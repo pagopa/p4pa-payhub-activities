@@ -5,6 +5,8 @@ on:
     branches:
       - main
 
+pr: none
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,5 +31,4 @@ jobs:
 #        env:
 #          USERNAME: ${{ github.actor }}
 #          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
