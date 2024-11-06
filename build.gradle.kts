@@ -2,6 +2,8 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
+	`java-library`
+	`maven-publish`
 }
 
 group = "it.gov.pagopa.payhub"
@@ -29,7 +31,7 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-
+apply(plugin = "maven-publish")
 
 val janinoVersion = "3.1.12"
 val wiremockVersion = "3.5.4"
@@ -82,5 +84,20 @@ configurations {
 configure<SourceSetContainer> {
 	named("main") {
 		java.srcDir("$projectDir/build/generated/src/main/java")
+	}
+}
+
+publishing {
+	publications {
+		create<MavenPublication>("myLibrary") {
+			from(components["java"])
+		}
+	}
+
+	repositories {
+		maven {
+			name = "myRepo"
+			url = uri(layout.buildDirectory.dir("repo"))
+		}
 	}
 }
