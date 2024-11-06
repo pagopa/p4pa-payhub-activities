@@ -89,15 +89,22 @@ configure<SourceSetContainer> {
 
 publishing {
 	publications {
-		create<MavenPublication>("myLibrary") {
+		create<MavenPublication>("github") {
 			from(components["java"])
+
+			groupId = project.group.toString()
+			artifactId = project.name
+			version = project.version.toString()
 		}
 	}
-
 	repositories {
 		maven {
-			name = "myRepo"
-			url = uri(layout.buildDirectory.dir("repo"))
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/pagopa/p4pa-payhub-activities")
+			credentials {
+				username = System.getenv("GITHUB_ACTOR") ?: "GITHUB_ACTOR"
+				password = System.getenv("GITHUB_TOKEN")
+			}
 		}
 	}
 }
