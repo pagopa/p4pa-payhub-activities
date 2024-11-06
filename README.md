@@ -1,1 +1,2 @@
-# template-repository-init
+# p4pa-payhub-activities
+
