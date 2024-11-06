@@ -102,8 +102,8 @@ publishing {
 			name = "GitHubPackages"
 			url = uri("https://maven.pkg.github.com/pagopa/p4pa-payhub-activities")
 			credentials {
-				username = System.getenv("GITHUB_ACTOR") ?: "GITHUB_ACTOR"
-				password = System.getenv("GITHUB_TOKEN")
+				username = System.getenv("USERNAME")
+				password = System.getenv("TOKEN")
 			}
 		}
 	}
