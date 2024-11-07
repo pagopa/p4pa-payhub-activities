@@ -33,6 +33,6 @@ jobs:
       - name: Build and Publish with Gradle
         run: ./gradlew clean build publish
         env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME_ACTIVITIES: ${{ github.actor }}
+          TOKEN_ACTIVITIES: ${{ secrets.GITHUB_TOKEN }}
 
