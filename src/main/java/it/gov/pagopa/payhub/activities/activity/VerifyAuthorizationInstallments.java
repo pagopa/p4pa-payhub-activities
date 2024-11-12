@@ -21,7 +21,7 @@ public class VerifyAuthorizationInstallments {
                 organizationInstallmentTypeDao.getByMygovEnteIdAndOperatoreUsername(mygovEnteId, username);
 
         return organizationInstallmentTypeList.stream()
-                .filter(etd -> etd.getCodTipo().equals(installmentsOperatorDTO.getTipoDovuto().getCodTipo()))
+                .filter(etd -> etd.getTypeCode().equals(installmentsOperatorDTO.getOrganizationTypeInstallment().getTypeCode()))
                 .findFirst()
                 .orElseThrow(() -> new ValidatorException("OrganizationInstallmentType is not active for this operator"));
     }
