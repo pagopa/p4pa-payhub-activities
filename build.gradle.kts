@@ -95,6 +95,26 @@ configure<SourceSetContainer> {
 	}
 }
 
+//publishing {
+//	publications {
+//		create<MavenPublication>("azureArtifacts") {
+//			from(components["java"])
+//			groupId = project.group.toString()
+//			artifactId = project.name
+//			version = project.version.toString()
+//		}
+//	}
+//	repositories {
+//		maven {
+//			name = "AzureArtifacts"
+//			url = uri("https://pkgs.dev.azure.com/pagopaspa/_packaging/pagopaspa/maven/v1")
+//			credentials {
+//				username = ""
+//				password = ""
+//			}
+//		}
+//	}
+//}
 publishing {
 	publications {
 		create<MavenPublication>("github") {

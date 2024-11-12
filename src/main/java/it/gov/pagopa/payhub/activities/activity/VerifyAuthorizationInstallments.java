@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity;
 
-import it.gov.pagopa.payhub.activities.constants.Constants;
+import it.gov.pagopa.payhub.activities.dao.OrganizationInstallmentTypeDao;
 import it.gov.pagopa.payhub.activities.dto.InstallmentsOperatorDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationInstallmentTypeDTO;
 import it.gov.pagopa.payhub.activities.exception.ValidatorException;
@@ -9,12 +9,16 @@ import java.util.List;
 
 public class VerifyAuthorizationInstallments {
 
-    public OrganizationInstallmentTypeDTO verifyAuth(InstallmentsOperatorDTO installmentsOperatorDTO,
-                                                     List<OrganizationInstallmentTypeDTO> organizationInstallmentTypeList){
+    private final OrganizationInstallmentTypeDao organizationInstallmentTypeDao;
 
-        if (installmentsOperatorDTO.getTipoDovuto().getCodTipo().equals(Constants.TIPO_DOVUTO_MARCA_BOLLO_DIGITALE)){
-            throw new ValidatorException("Operation not authorized for installment type MARCA_BOLLO_DIGITALE");
-        }
+    public VerifyAuthorizationInstallments(OrganizationInstallmentTypeDao organizationInstallmentTypeDao) {
+        this.organizationInstallmentTypeDao = organizationInstallmentTypeDao;
+    }
+
+    public OrganizationInstallmentTypeDTO verifyAuth(InstallmentsOperatorDTO installmentsOperatorDTO, String username, Long mygovEnteId){
+
+        List<OrganizationInstallmentTypeDTO> organizationInstallmentTypeList =
+                organizationInstallmentTypeDao.getByMygovEnteIdAndOperatoreUsername(mygovEnteId, username);
 
         return organizationInstallmentTypeList.stream()
                 .filter(etd -> etd.getCodTipo().equals(installmentsOperatorDTO.getTipoDovuto().getCodTipo()))
