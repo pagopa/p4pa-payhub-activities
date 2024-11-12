@@ -14,56 +14,55 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InstallmentsOperatorDTO implements Serializable {
-  private Long id;
-  private String codFiscale;
-  private String iud;
-  private String iuv;
-  private String causale;
-  private String causaleVisualizzata;
-  private String importo;
-  private LocalDate dataScadenza;
-  private String stato;
-  private String codStato;
-  private LocalDateTime dataStato;
-  private boolean hasAvviso;
-  private boolean hasRicevuta;
 
+    private Long installmentId;
+    private String uniqueIdentificationCode;
+    private String iud;
+    private String iuv;
+    private String remittanceInformation;
+    private String displayedRemittanceInformation;
+    private String amount;
+    private LocalDate dueDate;
+    private String status;
+    private String statusCode;
+    private LocalDateTime statusDate;
+    private boolean hasNotice;
+    private boolean hasReceipt;
 
-  //details
-  private OrganizationTypeInstallmentDTO tipoDovuto;
-  private String anagrafica;
-  private String tipoSoggetto;
-  private boolean flgAnagraficaAnonima;
-  private boolean hasCodFiscale;
-  private String email;
-  private String indirizzo;
-  private String numCiv;
-  private String cap;
-  private NationDTO nazione;
-  private ProvinceDTO prov;
-  private CityDTO comune;
-  private boolean flgGenerateIuv;
-  private String iuf;
+    //details
+    private OrganizationTypeInstallmentDTO organizationTypeInstallment;
+    private String beneficiaryName;
+    private String subjectType;
+    private boolean flagAnonymousData;
+    private boolean hasFiscalCode;
+    private String email;
+    private String address;
+    private String civic;
+    private String postalCode;
+    private NationDTO nation;
+    private ProvinceDTO province;
+    private CityDTO municipality;
+    private boolean flagGenerateIuv;
+    private String iuf;
 
-  //datails dovutoElaborato
-  private LocalDateTime dataInizioTransazione;
-  private String identificativoTransazione;
-  private String intestatario;
-  private String pspScelto;
+    //datails elaborated installment
+    private LocalDateTime transactionStartDate;
+    private String transactionId;
+    private String holder;
+    private String selectedPSP;
 
-  private String dovutoType; // "debito" or "pagato"
+    private String installmentType; // "debito" or "pagato"
+    private String invalidDescription; // Message thrown by ValidatorException when insertion, update.
 
-  private String invalidDesc; // Message thrown by ValidatorException when insertion, update.
-  
-  private boolean flgMultibeneficiario;
-  private boolean flgIuvVolatile;
+    private boolean flagMultiBeneficiary;
+    private boolean flagIuvVolatile;
 
-  //Ente primario detail
-  private InstallmentPrimaryOrganizationDTO entePrimarioDetail;
-  private InstallmentElaboratedPrimaryOrganization entePrimarioElaboratoDetail;
-  
-  //dovuto multibeneficiario
-  private InstallmentMultiBeneficiaryDTO dovutoMultibeneficiario;
-  private InstallmentMultiBeneficiaryElaborated dovutoMultibeneficiarioElaborato;
-  
+    //primary org detail
+    private InstallmentPrimaryOrganizationDTO installmentPrimaryOrgDetail;
+    private ElaboratedInstallmentPrimaryOrganizationDTO elaboratedInstallmentPrimaryOrgDetail;
+
+    //multibeneficiary detail
+    private MultiBeneficiaryInstallmentDTO multiBeneficiaryInstallmentDetail;
+    private ElaboratedMultiBeneficiaryInstallmentDTO elaboratedMultiBeneficiaryInstallmentDetail;
+
 }

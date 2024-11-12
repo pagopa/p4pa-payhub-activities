@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CityDTO implements Serializable {
 
-  private Long comuneId;
-  private String comune;
-  private Long provinciaId;
+    private Long municipalityId;
+    private String municipality;
+    private Long provinceId;
 }

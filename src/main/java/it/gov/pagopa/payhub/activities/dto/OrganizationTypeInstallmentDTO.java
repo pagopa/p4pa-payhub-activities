@@ -13,20 +13,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrganizationTypeInstallmentDTO implements Serializable {
-  private Long mygovEnteTipoDovutoId;
-  private Long mygovEnteId;
-  private String codIpaEnte;
-  private String deNomeEnte;
-  private String thumbLogoEnte;
-  private String hashThumbLogoEnte;
-  private String codTipo;
-  private String deTipo;
-  private String deUrlPagamentoDovuto;
-  private boolean flgCfAnonimo;
-  private boolean flgScadenzaObbligatoria;
-  private boolean flgAttivo;
-  private String importo;
 
-  private LocalDateTime dtUltimaAbilitazione;
-  private LocalDateTime dtUltimaDisabilitazione;
+    private Long orgInstallmentTypeId;
+    private Long orgId;
+    private String ipaCode;
+    private String orgName;
+    private String orgThumbLogo;
+    private String orgHashThumbLogo;
+    private String typeCode;
+    private String typeDesc;
+    private String installmentPaymentUrl;
+    private boolean flagAnonymousFiscalCode;
+    private boolean flagMandatoryDueDate;
+    private boolean flagActive;
+    private String amount;
+    private LocalDateTime lastEnablingDate;
+    private LocalDateTime lastDisablingDate;
 }

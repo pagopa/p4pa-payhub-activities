@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstallmentPrimaryOrganizationDTO {
+public class ElaboratedInstallmentPrimaryOrganizationDTO implements Serializable {
 
     private String beneficiaryName;
     private String uniqueIdentificationCode;
@@ -24,6 +26,6 @@ public class InstallmentPrimaryOrganizationDTO {
     private String beneficiaryLocation;
 
     @JsonIgnore
-    private Long installmentId;
+    private Long elaboratedInstallmentId;
 
 }

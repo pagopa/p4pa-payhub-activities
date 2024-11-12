@@ -13,11 +13,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NationDTO implements Serializable {
-  private Long nazioneId;
-  private String nomeNazione;
-  private String codiceIsoAlpha2;
 
-  public boolean hasProvince(){
-    return StringUtils.equalsIgnoreCase(codiceIsoAlpha2, "it");
-  }
+    private Long nationId;
+    private String nationName;
+    private String codeIsoAlpha2;
+
+   // public boolean hasProvince(){
+   //     return StringUtils.equalsIgnoreCase(codiceIsoAlpha2, "it");
+   // }
 }

@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ProvinceDTO implements Serializable {
 
-  private Long provinciaId;
-  private String provincia;
-  private String sigla;
+    private Long provinceId;
+    private String province;
+    private String acronym;
 }
