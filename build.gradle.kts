@@ -42,6 +42,7 @@ val hibernateValidatorVersion = "8.0.1.Final"
 val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
 val commonsTextVersion = "1.12.0"
+val jacksonModuleVersion = "2.18.1"
 
 
 dependencies {
@@ -57,6 +58,8 @@ dependencies {
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
+
+	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
