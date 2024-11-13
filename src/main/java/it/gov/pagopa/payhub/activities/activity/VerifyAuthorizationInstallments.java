@@ -4,9 +4,11 @@ import it.gov.pagopa.payhub.activities.dao.OrganizationInstallmentTypeDao;
 import it.gov.pagopa.payhub.activities.dto.InstallmentsOperatorDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationInstallmentTypeDTO;
 import it.gov.pagopa.payhub.activities.exception.ValidatorException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class VerifyAuthorizationInstallments {
 
     private final OrganizationInstallmentTypeDao organizationInstallmentTypeDao;
