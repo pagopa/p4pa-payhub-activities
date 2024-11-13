@@ -124,6 +124,6 @@ tasks.withType<Jar> {
 }
 
 tasks.withType<BootJar> {
-	enabled = false
+	enabled = true
 }
 
