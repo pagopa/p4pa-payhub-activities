@@ -120,7 +120,7 @@ publishing {
 }
 
 tasks.withType<Jar> {
-	enabled = false
+	enabled = true
 }
 
 tasks.withType<BootJar> {
