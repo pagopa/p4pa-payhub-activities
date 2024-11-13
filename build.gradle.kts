@@ -37,6 +37,9 @@ val janinoVersion = "3.1.12"
 val wiremockVersion = "3.5.4"
 val snakeYamlVersion = "2.0"
 val hibernateValidatorVersion = "8.0.1.Final"
+val commonsCompressVersion = "1.27.1"
+val commonsLang3Version = "3.17.0"
+val commonsTextVersion = "1.12.0"
 
 
 dependencies {
@@ -44,6 +47,11 @@ dependencies {
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
+
+	// apache commons
+	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
+	implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
+	implementation("org.apache.commons:commons-text:$commonsTextVersion")
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")

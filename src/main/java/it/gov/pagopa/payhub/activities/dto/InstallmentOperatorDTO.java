@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstallmentsOperatorDTO implements Serializable {
+public class InstallmentOperatorDTO implements Serializable {
 
     private Long installmentId;
     private String uniqueIdentificationCode;
