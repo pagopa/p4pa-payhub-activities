@@ -18,16 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class VerifyAuthorizationInstallmentsTest {
+class VerifyAuthorizationInstallmentsActivityTest {
 
     @Mock
     private OrganizationInstallmentTypeDao organizationInstallmentTypeDao;
 
-    private VerifyAuthorizationInstallments verifyAuthorizationInstallments;
+    private VerifyAuthorizationInstallmentsActivity verifyAuthorizationInstallmentsActivity;
 
     @BeforeEach
     void init() {
-        verifyAuthorizationInstallments = new VerifyAuthorizationInstallments(organizationInstallmentTypeDao);
+        verifyAuthorizationInstallmentsActivity = new VerifyAuthorizationInstallmentsActivity(organizationInstallmentTypeDao);
     }
 
     @Test
@@ -46,7 +46,7 @@ class VerifyAuthorizationInstallmentsTest {
         when(organizationInstallmentTypeDao.getByMygovEnteIdAndOperatoreUsername(mygovEnteId, username))
                 .thenReturn(List.of(organizationInstallmentTypeDTO));
 
-        OrganizationInstallmentTypeDTO result = verifyAuthorizationInstallments.verifyAuth(installmentsOperatorDTO, username, mygovEnteId);
+        OrganizationInstallmentTypeDTO result = verifyAuthorizationInstallmentsActivity.verifyAuth(installmentsOperatorDTO, username, mygovEnteId);
 
         assertEquals(organizationInstallmentTypeDTO, result);
     }
@@ -64,7 +64,7 @@ class VerifyAuthorizationInstallmentsTest {
                 .thenReturn(List.of());
 
         assertThrows(ValidatorException.class, () ->
-                verifyAuthorizationInstallments.verifyAuth(installmentsOperatorDTO, username, mygovEnteId));
+                verifyAuthorizationInstallmentsActivity.verifyAuth(installmentsOperatorDTO, username, mygovEnteId));
     }
 }
 
