@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity;
 
 import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.dao.LocationDao;
-import it.gov.pagopa.payhub.activities.dao.OrganizationDao;
+import it.gov.pagopa.payhub.activities.dao.FlowDao;
 import it.gov.pagopa.payhub.activities.dto.*;
 import it.gov.pagopa.payhub.activities.exception.FlowException;
 import it.gov.pagopa.payhub.activities.exception.ValidatorException;
@@ -18,10 +18,10 @@ import java.util.Optional;
 @Service
 public class InstallmentsValidationActivity {
 
-    private final OrganizationDao organizationDao;
+    private final FlowDao organizationDao;
     private final LocationDao locationDao;
 
-    public InstallmentsValidationActivity(OrganizationDao organizationDao, LocationDao locationDao) {
+    public InstallmentsValidationActivity(FlowDao organizationDao, LocationDao locationDao) {
         this.organizationDao = organizationDao;
         this.locationDao = locationDao;
     }

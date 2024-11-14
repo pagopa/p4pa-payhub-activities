@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.FlowDTO;
 
 import java.util.List;
 
-public interface OrganizationDao {
+public interface FlowDao {
 
     List<FlowDTO> getFlowsByOrganization(Long organizationId, boolean isSpontaneous);
 }
