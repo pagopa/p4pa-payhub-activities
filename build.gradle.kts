@@ -130,3 +130,9 @@ tasks.withType<BootJar> {
 	enabled = true
 }
 
+configurations {
+	compileClasspath {
+		resolutionStrategy.activateDependencyLocking()
+	}
+}
+
