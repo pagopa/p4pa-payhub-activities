@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class VerifyAuthorizationInstallments {
+public class VerifyAuthorizationInstallmentsActivity {
 
     private final OrganizationInstallmentTypeDao organizationInstallmentTypeDao;
 
-    public VerifyAuthorizationInstallments(OrganizationInstallmentTypeDao organizationInstallmentTypeDao) {
+    public VerifyAuthorizationInstallmentsActivity(OrganizationInstallmentTypeDao organizationInstallmentTypeDao) {
         this.organizationInstallmentTypeDao = organizationInstallmentTypeDao;
     }
 
