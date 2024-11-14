@@ -35,8 +35,8 @@ public class InstallmentsValidationActivity {
         return flows.get(0);
     }
 
-    public void formalValidation(InstallmentOperatorDTO installment, OrganizationTypeInstallmentDTO orgTypeInstallment) {
-        checkOrgTypeInstallmentFlag(installment, orgTypeInstallment);
+    public void formalValidation(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType) {
+        checkOrgTypeInstallmentFlag(installment, orgInstallmentType);
 
         if (StringUtils.isBlank(installment.getBeneficiaryName())) {
             throw new ValidatorException("Beneficiary name is mandatory");
@@ -54,20 +54,20 @@ public class InstallmentsValidationActivity {
             throw new ValidatorException("The due date cannot be retroactive");
         }
 
-        if (orgTypeInstallment.isFlagMandatoryDueDate() && installment.getDueDate() == null) {
+        if (orgInstallmentType.isFlagMandatoryDueDate() && installment.getDueDate() == null) {
             throw new ValidatorException("The due date is mandatory");
         }
 
-        checkAmountInstallment(installment, orgTypeInstallment);
+        checkAmountInstallment(installment, orgInstallmentType);
     }
 
-    private void checkOrgTypeInstallmentFlag(InstallmentOperatorDTO installment, OrganizationTypeInstallmentDTO orgTypeInstallment){
+    private void checkOrgTypeInstallmentFlag(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType){
         if (installment.getOrganizationTypeInstallment() == null ||
                 StringUtils.isBlank(installment.getOrganizationTypeInstallment().getTypeCode())) {
             throw new ValidatorException("Organization installment type is mandatory");
         }
 
-        if (orgTypeInstallment.isFlagAnonymousFiscalCode()) {
+        if (orgInstallmentType.isFlagAnonymousFiscalCode()) {
             if (!installment.isFlagAnonymousData() && StringUtils.isBlank(installment.getUniqueIdentificationCode())) {
                 throw new ValidatorException("This organization installment type or installment does not allow an anonymous unique identification code");
             }
@@ -78,7 +78,7 @@ public class InstallmentsValidationActivity {
         }
     }
 
-    private void checkAmountInstallment(InstallmentOperatorDTO installment, OrganizationTypeInstallmentDTO orgTypeInstallment){
+    private void checkAmountInstallment(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType){
         if (StringUtils.isBlank(installment.getAmount())) {
             throw new ValidatorException("Amount is mandatory");
         }
@@ -86,8 +86,8 @@ public class InstallmentsValidationActivity {
         try {
             BigDecimal amountInstallment = new BigDecimal(installment.getAmount()).setScale(2, RoundingMode.HALF_EVEN);
 
-            if (orgTypeInstallment.getAmount() != null) {
-                if (!installment.getAmount().equals(orgTypeInstallment.getAmount()))
+            if (orgInstallmentType.getAmount() != null) {
+                if (!amountInstallment.equals(orgInstallmentType.getAmount()))
                     throw new ValidatorException("Invalid amount for this installment type");
             } else {
                 if (amountInstallment.compareTo(BigDecimal.ZERO) < (installment.isFlagMultiBeneficiary() ? 0 : 1)) {
