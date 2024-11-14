@@ -103,7 +103,7 @@ public class InstallmentsValidationActivity {
         }
     }
 
-    private NationDTO validateNationAndPostalCode(InstallmentOperatorDTO installment) {
+    public NationDTO validateNationAndPostalCode(InstallmentOperatorDTO installment) {
         if (StringUtils.isNotBlank(installment.getPostalCode())) {
             if (installment.getNation() == null || StringUtils.isBlank(installment.getNation().getCodeIsoAlpha2())) {
                 throw new ValidatorException("Nation is not valid");
