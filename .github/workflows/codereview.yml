@@ -25,6 +25,9 @@ jobs:
           distribution: 'corretto'
           java-version: 17
 
+      - name: Set permissions for Gradle Wrapper
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
         run: ./gradlew clean build jacocoTestReport
         env:

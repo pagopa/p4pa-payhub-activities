@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -17,7 +16,7 @@ public class NationDTO implements Serializable {
     private String nationName;
     private String codeIsoAlpha2;
 
-   // public boolean hasProvince(){
-   //     return StringUtils.equalsIgnoreCase(codiceIsoAlpha2, "it");
-   // }
+//    public boolean hasProvince(){
+//        return StringUtils.equalsIgnoreCase(codiceIsoAlpha2, "it");
+//    }
 }
