@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivity;
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
-import it.gov.pagopa.payhub.activities.dto.DebtPositionTypeOrgDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
+import it.gov.pagopa.payhub.activities.dto.debtposition.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationTypeInstallmentDTO;
 import it.gov.pagopa.payhub.activities.exception.custom.OperatorNotAuthorizedException;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,10 +40,10 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
         OrganizationDTO organizationDTO = new OrganizationDTO();
         organizationDTO.setOrgId(orgId);
-        debtPositionTypeOrgDTO.setDebtPositionTypeId(debtPositionTypeOrgId);
+        debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
         debtPositionTypeOrgDTO.setOrgId(organizationDTO);
 
-        when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username))
+        when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.of(debtPositionTypeOrgDTO));
 
         DebtPositionTypeOrgDTO result = authorizeOperatorOnDebtPositionTypeActivity.authorize(orgId, debtPositionTypeOrgId, username);
@@ -64,7 +64,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         DebtPositionTypeOrgDTO organizationInstallmentTypeDTO = new DebtPositionTypeOrgDTO();
         organizationInstallmentTypeDTO.setTypeCode("TYPE_CODE");
 
-        when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username))
+        when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.empty());
 
         assertThrows(OperatorNotAuthorizedException.class, () ->
