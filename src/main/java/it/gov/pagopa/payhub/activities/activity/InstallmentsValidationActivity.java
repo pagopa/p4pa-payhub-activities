@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import io.micrometer.common.util.StringUtils;
-import it.gov.pagopa.payhub.activities.dao.LocationDao;
+import it.gov.pagopa.payhub.activities.dao.PositionDao;
 import it.gov.pagopa.payhub.activities.dao.FlowDao;
 import it.gov.pagopa.payhub.activities.dto.*;
 import it.gov.pagopa.payhub.activities.exception.FlowException;
@@ -19,11 +19,11 @@ import java.util.Optional;
 public class InstallmentsValidationActivity {
 
     private final FlowDao flowDao;
-    private final LocationDao locationDao;
+    private final PositionDao positionDao;
 
-    public InstallmentsValidationActivity(FlowDao flowDao, LocationDao locationDao) {
+    public InstallmentsValidationActivity(FlowDao flowDao, PositionDao positionDao) {
         this.flowDao = flowDao;
-        this.locationDao = locationDao;
+        this.positionDao = positionDao;
     }
 
     public FlowDTO validateFlow(Long organizationId, boolean isSpontaneous) {
@@ -116,7 +116,7 @@ public class InstallmentsValidationActivity {
 
         NationDTO nation = null;
         if (installment.getNation() != null && StringUtils.isNotBlank(installment.getNation().getCodeIsoAlpha2())) {
-            nation = Optional.ofNullable(locationDao.getNationByCodeIso(installment.getNation().getCodeIsoAlpha2()))
+            nation = Optional.ofNullable(positionDao.getNationByCodeIso(installment.getNation().getCodeIsoAlpha2()))
                     .orElseThrow(() -> new ValidatorException("Nation is not valid"));
         }
         return nation;
@@ -127,7 +127,7 @@ public class InstallmentsValidationActivity {
         if (installment.getProvince() != null && StringUtils.isNotBlank(installment.getProvince().getAcronym())) {
             if (nation == null || !nation.hasProvince())
                 throw new ValidatorException("Province is not valid");
-            province = Optional.ofNullable(locationDao.getProvinceByAcronym(installment.getProvince().getAcronym()))
+            province = Optional.ofNullable(positionDao.getProvinceByAcronym(installment.getProvince().getAcronym()))
                     .orElseThrow(() -> new ValidatorException("Province is not valid"));
         }
         return province;
@@ -140,7 +140,7 @@ public class InstallmentsValidationActivity {
             if (province == null) {
                 throw new ValidatorException("Location is not valid");
             }
-            municipality = locationDao.getMunicipalityByNameAndProvince(installment.getMunicipality().getMunicipality(), province.getAcronym())
+            municipality = positionDao.getMunicipalityByNameAndProvince(installment.getMunicipality().getMunicipality(), province.getAcronym())
                     .map(CityDTO::getMunicipality).orElse(installment.getMunicipality().getMunicipality());
         }
         return municipality;

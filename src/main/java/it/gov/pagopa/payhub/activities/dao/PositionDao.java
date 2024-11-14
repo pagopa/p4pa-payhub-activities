@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ProvinceDTO;
 
 import java.util.Optional;
 
-public interface LocationDao {
+public interface PositionDao {
 
     NationDTO getNationByCodeIso(String codeIso);
     ProvinceDTO getProvinceByAcronym(String acronym);
