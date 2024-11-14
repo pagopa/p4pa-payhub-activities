@@ -40,8 +40,8 @@ jobs:
           -Dorg.gradle.jvmargs=-Xmx4096M
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
-          -Dsonar.projectKey=${{ vars.SONARCLOUD_MYPAY_PROJECT_KEY }}
-          -Dsonar.projectName="${{ vars.SONARCLOUD_MYPAY_PROJECT_NAME }}"
+          -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
+          -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=src/main
           -Dsonar.tests=src/test
