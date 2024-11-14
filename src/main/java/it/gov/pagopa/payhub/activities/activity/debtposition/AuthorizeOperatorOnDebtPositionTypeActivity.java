@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.dao.DeptPositionTypeOrgDao;
+import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.exception.custom.OperatorNotAuthorizedException;
 import org.springframework.stereotype.Service;
@@ -16,16 +16,16 @@ import java.util.Optional;
 @Service
 public class AuthorizeOperatorOnDebtPositionTypeActivity {
 
-    private final DeptPositionTypeOrgDao deptPositionTypeOrgDao;
+    private final DebtPositionTypeOrgDao debtPositionTypeOrgDao;
 
     /**
      * Constructs a new {@code VerifyAuthorizationInstallmentsActivity} instance.
      *
-     * @param deptPositionTypeOrgDao the data access object for {@code DebtPositionTypeOrg} entities
+     * @param debtPositionTypeOrgDao the data access object for {@code DebtPositionTypeOrg} entities
      */
 
-    public AuthorizeOperatorOnDebtPositionTypeActivity(DeptPositionTypeOrgDao deptPositionTypeOrgDao) {
-        this.deptPositionTypeOrgDao = deptPositionTypeOrgDao;
+    public AuthorizeOperatorOnDebtPositionTypeActivity(DebtPositionTypeOrgDao debtPositionTypeOrgDao) {
+        this.debtPositionTypeOrgDao = debtPositionTypeOrgDao;
     }
 
     /**
@@ -46,7 +46,7 @@ public class AuthorizeOperatorOnDebtPositionTypeActivity {
 
     public DebtPositionTypeOrgDTO authorize(Long orgId, Long debtPositionTypeOrgId, String username){
         Optional<DebtPositionTypeOrgDTO> debtPositionTypeOrg =
-                deptPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username);
+                debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username);
 
         return debtPositionTypeOrg
                 .orElseThrow(() -> new OperatorNotAuthorizedException("The operator " + username + " is not authorized on the DebtPositionTypeOrg " + orgId));

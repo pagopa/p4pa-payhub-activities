@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivity;
-import it.gov.pagopa.payhub.activities.dao.DeptPositionTypeOrgDao;
+import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationTypeInstallmentDTO;
@@ -22,13 +22,13 @@ import static org.mockito.Mockito.when;
 class AuthorizeOperatorOnDebtPositionTypeActivityTest {
 
     @Mock
-    private DeptPositionTypeOrgDao deptPositionTypeOrgDao;
+    private DebtPositionTypeOrgDao debtPositionTypeOrgDao;
 
     private AuthorizeOperatorOnDebtPositionTypeActivity authorizeOperatorOnDebtPositionTypeActivity;
 
     @BeforeEach
     void init() {
-        authorizeOperatorOnDebtPositionTypeActivity = new AuthorizeOperatorOnDebtPositionTypeActivity(deptPositionTypeOrgDao);
+        authorizeOperatorOnDebtPositionTypeActivity = new AuthorizeOperatorOnDebtPositionTypeActivity(debtPositionTypeOrgDao);
     }
 
     @Test
@@ -43,7 +43,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         debtPositionTypeOrgDTO.setDebtPositionTypeId(debtPositionTypeOrgId);
         debtPositionTypeOrgDTO.setOrgId(organizationDTO);
 
-        when(deptPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username))
+        when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.of(debtPositionTypeOrgDTO));
 
         DebtPositionTypeOrgDTO result = authorizeOperatorOnDebtPositionTypeActivity.authorize(orgId, debtPositionTypeOrgId, username);
@@ -64,7 +64,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         DebtPositionTypeOrgDTO organizationInstallmentTypeDTO = new DebtPositionTypeOrgDTO();
         organizationInstallmentTypeDTO.setTypeCode("TYPE_CODE");
 
-        when(deptPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username))
+        when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.empty());
 
         assertThrows(OperatorNotAuthorizedException.class, () ->
