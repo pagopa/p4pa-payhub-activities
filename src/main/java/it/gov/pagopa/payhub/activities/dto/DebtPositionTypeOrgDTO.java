@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrganizationInstallmentTypeDTO implements Serializable {
+public class DebtPositionTypeOrgDTO implements Serializable {
 
-    private Long installmentTypeId;
+    private Long debtPositionTypeId;
     private OrganizationDTO orgId;
     private String typeCode;
     private String typeDesc;

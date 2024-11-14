@@ -3,9 +3,9 @@ package it.gov.pagopa.payhub.activities.exception.custom;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 
 
-public class ValidatorException extends ActivitiesException {
+public class OperatorNotAuthorizedException extends ActivitiesException {
 
-    public ValidatorException(String message) {
+    public OperatorNotAuthorizedException(String message) {
         super(message);
     }
 }
