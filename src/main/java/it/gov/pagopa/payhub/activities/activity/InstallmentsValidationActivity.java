@@ -36,7 +36,10 @@ public class InstallmentsValidationActivity {
     }
 
     public void formalValidation(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType) {
-        checkOrgTypeInstallmentFlag(installment, orgInstallmentType);
+        if (installment.getOrganizationTypeInstallment() == null ||
+                StringUtils.isBlank(installment.getOrganizationTypeInstallment().getTypeCode())) {
+            throw new ValidatorException("Organization installment type is mandatory");
+        }
 
         if (StringUtils.isBlank(installment.getBeneficiaryName())) {
             throw new ValidatorException("Beneficiary name is mandatory");
@@ -57,28 +60,27 @@ public class InstallmentsValidationActivity {
         if (orgInstallmentType.isFlagMandatoryDueDate() && installment.getDueDate() == null) {
             throw new ValidatorException("The due date is mandatory");
         }
-
-        checkAmountInstallment(installment, orgInstallmentType);
     }
 
-    private void checkOrgTypeInstallmentFlag(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType){
-        if (installment.getOrganizationTypeInstallment() == null ||
-                StringUtils.isBlank(installment.getOrganizationTypeInstallment().getTypeCode())) {
-            throw new ValidatorException("Organization installment type is mandatory");
+    public String validateUniqueIdentificationCode(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType){
+        if(!orgInstallmentType.isFlagAnonymousFiscalCode() && StringUtils.isBlank(installment.getUniqueIdentificationCode())){
+            throw new ValidatorException("Unique identification code is mandatory");
         }
+        String uniqueIdentificationCode = null;
 
         if (orgInstallmentType.isFlagAnonymousFiscalCode()) {
-            if (!installment.isFlagAnonymousData() && StringUtils.isBlank(installment.getUniqueIdentificationCode())) {
+            if(installment.isFlagAnonymousData()){
+                uniqueIdentificationCode = "ANONIMO";
+            } else if (StringUtils.isNotBlank(installment.getUniqueIdentificationCode())){
+                uniqueIdentificationCode = installment.getUniqueIdentificationCode();
+            } else {
                 throw new ValidatorException("This organization installment type or installment does not allow an anonymous unique identification code");
             }
-        } else {
-            if (StringUtils.isBlank(installment.getUniqueIdentificationCode())) {
-                throw new ValidatorException("Unique identification code is mandatory");
-            }
         }
+        return uniqueIdentificationCode;
     }
 
-    private void checkAmountInstallment(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType){
+    public void validateAmountInstallment(InstallmentOperatorDTO installment, OrganizationInstallmentTypeDTO orgInstallmentType){
         if (StringUtils.isBlank(installment.getAmount())) {
             throw new ValidatorException("Amount is mandatory");
         }
@@ -101,8 +103,26 @@ public class InstallmentsValidationActivity {
         }
     }
 
+    private NationDTO validateNationAndPostalCode(InstallmentOperatorDTO installment) {
+        if (StringUtils.isNotBlank(installment.getPostalCode())) {
+            if (installment.getNation() == null || StringUtils.isBlank(installment.getNation().getCodeIsoAlpha2())) {
+                throw new ValidatorException("Nation is not valid");
+            } else {
+                if (!Utilities.isValidPostalCode(installment.getPostalCode(), installment.getNation().getCodeIsoAlpha2())) {
+                    throw new ValidatorException("Postal code is not valid");
+                }
+            }
+        }
+
+        NationDTO nation = null;
+        if (installment.getNation() != null && StringUtils.isNotBlank(installment.getNation().getCodeIsoAlpha2())) {
+            nation = Optional.ofNullable(locationDao.getNationByCodeIso(installment.getNation().getCodeIsoAlpha2()))
+                    .orElseThrow(() -> new ValidatorException("Nation is not valid"));
+        }
+        return nation;
+    }
     public void businessValidation(InstallmentOperatorDTO installment) {
-        NationDTO nation = checkAndFindNation(installment);
+        NationDTO nation = validateNationAndPostalCode(installment);
 
         ProvinceDTO province = null;
         if (installment.getProvince() != null && StringUtils.isNotBlank(installment.getProvince().getAcronym())) {
@@ -128,22 +148,4 @@ public class InstallmentsValidationActivity {
         }
     }
 
-    private NationDTO checkAndFindNation(InstallmentOperatorDTO installment) {
-        if (StringUtils.isNotBlank(installment.getPostalCode())) {
-            if (installment.getNation() == null || StringUtils.isBlank(installment.getNation().getCodeIsoAlpha2())) {
-                throw new ValidatorException("Nation is not valid");
-            } else {
-                if (!Utilities.isValidPostalCode(installment.getPostalCode(), installment.getNation().getCodeIsoAlpha2())) {
-                    throw new ValidatorException("Postal code is not valid");
-                }
-            }
-        }
-
-        NationDTO nation = null;
-        if (installment.getNation() != null && StringUtils.isNotBlank(installment.getNation().getCodeIsoAlpha2())) {
-            nation = Optional.ofNullable(locationDao.getNationByCodeIso(installment.getNation().getCodeIsoAlpha2()))
-                    .orElseThrow(() -> new ValidatorException("Nation is not valid"));
-        }
-        return nation;
-    }
 }
