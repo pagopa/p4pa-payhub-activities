@@ -1,4 +1,4 @@
-name: MyPay - Code Review
+name: Activities - Code Review
 
 on:
   push:
