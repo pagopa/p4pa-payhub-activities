@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivity;
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationTypeInstallmentDTO;
 import it.gov.pagopa.payhub.activities.exception.custom.OperatorNotAuthorizedException;
 import org.junit.jupiter.api.BeforeEach;
