@@ -4,8 +4,10 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
+	id("org.sonarqube") version "5.0.0.4638"
 	`java-library`
 	`maven-publish`
+	jacoco
 }
 
 group = "it.gov.pagopa.payhub"
@@ -31,6 +33,14 @@ repositories {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		xml.required = true
+	}
 }
 
 apply(plugin = "maven-publish")
