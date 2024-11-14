@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
@@ -40,6 +42,7 @@ val hibernateValidatorVersion = "8.0.1.Final"
 val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
 val commonsTextVersion = "1.12.0"
+val jacksonModuleVersion = "2.18.1"
 
 
 dependencies {
@@ -48,13 +51,15 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
 
-	// apache commons
+	//apache commons
 	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
 	implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
+
+	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -116,3 +121,12 @@ publishing {
 		}
 	}
 }
+
+tasks.withType<Jar> {
+	enabled = true
+}
+
+tasks.withType<BootJar> {
+	enabled = true
+}
+

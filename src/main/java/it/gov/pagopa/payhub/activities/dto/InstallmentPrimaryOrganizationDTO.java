@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstallmentPrimaryOrganizationDTO {
+public class InstallmentPrimaryOrganizationDTO implements Serializable {
 
     private String beneficiaryName;
     private String uniqueIdentificationCode;

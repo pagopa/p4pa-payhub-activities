@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class InstallmentOperatorDTO implements Serializable {
@@ -45,7 +45,7 @@ public class InstallmentOperatorDTO implements Serializable {
     private boolean flagGenerateIuv;
     private String iuf;
 
-    //datails elaborated installment
+    //details elaborated installment
     private LocalDateTime transactionStartDate;
     private String transactionId;
     private String holder;
@@ -61,7 +61,7 @@ public class InstallmentOperatorDTO implements Serializable {
     private InstallmentPrimaryOrganizationDTO installmentPrimaryOrgDetail;
     private ElaboratedInstallmentPrimaryOrganizationDTO elaboratedInstallmentPrimaryOrgDetail;
 
-    //multibeneficiary detail
+    //multi beneficiary detail
     private MultiBeneficiaryInstallmentDTO multiBeneficiaryInstallmentDetail;
     private ElaboratedMultiBeneficiaryInstallmentDTO elaboratedMultiBeneficiaryInstallmentDetail;
 

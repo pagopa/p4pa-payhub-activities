@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class OrganizationInstallmentTypeDTO implements Serializable {
 
-
     private Long installmentTypeId;
     private OrganizationDTO orgId;
     private String typeCode;
