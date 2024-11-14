@@ -132,12 +132,20 @@ public class InstallmentsValidationActivity {
         }
         return province;
     }
-    public void validateAddress(InstallmentOperatorDTO installment, ProvinceDTO province) {
-        if (province == null && installment.getMunicipality() != null &&
-                StringUtils.isNotBlank(installment.getMunicipality().getMunicipality())) {
-            throw new ValidatorException("Location is not valid");
-        }
 
+    public String validateMunicipality(InstallmentOperatorDTO installment, ProvinceDTO province){
+        String municipality = null;
+        if (installment.getMunicipality() != null &&
+                StringUtils.isNotBlank(installment.getMunicipality().getMunicipality())) {
+            if (province == null) {
+                throw new ValidatorException("Location is not valid");
+            }
+            municipality = locationDao.getMunicipalityByNameAndProvince(installment.getMunicipality().getMunicipality(), province.getAcronym())
+                    .map(CityDTO::getMunicipality).orElse(installment.getMunicipality().getMunicipality());
+        }
+        return municipality;
+    }
+    public void validateAddress(InstallmentOperatorDTO installment) {
         if (StringUtils.isNotBlank(installment.getAddress()) &&
                 !Utilities.validateAddress(installment.getAddress(), false)) {
             throw new ValidatorException("Address is not valid");
