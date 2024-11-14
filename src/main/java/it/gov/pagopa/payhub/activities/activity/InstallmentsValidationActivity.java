@@ -121,9 +121,8 @@ public class InstallmentsValidationActivity {
         }
         return nation;
     }
-    public void businessValidation(InstallmentOperatorDTO installment) {
-        NationDTO nation = validateNationAndPostalCode(installment);
 
+    public ProvinceDTO validateProvince(InstallmentOperatorDTO installment, NationDTO nation){
         ProvinceDTO province = null;
         if (installment.getProvince() != null && StringUtils.isNotBlank(installment.getProvince().getAcronym())) {
             if (nation == null || !nation.hasProvince())
@@ -131,7 +130,9 @@ public class InstallmentsValidationActivity {
             province = Optional.ofNullable(locationDao.getProvinceByAcronym(installment.getProvince().getAcronym()))
                     .orElseThrow(() -> new ValidatorException("Province is not valid"));
         }
-
+        return province;
+    }
+    public void validateAddress(InstallmentOperatorDTO installment, ProvinceDTO province) {
         if (province == null && installment.getMunicipality() != null &&
                 StringUtils.isNotBlank(installment.getMunicipality().getMunicipality())) {
             throw new ValidatorException("Location is not valid");
