@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.dao.OrganizationInstallmentTypeDao;
-import it.gov.pagopa.payhub.activities.dto.InstallmentsOperatorDTO;
+import it.gov.pagopa.payhub.activities.dto.InstallmentOperatorDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationInstallmentTypeDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationTypeInstallmentDTO;
 import it.gov.pagopa.payhub.activities.exception.custom.ValidatorException;
@@ -34,7 +34,7 @@ class VerifyAuthorizationInstallmentsActivityTest {
     void givenVerifyAuthThenSuccess() {
         String username = "username";
         Long mygovEnteId = 1L;
-        InstallmentsOperatorDTO installmentsOperatorDTO = new InstallmentsOperatorDTO();
+        InstallmentOperatorDTO installmentsOperatorDTO = new InstallmentOperatorDTO();
         OrganizationTypeInstallmentDTO organizationTypeInstallmentDTO = new OrganizationTypeInstallmentDTO();
 
         installmentsOperatorDTO.setOrganizationTypeInstallment(organizationTypeInstallmentDTO);
@@ -55,7 +55,7 @@ class VerifyAuthorizationInstallmentsActivityTest {
     void givenVerifyAuthWhenNotEqualTypeCodeThenThrowValidatorException() {
         String username = "username";
         Long mygovEnteId = 1L;
-        InstallmentsOperatorDTO installmentsOperatorDTO = new InstallmentsOperatorDTO();
+        InstallmentOperatorDTO installmentsOperatorDTO = new InstallmentOperatorDTO();
 
         OrganizationInstallmentTypeDTO organizationInstallmentTypeDTO = new OrganizationInstallmentTypeDTO();
         organizationInstallmentTypeDTO.setTypeCode("TYPE_CODE");

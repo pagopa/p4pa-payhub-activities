@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.dao.OrganizationInstallmentTypeDao;
-import it.gov.pagopa.payhub.activities.dto.InstallmentsOperatorDTO;
+import it.gov.pagopa.payhub.activities.dto.InstallmentOperatorDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationInstallmentTypeDTO;
 import it.gov.pagopa.payhub.activities.exception.custom.ValidatorException;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class VerifyAuthorizationInstallmentsActivity {
         this.organizationInstallmentTypeDao = organizationInstallmentTypeDao;
     }
 
-    public OrganizationInstallmentTypeDTO verifyAuth(InstallmentsOperatorDTO installmentsOperatorDTO, String username, Long mygovEnteId){
+    public OrganizationInstallmentTypeDTO verifyAuth(InstallmentOperatorDTO installmentsOperatorDTO, String username, Long mygovEnteId){
 
         List<OrganizationInstallmentTypeDTO> organizationInstallmentTypeList =
                 organizationInstallmentTypeDao.getByMygovEnteIdAndOperatoreUsername(mygovEnteId, username);
