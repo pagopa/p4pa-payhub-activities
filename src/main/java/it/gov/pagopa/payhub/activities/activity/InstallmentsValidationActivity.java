@@ -18,16 +18,16 @@ import java.util.Optional;
 @Service
 public class InstallmentsValidationActivity {
 
-    private final FlowDao organizationDao;
+    private final FlowDao flowDao;
     private final LocationDao locationDao;
 
-    public InstallmentsValidationActivity(FlowDao organizationDao, LocationDao locationDao) {
-        this.organizationDao = organizationDao;
+    public InstallmentsValidationActivity(FlowDao flowDao, LocationDao locationDao) {
+        this.flowDao = flowDao;
         this.locationDao = locationDao;
     }
 
     public FlowDTO validateFlow(Long organizationId, boolean isSpontaneous) {
-        List<FlowDTO> flows = organizationDao.getFlowsByOrganization(organizationId, isSpontaneous);
+        List<FlowDTO> flows = flowDao.getFlowsByOrganization(organizationId, isSpontaneous);
 
         if (flows == null || flows.isEmpty())
             throw new FlowException("No flow was found for organization with id " + organizationId);
