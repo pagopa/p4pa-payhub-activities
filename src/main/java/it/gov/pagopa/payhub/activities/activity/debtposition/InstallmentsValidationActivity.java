@@ -9,8 +9,8 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import it.gov.pagopa.payhub.activities.dto.position.CityDTO;
 import it.gov.pagopa.payhub.activities.dto.position.NationDTO;
 import it.gov.pagopa.payhub.activities.dto.position.ProvinceDTO;
-import it.gov.pagopa.payhub.activities.exception.custom.FlowException;
-import it.gov.pagopa.payhub.activities.exception.custom.ValidatorException;
+import it.gov.pagopa.payhub.activities.exception.FlowException;
+import it.gov.pagopa.payhub.activities.exception.ValidatorException;
 import it.gov.pagopa.payhub.activities.utility.Utilities;
 import org.springframework.stereotype.Service;
 
