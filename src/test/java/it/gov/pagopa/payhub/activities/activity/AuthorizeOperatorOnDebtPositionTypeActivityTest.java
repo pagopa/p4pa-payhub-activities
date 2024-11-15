@@ -2,9 +2,8 @@ package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivity;
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationTypeInstallmentDTO;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.exception.OperatorNotAuthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,12 +56,8 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         Long orgId = 1L;
         Long debtPositionTypeOrgId = 1L;
 
-        OrganizationTypeInstallmentDTO organizationTypeInstallmentDTO = new OrganizationTypeInstallmentDTO();
-        organizationTypeInstallmentDTO.setOrgId(orgId);
-
-
-        DebtPositionTypeOrgDTO organizationInstallmentTypeDTO = new DebtPositionTypeOrgDTO();
-        organizationInstallmentTypeDTO.setTypeCode("TYPE_CODE");
+        DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
+        debtPositionTypeOrgDTO.setTypeCode("TYPE_CODE");
 
         when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.empty());
