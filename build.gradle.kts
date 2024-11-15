@@ -154,7 +154,7 @@ publishing {
 
 
 tasks.withType<BootJar> {
-	enabled = true
+	enabled = false
 }
 
 
