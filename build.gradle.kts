@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "it.gov.pagopa.payhub"
-version = "0.0.6-SNAPSHOT"
+version = "0.0.8-SNAPSHOT"
 
 java {
 	toolchain {
