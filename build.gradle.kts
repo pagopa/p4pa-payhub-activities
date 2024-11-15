@@ -110,6 +110,23 @@ configure<SourceSetContainer> {
 	}
 }
 
+tasks.register<Jar>("sourcesJar") {
+	group = "build"
+	description = "Assembles a JAR archive containing the main source code."
+
+	from(sourceSets["main"].allSource)
+	archiveClassifier.set("sources")
+}
+
+tasks.register<Jar>("javadocJar") {
+	group = "build"
+	description = "Assembles a JAR archive containing the Javadoc."
+
+	dependsOn(tasks.javadoc)
+	from(tasks.javadoc.get().destinationDir)
+	archiveClassifier.set("javadoc")
+}
+
 publishing {
 	publications {
 		create<MavenPublication>("github") {
@@ -133,24 +150,6 @@ publishing {
 			}
 		}
 	}
-}
-
-
-tasks.register<Jar>("sourcesJar") {
-	group = "build"
-	description = "Assembles a JAR archive containing the main source code."
-
-	from(sourceSets["main"].allSource)
-	archiveClassifier.set("sources")
-}
-
-tasks.register<Jar>("javadocJar") {
-	group = "build"
-	description = "Assembles a JAR archive containing the Javadoc."
-
-	dependsOn(tasks.javadoc)
-	from(tasks.javadoc.get().destinationDir)
-	archiveClassifier.set("javadoc")
 }
 
 
