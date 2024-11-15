@@ -51,7 +51,7 @@ public class OrganizationDTO implements Serializable {
     private String orgInformation;
     private String orgLogoDesc;
     private String authorizationDesc;
-    private RegistryStatusDTO statusCode;
+    private String status;
     private String urlActiveExternal;
     private String additionalLanguage;
     private String orgTypeCode;

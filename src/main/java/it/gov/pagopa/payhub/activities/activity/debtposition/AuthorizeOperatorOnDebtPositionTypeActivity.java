@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
-import it.gov.pagopa.payhub.activities.exception.custom.OperatorNotAuthorizedException;
+import it.gov.pagopa.payhub.activities.exception.OperatorNotAuthorizedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,18 +18,12 @@ public class AuthorizeOperatorOnDebtPositionTypeActivity {
 
     private final DebtPositionTypeOrgDao debtPositionTypeOrgDao;
 
-    /**
-     * Constructs a new {@code VerifyAuthorizationInstallmentsActivity} instance.
-     *
-     * @param debtPositionTypeOrgDao the data access object for {@code DebtPositionTypeOrg} entities
-     */
-
     public AuthorizeOperatorOnDebtPositionTypeActivity(DebtPositionTypeOrgDao debtPositionTypeOrgDao) {
         this.debtPositionTypeOrgDao = debtPositionTypeOrgDao;
     }
 
     /**
-     * Verifies if the specified operator has authorization to manage a specific installment type for an organization.
+     * Verifies if the specified operator has authorization to manage a specific debt position type for an organization.
      * <p>
      * This method retrieves an authorized {@link DebtPositionTypeOrgDTO} associated with the specified organization
      * and checks if the operator is authorized to manage it based on the provided {@code orgId},
@@ -39,16 +33,15 @@ public class AuthorizeOperatorOnDebtPositionTypeActivity {
      * @param orgId the identifier of the organization
      * @param debtPositionTypeOrgId the identifier of the specific debt position type to verify for authorization
      * @param username the username of the operator
-     * @return the {@link DebtPositionTypeOrgDTO} representing the authorized installment type
+     * @return the {@link DebtPositionTypeOrgDTO} representing the authorized debt position type
      * @throws OperatorNotAuthorizedException if the operator is not authorized to manage the specified installment type
-     * @see AuthorizeOperatorOnDebtPositionTypeActivity
      */
 
     public DebtPositionTypeOrgDTO authorize(Long orgId, Long debtPositionTypeOrgId, String username){
         Optional<DebtPositionTypeOrgDTO> debtPositionTypeOrg =
-                debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrgs(orgId, debtPositionTypeOrgId, username);
+                debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username);
 
         return debtPositionTypeOrg
-                .orElseThrow(() -> new OperatorNotAuthorizedException("The operator " + username + " is not authorized on the DebtPositionTypeOrg " + orgId));
+                .orElseThrow(() -> new OperatorNotAuthorizedException("The operator " + username + " is not authorized on the DebtPositionTypeOrg " + debtPositionTypeOrgId + " related to organization " + orgId));
     }
 }

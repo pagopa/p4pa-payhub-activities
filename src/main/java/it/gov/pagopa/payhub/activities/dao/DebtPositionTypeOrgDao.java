@@ -7,6 +7,6 @@ import java.util.Optional;
 public interface DebtPositionTypeOrgDao {
 
     /**
-     * It will return DebtPositionTypeOrgDTO entities authorized to the input operator
+     *  * It will return the requested DebtPositionTypeOrgDTO entity if authorized to the input operator
      * */
-    Optional<DebtPositionTypeOrgDTO> getAuthorizedDebtPositionTypeOrgs(Long orgId, Long debtPositionTypeOrgId, String operatorUsername);}
+    Optional<DebtPositionTypeOrgDTO> getAuthorizedDebtPositionTypeOrg(Long orgId, Long debtPositionTypeOrgId, String operatorUsername);}
