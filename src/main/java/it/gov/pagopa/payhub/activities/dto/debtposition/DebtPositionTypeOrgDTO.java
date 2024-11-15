@@ -1,5 +1,6 @@
-package it.gov.pagopa.payhub.activities.dto;
+package it.gov.pagopa.payhub.activities.dto.debtposition;
 
+import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +13,9 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrganizationInstallmentTypeDTO implements Serializable {
+public class DebtPositionTypeOrgDTO implements Serializable {
 
-
-    private Long installmentTypeId;
+    private Long debtPositionTypeOrgId;
     private OrganizationDTO orgId;
     private String typeCode;
     private String typeDesc;
