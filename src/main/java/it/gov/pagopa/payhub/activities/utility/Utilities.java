@@ -1,14 +1,13 @@
 package it.gov.pagopa.payhub.activities.utility;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Component
 public class Utilities {
 
+    private Utilities(){}
     public static final String EMAIL_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"; //RFC 5322
     public static final String ADDRESS_PATTERN = "[a-z A-Z0-9.,()/'&]{1,70}";
     public static final String NOT_ADDRESS_PATTERN = "[^a-z A-Z0-9.,()/'&]{1,70}";
@@ -22,7 +21,7 @@ public class Utilities {
     public static boolean isValidPostalCode(String postalCode, String isoNationCode) {
         // If nation = ITALIA the postal code must be numeric, else alphanumeric
         if ("IT".equalsIgnoreCase(isoNationCode)) {
-            return postalCode.matches("^[0-9]{5}$");
+            return postalCode.matches("^\\d{5}$");
         } else {
             return isValidPostalCode(postalCode);
         }
