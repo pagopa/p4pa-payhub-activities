@@ -115,6 +115,9 @@ publishing {
 		create<MavenPublication>("github") {
 			from(components["java"])
 
+			artifact(tasks["sourcesJar"])
+			artifact(tasks["javadocJar"])
+
 			groupId = project.group.toString()
 			artifactId = project.name
 			version = project.version.toString()
@@ -132,13 +135,29 @@ publishing {
 	}
 }
 
-tasks.withType<Jar> {
-	enabled = true
+
+tasks.register<Jar>("sourcesJar") {
+	group = "build"
+	description = "Assembles a JAR archive containing the main source code."
+
+	from(sourceSets["main"].allSource)
+	archiveClassifier.set("sources")
 }
+
+tasks.register<Jar>("javadocJar") {
+	group = "build"
+	description = "Assembles a JAR archive containing the Javadoc."
+
+	dependsOn(tasks.javadoc)
+	from(tasks.javadoc.get().destinationDir)
+	archiveClassifier.set("javadoc")
+}
+
 
 tasks.withType<BootJar> {
 	enabled = true
 }
+
 
 configurations {
 	compileClasspath {
