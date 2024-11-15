@@ -18,7 +18,7 @@ public class FlowDTO implements Serializable {
     private Long flowId;
     private int version;
     private OrganizationDTO orgId;
-    private RegistryStatusDTO statusId;
+    private String status;
     private String iuf;
     private Long numTotalRows;
     private Long numCorrectlyImportedRows;

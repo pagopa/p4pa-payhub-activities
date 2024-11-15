@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.dto.organization;
 
-import it.gov.pagopa.payhub.activities.dto.RegistryStatusDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

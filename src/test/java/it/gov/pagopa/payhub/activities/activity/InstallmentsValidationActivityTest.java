@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.InstallmentsValidat
 import it.gov.pagopa.payhub.activities.dao.FlowDao;
 import it.gov.pagopa.payhub.activities.dao.PositionDao;
 import it.gov.pagopa.payhub.activities.dto.FlowDTO;
-import it.gov.pagopa.payhub.activities.dto.RegistryStatusDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDebtPositionTypeOrgDTO;
@@ -36,7 +35,7 @@ class InstallmentsValidationActivityTest {
 
     @Mock private PositionDao positionDao;
     @Mock private FlowDao flowDao;
-    private static final FlowDTO FLOW_DTO = new FlowDTO(1L, 1, new OrganizationDTO(), new RegistryStatusDTO(),
+    private static final FlowDTO FLOW_DTO = new FlowDTO(1L, 1, new OrganizationDTO(), "STATUS",
             "IUF", 1L, 1L, new Date(), new Date(), true,
             "OPERATOR", Boolean.TRUE, "FILE_PATH", "FILE_NAME", 1L,
             "", "");
