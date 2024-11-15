@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationTypeInstallmentDTO;
-import it.gov.pagopa.payhub.activities.exception.custom.OperatorNotAuthorizedException;
+import it.gov.pagopa.payhub.activities.exception.OperatorNotAuthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

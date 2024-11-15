@@ -1,6 +1,4 @@
-package it.gov.pagopa.payhub.activities.exception.custom;
-
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+package it.gov.pagopa.payhub.activities.exception;
 
 
 public class OperatorNotAuthorizedException extends ActivitiesException {
