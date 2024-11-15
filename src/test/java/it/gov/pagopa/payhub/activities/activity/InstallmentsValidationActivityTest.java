@@ -71,6 +71,15 @@ class InstallmentsValidationActivityTest {
     }
 
     @Test
+    void givenNullFlowThenThrowFlowException(){
+        Long orgId = 1L;
+
+        when(flowDao.getFlowsByOrganization(orgId, true)).thenReturn(null);
+
+        assertThrows(FlowException.class, () -> installmentsValidationActivity.validateFlow(orgId, true));
+    }
+
+    @Test
     void givenNullInstallmentDebtPositionTypeOrgThenThrowValidatorException(){
         InstallmentDTO installmentDTO = new InstallmentDTO();
         DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
@@ -126,7 +135,6 @@ class InstallmentsValidationActivityTest {
         installmentDebtPositionTypeOrgDTO.setTypeCode(TYPE_ORG_CODE);
         installmentDTO.setInstallmentDebtPositionTypeOrg(installmentDebtPositionTypeOrgDTO);
         installmentDTO.setBeneficiaryName(BENEFICIARY_NAME);
-        installmentDTO.setEmail("email@email.it");
         DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
 
         ValidatorException validatorException = assertThrows(ValidatorException.class,
@@ -172,6 +180,21 @@ class InstallmentsValidationActivityTest {
     }
 
     @Test
+    void givenNullDateInstallmentWithNonMandatoryDateThenSuccess(){
+        InstallmentDTO installmentDTO = new InstallmentDTO();
+        InstallmentDebtPositionTypeOrgDTO installmentDebtPositionTypeOrgDTO = new InstallmentDebtPositionTypeOrgDTO();
+        installmentDebtPositionTypeOrgDTO.setTypeCode(TYPE_ORG_CODE);
+        installmentDTO.setInstallmentDebtPositionTypeOrg(installmentDebtPositionTypeOrgDTO);
+        installmentDTO.setBeneficiaryName(BENEFICIARY_NAME);
+        installmentDTO.setEmail("email@email.it");
+        installmentDTO.setRemittanceInformation("REMITTANCE_INFO");
+        DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
+        debtPositionTypeOrgDTO.setFlagMandatoryDueDate(false);
+
+        assertDoesNotThrow(() -> installmentsValidationActivity.formalValidation(installmentDTO, debtPositionTypeOrgDTO));
+    }
+
+    @Test
     void givenNullFiscalCodeWithNoAnonymousFlagThenThrowValidatorException(){
         InstallmentDTO installmentDTO = new InstallmentDTO();
         installmentDTO.setFlagAnonymousData(false);
@@ -199,6 +222,7 @@ class InstallmentsValidationActivityTest {
         InstallmentDTO installmentDTO = new InstallmentDTO();
         installmentDTO.setUniqueIdentificationCode("FISCAL_CODE");
         DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
+        debtPositionTypeOrgDTO.setFlagAnonymousFiscalCode(true);
 
         String result = installmentsValidationActivity.validateUniqueIdentificationCode(installmentDTO, debtPositionTypeOrgDTO);
         assertEquals("FISCAL_CODE", result);
