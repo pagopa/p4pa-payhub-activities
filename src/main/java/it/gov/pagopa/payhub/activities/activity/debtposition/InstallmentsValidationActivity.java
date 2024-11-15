@@ -61,7 +61,7 @@ public class InstallmentsValidationActivity {
     public void formalValidation(InstallmentDTO installmentDTO, DebtPositionTypeOrgDTO debtPositionTypeOrgDTO) {
         if (installmentDTO.getInstallmentDebtPositionTypeOrg() == null ||
                 StringUtils.isBlank(installmentDTO.getInstallmentDebtPositionTypeOrg().getTypeCode())) {
-            throw new ValidatorException("Organization installmentDTO type is mandatory");
+            throw new ValidatorException("Organization installment type is mandatory");
         }
 
         if (StringUtils.isBlank(installmentDTO.getBeneficiaryName())) {
@@ -99,7 +99,7 @@ public class InstallmentsValidationActivity {
             if(installmentDTO.isFlagAnonymousData()){
                 uniqueIdentificationCode = "ANONIMO";
             } else if (StringUtils.isBlank(installmentDTO.getUniqueIdentificationCode())){
-                throw new ValidatorException("This organization installmentDTO type or installmentDTO does not allow an anonymous unique identification code");
+                throw new ValidatorException("This organization installment type or installment does not allow an anonymous unique identification code");
             }
         } else {
             if(StringUtils.isBlank(installmentDTO.getUniqueIdentificationCode())){
@@ -125,7 +125,7 @@ public class InstallmentsValidationActivity {
 
             if (debtPositionTypeOrgDTO.getAmount() != null) {
                 if (!amountInstallment.equals(debtPositionTypeOrgDTO.getAmount().setScale(2, RoundingMode.HALF_EVEN)))
-                    throw new ValidatorException("Invalid amount for this installmentDTO type");
+                    throw new ValidatorException("Invalid amount for this installment type");
             } else {
                 if (amountInstallment.compareTo(BigDecimal.ZERO) < (installmentDTO.isFlagMultiBeneficiary() ? 0 : 1)) {
                     throw new ValidatorException("Invalid amount");
