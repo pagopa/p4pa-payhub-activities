@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.exception;
+package it.gov.pagopa.payhub.activities.exception.custom;
 
 public class ValidatorException extends RuntimeException {
 

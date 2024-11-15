@@ -1,5 +1,6 @@
-package it.gov.pagopa.payhub.activities.dto;
+package it.gov.pagopa.payhub.activities.dto.debtposition;
 
+import it.gov.pagopa.payhub.activities.dto.organization.OrganizationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

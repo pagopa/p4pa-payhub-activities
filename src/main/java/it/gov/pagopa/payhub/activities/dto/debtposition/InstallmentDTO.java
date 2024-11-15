@@ -1,5 +1,8 @@
-package it.gov.pagopa.payhub.activities.dto;
+package it.gov.pagopa.payhub.activities.dto.debtposition;
 
+import it.gov.pagopa.payhub.activities.dto.position.CityDTO;
+import it.gov.pagopa.payhub.activities.dto.position.NationDTO;
+import it.gov.pagopa.payhub.activities.dto.position.ProvinceDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstallmentOperatorDTO implements Serializable {
+public class InstallmentDTO implements Serializable {
 
     private Long installmentId;
     private String uniqueIdentificationCode;
@@ -30,7 +33,7 @@ public class InstallmentOperatorDTO implements Serializable {
     private boolean hasReceipt;
 
     //details
-    private OrganizationTypeInstallmentDTO organizationTypeInstallment;
+    private InstallmentDebtPositionTypeOrgDTO installmentDebtPositionTypeOrg;
     private String beneficiaryName;
     private String subjectType;
     private boolean flagAnonymousData;

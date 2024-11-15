@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto;
+package it.gov.pagopa.payhub.activities.dto.debtposition;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrganizationTypeInstallmentDTO implements Serializable {
+public class InstallmentDebtPositionTypeOrgDTO implements Serializable {
 
     private Long orgInstallmentTypeId;
     private Long orgId;

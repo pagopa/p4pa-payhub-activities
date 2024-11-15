@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
-import it.gov.pagopa.payhub.activities.dto.DebtPositionTypeOrgDTO;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.exception.custom.OperatorNotAuthorizedException;
 import org.springframework.stereotype.Service;
 
