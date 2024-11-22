@@ -15,5 +15,4 @@ import java.util.List;
 public class FdRIngestionResponse {
     private List<String> iufList;  // List of extracted IUFs
     private boolean success;       // Success flag for the operation
-    private String errorLogPath;   // Path to the error log, if applicable
 }
