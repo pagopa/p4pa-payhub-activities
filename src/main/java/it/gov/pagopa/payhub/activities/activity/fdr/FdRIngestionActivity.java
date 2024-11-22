@@ -2,8 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.fdr;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.fdr.FdRIngestionResponse;
-import it.gov.pagopa.payhub.activities.dto.fdr.FdRIngestionResponse;
+import it.gov.pagopa.payhub.activities.dto.fdr.FdRIngestionActivityResult;
 
 /**
  * Interface for the FdRIngestionActivity.
@@ -16,8 +15,8 @@ public interface FdRIngestionActivity {
      * Processes a file based on the provided IngestionFlow ID.
      *
      * @param ingestionFlowId the unique identifier related to the file to process.
-     * @return {@link FdRIngestionResponse} containing the list of IUFs and status.
+     * @return {@link FdRIngestionActivityResult} containing the list of IUFs and status.
      */
     @ActivityMethod
-    FdRIngestionResponse processFile(String ingestionFlowId);
+    FdRIngestionActivityResult processFile(String ingestionFlowId);
 }
