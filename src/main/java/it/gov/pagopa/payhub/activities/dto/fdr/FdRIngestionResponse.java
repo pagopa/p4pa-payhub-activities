@@ -13,7 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FdRIngestionResponse {
-    private List<String> iufList;  // List of extracted IUFs
+    /** List of extracted IUFs */
+    private List<String> iufs;
     /** Success flag for the operation */
     private boolean success;
 }
