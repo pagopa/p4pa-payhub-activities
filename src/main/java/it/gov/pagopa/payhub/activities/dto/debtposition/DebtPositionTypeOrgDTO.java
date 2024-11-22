@@ -16,41 +16,34 @@ import java.math.BigDecimal;
 public class DebtPositionTypeOrgDTO implements Serializable {
 
     private Long debtPositionTypeOrgId;
-    private OrganizationDTO orgId;
+    private OrganizationDTO org;
+    private DebtPositionType debtPositionType;
+    private String iban;
+    private String balance; // XML
     private String typeCode;
     private String typeDesc;
+    private boolean flagMandatoryDueDate;
+    private boolean flagAnonymousFiscalCode;
     private String creditIbanPi;
-    private String creditBicPi;
-    private String backingIbanPi;
-    private String backingBicPi;
     private String creditIbanPSP;
-    private String creditBicPSP;
-    private String backingIbanPSP;
-    private String backingBicPSP;
-    private String postalAccountCode;
-    private String xsdReasonCode;
-    private boolean creditBicPiSeller;
-    private boolean creditBicPspSeller;
-    private boolean spontaneous;
     private BigDecimal amount;
     private String installmentPaymentUrl;
     private String balanceDefaultDesc;
-    private boolean flagAnonymousFiscalCode;
-    private boolean flagMandatoryDueDate;
-    private boolean flagPrintDueDate;
-    private String holderPostalCC;
     private String orgSector;
+    private String postalAccountCode;
+    private String holderPostalCC;
     private boolean flagNotifyIO;
+    private boolean flagDisablePrintNotice;
     private boolean flagNotifyOutcomePush;
     private Integer maxAttemptForwardingOutcome;
+    private String xsdReasonCode;
+
+
+    // da controllare cosa tenere o meno
+    private String backingIbanPi;
+    private String backingIbanPSP;
     private Long orgSilId;
     private boolean flagActive;
-    private String paymentContextCode;
-    private boolean flgDisablePrintNotice;
-    private String macroArea;
-    private String serviceType;
-    private String collectingReason;
-    private String taxonomyCode;
     private String urlNotifyPnd;
     private String userPnd;
     private String pswPnd;

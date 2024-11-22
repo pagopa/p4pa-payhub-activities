@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto;
 
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder(toBuilder=true)
@@ -56,4 +58,5 @@ public class OrganizationDTO implements Serializable {
     private String orgTypeCode;
     private LocalDate startDate;
     private Long brokerId;
+    private List<DebtPositionTypeOrgDTO> debtPositionTypeOrgDTO;
 }
