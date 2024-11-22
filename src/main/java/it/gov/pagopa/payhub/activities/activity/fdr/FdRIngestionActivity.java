@@ -13,9 +13,9 @@ import it.gov.pagopa.payhub.activities.dto.fdr.FdRIngestionResponse;
 public interface FdRIngestionActivity {
 
     /**
-     * Processes a file based on the provided ID.
+     * Processes a file based on the provided IngestionFlow ID.
      *
-     * @param fileId the unique identifier of the file to process.
+     * @param ingestionFlowId the unique identifier related to the file to process.
      * @return {@link FdRIngestionResponse} containing the list of IUFs and status.
      */
     @ActivityMethod
