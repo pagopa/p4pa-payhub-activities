@@ -7,7 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.fdr.FdRIngestionResponse;
 
 /**
  * Interface for the FdRIngestionActivity.
- * Defines methods for processing files based on an ID.
+ * Defines methods for processing files based on an IngestionFlow ID.
  */
 @ActivityInterface
 public interface FdRIngestionActivity {
