@@ -5,7 +5,7 @@ import io.temporal.activity.ActivityMethod;
 
 /**
  * Interface for the UpdateIngestionFlowStatusActivity.
- * Updates the status of a database row identified by the provided ID.
+ * Updates the status of a IngestionFlow record identified by the provided ID.
  */
 @ActivityInterface
 public interface UpdateIngestionFlowStatusActivity {
