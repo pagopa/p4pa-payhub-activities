@@ -19,5 +19,5 @@ public interface FdRIngestionActivity {
      * @return {@link FdRIngestionResponse} containing the list of IUFs and status.
      */
     @ActivityMethod
-    FdRIngestionResponse processFile(String fileId);
+    FdRIngestionResponse processFile(String ingestionFlowId);
 }
