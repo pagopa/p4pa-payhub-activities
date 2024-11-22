@@ -71,6 +71,8 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
+    // Temporal.io
+	implementation ("io.temporal:temporal-sdk:1.19.0")
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
