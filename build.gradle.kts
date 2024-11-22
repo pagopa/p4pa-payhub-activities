@@ -53,7 +53,6 @@ val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
 val commonsTextVersion = "1.12.0"
 val jacksonModuleVersion = "2.18.1"
-val temporalVersion = "1.19.0"
 
 
 dependencies {
@@ -72,8 +71,6 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
-    // Temporal.io
-	implementation ("io.temporal:temporal-sdk:$temporalVersion")
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
