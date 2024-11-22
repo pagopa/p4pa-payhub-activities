@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FdRIngestionResponse {
+public class FdRIngestionActivityResult {
     /** List of extracted IUFs */
     private List<String> iufs;
     /** Success flag for the operation */
