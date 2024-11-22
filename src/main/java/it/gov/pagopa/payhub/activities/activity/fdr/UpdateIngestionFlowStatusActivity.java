@@ -11,9 +11,9 @@ import io.temporal.activity.ActivityMethod;
 public interface UpdateIngestionFlowStatusActivity {
 
     /**
-     * Updates the status of the row corresponding to the given ID.
+     * Updates the status of the IngestionFlow record corresponding to the given ID.
      *
-     * @param id        the unique identifier of the row to update.
+     * @param id        the unique identifier of the record to update.
      * @param newStatus the new status to set.
      * @return true if the update was successful, false otherwise.
      */
