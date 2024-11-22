@@ -11,12 +11,12 @@ import io.temporal.activity.ActivityMethod;
 public interface SendEmailIngestionFlowActivity {
 
     /**
-     * Sends an email based on the process result of the given file ID.
+     * Sends an email based on the process result of the given file ingestionFlow ID.
      *
-     * @param fileId       the unique identifier of the imported file.
+     * @param ingestionFlowId       the unique identifier of the IngestionFlow record related to the imported file.
      * @param success      true if the process succeeded, false otherwise.
      * @return true if the email was sent successfully, false otherwise.
      */
     @ActivityMethod
-    boolean sendEmail(String fileId, boolean success);
+    boolean sendEmail(String ingestionFlowId, boolean success);
 }
