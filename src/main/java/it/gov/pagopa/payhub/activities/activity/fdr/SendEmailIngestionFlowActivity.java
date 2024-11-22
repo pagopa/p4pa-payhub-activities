@@ -5,7 +5,7 @@ import io.temporal.activity.ActivityMethod;
 
 /**
  * Interface for SendEmailIngestionFlowActivity.
- * Sends an email based on the status of a processed file identified by its ID.
+ * Sends an email based on the status of a processed file identified by its IngestionFlow ID.
  */
 @ActivityInterface
 public interface SendEmailIngestionFlowActivity {
