@@ -14,5 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class FdRIngestionResponse {
     private List<String> iufList;  // List of extracted IUFs
-    private boolean success;       // Success flag for the operation
+    /** Success flag for the operation */
+    private boolean success;
 }
