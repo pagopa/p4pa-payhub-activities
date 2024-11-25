@@ -37,12 +37,18 @@ public class DebtPositionTypeOrgDTO implements Serializable {
     private boolean flagNotifyOutcomePush;
     private Integer maxAttemptForwardingOutcome;
     private String xsdReasonCode;
+    private String paymentContextCode;
+    private String taxonomyCode;
+    private String collectingReason;
+    private Long orgSilId;
+    private String serviceType;
+    private boolean flgDisablePrintNotice;
+    private String macroArea;
 
 
     // da controllare cosa tenere o meno
     private String backingIbanPi;
     private String backingIbanPSP;
-    private Long orgSilId;
     private boolean flagActive;
     private String urlNotifyPnd;
     private String userPnd;
