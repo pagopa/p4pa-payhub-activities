@@ -40,7 +40,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         OrganizationDTO organizationDTO = new OrganizationDTO();
         organizationDTO.setOrgId(orgId);
         debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
-        debtPositionTypeOrgDTO.setOrgId(organizationDTO);
+        debtPositionTypeOrgDTO.setOrg(organizationDTO);
 
         when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.of(debtPositionTypeOrgDTO));
