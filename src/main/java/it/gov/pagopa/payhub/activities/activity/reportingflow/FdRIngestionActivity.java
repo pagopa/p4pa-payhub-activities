@@ -1,5 +1,5 @@
-package it.gov.pagopa.payhub.activities.activity.fdr;
-import it.gov.pagopa.payhub.activities.dto.fdr.FdRIngestionActivityResult;
+package it.gov.pagopa.payhub.activities.activity.reportingflow;
+import it.gov.pagopa.payhub.activities.dto.reportingflow.FdRIngestionActivityResult;
 
 /**
  * Interface for the FdRIngestionActivity.

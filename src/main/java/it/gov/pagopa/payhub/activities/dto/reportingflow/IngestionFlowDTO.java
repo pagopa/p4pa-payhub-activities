@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.fdr;
+package it.gov.pagopa.payhub.activities.dto.reportingflow;
 
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FlowHandlerDTO {
+public class IngestionFlowDTO {
 	private Long flowHandlerId;
 	private int version;
 	private OrganizationDTO orgId;
