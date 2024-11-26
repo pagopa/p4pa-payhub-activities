@@ -41,9 +41,6 @@ public class DebtPositionTypeOrgDTO implements Serializable {
     private String taxonomyCode;
     private String collectingReason;
     private Long orgSilId;
-    private String serviceType;
-    private boolean flgDisablePrintNotice;
-    private String macroArea;
 
 
     // da controllare cosa tenere o meno

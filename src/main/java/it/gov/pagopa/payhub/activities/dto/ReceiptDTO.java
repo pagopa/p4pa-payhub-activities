@@ -27,44 +27,23 @@ public class ReceiptDTO implements Serializable {
     private String description;
     private String companyName;
     private String officeName;
-
     //*from CtSubject debtor
     private String uniqueIdentifierTypeDebtor;
-    private String uniqueIdentifierValueDebtor;
-    private String fullNameDebtor;
-    private String streetNameDebtor;
-    private String civicNumberDebtor;
-    private String postalCodeDebtor;
-    private String cityDebtor;
-    private String stateProvinceRegionDebtor;
-    private String countryDebtor;
-    private String emailDebtor;
 
     private String idPsp;
     private String pspFiscalCode;
     private String pspPartitaIva;
     private String pspCompanyName;
     private String idChannel;
-
-
+    private String channelDescription;
     //*from CtSubject payer
     private String uniqueIdentifierTypePayer;
-    private String uniqueIdentifierValuePayer;
-    private String fullNamePayer;
-    private String streetNamePayer;
-    private String civicNumberPayer;
-    private String postalCodePayer;
-    private String cityPayer;
-    private String stateProvinceRegionPayer;
-    private String countryPayer;
-    private String emailPayer;
 
     private String paymentMethod;
     private BigDecimal fee;
     private Date paymentDateTime;
     private Date applicationDate;
     private Date transferDate;
-
     //from CtTransferListPA list ( two items)
     private BigDecimal transferAmount1;
     private String fiscalCodePa1;
@@ -80,9 +59,11 @@ public class ReceiptDTO implements Serializable {
     private Date dtLastExport;
     private int numTryExport;
     private char statusExport;
-    private byte[] receiptBytes;
-    private boolean standIn;
+    private boolean hasReceiptBytes;
+    private boolean standin;
     private String status;
     private Date dtProcessing;
     private Integer numTriesProcessing;
+
+    private Long personalDataId;
 }

@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FlowDTO implements Serializable {
+public class IngestionFlowFileDTO implements Serializable {
 
     private Long flowId;
     private int version;

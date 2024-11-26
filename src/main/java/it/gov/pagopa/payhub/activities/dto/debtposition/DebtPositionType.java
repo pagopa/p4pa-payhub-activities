@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.IntermediaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 public class DebtPositionType implements Serializable {
 
     private Long debtTypePositionId;
-    private IntermediaryDTO intermediario;
+    private Long brokerId;
     private String typeCode;
     private String typeDesc;
     private String taxonomyCode;
@@ -25,6 +24,6 @@ public class DebtPositionType implements Serializable {
     private String collectingReason;
     private boolean flagPrintDueDate;
     private boolean flagAnonymousFiscalCode; // esiste in DebtPositionTypeOrg
-    private LocalDateTime dueDate; // Y/N
-    private String description;
+    private LocalDateTime dueDate; // Y/N? da mappare in caso
+    private String description; // capire da dove prendere questo dato
 }

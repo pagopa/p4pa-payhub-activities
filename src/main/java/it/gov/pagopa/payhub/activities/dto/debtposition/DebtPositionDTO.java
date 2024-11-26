@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
+import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +22,11 @@ public class DebtPositionDTO implements Serializable {
     private String organizationFiscalCode;
     private String description;
     private String status;
-    private String flowId;
-    private String numberLineFlow;
+    private IngestionFlowFileDTO flow;
+    private Long numberLineFlow;
     private String codeTypeInstallment;
-    private String gpdIUPD;
-    private String gpdStatus;
+    private String gpdIupd;
+    private Character gpdStatus;
     private OrganizationDTO org;
     private DebtPositionTypeOrgDTO debtPositionTypeOrgDTO;
     private List<PaymentOptionDTO> paymentOption;

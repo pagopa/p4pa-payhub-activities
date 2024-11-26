@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IntermediaryDTO implements Serializable {
+public class BrokerDTO implements Serializable {
 
     private Long intermediaryId;
     private String intermediaryFiscalCode;
@@ -20,6 +20,7 @@ public class IntermediaryDTO implements Serializable {
     private String intermediaryStationId;
     private byte[] subscriptionKey;
     private byte[] gpdKey;
+    private byte [] acaKey;
     private String domain;
     private String personalisationFe;
     private String intermediaryStationBroadcastId;

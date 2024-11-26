@@ -9,7 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,24 +25,24 @@ public class InstallmentDTO implements Serializable {
     private CartDTO cart;
     private String iud;
     private String iuv;
-    private LocalDate creationDate;
-    private LocalDate updateDate;
-    private LocalDate dueDate;
-    private String uniqueIdentifierTypePayer;
-    private LocalDate paymentExecutionDate;
+    private Date creationDate;
+    private Date updateDate;
+    private Date dueDate;
+    private Character uniqueIdentifierTypePayer;
+    private Date paymentExecutionDate;
     private String paymentTypeCode;
-    private String singlePaymentAmount;
-    private String paCommissionFee;
+    private BigDecimal singlePaymentAmount;
+    private BigDecimal paCommissionFee;
     private String paymentReason;
     private String collectionSpecificDetailsSinglePayment; //riscossione
-    private LocalDate iuvCreationDate;
+    private Date iuvCreationDate;
     private String displayedPaymentReason;
     private String balance; //XML
     private boolean flagGenerateIuv;
     private String sessionId;
     private boolean flagIuvVolatile;
-    private String payerUniquePaymentIdHash;
-    private String personalDataId;
-    private List<TransferDTO> transferDTOS;
-    private ReceiptDTO receiptDTO;
+    private byte [] payerUniquePaymentIdHash;
+    private Long personalDataId;
+    private List<TransferDTO> transfers;
+    private ReceiptDTO receipt;
 }

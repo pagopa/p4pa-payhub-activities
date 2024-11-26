@@ -5,18 +5,23 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ElaboratedInstallmentDTO {
+public class ElaboratedInstallmentDTO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long elaboratedInstallmentId;
     private int version;
     private boolean flagCurrentInstallment;
-    private FlowDTO flow;
+    private IngestionFlowFileDTO ingestionFlowFile;
     private long numberLineFlow;
     private String status; //anagrafica stato
     private CartDTO cart;

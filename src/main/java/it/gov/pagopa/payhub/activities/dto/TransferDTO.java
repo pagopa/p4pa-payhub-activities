@@ -7,7 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @Builder
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 public class TransferDTO implements Serializable {
 
     private OrganizationDTO org;
-    private String fiscalCode;
+    private String orgFiscalCode;
     private String beneficiaryName;
     private String creditIban;
     private String beneficiaryAddress;
@@ -25,10 +26,9 @@ public class TransferDTO implements Serializable {
     private String beneficiaryLocation;
     private String beneficiaryProvince;
     private String beneficiaryNation;
-    private String secondaryAmount;
-    private LocalDate creationDate;
-    private LocalDate updateDate;
-    private String paymentContextCode;
+    private BigDecimal secondaryAmount;
+    private Date creationDate;
+    private Date lastUpdateDate;
     private String paymentReasonMultiBeneficiary;
     private InstallmentDTO installment;
     private String stamp;

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,6 +24,6 @@ public class PaymentOptionDTO implements Serializable {
     private String status;
     private boolean multiDebtor;
     private PaymentOptionType paymentOptionType;
-    private LocalDateTime dueDate;
+    private Date dueDate;
     private List<InstallmentDTO> installments;
 }
