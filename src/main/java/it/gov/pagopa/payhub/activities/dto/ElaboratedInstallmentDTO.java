@@ -32,7 +32,7 @@ public class ElaboratedInstallmentDTO implements Serializable {
     private Date rpLastUpdateDate;
     private Date outcomeLastUpdateDate;
     private String codeSilSendPaymentRequestIdPsp;
-    private String codeSilSendPaymentRequestIdIntermediaryPsp;
+    private String codeSilSendPaymentRequestIdBrokerPsp;
     private String codeSilSendPaymentRequestIdChannel;
     private String codeSilSendPaymentRequestIdDomain;
     private String codeSilSendPaymentRequestUniquePaymentId;

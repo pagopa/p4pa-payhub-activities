@@ -22,7 +22,7 @@ public class CartDTO implements Serializable {
     private Date rpLastUpdateDate;
     private Date rpLastUpdateDateE;
     private String codeSilSendPaymentRequestIdPsp;
-    private String codeSilSendPaymentRequestIdIntermediaryPsp;
+    private String codeSilSendPaymentRequestIdBrokerPsp;
     private String codeSilSendPaymentRequestIdChannel;
     private String codeSilSendPaymentRequestIdDomain;
     private String codeSilSendPaymentRequestUniquePaymentId;

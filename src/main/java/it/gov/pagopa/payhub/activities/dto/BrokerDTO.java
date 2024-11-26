@@ -14,16 +14,16 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class BrokerDTO implements Serializable {
 
-    private Long intermediaryId;
-    private String intermediaryFiscalCode;
+    private Long brokerId;
+    private String brokerFiscalCode;
     private String orgFiscalCode;
-    private String intermediaryStationId;
+    private String brokerStationId;
     private byte[] subscriptionKey;
     private byte[] gpdKey;
     private byte [] acaKey;
     private String domain;
     private String personalisationFe;
-    private String intermediaryStationBroadcastId;
+    private String brokerStationBroadcastId;
     private PagoPaInteractionModel pagoPaInteractionModel;
     private OrganizationDTO org;
 }
