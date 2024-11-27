@@ -1,31 +1,27 @@
 package it.gov.pagopa.payhub.activities.activity;
 
-import com.sun.jdi.LongValue;
+import it.gov.pagopa.payhub.activities.activity.reportingflow.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.reportingflow.service.AsyncSendMailService;
-import it.gov.pagopa.payhub.activities.activity.reportingflow.service.IngestionFlowMailService;
 import it.gov.pagopa.payhub.activities.activity.reportingflow.service.IngestionFlowRetrieverService;
-import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
-import it.gov.pagopa.payhub.activities.helper.MailParameterHelper;
 
 import it.gov.pagopa.payhub.activities.model.MailParams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Optional;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SendEmailIngestionFlowActivityTest {
@@ -39,7 +35,7 @@ class SendEmailIngestionFlowActivityTest {
     @Mock
     AsyncSendMailService asyncSendMailService;
 
-    private IngestionFlowMailService ingestionFlowMailService;
+    private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
 
     private MailParams mailParams;
 
@@ -47,15 +43,15 @@ class SendEmailIngestionFlowActivityTest {
     void init() {
         JavaMailSender javaMailSender = new JavaMailSenderImpl();
         mailParams = new MailParams();
-        ingestionFlowMailService = new IngestionFlowMailService(asyncSendMailService, mailParams, javaMailSender);
+        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(ingestionFlowRetrieverService, asyncSendMailService, ingestionFlowDao, mailParams, javaMailSender);
     }
 
     @Test
     void sendEmailIngestionSuccess() {
         boolean success = true;
         String manageFlussoId = "100";
-        setMailParams(manageFlussoId, "mail-importFlussoRendicontazione-ok");
-        boolean result = ingestionFlowMailService.sendEmail(manageFlussoId, success);
+        setMailParams(manageFlussoId, "mail-importFlussoRendicontazione-ok", 1000L);
+        boolean result = sendEmailIngestionFlowActivity.sendEmail(manageFlussoId, success);
         assertTrue(result);
     }
 
@@ -63,23 +59,40 @@ class SendEmailIngestionFlowActivityTest {
     void sendEmailIngestionError() {
         boolean success = false;
         String manageFlussoId = "100";
-        setMailParams(manageFlussoId, "mail-importFlussoRendicontazione-error");
-        boolean result = ingestionFlowMailService.sendEmail(manageFlussoId, success);
+        setMailParams(manageFlussoId, "mail-importFlussoRendicontazione-error", 0L);
+        boolean result = sendEmailIngestionFlowActivity.sendEmail(manageFlussoId, success);
         assertFalse(result);
     }
 
-    void setMailParams(String manageFlussoId, String templatename){
+    void setMailParams(String manageFlussoId, String templatename, Long fileSize){
         Long ingestionFlowId = Long.valueOf(manageFlussoId);
         IngestionFlowDTO ingestionFlowDTO = new IngestionFlowDTO();
         ingestionFlowDTO.setFileName("test.zip");
         ingestionFlowDTO.setFlowHandlerId(ingestionFlowId);
+        ingestionFlowDTO.setDownloadedFileSize(fileSize);
 
-        HashMap<String,String> hm = new HashMap<>();
-        hm.put("nomeFile", ingestionFlowDTO.getFileName());
+        DateFormat parser = new SimpleDateFormat("EEE, MMM dd yyyy, hh:mm:ss");
+        String actualDate = parser.format(new Date());
+        String mailText = "Il caricamento del file " + ingestionFlowDTO.getFileName();
+        if (fileSize>0) {
+            ingestionFlowDTO.setTotalRowsNumber(100L);
+            mailText += " è andato a buon fine, tutti i " + fileSize + " dati presenti sono stati caricati correttamente.";
+        }
+        else  {
+            ingestionFlowDTO.setTotalRowsNumber(0L);
+            mailText += " NON è andato a buon fine";
+        }
+
+        Map<String,String> map = new HashMap<>();
+        map.put("testomail", mailText);
+        map.put("dataAttuale",actualDate);
+        map.put("nomeFile", ingestionFlowDTO.getFileName());
+
         mailParams.setEmailFromAddress("test@test.com");
         mailParams.setEmailFromName("test");
-        mailParams.setParams(hm);
         mailParams.setTemplateName(templatename);
+        mailParams.setParams(map);
+        mailParams.setIngestionFlowDTO(ingestionFlowDTO);
     }
 
 

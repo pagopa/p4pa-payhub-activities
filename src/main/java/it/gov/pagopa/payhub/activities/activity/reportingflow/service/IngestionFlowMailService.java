@@ -1,4 +1,6 @@
+/*
 package it.gov.pagopa.payhub.activities.activity.reportingflow.service;
+
 
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import it.gov.pagopa.payhub.activities.helper.EmailHelper;
@@ -48,3 +50,5 @@ public class IngestionFlowMailService {
   }
 
 }
+
+ */

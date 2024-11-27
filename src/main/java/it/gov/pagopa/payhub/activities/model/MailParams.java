@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.model;
 
+import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MailParams implements Serializable {
+    IngestionFlowDTO ingestionFlowDTO;
     Map<String, String> params;
     String ingestionFlowId;
     String emailFromAddress;
