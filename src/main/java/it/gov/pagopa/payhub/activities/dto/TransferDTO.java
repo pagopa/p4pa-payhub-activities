@@ -15,10 +15,9 @@ import java.time.Instant;
 public class TransferDTO implements Serializable {
 
     private Long transferId;
-    private Long orgId;
     private String orgFiscalCode;
     private String beneficiaryName;
-    private String creditIban;
+    private String iban;
     private String beneficiaryAddress;
     private String beneficiaryCivic;
     private String beneficiaryPostalCode;
@@ -28,13 +27,11 @@ public class TransferDTO implements Serializable {
     private Long amount;
     private Instant creationDate;
     private Instant lastUpdateDate;
-    private String paymentReasonMultiBeneficiary;
+    private String remittanceInformation;
     private String stamp;
     private String stampType;
     private String documentHash;
     private String category;
     private String status;
     private Integer transferIndex;
-    private String collectionSpecificDetailsSinglePayment; //riscossione esiste su InstallmentDTO
-
 }

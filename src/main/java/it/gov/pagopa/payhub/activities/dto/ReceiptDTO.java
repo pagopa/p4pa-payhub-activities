@@ -61,21 +61,7 @@ public class ReceiptDTO implements Serializable {
     private LocalDate paymentDateTime;
     private LocalDate applicationDate;
     private LocalDate transferDate;
-    //from CtTransferListPA list ( two items)
-    private Long transferAmount1;
-    private String fiscalCodePa1;
-    private String iban1;
-    private String remittanceInformation1;
-    private String transferCategory1;
-    private Long transferAmount2;
-    private String fiscalCodePa2;
-    private String iban2;
-    private String remittanceInformation2;
-    private String transferCategory2;
 
-    private Instant dtLastExport;
-    private int numTryExport;
-    private char statusExport;
     private byte[] receiptBytes;
     private boolean standin;
     private String status;

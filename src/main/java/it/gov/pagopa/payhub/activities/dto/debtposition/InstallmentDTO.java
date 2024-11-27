@@ -47,6 +47,7 @@ public class InstallmentDTO implements Serializable {
     private boolean flagGenerateIuv;
     private String sessionId;
     private boolean flagIuvVolatile;
+    private String collectionSpecificDetailsSinglePayment;
 
 
     private List<TransferDTO> transfers;
