@@ -71,9 +71,9 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
-	// Mail
+	// Used for mail
 	implementation("org.springframework.boot:spring-boot-starter-mail")
-
+	implementation("org.springframework.retry:spring-retry")
 	implementation("org.jsoup:jsoup:$jsoupVersion")
 
 	//	Testing

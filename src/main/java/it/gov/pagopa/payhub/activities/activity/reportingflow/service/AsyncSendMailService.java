@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.reportingflow.service;
 
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import it.gov.pagopa.payhub.activities.model.MailParams;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +8,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.Executor;
 
 @Service
 @Slf4j
@@ -24,6 +31,11 @@ public class AsyncSendMailService {
   @Value("${async.sendMail.queueCapacity:500}")
   private String queueCapacity;
 
+
+  @Async("SendMailTaskExecutor")
+  @Retryable(value = MailException.class, maxAttemptsExpression = "${async.sendMail.retry.maxAttempts}",
+          backoff = @Backoff(random = true, delayExpression = "${async.sendMail.retry.delay}",
+                  maxDelayExpression = "${async.sendMail.retry.maxDelay}", multiplierExpression = "${async.sendMail.retry.multiplier}"))
   public void sendMail(JavaMailSender javaMailSender, MailParams mailParams) {
     try {
       javaMailSender.send( mimeMessage -> {
@@ -35,7 +47,7 @@ public class AsyncSendMailService {
         message.setSubject(mailParams.getMailSubject());
         String plainText = Jsoup.clean(mailParams.getHtmlText(), "", Safelist.none(), new Document.OutputSettings().prettyPrint(false));
         message.setText(plainText, mailParams.getHtmlText());
-        log.debug("sending mail message");
+        log.info("sending mail message");
       } );
       log.info("MAIL has been send");
     }
@@ -44,4 +56,21 @@ public class AsyncSendMailService {
       throw new SendMailException("Error in mail sending");
     }
   }
+
+  @Recover
+  private void recover(MailException e, String[] to, String[] cc, String subject, String htmlText){
+    //TODO write fail to db or queue for retry, in case
+  }
+
+  @Bean("SendMailTaskExecutor")
+  public Executor taskExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(Integer.parseInt(corePoolSize));
+    executor.setMaxPoolSize(Integer.parseInt(maxPoolSize));
+    executor.setQueueCapacity(Integer.parseInt(queueCapacity));
+    executor.setThreadNamePrefix("BatchSendMail-");
+    executor.initialize();
+    return executor;
+  }
+
 }

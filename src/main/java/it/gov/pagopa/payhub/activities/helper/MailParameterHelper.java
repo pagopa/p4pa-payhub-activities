@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.helper;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import it.gov.pagopa.payhub.activities.model.MailParams;
+import it.gov.pagopa.payhub.activities.utils.Constants;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -53,9 +54,9 @@ public class MailParameterHelper {
 
             MailParams params = new MailParams();
             Map<String,String> map = new HashMap<>();
-            map.put("testomail", mailText);
-            map.put("dataAttuale",actualDate);
-            map.put("nomeFile", fileName);
+            map.put(Constants.MAIL_TEXT, mailText);
+            map.put(Constants.ACTUAL_DATE,actualDate);
+            map.put(Constants.FILE_NAME, fileName);
             params.setMailSubject(mailSubject);
             params.setHtmlText(htmlText);
             params.setParams(map);

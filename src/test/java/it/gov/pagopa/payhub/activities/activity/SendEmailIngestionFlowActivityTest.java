@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 
 import it.gov.pagopa.payhub.activities.model.MailParams;
+import it.gov.pagopa.payhub.activities.utils.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,9 +85,9 @@ class SendEmailIngestionFlowActivityTest {
         }
 
         Map<String,String> map = new HashMap<>();
-        map.put("testomail", mailText);
-        map.put("dataAttuale",actualDate);
-        map.put("nomeFile", ingestionFlowDTO.getFileName());
+        map.put(Constants.MAIL_TEXT, mailText);
+        map.put(Constants.ACTUAL_DATE,actualDate);
+        map.put(Constants.FILE_NAME, ingestionFlowDTO.getFileName());
 
         mailParams.setEmailFromAddress("test@test.com");
         mailParams.setEmailFromName("test");
