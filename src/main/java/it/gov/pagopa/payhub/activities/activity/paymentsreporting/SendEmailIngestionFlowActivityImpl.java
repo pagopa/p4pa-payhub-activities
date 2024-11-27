@@ -1,7 +1,7 @@
-package it.gov.pagopa.payhub.activities.activity.reportingflow;
+package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.activity.reportingflow.service.AsyncSendMailService;
-import it.gov.pagopa.payhub.activities.activity.reportingflow.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
@@ -40,7 +40,7 @@ public class SendEmailIngestionFlowActivityImpl implements  SendEmailIngestionFl
         // verify if previous operation is success
         if (success){
             try {
-                IngestionFlowDTO ingestionFlowDTO = ingestionFlowRetrieverService.getByFlowId(Long.valueOf(ingestionFlowId));
+                IngestionFlowDTO ingestionFlowDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
                 if (ingestionFlowDTO!=null) {
                     mailParams.setIngestionFlowDTO(ingestionFlowDTO);
                 }

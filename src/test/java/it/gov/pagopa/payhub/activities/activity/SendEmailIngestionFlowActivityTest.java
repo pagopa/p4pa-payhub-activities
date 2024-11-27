@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity;
 
-import it.gov.pagopa.payhub.activities.activity.reportingflow.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.activity.reportingflow.service.AsyncSendMailService;
-import it.gov.pagopa.payhub.activities.activity.reportingflow.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 
@@ -21,10 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SendEmailIngestionFlowActivityTest {
