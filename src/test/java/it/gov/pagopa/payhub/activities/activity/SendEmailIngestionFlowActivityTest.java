@@ -74,8 +74,10 @@ class SendEmailIngestionFlowActivityTest {
         ingestionFlowDTO.setFlowHandlerId(ingestionFlowId);
         ingestionFlowDTO.setDownloadedFileSize(fileSize);
 
+        /*
         when(ingestionFlowDao.getIngestionFlow(ingestionFlowId))
                 .thenReturn(Optional.of(ingestionFlowDTO));
+        */
 
         DateFormat parser = new SimpleDateFormat("EEE, MMM dd yyyy, hh:mm:ss");
         String actualDate = parser.format(new Date());
