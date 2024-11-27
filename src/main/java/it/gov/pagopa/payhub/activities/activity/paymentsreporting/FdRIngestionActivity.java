@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.reportingflow;
+package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.FdRIngestionActivityResult;
 
 /**

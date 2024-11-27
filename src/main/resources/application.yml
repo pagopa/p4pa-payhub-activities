@@ -2,3 +2,10 @@ spring:
   application:
     name: ${artifactId}
     version: ${version}
+
+data-chiper:
+  encrypt-psw: "\${DATA_CIPHER_ENCRYPT_PASSWORD:PWD}"
+
+
+ingestion-flow:
+  destination-base-path: ""
