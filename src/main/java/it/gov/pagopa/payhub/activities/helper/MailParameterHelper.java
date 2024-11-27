@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.model.MailParams;
 import it.gov.pagopa.payhub.activities.utils.Constants;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -63,8 +62,11 @@ public class MailParameterHelper {
             params.setSuccess(true);
             return params;
         }
+        catch (SendMailException sendMailException) {
+            throw sendMailException;
+        }
         catch (Exception e) {
-            throw new SendMailException("Error in mail configuration");
+            throw new SendMailException("Error in mail parameters");
         }
     }
 }

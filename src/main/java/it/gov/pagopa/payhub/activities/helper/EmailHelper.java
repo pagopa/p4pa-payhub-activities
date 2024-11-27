@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.helper;
 
+import it.gov.pagopa.payhub.activities.exception.SendMailException;
+
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -14,7 +16,7 @@ public class EmailHelper {
             InputStream inputStream = EmailHelper.class.getClassLoader().getResourceAsStream("mail-templates.properties");
             properties.load(inputStream);
         } catch (Exception e) {
-            return null;
+            throw new SendMailException("Error in mail template configuration");
         }
         return properties;
     }
