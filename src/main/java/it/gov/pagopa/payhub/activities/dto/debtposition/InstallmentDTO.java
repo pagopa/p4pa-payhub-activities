@@ -14,14 +14,14 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class InstallmentDTO implements Serializable {
 
     private Long installmentId;
     private boolean flagCurrentInstallment;
-    private String status; // anagrafica stato
+    private String status;
     private CartDTO cart;
     private String iud;
     private String iuv;
@@ -34,10 +34,10 @@ public class InstallmentDTO implements Serializable {
     private BigDecimal singlePaymentAmount;
     private BigDecimal paCommissionFee;
     private String paymentReason;
-    private String collectionSpecificDetailsSinglePayment; //riscossione
+    private String collectionSpecificDetailsSinglePayment;
     private Date iuvCreationDate;
     private String displayedPaymentReason;
-    private String balance; //XML
+    private String balance;
     private boolean flagGenerateIuv;
     private String sessionId;
     private boolean flagIuvVolatile;

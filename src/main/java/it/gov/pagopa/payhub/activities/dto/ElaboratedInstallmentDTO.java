@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ElaboratedInstallmentDTO implements Serializable {
@@ -59,7 +59,7 @@ public class ElaboratedInstallmentDTO implements Serializable {
     private BigDecimal totalAmountToPay;
     private String paymentType;
     private String remitterUniquePaymentId;
-    private String rpUniquePaymentId;
+    private String remitterPaymentContext;
     private String debitIban;
     private BigDecimal singlePaymentAmount;
     private BigDecimal paCommissionFee;
