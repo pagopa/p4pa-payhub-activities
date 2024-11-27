@@ -28,11 +28,11 @@ public class FileUtils {
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			if (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
-				SecureFileUtils.checkFileName(entry);
 				if (entry.isDirectory()) {
 					throw new InvalidIngestionFileException("ZIP file contains directories, but only files are expected");
 				}
-				Path entryPath = outputDir.resolve(entry.getName());
+				String checkedFilename = SecureFileUtils.checkFileName(entry.getName());
+				Path entryPath = outputDir.resolve(checkedFilename);
 				Files.createDirectories(entryPath.getParent());
 				try {
 					Files.copy(zipFile.getInputStream(entry), entryPath, StandardCopyOption.REPLACE_EXISTING);
