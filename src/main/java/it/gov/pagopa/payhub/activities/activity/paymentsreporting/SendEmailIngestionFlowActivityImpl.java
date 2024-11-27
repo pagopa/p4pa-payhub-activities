@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.AsyncSendMailService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
-import it.gov.pagopa.payhub.activities.activity.reportingflow.service.AsyncSendMailService;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;

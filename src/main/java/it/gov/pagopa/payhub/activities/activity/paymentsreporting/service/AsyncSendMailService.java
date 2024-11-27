@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.reportingflow.service;
+package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
 
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import it.gov.pagopa.payhub.activities.model.MailParams;
