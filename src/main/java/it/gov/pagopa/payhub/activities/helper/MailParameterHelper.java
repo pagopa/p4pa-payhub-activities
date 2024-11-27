@@ -15,6 +15,11 @@ import java.util.Map;
 import java.util.Properties;
 
 public class MailParameterHelper {
+    /**
+     * helper for e-mail
+     * @param mailParams  parameters not updated
+     * @return MailParams parameters updated
+     */
     public static MailParams getMailParams(MailParams mailParams) {
 
         IngestionFlowDTO  ingestionFlowDTO = mailParams.getIngestionFlowDTO();

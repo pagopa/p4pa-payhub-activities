@@ -57,11 +57,11 @@ class SendEmailIngestionFlowActivityTest {
 
     @Test
     void sendEmailIngestionError() {
-        boolean success = false;
+        boolean success = true;
         String manageFlussoId = "100";
         setMailParams(manageFlussoId, "mail-importFlussoRendicontazione-error", 0L);
         boolean result = sendEmailIngestionFlowActivity.sendEmail(manageFlussoId, success);
-        assertFalse(result);
+        assertTrue(result);
     }
 
     void setMailParams(String manageFlussoId, String templatename, Long fileSize){

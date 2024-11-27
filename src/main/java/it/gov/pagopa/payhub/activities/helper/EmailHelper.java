@@ -6,7 +6,7 @@ import java.util.Properties;
 public class EmailHelper {
     /**
      *
-     * @return Properties
+     * @return mail template Properties from properties
      */
     public Properties getProperties() {
         Properties properties = new Properties();
