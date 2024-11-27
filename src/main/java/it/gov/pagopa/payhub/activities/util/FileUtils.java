@@ -12,7 +12,8 @@ import java.util.zip.ZipFile;
 
 public class FileUtils {
 
-	public FileUtils() {}
+	private FileUtils() {
+	}
 
 	public static void validateZip(Path zipFilePath) {
 		try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {

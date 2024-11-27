@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IngestionFlowDTO {
-	private Long flowHandlerId;
+	private Long ingestionFlowId;
 	private int version;
 	private OrganizationDTO orgId;
 	private String PspIdentifier;

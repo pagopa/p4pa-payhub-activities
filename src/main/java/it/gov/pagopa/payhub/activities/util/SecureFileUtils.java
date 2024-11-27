@@ -3,6 +3,9 @@ package it.gov.pagopa.payhub.activities.util;
 import java.util.zip.ZipEntry;
 
 public class SecureFileUtils {
+  private SecureFileUtils() {
+  }
+
   /**
    * Checks if the name of the zip entry is safe.
    * The name must:
