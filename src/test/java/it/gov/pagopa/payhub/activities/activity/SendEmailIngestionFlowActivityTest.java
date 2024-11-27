@@ -21,8 +21,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SendEmailIngestionFlowActivityTest {
@@ -71,6 +73,9 @@ class SendEmailIngestionFlowActivityTest {
         ingestionFlowDTO.setFileName("test.zip");
         ingestionFlowDTO.setFlowHandlerId(ingestionFlowId);
         ingestionFlowDTO.setDownloadedFileSize(fileSize);
+
+        when(ingestionFlowDao.getIngestionFlow(ingestionFlowId))
+                .thenReturn(Optional.of(ingestionFlowDTO));
 
         DateFormat parser = new SimpleDateFormat("EEE, MMM dd yyyy, hh:mm:ss");
         String actualDate = parser.format(new Date());
