@@ -28,6 +28,7 @@ public class FileUtils {
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			if (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
+				SecureFileUtils.checkFileName(entry);
 				if (entry.isDirectory()) {
 					throw new InvalidIngestionFileException("ZIP file contains directories, but only files are expected");
 				}
