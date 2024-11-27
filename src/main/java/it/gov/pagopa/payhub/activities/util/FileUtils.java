@@ -2,51 +2,55 @@ package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class FileUtils {
 
 	private FileUtils() {
 	}
 
-	public static void validateZip(Path zipFilePath) {
-		try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
-			zipFile.entries();
-		} catch (Exception e) {
+	public static boolean isArchive(Path zipFilePath) {
+		try (RandomAccessFile raf = new RandomAccessFile(zipFilePath.toFile(), "r")) {
+			int fileSignature = raf.readInt();
+			return fileSignature == 0x504B0304 || fileSignature == 0x504B0506 || fileSignature == 0x504B0708;
+		} catch (IOException e) {
 			throw new InvalidIngestionFileException("Invalid zip file");
 		}
 	}
 
-	public static Path unzipFile(Path zipFilePath, Path outputDir) {
-		Path extractedFilePath;
-		try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			if (entries.hasMoreElements()) {
-				ZipEntry entry = entries.nextElement();
-				if (entry.isDirectory()) {
+	public static void unzip(Path source, Path target) {
+		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
+			ZipEntry zipEntry = zis.getNextEntry();
+			SecureFileUtils.checkFileName(zipEntry);
+			while (zipEntry != null) {
+				if (zipEntry.isDirectory()) {
 					throw new InvalidIngestionFileException("ZIP file contains directories, but only files are expected");
 				}
-				String checkedFilename = SecureFileUtils.checkFileName(entry.getName());
-				Path entryPath = outputDir.resolve(checkedFilename);
-				Files.createDirectories(entryPath.getParent());
-				try {
-					Files.copy(zipFile.getInputStream(entry), entryPath, StandardCopyOption.REPLACE_EXISTING);
-					extractedFilePath = entryPath;  // Restituisci il path completo del file estratto
-				} catch (IOException e) {
-					throw new InvalidIngestionFileException("Failed to extract file: " + entry.getName());
-				}
-			} else {
-				throw new InvalidIngestionFileException("ZIP file is empty or contains no files");
+				Path targetPath = zipSlipProtect(zipEntry, target);
+				Files.createDirectories(targetPath);
+				Files.copy(zis, targetPath, StandardCopyOption.REPLACE_EXISTING);
+				zipEntry = zis.getNextEntry();
 			}
+			zis.closeEntry();
 		} catch (IOException e) {
-			throw new InvalidIngestionFileException("Error while unzipping file: " + zipFilePath);
+			throw new InvalidIngestionFileException("Error while unzipping file: " + source);
 		}
-		return extractedFilePath;
+	}
+
+	public static Path zipSlipProtect(ZipEntry zipEntry, Path targetDir) {
+		String checkedFilename = SecureFileUtils.checkFileName(zipEntry.getName());
+		Path targetDirResolved = targetDir.resolve(checkedFilename);
+		Path normalizePath = targetDirResolved.normalize();
+		if (!normalizePath.startsWith(targetDir)) {
+			throw new InvalidIngestionFileException("Bad zip entry: " + zipEntry.getName());
+		}
+		return normalizePath;
 	}
 }
