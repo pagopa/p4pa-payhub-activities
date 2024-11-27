@@ -69,7 +69,7 @@ class SendEmailIngestionFlowActivityTest {
         Long ingestionFlowId = Long.valueOf(manageFlussoId);
         IngestionFlowDTO ingestionFlowDTO = new IngestionFlowDTO();
         ingestionFlowDTO.setFileName("test.zip");
-        ingestionFlowDTO.setFlowHandlerId(ingestionFlowId);
+        ingestionFlowDTO.setIngestionFlowId(ingestionFlowId);
         ingestionFlowDTO.setDownloadedFileSize(fileSize);
 
         /*
