@@ -32,7 +32,7 @@ public class AsyncSendMailService {
   private String queueCapacity;
 
 
-  @Async("SendMailTaskExecutor")
+  @Async("sendMailTaskExecutor")
   @Retryable(value = MailException.class, maxAttemptsExpression = "${async.sendMail.retry.maxAttempts}",
           backoff = @Backoff(random = true, delayExpression = "${async.sendMail.retry.delay}",
                   maxDelayExpression = "${async.sendMail.retry.maxDelay}", multiplierExpression = "${async.sendMail.retry.multiplier}"))
@@ -62,7 +62,7 @@ public class AsyncSendMailService {
     //TODO write fail to db or queue for retry, in case
   }
 
-  @Bean("SendMailTaskExecutor")
+  @Bean("sendMailTaskExecutor")
   public Executor taskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(Integer.parseInt(corePoolSize));
