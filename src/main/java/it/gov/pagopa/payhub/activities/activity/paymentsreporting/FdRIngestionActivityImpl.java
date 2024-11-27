@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFileHandlerService;
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFileValidatorService;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.FdRIngestionActivityResult;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +40,7 @@ public class FdRIngestionActivityImpl implements FdRIngestionActivity {
 		} catch (Exception e) {
 			log.error("Error during IngestionActivity flowId {} due to: {}", ingestionFlowId, e.getMessage());
 			success = false;
-		} finally {
-			return new FdRIngestionActivityResult(iufList, success);
 		}
+		return new FdRIngestionActivityResult(iufList, success);
 	}
 }

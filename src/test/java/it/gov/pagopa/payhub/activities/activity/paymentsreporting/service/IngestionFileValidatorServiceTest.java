@@ -1,12 +1,11 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
 
-import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.nio.file.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.nio.file.Path;
 
 class IngestionFileValidatorServiceTest {
 

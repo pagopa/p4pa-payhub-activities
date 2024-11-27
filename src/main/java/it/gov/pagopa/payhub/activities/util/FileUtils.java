@@ -12,7 +12,8 @@ import java.util.zip.ZipFile;
 
 public class FileUtils {
 
-	public FileUtils() {}
+	private FileUtils() {
+	}
 
 	public static void validateZip(Path zipFilePath) {
 		try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
@@ -31,7 +32,8 @@ public class FileUtils {
 				if (entry.isDirectory()) {
 					throw new InvalidIngestionFileException("ZIP file contains directories, but only files are expected");
 				}
-				Path entryPath = outputDir.resolve(entry.getName());
+				String checkedFilename = SecureFileUtils.checkFileName(entry.getName());
+				Path entryPath = outputDir.resolve(checkedFilename);
 				Files.createDirectories(entryPath.getParent());
 				try {
 					Files.copy(zipFile.getInputStream(entry), entryPath, StandardCopyOption.REPLACE_EXISTING);
