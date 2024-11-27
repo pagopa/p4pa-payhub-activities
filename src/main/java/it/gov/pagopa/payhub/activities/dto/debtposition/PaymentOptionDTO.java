@@ -8,8 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -19,11 +18,11 @@ import java.util.List;
 public class PaymentOptionDTO implements Serializable {
 
     private OrganizationDTO org;
-    private BigDecimal totalAmount;
+    private Long totalAmount;
     private String description;
     private String status;
     private boolean multiDebtor;
     private PaymentOptionType paymentOptionType;
-    private Date dueDate;
+    private LocalDate dueDate;
     private List<InstallmentDTO> installments;
 }

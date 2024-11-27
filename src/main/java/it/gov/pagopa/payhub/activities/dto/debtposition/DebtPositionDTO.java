@@ -19,13 +19,10 @@ public class DebtPositionDTO implements Serializable {
     private Long id;
     private String iupdOrg;
     private String iupdPagopa;
-    private String organizationFiscalCode;
     private String description;
     private String status;
-    private IngestionFlowFileDTO flow;
-    private Long numberLineFlow;
-    private String codeTypeInstallment;
-    private String gpdIupd;
+    private IngestionFlowFileDTO ingestionFlowFile;
+    private Long flowLineNumber;
     private Character gpdStatus;
     private OrganizationDTO org;
     private DebtPositionTypeOrgDTO debtPositionTypeOrgDTO;

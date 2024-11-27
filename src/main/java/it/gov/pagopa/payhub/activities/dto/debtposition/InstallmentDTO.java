@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.CartDTO;
 import it.gov.pagopa.payhub.activities.dto.ReceiptDTO;
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import lombok.AllArgsConstructor;
@@ -9,8 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -20,29 +19,36 @@ import java.util.List;
 public class InstallmentDTO implements Serializable {
 
     private Long installmentId;
-    private boolean flagCurrentInstallment;
     private String status;
-    private CartDTO cart;
     private String iud;
     private String iuv;
-    private Date creationDate;
-    private Date updateDate;
-    private Date dueDate;
-    private Character uniqueIdentifierTypePayer;
-    private Date paymentExecutionDate;
+    private String iur;
+    private Instant creationDate;
+    private Instant updateDate;
+    private LocalDate dueDate;
+    private Character rpPayerUniqueIdentifierType;
+    private String rpPayerUniqueIdentifierCode;
+    private String rpPayerRegistry;
+    private String rpPayerAddress;
+    private String rpPayerCivic;
+    private String rpPayerPostalCode;
+    private String rpPayerLocation;
+    private String rpPayerProvince;
+    private String rpPayerNation;
+    private String rpPayerEmail;
+    private LocalDate paymentExecutionDate;
     private String paymentTypeCode;
-    private BigDecimal singlePaymentAmount;
-    private BigDecimal paCommissionFee;
-    private String paymentReason;
-    private String collectionSpecificDetailsSinglePayment;
-    private Date iuvCreationDate;
-    private String displayedPaymentReason;
+    private Long singlePaymentAmount;
+    private Long paCommissionFee;
+    private String remittanceInformation;
+    private Instant iuvCreationDate;
+    private String humanFriendlyRemittanceInformation;
     private String balance;
     private boolean flagGenerateIuv;
     private String sessionId;
     private boolean flagIuvVolatile;
-    private byte [] payerUniquePaymentIdHash;
-    private Long personalDataId;
+
+
     private List<TransferDTO> transfers;
     private ReceiptDTO receipt;
 }

@@ -16,8 +16,8 @@ public class DebtPositionType implements Serializable {
 
     private Long debtTypePositionId;
     private Long brokerId;
-    private String typeCode;
-    private String typeDesc;
+    private String code;
+    private String descr;
     private String taxonomyCode;
     private String macroArea;
     private String serviceType;

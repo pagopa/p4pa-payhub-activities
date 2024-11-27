@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Data
 @Builder(toBuilder = true)
@@ -18,16 +17,15 @@ public class DebtPositionTypeOrgDTO implements Serializable {
     private Long debtPositionTypeOrgId;
     private OrganizationDTO org;
     private DebtPositionType debtPositionType;
-    private String iban;
-    private String balance; // XML
-    private String typeCode;
-    private String typeDesc;
+    private String balance;
+    private String code;
+    private String descr;
     private boolean flagMandatoryDueDate;
     private boolean flagAnonymousFiscalCode;
-    private String creditIbanPi;
-    private String creditIbanPSP;
-    private BigDecimal amount;
-    private String installmentPaymentUrl;
+    private String postalIban;
+    private String iban;
+    private Long amount;
+    private String externalPaymentUrl;
     private String balanceDefaultDesc;
     private String orgSector;
     private String postalAccountCode;
@@ -36,16 +34,12 @@ public class DebtPositionTypeOrgDTO implements Serializable {
     private boolean flagDisablePrintNotice;
     private boolean flagNotifyOutcomePush;
     private Integer maxAttemptForwardingOutcome;
-    private String xsdReasonCode;
-    private String paymentContextCode;
+    private String xsdDefinitionRef;
     private String taxonomyCode;
-    private String collectingReason;
     private Long orgSilId;
 
 
     // da controllare cosa tenere o meno
-    private String backingIbanPi;
-    private String backingIbanPSP;
     private boolean flagActive;
     private String urlNotifyPnd;
     private String userPnd;

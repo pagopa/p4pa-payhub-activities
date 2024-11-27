@@ -16,14 +16,13 @@ public class BrokerDTO implements Serializable {
 
     private Long brokerId;
     private String brokerFiscalCode;
-    private String orgFiscalCode;
-    private String brokerStationId;
+    private String stationId;
     private byte[] subscriptionKey;
     private byte[] gpdKey;
     private byte [] acaKey;
-    private String domain;
+    private String brokerName;
     private String personalisationFe;
-    private String brokerStationBroadcastId;
+    private String broadcastStationId;
     private PagoPaInteractionModel pagoPaInteractionModel;
-    private OrganizationDTO org;
+    private OrganizationDTO masterOrg;
 }

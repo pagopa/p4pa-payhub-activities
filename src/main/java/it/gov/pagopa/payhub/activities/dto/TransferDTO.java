@@ -1,14 +1,12 @@
 package it.gov.pagopa.payhub.activities.dto;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
 
 @Data
 @Builder(toBuilder = true)
@@ -16,7 +14,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class TransferDTO implements Serializable {
 
-    private OrganizationDTO org;
+    private Long transferId;
+    private Long orgId;
     private String orgFiscalCode;
     private String beneficiaryName;
     private String creditIban;
@@ -26,14 +25,16 @@ public class TransferDTO implements Serializable {
     private String beneficiaryLocation;
     private String beneficiaryProvince;
     private String beneficiaryNation;
-    private BigDecimal secondaryAmount;
-    private Date creationDate;
-    private Date lastUpdateDate;
+    private Long amount;
+    private Instant creationDate;
+    private Instant lastUpdateDate;
     private String paymentReasonMultiBeneficiary;
-    private InstallmentDTO installment;
     private String stamp;
     private String stampType;
+    private String documentHash;
     private String category;
+    private String status;
+    private Integer transferIndex;
     private String collectionSpecificDetailsSinglePayment; //riscossione esiste su InstallmentDTO
 
 }

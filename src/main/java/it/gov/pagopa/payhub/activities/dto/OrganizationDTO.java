@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Data
@@ -21,10 +20,10 @@ public class OrganizationDTO implements Serializable {
     private String orgFiscalCode;
     private String orgName;
     private String adminEmail;
-    private Timestamp creationDate;
-    private Timestamp lastChangeDate;
+    private Instant creationDate;
+    private Instant lastChangeDate;
     private String paymentTypeCode;
-    private BigDecimal numPAChargeCommittee;
+    private Long numPAChargeCommittee;
     private String creditIban;
     private String creditBic;
     private String backingIban;
