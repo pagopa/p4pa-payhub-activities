@@ -29,6 +29,7 @@ class IngestionFileValidatorServiceTest {
 	void validate_ValidFile_Success() throws IOException, NoSuchAlgorithmException {
 		// Given
 		Path tempDir = Files.createTempDirectory("testDir");
+		String canonicalPath = tempDir.toFile().getCanonicalPath();
 		Path filePath = tempDir.resolve("test.zip");
 		Path md5Path = tempDir.resolve("test.md5");
 		Path authPath = tempDir.resolve("test.auth");
@@ -46,7 +47,7 @@ class IngestionFileValidatorServiceTest {
 		Files.writeString(md5Path, calculatedMd5);
 
 		// When Then
-		assertDoesNotThrow(() -> validatorService.validate(tempDir.toString(), "test.zip", requestTokenCode));
+		assertDoesNotThrow(() -> validatorService.validate(canonicalPath, "test.zip", requestTokenCode));
 
 		// Cleanup
 		Files.deleteIfExists(filePath);
@@ -59,6 +60,7 @@ class IngestionFileValidatorServiceTest {
 	void validate_InvalidMD5_ThrowsException() throws IOException {
 		// Given
 		Path tempDir = Files.createTempDirectory("testDir");
+		String canonicalPath = tempDir.toFile().getCanonicalPath();
 		Path filePath = tempDir.resolve("test.zip");
 		Path md5Path = tempDir.resolve("test.md5");
 		Path authPath = tempDir.resolve("test.auth");
@@ -70,7 +72,7 @@ class IngestionFileValidatorServiceTest {
 
 		// When Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> validatorService.validate(tempDir.toString(), "test.zip", requestTokenCode)
+			() -> validatorService.validate(canonicalPath, "test.zip", requestTokenCode)
 		);
 		// Cleanup
 		Files.deleteIfExists(filePath);
@@ -83,6 +85,7 @@ class IngestionFileValidatorServiceTest {
 	void validate_InvalidAuth_ThrowsException() throws IOException {
 		// Given
 		Path tempDir = Files.createTempDirectory("testDir");
+		String canonicalPath = tempDir.toFile().getCanonicalPath();
 		Path filePath = tempDir.resolve("test.zip");
 		Path md5Path = tempDir.resolve("test.md5");
 		Path authPath = tempDir.resolve("test.auth");
@@ -94,7 +97,7 @@ class IngestionFileValidatorServiceTest {
 
 		// When Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> validatorService.validate(tempDir.toString(), "test.zip", requestTokenCode)
+			() -> validatorService.validate(canonicalPath, "test.zip", requestTokenCode)
 		);
 
 		// Cleanup
@@ -112,7 +115,7 @@ class IngestionFileValidatorServiceTest {
 
 		// When Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> validatorService.validate(tempDir.toString(), filename, "valid-token")
+			() -> validatorService.validate(tempDir, filename, "valid-token")
 		);
 	}
 }
