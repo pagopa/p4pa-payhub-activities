@@ -3,27 +3,133 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFileHandlerService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFileValidatorService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
+import it.gov.pagopa.payhub.activities.dto.reportingflow.FdRIngestionActivityResult;
+import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
 
-@ExtendWith(MockitoExtension.class)
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 class FdRIngestionActivityImplTest {
 
-	@Mock
-	private IngestionFlowRetrieverService ingestionFlowRetrieverServiceMock;
-	@Mock
-	private IngestionFileValidatorService ingestionFileValidatorServiceMock;
-	@Mock
-	private IngestionFileHandlerService ingestionFileHandlerServiceMock;
-
-	private FdRIngestionActivityImpl activity;
+	private IngestionFlowRetrieverService ingestionFlowRetrieverService;
+	private IngestionFileValidatorService ingestionFileValidatorService;
+	private IngestionFileHandlerService ingestionFileHandlerService;
+	private FdRIngestionActivityImpl ingestionActivity;
 
 	@BeforeEach
-	void init() {
-		activity = new FdRIngestionActivityImpl(ingestionFlowRetrieverServiceMock, ingestionFileValidatorServiceMock, ingestionFileHandlerServiceMock);
+	void setUp() {
+		ingestionFlowRetrieverService = mock(IngestionFlowRetrieverService.class);
+		ingestionFileValidatorService = mock(IngestionFileValidatorService.class);
+		ingestionFileHandlerService = mock(IngestionFileHandlerService.class);
+
+		ingestionActivity = new FdRIngestionActivityImpl(
+			ingestionFlowRetrieverService,
+			ingestionFileValidatorService,
+			ingestionFileHandlerService
+		);
 	}
 
+	@Test
+	void processFile_SuccessfulFlow() throws Exception {
+		// Given
+		String ingestionFlowId = "123";
+		IngestionFlowDTO mockFlowDTO = new IngestionFlowDTO();
+		mockFlowDTO.setFilePathName("/valid/path");
+		mockFlowDTO.setFileName("valid-file.zip");
+		mockFlowDTO.setRequestTokenCode("valid-token");
 
+		when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId)))
+			.thenReturn(mockFlowDTO);
+
+		// When
+		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+
+		// Then
+		assertTrue(result.isSuccess());
+		assertNotNull(result.getIufs());
+		verify(ingestionFlowRetrieverService, times(1))
+			.getIngestionFlow(Long.valueOf(ingestionFlowId));
+		verify(ingestionFileValidatorService, times(1))
+			.validate(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName(), mockFlowDTO.getRequestTokenCode());
+		verify(ingestionFileHandlerService, times(1))
+			.setUpProcess(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+	}
+
+	@Test
+	void processFile_FlowRetrieverFails() {
+		// Given
+		String ingestionFlowId = "123";
+		when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId)))
+			.thenThrow(new RuntimeException("Flow retriever failed"));
+
+		// When
+		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+
+		// Then
+		assertFalse(result.isSuccess());
+		verify(ingestionFlowRetrieverService, times(1))
+			.getIngestionFlow(Long.valueOf(ingestionFlowId));
+		verifyNoInteractions(ingestionFileValidatorService);
+		verifyNoInteractions(ingestionFileHandlerService);
+	}
+
+	@Test
+	void processFile_ValidationFails() throws Exception {
+		// Given
+		String ingestionFlowId = "123";
+		IngestionFlowDTO mockFlowDTO = new IngestionFlowDTO();
+		mockFlowDTO.setFilePathName("/valid/path");
+		mockFlowDTO.setFileName("valid-file.zip");
+		mockFlowDTO.setRequestTokenCode("valid-token");
+
+		when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId)))
+			.thenReturn(mockFlowDTO);
+
+		doThrow(new InvalidIngestionFileException("Validation failed"))
+			.when(ingestionFileValidatorService)
+			.validate(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName(), mockFlowDTO.getRequestTokenCode());
+
+		// When
+		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+
+		// Then
+		assertFalse(result.isSuccess());
+		verify(ingestionFlowRetrieverService, times(1))
+			.getIngestionFlow(Long.valueOf(ingestionFlowId));
+		verify(ingestionFileValidatorService, times(1))
+			.validate(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName(), mockFlowDTO.getRequestTokenCode());
+		verifyNoInteractions(ingestionFileHandlerService);
+	}
+
+	@Test
+	void processFile_SetupProcessFails() throws Exception {
+		// Given
+		String ingestionFlowId = "123";
+		IngestionFlowDTO mockFlowDTO = new IngestionFlowDTO();
+		mockFlowDTO.setFilePathName("/valid/path");
+		mockFlowDTO.setFileName("valid-file.zip");
+		mockFlowDTO.setRequestTokenCode("valid-token");
+
+		when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId)))
+			.thenReturn(mockFlowDTO);
+
+		doThrow(new RuntimeException("Setup process failed"))
+			.when(ingestionFileHandlerService)
+			.setUpProcess(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+
+		// When
+		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+
+		// Then
+		assertFalse(result.isSuccess());
+		verify(ingestionFlowRetrieverService, times(1))
+			.getIngestionFlow(Long.valueOf(ingestionFlowId));
+		verify(ingestionFileValidatorService, times(1))
+			.validate(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName(), mockFlowDTO.getRequestTokenCode());
+		verify(ingestionFileHandlerService, times(1))
+			.setUpProcess(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+	}
 }

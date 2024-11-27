@@ -9,14 +9,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class IngestionFileValidatorServiceTest {
+
+	private static final String TEMP_PATH = "temp";
 
 	private IngestionFileValidatorService validatorService;
 
@@ -28,7 +30,7 @@ class IngestionFileValidatorServiceTest {
 	@Test
 	void validate_ValidFile_Success() throws IOException, NoSuchAlgorithmException {
 		// Given
-		Path tempDir = Files.createTempDirectory("testDir");
+		Path tempDir = Files.createTempDirectory(TEMP_PATH);
 		Path filePath = tempDir.resolve("test.zip");
 		Path md5Path = tempDir.resolve("test.md5");
 		Path authPath = tempDir.resolve("test.auth");
@@ -46,7 +48,7 @@ class IngestionFileValidatorServiceTest {
 		Files.writeString(md5Path, calculatedMd5);
 
 		// When Then
-		assertDoesNotThrow(() -> validatorService.validate(tempDir.toString(), "test.zip", requestTokenCode));
+		assertDoesNotThrow(() -> validatorService.validate(TEMP_PATH, "test.zip", requestTokenCode));
 
 		// Cleanup
 		Files.deleteIfExists(filePath);
@@ -56,9 +58,9 @@ class IngestionFileValidatorServiceTest {
 	}
 
 	@Test
-	void validate_InvalidMD5_ThrowsException() throws IOException, NoSuchAlgorithmException {
+	void validate_InvalidMD5_ThrowsException() throws IOException {
 		// Given
-		Path tempDir = Files.createTempDirectory("testDir");
+		Path tempDir = Files.createTempDirectory(TEMP_PATH);
 		Path filePath = tempDir.resolve("test.zip");
 		Path md5Path = tempDir.resolve("test.md5");
 		Path authPath = tempDir.resolve("test.auth");
@@ -70,7 +72,7 @@ class IngestionFileValidatorServiceTest {
 
 		// When Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> validatorService.validate(tempDir.toString(), "test.zip", requestTokenCode)
+			() -> validatorService.validate(TEMP_PATH, "test.zip", requestTokenCode)
 		);
 		// Cleanup
 		Files.deleteIfExists(filePath);
@@ -82,7 +84,7 @@ class IngestionFileValidatorServiceTest {
 	@Test
 	void validate_InvalidAuth_ThrowsException() throws IOException {
 		// Given
-		Path tempDir = Files.createTempDirectory("testDir");
+		Path tempDir = Files.createTempDirectory(TEMP_PATH);
 		Path filePath = tempDir.resolve("test.zip");
 		Path md5Path = tempDir.resolve("test.md5");
 		Path authPath = tempDir.resolve("test.auth");
@@ -94,7 +96,7 @@ class IngestionFileValidatorServiceTest {
 
 		// When Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> validatorService.validate(tempDir.toString(), "test.zip", requestTokenCode)
+			() -> validatorService.validate(TEMP_PATH, "test.zip", requestTokenCode)
 		);
 
 		// Cleanup
@@ -107,12 +109,12 @@ class IngestionFileValidatorServiceTest {
 	@Test
 	void validate_FileNotFound_ThrowsException() {
 		// Given
-		Path tempDir = Paths.get("non-existent-dir");
+		String tempDir = "non-existent-dir";
 		String filename = "non-existent.zip";
 
 		// When Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> validatorService.validate(tempDir.toString(), filename, "valid-token")
+			() -> validatorService.validate(tempDir, filename, "valid-token")
 		);
 	}
 }

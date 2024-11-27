@@ -14,7 +14,7 @@ import java.util.zip.ZipOutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileUtilsTest {
+class FileUtilsTest {
 	@TempDir
 	Path tempDir;
 
