@@ -38,8 +38,8 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "p4pa-pagopa-github-bot"
           git commit -a -m "Bump version"
+          export GITHUB_TOKEN=${{ secrets.ADMIN_GITHUB_TOKEN_RW }}
           git config -l
-          echo $GITHUB_TOKEN
           git push origin main #${{ github.ref }}
-        with:
+        env:
           GITHUB_TOKEN: PROVA #${{ secrets.ADMIN_GITHUB_TOKEN_RW }}
