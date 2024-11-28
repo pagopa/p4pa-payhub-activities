@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class EmailHelper {
+public final class EmailHelper {
     /**
      *
      * @return mail template Properties from properties
