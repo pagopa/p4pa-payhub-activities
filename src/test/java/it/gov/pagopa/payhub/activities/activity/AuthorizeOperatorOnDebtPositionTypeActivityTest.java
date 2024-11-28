@@ -57,7 +57,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         Long debtPositionTypeOrgId = 1L;
 
         DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
-        debtPositionTypeOrgDTO.setTypeCode("TYPE_CODE");
+        debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(1L);
 
         when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.empty());
