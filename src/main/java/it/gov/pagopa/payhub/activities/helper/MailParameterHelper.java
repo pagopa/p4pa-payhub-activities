@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.Properties;
 
 public final class MailParameterHelper {
+    private MailParameterHelper() {
+    }
+
     /**
      * helper for e-mail
      * @param mailParams  parameters not updated
@@ -39,8 +42,7 @@ public final class MailParameterHelper {
         }
 
         try {
-            EmailHelper emailHelper = new EmailHelper();
-            Properties mailProperties = emailHelper.getProperties();
+            Properties mailProperties = EmailHelper.getProperties();
             Assert.notEmpty(mailProperties.values(), "Wrong mail configuration");
             String templateName = mailParams.getTemplateName();
             String subject = mailProperties.getProperty("template."+templateName+".subject");

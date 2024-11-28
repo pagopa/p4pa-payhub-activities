@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public final class EmailHelper {
+    private EmailHelper() {
+    }
+
     /**
      *
      * @return mail template Properties from properties
      */
-    public Properties getProperties() {
+    public static Properties getProperties() {
         Properties properties = new Properties();
         try {
             InputStream inputStream = EmailHelper.class.getClassLoader().getResourceAsStream("mail-templates.properties");
