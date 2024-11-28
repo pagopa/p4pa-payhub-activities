@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIngestionActivityRes
  * Interface for the TreasuryIngestionActivity.
  * Defines methods for processing files based on an IngestionFlow ID.
  */
-public interface TreasuryIngestionActivity {
+public interface TreasuryOpiIngestionActivity {
 
     /**
      * Processes a file based on the provided IngestionFlow ID.
