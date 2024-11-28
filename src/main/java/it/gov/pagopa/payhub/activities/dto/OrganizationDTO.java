@@ -25,7 +25,6 @@ public class OrganizationDTO implements Serializable {
     private String paymentTypeCode;
     private Long numPAChargeCommittee;
     private String iban;
-    private String postalIban;
     private String myBoxClientKey;
     private String myBoxClientSecret;
     private String urlOrgSendSILPaymentResult;
