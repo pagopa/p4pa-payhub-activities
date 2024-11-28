@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.treasury.opi;
+package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryOpiIngestionActivityResult;
 
