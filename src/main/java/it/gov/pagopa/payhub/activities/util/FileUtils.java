@@ -26,7 +26,7 @@ public class FileUtils {
 	// Maximum number of entries to extract from the ZIP file
 	private static final int MAX_ENTRIES = 1000;
 	// Maximum total size (in bytes) of all uncompressed data
-	private static final long MAX_UNCOMPRESSED_SIZE = 50 * 1024 * 1024;  // 50MB
+	private static final long MAX_UNCOMPRESSED_SIZE = 50 * 1024 * 1024L;  // 50MB
 	// Maximum allowed compression ratio (compressed size / uncompressed size)
 	private static final double MAX_COMPRESSION_RATIO = 0.1;  // 10%
 
