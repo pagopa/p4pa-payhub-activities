@@ -13,14 +13,14 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class PaymentsReportingIngestionActivityImpl implements PaymentsReportingIngestionActivity {
+public class ReportingFlowIngestionActivityImpl implements ReportingFlowIngestionActivity {
 	private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
 	private final IngestionFileValidatorService ingestionFileValidatorService;
 	private final IngestionFileHandlerService ingestionFileHandlerService;
 
-	public PaymentsReportingIngestionActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService,
-	                                              IngestionFileValidatorService ingestionFileValidatorService,
-	                                              IngestionFileHandlerService ingestionFileHandlerService) {
+	public ReportingFlowIngestionActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService,
+	                                          IngestionFileValidatorService ingestionFileValidatorService,
+	                                          IngestionFileHandlerService ingestionFileHandlerService) {
 		this.ingestionFlowRetrieverService = ingestionFlowRetrieverService;
 		this.ingestionFileValidatorService = ingestionFileValidatorService;
 		this.ingestionFileHandlerService = ingestionFileHandlerService;
