@@ -19,13 +19,12 @@ public class SecureFileUtils {
 
   /**
    * Validates the safety of a file name within a ZIP archive.
-   * <p>
+   *
    * The file name is considered safe if it:
    * <ul>
    *   <li>Starts with an alphanumeric character.</li>
    *   <li>Does not contain the string ".." (prevents directory traversal).</li>
    * </ul>
-   * </p>
    *
    * @param fileName the name of the ZIP entry to validate.
    * @return the file name if it is deemed safe.
