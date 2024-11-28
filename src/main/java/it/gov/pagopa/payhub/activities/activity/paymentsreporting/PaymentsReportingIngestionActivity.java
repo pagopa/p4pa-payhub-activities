@@ -2,10 +2,10 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.FdRIngestionActivityResult;
 
 /**
- * Interface for the FdRIngestionActivity.
+ * Interface for the PaymentsReportingIngestionActivity.
  * Defines methods for processing files based on an IngestionFlow ID.
  */
-public interface FdRIngestionActivity {
+public interface PaymentsReportingIngestionActivity {
 
     /**
      * Processes a file based on the provided IngestionFlow ID.

@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class FdRIngestionActivityImplTest {
+class PaymentsReportingIngestionActivityImplTest {
 
 	private IngestionFlowRetrieverService ingestionFlowRetrieverService;
 	private IngestionFileValidatorService ingestionFileValidatorService;
 	private IngestionFileHandlerService ingestionFileHandlerService;
-	private FdRIngestionActivityImpl ingestionActivity;
+	private PaymentsReportingIngestionActivityImpl ingestionActivity;
 
 	@BeforeEach
 	void setUp() {
@@ -25,7 +25,7 @@ class FdRIngestionActivityImplTest {
 		ingestionFileValidatorService = mock(IngestionFileValidatorService.class);
 		ingestionFileHandlerService = mock(IngestionFileHandlerService.class);
 
-		ingestionActivity = new FdRIngestionActivityImpl(
+		ingestionActivity = new PaymentsReportingIngestionActivityImpl(
 			ingestionFlowRetrieverService,
 			ingestionFileValidatorService,
 			ingestionFileHandlerService
