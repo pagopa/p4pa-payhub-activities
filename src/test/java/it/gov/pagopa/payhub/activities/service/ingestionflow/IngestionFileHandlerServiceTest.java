@@ -102,7 +102,7 @@ class IngestionFileHandlerServiceTest {
 				.thenThrow(new IllegalStateException("Decryption failed"));
 
 			// When Then
-			assertThrows(IllegalStateException.class, () -> ingestionFileHandlerService.setUpProcess(relativePath, filename),
+			assertThrows(InvalidIngestionFileException.class, () -> ingestionFileHandlerService.setUpProcess(relativePath, filename),
 				"Expected exception for decryption failure."
 			);
 		}
