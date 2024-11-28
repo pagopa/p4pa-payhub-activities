@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.service;
 
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.AsyncSendMailService;
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.model.MailParams;
 import it.gov.pagopa.payhub.activities.utils.Constants;
 import org.junit.jupiter.api.BeforeEach;

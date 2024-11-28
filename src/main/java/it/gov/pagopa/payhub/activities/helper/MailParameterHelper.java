@@ -42,7 +42,6 @@ public final class MailParameterHelper {
             String mailSubject = StringSubstitutor.replace(subject, mailParams.getParams(), "{", "}");
             String htmlText = StringSubstitutor.replace(body, mailParams.getParams(), "{", "}");
 
-            //MailParams params = new MailParams();
             Map<String,String> map = new HashMap<>();
             map.put(Constants.MAIL_TEXT, mailParams.getMailText());
             map.put(Constants.ACTUAL_DATE,actualDate);
