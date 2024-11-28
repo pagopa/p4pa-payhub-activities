@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * DTO for the TreasuryIngestionResponse, representing the result of file processing.
+ * DTO for the TreasuryOpiIngestionActivityResult, representing the result of file processing.
  */
 @Data
 @NoArgsConstructor
