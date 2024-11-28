@@ -2,14 +2,18 @@ package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Utility class for file operations, including ZIP file validation and extraction.
@@ -77,5 +81,14 @@ public class FileUtils {
 			throw new InvalidIngestionFileException("Bad zip entry: " + zipEntry.getName());
 		}
 		return normalizePath;
+	}
+
+	public static void moveFile(File file, Path target) throws IOException {
+		moveFile(file, target, file.getName());
+	}
+
+	public static void moveFile(File originalFile, Path target, String newFileName) throws IOException {
+		Files.copy(originalFile.toPath(), target.resolve(newFileName), REPLACE_EXISTING);
+		Files.delete(originalFile.toPath());
 	}
 }

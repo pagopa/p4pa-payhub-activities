@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +54,9 @@ public class ReportingFlowIngestionActivityImpl implements ReportingFlowIngestio
 
 			ingestionFileValidatorService.validate(ingestionFlowDTO.getFilePathName(), ingestionFlowDTO.getFileName(), ingestionFlowDTO.getRequestTokenCode());
 
-			ingestionFileHandlerService.setUpProcess(ingestionFlowDTO.getFilePathName(), ingestionFlowDTO.getFileName());
+			Path xmlWorkingPath = ingestionFileHandlerService.setUpProcess(ingestionFlowDTO.getFilePathName(), ingestionFlowDTO.getFileName());
+
+			ingestionFileHandlerService.finalizeProcess(ingestionFlowDTO.getFilePathName(), xmlWorkingPath);
 		} catch (Exception e) {
 			log.error("Error during IngestionActivity flowId {} due to: {}", ingestionFlowId, e.getMessage());
 			success = false;

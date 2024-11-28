@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 @Service
 public class IngestionFileHandlerService {
 	private static final String TEMPORARY_PATH = "TEMP";
+	private static final String PROCESSED_PATH = "PROCESSED";
 
 	/**
 	 * The password used for decrypting encrypted files.
@@ -72,5 +73,13 @@ public class IngestionFileHandlerService {
 
 		log.debug("File setup process completed successfully for: {}", filename);
 		return outputUnzippedPath;
+	}
+
+	public void finalizeProcess(String relativePath, Path xmlPath) throws IOException {
+
+		//zip file
+		//encrypt
+		Path targetPath = Paths.get(relativePath, PROCESSED_PATH);
+		FileUtils.moveFile(xmlPath.toFile(), targetPath);
 	}
 }
