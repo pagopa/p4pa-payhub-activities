@@ -24,22 +24,11 @@ public final class MailParameterHelper {
      * @return MailParams parameters updated
      */
     public static MailParams getMailParams(MailParams mailParams) {
-
-        IngestionFlowDTO  ingestionFlowDTO = mailParams.getIngestionFlowDTO();
-
+        IngestionFlowDTO ingestionFlowDTO = mailParams.getIngestionFlowDTO();
 
         String fileName = ingestionFlowDTO.getFileName();
-        Long fileSize = ingestionFlowDTO.getDownloadedFileSize();
-        Long totalRowsNumber = ingestionFlowDTO.getTotalRowsNumber();
         DateFormat parser = new SimpleDateFormat("EEE, MMM dd yyyy, hh:mm:ss");
         String actualDate = parser.format(new Date());
-        String mailText = "Il caricamento del file " + fileName;
-        if (fileSize>0 && totalRowsNumber>0) {
-            mailText += " è andato a buon fine, tutti i " + totalRowsNumber + " dati presenti sono stati caricati correttamente.";
-        }
-        else  {
-            mailText += " NON è andato a buon fine";
-        }
 
         try {
             Properties mailProperties = EmailHelper.getProperties();
@@ -53,16 +42,16 @@ public final class MailParameterHelper {
             String mailSubject = StringSubstitutor.replace(subject, mailParams.getParams(), "{", "}");
             String htmlText = StringSubstitutor.replace(body, mailParams.getParams(), "{", "}");
 
-            MailParams params = new MailParams();
+            //MailParams params = new MailParams();
             Map<String,String> map = new HashMap<>();
-            map.put(Constants.MAIL_TEXT, mailText);
+            map.put(Constants.MAIL_TEXT, mailParams.getMailText());
             map.put(Constants.ACTUAL_DATE,actualDate);
             map.put(Constants.FILE_NAME, fileName);
-            params.setMailSubject(mailSubject);
-            params.setHtmlText(htmlText);
-            params.setParams(map);
-            params.setSuccess(true);
-            return params;
+            mailParams.setMailSubject(mailSubject);
+            mailParams.setHtmlText(htmlText);
+            mailParams.setParams(map);
+            mailParams.setSuccess(true);
+            return mailParams;
         }
         catch (SendMailException sendMailException) {
             throw sendMailException;

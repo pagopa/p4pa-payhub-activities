@@ -13,7 +13,6 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -21,6 +20,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.Executor;
 
+/**
+ * Service class for sending mails
+ */
 @Service
 @Slf4j
 public class AsyncSendMailService {
@@ -31,7 +33,11 @@ public class AsyncSendMailService {
   @Value("${async.sendMail.queueCapacity:500}")
   private String queueCapacity;
 
-
+  /**
+   * sendMail method dor sending e-mails
+   * @param javaMailSender and mail sender
+   * @param mailParams mail parameters used for mail data
+   */
   @Async("sendMailTaskExecutor")
   @Retryable(value = MailException.class, maxAttemptsExpression = "${async.sendMail.retry.maxAttempts}",
           backoff = @Backoff(random = true, delayExpression = "${async.sendMail.retry.delay}",
@@ -57,6 +63,11 @@ public class AsyncSendMailService {
     }
   }
 
+  /**
+   * send mail task executor
+   *
+   * @return TaskExecutor
+   */
   @Bean("sendMailTaskExecutor")
   public Executor taskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

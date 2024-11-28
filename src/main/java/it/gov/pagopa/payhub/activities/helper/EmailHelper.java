@@ -5,13 +5,15 @@ import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import java.io.InputStream;
 import java.util.Properties;
 
+
 public final class EmailHelper {
     private EmailHelper() {
     }
 
     /**
+     * helper for loading mail template properties
      *
-     * @return mail template Properties from properties
+     * @return Properties for mail template
      */
     public static Properties getProperties() {
         Properties properties = new Properties();
