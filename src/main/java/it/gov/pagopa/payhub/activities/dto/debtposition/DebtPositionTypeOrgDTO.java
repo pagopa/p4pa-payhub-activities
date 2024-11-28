@@ -16,7 +16,7 @@ public class DebtPositionTypeOrgDTO implements Serializable {
 
     private Long debtPositionTypeOrgId;
     private OrganizationDTO org;
-    private DebtPositionType debtPositionType;
+    private DebtPositionTypeDTO debtPositionType;
     private String balance;
     private String code;
     private String description;

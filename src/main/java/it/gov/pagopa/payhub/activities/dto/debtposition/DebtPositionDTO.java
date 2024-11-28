@@ -25,6 +25,6 @@ public class DebtPositionDTO implements Serializable {
     private Long flowLineNumber;
     private Character gpdStatus;
     private OrganizationDTO org;
-    private DebtPositionTypeOrgDTO debtPositionTypeOrgDTO;
-    private List<PaymentOptionDTO> paymentOption;
+    private DebtPositionTypeOrgDTO debtPositionTypeOrg;
+    private List<PaymentOptionDTO> paymentOptions;
 }

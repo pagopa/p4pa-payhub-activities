@@ -6,13 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class DebtPositionType implements Serializable {
+public class DebtPositionTypeDTO implements Serializable {
 
     private Long debtTypePositionId;
     private Long brokerId;

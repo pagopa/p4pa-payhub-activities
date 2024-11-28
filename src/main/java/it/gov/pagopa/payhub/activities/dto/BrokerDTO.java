@@ -19,7 +19,7 @@ public class BrokerDTO implements Serializable {
     private String stationId;
     private byte[] subscriptionKey;
     private byte[] gpdKey;
-    private byte [] acaKey;
+    private byte[] acaKey;
     private String brokerName;
     private String personalisationFe;
     private String broadcastStationId;
