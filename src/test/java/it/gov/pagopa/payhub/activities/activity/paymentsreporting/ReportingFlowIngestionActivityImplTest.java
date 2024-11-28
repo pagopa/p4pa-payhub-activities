@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFileHandlerService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFileValidatorService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.FdRIngestionActivityResult;
+import it.gov.pagopa.payhub.activities.dto.reportingflow.ReportingFlowIngestionActivityResult;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ class ReportingFlowIngestionActivityImplTest {
 			.thenReturn(mockFlowDTO);
 
 		// When
-		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+		ReportingFlowIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
 
 		// Then
 		assertTrue(result.isSuccess());
@@ -66,7 +66,7 @@ class ReportingFlowIngestionActivityImplTest {
 			.thenThrow(new RuntimeException("Flow retriever failed"));
 
 		// When
-		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+		ReportingFlowIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
 
 		// Then
 		assertFalse(result.isSuccess());
@@ -93,7 +93,7 @@ class ReportingFlowIngestionActivityImplTest {
 			.validate(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName(), mockFlowDTO.getRequestTokenCode());
 
 		// When
-		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+		ReportingFlowIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
 
 		// Then
 		assertFalse(result.isSuccess());
@@ -121,7 +121,7 @@ class ReportingFlowIngestionActivityImplTest {
 			.setUpProcess(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
 
 		// When
-		FdRIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+		ReportingFlowIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
 
 		// Then
 		assertFalse(result.isSuccess());
