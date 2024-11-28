@@ -1,9 +1,10 @@
 name: Gradle publish package
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [ release ]
+    types:
+      - completed
   pull_request:
     branches:
       - main
@@ -20,6 +21,13 @@ jobs:
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4.1.7
         with:
           fetch-depth: 0
+
+      - name: DEbug
+        run: echo ${{github.actor}}
+
+      - name: Check SNAPSHOT version
+        if: github.ref_name != 'main'
+        run: grep '\-SNAPSHOT$' ./version
 
       - name: Set permissions for Gradle Wrapper
         run: chmod +x ./gradlew

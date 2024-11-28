@@ -1,26 +1,15 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.exception.OperatorNotAuthorizedException;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
  * Service class responsible for verifying authorization on the DebtPositionType entity.
  * This class provides methods to verify whether an operator has authorization to manage installment types
  * associated with a particular organization.
  */
+public interface AuthorizeOperatorOnDebtPositionTypeActivity {
 
-@Service
-public class AuthorizeOperatorOnDebtPositionTypeActivity {
-
-    private final DebtPositionTypeOrgDao debtPositionTypeOrgDao;
-
-    public AuthorizeOperatorOnDebtPositionTypeActivity(DebtPositionTypeOrgDao debtPositionTypeOrgDao) {
-        this.debtPositionTypeOrgDao = debtPositionTypeOrgDao;
-    }
 
     /**
      * Verifies if the specified operator has authorization to manage a specific debt position type for an organization.
@@ -37,11 +26,5 @@ public class AuthorizeOperatorOnDebtPositionTypeActivity {
      * @throws OperatorNotAuthorizedException if the operator is not authorized to manage the specified installment type
      */
 
-    public DebtPositionTypeOrgDTO authorize(Long orgId, Long debtPositionTypeOrgId, String username){
-        Optional<DebtPositionTypeOrgDTO> debtPositionTypeOrg =
-                debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username);
-
-        return debtPositionTypeOrg
-                .orElseThrow(() -> new OperatorNotAuthorizedException("The operator " + username + " is not authorized on the DebtPositionTypeOrg " + debtPositionTypeOrgId + " related to organization " + orgId));
-    }
+    DebtPositionTypeOrgDTO authorize(Long orgId, Long debtPositionTypeOrgId, String username);
 }

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivityImpl;
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
@@ -27,7 +28,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
 
     @BeforeEach
     void init() {
-        authorizeOperatorOnDebtPositionTypeActivity = new AuthorizeOperatorOnDebtPositionTypeActivity(debtPositionTypeOrgDao);
+        authorizeOperatorOnDebtPositionTypeActivity = new AuthorizeOperatorOnDebtPositionTypeActivityImpl(debtPositionTypeOrgDao);
     }
 
     @Test

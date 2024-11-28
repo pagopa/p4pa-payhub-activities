@@ -9,6 +9,7 @@ on:
       - 'CODEOWNERS'
       - '**.md'
       - '.**'
+      - 'version'
 
 jobs:
   release:
@@ -19,6 +20,29 @@ jobs:
 
       - name: 🚀 Release with docker action
         id: release
-        uses: pagopa/eng-github-actions-iac-template/global/release-with-docker@main #
+        uses: pagopa/eng-github-actions-iac-template/global/release-action@main #
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Checkout sources
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4.1.7
+        with:
+          fetch-depth: 0
+
+      - name: Update application version
+        run: echo ${{steps.release.outputs.new_release_version }} > version
+
+      - name: Commit files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Bump version"
+
+      - name: DEbug
+        run: echo ${{github.actor}}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@d91a481090679876dfc4178fef17f286781251df #v0.8.0
+        with:
+          branch: ${{ github.head_ref }}
