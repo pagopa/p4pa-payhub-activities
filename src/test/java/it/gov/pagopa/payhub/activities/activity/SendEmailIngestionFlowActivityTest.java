@@ -43,7 +43,8 @@ class SendEmailIngestionFlowActivityTest {
     void init() {
         JavaMailSender javaMailSender = new JavaMailSenderImpl();
         mailParams = new MailParams();
-        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(ingestionFlowRetrieverService, asyncSendMailService, ingestionFlowDao, mailParams, javaMailSender);
+        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(ingestionFlowRetrieverService, asyncSendMailService, mailParams, javaMailSender);
+        ingestionFlowRetrieverService = new IngestionFlowRetrieverService(ingestionFlowDao);
     }
 
     @Test

@@ -18,12 +18,10 @@ public class SendEmailIngestionFlowActivityImpl implements  SendEmailIngestionFl
     private final AsyncSendMailService asyncSendMailService;
     private final MailParams mailParams;
     private final JavaMailSender javaMailSender;
-    private final IngestionFlowDao ingestionFlowDao;
 
-    public SendEmailIngestionFlowActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService, AsyncSendMailService asyncSendMailService, IngestionFlowDao ingestionFlowDao, MailParams mailParams, JavaMailSender javaMailSender) {
+    public SendEmailIngestionFlowActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService, AsyncSendMailService asyncSendMailService, MailParams mailParams, JavaMailSender javaMailSender) {
         this.ingestionFlowRetrieverService = ingestionFlowRetrieverService;
         this.asyncSendMailService = asyncSendMailService;
-        this.ingestionFlowDao = ingestionFlowDao;
         this.mailParams = mailParams;
         this.javaMailSender = javaMailSender;
     }

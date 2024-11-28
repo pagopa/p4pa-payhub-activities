@@ -57,11 +57,6 @@ public class AsyncSendMailService {
     }
   }
 
-  @Recover
-  private void recover(MailException e, String[] to, String[] cc, String subject, String htmlText){
-    // TODO: write code for retry, in case
-  }
-
   @Bean("sendMailTaskExecutor")
   public Executor taskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
