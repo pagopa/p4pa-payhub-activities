@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
+package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import lombok.extern.slf4j.Slf4j;
