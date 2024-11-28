@@ -20,7 +20,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public class AsyncSendMailServiceTest {
+class AsyncSendMailServiceTest {
     @Mock
     AsyncSendMailService asyncSendMailService;
 
