@@ -11,11 +11,21 @@ import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Utility class for file operations, including ZIP file validation and extraction.
+ */
 public class FileUtils {
 
 	private FileUtils() {
 	}
 
+	/**
+	 * Checks if the specified file is a valid archive by analyzing its signature.
+	 *
+	 * @param zipFilePath the path to the ZIP file to check.
+	 * @return true if the file is a valid ZIP archive; false otherwise.
+	 * @throws InvalidIngestionFileException if the file is not a valid archive.
+	 */
 	public static boolean isArchive(Path zipFilePath) {
 		try (RandomAccessFile raf = new RandomAccessFile(zipFilePath.toFile(), "r")) {
 			int fileSignature = raf.readInt();
@@ -25,6 +35,13 @@ public class FileUtils {
 		}
 	}
 
+	/**
+	 * Extracts the contents of a ZIP file to a target directory.
+	 *
+	 * @param source the path to the ZIP file.
+	 * @param target the target directory for extraction.
+	 * @throws InvalidIngestionFileException if the ZIP file contains invalid entries or an error occurs during extraction.
+	 */
 	public static void unzip(Path source, Path target) {
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
 			ZipEntry zipEntry = zis.getNextEntry();
@@ -44,6 +61,14 @@ public class FileUtils {
 		}
 	}
 
+	/**
+	 * Protects against ZIP Slip vulnerability by validating the path of an extracted entry.
+	 *
+	 * @param zipEntry the ZIP entry to validate.
+	 * @param targetDir the target directory for extraction.
+	 * @return a safe, normalized path within the target directory.
+	 * @throws InvalidIngestionFileException if the ZIP entry is outside the target directory.
+	 */
 	public static Path zipSlipProtect(ZipEntry zipEntry, Path targetDir) {
 		String checkedFilename = SecureFileUtils.checkFileName(zipEntry.getName());
 		Path targetDirResolved = targetDir.resolve(checkedFilename);
