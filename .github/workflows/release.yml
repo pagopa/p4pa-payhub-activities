@@ -40,7 +40,7 @@ jobs:
           git add version
           git commit -m "Bump version"
           git config --local remote.origin.url 'https://p4pa-pagopa-github-bot:${{ secrets.ADMIN_GITHUB_TOKEN_RW }}@github.com/pagopa/p4pa-payhub-activities.git'
-          git config --local http.https://github.com/.extraheader "AUTHORIZATION: token ${{ secrets.ADMIN_GITHUB_TOKEN_RW }}"
+          #git config --local http.https://github.com/.extraheader "AUTHORIZATION: token ${{ secrets.ADMIN_GITHUB_TOKEN_RW }}"
           git config -l
           git push origin P4ADEV-1593_removigDebugActions:main
           #${{ github.ref }}
