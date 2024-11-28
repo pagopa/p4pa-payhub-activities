@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on push on the main branch
   push:
     branches:
-      - P4ADEV-1593_removigDebugActions
+      - main
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update application version
-        run: echo 0.0.7-SNAPSHOT > version
+        run: echo ${{steps.release.outputs.new_release_version }} > version
 
       - name: Push changes
         run: |
