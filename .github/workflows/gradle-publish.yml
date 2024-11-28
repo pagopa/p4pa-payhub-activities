@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check SNAPSHOT version
-        if: github.ref_name != "main"
+        if: github.ref_name != 'main'
         run: grep SNAPSHOT ./version
 
       - name: Set permissions for Gradle Wrapper
