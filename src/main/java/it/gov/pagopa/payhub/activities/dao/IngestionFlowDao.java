@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.dao;
 
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
 
 import java.util.Optional;
 

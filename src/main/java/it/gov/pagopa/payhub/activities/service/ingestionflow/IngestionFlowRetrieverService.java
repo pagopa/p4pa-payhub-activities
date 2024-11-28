@@ -1,7 +1,7 @@
-package it.gov.pagopa.payhub.activities.service;
+package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

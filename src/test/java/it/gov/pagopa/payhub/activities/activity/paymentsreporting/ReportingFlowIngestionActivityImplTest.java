@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
-import it.gov.pagopa.payhub.activities.service.IngestionFileHandlerService;
-import it.gov.pagopa.payhub.activities.service.IngestionFileValidatorService;
-import it.gov.pagopa.payhub.activities.service.IngestionFlowRetrieverService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFileHandlerService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFileValidatorService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.ReportingFlowIngestionActivityResult;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
