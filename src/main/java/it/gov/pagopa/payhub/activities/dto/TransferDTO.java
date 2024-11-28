@@ -18,12 +18,6 @@ public class TransferDTO implements Serializable {
     private String orgFiscalCode;
     private String beneficiaryName;
     private String iban;
-    private String beneficiaryAddress;
-    private String beneficiaryCivic;
-    private String beneficiaryPostalCode;
-    private String beneficiaryLocation;
-    private String beneficiaryProvince;
-    private String beneficiaryNation;
     private Long amount;
     private Instant creationDate;
     private Instant lastUpdateDate;
@@ -32,6 +26,5 @@ public class TransferDTO implements Serializable {
     private String stampType;
     private String documentHash;
     private String category;
-    private String status;
     private Integer transferIndex;
 }

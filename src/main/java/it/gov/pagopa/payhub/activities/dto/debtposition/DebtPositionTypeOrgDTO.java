@@ -19,7 +19,7 @@ public class DebtPositionTypeOrgDTO implements Serializable {
     private DebtPositionType debtPositionType;
     private String balance;
     private String code;
-    private String descr;
+    private String description;
     private boolean flagMandatoryDueDate;
     private boolean flagAnonymousFiscalCode;
     private String postalIban;

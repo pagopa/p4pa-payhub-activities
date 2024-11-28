@@ -17,13 +17,12 @@ public class DebtPositionType implements Serializable {
     private Long debtTypePositionId;
     private Long brokerId;
     private String code;
-    private String descr;
+    private String description;
     private String taxonomyCode;
     private String macroArea;
     private String serviceType;
     private String collectingReason;
     private boolean flagPrintDueDate;
-    private boolean flagAnonymousFiscalCode; // esiste in DebtPositionTypeOrg
-    private LocalDateTime dueDate; // Y/N? da mappare in caso
-    private String description; // capire da dove prendere questo dato
+    private boolean flagAnonymousFiscalCode;
+    private LocalDateTime dueDate;
 }

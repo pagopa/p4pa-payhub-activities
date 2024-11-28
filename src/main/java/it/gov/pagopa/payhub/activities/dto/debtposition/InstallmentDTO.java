@@ -36,7 +36,6 @@ public class InstallmentDTO implements Serializable {
     private String rpPayerProvince;
     private String rpPayerNation;
     private String rpPayerEmail;
-    private LocalDate paymentExecutionDate;
     private String paymentTypeCode;
     private Long singlePaymentAmount;
     private Long paCommissionFee;
