@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.service;
 
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.AsyncSendMailService;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
 import it.gov.pagopa.payhub.activities.model.MailParams;
 import it.gov.pagopa.payhub.activities.utils.Constants;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +20,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-class AsyncSendMailServiceTest {
+class SendMailServiceTest {
     @Mock
-    AsyncSendMailService asyncSendMailService;
+    SendMailService sendMailService;
 
     private MailParams mailParams;
     private JavaMailSender javaMailSender;
@@ -38,7 +38,7 @@ class AsyncSendMailServiceTest {
         boolean result = true;
         mailParams = getMailParams();
         try {
-            asyncSendMailService.sendMail(javaMailSender, mailParams);
+            sendMailService.sendMail(javaMailSender, mailParams);
         }
         catch (Exception e){
             result = false;

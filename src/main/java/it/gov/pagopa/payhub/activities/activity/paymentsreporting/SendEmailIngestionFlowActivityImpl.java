@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.AsyncSendMailService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import it.gov.pagopa.payhub.activities.helper.MailParameterHelper;
@@ -19,13 +19,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
     private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
-    private final AsyncSendMailService asyncSendMailService;
+    private final SendMailService sendMailService;
     private final MailParams mailParams;
     private final JavaMailSender javaMailSender;
 
-    public SendEmailIngestionFlowActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService, AsyncSendMailService asyncSendMailService, MailParams mailParams, JavaMailSender javaMailSender) {
+    public SendEmailIngestionFlowActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService, SendMailService sendMailService, MailParams mailParams, JavaMailSender javaMailSender) {
         this.ingestionFlowRetrieverService = ingestionFlowRetrieverService;
-        this.asyncSendMailService = asyncSendMailService;
+        this.sendMailService = sendMailService;
         this.mailParams = mailParams;
         this.javaMailSender = javaMailSender;
     }
@@ -51,7 +51,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
                 // get e-mail parameters and send e-mail if there are no errors in parameters
                 MailParams params = MailParameterHelper.getMailParams(mailParams);
                 if (params.isSuccess()){
-                    asyncSendMailService.sendMail(javaMailSender, mailParams);
+                    sendMailService.sendMail(javaMailSender, mailParams);
                     return true;
                 }
             } catch (Exception e) {

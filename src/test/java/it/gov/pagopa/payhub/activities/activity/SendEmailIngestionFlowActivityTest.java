@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivityImpl;
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.AsyncSendMailService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.model.MailParams;
@@ -36,7 +36,7 @@ class SendEmailIngestionFlowActivityTest {
     private IngestionFlowDao ingestionFlowDao;
 
     @Mock
-    AsyncSendMailService asyncSendMailService;
+    SendMailService sendMailService;
 
     private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
 
@@ -46,7 +46,7 @@ class SendEmailIngestionFlowActivityTest {
     void init() {
         JavaMailSender javaMailSender = new JavaMailSenderImpl();
         mailParams = new MailParams();
-        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(ingestionFlowRetrieverService, asyncSendMailService, mailParams, javaMailSender);
+        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(ingestionFlowRetrieverService, sendMailService, mailParams, javaMailSender);
         ingestionFlowRetrieverService = new IngestionFlowRetrieverService(ingestionFlowDao);
     }
 
