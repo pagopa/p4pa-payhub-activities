@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TreasuryOpiIngestionActivityResult {
+public class TreasuryIufResult {
     /** List of extracted IUFs */
     private List<String> iufs;
     /** Success flag for the operation */
