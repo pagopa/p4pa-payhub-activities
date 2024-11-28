@@ -51,6 +51,7 @@ public class IngestionFileHandlerService {
 	public Path setUpProcess(String relativePath, String filename) throws IOException {
 		Path relativePathDir = Paths.get(relativePath);
 		Path encryptedFilePath = relativePathDir.resolve(filename);
+		FileUtils.validateFile(encryptedFilePath);
 
 		Path temporaryPath = relativePathDir.resolve(TEMPORARY_PATH);
 		Files.createDirectories(temporaryPath);

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service;
+package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFileHandlerService;

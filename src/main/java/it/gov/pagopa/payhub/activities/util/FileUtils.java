@@ -20,6 +20,18 @@ public class FileUtils {
 	}
 
 	/**
+	 * Validates that the file exists and is a regular file.
+	 *
+	 * @param filePath the path to the file.
+	 * @throws InvalidIngestionFileException if the file does not exist or is not a regular file.
+	 */
+	public static void validateFile(Path filePath) {
+		if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+			throw new InvalidIngestionFileException("File non trovato: " + filePath);
+		}
+	}
+
+	/**
 	 * Checks if the specified file is a valid archive by analyzing its signature.
 	 *
 	 * @param zipFilePath the path to the ZIP file to check.

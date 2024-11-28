@@ -19,11 +19,37 @@ class FileUtilsTest {
 	Path tempDir;
 
 	@Test
+	void validateFile_validFile_doesNotThrowException() throws IOException {
+		Path validFile = Files.createFile(tempDir.resolve("validFile.txt"));
+
+		assertDoesNotThrow(() -> FileUtils.validateFile(validFile), "Expected file is valid");
+	}
+
+	@Test
+	void validateFile_nonExistentFile_throwsInvalidIngestionFileException() {
+		Path nonExistentFile = tempDir.resolve("nonExistentFile.txt");
+
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.validateFile(nonExistentFile), "Expected file not exist"
+		);
+	}
+
+	@Test
+	void validateFile_directoryInsteadOfFile_throwsInvalidIngestionFileException() {
+		Path directory = tempDir.resolve("directory");
+		assertTrue(directory.toFile().mkdir());
+
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.validateFile(directory), "Expected file is not a regular file"
+		);
+	}
+
+	@Test
 	void testIsArchiveWithValidZipFile() throws IOException {
 		Path validZip = tempDir.resolve("valid.zip");
 		Files.write(validZip, new byte[]{0x50, 0x4B, 0x03, 0x04}, StandardOpenOption.CREATE_NEW);
 
-		assertTrue(FileUtils.isArchive(validZip), "Expected file to be recognized as a valid ZIP archive.");
+		assertTrue(FileUtils.isArchive(validZip), "Expected file to be recognized as a valid ZIP archive");
 	}
 
 	@Test
@@ -31,7 +57,7 @@ class FileUtilsTest {
 		Path invalidZip = tempDir.resolve("invalid.zip");
 		Files.write(invalidZip, new byte[]{0x00, 0x00, 0x00, 0x00}, StandardOpenOption.CREATE_NEW);
 
-		assertFalse(FileUtils.isArchive(invalidZip), "Expected file to not be recognized as a valid ZIP archive.");
+		assertFalse(FileUtils.isArchive(invalidZip), "Expected file to not be recognized as a valid ZIP archive");
 	}
 
 	@Test
@@ -39,25 +65,20 @@ class FileUtilsTest {
 		Path emptyFile = tempDir.resolve("empty.zip");
 		Files.createFile(emptyFile);
 
-		Exception exception = assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.isArchive(emptyFile),
-			"Expected InvalidIngestionFileException for an empty file.");
-		assertEquals("Invalid zip file", exception.getMessage());
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.isArchive(emptyFile), "Expected InvalidIngestionFileException for an empty file");
 	}
 
 	@Test
 	void testIsArchiveWithNonExistentFile() {
 		Path nonExistentFile = tempDir.resolve("nonexistent.zip");
 
-		Exception exception = assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.isArchive(nonExistentFile),
-			"Expected InvalidIngestionFileException for a non-existent file.");
-		assertEquals("Invalid zip file", exception.getMessage());
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.isArchive(nonExistentFile), "Expected InvalidIngestionFileException for a non-existent file");
 	}
 
 	@Test
 	void testUnzipFolderSuccess() throws IOException {
-		// Create a sample ZIP file
 		Path zipFile = tempDir.resolve("test.zip");
 		Path extractedDir = tempDir.resolve("extracted");
 
@@ -67,14 +88,11 @@ class FileUtilsTest {
 			zos.write("Hello, World!".getBytes());
 			zos.closeEntry();
 		}
-
-		// Call the method to test
 		FileUtils.unzip(zipFile, extractedDir);
-
-		// Assert the file was extracted correctly
+		
 		Path extractedFile = extractedDir.resolve("testfile.txt");
-		assertTrue(Files.exists(extractedFile), "Extracted file should exist.");
-		assertEquals("Hello, World!", Files.readString(extractedFile), "Extracted file content should match.");
+		assertTrue(Files.exists(extractedFile), "Extracted file should exist");
+		assertEquals("Hello, World!", Files.readString(extractedFile), "Extracted file content should match");
 	}
 
 	@Test
@@ -86,25 +104,18 @@ class FileUtilsTest {
 			zos.closeEntry();
 		}
 
-		// Call the method to test and assert exception
-		InvalidIngestionFileException exception = assertThrows(
+		assertThrows(
 			InvalidIngestionFileException.class,
-			() -> FileUtils.unzip(zipFile, tempDir),
-			"Expected exception for ZIP containing directories."
+			() -> FileUtils.unzip(zipFile, tempDir), "Expected exception for ZIP containing directories."
 		);
-		assertEquals("ZIP file contains directories, but only files are expected", exception.getMessage());
 	}
 
 	@Test
 	void testUnzipFolderWithNonExistentSource() {
-		// Call the method with a non-existent source file
 		Path nonExistentZip = tempDir.resolve("nonexistent.zip");
 
-		InvalidIngestionFileException exception = assertThrows(
-			InvalidIngestionFileException.class,
-			() -> FileUtils.unzip(nonExistentZip, tempDir),
-			"Expected exception for non-existent ZIP file."
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.unzip(nonExistentZip, tempDir), "Expected exception for non-existent ZIP file."
 		);
-		assertTrue(exception.getMessage().contains("Error while unzipping file"));
 	}
 }

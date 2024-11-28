@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFileHandlerService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFileValidatorService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.ReportingFlowIngestionActivityResult;
 import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
@@ -19,21 +18,17 @@ import java.util.List;
 @Component
 public class ReportingFlowIngestionActivityImpl implements ReportingFlowIngestionActivity {
 	private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
-	private final IngestionFileValidatorService ingestionFileValidatorService;
 	private final IngestionFileHandlerService ingestionFileHandlerService;
 
 	/**
 	 * Constructor for `ReportingFlowIngestionActivityImpl`.
 	 *
 	 * @param ingestionFlowRetrieverService service for retrieving ingestion flow details.
-	 * @param ingestionFileValidatorService service for validating ingestion files.
 	 * @param ingestionFileHandlerService service for handling ingestion files.
 	 */
 	public ReportingFlowIngestionActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService,
-	                                          IngestionFileValidatorService ingestionFileValidatorService,
 	                                          IngestionFileHandlerService ingestionFileHandlerService) {
 		this.ingestionFlowRetrieverService = ingestionFlowRetrieverService;
-		this.ingestionFileValidatorService = ingestionFileValidatorService;
 		this.ingestionFileHandlerService = ingestionFileHandlerService;
 	}
 
@@ -50,10 +45,8 @@ public class ReportingFlowIngestionActivityImpl implements ReportingFlowIngestio
 
 		try {
 			IngestionFlowDTO ingestionFlowDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
-
-			ingestionFileValidatorService.validate(ingestionFlowDTO.getFilePathName(), ingestionFlowDTO.getFileName(), ingestionFlowDTO.getRequestTokenCode());
-
 			ingestionFileHandlerService.setUpProcess(ingestionFlowDTO.getFilePathName(), ingestionFlowDTO.getFileName());
+
 		} catch (Exception e) {
 			log.error("Error during IngestionActivity flowId {} due to: {}", ingestionFlowId, e.getMessage());
 			success = false;
