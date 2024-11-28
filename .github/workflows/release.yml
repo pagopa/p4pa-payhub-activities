@@ -19,7 +19,7 @@ jobs:
 
       - name: 🚀 Release with docker action
         id: release
-        uses: pagopa/eng-github-actions-iac-template/global/release-with-docker@main #
+        uses: pagopa/eng-github-actions-iac-template/global/release-action@main #
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
