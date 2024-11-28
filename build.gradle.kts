@@ -53,7 +53,7 @@ val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
 val commonsTextVersion = "1.12.0"
 val jacksonModuleVersion = "2.18.1"
-
+val jsoupVersion = "1.18.1"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -70,6 +70,11 @@ dependencies {
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
+
+	//usage: mail
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.retry:spring-retry")
+	implementation("org.jsoup:jsoup:$jsoupVersion")
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
