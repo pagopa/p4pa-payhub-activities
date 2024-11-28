@@ -22,6 +22,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: DEbug
+        run: echo ${{github.actor}}
+
       - name: Check SNAPSHOT version
         if: github.ref_name != 'main'
         run: grep '\-SNAPSHOT$' ./version

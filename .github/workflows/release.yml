@@ -9,6 +9,7 @@ on:
       - 'CODEOWNERS'
       - '**.md'
       - '.**'
+      - 'version'
 
 jobs:
   release:
