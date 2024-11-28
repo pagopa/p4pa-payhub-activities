@@ -96,21 +96,6 @@ class FileUtilsTest {
 	}
 
 	@Test
-	void testUnzipFolderWithDirectoryEntry() throws IOException {
-		// Create a ZIP file containing a directory entry
-		Path zipFile = tempDir.resolve("test_with_dir.zip");
-		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile.toFile()))) {
-			zos.putNextEntry(new ZipEntry("folder/")); // Directory entry
-			zos.closeEntry();
-		}
-
-		assertThrows(
-			InvalidIngestionFileException.class,
-			() -> FileUtils.unzip(zipFile, tempDir), "Expected exception for ZIP containing directories."
-		);
-	}
-
-	@Test
 	void testUnzipFolderWithNonExistentSource() {
 		Path nonExistentZip = tempDir.resolve("nonexistent.zip");
 

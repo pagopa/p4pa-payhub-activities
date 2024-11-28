@@ -23,6 +23,12 @@ import java.util.zip.ZipInputStream;
  * </p>
  */
 public class FileUtils {
+	// Maximum number of entries to extract from the ZIP file
+	private static final int MAX_ENTRIES = 1000;
+	// Maximum total size (in bytes) of all uncompressed data
+	private static final long MAX_UNCOMPRESSED_SIZE = 50 * 1024 * 1024;  // 50MB
+	// Maximum allowed compression ratio (compressed size / uncompressed size)
+	private static final double MAX_COMPRESSION_RATIO = 0.1;  // 10%
 
 	private FileUtils() {
 	}
@@ -69,71 +75,55 @@ public class FileUtils {
 	 *                                       or if an error occurs during extraction.
 	 */
 	public static void unzip(Path source, Path target) {
-		validateZipFile(source);
-		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
-			ZipEntry zipEntry = zis.getNextEntry();
-			while (zipEntry != null) {
-				if (zipEntry.isDirectory()) {
-					throw new InvalidIngestionFileException("ZIP contains directories, only files are expected");
-				}
-				Path targetPath = zipSlipProtect(zipEntry, target);
-				Files.createDirectories(targetPath.getParent()); // Ensure parent directory exists
-				Files.copy(zis, targetPath, StandardCopyOption.REPLACE_EXISTING);
-				zipEntry = zis.getNextEntry();
-			}
-		} catch (IOException e) {
-			throw new InvalidIngestionFileException("Error unzipping file: " + source.getFileName());
-		}
-	}
-
-	/**
-	 * Protects against ZIP Slip vulnerabilities by ensuring extracted file paths
-	 * are confined within the target directory.
-	 * <p>
-	 * ZIP Slip vulnerabilities occur when malicious ZIP files contain entries with
-	 * paths that attempt to traverse outside the intended extraction directory.
-	 * This method validates the normalized path of the extracted entry and prevents
-	 * such exploits.
-	 * </p>
-	 *
-	 * @param zipEntry the ZIP entry to validate.
-	 * @param targetDir the target directory where the file should be extracted.
-	 * @return a secure, normalized path within the target directory.
-	 * @throws InvalidIngestionFileException if the ZIP entry resolves to a path
-	 *                                       outside of the target directory.
-	 */
-	public static Path zipSlipProtect(ZipEntry zipEntry, Path targetDir) {
-		String checkedFilename = SecureFileUtils.checkFileName(zipEntry.getName());
-		Path targetDirResolved = targetDir.resolve(checkedFilename).normalize();
-		if (!targetDirResolved.startsWith(targetDir)) {
-			throw new InvalidIngestionFileException("ZIP entry resolves outside of target directory: " + zipEntry.getName());
-		}
-		return targetDirResolved;
-	}
-
-	/**
-	 * Validates the contents of a ZIP file without extracting them.
-	 * <p>
-	 * This method inspects all entries in the ZIP file to ensure they do not
-	 * contain directories or invalid paths that might indicate an attempted
-	 * directory traversal attack. This validation is performed before any extraction
-	 * occurs.
-	 * </p>
-	 *
-	 * @param source the path to the ZIP file to validate.
-	 * @throws InvalidIngestionFileException if the ZIP file contains directories,
-	 *                                       invalid paths, or if an error occurs during validation.
-	 */
-	public static void validateZipFile(Path source) {
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
 			ZipEntry zipEntry;
+			long totalUncompressedSize = 0;
+			int entryCount = 0;
+
 			while ((zipEntry = zis.getNextEntry()) != null) {
-				if (zipEntry.isDirectory() || zipEntry.getName().contains("..")) {
-					throw new InvalidIngestionFileException("ZIP contains invalid entries: " + zipEntry.getName());
+				// Ensure we don't exceed the maximum number of entries
+				if (entryCount >= MAX_ENTRIES) {
+					throw new InvalidIngestionFileException("ZIP file exceeds the maximum number of entries.");
 				}
+				SecureFileUtils.checkFileName(zipEntry);
+
+				long uncompressedSize = zipEntry.getSize();
+				totalUncompressedSize += uncompressedSize;
+				if (totalUncompressedSize > MAX_UNCOMPRESSED_SIZE) {
+					throw new InvalidIngestionFileException("ZIP file exceeds the maximum allowed uncompressed size.");
+				}
+
+				long compressedSize = zipEntry.getCompressedSize();
+				if (compressedSize > 0 && ((double) compressedSize / uncompressedSize) > MAX_COMPRESSION_RATIO) {
+					throw new InvalidIngestionFileException("ZIP file contains an entry with excessive compression ratio.");
+				}
+
+				Path targetPath = zipSlipProtect(zipEntry, target);
+				Files.createDirectories(targetPath);
+				Files.copy(zis, targetPath, StandardCopyOption.REPLACE_EXISTING);
+				zis.closeEntry();
+				entryCount++;
 			}
 		} catch (IOException e) {
-			throw new InvalidIngestionFileException("Error validating ZIP file: " + source);
+			throw new InvalidIngestionFileException("Error while unzipping file: " + source);
 		}
+	}
+
+	/**
+	 * Protects against ZIP Slip vulnerability by validating the path of an extracted entry.
+	 *
+	 * @param zipEntry the ZIP entry to validate.
+	 * @param targetDir the target directory for extraction.
+	 * @return a safe, normalized path within the target directory.
+	 * @throws InvalidIngestionFileException if the ZIP entry is outside the target directory.
+	 */
+	private static Path zipSlipProtect(ZipEntry zipEntry, Path targetDir) {
+		String checkedFilename = SecureFileUtils.checkFileName(zipEntry.getName());
+		Path targetDirResolved = targetDir.resolve(checkedFilename);
+		Path normalizePath = targetDirResolved.normalize();
+		if (!normalizePath.startsWith(targetDir)) {
+			throw new InvalidIngestionFileException("Bad zip entry: " + zipEntry.getName());
+		}
+		return normalizePath;
 	}
 }
