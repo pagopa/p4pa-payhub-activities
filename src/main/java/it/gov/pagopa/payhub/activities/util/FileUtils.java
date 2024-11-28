@@ -69,7 +69,7 @@ public class FileUtils {
 	 *                                       or if an error occurs during extraction.
 	 */
 	public static void unzip(Path source, Path target) {
-		validateZipFile(source); // Validate before processing
+		validateZipFile(source);
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
 			ZipEntry zipEntry = zis.getNextEntry();
 			while (zipEntry != null) {
