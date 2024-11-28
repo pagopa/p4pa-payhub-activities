@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update application version
-        run: cat ${{steps.release.outputs.new_release_version }} > version
+        run: echo ${{steps.release.outputs.new_release_version }} > version
 
       - name: Commit files
         run: |
