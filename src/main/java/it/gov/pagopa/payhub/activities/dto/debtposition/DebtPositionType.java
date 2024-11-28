@@ -24,5 +24,5 @@ public class DebtPositionType implements Serializable {
     private String collectingReason;
     private boolean flagPrintDueDate;
     private boolean flagAnonymousFiscalCode;
-    private LocalDateTime dueDate;
+    private boolean flagDueDate;
 }
