@@ -34,7 +34,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update application version
-        run: echo 0.0.7-SNAPSHOT2 > version
+        run: echo 0.0.7-SNAPSHOT > version
 
       - name: Commit files
         run: |
@@ -45,4 +45,5 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@d91a481090679876dfc4178fef17f286781251df #v0.8.0
         with:
-          branch: ${{ github.ref }}
+          branch: main #${{ github.ref }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
