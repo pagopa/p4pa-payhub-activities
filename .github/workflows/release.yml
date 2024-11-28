@@ -4,12 +4,15 @@ on:
   # Trigger the workflow on push on the main branch
   push:
     branches:
-      - main
+      - P4ADEV-1593_removigDebugActions
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
       - '.**'
       - 'version'
+
+permissions:
+  contents: write
 
 jobs:
   release:
@@ -18,11 +21,11 @@ jobs:
 
     steps:
 
-      - name: 🚀 Release with docker action
-        id: release
-        uses: pagopa/eng-github-actions-iac-template/global/release-action@main #
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+ #     - name: 🚀 Release with docker action
+ #       id: release
+ #       uses: pagopa/eng-github-actions-iac-template/global/release-action@main #
+ #       with:
+ #         github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Checkout sources
@@ -31,16 +34,13 @@ jobs:
           fetch-depth: 0
 
       - name: Update application version
-        run: echo ${{steps.release.outputs.new_release_version }} > version
+        run: echo 0.0.7-SNAPSHOT2 > version
 
       - name: Commit files
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git commit -a -m "Bump version"
-
-      - name: DEbug
-        run: echo ${{github.actor}}
 
       - name: Push changes
         uses: ad-m/github-push-action@d91a481090679876dfc4178fef17f286781251df #v0.8.0
