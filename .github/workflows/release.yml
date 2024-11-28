@@ -5,11 +5,11 @@ on:
   push:
     branches:
       - P4ADEV-1593_removigDebugActions
-#    paths-ignore:
-#      - 'CODEOWNERS'
-#      - '**.md'
-#      - '.**'
-#      - 'version'
+    paths-ignore:
+      - 'CODEOWNERS'
+      - '**.md'
+      - '.**'
+      - 'version'
 
 jobs:
   release:
@@ -18,11 +18,11 @@ jobs:
 
     steps:
 
- #     - name: 🚀 Release with docker action
- #       id: release
- #       uses: pagopa/eng-github-actions-iac-template/global/release-action@main #
- #       with:
- #         github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 🚀 Release with docker action
+        id: release
+        uses: pagopa/eng-github-actions-iac-template/global/release-action@main #
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Checkout sources
@@ -41,6 +41,4 @@ jobs:
           git commit -m "Bump version"
           git config --local remote.origin.url 'https://p4pa-pagopa-github-bot:${{ secrets.ADMIN_GITHUB_TOKEN_RW }}@github.com/pagopa/p4pa-payhub-activities.git'
           git config --local --unset http.https://github.com/.extraheader
-          git config -l
-          git push origin P4ADEV-1593_removigDebugActions:main
-          #${{ github.ref }}
+          git push origin ${{ github.ref }}
