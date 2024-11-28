@@ -5,11 +5,11 @@ on:
   push:
     branches:
       - P4ADEV-1593_removigDebugActions
-    paths-ignore:
-      - 'CODEOWNERS'
-      - '**.md'
-      - '.**'
-      - 'version'
+#    paths-ignore:
+#      - 'CODEOWNERS'
+#      - '**.md'
+#      - '.**'
+#      - 'version'
 
 jobs:
   release:
@@ -33,14 +33,13 @@ jobs:
       - name: Update application version
         run: echo 0.0.7-SNAPSHOT > version
 
-      - name: Commit files
+      - name: Push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.name "p4pa-pagopa-github-bot"
           git commit -a -m "Bump version"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@d91a481090679876dfc4178fef17f286781251df #v0.8.0
+          git config -l
+          echo $GITHUB_TOKEN
+          git push origin main #${{ github.ref }}
         with:
-          branch: main #${{ github.ref }}
-          github_token: ${{ secrets.ADMIN_GITHUB_TOKEN_RW }}
+          GITHUB_TOKEN: PROVA #${{ secrets.ADMIN_GITHUB_TOKEN_RW }}
