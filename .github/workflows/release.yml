@@ -37,7 +37,9 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "p4pa-pagopa-github-bot"
-          git commit -a -m "Bump version"
+          git add version
+          git commit -m "Bump version"
           export GITHUB_TOKEN=${{ secrets.ADMIN_GITHUB_TOKEN_RW }}
           git config -l
-          git push origin main #${{ github.ref }}
+          git push origin P4ADEV-1593_removigDebugActions:main
+          #${{ github.ref }}
