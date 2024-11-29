@@ -64,7 +64,7 @@ public class FileUtils {
 
 	/**
 	 * Extracts the contents of a ZIP file to a specified target directory.
-	 * <p>
+	 *
 	 * This method ensures that the extracted files remain within the target directory
 	 * to prevent security vulnerabilities, such as ZIP Slip attacks. It validates:
 	 * <ul>
@@ -74,7 +74,7 @@ public class FileUtils {
 	 * </ul>
 	 * The method also dynamically calculates the actual size of uncompressed entries while extracting them
 	 * to ensure accurate and secure validation.
-	 * </p>
+	 *
 	 *
 	 * @param source the path to the ZIP file to be extracted.
 	 * @param target the target directory where the contents will be extracted.
@@ -87,7 +87,6 @@ public class FileUtils {
 	 *                                          <li>An entry in the ZIP file has a suspiciously high compression ratio.</li>
 	 *                                          <li>An I/O error occurs during extraction.</li>
 	 *                                        </ul>
-	 * @throws IOException if an I/O error occurs while accessing the ZIP file or the target directory.
 	 */
 	public static void unzip(Path source, Path target) {
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
