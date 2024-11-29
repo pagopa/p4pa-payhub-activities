@@ -33,16 +33,12 @@ jobs:
       - name: Update application version
         run: echo ${{steps.release.outputs.new_release_version }} > version
 
-      - name: Commit files
+      - name: Push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -a -m "Bump version"
-
-      - name: DEbug
-        run: echo ${{github.actor}}
-
-      - name: Push changes
-        uses: ad-m/github-push-action@d91a481090679876dfc4178fef17f286781251df #v0.8.0
-        with:
-          branch: ${{ github.head_ref }}
+          git config --local user.name "p4pa-pagopa-github-bot"
+          git add version
+          git commit -m "Bump version"
+          git config --local remote.origin.url 'https://p4pa-pagopa-github-bot:${{ secrets.ADMIN_GITHUB_TOKEN_RW }}@github.com/pagopa/p4pa-payhub-activities.git'
+          git config --local --unset http.https://github.com/.extraheader
+          git push origin ${{ github.ref }}
