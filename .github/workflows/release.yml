@@ -9,6 +9,7 @@ on:
       - 'CODEOWNERS'
       - '**.md'
       - '.**'
+      - 'version'
 
 jobs:
   release:
@@ -19,6 +20,25 @@ jobs:
 
       - name: 🚀 Release with docker action
         id: release
-        uses: pagopa/eng-github-actions-iac-template/global/release-with-docker@main #
+        uses: pagopa/eng-github-actions-iac-template/global/release-action@main #
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Checkout sources
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 #v4.1.7
+        with:
+          fetch-depth: 0
+
+      - name: Update application version
+        run: echo ${{steps.release.outputs.new_release_version }} > version
+
+      - name: Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "p4pa-pagopa-github-bot"
+          git add version
+          git commit -m "Bump version"
+          git config --local remote.origin.url 'https://p4pa-pagopa-github-bot:${{ secrets.ADMIN_GITHUB_TOKEN_RW }}@github.com/pagopa/p4pa-payhub-activities.git'
+          git config --local --unset http.https://github.com/.extraheader
+          git push origin ${{ github.ref }}
