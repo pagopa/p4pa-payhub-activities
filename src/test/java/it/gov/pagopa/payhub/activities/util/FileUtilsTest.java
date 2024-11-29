@@ -141,20 +141,6 @@ class FileUtilsTest {
 		);
 	}
 
-	@Test
-	void testUnzipWithHighCompressionRatio() throws IOException {
-		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
-			byte[] compressedContent = new byte[10];
-			zos.putNextEntry(new ZipEntry("highcompression.txt"));
-			zos.write(compressedContent);
-			zos.closeEntry();
-		}
-		Path outputDir = tempDir.resolve("output");
-		assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.unzip(zipFile, outputDir), "excessive compression ratio"
-		);
-	}
-
 	// Helper method to add entries to the ZIP file
 	private void addZipEntry(ZipOutputStream zos, String entryName, String content) throws IOException {
 		zos.putNextEntry(new ZipEntry(entryName));

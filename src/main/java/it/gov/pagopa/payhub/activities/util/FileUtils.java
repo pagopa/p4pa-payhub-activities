@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,6 +8,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
