@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
+
 import java.util.zip.ZipEntry;
 
 /**
@@ -32,7 +34,7 @@ public class SecureFileUtils {
    */
   public static String checkFileName(String fileName) throws IllegalArgumentException {
     if (!Character.isLetterOrDigit(fileName.charAt(0)) || fileName.contains("..")) {
-      throw new IllegalArgumentException("Potential Zip Slip exploit detected: " + fileName);
+      throw new InvalidIngestionFileException("Potential Zip Slip exploit detected: " + fileName);
     }
     return fileName;
   }

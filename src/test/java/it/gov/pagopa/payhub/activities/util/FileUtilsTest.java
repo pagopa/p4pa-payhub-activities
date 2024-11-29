@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +17,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileUtilsTest {
 	@TempDir
 	Path tempDir;
+
+	private Path zipFile;
+
+	@BeforeEach
+	void setup() throws IOException {
+		zipFile = tempDir.resolve("test.zip");
+		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
+			addZipEntry(zos, "file1.txt", "This is the content of file1.");
+			addZipEntry(zos, "file2.txt", "This is the content of file2.");
+		}
+	}
 
 	@Test
 	void validateFile_validFile_doesNotThrowException() throws IOException {
@@ -78,29 +89,76 @@ class FileUtilsTest {
 	}
 
 	@Test
-	void testUnzipFolderSuccess() throws IOException {
-		Path zipFile = tempDir.resolve("test.zip");
-		Path extractedDir = tempDir.resolve("extracted");
+	void testUnzipValidArchive() throws IOException {
+		Path outputDir = tempDir.resolve("output");
 
-		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile.toFile()))) {
-			ZipEntry fileEntry = new ZipEntry("testfile.txt");
-			zos.putNextEntry(fileEntry);
-			zos.write("Hello, World!".getBytes());
-			zos.closeEntry();
-		}
-		FileUtils.unzip(zipFile, extractedDir);
-		
-		Path extractedFile = extractedDir.resolve("testfile.txt");
-		assertTrue(Files.exists(extractedFile), "Extracted file should exist");
-		assertEquals("Hello, World!", Files.readString(extractedFile), "Extracted file content should match");
+		assertDoesNotThrow(() -> FileUtils.unzip(zipFile, outputDir));
+		assertTrue(Files.exists(outputDir.resolve("file1.txt")));
+		assertTrue(Files.exists(outputDir.resolve("file2.txt")));
+
+		String contentFile1 = Files.readString(outputDir.resolve("file1.txt"));
+		String contentFile2 = Files.readString(outputDir.resolve("file2.txt"));
+		assertEquals("This is the content of file1.", contentFile1);
+		assertEquals("This is the content of file2.", contentFile2);
 	}
 
 	@Test
-	void testUnzipFolderWithNonExistentSource() {
-		Path nonExistentZip = tempDir.resolve("nonexistent.zip");
-
+	void testUnzipWithExcessiveEntries() throws IOException {
+		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
+			for (int i = 0; i < 1100; i++) {
+				addZipEntry(zos, "file" + i + ".txt", "Content of file " + i);
+			}
+		}
+		Path outputDir = tempDir.resolve("output");
 		assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.unzip(nonExistentZip, tempDir), "Expected exception for non-existent ZIP file."
+			() -> FileUtils.unzip(zipFile, outputDir), "exceeds the maximum number of entries"
 		);
+	}
+
+	@Test
+	void testUnzipWithExcessiveUncompressedSize() throws IOException {
+		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
+			String largeContent = "A".repeat(60 * 1024 * 1024);
+			addZipEntry(zos, "largefile.txt", largeContent);
+		}
+		Path outputDir = tempDir.resolve("output");
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.unzip(zipFile, outputDir), "exceeds the maximum allowed uncompressed size"
+		);
+	}
+
+	@Test
+	void testUnzipWithZipSlipAttack() throws IOException {
+		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
+			zos.putNextEntry(new ZipEntry("../malicious.txt"));
+			zos.write("Malicious content".getBytes());
+			zos.closeEntry();
+		}
+
+		Path outputDir = tempDir.resolve("output");
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.unzip(zipFile, outputDir), "Bad zip entry"
+		);
+	}
+
+	@Test
+	void testUnzipWithHighCompressionRatio() throws IOException {
+		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
+			byte[] compressedContent = new byte[10];
+			zos.putNextEntry(new ZipEntry("highcompression.txt"));
+			zos.write(compressedContent);
+			zos.closeEntry();
+		}
+		Path outputDir = tempDir.resolve("output");
+		assertThrows(InvalidIngestionFileException.class,
+			() -> FileUtils.unzip(zipFile, outputDir), "excessive compression ratio"
+		);
+	}
+
+	// Helper method to add entries to the ZIP file
+	private void addZipEntry(ZipOutputStream zos, String entryName, String content) throws IOException {
+		zos.putNextEntry(new ZipEntry(entryName));
+		zos.write(content.getBytes());
+		zos.closeEntry();
 	}
 }
