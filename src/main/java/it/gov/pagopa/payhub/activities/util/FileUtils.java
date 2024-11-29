@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -63,71 +62,108 @@ public class FileUtils {
 		}
 	}
 
-	/**
-	 * Extracts the contents of a ZIP file to a specified target directory.
-	 * <p>
-	 * This method ensures that the extracted files remain within the target directory
-	 * to prevent security vulnerabilities, such as ZIP Slip attacks. It validates:
-	 * <ul>
-	 *   <li>The number of entries in the ZIP file does not exceed a predefined threshold.</li>
-	 *   <li>The total uncompressed size of the extracted data does not exceed a maximum allowed size.</li>
-	 *   <li>The compression ratio of each entry is within acceptable limits to mitigate ZIP bomb attacks.</li>
-	 * </ul>
-	 * The method also dynamically calculates the actual size of uncompressed entries while extracting them
-	 * to ensure accurate and secure validation.
-	 * </p>
-	 *
-	 * @param source the path to the ZIP file to be extracted.
-	 * @param target the target directory where the contents will be extracted.
-	 * @throws InvalidIngestionFileException if:
-	 *                                        <ul>
-	 *                                          <li>The ZIP file contains an entry with an invalid name
-	 *                                          that could lead to a ZIP Slip attack.</li>
-	 *                                          <li>The ZIP file exceeds the maximum allowed uncompressed size.</li>
-	 *                                          <li>The ZIP file contains an excessive number of entries.</li>
-	 *                                          <li>An entry in the ZIP file has a suspiciously high compression ratio.</li>
-	 *                                          <li>An I/O error occurs during extraction.</li>
-	 *                                        </ul>
-	 * @throws IOException if an I/O error occurs while accessing the ZIP file or the target directory.
-	 */
 	public static void unzip(Path source, Path target) {
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
-			ZipEntry zipEntry;
 			long totalUncompressedSize = 0;
 			int entryCount = 0;
-			byte[] buffer = new byte[2048];
+
+			ZipEntry zipEntry;
 			while ((zipEntry = zis.getNextEntry()) != null) {
-				if (entryCount >= MAX_ENTRIES) {
-					throw new InvalidIngestionFileException("ZIP file exceeds the maximum number of entries");
-				}
-				Path targetPath = zipSlipProtect(zipEntry, target);
-				Files.createDirectories(targetPath.getParent());
-				long totalSizeEntry = 0;
-				int bytesRead;
-				try (OutputStream out = Files.newOutputStream(targetPath, StandardOpenOption.CREATE)) {
-					while ((bytesRead = zis.read(buffer)) > 0) {
-						totalSizeEntry += bytesRead;
-						totalUncompressedSize += bytesRead;
-						if (totalUncompressedSize > MAX_UNCOMPRESSED_SIZE) {
-							throw new InvalidIngestionFileException("ZIP file exceeds the maximum allowed uncompressed size");
-						}
-						if (zipEntry.getCompressedSize() > 0) {
-							double compressionRatio = (double) totalSizeEntry / zipEntry.getCompressedSize();
-							if (compressionRatio > MAX_COMPRESSION_RATIO) {
-								throw new InvalidIngestionFileException("ZIP file contains an entry with excessive compression ratio");
-							}
-						}
-						out.write(buffer, 0, bytesRead);
-					}
-				}
+				validateEntryCount(++entryCount);
+				Path targetPath = validateAndPrepareTargetPath(zipEntry, target);
+
+				totalUncompressedSize = extractEntry(zis, zipEntry, targetPath, totalUncompressedSize);
 				zis.closeEntry();
-				entryCount++;
 			}
 		} catch (IOException e) {
 			throw new InvalidIngestionFileException("Error while unzipping file: " + source);
 		}
 	}
 
+	/**
+	 * Validates the entry count against the maximum allowed entries.
+	 *
+	 * @param entryCount the current entry count.
+	 * @throws InvalidIngestionFileException if the entry count exceeds the maximum allowed.
+	 */
+	private static void validateEntryCount(int entryCount) {
+		if (entryCount > MAX_ENTRIES) {
+			throw new InvalidIngestionFileException("ZIP file exceeds the maximum number of entries");
+		}
+	}
+
+	/**
+	 * Validates and prepares the target path for the current ZIP entry.
+	 *
+	 * @param zipEntry the ZIP entry to process.
+	 * @param target the target directory for extraction.
+	 * @return the validated and normalized target path.
+	 * @throws InvalidIngestionFileException if the ZIP entry is invalid.
+	 */
+	private static Path validateAndPrepareTargetPath(ZipEntry zipEntry, Path target) throws IOException {
+		Path targetPath = zipSlipProtect(zipEntry, target);
+		Files.createDirectories(targetPath.getParent());
+		return targetPath;
+	}
+
+	/**
+	 * Extracts a single ZIP entry.
+	 *
+	 * @param zis the ZIP input stream.
+	 * @param zipEntry the ZIP entry to extract.
+	 * @param targetPath the target path for the extracted file.
+	 * @param totalUncompressedSize the current total uncompressed size.
+	 * @return the updated total uncompressed size after extraction.
+	 * @throws InvalidIngestionFileException if the uncompressed size or compression ratio is invalid.
+	 * @throws IOException if an error occurs during file extraction.
+	 */
+	private static long extractEntry(ZipInputStream zis, ZipEntry zipEntry, Path targetPath, long totalUncompressedSize) throws IOException {
+		long totalSizeEntry = 0;
+		byte[] buffer = new byte[2048];
+
+		try (OutputStream out = Files.newOutputStream(targetPath, StandardOpenOption.CREATE)) {
+			int bytesRead;
+			while ((bytesRead = zis.read(buffer)) > 0) {
+				totalSizeEntry += bytesRead;
+				totalUncompressedSize += bytesRead;
+
+				validateUncompressedSize(totalUncompressedSize);
+				validateCompressionRatio(zipEntry, totalSizeEntry);
+
+				out.write(buffer, 0, bytesRead);
+			}
+		}
+
+		return totalUncompressedSize;
+	}
+
+	/**
+	 * Validates the total uncompressed size against the maximum allowed size.
+	 *
+	 * @param totalUncompressedSize the current total uncompressed size.
+	 * @throws InvalidIngestionFileException if the uncompressed size exceeds the maximum allowed.
+	 */
+	private static void validateUncompressedSize(long totalUncompressedSize) {
+		if (totalUncompressedSize > MAX_UNCOMPRESSED_SIZE) {
+			throw new InvalidIngestionFileException("ZIP file exceeds the maximum allowed uncompressed size");
+		}
+	}
+
+	/**
+	 * Validates the compression ratio of the current ZIP entry.
+	 *
+	 * @param zipEntry the ZIP entry to validate.
+	 * @param totalSizeEntry the current uncompressed size of the entry.
+	 * @throws InvalidIngestionFileException if the compression ratio exceeds the maximum allowed.
+	 */
+	private static void validateCompressionRatio(ZipEntry zipEntry, long totalSizeEntry) {
+		if (zipEntry.getCompressedSize() > 0) {
+			double compressionRatio = (double) totalSizeEntry / zipEntry.getCompressedSize();
+			if (compressionRatio > MAX_COMPRESSION_RATIO) {
+				throw new InvalidIngestionFileException("ZIP file contains an entry with excessive compression ratio");
+			}
+		}
+	}
 
 	/**
 	 * Protects against ZIP Slip vulnerability by validating the path of an extracted entry.

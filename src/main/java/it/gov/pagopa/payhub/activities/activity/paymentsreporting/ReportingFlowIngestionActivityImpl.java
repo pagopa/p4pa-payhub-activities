@@ -10,34 +10,18 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementation of the `ReportingFlowIngestionActivity` interface.
- * Manages the ingestion of reporting flow files, including validation and processing.
- */
 @Slf4j
 @Component
 public class ReportingFlowIngestionActivityImpl implements ReportingFlowIngestionActivity {
 	private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
 	private final IngestionFileHandlerService ingestionFileHandlerService;
 
-	/**
-	 * Constructor for `ReportingFlowIngestionActivityImpl`.
-	 *
-	 * @param ingestionFlowRetrieverService service for retrieving ingestion flow details.
-	 * @param ingestionFileHandlerService service for handling ingestion files.
-	 */
 	public ReportingFlowIngestionActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService,
 	                                          IngestionFileHandlerService ingestionFileHandlerService) {
 		this.ingestionFlowRetrieverService = ingestionFlowRetrieverService;
 		this.ingestionFileHandlerService = ingestionFileHandlerService;
 	}
 
-	/**
-	 * Processes an ingestion flow file.
-	 *
-	 * @param ingestionFlowId the ID of the ingestion flow to process.
-	 * @return the result of the ingestion activity, including status and processed items.
-	 */
 	@Override
 	public ReportingFlowIngestionActivityResult processFile(String ingestionFlowId) {
 		List<String> iufList = new ArrayList<>();

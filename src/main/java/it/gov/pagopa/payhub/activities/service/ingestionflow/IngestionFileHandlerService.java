@@ -25,13 +25,7 @@ public class IngestionFileHandlerService {
 	 */
 	private final String dataCipherPsw;
 
-	/**
-	 * Constructor for `IngestionFileHandlerService`.
-	 *
-	 * @param dataCipherPsw the password used for encryption and decryption,
-	 *                      injected from application properties.
-	 */
-	public IngestionFileHandlerService(@Value("${data-cipher.encrypt-psw}") String dataCipherPsw) {
+		public IngestionFileHandlerService(@Value("${data-cipher.encrypt-psw}") String dataCipherPsw) {
 		this.dataCipherPsw = dataCipherPsw;
 	}
 

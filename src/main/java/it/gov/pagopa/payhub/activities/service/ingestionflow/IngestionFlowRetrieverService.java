@@ -17,11 +17,6 @@ public class IngestionFlowRetrieverService {
 
 	private final IngestionFlowDao ingestionFlowDao;
 
-	/**
-	 * Constructor for `IngestionFlowRetrieverService`.
-	 *
-	 * @param ingestionFlowDao the DAO used to retrieve ingestion flow data.
-	 */
 	public IngestionFlowRetrieverService(IngestionFlowDao ingestionFlowDao) {
 		this.ingestionFlowDao = ingestionFlowDao;
 	}
