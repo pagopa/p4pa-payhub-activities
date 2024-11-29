@@ -109,7 +109,7 @@ class FileUtilsTest {
 	}
 
 	@Test
-	void testUnzipWithMockedFileSystem() throws IOException {
+	void testUnzipWithMockedFileSystem() {
 		Path mockZip = mock(Path.class);
 		when(mockZip.toFile()).thenReturn(zipFile.toFile());
 
