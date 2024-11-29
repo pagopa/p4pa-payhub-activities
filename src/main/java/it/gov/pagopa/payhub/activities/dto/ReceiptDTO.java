@@ -17,7 +17,7 @@ public class ReceiptDTO implements Serializable {
 
     private Long id;
     private Instant creationDate;
-    private String receiptId;
+    private String paymentReceiptId;
     private String noticeNumber;
     private String fiscalCode;
     private String outcome;
@@ -47,7 +47,7 @@ public class ReceiptDTO implements Serializable {
     private String channelDescription;
 
     //*from CtSubject payer
-    private PersonDTO person;
+    private PersonDTO payer;
 
     private String paymentMethod;
     private Long fee;

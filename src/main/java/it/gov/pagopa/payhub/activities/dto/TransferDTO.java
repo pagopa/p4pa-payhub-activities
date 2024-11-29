@@ -22,7 +22,6 @@ public class TransferDTO implements Serializable {
     private Instant creationDate;
     private Instant lastUpdateDate;
     private String remittanceInformation;
-    private String stamp;
     private String stampType;
     private String documentHash;
     private String provincialResidence;

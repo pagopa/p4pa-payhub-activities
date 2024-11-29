@@ -13,15 +13,15 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class PersonDTO implements Serializable {
 
-    private Character payerUniqueIdentifierTypeChar;
-    private String payerUniqueIdentifierType;
-    private String payerUniqueIdentifierCode;
-    private String payerFullName;
-    private String payerAddress;
-    private String payerCivic;
-    private String payerPostalCode;
-    private String payerLocation;
-    private String payerProvince;
-    private String payerNation;
-    private String payerEmail;
+    private Character uniqueIdentifierTypeChar;
+    private String uniqueIdentifierType;
+    private String uniqueIdentifierCode;
+    private String fullName;
+    private String address;
+    private String civic;
+    private String postalCode;
+    private String location;
+    private String province;
+    private String nation;
+    private String email;
 }

@@ -42,5 +42,5 @@ public class InstallmentDTO implements Serializable {
 
     private List<TransferDTO> transfers;
     private ReceiptDTO receipt;
-    private PersonDTO person;
+    private PersonDTO payer;
 }
