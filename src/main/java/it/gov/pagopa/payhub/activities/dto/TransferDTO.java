@@ -25,6 +25,7 @@ public class TransferDTO implements Serializable {
     private String stamp;
     private String stampType;
     private String documentHash;
+    private String provincialResidence;
     private String category;
     private Integer transferIndex;
 }

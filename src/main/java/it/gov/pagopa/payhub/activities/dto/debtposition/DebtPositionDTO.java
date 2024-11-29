@@ -22,7 +22,7 @@ public class DebtPositionDTO implements Serializable {
     private String description;
     private String status;
     private IngestionFlowFileDTO ingestionFlowFile;
-    private Long flowLineNumber;
+    private Long ingestionFlowFileLineNumber;
     private Character gpdStatus;
     private OrganizationDTO org;
     private DebtPositionTypeOrgDTO debtPositionTypeOrg;

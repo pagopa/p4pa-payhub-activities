@@ -21,9 +21,9 @@ public class OrganizationDTO implements Serializable {
     private String orgName;
     private String adminEmail;
     private Instant creationDate;
-    private Instant lastChangeDate;
+    private Instant lastUpdateDate;
     private String paymentTypeCode;
-    private Long numPAChargeCommittee;
+    private Long fee;
     private String iban;
     private String myBoxClientKey;
     private String myBoxClientSecret;

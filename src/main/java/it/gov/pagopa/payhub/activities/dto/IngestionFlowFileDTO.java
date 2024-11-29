@@ -14,15 +14,15 @@ import java.util.Date;
 @AllArgsConstructor
 public class IngestionFlowFileDTO implements Serializable {
 
-    private Long flowId;
+    private Long ingestionFlowFileId;
     private int version;
-    private OrganizationDTO orgId;
+    private OrganizationDTO org;
     private String status;
     private String iuf;
     private Long numTotalRows;
     private Long numCorrectlyImportedRows;
     private Date creationDate;
-    private Date lastChangeDate;
+    private Date lastUpdateDate;
     private boolean flagActive;
     private String operatorName;
     private Boolean flagSpontaneous;

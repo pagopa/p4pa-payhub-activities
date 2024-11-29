@@ -23,5 +23,5 @@ public class DebtPositionTypeDTO implements Serializable {
     private String collectingReason;
     private boolean flagPrintDueDate;
     private boolean flagAnonymousFiscalCode;
-    private boolean flagDueDate;
+    private boolean flagMandatoryDueDate;
 }

@@ -37,12 +37,12 @@ public class DebtPositionTypeOrgDTO implements Serializable {
     private String xsdDefinitionRef;
     private String taxonomyCode;
     private Long orgSilId;
+    private String amountActualizationUser;
+    private String amountActualizationUrl;
+    private String amountActualizationPwd;
 
 
     // da controllare cosa tenere o meno
     private boolean flagActive;
-    private String urlNotifyPnd;
-    private String userPnd;
-    private String pswPnd;
     private String urlNotifyActualizationPnd;
 }

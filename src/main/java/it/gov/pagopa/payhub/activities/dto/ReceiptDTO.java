@@ -26,6 +26,7 @@ public class ReceiptDTO implements Serializable {
     private String description;
     private String companyName;
     private String officeName;
+
     //*from CtSubject debtor
     private String uniqueIdentifierTypeDebtor;
     private String uniqueIdentifierValueDebtor;
@@ -44,17 +45,9 @@ public class ReceiptDTO implements Serializable {
     private String pspCompanyName;
     private String idChannel;
     private String channelDescription;
+
     //*from CtSubject payer
-    private String uniqueIdentifierTypePayer;
-    private String uniqueIdentifierValuePayer;
-    private String fullNamePayer;
-    private String streetNamePayer;
-    private String civicNumberPayer;
-    private String postalCodePayer;
-    private String cityPayer;
-    private String stateProvinceRegionPayer;
-    private String countryPayer;
-    private String emailPayer;
+    private PersonDTO person;
 
     private String paymentMethod;
     private Long fee;

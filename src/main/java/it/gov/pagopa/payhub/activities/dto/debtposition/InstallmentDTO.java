@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
+import it.gov.pagopa.payhub.activities.dto.PersonDTO;
 import it.gov.pagopa.payhub.activities.dto.ReceiptDTO;
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import lombok.AllArgsConstructor;
@@ -26,19 +27,9 @@ public class InstallmentDTO implements Serializable {
     private Instant creationDate;
     private Instant updateDate;
     private LocalDate dueDate;
-    private Character rpPayerUniqueIdentifierType;
-    private String rpPayerUniqueIdentifierCode;
-    private String rpPayerRegistry;
-    private String rpPayerAddress;
-    private String rpPayerCivic;
-    private String rpPayerPostalCode;
-    private String rpPayerLocation;
-    private String rpPayerProvince;
-    private String rpPayerNation;
-    private String rpPayerEmail;
     private String paymentTypeCode;
-    private Long singlePaymentAmount;
-    private Long paCommissionFee;
+    private Long amount;
+    private Long fee;
     private String remittanceInformation;
     private Instant iuvCreationDate;
     private String humanFriendlyRemittanceInformation;
@@ -46,9 +37,10 @@ public class InstallmentDTO implements Serializable {
     private boolean flagGenerateIuv;
     private String sessionId;
     private boolean flagIuvVolatile;
-    private String collectionSpecificDetailsSinglePayment;
+    private String legacyPaymentMetadata;
 
 
     private List<TransferDTO> transfers;
     private ReceiptDTO receipt;
+    private PersonDTO person;
 }
