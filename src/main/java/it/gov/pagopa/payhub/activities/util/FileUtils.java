@@ -62,6 +62,33 @@ public class FileUtils {
 		}
 	}
 
+	/**
+	 * Extracts the contents of a ZIP file to a specified target directory.
+	 * <p>
+	 * This method ensures that the extracted files remain within the target directory
+	 * to prevent security vulnerabilities, such as ZIP Slip attacks. It validates:
+	 * <ul>
+	 *   <li>The number of entries in the ZIP file does not exceed a predefined threshold.</li>
+	 *   <li>The total uncompressed size of the extracted data does not exceed a maximum allowed size.</li>
+	 *   <li>The compression ratio of each entry is within acceptable limits to mitigate ZIP bomb attacks.</li>
+	 * </ul>
+	 * The method also dynamically calculates the actual size of uncompressed entries while extracting them
+	 * to ensure accurate and secure validation.
+	 * </p>
+	 *
+	 * @param source the path to the ZIP file to be extracted.
+	 * @param target the target directory where the contents will be extracted.
+	 * @throws InvalidIngestionFileException if:
+	 *                                        <ul>
+	 *                                          <li>The ZIP file contains an entry with an invalid name
+	 *                                          that could lead to a ZIP Slip attack.</li>
+	 *                                          <li>The ZIP file exceeds the maximum allowed uncompressed size.</li>
+	 *                                          <li>The ZIP file contains an excessive number of entries.</li>
+	 *                                          <li>An entry in the ZIP file has a suspiciously high compression ratio.</li>
+	 *                                          <li>An I/O error occurs during extraction.</li>
+	 *                                        </ul>
+	 * @throws IOException if an I/O error occurs while accessing the ZIP file or the target directory.
+	 */
 	public static void unzip(Path source, Path target) {
 		try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
 			long totalUncompressedSize = 0;
@@ -72,7 +99,21 @@ public class FileUtils {
 				validateEntryCount(++entryCount);
 				Path targetPath = validateAndPrepareTargetPath(zipEntry, target);
 
-				totalUncompressedSize = extractEntry(zis, zipEntry, targetPath, totalUncompressedSize);
+				long totalSizeEntry = 0;
+				byte[] buffer = new byte[2048];
+
+				try (OutputStream out = Files.newOutputStream(targetPath, StandardOpenOption.CREATE)) {
+					int bytesRead;
+					while ((bytesRead = zis.read(buffer)) > 0) {
+						totalSizeEntry += bytesRead;
+						totalUncompressedSize += bytesRead;
+
+						validateUncompressedSize(totalUncompressedSize);
+						validateCompressionRatio(zipEntry, totalSizeEntry);
+
+						out.write(buffer, 0, bytesRead);
+					}
+				}
 				zis.closeEntry();
 			}
 		} catch (IOException e) {
@@ -104,37 +145,6 @@ public class FileUtils {
 		Path targetPath = zipSlipProtect(zipEntry, target);
 		Files.createDirectories(targetPath.getParent());
 		return targetPath;
-	}
-
-	/**
-	 * Extracts a single ZIP entry.
-	 *
-	 * @param zis the ZIP input stream.
-	 * @param zipEntry the ZIP entry to extract.
-	 * @param targetPath the target path for the extracted file.
-	 * @param totalUncompressedSize the current total uncompressed size.
-	 * @return the updated total uncompressed size after extraction.
-	 * @throws InvalidIngestionFileException if the uncompressed size or compression ratio is invalid.
-	 * @throws IOException if an error occurs during file extraction.
-	 */
-	private static long extractEntry(ZipInputStream zis, ZipEntry zipEntry, Path targetPath, long totalUncompressedSize) throws IOException {
-		long totalSizeEntry = 0;
-		byte[] buffer = new byte[2048];
-
-		try (OutputStream out = Files.newOutputStream(targetPath, StandardOpenOption.CREATE)) {
-			int bytesRead;
-			while ((bytesRead = zis.read(buffer)) > 0) {
-				totalSizeEntry += bytesRead;
-				totalUncompressedSize += bytesRead;
-
-				validateUncompressedSize(totalUncompressedSize);
-				validateCompressionRatio(zipEntry, totalSizeEntry);
-
-				out.write(buffer, 0, bytesRead);
-			}
-		}
-
-		return totalUncompressedSize;
 	}
 
 	/**
