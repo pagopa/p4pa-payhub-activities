@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
+package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileUtils;
@@ -25,13 +25,7 @@ public class IngestionFileHandlerService {
 	 */
 	private final String dataCipherPsw;
 
-	/**
-	 * Constructor for `IngestionFileHandlerService`.
-	 *
-	 * @param dataCipherPsw the password used for encryption and decryption,
-	 *                      injected from application properties.
-	 */
-	public IngestionFileHandlerService(@Value("${data-cipher.encrypt-psw}") String dataCipherPsw) {
+		public IngestionFileHandlerService(@Value("${data-cipher.encrypt-psw}") String dataCipherPsw) {
 		this.dataCipherPsw = dataCipherPsw;
 	}
 
@@ -51,6 +45,7 @@ public class IngestionFileHandlerService {
 	public Path setUpProcess(String relativePath, String filename) throws IOException {
 		Path relativePathDir = Paths.get(relativePath);
 		Path encryptedFilePath = relativePathDir.resolve(filename);
+		FileUtils.validateFile(encryptedFilePath);
 
 		Path temporaryPath = relativePathDir.resolve(TEMPORARY_PATH);
 		Files.createDirectories(temporaryPath);

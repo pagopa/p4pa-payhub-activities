@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
+package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
@@ -101,7 +101,7 @@ class IngestionFileHandlerServiceTest {
 				.thenThrow(new IllegalStateException("Decryption failed"));
 
 			// When Then
-			assertThrows(IllegalStateException.class, () -> ingestionFileHandlerService.setUpProcess(relativePath, filename),
+			assertThrows(InvalidIngestionFileException.class, () -> ingestionFileHandlerService.setUpProcess(relativePath, filename),
 				"Expected exception for decryption failure."
 			);
 		}

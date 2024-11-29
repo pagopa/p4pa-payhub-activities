@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import org.junit.jupiter.api.Test;
 
 import java.util.zip.ZipEntry;
@@ -17,13 +18,13 @@ class SecureFileUtilsTest {
   @Test
   void givenInvalidFileNameStartingWithNonAlphanumericThenException() {
     String invalidFileName = "/unsafeFile.txt";
-    assertThrows(IllegalArgumentException.class, () -> SecureFileUtils.checkFileName(invalidFileName));
+    assertThrows(InvalidIngestionFileException.class, () -> SecureFileUtils.checkFileName(invalidFileName));
   }
 
   @Test
   void givenInvalidFileNameContainingDotDotThenException() {
     String invalidFileName = "safe/../../unsafeFile.txt";
-    assertThrows(IllegalArgumentException.class, () -> SecureFileUtils.checkFileName(invalidFileName));
+    assertThrows(InvalidIngestionFileException.class, () -> SecureFileUtils.checkFileName(invalidFileName));
   }
 
   @Test

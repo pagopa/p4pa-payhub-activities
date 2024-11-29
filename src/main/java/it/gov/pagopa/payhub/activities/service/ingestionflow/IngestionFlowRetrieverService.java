@@ -1,7 +1,7 @@
-package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
+package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,11 +17,6 @@ public class IngestionFlowRetrieverService {
 
 	private final IngestionFlowDao ingestionFlowDao;
 
-	/**
-	 * Constructor for `IngestionFlowRetrieverService`.
-	 *
-	 * @param ingestionFlowDao the DAO used to retrieve ingestion flow data.
-	 */
 	public IngestionFlowRetrieverService(IngestionFlowDao ingestionFlowDao) {
 		this.ingestionFlowDao = ingestionFlowDao;
 	}

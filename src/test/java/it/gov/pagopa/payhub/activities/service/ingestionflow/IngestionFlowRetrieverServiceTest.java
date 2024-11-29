@@ -1,7 +1,7 @@
-package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
+package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
