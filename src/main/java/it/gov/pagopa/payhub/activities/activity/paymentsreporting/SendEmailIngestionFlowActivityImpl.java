@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
 import it.gov.pagopa.payhub.activities.dto.MailDTO;
-import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import it.gov.pagopa.payhub.activities.helper.MailParameterHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -41,14 +40,9 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         }
 
         // get e-mail parameters and send e-mail if there are no errors in parameters
-        try {
-            MailDTO mailToSendDTO = MailParameterHelper.getMailParameters(mailDTO);
-            sendMailService.sendMail(javaMailSender, mailToSendDTO);
-            return true;
-        }
-        catch (SendMailException e){
-            return false;
-        }
+        MailDTO mailToSendDTO = MailParameterHelper.getMailParameters(mailDTO);
+        sendMailService.sendMail(javaMailSender, mailToSendDTO);
+        return true;
     }
 
 }
