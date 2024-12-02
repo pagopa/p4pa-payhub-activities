@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.helper;
 
 import it.gov.pagopa.payhub.activities.dto.MailDTO;
-import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.util.Assert;
 
