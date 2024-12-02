@@ -13,7 +13,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class PersonDTO implements Serializable {
 
-    private Character uniqueIdentifierTypeChar;
     private String uniqueIdentifierType;
     private String uniqueIdentifierCode;
     private String fullName;
