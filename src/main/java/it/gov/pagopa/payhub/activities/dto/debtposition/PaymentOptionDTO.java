@@ -21,7 +21,7 @@ public class PaymentOptionDTO implements Serializable {
     private Long totalAmount;
     private String description;
     private String status;
-    private boolean multiDebtor;
+    private boolean multiDebtor; // co-optato
     private PaymentOptionType paymentOptionType;
     private LocalDate dueDate;
     private List<InstallmentDTO> installments;
