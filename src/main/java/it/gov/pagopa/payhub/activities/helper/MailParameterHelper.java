@@ -1,17 +1,11 @@
 package it.gov.pagopa.payhub.activities.helper;
 
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dto.MailDTO;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
-import it.gov.pagopa.payhub.activities.model.MailParams;
-import it.gov.pagopa.payhub.activities.utils.Constants;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.util.Assert;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
 import java.util.Properties;
 
 public final class MailParameterHelper {
@@ -19,44 +13,41 @@ public final class MailParameterHelper {
     }
 
     /**
-     * helper for e-mail
-     * @param mailParams  parameters not updated
-     * @return MailParams parameters updated
+     *  helper for composing e-mail parameters
+     *
+     * @param mailDTO parameters not updated
+     * @return parameters updated
      */
-    public static MailParams getMailParams(MailParams mailParams) {
-        IngestionFlowDTO ingestionFlowDTO = mailParams.getIngestionFlowDTO();
-
-        String fileName = ingestionFlowDTO.getFileName();
-        DateFormat parser = new SimpleDateFormat("EEE, MMM dd yyyy, hh:mm:ss");
-        String actualDate = parser.format(new Date());
-
+    public static MailDTO getMailParameters(MailDTO mailDTO) {
         try {
-            Properties mailProperties = EmailHelper.getProperties();
+            Properties mailProperties = getProperties();
             Assert.notEmpty(mailProperties.values(), "Wrong mail configuration");
-            String templateName = mailParams.getTemplateName();
+            String templateName = mailDTO.getTemplateName();
             String subject = mailProperties.getProperty("template."+templateName+".subject");
             String body = mailProperties.getProperty("template."+templateName+".body");
             Assert.notNull(subject, "Invalid email template (missing subject) "+templateName);
             Assert.notNull(body, "Invalid email template (missing body) "+templateName);
-
-            String mailSubject = StringSubstitutor.replace(subject, mailParams.getParams(), "{", "}");
-            String htmlText = StringSubstitutor.replace(body, mailParams.getParams(), "{", "}");
-
-            Map<String,String> map = new HashMap<>();
-            map.put(Constants.MAIL_TEXT, mailParams.getMailText());
-            map.put(Constants.ACTUAL_DATE,actualDate);
-            map.put(Constants.FILE_NAME, fileName);
-            mailParams.setMailSubject(mailSubject);
-            mailParams.setHtmlText(htmlText);
-            mailParams.setParams(map);
-            mailParams.setSuccess(true);
-            return mailParams;
-        }
-        catch (SendMailException sendMailException) {
-            throw sendMailException;
+            mailDTO.setMailSubject(StringSubstitutor.replace(subject, mailDTO.getParams(), "{", "}"));
+            mailDTO.setHtmlText(StringSubstitutor.replace(body, mailDTO.getParams(), "{", "}"));
+            return mailDTO;
         }
         catch (Exception e) {
             throw new SendMailException("Error in mail parameters");
         }
+    }
+
+    /**
+     * helper for loading mail template properties
+     *
+     * @return Properties for mail templates
+     */
+    public static Properties getProperties() {
+        Properties templateProperties = new Properties();
+        try (InputStream inputStream = MailParameterHelper.class.getClassLoader().getResourceAsStream("mail-templates.properties")) {
+            templateProperties.load(inputStream);
+        } catch (Exception e) {
+            throw new SendMailException("Error in mail template configuration");
+        }
+        return templateProperties;
     }
 }

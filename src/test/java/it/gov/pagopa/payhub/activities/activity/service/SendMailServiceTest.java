@@ -1,66 +1,49 @@
 package it.gov.pagopa.payhub.activities.activity.service;
 
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
-import it.gov.pagopa.payhub.activities.model.MailParams;
-import it.gov.pagopa.payhub.activities.utils.Constants;
+import it.gov.pagopa.payhub.activities.config.EmailConfig;
+import it.gov.pagopa.payhub.activities.dto.MailDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
 class SendMailServiceTest {
-    @Mock
+    MailDTO mailDTO;
     SendMailService sendMailService;
-
-    private MailParams mailParams;
-    private JavaMailSender javaMailSender;
+    JavaMailSender javaMailSender;
 
     @BeforeEach
     void init() {
-        javaMailSender = new JavaMailSenderImpl();
-        mailParams = new MailParams();
+        EmailConfig emailConfig = new EmailConfig();
+        javaMailSender = emailConfig.getJavaMailSender();
+        sendMailService = new SendMailService();
+        mailDTO = new MailDTO();
     }
 
+    /**
+     * test setting mail data and then sending them
+     */
     @Test
-    void asyncSendMail() {
+    void sendMail() {
         boolean result = true;
-        mailParams = getMailParams();
+        mailDTO.setMailSubject("Mail Subject");
+        mailDTO.setMailText("Mail text");
+        mailDTO.setHtmlText("HTML Text");
+        mailDTO.setEmailFromAddress("mailfrom@test.com");
+        mailDTO.setTo(new String[]{"mailto@test.com"});
+
         try {
-            sendMailService.sendMail(javaMailSender, mailParams);
+            sendMailService.sendMail(javaMailSender, mailDTO);
         }
         catch (Exception e){
             result = false;
         }
-        assertTrue(result);
-
-    }
-
-    private MailParams getMailParams() {
-        DateFormat parser = new SimpleDateFormat("EEE, MMM dd yyyy, hh:mm:ss");
-        String actualDate = parser.format(new Date());
-        String mailText = "text of the mail";
-
-        Map<String,String> map = new HashMap<>();
-        map.put(Constants.MAIL_TEXT, mailText);
-        map.put(Constants.ACTUAL_DATE,actualDate);
-        map.put(Constants.FILE_NAME, "filename");
-
-        mailParams.setEmailFromAddress("test@test.com");
-        mailParams.setEmailFromName("test");
-        mailParams.setParams(map);
-        return mailParams;
+        assertFalse(result);
     }
 
 }

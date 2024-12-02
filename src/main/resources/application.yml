@@ -2,3 +2,7 @@ spring:
   application:
     name: ${artifactId}
     version: ${version}
+activities-mail-host:
+activities-mail-port:
+activities-mail-username:
+activities-mail-password:

@@ -1,15 +1,12 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dto.MailDTO;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import it.gov.pagopa.payhub.activities.helper.MailParameterHelper;
-import it.gov.pagopa.payhub.activities.model.MailParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -18,16 +15,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
-    private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
     private final SendMailService sendMailService;
-    private final MailParams mailParams;
     private final JavaMailSender javaMailSender;
+    private final MailDTO mailDTO;
 
-    public SendEmailIngestionFlowActivityImpl(IngestionFlowRetrieverService ingestionFlowRetrieverService, SendMailService sendMailService, MailParams mailParams, JavaMailSender javaMailSender) {
-        this.ingestionFlowRetrieverService = ingestionFlowRetrieverService;
+    public SendEmailIngestionFlowActivityImpl(SendMailService sendMailService, JavaMailSender javaMailSender, MailDTO mailDTO) {
         this.sendMailService = sendMailService;
-        this.mailParams = mailParams;
         this.javaMailSender = javaMailSender;
+        this.mailDTO =  mailDTO;
     }
 
     /**
@@ -38,47 +33,22 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
      * @return true if the email was sent successfully, false otherwise.
      */
     @Override
-    public boolean sendEmail(String ingestionFlowId, boolean success) {
+    public boolean sendEmail(String ingestionFlowId, boolean success) throws Exception {
         // verify if previous operation is success
-        if (success){
-            try {
-                IngestionFlowDTO ingestionFlowDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
-                if (ingestionFlowDTO!=null) {
-                    mailParams.setIngestionFlowDTO(ingestionFlowDTO);
-                    mailParams.setId(ingestionFlowId);
-                    mailParams.setMailText(getMailIngestionFlowText(ingestionFlowDTO));
-                }
-                // get e-mail parameters and send e-mail if there are no errors in parameters
-                MailParams params = MailParameterHelper.getMailParams(mailParams);
-                if (params.isSuccess()){
-                    sendMailService.sendMail(javaMailSender, mailParams);
-                    return true;
-                }
-            } catch (Exception e) {
-                throw new SendMailException("Error sending mail for id: "+ingestionFlowId);
-            }
+        if (! success){
+            log.info("The previous operation failed. It is not possible to send mail");
+            return false;
         }
-        return false;
-    }
 
-    /**
-     * utility to get specific mail text for ingestion flow activity
-     *
-     * @param ingestionFlowDTO dto containing
-     * @return String containing mail text
-     */
-    private String getMailIngestionFlowText(IngestionFlowDTO ingestionFlowDTO) {
-        Long fileSize = ingestionFlowDTO.getDownloadedFileSize();
-        Long totalRowsNumber = ingestionFlowDTO.getTotalRowsNumber();
-        String mailText = "Il caricamento del file " + ingestionFlowDTO.getFileName();
-        if (fileSize>0 && totalRowsNumber>0) {
-            mailText += " è andato a buon fine, tutti i " + totalRowsNumber + " dati presenti sono stati caricati correttamente.";
+        // get e-mail parameters and send e-mail if there are no errors in parameters
+        try {
+            MailDTO mailToSendDTO = MailParameterHelper.getMailParameters(mailDTO);
+            sendMailService.sendMail(javaMailSender, mailToSendDTO);
+            return true;
         }
-        else  {
-            mailText += " NON è andato a buon fine";
+        catch (SendMailException e){
+            return false;
         }
-        return mailText;
     }
 
 }
-
