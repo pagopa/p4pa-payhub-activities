@@ -28,9 +28,6 @@ public class SendMailService {
         helper.setSubject(subject);
         helper.setText(htmlContent, true);
 
-        // Sending mail
         javaMailSender.send(message);
-
-        log.info("MAIL has been send");
     }
 }

@@ -17,7 +17,7 @@ public class IngestionMailHelper {
      * @param actualDate  formatted actual date
      * @return MailDTO dto containing mail data
      */
-    public static MailDTO getMailIngestionFlowText(IngestionFlowDTO ingestionFlowDTO, String actualDate) {
+    public static MailDTO getMailIngestionFlowText(IngestionFlowDTO ingestionFlowDTO, String actualDate) throws Exception {
         Long fileSize = ingestionFlowDTO.getDownloadedFileSize();
         Long totalRowsNumber = ingestionFlowDTO.getTotalRowsNumber();
 

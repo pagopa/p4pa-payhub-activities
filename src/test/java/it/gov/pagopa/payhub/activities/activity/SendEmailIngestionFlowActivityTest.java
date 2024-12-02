@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailInges
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
 import it.gov.pagopa.payhub.activities.dto.MailDTO;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.utils.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,14 +88,14 @@ class SendEmailIngestionFlowActivityTest {
     /**
      * setting email parameters for test
      */
-    private MailDTO setMailParams(){
+    private MailDTO setMailParams() throws Exception {
         IngestionFlowDTO ingestionFlowDTO = new IngestionFlowDTO();
         ingestionFlowDTO.setFileName(fileName);
         ingestionFlowDTO.setIngestionFlowId(ingestionFlowId);
         ingestionFlowDTO.setDownloadedFileSize(fileSize);
         ingestionFlowDTO.setTotalRowsNumber(totalRowsNumber);
         
-        DateFormat parser = new SimpleDateFormat("EEE, MMM dd yyyy, hh:mm:ss");
+        DateFormat parser = new SimpleDateFormat(Constants.MAIL_DATE_FORMAT);
         String actualDate = parser.format(new Date());
 
         MailDTO mailDTO  = IngestionMailHelper.getMailIngestionFlowText(ingestionFlowDTO, actualDate);

@@ -33,13 +33,6 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
      */
     @Override
     public boolean sendEmail(String ingestionFlowId, boolean success) throws Exception {
-        // verify if previous operation is success
-        if (! success){
-            log.info("The previous operation failed. It is not possible to send mail");
-            return false;
-        }
-
-        // get e-mail parameters and send e-mail if there are no errors in parameters
         MailDTO mailToSendDTO = MailParameterHelper.getMailParameters(mailDTO);
         sendMailService.sendMail(javaMailSender, mailToSendDTO);
         return true;
