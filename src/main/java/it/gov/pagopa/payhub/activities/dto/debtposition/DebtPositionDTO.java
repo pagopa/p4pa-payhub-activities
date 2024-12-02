@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DebtPositionDTO implements Serializable {
 
-    private Long id;
+    private Long debtPositionId;
     private String iupdOrg;
     private String iupdPagopa;
     private String description;

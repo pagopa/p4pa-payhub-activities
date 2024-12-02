@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ReceiptDTO implements Serializable {
 
-    private Long id;
+    private Long receiptId;
     private Instant creationDate;
     private String paymentReceiptId;
     private String noticeNumber;
@@ -28,16 +28,7 @@ public class ReceiptDTO implements Serializable {
     private String officeName;
 
     //*from CtSubject debtor
-    private String uniqueIdentifierTypeDebtor;
-    private String uniqueIdentifierValueDebtor;
-    private String fullNameDebtor;
-    private String streetNameDebtor;
-    private String civicNumberDebtor;
-    private String postalCodeDebtor;
-    private String cityDebtor;
-    private String stateProvinceRegionDebtor;
-    private String countryDebtor;
-    private String emailDebtor;
+    private PersonDTO debtor;
 
     private String idPsp;
     private String pspFiscalCode;
