@@ -26,26 +26,19 @@ public class ReceiptDTO implements Serializable {
     private String description;
     private String companyName;
     private String officeName;
-
-    //*from CtSubject debtor
     private PersonDTO debtor;
-
     private String idPsp;
     private String pspFiscalCode;
     private String pspPartitaIva;
     private String pspCompanyName;
     private String idChannel;
     private String channelDescription;
-
-    //*from CtSubject payer
     private PersonDTO payer;
-
     private String paymentMethod;
     private Long fee;
     private LocalDate paymentDateTime;
     private LocalDate applicationDate;
     private LocalDate transferDate;
-
     private byte[] receiptBytes;
     private boolean standin;
     private String status;
