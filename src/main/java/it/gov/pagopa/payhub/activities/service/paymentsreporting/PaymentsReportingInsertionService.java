@@ -1,7 +1,7 @@
-package it.gov.pagopa.payhub.activities.service.ingestionflow;
+package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
