@@ -56,7 +56,7 @@ class IngestionFileRetrieverServiceTest {
 		//Given
 		Path sourcePath = zipFile.getParent();
 		String filename = zipFile.getFileName().toString();
-		Path workingPath = sourcePath.resolve(TEMPORARY_PATH);
+		Path workingPath = Path.of(TEMPORARY_PATH).resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
 		Path zipFilePath = workingPath.resolve(filename.replace(AESUtils.CIPHER_EXTENSION, ""));
 		List<Path> unzippedPaths = List.of(workingPath.resolve("file1.txt"), workingPath.resolve("file2.txt"));
 
@@ -94,11 +94,11 @@ class IngestionFileRetrieverServiceTest {
 	}
 
 	@Test
-	void testRetrieveFile_zipValidationFails() throws IOException {
+	void testRetrieveFile_zipValidationFails() {
 		//Given
 		Path sourcePath = zipFile.getParent();
 		String filename = zipFile.getFileName().toString();
-		Path workingPath = sourcePath.resolve(TEMPORARY_PATH);
+		Path workingPath = Path.of(TEMPORARY_PATH).resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
 		Path zipFilePath = workingPath.resolve(filename.replace(AESUtils.CIPHER_EXTENSION, ""));
 
 		doNothing().when(fileValidatorService).validateFile(zipFile);

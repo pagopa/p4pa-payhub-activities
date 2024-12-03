@@ -22,7 +22,11 @@ import java.util.List;
 @Slf4j
 @Service
 public class IngestionFileRetrieverService {
-	private static final String TEMPORARY_PATH = "/tmp/";
+
+	/**
+	 * The temporary directory used for working process.
+	 */
+	private static final Path TEMPORARY_PATH = Path.of("/tmp/");
 
 	/**
 	 * The password used for decrypting encrypted files.
@@ -56,7 +60,7 @@ public class IngestionFileRetrieverService {
 		Path encryptedFilePath = sourcePath.resolve(filename);
 		fileValidatorService.validateFile(encryptedFilePath);
 
-		Path workingPath = sourcePath.resolve(TEMPORARY_PATH);
+		Path workingPath = TEMPORARY_PATH.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
 		Files.createDirectories(workingPath);
 
 		String filenameNoCipher = filename.replace(AESUtils.CIPHER_EXTENSION, "");
