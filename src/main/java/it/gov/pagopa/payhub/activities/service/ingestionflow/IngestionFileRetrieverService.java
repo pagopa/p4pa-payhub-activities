@@ -26,7 +26,7 @@ public class IngestionFileRetrieverService {
 	/**
 	 * The temporary directory used for working process.
 	 */
-	private static final Path TEMPORARY_PATH = Path.of("/tmp/");
+	private final String tempDirectory;
 
 	/**
 	 * The password used for decrypting encrypted files.
@@ -36,8 +36,10 @@ public class IngestionFileRetrieverService {
 	private final FileValidatorService fileValidatorService;
 	private final ZipFileService zipFileService;
 
-	public IngestionFileRetrieverService(@Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
+	public IngestionFileRetrieverService(@Value("${working-path.temp-dir:/tmp/}") String tempDirectory,
+	                                     @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
 	                                     FileValidatorService fileValidatorService, ZipFileService zipFileService) {
+		this.tempDirectory = tempDirectory;
 		this.dataCipherPsw = dataCipherPsw;
 		this.fileValidatorService = fileValidatorService;
 		this.zipFileService = zipFileService;
@@ -60,7 +62,7 @@ public class IngestionFileRetrieverService {
 		Path encryptedFilePath = sourcePath.resolve(filename);
 		fileValidatorService.validateFile(encryptedFilePath);
 
-		Path workingPath = TEMPORARY_PATH.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
+		Path workingPath = Path.of(tempDirectory).resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
 		Files.createDirectories(workingPath);
 
 		String filenameNoCipher = filename.replace(AESUtils.CIPHER_EXTENSION, "");
