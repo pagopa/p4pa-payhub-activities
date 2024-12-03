@@ -17,14 +17,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static it.gov.pagopa.payhub.activities.util.FilesUtils.addZipEntry;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class IngestionFileRetrieverServiceTest {
+class IngestionFlowFileRetrieverServiceTest {
 	private static final String TEST_CIPHER_PSW = "testPassword";
 	private static final String TEMPORARY_PATH = "/tmp/";
 
@@ -35,12 +35,12 @@ class IngestionFileRetrieverServiceTest {
 	private ZipFileService zipFileService;
 
 	@InjectMocks
-	private IngestionFileRetrieverService ingestionFileRetrieverService;
+	private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 
 	private Path zipFile;
 
 	@TempDir
-	Path tempDir;
+	private Path tempDir;
 
 	@BeforeEach
 	void setup() throws IOException {
@@ -69,7 +69,7 @@ class IngestionFileRetrieverServiceTest {
 				.then(invocation -> null);
 
 			// Act
-			List<Path> result = ingestionFileRetrieverService.retrieveFile(sourcePath, filename);
+			List<Path> result = ingestionFlowFileRetrieverService.retrieveAndUnzipFile(sourcePath, filename);
 
 			// Then
 			assertNotNull(result);
@@ -90,7 +90,7 @@ class IngestionFileRetrieverServiceTest {
 
 		//When & Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> ingestionFileRetrieverService.retrieveFile(sourcePath, filename), "File validation failed");
+			() -> ingestionFlowFileRetrieverService.retrieveAndUnzipFile(sourcePath, filename), "File validation failed");
 	}
 
 	@Test
@@ -110,7 +110,14 @@ class IngestionFileRetrieverServiceTest {
 
 			//When & Then
 			assertThrows(InvalidIngestionFileException.class,
-				() -> ingestionFileRetrieverService.retrieveFile(sourcePath, filename), "ZIP validation failed");
+				() -> ingestionFlowFileRetrieverService.retrieveAndUnzipFile(sourcePath, filename), "ZIP validation failed");
 		}
+	}
+
+	/** Helper method to add entries to the ZIP file */
+	private static void addZipEntry(ZipOutputStream zos, String entryName, String content) throws IOException {
+		zos.putNextEntry(new ZipEntry(entryName));
+		zos.write(content.getBytes());
+		zos.closeEntry();
 	}
 }

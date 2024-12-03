@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IngestionFlowFileDTO {
-	private Long ingestionFlowId;
+	private Long ingestionFlowFileId;
 	private int version;
 	private OrganizationDTO orgId;
 	private String PspIdentifier;
