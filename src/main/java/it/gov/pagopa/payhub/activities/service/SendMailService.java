@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.config.EmailConfig;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;

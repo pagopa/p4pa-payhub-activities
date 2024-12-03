@@ -70,7 +70,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         }
     }
 
-    public static MailTo getMailFromIngestionFlow(IngestionFlowDTO ingestionFlowDTO, boolean success) throws Exception {
+    private MailTo getMailFromIngestionFlow(IngestionFlowDTO ingestionFlowDTO, boolean success) throws Exception {
         try {
             Properties properties = MailParameterHelper.getProperties();
             String template = success ? properties.getProperty(Constants.TEMPLATE_LOAD_FILE_OK) :  properties.getProperty(Constants.TEMPLATE_LOAD_FILE_KO);
