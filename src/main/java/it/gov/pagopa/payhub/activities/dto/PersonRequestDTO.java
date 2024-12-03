@@ -8,12 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonRequestDTO {
+public class PersonRequestDTO implements Serializable {
 
     private String uniqueIdentifierType;
     private String uniqueIdentifierCode;

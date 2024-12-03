@@ -32,36 +32,38 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
         this.addressDao = addressDao;
     }
 
-    public DebtPositionDTO validate(DebtPositionRequestDTO debtPositionRequestDTO) {
+    public DebtPositionDTO validate(DebtPositionDTO debtPositionRequestDTO,
+                                    DebtPositionTypeOrgDTO debtPositionTypeOrgDTO) {
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
 
-        List<IngestionFlowFileDTO> flows = ingestionFlowFileDao.getIngestionFlowFilesByOrganization(debtPositionRequestDTO.getOrg().getOrgId(), true);
+        List<IngestionFlowFileDTO> flows = ingestionFlowFileDao.getIngestionFlowFilesByOrganization(
+                debtPositionTypeOrgDTO.getOrg().getOrgId(), true);
 
         if (flows == null || flows.isEmpty())
-            throw new ValidationException("No flow was found for organization with id " + debtPositionRequestDTO.getOrg().getOrgId());
+            throw new ValidationException("No flow was found for organization with id " + debtPositionTypeOrgDTO.getOrg().getOrgId());
 
         debtPositionDTO.setIngestionFlowFile(flows.get(0));
 
-        if (debtPositionRequestDTO.getDebtPositionTypeOrg() == null ||
-                StringUtils.isBlank(debtPositionRequestDTO.getDebtPositionTypeOrg().getDebtPositionType().getCode())) {
+        if (debtPositionTypeOrgDTO.getDebtPositionType() == null ||
+                StringUtils.isBlank(debtPositionTypeOrgDTO.getDebtPositionType().getCode())) {
             throw new ValidationException("Debt position type organization is mandatory");
         }
-        debtPositionDTO.setDebtPositionTypeOrg(debtPositionRequestDTO.getDebtPositionTypeOrg());
+        debtPositionDTO.setDebtPositionTypeOrg(debtPositionTypeOrgDTO);
 
         List<PaymentOptionDTO> paymentOptionsDTO = new ArrayList<>();
 
-        for (PaymentOptionRequestDTO paymentOptionRequestDTO : debtPositionRequestDTO.getPaymentOptions()) {
+        for (PaymentOptionDTO paymentOptionRequestDTO : debtPositionRequestDTO.getPaymentOptions()) {
             PaymentOptionDTO paymentOptionDTO = new PaymentOptionDTO();
             List<InstallmentDTO> installmentsDTO = new ArrayList<>();
-            for (InstallmentRequestDTO installmentRequestDTO : paymentOptionRequestDTO.getInstallments()) {
+            for (InstallmentDTO installmentRequestDTO : paymentOptionRequestDTO.getInstallments()) {
                 InstallmentDTO installmentDTO = new InstallmentDTO();
                 validateInstallment(installmentRequestDTO,
-                        debtPositionRequestDTO.getDebtPositionTypeOrg(),
+                        debtPositionTypeOrgDTO,
                         installmentDTO);
 
                 PersonDTO personDTO = new PersonDTO();
                 validatePersonData(installmentRequestDTO.getDebtor(),
-                        debtPositionRequestDTO.getDebtPositionTypeOrg(),
+                        debtPositionTypeOrgDTO,
                         personDTO);
                 installmentDTO.setPayer(personDTO);
 
@@ -77,7 +79,7 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
     }
 
 
-    private void validateInstallment(InstallmentRequestDTO installmentRequestDTO, DebtPositionTypeOrgDTO debtPositionTypeOrgDTO,
+    private void validateInstallment(InstallmentDTO installmentRequestDTO, DebtPositionTypeOrgDTO debtPositionTypeOrgDTO,
                                      InstallmentDTO installmentDTO) {
         if (StringUtils.isBlank(installmentRequestDTO.getRemittanceInformation())) {
             throw new ValidationException("Remittance information is mandatory");
@@ -127,6 +129,7 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
             throw new ValidationException("Beneficiary name is mandatory");
         }
         personDTO.setFullName(personRequestDTO.getFullName());
+        personDTO.setUniqueIdentifierType(personRequestDTO.getUniqueIdentifierType());
 
         if (StringUtils.isNotBlank(personRequestDTO.getEmail()) &&
                 !Utilities.isValidEmail(personRequestDTO.getEmail())) {
