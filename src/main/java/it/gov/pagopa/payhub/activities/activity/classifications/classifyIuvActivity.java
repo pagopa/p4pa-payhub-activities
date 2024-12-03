@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 /**
  * Interface for defining an activity to process payment classifications.
  */
-public interface classifyIuvActivity {
+public interface IuvClassificationActivity {
 
     /**
      * Processes IUV classification based on the provided parameters.
