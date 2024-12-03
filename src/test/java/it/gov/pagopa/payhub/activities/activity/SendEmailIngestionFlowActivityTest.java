@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.SendEmailIngestionFlowActivityImpl;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrieverService;
@@ -11,7 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SendEmailIngestionFlowActivityTest {
     private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
+    @Mock
     private IngestionFlowRetrieverService ingestionFlowRetrieverService;
     @Mock
     private SendMailService sendMailService ;
@@ -29,9 +31,8 @@ class SendEmailIngestionFlowActivityTest {
 
     @BeforeEach
     void init() {
-        sendEmailIngestionFlowActivity = mock(SendEmailIngestionFlowActivityImpl.class);
+        String ingestionFlowId = "100";
         ingestionFlowRetrieverService = mock(IngestionFlowRetrieverService.class);
-
         sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(
                 userAuthorizationService, ingestionFlowRetrieverService, sendMailService);
     }
@@ -42,16 +43,8 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionSuccess() {
         String ingestionFlowId = "100";
-
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
-        ingestionFlowFileDTO.setFilePathName("/valid/path");
-        ingestionFlowFileDTO.setFileName("valid-file.zip");
-        ingestionFlowFileDTO.setRequestTokenCode("valid-token");
-
-        when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId)))
-                .thenReturn(ingestionFlowFileDTO);
-
-        assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, true));
+        boolean sent = sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, true);
+        assertFalse(sent);
     }
 
     /**
@@ -60,7 +53,8 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionError() {
         String ingestionFlowId = "100";
-        assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, false));
+        boolean sent = sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, false);
+        assertFalse(sent);
     }
 
 }

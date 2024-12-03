@@ -54,6 +54,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         boolean ret = true;
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
+
             UserInfoDTO userInfoDTO = userAuthorizationActivity.getUserInfo(ingestionFlowFileDTO.getUserId().getExternalUserId());
             MailTo mailTo =  getMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
@@ -63,7 +64,6 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         }
         catch (Exception e){
             ret = false;
-            log.error("Error sending e-mail");
         }
         return ret;
     }
