@@ -29,15 +29,15 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
-    private final UserAuthorizationService userAuthorizationActivity;
+    private final UserAuthorizationService userAuthorizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
 
     public SendEmailIngestionFlowActivityImpl(
-            UserAuthorizationService userAuthorizationActivity,
+            UserAuthorizationService userAuthorizationService,
             IngestionFlowRetrieverService ingestionFlowRetrieverService,
             SendMailService sendMailService) {
-        this.userAuthorizationActivity = userAuthorizationActivity;
+        this.userAuthorizationService = userAuthorizationService;
         this.ingestionFlowRetrieverService  = ingestionFlowRetrieverService;
         this.sendMailService = sendMailService;
     }
@@ -54,8 +54,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         boolean ret = true;
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
-
-            UserInfoDTO userInfoDTO = userAuthorizationActivity.getUserInfo(ingestionFlowFileDTO.getUserId().getExternalUserId());
+            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ingestionFlowFileDTO.getUserId().getExternalUserId());
             MailTo mailTo =  getMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
             EmailConfig emailConfig = new EmailConfig();
