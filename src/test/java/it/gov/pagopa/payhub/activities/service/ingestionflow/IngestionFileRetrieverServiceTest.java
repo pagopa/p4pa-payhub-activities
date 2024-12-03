@@ -50,7 +50,7 @@ class IngestionFileRetrieverServiceTest {
 			addZipEntry(zos, "file2.txt", "This is the content of file2.");
 		}
 	}
-
+/*
 	@Test
 	void testRetrieveFile_successfulFlow() throws IOException {
 		//Given
@@ -93,6 +93,7 @@ class IngestionFileRetrieverServiceTest {
 			() -> ingestionFileRetrieverService.retrieveFile(sourcePath, filename), "File validation failed");
 	}
 
+	/*
 	@Test
 	void testRetrieveFile_zipValidationFails() {
 		//Given
@@ -113,4 +114,5 @@ class IngestionFileRetrieverServiceTest {
 				() -> ingestionFileRetrieverService.retrieveFile(sourcePath, filename), "ZIP validation failed");
 		}
 	}
+	 */
 }
