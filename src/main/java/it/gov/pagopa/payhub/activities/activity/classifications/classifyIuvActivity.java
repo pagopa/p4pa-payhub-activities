@@ -13,5 +13,5 @@ public interface classifyIuvActivity {
      * @param transferIndex  the index of the transfer to be classified
      * @return true if the classification is successful, false otherwise
      */
-    boolean classify(String organizationId, String IUV, String receiptId, int transferIndex);
+    boolean classify(String organizationId, String iuv, String receiptId, int transferIndex);
 }
