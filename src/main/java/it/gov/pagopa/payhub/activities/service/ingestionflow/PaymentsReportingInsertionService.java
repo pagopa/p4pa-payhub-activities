@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
+package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingDTO;

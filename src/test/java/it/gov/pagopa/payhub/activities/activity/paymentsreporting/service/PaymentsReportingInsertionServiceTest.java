@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting.service;
 
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.PaymentsReportingInsertionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
