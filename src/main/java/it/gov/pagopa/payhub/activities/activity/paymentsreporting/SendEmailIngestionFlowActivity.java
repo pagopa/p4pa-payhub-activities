@@ -12,5 +12,5 @@ public interface SendEmailIngestionFlowActivity {
      * @param success      true if the process succeeded, false otherwise.
      * @return true if the email was sent successfully, false otherwise.
      */
-    boolean sendEmail(String ingestionFlowId, boolean success) throws Exception;
+    boolean sendEmail(String ingestionFlowId, boolean success);
 }

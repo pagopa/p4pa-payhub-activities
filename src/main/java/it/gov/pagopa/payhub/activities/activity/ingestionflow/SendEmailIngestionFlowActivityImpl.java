@@ -52,7 +52,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
      * @return true if the email was sent successfully, false otherwise.
      */
     @Override
-    public boolean sendEmail(String ingestionFlowId, boolean success) throws Exception {
+    public boolean sendEmail(String ingestionFlowId, boolean success) {
         try {
             IngestionFlowDTO ingestionFlowDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
             UserInfoDTO userInfoDTO = authorizationService.getUserInfoDTO(ingestionFlowDTO.getUserId().getExternalUserId());
@@ -65,30 +65,37 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
             return true;
         }
         catch (Exception e){
+            log.error("Error sending e-mail");
             return false;
         }
     }
 
     public static MailTo getMailFromIngestionFlow(IngestionFlowDTO ingestionFlowDTO, boolean success) throws Exception {
-        Properties properties = MailParameterHelper.getProperties();
-        String template = success ? properties.getProperty(Constants.TEMPLATE_LOAD_FILE_OK) :  properties.getProperty(Constants.TEMPLATE_LOAD_FILE_KO);
-        DateFormat parser = new SimpleDateFormat(Constants.MAIL_DATE_FORMAT);
-        String actualDate = parser.format(new Date());
+        try {
+            Properties properties = MailParameterHelper.getProperties();
+            String template = success ? properties.getProperty(Constants.TEMPLATE_LOAD_FILE_OK) :  properties.getProperty(Constants.TEMPLATE_LOAD_FILE_KO);
+            DateFormat parser = new SimpleDateFormat(Constants.MAIL_DATE_FORMAT);
+            String actualDate = parser.format(new Date());
 
-        Map<String, String> mailMap = new HashMap<>();
-        mailMap.put(Constants.ACTUAL_DATE, actualDate);
-        mailMap.put(Constants.FILE_NAME, ingestionFlowDTO.getFileName());
-        mailMap.put(Constants.TOTAL_ROWS_NUMBER, String.valueOf(ingestionFlowDTO.getTotalRowsNumber()));
-        mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(template, mailMap, "{", "}"));
+            Map<String, String> mailMap = new HashMap<>();
+            mailMap.put(Constants.ACTUAL_DATE, actualDate);
+            mailMap.put(Constants.FILE_NAME, ingestionFlowDTO.getFileName());
+            mailMap.put(Constants.TOTAL_ROWS_NUMBER, String.valueOf(ingestionFlowDTO.getTotalRowsNumber()));
+            mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(template, mailMap, "{", "}"));
 
-        MailParameterHelper mailParameterHelper = new MailParameterHelper();
-        MailTo mailTo = new MailTo();
-        mailTo.setTemplateName(template);
-        mailTo.setParams(mailMap);
-        MailTo dto = mailParameterHelper.getMailParameters(mailTo);
-        mailTo.setMailSubject(dto.getMailSubject());
-        mailTo.setHtmlText(dto.getHtmlText());
-        return mailTo;
+            MailParameterHelper mailParameterHelper = new MailParameterHelper();
+            MailTo mailTo = new MailTo();
+            mailTo.setTemplateName(template);
+            mailTo.setParams(mailMap);
+            MailTo dto = mailParameterHelper.getMailParameters(mailTo);
+            mailTo.setMailSubject(dto.getMailSubject());
+            mailTo.setHtmlText(dto.getHtmlText());
+            return mailTo;
+        }
+        catch (Exception e){
+            log.error("Error setting mail data from ingestion flow");
+            throw new Exception(e);
+        }
     }
 
 }

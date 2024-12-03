@@ -38,16 +38,8 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionSuccess() {
         String ingestionFlowId = "100";
-        boolean success = true;
-        try {
-            sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(authorizationService, ingestionFlowRetrieverService, sendMailService);
-            success = sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, success);
-        } catch (IngestionFlowNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        assertFalse(success);
+        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(authorizationService, ingestionFlowRetrieverService, sendMailService);
+        assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, true));
     }
 
     /**
@@ -56,17 +48,9 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionError() {
         String ingestionFlowId = "100";
-        boolean success = false;
-        try {
-            sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(
-                    authorizationService, ingestionFlowRetrieverService, sendMailService);
-            success = sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, success);
-        } catch (IngestionFlowNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        assertFalse(success);
+        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(
+                authorizationService, ingestionFlowRetrieverService, sendMailService);
+        assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, false));
     }
 
 }

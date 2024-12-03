@@ -15,10 +15,9 @@ public class SendMailService {
      *
      * @param javaMailSender mail sender
      * @param mailTo bean containing data to send
-     * @throws Exception exception in case of send mail problems
+     * @return boolean true if mail is sent otherwise false
      */
-
-    public boolean sendMail(JavaMailSender javaMailSender, MailTo mailTo) throws Exception {
+    public boolean sendMail(JavaMailSender javaMailSender, MailTo mailTo) {
         try {
             String subject = mailTo.getMailSubject();
             String htmlContent = mailTo.getHtmlText();
@@ -34,7 +33,7 @@ public class SendMailService {
             javaMailSender.send(message);
         }
         catch (Exception e){
-            log.error("sendEmail error");
+            log.error("Mail sender error");
             return false;
         }
         return true;

@@ -25,7 +25,7 @@ class SendMailServiceTest {
      */
     @Test
     void sendMail() {
-        boolean result = true;
+        boolean result;
         MailTo mailTo = new MailTo();
         mailTo.setMailSubject("Mail Subject");
         mailTo.setMailText("Mail text");
