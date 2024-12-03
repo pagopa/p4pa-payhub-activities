@@ -1,25 +1,23 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
-import it.gov.pagopa.payhub.activities.config.EmailConfig;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.helper.MailParameterHelper;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -28,14 +26,17 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
+    private final Environment env;
     private final UserAuthorizationService userAuthorizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
 
     public SendEmailIngestionFlowActivityImpl(
+            Environment env,
             UserAuthorizationService userAuthorizationService,
             IngestionFlowRetrieverService ingestionFlowRetrieverService,
             SendMailService sendMailService) {
+        this.env = env;
         this.userAuthorizationService = userAuthorizationService;
         this.ingestionFlowRetrieverService  = ingestionFlowRetrieverService;
         this.sendMailService = sendMailService;
@@ -53,21 +54,20 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
             UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ingestionFlowFileDTO.getUserId().getExternalUserId());
-            MailTo mailTo =  getMailFromIngestionFlow(ingestionFlowFileDTO, success);
+            MailTo mailTo = getMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
-            EmailConfig emailConfig = new EmailConfig();
-            JavaMailSender javaMailSender = emailConfig.getJavaMailSender();
-            sendMailService.sendMail(javaMailSender, mailTo);
+            sendMailService.sendMail(mailTo);
         }
         catch (Exception e){
+            log.error("exception send mail", e);
             return false;
         }
         return true;
     }
 
-    private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) throws Exception {
-        Properties properties = MailParameterHelper.getProperties();
-        String template = success ? properties.getProperty(Constants.TEMPLATE_LOAD_FILE_OK) :  properties.getProperty(Constants.TEMPLATE_LOAD_FILE_KO);
+    private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) {
+
+        String template = ingestionFlowFileDTO.getFlowType() + (success ? "-OK" :  "-KO");
         DateFormat parser = new SimpleDateFormat(Constants.MAIL_DATE_FORMAT);
         String actualDate = parser.format(new Date());
 
@@ -77,14 +77,29 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         mailMap.put(Constants.TOTAL_ROWS_NUMBER, String.valueOf(ingestionFlowFileDTO.getTotalRowsNumber()));
         mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(template, mailMap, "{", "}"));
 
-        MailParameterHelper mailParameterHelper = new MailParameterHelper();
         MailTo mailTo = new MailTo();
         mailTo.setTemplateName(template);
         mailTo.setParams(mailMap);
-        MailTo dto = mailParameterHelper.getMailParameters(mailTo);
+        MailTo dto = getMailParameters(mailTo);
         mailTo.setMailSubject(dto.getMailSubject());
         mailTo.setHtmlText(dto.getHtmlText());
         return mailTo;
     }
 
+    /**
+     *  helper for composing e-mail parameters
+     *
+     * @param mailDTO parameters not updated
+     * @return parameters updated
+     */
+    public MailTo getMailParameters(MailTo mailDTO) {
+        String templateName = mailDTO.getTemplateName();
+        String subject = env.getProperty("template."+templateName+".subject");
+        String body = env.getProperty("template."+templateName+".body");
+        Assert.notNull(subject, "Invalid email template (missing subject) "+templateName);
+        Assert.notNull(body, "Invalid email template (missing body) "+templateName);
+        mailDTO.setMailSubject(StringSubstitutor.replace(subject, mailDTO.getParams(), "{", "}"));
+        mailDTO.setHtmlText(StringSubstitutor.replace(body, mailDTO.getParams(), "{", "}"));
+        return mailDTO;
+    }
 }
