@@ -8,9 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
 import it.gov.pagopa.payhub.activities.helper.MailParameterHelper;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
-import it.gov.pagopa.payhub.activities.service.auth.UserAuthorizationService;
-import it.gov.pagopa.payhub.activities.utility.SendEmailActivity;
-import it.gov.pagopa.payhub.activities.utility.SendEmailActivityImpl;
+import it.gov.pagopa.payhub.activities.utility.UserAuthorizationActivity;
 import it.gov.pagopa.payhub.activities.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -31,15 +29,15 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
-    private final UserAuthorizationService authorizationService;
+    private final UserAuthorizationActivity userAuthorizationActivity;
     private final SendMailService sendMailService;
     private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
 
     public SendEmailIngestionFlowActivityImpl(
-            UserAuthorizationService authorizationService,
+            UserAuthorizationActivity userAuthorizationActivity,
             IngestionFlowRetrieverService ingestionFlowRetrieverService,
             SendMailService sendMailService) {
-        this.authorizationService = authorizationService;
+        this.userAuthorizationActivity = userAuthorizationActivity;
         this.ingestionFlowRetrieverService  = ingestionFlowRetrieverService;
         this.sendMailService = sendMailService;
     }
@@ -55,19 +53,18 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     public boolean sendEmail(String ingestionFlowId, boolean success) {
         try {
             IngestionFlowDTO ingestionFlowDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
-            UserInfoDTO userInfoDTO = authorizationService.getUserInfoDTO(ingestionFlowDTO.getUserId().getExternalUserId());
+            UserInfoDTO userInfoDTO = userAuthorizationActivity.getUserInfo(ingestionFlowDTO.getUserId().getExternalUserId());
             MailTo mailTo =  getMailFromIngestionFlow(ingestionFlowDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
-            SendEmailActivity sendEmailActivity = new SendEmailActivityImpl();
             EmailConfig emailConfig = new EmailConfig();
             JavaMailSender javaMailSender = emailConfig.getJavaMailSender();
-            sendEmailActivity.sendEmail(sendMailService, javaMailSender, mailTo);
-            return true;
+            sendMailService.sendMail(javaMailSender, mailTo);
         }
         catch (Exception e){
             log.error("Error sending e-mail");
             return false;
         }
+        return true;
     }
 
     private MailTo getMailFromIngestionFlow(IngestionFlowDTO ingestionFlowDTO, boolean success) throws Exception {

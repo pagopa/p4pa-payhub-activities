@@ -2,9 +2,8 @@ package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
-import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
-import it.gov.pagopa.payhub.activities.service.auth.UserAuthorizationService;
+import it.gov.pagopa.payhub.activities.utility.UserAuthorizationActivity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,7 @@ class SendEmailIngestionFlowActivityTest {
     private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
 
     @Mock
-    UserAuthorizationService authorizationService;
+    UserAuthorizationActivity userAuthorizationActivity;
     @Mock
     IngestionFlowRetrieverService ingestionFlowRetrieverService;
     @Mock
@@ -38,7 +37,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionSuccess() {
         String ingestionFlowId = "100";
-        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(authorizationService, ingestionFlowRetrieverService, sendMailService);
+        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(userAuthorizationActivity, ingestionFlowRetrieverService, sendMailService);
         assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, true));
     }
 
@@ -49,7 +48,7 @@ class SendEmailIngestionFlowActivityTest {
     void sendEmailIngestionError() {
         String ingestionFlowId = "100";
         sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(
-                authorizationService, ingestionFlowRetrieverService, sendMailService);
+                userAuthorizationActivity, ingestionFlowRetrieverService, sendMailService);
         assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, false));
     }
 
