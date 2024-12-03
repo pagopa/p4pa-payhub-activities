@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.reportingflow;
 
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class PaymentsReportingDTO {
 	private Timestamp creationDate;
 	private Timestamp lastChangeDate;
 	private OrganizationDTO orgId;
-	private IngestionFlowDTO ingestionFlowId;
+	private IngestionFlowFileDTO ingestionFlowId;
 	private String idPsp;
 	private String flowIdentifierCode;
 	private Timestamp flowDateTime;
