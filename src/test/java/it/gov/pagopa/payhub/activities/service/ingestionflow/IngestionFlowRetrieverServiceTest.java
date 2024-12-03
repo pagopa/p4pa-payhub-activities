@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowDao;
-import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
+import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,25 +19,25 @@ import static org.mockito.Mockito.when;
 class IngestionFlowRetrieverServiceTest {
 
 	@Mock
-	private IngestionFlowDao ingestionFlowDaoMock;
+	private IngestionFlowFileDao ingestionFlowFileDaoMock;
 
 	private IngestionFlowRetrieverService service;
 
 	@BeforeEach
 	void init() {
-		service = new IngestionFlowRetrieverService(ingestionFlowDaoMock);
+		service = new IngestionFlowRetrieverService(ingestionFlowFileDaoMock);
 	}
 
 	@Test
 	void givenIngestionFlowIdThenSuccess() {
 		Long ingestionFlowId = 1L;
-		IngestionFlowDTO expected = IngestionFlowDTO.builder()
+		IngestionFlowFileDTO expected = IngestionFlowFileDTO.builder()
 			.ingestionFlowId(ingestionFlowId)
 			.build();
 
-		when(ingestionFlowDaoMock.getIngestionFlow(ingestionFlowId)).thenReturn(Optional.of(expected));
+		when(ingestionFlowFileDaoMock.getIngestionFlow(ingestionFlowId)).thenReturn(Optional.of(expected));
 
-		IngestionFlowDTO actual = service.getIngestionFlow(ingestionFlowId);
+		IngestionFlowFileDTO actual = service.getIngestionFlow(ingestionFlowId);
 
 		assertEquals(expected, actual);
 	}
@@ -45,7 +45,7 @@ class IngestionFlowRetrieverServiceTest {
 	@Test
 	void givenIngestionFlowIdThenThrowIngestionFlowNotFoundException() {
 		Long ingestionFlowId = 1L;
-		when(ingestionFlowDaoMock.getIngestionFlow(ingestionFlowId)).thenReturn(Optional.empty());
+		when(ingestionFlowFileDaoMock.getIngestionFlow(ingestionFlowId)).thenReturn(Optional.empty());
 		assertThrows(IngestionFlowNotFoundException.class, () -> service.getIngestionFlow(ingestionFlowId));
 	}
 }

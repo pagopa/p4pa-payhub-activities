@@ -1,37 +1,39 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
-import it.gov.pagopa.payhub.activities.dto.ingestionflow.IngestionFlowDTO;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.ReportingFlowIngestionActivityResult;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFileHandlerService;
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingIngestionFlowActivityResult;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrieverService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ReportingFlowIngestionActivityImplTest {
+class PaymentsReportingIngestionFlowActivityImplTest {
 
 	private IngestionFlowRetrieverService ingestionFlowRetrieverService;
-	private IngestionFileHandlerService ingestionFileHandlerService;
-	private ReportingFlowIngestionActivityImpl ingestionActivity;
+	private IngestionFileRetrieverService ingestionFileRetrieverService;
+	private PaymentsReportingIngestionFlowActivityImpl ingestionActivity;
 
 	@BeforeEach
 	void setUp() {
 		ingestionFlowRetrieverService = mock(IngestionFlowRetrieverService.class);
-		ingestionFileHandlerService = mock(IngestionFileHandlerService.class);
+		ingestionFileRetrieverService = mock(IngestionFileRetrieverService.class);
 
-		ingestionActivity = new ReportingFlowIngestionActivityImpl(
+		ingestionActivity = new PaymentsReportingIngestionFlowActivityImpl(
 			ingestionFlowRetrieverService,
-			ingestionFileHandlerService
+			ingestionFileRetrieverService
 		);
 	}
 
 	@Test
-	void processFile_SuccessfulFlow() throws Exception {
+	void retrieveFile_SuccessfulFlow() throws Exception {
 		// Given
-		String ingestionFlowId = "123";
-		IngestionFlowDTO mockFlowDTO = new IngestionFlowDTO();
+		long ingestionFlowId = 123L;
+		IngestionFlowFileDTO mockFlowDTO = new IngestionFlowFileDTO();
 		mockFlowDTO.setFilePathName("/valid/path");
 		mockFlowDTO.setFileName("valid-file.zip");
 		mockFlowDTO.setRequestTokenCode("valid-token");
@@ -40,39 +42,39 @@ class ReportingFlowIngestionActivityImplTest {
 			.thenReturn(mockFlowDTO);
 
 		// When
-		ReportingFlowIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+		PaymentsReportingIngestionFlowActivityResult result = ingestionActivity.processFile(ingestionFlowId);
 
 		// Then
 		assertTrue(result.isSuccess());
 		assertNotNull(result.getIufs());
 		verify(ingestionFlowRetrieverService, times(1))
 			.getIngestionFlow(Long.valueOf(ingestionFlowId));
-		verify(ingestionFileHandlerService, times(1))
-			.setUpProcess(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+		verify(ingestionFileRetrieverService, times(1))
+			.retrieveFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
 	}
 
 	@Test
-	void processFile_FlowRetrieverFails() {
+	void retrieveFile_FlowRetrieverFails() {
 		// Given
-		String ingestionFlowId = "123";
+		long ingestionFlowId = 123L;
 		when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId)))
 			.thenThrow(new RuntimeException("Flow retriever failed"));
 
 		// When
-		ReportingFlowIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+		PaymentsReportingIngestionFlowActivityResult result = ingestionActivity.processFile(ingestionFlowId);
 
 		// Then
 		assertFalse(result.isSuccess());
 		verify(ingestionFlowRetrieverService, times(1))
 			.getIngestionFlow(Long.valueOf(ingestionFlowId));
-		verifyNoInteractions(ingestionFileHandlerService);
+		verifyNoInteractions(ingestionFileRetrieverService);
 	}
 
 	@Test
-	void processFile_SetupProcessFails() throws Exception {
+	void retrieveFile_RetrieveFileFails() throws Exception {
 		// Given
-		String ingestionFlowId = "123";
-		IngestionFlowDTO mockFlowDTO = new IngestionFlowDTO();
+		long ingestionFlowId = 123L;
+		IngestionFlowFileDTO mockFlowDTO = new IngestionFlowFileDTO();
 		mockFlowDTO.setFilePathName("/valid/path");
 		mockFlowDTO.setFileName("valid-file.zip");
 		mockFlowDTO.setRequestTokenCode("valid-token");
@@ -81,17 +83,17 @@ class ReportingFlowIngestionActivityImplTest {
 			.thenReturn(mockFlowDTO);
 
 		doThrow(new RuntimeException("Setup process failed"))
-			.when(ingestionFileHandlerService)
-			.setUpProcess(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+			.when(ingestionFileRetrieverService)
+			.retrieveFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
 
 		// When
-		ReportingFlowIngestionActivityResult result = ingestionActivity.processFile(ingestionFlowId);
+		PaymentsReportingIngestionFlowActivityResult result = ingestionActivity.processFile(ingestionFlowId);
 
 		// Then
 		assertFalse(result.isSuccess());
 		verify(ingestionFlowRetrieverService, times(1))
 			.getIngestionFlow(Long.valueOf(ingestionFlowId));
-		verify(ingestionFileHandlerService, times(1))
-			.setUpProcess(mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+		verify(ingestionFileRetrieverService, times(1))
+			.retrieveFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
 	}
 }
