@@ -23,3 +23,11 @@ data "azurerm_key_vault_secret" "sonar_token" {
   key_vault_id = data.azurerm_key_vault.key_vault_core.id
   name         = "sonar-cloud-token"
 }
+
+# Key Vault - Sonar Token
+data "azurerm_key_vault_secret" "github_token" {
+  count = var.env_short == "p" ? 1 : 0
+
+  key_vault_id = data.azurerm_key_vault.key_vault_core.id
+  name         = "azure-devops-github-rw-TOKEN"
+}

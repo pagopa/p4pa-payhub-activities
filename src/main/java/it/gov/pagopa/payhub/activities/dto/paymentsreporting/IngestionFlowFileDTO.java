@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.reportingflow;
+package it.gov.pagopa.payhub.activities.dto.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import lombok.AllArgsConstructor;
@@ -8,12 +8,16 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
+/**
+ * Data Transfer Object (DTO) representing the details of an ingestion flow.
+ *
+ **/
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IngestionFlowDTO {
-	private Long ingestionFlowId;
+public class IngestionFlowFileDTO {
+	private Long ingestionFlowFileId;
 	private int version;
 	private OrganizationDTO orgId;
 	private String PspIdentifier;
@@ -35,3 +39,4 @@ public class IngestionFlowDTO {
 	private Long TotalRowsNumber;
 	private Long numberLinesImportedCorrectly;
 }
+
