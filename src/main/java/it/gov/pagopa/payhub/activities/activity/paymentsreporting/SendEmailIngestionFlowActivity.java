@@ -1,11 +1,10 @@
-package it.gov.pagopa.payhub.activities.activity.fdr;
+package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 /**
  * Interface for SendEmailIngestionFlowActivity.
  * Sends an email based on the status of a processed file identified by its IngestionFlow ID.
  */
 public interface SendEmailIngestionFlowActivity {
-
     /**
      * Sends an email based on the process result of the given file ingestionFlow ID.
      *

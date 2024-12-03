@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.fdr;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 /**
  * Interface for the UpdateIngestionFlowStatusActivity.
