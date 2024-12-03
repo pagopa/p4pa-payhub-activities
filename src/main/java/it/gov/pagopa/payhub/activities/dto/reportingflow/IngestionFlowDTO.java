@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.reportingflow;
 
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class IngestionFlowDTO {
 	private Long ingestionFlowId;
 	private int version;
 	private OrganizationDTO orgId;
+	private UserDTO userId;
 	private String PspIdentifier;
 	private String flowIdentifierCode;
 	private Timestamp flowDateTime;

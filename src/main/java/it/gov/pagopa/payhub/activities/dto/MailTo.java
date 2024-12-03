@@ -9,14 +9,14 @@ import org.springframework.context.annotation.Lazy;
 import java.util.Map;
 
 /**
- * Utility DTO to manage mail parameters
+ * Utility transfer object to manage mail parameters
  */
 @Data
 @Builder(toBuilder=true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Lazy
-public class MailDTO {
+public class MailTo {
     Map<String, String> params;
     private String[] to;
     private String mailSubject;

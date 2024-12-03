@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.helper;
 
-import it.gov.pagopa.payhub.activities.dto.MailDTO;
+import it.gov.pagopa.payhub.activities.dto.MailTo;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.util.Assert;
 
@@ -8,16 +8,13 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public final class MailParameterHelper {
-    private MailParameterHelper() {
-    }
-
     /**
      *  helper for composing e-mail parameters
      *
      * @param mailDTO parameters not updated
      * @return parameters updated
      */
-    public static MailDTO getMailParameters(MailDTO mailDTO) throws Exception {
+    public MailTo getMailParameters(MailTo mailDTO) throws Exception {
         Properties mailProperties = getProperties();
         Assert.notEmpty(mailProperties.values(), "Wrong mail configuration");
         String templateName = mailDTO.getTemplateName();

@@ -1,50 +1,35 @@
 package it.gov.pagopa.payhub.activities.activity;
 
-import helper.IngestionMailHelper;
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivityImpl;
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
-import it.gov.pagopa.payhub.activities.dto.MailDTO;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.IngestionFlowDTO;
-import it.gov.pagopa.payhub.activities.utils.Constants;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.IngestionFlowRetrieverService;
+import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
+import it.gov.pagopa.payhub.activities.service.SendMailService;
+import it.gov.pagopa.payhub.activities.service.auth.UserAuthorizationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * test class for send mail for ingestion activity
  */
 @ExtendWith(MockitoExtension.class)
 class SendEmailIngestionFlowActivityTest {
+    private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
+
+    @Mock
+    UserAuthorizationService authorizationService;
+    @Mock
+    IngestionFlowRetrieverService ingestionFlowRetrieverService;
     @Mock
     SendMailService sendMailService;
 
-    private JavaMailSender javaMailSender;
-    private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
-
-    private String fileName;
-    private  String templateName;
-    private Long ingestionFlowId;
-    private Long fileSize;
-    private Long totalRowsNumber;
-    private String emailFromAddress;
-    private String emailToAddress;
-
     @BeforeEach
     void init() {
-        javaMailSender = new JavaMailSenderImpl();
-        ingestionFlowId = 100L;
-        emailFromAddress = "activities@test.com";
-        emailToAddress = "test@test.com";
-        fileName = "test.zip";
+
     }
 
     /**
@@ -52,18 +37,17 @@ class SendEmailIngestionFlowActivityTest {
      */
     @Test
     void sendEmailIngestionSuccess() {
+        String ingestionFlowId = "100";
         boolean success = true;
-        fileSize = 1000L;
-        totalRowsNumber = 10L;
-        templateName = "mail-reportingFlow-ok";
-
         try {
-            MailDTO mailDTO = setMailParams();
-            sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(sendMailService, javaMailSender, mailDTO);
-            assertTrue(sendEmailIngestionFlowActivity.sendEmail(String.valueOf(ingestionFlowId), success));
+            sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(authorizationService, ingestionFlowRetrieverService, sendMailService);
+            success = sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, success);
+        } catch (IngestionFlowNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        assertFalse(success);
     }
 
     /**
@@ -71,40 +55,18 @@ class SendEmailIngestionFlowActivityTest {
      */
     @Test
     void sendEmailIngestionError() {
-        boolean success = true;
-        fileSize = 0L;
-        totalRowsNumber = 0L;
-        templateName = "mail-reportingFlow-error";
-
+        String ingestionFlowId = "100";
+        boolean success = false;
         try {
-            MailDTO mailDTO = setMailParams();
-            sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(sendMailService, javaMailSender, mailDTO);
-            assertTrue(sendEmailIngestionFlowActivity.sendEmail(String.valueOf(ingestionFlowId), success));
+            sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(
+                    authorizationService, ingestionFlowRetrieverService, sendMailService);
+            success = sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, success);
+        } catch (IngestionFlowNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        assertFalse(success);
     }
 
-    /**
-     * setting email parameters for test
-     */
-    private MailDTO setMailParams() throws Exception {
-        IngestionFlowDTO ingestionFlowDTO = new IngestionFlowDTO();
-        ingestionFlowDTO.setFileName(fileName);
-        ingestionFlowDTO.setIngestionFlowId(ingestionFlowId);
-        ingestionFlowDTO.setDownloadedFileSize(fileSize);
-        ingestionFlowDTO.setTotalRowsNumber(totalRowsNumber);
-        
-        DateFormat parser = new SimpleDateFormat(Constants.MAIL_DATE_FORMAT);
-        String actualDate = parser.format(new Date());
-
-        MailDTO mailDTO  = IngestionMailHelper.getMailIngestionFlowText(ingestionFlowDTO, actualDate);
-        mailDTO.setTemplateName(templateName);
-        mailDTO.setEmailFromAddress(emailFromAddress);
-        mailDTO.setTo(new String[]{emailToAddress});
-        mailDTO.setEmailFromAddress(emailFromAddress);
-
-        return mailDTO;
-    }
 }
-

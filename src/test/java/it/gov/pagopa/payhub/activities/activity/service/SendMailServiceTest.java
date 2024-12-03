@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.service;
 
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.service.SendMailService;
 import it.gov.pagopa.payhub.activities.config.EmailConfig;
-import it.gov.pagopa.payhub.activities.dto.MailDTO;
+import it.gov.pagopa.payhub.activities.dto.MailTo;
+import it.gov.pagopa.payhub.activities.service.SendMailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,16 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
 class SendMailServiceTest {
-    MailDTO mailDTO;
     SendMailService sendMailService;
-    JavaMailSender javaMailSender;
 
     @BeforeEach
     void init() {
-        EmailConfig emailConfig = new EmailConfig();
-        javaMailSender = emailConfig.getJavaMailSender();
         sendMailService = new SendMailService();
-        mailDTO = new MailDTO();
     }
 
     /**
@@ -31,14 +26,17 @@ class SendMailServiceTest {
     @Test
     void sendMail() {
         boolean result = true;
-        mailDTO.setMailSubject("Mail Subject");
-        mailDTO.setMailText("Mail text");
-        mailDTO.setHtmlText("HTML Text");
-        mailDTO.setEmailFromAddress("mailfrom@test.com");
-        mailDTO.setTo(new String[]{"mailto@test.com"});
+        MailTo mailTo = new MailTo();
+        mailTo.setMailSubject("Mail Subject");
+        mailTo.setMailText("Mail text");
+        mailTo.setHtmlText("HTML Text");
+        mailTo.setEmailFromAddress("mailfrom@test.com");
+        mailTo.setTo(new String[]{"mailto@test.com"});
 
         try {
-            sendMailService.sendMail(javaMailSender, mailDTO);
+            EmailConfig emailConfig = new EmailConfig();
+            JavaMailSender javaMailSender = emailConfig.getJavaMailSender();
+            result = sendMailService.sendMail(javaMailSender, mailTo);
         }
         catch (Exception e){
             result = false;
