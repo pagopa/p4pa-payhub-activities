@@ -16,7 +16,7 @@ public class IngestionFlowDTO {
 	private Long ingestionFlowId;
 	private int version;
 	private OrganizationDTO orgId;
-	private String PspIdentifier;
+	private String idPsp;
 	private String flowIdentifierCode;
 	private Timestamp flowDateTime;
 	private String flowType;
