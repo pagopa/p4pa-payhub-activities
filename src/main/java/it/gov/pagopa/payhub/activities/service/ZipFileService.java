@@ -6,13 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
 import java.io.*;
-=======
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
->>>>>>> P4ADEV-1545-FdRIngestionActity-implementation-retrieval-via-query-file-validation
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -20,12 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-<<<<<<< HEAD
 import java.util.zip.ZipOutputStream;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-=======
->>>>>>> P4ADEV-1545-FdRIngestionActity-implementation-retrieval-via-query-file-validation
 
 /**
  * Service class for performing common file operations, including
@@ -250,7 +244,6 @@ public class ZipFileService {
 		checkFileName(entry.getName());
 		return entry;
 	}
-<<<<<<< HEAD
 
 	/**
 	 * Moves the specified file to the target directory, keeping the original file name.
@@ -340,6 +333,4 @@ public class ZipFileService {
 		Files.copy(file, zos);
 		zos.closeEntry();
 	}
-=======
->>>>>>> P4ADEV-1545-FdRIngestionActity-implementation-retrieval-via-query-file-validation
 }
