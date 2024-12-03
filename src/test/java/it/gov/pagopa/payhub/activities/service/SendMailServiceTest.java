@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class SendMailServiceTest {
@@ -36,7 +35,13 @@ class SendMailServiceTest {
 		mailto.setTemplateName(Constants.TEMPLATE_LOAD_FILE_OK);
 		JavaMailSender javaMailSender = emailConfig.getJavaMailSender();
 
-		assertFalse(sendMailService.sendMail(javaMailSender, mailto));
-	}
+		boolean testOK = true;
+        try {
+            sendMailService.sendMail(javaMailSender, mailto);
+        } catch (Exception e) {
+			testOK = false;
+		}
+		assertFalse(testOK);
+    }
 
 }

@@ -14,27 +14,18 @@ public class SendMailService {
      *
      * @param javaMailSender mail sender
      * @param mailTo bean containing data to send
-     * @return boolean true if mail is sent otherwise false
      */
-    public boolean sendMail(JavaMailSender javaMailSender, MailTo mailTo) {
-        try {
-            String subject = mailTo.getMailSubject();
-            String htmlContent = mailTo.getHtmlText();
+    public void sendMail(JavaMailSender javaMailSender, MailTo mailTo) throws Exception {
+        String subject = mailTo.getMailSubject();
+        String htmlContent = mailTo.getHtmlText();
 
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            //helper.addAttachment();
-            helper.setFrom(mailTo.getEmailFromAddress());
-            helper.setTo(mailTo.getTo());
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true);
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(mailTo.getEmailFromAddress());
+        helper.setTo(mailTo.getTo());
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true);
 
-            javaMailSender.send(message);
-        }
-        catch (Exception e){
-            log.error("Mail sender error");
-            return false;
-        }
-        return true;
+        javaMailSender.send(message);
     }
 }
