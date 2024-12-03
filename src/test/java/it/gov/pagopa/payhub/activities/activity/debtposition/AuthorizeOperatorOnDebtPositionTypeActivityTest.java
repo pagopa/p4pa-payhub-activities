@@ -26,7 +26,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
 
     @BeforeEach
     void init() {
-        authorizeOperatorOnDebtPositionTypeActivity = new AuthorizeOperatorOnDebtPositionTypeActivity(debtPositionTypeOrgDao);
+        authorizeOperatorOnDebtPositionTypeActivity = new AuthorizeOperatorOnDebtPositionTypeActivityImpl(debtPositionTypeOrgDao);
     }
 
     @Test
