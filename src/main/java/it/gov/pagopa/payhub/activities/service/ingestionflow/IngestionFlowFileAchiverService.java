@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 
 public class IngestionFlowFileAchiverService {
@@ -30,12 +32,20 @@ public class IngestionFlowFileAchiverService {
 		this.zipFileService = zipFileService;
 	}
 
-	public void compressAndArchiveFile(List<Path> files, Path sourcePath, String outputFilename) throws IOException {
+	public void compressArchiveFileCleanUp(List<Path> files, Path sourcePath, String outputFilename) throws IOException {
 		Path workingPath = files.get(0).getParent();
 		Path zipFilePath = workingPath.resolve(outputFilename);
 		File zipped = zipFileService.zipper(zipFilePath, files);
+
 		AESUtils.encrypt(dataCipherPsw, zipped);
+
 		Path targetPath = sourcePath.resolve(storeDirectory);
+
 		zipFileService.moveFile(zipped, targetPath);
+
+		Files.walk(workingPath)
+			.sorted(Comparator.reverseOrder())
+			.map(Path::toFile)
+			.forEach(File::delete);
 	}
 }
