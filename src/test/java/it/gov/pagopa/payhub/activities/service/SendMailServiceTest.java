@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
+import java.rmi.UnexpectedException;
+
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
+
+@Slf4j
 @SpringBootTest(
 		classes = {SendEmailIngestionFlowActivityImpl.class},
 		webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -29,8 +36,8 @@ class SendMailServiceTest {
 
 	private MailTo validMailOk;
 	private MailTo validMailKo;
-	//private MailTo invalidMailOk;
-	//private MailTo invalidMailKo;
+	private MailTo invalidMailOk;
+	private MailTo invalidMailKo;
 
 
 	@BeforeEach
@@ -51,7 +58,6 @@ class SendMailServiceTest {
 			.emailFromAddress("test_sender@mailtest.com")
 			.templateName("reportingFlow-ko")
 			.build();
-/*
 		invalidMailOk = MailTo.builder()
 				.mailSubject(null)
 				.to(new String[]{})
@@ -63,56 +69,25 @@ class SendMailServiceTest {
 				.to(new String[]{})
 				.templateName("reportingFlow-ko")
 				.build();
- */
-	}
-
-    @Test
-	void testSendEmailOkSuccess() {
-		boolean ret = true;
-		try {
-			Mockito.doNothing().when(sendMailService).sendMail(validMailOk);
-		}
-		catch (MessagingException e) {
-			ret = false;
-		}
-		Assertions.assertTrue(ret);
-    }
-
-    @Test
-	void testSendEmailKoSuccess() {
-		boolean ret = true;
-		try {
-			Mockito.doNothing().when(sendMailService).sendMail(validMailKo);
-		}
-		catch (MessagingException e) {
-			ret = false;
-		}
-		Assertions.assertTrue(ret);
-	}
-
-	/*
-	@Test
-	void testSendEmailOkFailed() {
-		boolean ret = true;
-		try {
-			Mockito.doNothing().when(sendMailService).sendMail(invalidMailOk);
-		}
-		catch (MessagingException e) {
-			ret = false;
-		}
-		Assertions.assertFalse(ret);
 	}
 
 	@Test
-	void testSendEmailKoFailed() {
-		boolean ret = true;
-		try {
-			Mockito.doNothing().when(sendMailService).sendMail(invalidMailKo);
-		}
-		catch (MessagingException e) {
-			ret = false;
-		}
-		Assertions.assertFalse(ret);
+	void testSendEmailValidMail() throws MessagingException {
+		SendMailService sms = mock(SendMailService.class);
+		doNothing().when(sms).sendMail(isA(MailTo.class));
+		sms.sendMail(validMailOk);
+		Mockito.verify(sms, times(1)).sendMail(validMailOk);
 	}
-	*/
+
+	@Test
+	void testSendEmailOkInvalidMail() {
+		SendMailService sms = mock(SendMailService.class);
+		try {
+			doThrow(new MessagingException()).when(sms).sendMail(invalidMailOk);
+			sms.sendMail(invalidMailOk);
+		} catch (MessagingException e) {
+			System.out.println("Exception in sending invalid mail");
+		}
+	}
+
 }
