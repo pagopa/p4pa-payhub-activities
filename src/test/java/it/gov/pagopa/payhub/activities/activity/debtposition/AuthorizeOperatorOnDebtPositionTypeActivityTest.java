@@ -1,7 +1,5 @@
-package it.gov.pagopa.payhub.activities.activity;
+package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivityImpl;
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
