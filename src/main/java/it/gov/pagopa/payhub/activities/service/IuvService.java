@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.dao.ProgressiviVersamentoDao;
+import it.gov.pagopa.payhub.activities.dao.IuvSequenceNumberDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class exposing methods related to IUV handling.
+ */
 @Lazy
 @Service
 @Slf4j
@@ -19,20 +22,25 @@ public class IuvService {
 
   private final String informationSystemId;
 
-  private final ProgressiviVersamentoDao progressiviVersamentoDao;
+  private final IuvSequenceNumberDao progressiviVersamentoDao;
 
   public IuvService(@Value("${iuv.informationSystemId:00}") String informationSystemId,
-                    ProgressiviVersamentoDao progressiviVersamentoDao) {
+                    IuvSequenceNumberDao iuvSequenceNumberDao) {
     this.informationSystemId = informationSystemId;
-    this.progressiviVersamentoDao = progressiviVersamentoDao;
+    this.progressiviVersamentoDao = iuvSequenceNumberDao;
   }
 
 
+  /**
+   * Generate a valid and unique IUV given the organization entity.
+   * @param org the organization for which to generate the IUV
+   * @return the generated IUV
+   */
   public String generateIuv(OrganizationDTO org){
     StringBuilder iuvBuilder = new StringBuilder();
     iuvBuilder.append(org.getApplicationCode());
     iuvBuilder.append(informationSystemId);
-    long paymentIndex = progressiviVersamentoDao.getNextProgressivoVersamento(org.getIpaCode());
+    long paymentIndex = progressiviVersamentoDao.getNextIuvSequenceNumber(org.getIpaCode());
     if(paymentIndex<1){
       log.error("invalid payment index returned for org[{}/{}]: {}", org.getIpaCode(), org.getOrgFiscalCode(), paymentIndex);
       throw new ValueNotValidException("invalid payment index");
@@ -49,6 +57,11 @@ public class IuvService {
     return iuvBuilder.toString();
   }
 
+  /**
+   * Utility method to generate the NAV (notice number) given the corresponding IUV.
+   * @param iuv the IUV for which to generate the NAV
+   * @return the generated NAV
+   */
   public String iuv2Nav(String iuv){
     if(isValidIuv(iuv))
       return AUX_DIGIT + iuv;
@@ -56,6 +69,11 @@ public class IuvService {
       throw new ValueNotValidException("invalid iuv");
   }
 
+  /**
+   * Utility method to extract the IUV given the corresponding NAV (notice number).
+   * @param nav the NAV for which to extract the IUV
+   * @return the extraxted IUV
+   */
   public String nav2Iuv(String nav){
     if(isValidNav(nav)){
       return nav.substring(AUX_DIGIT.length());
@@ -64,10 +82,20 @@ public class IuvService {
     }
   }
 
+  /**
+   * Utility method to formally validate a IUV.
+   * @param iuv the IUV to validate
+   * @return true if valid, otherwise false
+   */
   public boolean isValidIuv(String iuv){
     return isValidNav(StringUtils.join(AUX_DIGIT+iuv));
   }
 
+  /**
+   * Utility method to formally validate a NAV.
+   * @param nav the NAV to validate
+   * @return true if valid, otherwise false
+   */
   public boolean isValidNav(String nav){
     if(StringUtils.length(nav)==18 || !StringUtils.startsWith(nav, AUX_DIGIT)){
       try{

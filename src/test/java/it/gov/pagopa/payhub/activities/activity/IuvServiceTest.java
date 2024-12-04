@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity;
 
-import it.gov.pagopa.payhub.activities.dao.ProgressiviVersamentoDao;
+import it.gov.pagopa.payhub.activities.dao.IuvSequenceNumberDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
 import it.gov.pagopa.payhub.activities.service.IuvService;
@@ -26,7 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 public class IuvServiceTest {
 
   @MockBean
-  private ProgressiviVersamentoDao progressiviVersamentoDao;
+  private IuvSequenceNumberDao iuvSequenceNumberDao;
 
   @Autowired
   private IuvService iuvService;
@@ -58,18 +58,18 @@ public class IuvServiceTest {
   @Test
   void givenValidOrgWhenGenerateIuvThenOk(){
     //Given
-    Mockito.when(progressiviVersamentoDao.getNextProgressivoVersamento(VALID_ORG_IPA_CODE)).thenReturn(VALID_PAYMENT_INDEX);
+    Mockito.when(iuvSequenceNumberDao.getNextIuvSequenceNumber(VALID_ORG_IPA_CODE)).thenReturn(VALID_PAYMENT_INDEX);
     //When
     String result = iuvService.generateIuv(VALID_ORG);
     //Verify
     Assertions.assertEquals(VALID_IUV, result);
-    Mockito.verify(progressiviVersamentoDao, Mockito.times(1)).getNextProgressivoVersamento(VALID_ORG_IPA_CODE);
+    Mockito.verify(iuvSequenceNumberDao, Mockito.times(1)).getNextIuvSequenceNumber(VALID_ORG_IPA_CODE);
   }
 
   @Test
   void givenEmptyOrgWhenGenerateIuvThenException(){
     //Given
-    Mockito.when(progressiviVersamentoDao.getNextProgressivoVersamento(INVALID_ORG_IPA_CODE)).thenReturn(INVALID_PAYMENT_INDEX);
+    Mockito.when(iuvSequenceNumberDao.getNextIuvSequenceNumber(INVALID_ORG_IPA_CODE)).thenReturn(INVALID_PAYMENT_INDEX);
     //Verify
     Assertions.assertThrows(ValueNotValidException.class, () -> iuvService.generateIuv(INVALID_ORG));
   }

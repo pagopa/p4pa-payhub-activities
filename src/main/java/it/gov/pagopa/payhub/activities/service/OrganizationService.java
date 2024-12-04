@@ -5,6 +5,11 @@ import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
+/**
+ * Service class exposing methods related to Organization entity.
+ */
 @Lazy
 @Service
 public class OrganizationService {
@@ -15,7 +20,12 @@ public class OrganizationService {
     this.organizationDao = organizationDao;
   }
 
-  public OrganizationDTO getOrganizationByFiscalCode(String orgFiscalCode){
-    return organizationDao.getOrganizationByFiscalCode(orgFiscalCode);
+  /*
+   * Retrieve organization entity by fiscal code.
+   * @param orgFiscalCode the fiscal code of the organization to retrieve
+   * @return the retrieved organization
+   */
+  public Optional<OrganizationDTO> getOrganizationByFiscalCode(String orgFiscalCode){
+    return Optional.ofNullable(organizationDao.getOrganizationByFiscalCode(orgFiscalCode));
   }
 }

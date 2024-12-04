@@ -13,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 @ExtendWith(MockitoExtension.class)
 public class GenerateIuvActivityTest {
 
@@ -39,7 +41,7 @@ public class GenerateIuvActivityTest {
   @Test
   void givenValidOrgWhenGenerateIuvThenOk(){
     //Given
-    Mockito.when(organizationService.getOrganizationByFiscalCode(VALID_ORG_FISCAL_CODE)).thenReturn(VALID_ORG);
+    Mockito.when(organizationService.getOrganizationByFiscalCode(VALID_ORG_FISCAL_CODE)).thenReturn(Optional.of(VALID_ORG));
     Mockito.when(iuvService.generateIuv(VALID_ORG)).thenReturn(VALID_IUV);
     //When
     String result = generateIuvActivity.generateIuv(VALID_ORG_FISCAL_CODE);
@@ -59,7 +61,7 @@ public class GenerateIuvActivityTest {
   @Test
   void givenInvalidOrgWhenGenerateIuvThenException(){
     //Given
-    Mockito.when(organizationService.getOrganizationByFiscalCode(INVALID_ORG_FISCAL_CODE)).thenReturn(null);
+    Mockito.when(organizationService.getOrganizationByFiscalCode(INVALID_ORG_FISCAL_CODE)).thenReturn(Optional.empty());
     //Verify
     ValueNotValidException exception = Assertions.assertThrows(ValueNotValidException.class, () -> generateIuvActivity.generateIuv(INVALID_ORG_FISCAL_CODE));
     Assertions.assertEquals("invalid organization", exception.getMessage());
