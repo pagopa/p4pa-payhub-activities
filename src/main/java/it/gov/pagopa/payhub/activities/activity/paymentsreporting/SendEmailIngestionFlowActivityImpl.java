@@ -1,11 +1,12 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
+import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrieverService;
 import it.gov.pagopa.payhub.activities.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -19,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -31,30 +33,31 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     private final Environment env;
     private final UserAuthorizationService userAuthorizationService;
     private final SendMailService sendMailService;
-    private final IngestionFlowRetrieverService ingestionFlowRetrieverService;
+    private final IngestionFlowFileDao ingestionFlowFileDao;
 
     public SendEmailIngestionFlowActivityImpl(
             Environment env,
             UserAuthorizationService userAuthorizationService,
-            IngestionFlowRetrieverService ingestionFlowRetrieverService,
+            IngestionFlowFileDao ingestionFlowFileDao,
             SendMailService sendMailService) {
         this.env = env;
         this.userAuthorizationService = userAuthorizationService;
-        this.ingestionFlowRetrieverService  = ingestionFlowRetrieverService;
+        this.ingestionFlowFileDao  = ingestionFlowFileDao;
         this.sendMailService = sendMailService;
     }
 
     /**
      * Sends an email based on the process result of the given file ingestionFlow ID.
      *
-     * @param ingestionFlowId       the unique identifier of the IngestionFlow record related to the imported file.
+     * @param ingestionFlowFileId       the unique identifier of the IngestionFlow record related to the imported file.
      * @param success      true if the process succeeded, false otherwise.
      * @return true if the email was sent successfully, false otherwise.
      */
     @Override
-    public boolean sendEmail(String ingestionFlowId, boolean success) {
+    public boolean sendEmail(Long ingestionFlowFileId, boolean success) {
         try {
-            IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId));
+            IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
+                    .orElseThrow(() -> new IngestionFlowNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
             UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ingestionFlowFileDTO.getUserId().getExternalUserId());
             MailTo mailTo = getMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
