@@ -1,7 +1,5 @@
-package it.gov.pagopa.payhub.activities.activity;
+package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.AuthorizeOperatorOnDebtPositionTypeActivityImpl;
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
@@ -41,7 +39,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         OrganizationDTO organizationDTO = new OrganizationDTO();
         organizationDTO.setOrgId(orgId);
         debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
-        debtPositionTypeOrgDTO.setOrgId(organizationDTO);
+        debtPositionTypeOrgDTO.setOrg(organizationDTO);
 
         when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.of(debtPositionTypeOrgDTO));
@@ -58,7 +56,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         Long debtPositionTypeOrgId = 1L;
 
         DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
-        debtPositionTypeOrgDTO.setTypeCode("TYPE_CODE");
+        debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(1L);
 
         when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.empty());
