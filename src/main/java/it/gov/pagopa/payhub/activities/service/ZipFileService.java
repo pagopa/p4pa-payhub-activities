@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
-import it.gov.pagopa.payhub.activities.util.SecureFileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -30,12 +29,12 @@ import java.util.zip.ZipInputStream;
 @Slf4j
 @Service
 public class ZipFileService {
-	// Maximum number of entries to extract from the ZIP file
+	/** Maximum number of entries to extract from the ZIP file */
 	private final int maxEntries;
-	// Maximum total size (in bytes) of all uncompressed data
-	private final long maxUncompressedSize;  // 50MB
-	// Maximum allowed compression ratio (compressed size / uncompressed size)
-	private final double maxCompressionRatio;  // 10%
+	/** Maximum total size (in bytes) of all uncompressed data, for example 50MB */
+	private final long maxUncompressedSize;
+	/** Maximum allowed compression ratio (compressed size / uncompressed size), for example 10% */
+	private final double maxCompressionRatio;
 
 	public ZipFileService(@Value("${zip-file.max-entries:1000}") int maxEntries,
 						  @Value("${zip-file.max-uncompressed-size:50 * 1024 * 1024}") long maxUncompressedSize,
@@ -154,6 +153,7 @@ public class ZipFileService {
 	 * @throws InvalidIngestionFileException if the ZIP entry is invalid.
 	 */
 	private Path validateAndPrepareTargetPath(ZipEntry zipEntry, Path target) throws IOException {
+		checkFileName(zipEntry);
 		Path targetPath = zipSlipProtect(zipEntry, target);
 		Files.createDirectories(targetPath.getParent());
 		return targetPath;
@@ -196,7 +196,7 @@ public class ZipFileService {
 	 * @throws InvalidIngestionFileException if the ZIP entry is outside the target directory.
 	 */
 	private Path zipSlipProtect(ZipEntry zipEntry, Path targetDir) {
-		String checkedFilename = SecureFileUtils.checkFileName(zipEntry.getName());
+		String checkedFilename = checkFileName(zipEntry.getName());
 		Path targetDirResolved = targetDir.resolve(checkedFilename);
 		Path normalizePath = targetDirResolved.normalize();
 		if (!normalizePath.startsWith(targetDir)) {
@@ -218,7 +218,7 @@ public class ZipFileService {
 	 * @return the file name if it is deemed safe.
 	 * @throws IllegalArgumentException if the file name is deemed unsafe.
 	 */
-	public static String checkFileName(String fileName) throws IllegalArgumentException {
+	private static String checkFileName(String fileName) throws IllegalArgumentException {
 		if (!Character.isLetterOrDigit(fileName.charAt(0)) || fileName.contains("..")) {
 			throw new InvalidIngestionFileException("Potential Zip Slip exploit detected: " + fileName);
 		}
@@ -236,7 +236,7 @@ public class ZipFileService {
 	 * @return the original {@code ZipEntry} if the file name is deemed safe.
 	 * @throws IllegalArgumentException if the file name of the ZIP entry is deemed unsafe.
 	 */
-	public static ZipEntry checkFileName(ZipEntry entry) throws IllegalArgumentException {
+	private static ZipEntry checkFileName(ZipEntry entry) throws IllegalArgumentException {
 		checkFileName(entry.getName());
 		return entry;
 	}

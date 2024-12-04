@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,14 +16,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static it.gov.pagopa.payhub.activities.util.FilesUtils.addZipEntry;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class IngestionFileRetrieverServiceTest {
+class IngestionFlowFileRetrieverServiceTest {
 	private static final String TEST_CIPHER_PSW = "testPassword";
 	private static final String TEMPORARY_PATH = "/tmp/";
 
@@ -34,23 +33,23 @@ class IngestionFileRetrieverServiceTest {
 	@Mock
 	private ZipFileService zipFileService;
 
-	@InjectMocks
-	private IngestionFileRetrieverService ingestionFileRetrieverService;
+	private IngestionFlowFileRetrieverService service;
 
 	private Path zipFile;
 
 	@TempDir
-	Path tempDir;
+	private Path tempDir;
 
 	@BeforeEach
 	void setup() throws IOException {
+		service = new IngestionFlowFileRetrieverService(TEMPORARY_PATH, TEST_CIPHER_PSW, fileValidatorService, zipFileService);
 		zipFile = tempDir.resolve("encryptedFile.zip.cipher");
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 			addZipEntry(zos, "file1.txt", "This is the content of file1.");
 			addZipEntry(zos, "file2.txt", "This is the content of file2.");
 		}
 	}
-/*
+
 	@Test
 	void testRetrieveFile_successfulFlow() throws IOException {
 		//Given
@@ -68,8 +67,8 @@ class IngestionFileRetrieverServiceTest {
 			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFilePath.toFile(), workingPath.toFile()))
 				.then(invocation -> null);
 
-			// Act
-			List<Path> result = ingestionFileRetrieverService.retrieveFile(sourcePath, filename);
+			// when
+			List<Path> result = service.retrieveAndUnzipFile(sourcePath, filename);
 
 			// Then
 			assertNotNull(result);
@@ -90,10 +89,9 @@ class IngestionFileRetrieverServiceTest {
 
 		//When & Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> ingestionFileRetrieverService.retrieveFile(sourcePath, filename), "File validation failed");
+			() -> service.retrieveAndUnzipFile(sourcePath, filename), "File validation failed");
 	}
 
-	/*
 	@Test
 	void testRetrieveFile_zipValidationFails() {
 		//Given
@@ -111,8 +109,14 @@ class IngestionFileRetrieverServiceTest {
 
 			//When & Then
 			assertThrows(InvalidIngestionFileException.class,
-				() -> ingestionFileRetrieverService.retrieveFile(sourcePath, filename), "ZIP validation failed");
+				() -> service.retrieveAndUnzipFile(sourcePath, filename), "ZIP validation failed");
 		}
 	}
-	 */
+
+	/** Helper method to add entries to the ZIP file */
+	private static void addZipEntry(ZipOutputStream zos, String entryName, String content) throws IOException {
+		zos.putNextEntry(new ZipEntry(entryName));
+		zos.write(content.getBytes());
+		zos.closeEntry();
+	}
 }

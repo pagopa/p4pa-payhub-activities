@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -21,7 +20,7 @@ import java.util.List;
 @Lazy
 @Slf4j
 @Service
-public class IngestionFileRetrieverService {
+public class IngestionFlowFileRetrieverService {
 
 	/**
 	 * The temporary directory used for working process.
@@ -36,9 +35,9 @@ public class IngestionFileRetrieverService {
 	private final FileValidatorService fileValidatorService;
 	private final ZipFileService zipFileService;
 
-	public IngestionFileRetrieverService(@Value("${working-path.temp-dir:/tmp/}") String tempDirectory,
-	                                     @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
-	                                     FileValidatorService fileValidatorService, ZipFileService zipFileService) {
+	public IngestionFlowFileRetrieverService(@Value("${tmp-dir:/tmp/}") String tempDirectory,
+	                                         @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
+	                                         FileValidatorService fileValidatorService, ZipFileService zipFileService) {
 		this.tempDirectory = tempDirectory;
 		this.dataCipherPsw = dataCipherPsw;
 		this.fileValidatorService = fileValidatorService;
@@ -58,7 +57,7 @@ public class IngestionFileRetrieverService {
 	 * @return the path to the extracted file.
 	 * @throws IOException if any file operation fails during the setup process.
 	 */
-	public List<Path> retrieveFile(Path sourcePath, String filename) throws IOException {
+	public List<Path> retrieveAndUnzipFile(Path sourcePath, String filename) throws IOException {
 		Path encryptedFilePath = sourcePath.resolve(filename);
 		fileValidatorService.validateFile(encryptedFilePath);
 
@@ -71,7 +70,7 @@ public class IngestionFileRetrieverService {
 		log.debug("Decrypting file: {}", encryptedFilePath);
 		AESUtils.decrypt(dataCipherPsw,
 			encryptedFilePath.toFile(),
-			workingPath.resolve(Paths.get(filenameNoCipher)).toFile());
+			zipFilePath.toFile());
 
 		log.debug("Validating ZIP file: {}", zipFilePath);
 		fileValidatorService.isArchive(zipFilePath);

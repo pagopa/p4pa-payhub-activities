@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
-import it.gov.pagopa.payhub.activities.util.FilesUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -31,8 +30,8 @@ class ZipFileServiceTest {
 		service = new ZipFileService(MAX_ENTRIES, MAX_UNCOMPRESSED_SIZE, MAX_COMPRESSION_RATIO);
 		zipFile = tempDir.resolve("test.zip");
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
-			FilesUtils.addZipEntry(zos, "file1.txt", "This is the content of file1.");
-			FilesUtils.addZipEntry(zos, "file2.txt", "This is the content of file2.");
+			addZipEntry(zos, "file1.txt", "This is the content of file1.");
+			addZipEntry(zos, "file2.txt", "This is the content of file2.");
 		}
 	}
 
@@ -54,7 +53,7 @@ class ZipFileServiceTest {
 	void testUnzipWithExcessiveEntries() throws IOException {
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 			for (int i = 0; i < 1100; i++) {
-				FilesUtils.addZipEntry(zos, "file" + i + ".txt", "Content of file " + i);
+				addZipEntry(zos, "file" + i + ".txt", "Content of file " + i);
 			}
 		}
 
@@ -103,28 +102,10 @@ class ZipFileServiceTest {
 		assertTrue(Files.exists(outputDir.resolve("empty.txt")), "Expected empty.txt to exist");
 	}
 
-
-	@Test
-	void givenValidFileNameThenOk() throws IllegalArgumentException {
-		String validFileName = "safeFile.txt";
-		assertDoesNotThrow(() -> service.checkFileName(validFileName));
-	}
-
-	@Test
-	void givenInvalidFileNameStartingWithNonAlphanumericThenException() {
-		String invalidFileName = "/unsafeFile.txt";
-		assertThrows(InvalidIngestionFileException.class, () -> service.checkFileName(invalidFileName));
-	}
-
-	@Test
-	void givenInvalidFileNameContainingDotDotThenException() {
-		String invalidFileName = "safe/../../unsafeFile.txt";
-		assertThrows(InvalidIngestionFileException.class, () -> service.checkFileName(invalidFileName));
-	}
-
-	@Test
-	void givenValidZipEntryThenReturnZipEntry() throws IllegalArgumentException {
-		ZipEntry validEntry = new ZipEntry("safeFile.txt");
-		assertEquals(validEntry, service.checkFileName(validEntry));
+	/** Helper method to add entries to the ZIP file */
+	private static void addZipEntry(ZipOutputStream zos, String entryName, String content) throws IOException {
+		zos.putNextEntry(new ZipEntry(entryName));
+		zos.write(content.getBytes());
+		zos.closeEntry();
 	}
 }
