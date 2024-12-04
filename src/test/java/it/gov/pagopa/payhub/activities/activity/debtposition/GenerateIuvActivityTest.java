@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.activity;
+package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.activity.debtposition.GenerateIuvActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
 import it.gov.pagopa.payhub.activities.service.IuvService;
