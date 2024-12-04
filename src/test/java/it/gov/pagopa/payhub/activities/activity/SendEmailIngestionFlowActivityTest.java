@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.UserDTO;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
-import it.gov.pagopa.payhub.activities.service.UserAuthorizationServiceImpl;
+import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrieverService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Assertions;
@@ -43,7 +43,7 @@ class SendEmailIngestionFlowActivityTest {
     @MockBean
     private SendMailService sendMailService ;
     @MockBean
-    private UserAuthorizationServiceImpl userAuthorizationService;
+    private UserAuthorizationService userAuthorizationService;
 
     private UserInfoDTO validUserInfoDTO;
     private UserInfoDTO invalidUserInfoDTO;
