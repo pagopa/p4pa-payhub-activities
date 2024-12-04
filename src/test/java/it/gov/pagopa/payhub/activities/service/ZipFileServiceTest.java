@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.util;
+package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,14 +14,20 @@ import java.util.zip.ZipOutputStream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class FileUtilsTest {
+class ZipFileServiceTest {
+	private static final int MAX_ENTRIES = 1000;
+	private static final long MAX_UNCOMPRESSED_SIZE = 50 * 1024 * 1024L;
+	private static final double MAX_COMPRESSION_RATIO = 0.1;
+
 	@TempDir
-	Path tempDir;
+	private Path tempDir;
 
 	private Path zipFile;
+	private ZipFileService service;
 
 	@BeforeEach
 	void setup() throws IOException {
+		service = new ZipFileService(MAX_ENTRIES, MAX_UNCOMPRESSED_SIZE, MAX_COMPRESSION_RATIO);
 		zipFile = tempDir.resolve("test.zip");
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 			addZipEntry(zos, "file1.txt", "This is the content of file1.");
@@ -30,61 +36,10 @@ class FileUtilsTest {
 	}
 
 	@Test
-	void validateFile_validFile_doesNotThrowException() throws IOException {
-		Path validFile = Files.createFile(tempDir.resolve("validFile.txt"));
-
-		assertDoesNotThrow(() -> FileUtils.validateFile(validFile), "Expected file is valid");
-	}
-
-	@Test
-	void validateFile_nonExistentFile_throwsInvalidIngestionFileException() {
-		Path nonExistentFile = tempDir.resolve("nonExistentFile.txt");
-
-		assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.validateFile(nonExistentFile), "Expected file not exist"
-		);
-	}
-
-	@Test
-	void validateFile_directoryInsteadOfFile_throwsInvalidIngestionFileException() {
-		Path directory = tempDir.resolve("directory");
-		assertTrue(directory.toFile().mkdir());
-
-		assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.validateFile(directory), "Expected file is not a regular file"
-		);
-	}
-
-	@Test
-	void testIsArchiveWithValidZipFile() throws IOException {
-		Path validZip = tempDir.resolve("valid.zip");
-		Files.write(validZip, new byte[]{0x50, 0x4B, 0x03, 0x04});
-
-		assertTrue(FileUtils.isArchive(validZip), "Expected file to be recognized as a valid ZIP archive");
-	}
-
-	@Test
-	void testIsArchiveWithInvalidZipFile() throws IOException {
-		Path invalidZip = tempDir.resolve("invalid.zip");
-		Files.write(invalidZip, new byte[]{0x00, 0x00, 0x00, 0x00});
-
-		assertFalse(FileUtils.isArchive(invalidZip), "Expected file to not be recognized as a valid ZIP archive");
-	}
-
-	@Test
-	void testIsArchiveWithEmptyFile() throws IOException {
-		Path emptyFile = tempDir.resolve("empty.zip");
-		Files.createFile(emptyFile);
-
-		assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.isArchive(emptyFile), "Expected InvalidIngestionFileException for an empty file");
-	}
-
-	@Test
 	void testUnzipValidArchive() throws IOException {
 		Path outputDir = tempDir.resolve("output");
-
-		assertDoesNotThrow(() -> FileUtils.unzip(zipFile, outputDir));
+		System.out.println(outputDir);
+		assertDoesNotThrow(() -> service.unzip(zipFile, outputDir));
 		assertTrue(Files.exists(outputDir.resolve("file1.txt")));
 		assertTrue(Files.exists(outputDir.resolve("file2.txt")));
 
@@ -104,7 +59,7 @@ class FileUtilsTest {
 
 		Path outputDir = tempDir.resolve("output");
 		assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.unzip(zipFile, outputDir), "exceeds the maximum number of entries"
+			() -> service.unzip(zipFile, outputDir), "exceeds the maximum number of entries"
 		);
 	}
 
@@ -115,7 +70,7 @@ class FileUtilsTest {
 
 		Path outputDir = tempDir.resolve("output");
 
-		assertDoesNotThrow(() -> FileUtils.unzip(mockZip, outputDir));
+		assertDoesNotThrow(() -> service.unzip(mockZip, outputDir));
 		verify(mockZip, atLeastOnce()).toFile();
 	}
 
@@ -129,7 +84,7 @@ class FileUtilsTest {
 
 		Path outputDir = tempDir.resolve("output");
 		assertThrows(InvalidIngestionFileException.class,
-			() -> FileUtils.unzip(zipFile, outputDir), "Bad zip entry"
+			() -> service.unzip(zipFile, outputDir), "Bad zip entry"
 		);
 	}
 
@@ -142,13 +97,13 @@ class FileUtilsTest {
 		}
 
 		Path outputDir = tempDir.resolve("output");
-		assertDoesNotThrow(() -> FileUtils.unzip(zipFile, outputDir));
+		assertDoesNotThrow(() -> service.unzip(zipFile, outputDir));
 
 		assertTrue(Files.exists(outputDir.resolve("empty.txt")), "Expected empty.txt to exist");
 	}
 
-	// Helper method to add entries to the ZIP file
-	private void addZipEntry(ZipOutputStream zos, String entryName, String content) throws IOException {
+	/** Helper method to add entries to the ZIP file */
+	private static void addZipEntry(ZipOutputStream zos, String entryName, String content) throws IOException {
 		zos.putNextEntry(new ZipEntry(entryName));
 		zos.write(content.getBytes());
 		zos.closeEntry();

@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * DTO for the FdRIngestionResponse, representing the result of file processing.
+ * DTO for the PaymentsReportingIngestionFlowFileActivityResult, representing the result of file processing.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportingFlowIngestionActivityResult {
+public class PaymentsReportingIngestionFlowFileActivityResult {
     /** List of extracted IUFs */
     private List<String> iufs;
     /** Success flag for the operation */
