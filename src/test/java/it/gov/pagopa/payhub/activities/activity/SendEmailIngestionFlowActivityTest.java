@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
@@ -38,40 +38,26 @@ import static org.mockito.ArgumentMatchers.any;
 @EnableConfigurationProperties
 @ExtendWith(MockitoExtension.class)
 class SendEmailIngestionFlowActivityTest {
-    @Autowired
-    private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
     @MockBean
     private IngestionFlowFileDao ingestionFlowFileDao;
     @MockBean
-    private SendMailService sendMailService ;
+    private SendMailService sendMailService;
     @MockBean
     private UserAuthorizationService userAuthorizationService;
+    @MockBean
+    private Environment environment;
 
     private UserInfoDTO validUserInfoDTO;
     private UserInfoDTO invalidUserInfoDTO;
     private IngestionFlowFileDTO validIngestionFlowFileDTO;
     private IngestionFlowFileDTO invalidIngestionFlowFileDTO;
 
+    private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
+
     @BeforeEach
     void init() {
-        validUserInfoDTO = UserInfoDTO.builder()
-            .mappedExternalUserId("VALID_USER")
-            .build();
-        invalidUserInfoDTO = UserInfoDTO.builder()
-                .mappedExternalUserId(null)
-                .build();
-        validIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
-            .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
-            .fileName("VALID_FILE_NAME")
-            .flowType("REPORTING")
-            .TotalRowsNumber(123L)
-            .build();
-        invalidIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
-                .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
-                .fileName("VALID_FILE_NAME")
-                .flowType("WRONG_FLOW")
-                .TotalRowsNumber(123L)
-                .build();
+        createBeans();
+        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(environment, userAuthorizationService, ingestionFlowFileDao, sendMailService);
     }
 
     /**
@@ -187,6 +173,26 @@ class SendEmailIngestionFlowActivityTest {
         Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, sendMailOK));
     }
 
+    private void createBeans() {
+        validUserInfoDTO = UserInfoDTO.builder()
+                .mappedExternalUserId("VALID_USER")
+                .build();
+        invalidUserInfoDTO = UserInfoDTO.builder()
+                .mappedExternalUserId(null)
+                .build();
+        validIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
+                .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
+                .fileName("VALID_FILE_NAME")
+                .flowType("REPORTING")
+                .TotalRowsNumber(123L)
+                .build();
+        invalidIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
+                .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
+                .fileName("VALID_FILE_NAME")
+                .flowType("WRONG_FLOW")
+                .TotalRowsNumber(123L)
+                .build();
+    }
 
 }
 
