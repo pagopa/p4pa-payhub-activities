@@ -32,6 +32,16 @@ public class IngestionFlowFileAchiverService {
 		this.zipFileService = zipFileService;
 	}
 
+	/**
+	 * Compresses a list of files into a ZIP archive, encrypts the archive, moves it to a target directory,
+	 * and cleans up the working directory by deleting all files and subdirectories.
+	 *
+	 * @param files         the list of {@link Path} objects representing the files to be compressed.
+	 *                      The files must reside in the same working directory.
+	 * @param sourcePath    the source directory path used to resolve the target directory for the archive.
+	 * @param outputFilename the name of the output ZIP file.
+	 * @throws IOException if an I/O error occurs during file operations such as compression, moving, or deletion.
+	 */
 	public void compressArchiveFileCleanUp(List<Path> files, Path sourcePath, String outputFilename) throws IOException {
 		Path workingPath = files.get(0).getParent();
 		Path zipFilePath = workingPath.resolve(outputFilename);
