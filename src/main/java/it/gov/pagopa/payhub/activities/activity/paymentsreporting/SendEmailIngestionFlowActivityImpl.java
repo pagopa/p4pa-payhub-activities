@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowRetrie
 import it.gov.pagopa.payhub.activities.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -23,6 +24,7 @@ import java.util.Map;
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
  * Sends an email based on the status of a processed file identified by its IngestionFlow ID.
  */
+@Lazy
 @Slf4j
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
@@ -59,15 +61,23 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
             sendMailService.sendMail(mailTo);
         }
         catch (Exception e){
-            log.error("exception send mail", e);
+            log.error("Sending mail failed", e);
             return false;
         }
         return true;
     }
 
-    private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) {
+    private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) throws Exception {
+        String template = "";
+        String flowType = ingestionFlowFileDTO.getFlowType();
+        if (flowType.equals("REPORTING")) {
+            template += "reportingFlow-";
+            template += success ? "ok" : "ko";
+        } else {
+            log.error("Wrong flow type: {}", flowType);
+            throw new Exception("Wrong flow type: "+flowType);
+        }
 
-        String template = ingestionFlowFileDTO.getFlowType() + (success ? "-OK" :  "-KO");
         DateFormat parser = new SimpleDateFormat(Constants.MAIL_DATE_FORMAT);
         String actualDate = parser.format(new Date());
 
@@ -96,8 +106,8 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         String templateName = mailDTO.getTemplateName();
         String subject = env.getProperty("template."+templateName+".subject");
         String body = env.getProperty("template."+templateName+".body");
-        Assert.notNull(subject, "Invalid email template (missing subject) "+templateName);
-        Assert.notNull(body, "Invalid email template (missing body) "+templateName);
+        //Assert.notNull(subject, "Invalid email template (missing subject) "+templateName);
+        //Assert.notNull(body, "Invalid email template (missing body) "+templateName);
         mailDTO.setMailSubject(StringSubstitutor.replace(subject, mailDTO.getParams(), "{", "}"));
         mailDTO.setHtmlText(StringSubstitutor.replace(body, mailDTO.getParams(), "{", "}"));
         return mailDTO;

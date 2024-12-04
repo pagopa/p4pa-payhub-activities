@@ -46,41 +46,145 @@ class SendEmailIngestionFlowActivityTest {
     private UserAuthorizationServiceImpl userAuthorizationService;
 
     private UserInfoDTO validUserInfoDTO;
+    private UserInfoDTO invalidUserInfoDTO;
     private IngestionFlowFileDTO validIngestionFlowFileDTO;
+    private IngestionFlowFileDTO invalidIngestionFlowFileDTO;
+
     @BeforeEach
     void init() {
         validUserInfoDTO = UserInfoDTO.builder()
-          .mappedExternalUserId("VALID_USER")
-          .build();
+            .mappedExternalUserId("VALID_USER")
+            .build();
+        invalidUserInfoDTO = UserInfoDTO.builder()
+                .mappedExternalUserId(null)
+                .build();
         validIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
-          .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
-          .fileName("VALID_FILE_NAME")
-          .TotalRowsNumber(123L)
-          .build();
-
+            .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
+            .fileName("VALID_FILE_NAME")
+            .flowType("REPORTING")
+            .TotalRowsNumber(123L)
+            .build();
+        invalidIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
+                .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
+                .fileName("VALID_FILE_NAME")
+                .flowType("WRONG_FLOW")
+                .TotalRowsNumber(123L)
+                .build();
     }
 
     /**
-     * test mail sending OK
+     * send email for OK loading flow, success: valid user and valid flow
      */
     @Test
-    void sendEmailIngestionSuccess() throws MessagingException {
+    void sendEmailIngestionOkValidUserValidFlowSuccess() throws MessagingException {
+        boolean sendMailOK = true;
         String ingestionFlowId = "100";
         Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(validIngestionFlowFileDTO);
         Mockito.when(userAuthorizationService.getUserInfo(validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
         Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
 
-        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, true));
+        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
     }
 
-//    /**
-//     * test mail sending KO
-//     */
-//    @Test
-//    void sendEmailIngestionError() {
-//        String ingestionFlowId = "100";
-//        boolean sent = sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, false);
-//        assertFalse(sent);
-//    }
+    /**
+     * send email for KO loading flow, success: valid user and valid flow
+     */
+    @Test
+    void sendEmailIngestionKoValidUserValidFlowSuccess() throws MessagingException {
+        boolean sendMailOK = false;
+        String ingestionFlowId = "100";
+        Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(validIngestionFlowFileDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
+
+        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
+    }
+
+    /**
+     * send email for OK loading flow, success: invalid user and valid flow
+     */
+    @Test
+    void sendEmailIngestionOkInvalidUserValidFlowFailed() throws MessagingException {
+        boolean sendMailOK = true;
+        String ingestionFlowId = "100";
+        Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(validIngestionFlowFileDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
+    }
+
+    /**
+     * send email for KO loading flow, failed: invalid user and valid flow
+     */
+    @Test
+    void sendEmailIngestionKoInvalidUserValidFlowFailed() throws MessagingException {
+        boolean sendMailOK = false;
+        String ingestionFlowId = "100";
+        Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(validIngestionFlowFileDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
+    }
+
+    /**
+     * send email for OK loading flow, success: valid user and invalid flow
+     */
+    @Test
+    void sendEmailIngestionOkValidUserInvalidFlowFailed() throws MessagingException {
+        boolean sendMailOK = true;
+        String ingestionFlowId = "100";
+        Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(invalidIngestionFlowFileDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
+    }
+
+    /**
+     * send email for KO loading flow, failed: valid user and invalid flow
+     */
+    @Test
+    void sendEmailIngestionKoValidUserInvalidFlowFailed() throws MessagingException {
+        boolean sendMailOK = false;
+        String ingestionFlowId = "100";
+        Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(invalidIngestionFlowFileDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
+    }
+
+    /**
+     * send email for OK loading flow, failed: invalid user and invalid flow
+     */
+    @Test
+    void sendEmailIngestionOkInvalidUserInvalidFlowFailed() throws MessagingException {
+        boolean sendMailOK = true;
+        String ingestionFlowId = "100";
+        Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(invalidIngestionFlowFileDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
+    }
+
+    /**
+     * send email for KO loading flow, failed: invalid user and invalid flow
+     */
+    @Test
+    void sendEmailIngestionKoInvalidUserInvalidFlowFailed() throws MessagingException {
+        boolean sendMailOK = false;
+        String ingestionFlowId = "100";
+        Mockito.when(ingestionFlowRetrieverService.getIngestionFlow(Long.valueOf(ingestionFlowId))).thenReturn(invalidIngestionFlowFileDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, sendMailOK));
+    }
+
+
+
 }
 

@@ -4,11 +4,12 @@ import it.gov.pagopa.payhub.activities.dto.MailTo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@Lazy
 @Service
 @Slf4j
 public class SendMailService {
@@ -22,6 +23,7 @@ public class SendMailService {
     /**
      *
      * @param mailTo bean containing data to send
+     * throws MessagingException if message is not sent
      */
     public void sendMail(MailTo mailTo) throws MessagingException {
         String subject = mailTo.getMailSubject();
