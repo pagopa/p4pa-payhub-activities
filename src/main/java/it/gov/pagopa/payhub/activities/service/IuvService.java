@@ -97,7 +97,7 @@ public class IuvService {
    * @return true if valid, otherwise false
    */
   public boolean isValidNav(String nav){
-    if(StringUtils.length(nav)==18 || !StringUtils.startsWith(nav, AUX_DIGIT)){
+    if(StringUtils.length(nav)==18 && StringUtils.startsWith(nav, AUX_DIGIT)){
       try{
         return Long.parseLong(nav.substring(0,16)) % 93 == Long.parseLong(nav.substring(16));
       }catch(Exception e){

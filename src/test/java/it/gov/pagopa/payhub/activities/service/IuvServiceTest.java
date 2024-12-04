@@ -1,9 +1,8 @@
-package it.gov.pagopa.payhub.activities.activity;
+package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.dao.IuvSequenceNumberDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
-import it.gov.pagopa.payhub.activities.service.IuvService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,6 +74,7 @@ public class IuvServiceTest {
   }
   //endregion
 
+  //region test iuv2Nav
   @Test
   void whenIuv2NavThenOk(){
     //When
@@ -83,6 +83,14 @@ public class IuvServiceTest {
     Assertions.assertEquals(IuvService.AUX_DIGIT+VALID_IUV, result);
   }
 
+  @Test
+  void givenInvalidIuvWhenIuv2NavThenException(){
+    //Verify
+    Assertions.assertThrows(ValueNotValidException.class, () -> iuvService.iuv2Nav(WRONG_CHECK_IUV));
+  }
+  //endregion
+
+  //region test nav2Iuv
   @Test
   void givenValidNavWhenNav2IuvThenOk(){
     //When
@@ -96,6 +104,7 @@ public class IuvServiceTest {
     //Verify
     Assertions.assertThrows(ValueNotValidException.class, () -> iuvService.nav2Iuv("4"+VALID_IUV));
   }
+  //endregion
 
   //region test isValidNav
   @Test
