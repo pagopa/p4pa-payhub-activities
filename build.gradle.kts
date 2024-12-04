@@ -8,6 +8,7 @@ plugins {
 	`java-library`
 	`maven-publish`
 	jacoco
+	id("com.intershop.gradle.jaxb") version "7.0.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -53,6 +54,9 @@ val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
 val commonsTextVersion = "1.12.0"
 val jacksonModuleVersion = "2.18.1"
+val activationVersion = "2.1.3"
+val jaxbVersion = "4.0.5"
+val jaxbApiVersion = "4.0.2"
 
 
 dependencies {
@@ -82,6 +86,14 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 
+	//jaxb
+	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+	implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
+	implementation("com.sun.xml.bind:jaxb-jxc:$jaxbVersion")
+	implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")
+	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
+	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
 }
 
 
@@ -94,6 +106,18 @@ tasks {
 	val processResources by getting(ProcessResources::class) {
 		filesMatching("**/application.yml") {
 			expand(projectInfo)
+		}
+	}
+}
+
+jaxb {
+	javaGen {
+		register("PaymentsReport") {
+			extension = true
+			args = listOf("-xmlschema")
+			outputDir = file("$projectDir/build/generated/jaxb/java")
+			schema = file("src/main/resources/xsd/FlussoRiversamento.xsd")
+			bindings = layout.files("src/main/resources/xsd/FlussoRiversamento.xjb")
 		}
 	}
 }
