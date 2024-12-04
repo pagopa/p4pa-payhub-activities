@@ -13,20 +13,7 @@ import java.net.URL;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JaxbTrasformerServiceTest {
-
-	private final URL xsdUrl = getClass().getResource("/xsd/FlussoRiversamento.xsd");
-	private final JaxbTrasformerService service = new JaxbTrasformerService();
-
-	@TempDir
-	File tempDir;
-
-	@Test
-	void unmarshaller_validXmlWithSchemaFromResources_shouldReturnCtFlussoRiversamento() throws Exception {
-		assertNotNull(xsdUrl, "XSD file not found in resources");
-		//given
-		File xmlFile = new File(tempDir, "testFlussoRiversamento.xml");
-
-		String xmlContent = """
+		private static final String XML_CONTENT = """
 			<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 			<FlussoRiversamento xmlns="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
 			    <versioneOggetto>1.0</versioneOggetto>
@@ -69,8 +56,21 @@ class JaxbTrasformerServiceTest {
 			</FlussoRiversamento>
                 """;
 
+	private final URL xsdUrl = getClass().getResource("/xsd/FlussoRiversamento.xsd");
+	private final JaxbTrasformerService service = new JaxbTrasformerService();
+
+	@TempDir
+	File tempDir;
+
+	@Test
+	void unmarshaller_validXmlWithSchemaFromResources_shouldReturnCtFlussoRiversamento() throws Exception {
+		assertNotNull(xsdUrl, "XSD file not found in resources");
+		//given
+		File xmlFile = new File(tempDir, "testFlussoRiversamento.xml");
+
+
 		try (FileWriter xmlWriter = new FileWriter(xmlFile)) {
-			xmlWriter.write(xmlContent);
+			xmlWriter.write(XML_CONTENT);
 		}
 
 		// when
@@ -96,5 +96,18 @@ class JaxbTrasformerServiceTest {
 		assertThrows(ActivitiesException.class, () ->
 			service.unmarshaller(xmlFile, CtFlussoRiversamento.class, xsdUrl), "Error while parsing file"
 		);
+	}
+
+	@Test
+	void unmarshaller_validXmlWithoutSchema_successfulUnmarshaller() throws Exception {
+		//given
+		File xmlFile = new File(tempDir, "testFlussoRiversamento.xml");
+
+		try (FileWriter xmlWriter = new FileWriter(xmlFile)) {
+			xmlWriter.write(XML_CONTENT);
+		}
+
+		// when then
+		assertDoesNotThrow(() -> service.unmarshaller(xmlFile, CtFlussoRiversamento.class, null));
 	}
 }
