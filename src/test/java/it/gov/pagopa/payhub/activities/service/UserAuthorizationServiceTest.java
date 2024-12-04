@@ -27,10 +27,11 @@ class UserAuthorizationServiceTest {
 
 	@Test
 	void testUser() {
-		UserInfoDTO uiDTO;
 		String mappedExternalUserId = "USER";
+
 		userInfoDTO = UserInfoDTO.builder()
 				.userId(null)
+				.email("testmail@mail.com")
 				.mappedExternalUserId(mappedExternalUserId)
 				.build();
 		userInfo = userAuthorizationService.getUserInfo(mappedExternalUserId);
