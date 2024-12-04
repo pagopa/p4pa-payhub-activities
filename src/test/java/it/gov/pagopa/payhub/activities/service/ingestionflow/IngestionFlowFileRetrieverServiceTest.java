@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,8 +33,7 @@ class IngestionFlowFileRetrieverServiceTest {
 	@Mock
 	private ZipFileService zipFileService;
 
-	@InjectMocks
-	private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
+	private IngestionFlowFileRetrieverService service;
 
 	private Path zipFile;
 
@@ -44,6 +42,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 	@BeforeEach
 	void setup() throws IOException {
+		service = new IngestionFlowFileRetrieverService(TEMPORARY_PATH, TEST_CIPHER_PSW, fileValidatorService, zipFileService);
 		zipFile = tempDir.resolve("encryptedFile.zip.cipher");
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 			addZipEntry(zos, "file1.txt", "This is the content of file1.");
@@ -68,8 +67,8 @@ class IngestionFlowFileRetrieverServiceTest {
 			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFilePath.toFile(), workingPath.toFile()))
 				.then(invocation -> null);
 
-			// Act
-			List<Path> result = ingestionFlowFileRetrieverService.retrieveAndUnzipFile(sourcePath, filename);
+			// when
+			List<Path> result = service.retrieveAndUnzipFile(sourcePath, filename);
 
 			// Then
 			assertNotNull(result);
@@ -90,7 +89,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 		//When & Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> ingestionFlowFileRetrieverService.retrieveAndUnzipFile(sourcePath, filename), "File validation failed");
+			() -> service.retrieveAndUnzipFile(sourcePath, filename), "File validation failed");
 	}
 
 	@Test
@@ -110,7 +109,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 			//When & Then
 			assertThrows(InvalidIngestionFileException.class,
-				() -> ingestionFlowFileRetrieverService.retrieveAndUnzipFile(sourcePath, filename), "ZIP validation failed");
+				() -> service.retrieveAndUnzipFile(sourcePath, filename), "ZIP validation failed");
 		}
 	}
 
