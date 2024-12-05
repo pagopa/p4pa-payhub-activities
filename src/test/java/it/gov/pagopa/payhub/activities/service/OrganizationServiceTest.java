@@ -27,12 +27,12 @@ public class OrganizationServiceTest {
   private final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
   private final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
   private final String VALID_APPLICATION_CODE = "01";
-  private final OrganizationDTO VALID_ORG = OrganizationDTO.builder()
+  private final Optional<OrganizationDTO> VALID_ORG = Optional.of(OrganizationDTO.builder()
     .orgId(1L)
     .orgFiscalCode(VALID_ORG_FISCAL_CODE)
     .ipaCode(VALID_ORG_IPA_CODE)
     .applicationCode(VALID_APPLICATION_CODE)
-    .build();
+    .build());
   private final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
 
   @Test
@@ -43,7 +43,7 @@ public class OrganizationServiceTest {
     Optional<OrganizationDTO> result = organizationService.getOrganizationByFiscalCode(VALID_ORG_FISCAL_CODE);
     //verify
     Assertions.assertTrue(result.isPresent());
-    Assertions.assertEquals(VALID_ORG, result.orElse(null));
+    Assertions.assertEquals(VALID_ORG, result);
     Mockito.verify(organizationDao, Mockito.times(1)).getOrganizationByFiscalCode(VALID_ORG_FISCAL_CODE);
   }
 

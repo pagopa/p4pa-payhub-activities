@@ -26,6 +26,6 @@ public class OrganizationService {
    * @return the retrieved organization
    */
   public Optional<OrganizationDTO> getOrganizationByFiscalCode(String orgFiscalCode){
-    return Optional.ofNullable(organizationDao.getOrganizationByFiscalCode(orgFiscalCode));
+    return organizationDao.getOrganizationByFiscalCode(orgFiscalCode);
   }
 }
