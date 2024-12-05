@@ -92,11 +92,9 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
             throw new ValidationException("The debtor is mandatory for installment");
         }
 
-        String uniqueIdentificationCode = personDTO.getUniqueIdentifierCode();
-
         if (debtPositionTypeOrgDTO.isFlagAnonymousFiscalCode()) {
             if (personDTO.isFlagAnonymousIdentifierCode()) {
-                uniqueIdentificationCode = "ANONIMO";
+                personDTO.setUniqueIdentifierCode("ANONIMO");
             } else if (StringUtils.isBlank(personDTO.getUniqueIdentifierCode())) {
                 throw new ValidationException("This organization installment type or installment does not allow an anonymous unique identification code");
             }
@@ -105,7 +103,6 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
                 throw new ValidationException("Unique identification code is mandatory");
             }
         }
-        personDTO.setUniqueIdentifierCode(uniqueIdentificationCode);
 
         if (StringUtils.isBlank(personDTO.getFullName())) {
             throw new ValidationException("Beneficiary name is mandatory");
