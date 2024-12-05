@@ -94,7 +94,11 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
     }
 
     private void validateTransfers(List<TransferDTO> transferDTOList) {
-        if (transferDTOList != null && transferDTOList.size() > 1) {
+        if(CollectionUtils.isEmpty(transferDTOList)){
+            throw new ValidationException("At least one transfer is mandatory for installment");
+        }
+
+        if (transferDTOList.size() > 1) {
             TransferDTO transferSecondaryBeneficiary = transferDTOList.stream()
                     .filter(transfer -> (transfer.getTransferIndex() == 2)).findAny()
                     .orElseThrow(() -> new ValidationException("Mismatch with transfers list"));

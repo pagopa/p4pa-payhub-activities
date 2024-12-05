@@ -148,6 +148,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenPersonWithAnonimousCFButNotAnonymousFlagThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        debtPositionDTO.getDebtPositionTypeOrg().setAmount(null);
         debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(false);
         debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setUniqueIdentifierCode("ANONIMO");
 
@@ -191,6 +192,15 @@ class ValidateDebtPositionActivityImplTest {
 
         ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Email is not valid", validationException.getMessage());
+    }
+
+    @Test
+    void givenNoTransfersThenThrowValidationException(){
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setTransfers(null);
+
+        ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
+        assertEquals("At least one transfer is mandatory for installment", validationException.getMessage());
     }
 
     @Test
@@ -302,6 +312,22 @@ class ValidateDebtPositionActivityImplTest {
 
         ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("The amount of secondary beneficiary is not valid", validationException.getMessage());
+    }
+
+    @Test
+    void givenSecondTransferThenSuccess(){
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        TransferDTO secondTransfer = buildTransferDTO();
+        secondTransfer.setTransferIndex(2);
+        secondTransfer.setOrgFiscalCode("31798530361");
+        secondTransfer.setIban("IT00A0000001234567891234567");
+        secondTransfer.setCategory("category");
+        secondTransfer.setAmount(12L);
+        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+
+        when(taxonomyDaoMock.verifyCategory("category/")).thenReturn(Boolean.TRUE);
+
+        assertDoesNotThrow(() -> activity.validate(debtPositionDTO));
     }
 
     @Test
