@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
-import java.util.Optional;
-
 /**
  * Interface for the UpdateIngestionFlowStatusActivity.
  * Updates the status of a IngestionFlow record identified by the provided ID.
@@ -15,5 +13,5 @@ public interface UpdateIngestionFlowStatusActivity {
      * @param newStatus the new status to set.
      * @return true if the update was successful, false otherwise.
      */
-    Optional<Boolean> updateStatus(String id, String newStatus);
+    boolean updateStatus(Long id, String newStatus);
 }

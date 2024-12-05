@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 /**
  * Implementation for the activity to update the ingestion flow status
@@ -20,8 +20,13 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
     }
 
     @Override
-    public Optional<Boolean> updateStatus(String id, String newStatus) {
-        Long ingestionFlowId = Long.valueOf(id);
-        return ingestionFlowFileDao.updateStatus(ingestionFlowId, newStatus);
+    public boolean updateStatus(Long id, String newStatus) {
+        if(id==null){
+            throw new ActivitiesException("id is null");
+        }
+        if(StringUtils.isBlank(newStatus)){
+            throw new ActivitiesException("newStatus is null");
+        }
+        return ingestionFlowFileDao.updateStatus(id, newStatus);
     }
 }
