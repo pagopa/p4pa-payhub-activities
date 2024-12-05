@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.PersonDTO;
-import it.gov.pagopa.payhub.activities.dto.PersonRequestDTO;
 import it.gov.pagopa.payhub.activities.dto.ReceiptDTO;
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import lombok.AllArgsConstructor;
@@ -44,5 +43,4 @@ public class InstallmentDTO implements Serializable {
     private List<TransferDTO> transfers;
     private ReceiptDTO receipt;
     private PersonDTO payer;
-    private PersonRequestDTO debtor;
 }
