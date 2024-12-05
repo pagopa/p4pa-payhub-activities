@@ -43,7 +43,7 @@ class SendMailServiceTest {
 	private MailTo invalidMailKo;
 
 	@BeforeEach
-	void setup() throws MessagingException {
+	void setup() {
 		createBeans();
 		javaMailSender = new JavaMailSenderImpl();
 		sendMailService  = new SendMailService(javaMailSender);
@@ -55,8 +55,6 @@ class SendMailServiceTest {
 		setMimeMessage(validMailOk);
 		assertThrows(MailSendException.class, () ->
 				sendMailService.sendMail(validMailOk), "Mail sender error encountered");
-		//Assertions.assertDoesNotThrow(() -> sendMailService.sendMail(validMailOk));
-		//Mockito.verify(sendMailService, times(1)).sendMail(validMailOk);
 	}
 
 	@Test
@@ -64,8 +62,6 @@ class SendMailServiceTest {
 		setMimeMessage(validMailKo);
 		assertThrows(MailSendException.class, () ->
 				sendMailService.sendMail(validMailKo), "Mail sender error encountered");
-		//Assertions.assertDoesNotThrow(() -> sendMailService.sendMail(validMailKo));
-		//Mockito.verify(sendMailService, times(1)).sendMail(validMailKo);
 	}
 
 	@Test
