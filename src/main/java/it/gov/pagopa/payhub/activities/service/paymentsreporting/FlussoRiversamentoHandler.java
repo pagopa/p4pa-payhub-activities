@@ -16,7 +16,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * Handles the deserialization of files conforming to the "FlussoRiversamento" schema.
@@ -38,17 +37,9 @@ public class FlussoRiversamentoHandler {
 	                                 XMLUnmarshallerService xmlUnmarshallerService) {
 		try {
 			this.jaxbContext = JAXBContext.newInstance(CtFlussoRiversamento.class);
-
-			URL xsdUrl = paymetsReportingXsdResource.getURL();
-			if (xsdUrl != null) {
-				SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-				this.schema = schemaFactory.newSchema(xsdUrl);
-			} else {
-				this.schema = null;
-			}
-
+			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			this.schema = schemaFactory.newSchema(paymetsReportingXsdResource.getURL());
 			this.xmlUnmarshallerService = xmlUnmarshallerService;
-
 		} catch (JAXBException | SAXException | IOException e) {
 			throw new ActivitiesException("Error while creating a new instance for CtFlussoRiversamento");
 		}
