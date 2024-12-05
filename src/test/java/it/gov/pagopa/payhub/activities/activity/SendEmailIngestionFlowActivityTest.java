@@ -9,11 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
-import jakarta.mail.BodyPart;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
-import jakarta.mail.internet.PreencodedMimeBodyPart;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +20,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
