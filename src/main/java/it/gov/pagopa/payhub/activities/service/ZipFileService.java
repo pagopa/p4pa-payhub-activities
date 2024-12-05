@@ -279,7 +279,7 @@ public class ZipFileService {
 	 * @param originalFile the file to be moved
 	 * @param target       the target directory where the file will be moved
 	 * @param newFileName  the new name for the file in the target directory
-	 * @throws IOException if an I/O error occurs during the file move operation
+	 * @throws InvalidIngestionFileException if an I/O error occurs during the file move operation
 	 *                      (e.g., the file or directory does not exist, or the file cannot be copied).
 	 */
 	public static void moveFile(File originalFile, Path target, String newFileName) {
@@ -306,7 +306,12 @@ public class ZipFileService {
 	 * @return a {@link File} object representing the created ZIP archive
 	 * @throws IOException if any I/O error occurs during compression
 	 *                      (e.g., file not found, read/write issues, invalid paths).
-	 * @throws IllegalArgumentException if the file list is null or empty, or if the ZIP file path is invalid.
+	 * @throws InvalidIngestionFileException if
+	 *         <ul>
+	 *           <li>the file list is null or empty, or if the ZIP file path is invalid.</li>
+	 *           <li>if any I/O error occurs during compression
+	 *               (e.g., file not found, read/write issues, invalid paths).</li>
+	 *         </ul>
 	 */
 	public File zipper(Path zipFilePath, List<Path> filesToZip) {
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFilePath.toFile()))) {
