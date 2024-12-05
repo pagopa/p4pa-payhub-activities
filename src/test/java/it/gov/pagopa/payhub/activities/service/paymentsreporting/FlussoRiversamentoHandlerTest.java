@@ -68,8 +68,6 @@ class FlussoRiversamentoHandlerTest {
                 """;
 
 	private Resource resource;
-	private JAXBContext jaxbContext;
-	private Schema schema;
 	private FlussoRiversamentoHandler handler;
 	private XMLUnmarshallerService xmlUnmarshallerService;
 
@@ -79,18 +77,8 @@ class FlussoRiversamentoHandlerTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		xmlUnmarshallerService = new XMLUnmarshallerService();
-		jaxbContext = JAXBContext.newInstance(CtFlussoRiversamento.class);
 		resource = new ClassPathResource("xsd/FlussoRiversamento.xsd");
 		handler = new FlussoRiversamentoHandler(resource, xmlUnmarshallerService);
-		try {
-			URL xsdUrl = resource.getURL();
-			if (xsdUrl != null) {
-				SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-				schema = schemaFactory.newSchema(xsdUrl);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error initializing Schema for testing", e);
-		}
 	}
 
 	@Test
