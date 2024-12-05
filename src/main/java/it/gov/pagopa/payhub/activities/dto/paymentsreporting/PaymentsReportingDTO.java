@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.paymentsreporting;
 
+import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

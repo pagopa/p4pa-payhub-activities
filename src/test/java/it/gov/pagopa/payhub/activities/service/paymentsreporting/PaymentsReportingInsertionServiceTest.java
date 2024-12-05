@@ -27,11 +27,10 @@ class PaymentsReportingInsertionServiceTest {
 	@Test
 	void givenPaymentsReportingThenSuccess() {
 		PaymentsReportingDTO paymentsReportingDTO = new PaymentsReportingDTO();
-		int insertedId = -1;
-		when(paymentsReportingDaoMock.insertPaymentsReporting(paymentsReportingDTO)).thenReturn(insertedId);
+		when(paymentsReportingDaoMock.save(paymentsReportingDTO)).thenReturn(paymentsReportingDTO);
 
-		long insert = service.insertPaymentsReporting(paymentsReportingDTO);
+		PaymentsReportingDTO actual = service.savePaymentsReporting(paymentsReportingDTO);
 
-		assertEquals(1, insert);
+		assertEquals(paymentsReportingDTO, actual);
 	}
 }
