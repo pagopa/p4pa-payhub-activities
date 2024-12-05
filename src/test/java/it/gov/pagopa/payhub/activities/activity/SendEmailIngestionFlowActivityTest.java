@@ -187,9 +187,11 @@ class SendEmailIngestionFlowActivityTest {
 
         validUserInfoDTO = UserInfoDTO.builder()
                 .mappedExternalUserId("VALID_USER")
+                .email("usertest@testuser.com")
                 .build();
         invalidUserInfoDTO = UserInfoDTO.builder()
                 .mappedExternalUserId(null)
+                .email("usertest@testuser.com")
                 .build();
         validIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
                 .userId(UserDTO.builder().externalUserId(validUserInfoDTO.getMappedExternalUserId()).build())
