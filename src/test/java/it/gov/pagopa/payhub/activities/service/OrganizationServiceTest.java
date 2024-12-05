@@ -50,7 +50,7 @@ public class OrganizationServiceTest {
   @Test
   void givenInvalidOrgWhenGetOrganizationByFiscalCodeThenEmpty(){
     //given
-    Mockito.when(organizationDao.getOrganizationByFiscalCode(INVALID_ORG_FISCAL_CODE)).thenReturn(null);
+    Mockito.when(organizationDao.getOrganizationByFiscalCode(INVALID_ORG_FISCAL_CODE)).thenReturn(Optional.empty());
     //when
     Optional<OrganizationDTO> result = organizationService.getOrganizationByFiscalCode(INVALID_ORG_FISCAL_CODE);
     //verify
