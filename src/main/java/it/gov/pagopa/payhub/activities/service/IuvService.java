@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class IuvService {
 
-  private static final String PROGRESSIVO_PADDING_ZEROES_SMALL = "%011d";
   public static final String AUX_DIGIT = "3";
+  private static final int CHECK_DIGIT_BASE = 93;
 
   private final String informationSystemId;
 
@@ -38,23 +38,35 @@ public class IuvService {
    */
   public String generateIuv(OrganizationDTO org){
     StringBuilder iuvBuilder = new StringBuilder();
+    //header
     iuvBuilder.append(org.getApplicationCode());
     iuvBuilder.append(informationSystemId);
+
+    //payment index
+    String paymentIndex = generatePaymentIndex(org);
+    iuvBuilder.append(paymentIndex);
+
+    //check digit
+    String checkDigit = generateCheckDigit(iuvBuilder.toString());
+    iuvBuilder.append(checkDigit);
+
+    return iuvBuilder.toString();
+  }
+
+  private String generatePaymentIndex(OrganizationDTO org){
     long paymentIndex = iuvSequenceNumberDao.getNextIuvSequenceNumber(org.getIpaCode());
     if(paymentIndex<1){
       log.error("invalid payment index returned for org[{}/{}]: {}", org.getIpaCode(), org.getOrgFiscalCode(), paymentIndex);
       throw new ValueNotValidException("invalid payment index");
     }
-    iuvBuilder.append(String.format(PROGRESSIVO_PADDING_ZEROES_SMALL, paymentIndex));
+    return StringUtils.leftPad(String.valueOf(paymentIndex), 11, '0');
+  }
 
-    //check digit
-    String digitString = AUX_DIGIT + iuvBuilder;
+  private String generateCheckDigit(String paymentIndex){
+    String digitString = AUX_DIGIT + paymentIndex;
     long digit = Long.parseLong(digitString);
-    long reminder = digit % 93;
-    String checkDigit = StringUtils.leftPad(String.valueOf(reminder), 2, '0');
-    iuvBuilder.append(checkDigit);
-
-    return iuvBuilder.toString();
+    long reminder = digit % CHECK_DIGIT_BASE;
+    return StringUtils.leftPad(String.valueOf(reminder), 2, '0');
   }
 
   /**
@@ -99,7 +111,7 @@ public class IuvService {
   public boolean isValidNav(String nav){
     if(StringUtils.length(nav)==18 && StringUtils.startsWith(nav, AUX_DIGIT)){
       try{
-        return Long.parseLong(nav.substring(0,16)) % 93 == Long.parseLong(nav.substring(16));
+        return Long.parseLong(nav.substring(0,16)) % CHECK_DIGIT_BASE == Long.parseLong(nav.substring(16));
       }catch(Exception e){
         return false;
       }
