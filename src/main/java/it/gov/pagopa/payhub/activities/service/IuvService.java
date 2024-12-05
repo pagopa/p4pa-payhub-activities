@@ -100,7 +100,7 @@ public class IuvService {
    * @return true if valid, otherwise false
    */
   public boolean isValidIuv(String iuv){
-    return isValidNav(StringUtils.join(AUX_DIGIT+iuv));
+    return isValidNav(StringUtils.join(AUX_DIGIT,iuv));
   }
 
   /**
