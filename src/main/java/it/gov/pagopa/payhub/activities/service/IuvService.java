@@ -22,12 +22,12 @@ public class IuvService {
 
   private final String informationSystemId;
 
-  private final IuvSequenceNumberDao progressiviVersamentoDao;
+  private final IuvSequenceNumberDao iuvSequenceNumberDao;
 
   public IuvService(@Value("${iuv.informationSystemId:00}") String informationSystemId,
                     IuvSequenceNumberDao iuvSequenceNumberDao) {
     this.informationSystemId = informationSystemId;
-    this.progressiviVersamentoDao = iuvSequenceNumberDao;
+    this.iuvSequenceNumberDao = iuvSequenceNumberDao;
   }
 
 
@@ -40,7 +40,7 @@ public class IuvService {
     StringBuilder iuvBuilder = new StringBuilder();
     iuvBuilder.append(org.getApplicationCode());
     iuvBuilder.append(informationSystemId);
-    long paymentIndex = progressiviVersamentoDao.getNextIuvSequenceNumber(org.getIpaCode());
+    long paymentIndex = iuvSequenceNumberDao.getNextIuvSequenceNumber(org.getIpaCode());
     if(paymentIndex<1){
       log.error("invalid payment index returned for org[{}/{}]: {}", org.getIpaCode(), org.getOrgFiscalCode(), paymentIndex);
       throw new ValueNotValidException("invalid payment index");
