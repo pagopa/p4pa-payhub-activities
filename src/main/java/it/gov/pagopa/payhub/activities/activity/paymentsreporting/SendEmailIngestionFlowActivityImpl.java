@@ -56,7 +56,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
                     .orElseThrow(() -> new IngestionFlowNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
-            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ingestionFlowFileDTO.getOrgId().getIpaCode(),ingestionFlowFileDTO.getUserId().getExternalUserId());
+            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ingestionFlowFileDTO.getOrgId().getIpaCode(),ingestionFlowFileDTO.getOperatorUsername());
             MailTo mailTo = getMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
             sendMailService.sendMail(mailTo);
