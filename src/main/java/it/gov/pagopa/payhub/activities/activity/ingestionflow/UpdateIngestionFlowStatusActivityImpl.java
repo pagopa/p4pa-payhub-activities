@@ -20,9 +20,8 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
     }
 
     @Override
-    public boolean updateStatus(String id, String newStatus) {
+    public Optional<Boolean> updateStatus(String id, String newStatus) {
         Long ingestionFlowId = Long.valueOf(id);
-        Optional<Boolean> update = ingestionFlowFileDao.updateStatus(ingestionFlowId, newStatus);
-        return false;
+        return ingestionFlowFileDao.updateStatus(ingestionFlowId, newStatus);
     }
 }
