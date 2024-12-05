@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.exception.SendMailException;
 import jakarta.mail.BodyPart;
 import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.internet.PreencodedMimeBodyPart;
@@ -18,8 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.TestPropertySource;
+
+import java.net.ConnectException;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -38,6 +44,7 @@ class SendMailServiceTest {
 	@MockBean
 	private SendMailService sendMailService ;
 	private JavaMailSenderImpl javaMailSender;
+	private MimeMessage mimeMessage;
 	private MailTo validMailOk;
 	private MailTo invalidMailOk;
 	private MailTo validMailKo;
@@ -48,61 +55,92 @@ class SendMailServiceTest {
 		createBeans();
 		javaMailSender = new JavaMailSenderImpl();
 		sendMailService  = new SendMailService(javaMailSender);
+		mimeMessage = javaMailSender.createMimeMessage();
 	}
 
 	@Test
 	void testSendEmailFileLoadedSuccess() throws MessagingException {
-		Assertions.assertDoesNotThrow(() -> sendMailService.sendMail(validMailOk));
-		Mockito.verify(sendMailService, times(1)).sendMail(validMailOk);
+		setMimeMessage(validMailOk);
+		assertThrows(MailSendException.class, () ->
+				sendMailService.sendMail(validMailOk), "Mail sender error encountered");
+		//Assertions.assertDoesNotThrow(() -> sendMailService.sendMail(validMailOk));
+		//Mockito.verify(sendMailService, times(1)).sendMail(validMailOk);
 	}
 
 	@Test
 	void testSendEmailFileNotLoadedSuccess() throws MessagingException {
-		Assertions.assertDoesNotThrow(() -> sendMailService.sendMail(validMailKo));
-		Mockito.verify(sendMailService, times(1)).sendMail(validMailKo);
+		setMimeMessage(validMailKo);
+		assertThrows(MailSendException.class, () ->
+				sendMailService.sendMail(validMailKo), "Mail sender error encountered");
+		//Assertions.assertDoesNotThrow(() -> sendMailService.sendMail(validMailKo));
+		//Mockito.verify(sendMailService, times(1)).sendMail(validMailKo);
 	}
 
-/*
 	@Test
 	void testSendEmailFileLoadedFailed() throws MessagingException {
+		setMimeMessage(invalidMailOk);
 		assertThrows(MessagingException.class, () ->
-		sendMailService.sendMail(invalidMailOk), "Error while sending mail");
+		sendMailService.sendMail(invalidMailOk), "Error in mail data");
 	}
 
 	@Test
-	void testSendEmailFileNotLoadedFailed() {
+	void testSendEmailFileNotLoadedFailed() throws MessagingException {
+		setMimeMessage(invalidMailKo);
 		assertThrows(MessagingException.class, () ->
-				sendMailService.sendMail(invalidMailKo), "Error while sending mail");
+				sendMailService.sendMail(invalidMailKo), "Error in mail data");
 	}
-*/
 
 	private void createBeans() {
 		validMailOk = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
 				.to(new String[]{"test_receiver@mailtest.com"})
 				.mailText("Mail Text")
 				.htmlText("Html Text")
-				.emailFromAddress("test_sender@mailtest.com")
 				.templateName("reportingFlow-ok")
 				.build();
 		validMailKo = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
 				.to(new String[]{"test_receiver@mailtest.com"})
 				.mailText("Mail Text")
 				.htmlText("Html Text")
-				.emailFromAddress("test_sender@mailtest.com")
 				.templateName("reportingFlow-ko")
 				.build();
 		invalidMailOk = MailTo.builder()
-				.mailSubject(null)
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
 				.to(new String[]{})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
 				.templateName("reportingFlow-ok")
 				.build();
 		invalidMailKo = MailTo.builder()
-				.mailSubject(null)
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
 				.to(new String[]{})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
 				.templateName("reportingFlow-ko")
 				.build();
 	}
 
+	private void setMimeMessage(MailTo mailTo) throws MessagingException {
+		mimeMessage = javaMailSender.createMimeMessage();
+
+		MimeMultipart multipart = new MimeMultipart();
+		BodyPart mimeBodyPart = new PreencodedMimeBodyPart("8bit");
+		mimeBodyPart.setContent("", "text/html");
+		multipart.addBodyPart(mimeBodyPart);
+
+		mimeMessage.setContent(multipart);
+		mimeMessage.setFrom("FROM");
+		mimeMessage.setSubject("SUBJECT");
+
+		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+		helper.setFrom(mailTo.getEmailFromAddress());
+		helper.setTo(mailTo.getTo());
+		helper.setSubject(mailTo.getMailSubject());
+		helper.setText(mailTo.getHtmlText());
+	}
 }

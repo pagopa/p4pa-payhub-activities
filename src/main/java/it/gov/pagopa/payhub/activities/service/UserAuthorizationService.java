@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
 @Lazy
 @Service
 public interface UserAuthorizationService {
-    UserInfoDTO getUserInfo(String mappedExternalUserId);
+    UserInfoDTO getUserInfo(String ipaCode, String mappedExternalUserId);
 }
