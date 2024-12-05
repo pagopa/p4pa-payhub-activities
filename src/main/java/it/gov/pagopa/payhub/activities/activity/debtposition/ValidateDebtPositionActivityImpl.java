@@ -78,23 +78,15 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
         if (personDTO == null) {
             throw new ValidationException("The debtor is mandatory for installment");
         }
-
-        if (debtPositionTypeOrgDTO.isFlagAnonymousFiscalCode()) {
-            if (personDTO.isFlagAnonymousIdentifierCode()) {
-                personDTO.setUniqueIdentifierCode("ANONIMO");
-            } else if (StringUtils.isBlank(personDTO.getUniqueIdentifierCode())) {
-                throw new ValidationException("This organization installment type or installment does not allow an anonymous unique identification code");
-            }
-        } else {
-            if (StringUtils.isBlank(personDTO.getUniqueIdentifierCode())) {
-                throw new ValidationException("Unique identification code is mandatory");
-            }
+        if (StringUtils.isBlank(personDTO.getUniqueIdentifierCode())) {
+            throw new ValidationException("Unique identification code is mandatory");
         }
-
+        if (!debtPositionTypeOrgDTO.isFlagAnonymousFiscalCode() && personDTO.getUniqueIdentifierCode().equals("ANONIMO")) {
+            throw new ValidationException("This organization installment type or installment does not allow an anonymous unique identification code");
+        }
         if (StringUtils.isBlank(personDTO.getFullName())) {
             throw new ValidationException("Beneficiary name is mandatory");
         }
-
         if (StringUtils.isBlank(personDTO.getEmail()) ||
                 !Utilities.isValidEmail(personDTO.getEmail())) {
             throw new ValidationException("Email is not valid");

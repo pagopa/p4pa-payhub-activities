@@ -23,5 +23,4 @@ public class PersonDTO implements Serializable {
     private String province;
     private String nation;
     private String email;
-    private boolean flagAnonymousIdentifierCode;
 }

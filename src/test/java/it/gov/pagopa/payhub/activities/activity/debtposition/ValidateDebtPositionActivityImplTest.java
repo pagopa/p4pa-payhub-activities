@@ -117,6 +117,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenInstallmentWithAmountInvalidThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        debtPositionDTO.getDebtPositionTypeOrg().setFlagMandatoryDueDate(false);
         debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setAmount(-200L);
 
         ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
@@ -136,6 +137,8 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenPersonNullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        debtPositionDTO.getDebtPositionTypeOrg().setAmount(100L);
+        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setAmount(100L);
         debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setPayer(null);
 
         ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
@@ -143,11 +146,10 @@ class ValidateDebtPositionActivityImplTest {
     }
 
     @Test
-    void givenPersonWithNullCFButNotAnonymousFlagThenThrowValidationException(){
+    void givenPersonWithAnonimousCFButNotAnonymousFlagThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(true);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setFlagAnonymousIdentifierCode(false);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setUniqueIdentifierCode(null);
+        debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(false);
+        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setUniqueIdentifierCode("ANONIMO");
 
         ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("This organization installment type or installment does not allow an anonymous unique identification code", validationException.getMessage());
@@ -156,7 +158,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenPersonWithNullCFButNotAnonymousFlagForDebtTypeThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(false);
+        debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(true);
         debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setUniqueIdentifierCode(null);
 
         ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
@@ -167,7 +169,6 @@ class ValidateDebtPositionActivityImplTest {
     void givenPersonWithNullFullNameThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(true);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setFlagAnonymousIdentifierCode(true);
         debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setFullName(null);
 
         ValidationException validationException = assertThrows(ValidationException.class, () -> activity.validate(debtPositionDTO));
