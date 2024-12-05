@@ -3,19 +3,28 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import javax.xml.XMLConstants;
+import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FlussoRiversamentoHandlerTest {
@@ -104,5 +113,32 @@ class FlussoRiversamentoHandlerTest {
 		assertThrows(ActivitiesException.class,
 			() -> handler.handle(xmlFile), "Error while parsing file"
 		);
+	}
+
+	@Test
+	void testJAXBExceptionInConstructor() {
+		Mockito.mockStatic(JAXBContext.class).when(() -> JAXBContext.newInstance(CtFlussoRiversamento.class))
+			.thenThrow(new JAXBException("Simulated JAXBException"));
+		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoHandler(resource, null));
+	}
+
+	@Test
+	void testIOExceptionInConstructor() throws Exception {
+		// Mock the Resource to simulate an exception during URL retrieval
+		Resource mockResource = mock(Resource.class);
+		when(mockResource.getURL()).thenThrow(new IOException("Simulated IOException"));
+
+		// Assert that ActivitiesException is thrown
+		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoHandler(mockResource, null));
+	}
+
+	@Test
+	void testMalformedURLExceptionInConstructor() throws Exception {
+		// Mock the Resource to simulate an invalid URL
+		Resource mockResource = mock(Resource.class);
+		when(mockResource.getURL()).thenThrow(new MalformedURLException("Simulated MalformedURLException"));
+
+		// Assert that ActivitiesException is thrown
+		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoHandler(mockResource, null));
 	}
 }
