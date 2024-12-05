@@ -4,5 +4,5 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 
 public interface DebtPositionDao {
 
-    long save(DebtPositionDTO debtPosition);
+     DebtPositionDTO save(DebtPositionDTO debtPosition);
 }
