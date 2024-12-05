@@ -47,18 +47,20 @@ public class UpdateIngestionFlowStatusActivityTest {
 
   @Test
   public void givenNullIdAndNewStatusWhenUpdateStatusThenException(){
+    String expectedError = "A null IngestionFlowFile was provided when updating its status to " + VALID_STATUS;
     //verify
-    ActivitiesException exception = Assertions.assertThrows(ActivitiesException.class,
+    IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
       () -> updateIngestionFlowStatusActivity.updateStatus(null, VALID_STATUS));
-    Assertions.assertEquals("id is null", exception.getMessage());
+    Assertions.assertEquals(expectedError, exception.getMessage());
   }
 
   @Test
   public void givenIdAndNullNewStatusWhenUpdateStatusThenException(){
+    String expectedError = "A null IngestionFlowFile status was provided when updating the id " + VALID_ID;;
     //verify
-    ActivitiesException exception = Assertions.assertThrows(ActivitiesException.class,
+    IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
       () -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, null));
-    Assertions.assertEquals("newStatus is null", exception.getMessage());
+    Assertions.assertEquals(expectedError, exception.getMessage());
   }
 
 }
