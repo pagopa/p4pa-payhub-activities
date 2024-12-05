@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "it.gov.pagopa.payhub"
-version = "0.0.13-SNAPSHOT"
+version = rootProject.file("version").readText().trim()
 
 java {
 	toolchain {
