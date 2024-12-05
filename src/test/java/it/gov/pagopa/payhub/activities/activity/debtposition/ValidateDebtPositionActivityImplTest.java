@@ -322,12 +322,12 @@ class ValidateDebtPositionActivityImplTest {
     }
 
     @Test
-    void givenSecondTransferIbanNotValidThenThrowValidationException(){
+    void givenSecondTransferIbanNullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
         secondTransfer.setTransferIndex(2);
         secondTransfer.setOrgFiscalCode("31798530361");
-        secondTransfer.setIban("test");
+        secondTransfer.setIban(null);
         debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
         Long orgId = 1L;
 
