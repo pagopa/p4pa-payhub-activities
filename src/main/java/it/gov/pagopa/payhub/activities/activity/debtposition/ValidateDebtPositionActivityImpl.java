@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.TaxonomyDao;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.PersonDTO;
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
@@ -26,24 +24,13 @@ import static it.gov.pagopa.payhub.activities.utility.Utilities.isValidPIVA;
 @Service
 public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionActivity {
 
-    private final IngestionFlowFileDao ingestionFlowFileDao;
     private final TaxonomyDao taxonomyDao;
 
-    public ValidateDebtPositionActivityImpl(IngestionFlowFileDao ingestionFlowFileDao, TaxonomyDao taxonomyDao) {
-        this.ingestionFlowFileDao = ingestionFlowFileDao;
+    public ValidateDebtPositionActivityImpl(TaxonomyDao taxonomyDao) {
         this.taxonomyDao = taxonomyDao;
     }
 
     public void validate(DebtPositionDTO debtPositionDTO) {
-        List<IngestionFlowFileDTO> flows = ingestionFlowFileDao.getIngestionFlowFilesByOrganization(
-                debtPositionDTO.getOrg().getOrgId(), true);
-
-        if (CollectionUtils.isEmpty(flows)) {
-            throw new ValidationException("No flow was found for organization with id " + debtPositionDTO.getOrg().getOrgId());
-        }
-
-        debtPositionDTO.setIngestionFlowFile(flows.get(0));
-
         if (debtPositionDTO.getDebtPositionTypeOrg() == null ||
                 debtPositionDTO.getDebtPositionTypeOrg().getDebtPositionType() == null ||
                 StringUtils.isBlank(debtPositionDTO.getDebtPositionTypeOrg().getDebtPositionType().getCode())) {
