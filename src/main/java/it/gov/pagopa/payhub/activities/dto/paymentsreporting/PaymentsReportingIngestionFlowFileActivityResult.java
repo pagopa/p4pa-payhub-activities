@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.reportingflow;
+package it.gov.pagopa.payhub.activities.dto.paymentsreporting;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
