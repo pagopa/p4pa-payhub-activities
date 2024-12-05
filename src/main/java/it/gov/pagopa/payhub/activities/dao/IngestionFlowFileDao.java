@@ -25,5 +25,15 @@ public interface IngestionFlowFileDao {
 	 *         or an empty {@link Optional} if no matching entity exists.
 	 */
 	Optional<IngestionFlowFileDTO> findById(Long ingestionFlowFileId);
+
+	/**
+	 * update ingestion flow file status
+	 *
+	 * @param ingestionFlowFileId the unique identifier of the ingestion flow file id
+	 * @param status new status
+	 * @return boolean true if the status has been updated
+	 */
+	Optional<Boolean> updateStatus(Long ingestionFlowFileId, String status);
+
 }
 
