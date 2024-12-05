@@ -14,17 +14,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import javax.xml.XMLConstants;
-import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FlussoRiversamentoHandlerTest {
@@ -127,16 +125,6 @@ class FlussoRiversamentoHandlerTest {
 		// Mock the Resource to simulate an exception during URL retrieval
 		Resource mockResource = mock(Resource.class);
 		when(mockResource.getURL()).thenThrow(new IOException("Simulated IOException"));
-
-		// Assert that ActivitiesException is thrown
-		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoHandler(mockResource, null));
-	}
-
-	@Test
-	void testMalformedURLExceptionInConstructor() throws Exception {
-		// Mock the Resource to simulate an invalid URL
-		Resource mockResource = mock(Resource.class);
-		when(mockResource.getURL()).thenThrow(new MalformedURLException("Simulated MalformedURLException"));
 
 		// Assert that ActivitiesException is thrown
 		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoHandler(mockResource, null));
