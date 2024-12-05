@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.dao.IuvSequenceNumberDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +70,7 @@ public class IuvServiceTest {
     //Given
     Mockito.when(iuvSequenceNumberDao.getNextIuvSequenceNumber(INVALID_ORG_IPA_CODE)).thenReturn(INVALID_PAYMENT_INDEX);
     //Verify
-    Assertions.assertThrows(ValueNotValidException.class, () -> iuvService.generateIuv(INVALID_ORG));
+    Assertions.assertThrows(InvalidValueException.class, () -> iuvService.generateIuv(INVALID_ORG));
   }
   //endregion
 
@@ -86,7 +86,7 @@ public class IuvServiceTest {
   @Test
   void givenInvalidIuvWhenIuv2NavThenException(){
     //Verify
-    Assertions.assertThrows(ValueNotValidException.class, () -> iuvService.iuv2Nav(WRONG_CHECK_IUV));
+    Assertions.assertThrows(InvalidValueException.class, () -> iuvService.iuv2Nav(WRONG_CHECK_IUV));
   }
   //endregion
 
@@ -102,7 +102,7 @@ public class IuvServiceTest {
   @Test
   void givenInvalidNavWhenNav2IuvThenException(){
     //Verify
-    Assertions.assertThrows(ValueNotValidException.class, () -> iuvService.nav2Iuv("4"+VALID_IUV));
+    Assertions.assertThrows(InvalidValueException.class, () -> iuvService.nav2Iuv("4"+VALID_IUV));
   }
   //endregion
 

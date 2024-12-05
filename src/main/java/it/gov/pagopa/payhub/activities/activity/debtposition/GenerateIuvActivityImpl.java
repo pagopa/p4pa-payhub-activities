@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.IuvService;
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +27,10 @@ public class GenerateIuvActivityImpl implements GenerateIuvActivity{
   @Override
   public String generateIuv(String orgFiscalCode) {
     if(StringUtils.isBlank(orgFiscalCode)){
-      throw new ValueNotValidException("invalid orgFiscalCode");
+      throw new InvalidValueException("invalid orgFiscalCode");
     }
     OrganizationDTO org = organizationService.getOrganizationByFiscalCode(orgFiscalCode)
-      .orElseThrow(() -> new ValueNotValidException("invalid organization"));
+      .orElseThrow(() -> new InvalidValueException("invalid organization"));
 
     String iuv = iuvService.generateIuv(org);
     log.debug("generated new IUV[{}] for organization[{}/{}]", iuv, org.getIpaCode(), org.getOrgFiscalCode());

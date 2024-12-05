@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.IuvService;
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import org.junit.jupiter.api.Assertions;
@@ -53,7 +53,7 @@ public class GenerateIuvActivityTest {
   @Test
   void givenEmptyOrgWhenGenerateIuvThenException(){
     //Verify
-    ValueNotValidException exception = Assertions.assertThrows(ValueNotValidException.class, () -> generateIuvActivity.generateIuv(""));
+    InvalidValueException exception = Assertions.assertThrows(InvalidValueException.class, () -> generateIuvActivity.generateIuv(""));
     Assertions.assertEquals("invalid orgFiscalCode", exception.getMessage());
   }
 
@@ -62,7 +62,7 @@ public class GenerateIuvActivityTest {
     //Given
     Mockito.when(organizationService.getOrganizationByFiscalCode(INVALID_ORG_FISCAL_CODE)).thenReturn(Optional.empty());
     //Verify
-    ValueNotValidException exception = Assertions.assertThrows(ValueNotValidException.class, () -> generateIuvActivity.generateIuv(INVALID_ORG_FISCAL_CODE));
+    InvalidValueException exception = Assertions.assertThrows(InvalidValueException.class, () -> generateIuvActivity.generateIuv(INVALID_ORG_FISCAL_CODE));
     Assertions.assertEquals("invalid organization", exception.getMessage());
   }
 }

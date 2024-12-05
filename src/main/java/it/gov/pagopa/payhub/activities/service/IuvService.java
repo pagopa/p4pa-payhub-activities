@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.dao.IuvSequenceNumberDao;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.exception.ValueNotValidException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,7 +57,7 @@ public class IuvService {
     long paymentIndex = iuvSequenceNumberDao.getNextIuvSequenceNumber(org.getIpaCode());
     if(paymentIndex<1){
       log.error("invalid payment index returned for org[{}/{}]: {}", org.getIpaCode(), org.getOrgFiscalCode(), paymentIndex);
-      throw new ValueNotValidException("invalid payment index");
+      throw new InvalidValueException("invalid payment index");
     }
     return StringUtils.leftPad(String.valueOf(paymentIndex), 11, '0');
   }
@@ -78,7 +78,7 @@ public class IuvService {
     if(isValidIuv(iuv))
       return AUX_DIGIT + iuv;
     else
-      throw new ValueNotValidException("invalid iuv");
+      throw new InvalidValueException("invalid iuv");
   }
 
   /**
@@ -90,7 +90,7 @@ public class IuvService {
     if(isValidNav(nav)){
       return nav.substring(AUX_DIGIT.length());
     } else {
-      throw new ValueNotValidException("invalid nav");
+      throw new InvalidValueException("invalid nav");
     }
   }
 
