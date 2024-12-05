@@ -14,6 +14,7 @@ import it.gov.pagopa.payhub.activities.utility.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,12 +35,12 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
     }
 
     public void validate(DebtPositionDTO debtPositionDTO) {
-
         List<IngestionFlowFileDTO> flows = ingestionFlowFileDao.getIngestionFlowFilesByOrganization(
                 debtPositionDTO.getOrg().getOrgId(), true);
 
-        if (flows == null || flows.isEmpty())
+        if (CollectionUtils.isEmpty(flows)) {
             throw new ValidationException("No flow was found for organization with id " + debtPositionDTO.getOrg().getOrgId());
+        }
 
         debtPositionDTO.setIngestionFlowFile(flows.get(0));
 
@@ -49,12 +50,12 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
             throw new ValidationException("Debt position type organization is mandatory");
         }
 
-        if (debtPositionDTO.getPaymentOptions().isEmpty()) {
+        if (CollectionUtils.isEmpty(debtPositionDTO.getPaymentOptions())) {
             throw new ValidationException("Debt position payment options is mandatory");
         }
 
         for (PaymentOptionDTO paymentOptionDTO : debtPositionDTO.getPaymentOptions()) {
-            if (paymentOptionDTO.getInstallments().isEmpty()) {
+            if (CollectionUtils.isEmpty(paymentOptionDTO.getInstallments())) {
                 throw new ValidationException("At least one installment of the debt position is mandatory");
             }
             for (InstallmentDTO installmentDTO : paymentOptionDTO.getInstallments()) {
@@ -79,10 +80,10 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
             throw new ValidationException("Amount is mandatory");
         }
         if (installmentDTO.getAmount() < 0) {
-            throw new ValidationException("Invalid amount");
+            throw new ValidationException("Amount is not valid");
         }
         if (debtPositionTypeOrgDTO.getAmount() != null && !installmentDTO.getAmount().equals(debtPositionTypeOrgDTO.getAmount())) {
-            throw new ValidationException("Invalid amount for this debt position type org");
+            throw new ValidationException("Amount is not valid for this debt position type org");
         }
     }
 
@@ -110,7 +111,7 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
             throw new ValidationException("Beneficiary name is mandatory");
         }
 
-        if (StringUtils.isNotBlank(personDTO.getEmail()) &&
+        if (StringUtils.isBlank(personDTO.getEmail()) ||
                 !Utilities.isValidEmail(personDTO.getEmail())) {
             throw new ValidationException("Email is not valid");
         }
@@ -126,24 +127,24 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
                     !isValidPIVA(transferSecondaryBeneficiary.getOrgFiscalCode())) {
                 throw new ValidationException("Fiscal code of secondary beneficiary is not valid");
             }
-            if (StringUtils.isNotBlank(transferSecondaryBeneficiary.getIban()) && !isValidIban(transferSecondaryBeneficiary.getIban())) {
+            if (!isValidIban(transferSecondaryBeneficiary.getIban())) {
                 throw new ValidationException("Iban of secondary beneficiary is not valid");
             }
             checkTaxonomyCategory(transferSecondaryBeneficiary.getCategory());
 
-            if(transferSecondaryBeneficiary.getAmount() == null || transferSecondaryBeneficiary.getAmount() < 0) {
+            if (transferSecondaryBeneficiary.getAmount() == null || transferSecondaryBeneficiary.getAmount() < 0) {
                 throw new ValidationException("The amount of secondary beneficiary is not valid");
             }
         }
     }
 
-    private void checkTaxonomyCategory(String category){
+    private void checkTaxonomyCategory(String category) {
         if (StringUtils.isBlank(category)) {
             throw new ValidationException("Category of secondary beneficiary is mandatory");
         } else {
             String categoryCode = StringUtils.substringBeforeLast(category, "/") + "/";
             Boolean categoryCodeExists = taxonomyDao.verifyCategory(categoryCode);
-            if(!Boolean.TRUE.equals(categoryCodeExists)) {
+            if (!Boolean.TRUE.equals(categoryCodeExists)) {
                 throw new ValidationException("The category code does not exist in the archive");
             }
         }
