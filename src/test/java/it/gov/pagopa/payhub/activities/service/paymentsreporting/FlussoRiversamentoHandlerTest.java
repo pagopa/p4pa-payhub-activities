@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
-import jakarta.xml.bind.JAXBContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,13 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import javax.xml.XMLConstants;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.math.BigDecimal;
-import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,7 +70,7 @@ class FlussoRiversamentoHandlerTest {
 	File tempDir;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		xmlUnmarshallerService = new XMLUnmarshallerService();
 		resource = new ClassPathResource("xsd/FlussoRiversamento.xsd");
 		handler = new FlussoRiversamentoHandler(resource, xmlUnmarshallerService);
