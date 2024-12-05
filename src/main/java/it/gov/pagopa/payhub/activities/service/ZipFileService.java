@@ -220,9 +220,9 @@ public class ZipFileService {
 	 *
 	 * @param fileName the name of the ZIP entry to validate.
 	 * @return the file name if it is deemed safe.
-	 * @throws IllegalArgumentException if the file name is deemed unsafe.
+	 * @throws InvalidIngestionFileException if the file name is deemed unsafe.
 	 */
-	private static String checkFileName(String fileName) throws IllegalArgumentException {
+	private static String checkFileName(String fileName) {
 		if (!Character.isLetterOrDigit(fileName.charAt(0)) || fileName.contains("..")) {
 			throw new InvalidIngestionFileException("Potential Zip Slip exploit detected: " + fileName);
 		}
@@ -238,9 +238,8 @@ public class ZipFileService {
 	 *
 	 * @param entry the ZIP entry to validate.
 	 * @return the original {@code ZipEntry} if the file name is deemed safe.
-	 * @throws IllegalArgumentException if the file name of the ZIP entry is deemed unsafe.
 	 */
-	private static ZipEntry checkFileName(ZipEntry entry) throws IllegalArgumentException {
+	private static ZipEntry checkFileName(ZipEntry entry) {
 		checkFileName(entry.getName());
 		return entry;
 	}
@@ -287,7 +286,6 @@ public class ZipFileService {
 			Files.copy(originalFile.toPath(), target.resolve(newFileName), REPLACE_EXISTING);
 			Files.delete(originalFile.toPath());
 		} catch (IOException e) {
-			System.out.println(e);
 			throw new InvalidIngestionFileException("Error while moving: " + originalFile);
 		}
 	}
@@ -304,8 +302,6 @@ public class ZipFileService {
 	 * @param zipFilePath the path where the ZIP file will be created, including the desired filename
 	 * @param filesToZip  a list of {@link Path} objects representing the files to be compressed
 	 * @return a {@link File} object representing the created ZIP archive
-	 * @throws IOException if any I/O error occurs during compression
-	 *                      (e.g., file not found, read/write issues, invalid paths).
 	 * @throws InvalidIngestionFileException if
 	 *         <ul>
 	 *           <li>the file list is null or empty, or if the ZIP file path is invalid.</li>
@@ -316,26 +312,14 @@ public class ZipFileService {
 	public File zipper(Path zipFilePath, List<Path> filesToZip) {
 		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFilePath.toFile()))) {
 			for (Path file : filesToZip) {
-				addFileToZip(zos, file);
+				String checkedFilename = checkFileName(file.getFileName().toString());
+				ZipEntry zipEntry = new ZipEntry(checkedFilename);
+				zos.putNextEntry(zipEntry);
+				Files.copy(file, zos);
 			}
+			return zipFilePath.toFile();
 		} catch (IOException e) {
 			throw new InvalidIngestionFileException("Error while zipping: " + zipFilePath);
 		}
-		return zipFilePath.toFile();
-	}
-
-	/**
-	 * Adds a file to the ZIP archive securely.
-	 *
-	 * @param zos the {@link ZipOutputStream} used for writing the ZIP archive
-	 * @param file the file to be added to the archive
-	 * @throws IOException if an I/O error occurs while adding the file to the archive
-	 */
-	private void addFileToZip(ZipOutputStream zos, Path file) throws IOException {
-		String checkedFilename = checkFileName(file.getFileName().toString());
-		ZipEntry zipEntry = new ZipEntry(checkedFilename);
-		zos.putNextEntry(zipEntry);
-		Files.copy(file, zos);
-		zos.closeEntry();
 	}
 }
