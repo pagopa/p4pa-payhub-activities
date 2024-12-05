@@ -88,7 +88,6 @@ dependencies {
 
 	//jaxb
 	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
-	implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
 	implementation("com.sun.xml.bind:jaxb-jxc:$jaxbVersion")
 	implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")

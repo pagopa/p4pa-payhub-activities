@@ -2,17 +2,23 @@ package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URL;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JaxbTrasformerServiceTest {
+class XMLUnmarshallerServiceTest {
 		private static final String XML_CONTENT = """
 			<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 			<FlussoRiversamento xmlns="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
@@ -56,25 +62,40 @@ class JaxbTrasformerServiceTest {
 			</FlussoRiversamento>
                 """;
 
-	private final URL xsdUrl = getClass().getResource("/xsd/FlussoRiversamento.xsd");
-	private final JaxbTrasformerService service = new JaxbTrasformerService();
+	private JAXBContext jaxbContext;
+	private Schema schema;
+	private XMLUnmarshallerService service;
 
 	@TempDir
 	File tempDir;
 
+	@BeforeEach
+	void setUp() throws JAXBException {
+		service = new XMLUnmarshallerService();
+		jaxbContext = JAXBContext.newInstance(CtFlussoRiversamento.class);
+
+		try {
+			URL xsdUrl = getClass().getResource("/xsd/FlussoRiversamento.xsd");
+			if (xsdUrl != null) {
+				SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				schema = schemaFactory.newSchema(xsdUrl);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error initializing Schema for testing", e);
+		}
+	}
+
 	@Test
 	void unmarshaller_validXmlWithSchemaFromResources_shouldReturnCtFlussoRiversamento() throws Exception {
-		assertNotNull(xsdUrl, "XSD file not found in resources");
 		//given
 		File xmlFile = new File(tempDir, "testFlussoRiversamento.xml");
-
 
 		try (FileWriter xmlWriter = new FileWriter(xmlFile)) {
 			xmlWriter.write(XML_CONTENT);
 		}
 
 		// when
-		CtFlussoRiversamento result = service.unmarshaller(xmlFile, CtFlussoRiversamento.class, xsdUrl);
+		CtFlussoRiversamento result = service.unmarshal(xmlFile, CtFlussoRiversamento.class, jaxbContext, schema);
 
 		// then
 		assertNotNull(result);
@@ -90,11 +111,12 @@ class JaxbTrasformerServiceTest {
 		// given
 		File xmlFile = new File(tempDir, "invalid.xml");
 		String invalidXmlContent = "<testObject><invalidElement>Invalid</invalidElement></testObject>";
-		java.nio.file.Files.writeString(xmlFile.toPath(), invalidXmlContent);
+		Files.writeString(xmlFile.toPath(), invalidXmlContent);
 
 		// when then
 		assertThrows(ActivitiesException.class, () ->
-			service.unmarshaller(xmlFile, CtFlussoRiversamento.class, xsdUrl), "Error while parsing file"
+				service.unmarshal(xmlFile, CtFlussoRiversamento.class, jaxbContext, schema),
+				"Error while parsing file"
 		);
 	}
 
@@ -108,6 +130,6 @@ class JaxbTrasformerServiceTest {
 		}
 
 		// when then
-		assertDoesNotThrow(() -> service.unmarshaller(xmlFile, CtFlussoRiversamento.class, null));
+		assertDoesNotThrow(() -> service.unmarshal(xmlFile, CtFlussoRiversamento.class, jaxbContext,null));
 	}
 }

@@ -5,12 +5,11 @@ import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
-import it.gov.pagopa.payhub.activities.service.JaxbTrasformerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
+import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -23,10 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 class PaymentsReportingIngestionFlowFileActivityImplTest {
-	private Resource resource;
 	private IngestionFlowFileDao ingestionFlowFileDao;
 	private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
-	private JaxbTrasformerService jaxbTrasformerService;
+	private FlussoRiversamentoHandler flussoRiversamentoHandler;
 	private PaymentsReportingIngestionFlowFileActivityImpl ingestionActivity;
 
 	@TempDir
@@ -37,13 +35,11 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	void setUp() {
 		ingestionFlowFileDao = mock(IngestionFlowFileDao.class);
 		ingestionFlowFileRetrieverService = mock(IngestionFlowFileRetrieverService.class);
-		jaxbTrasformerService = mock(JaxbTrasformerService.class);
-		resource = mock(Resource.class);
+		flussoRiversamentoHandler = mock(FlussoRiversamentoHandler.class);
 		ingestionActivity = new PaymentsReportingIngestionFlowFileActivityImpl(
-			resource,
 			ingestionFlowFileDao,
 			ingestionFlowFileRetrieverService,
-			jaxbTrasformerService
+			flussoRiversamentoHandler
 		);
 	}
 
@@ -66,8 +62,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverService)
 			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
-		when(jaxbTrasformerService.unmarshaller(file, CtFlussoRiversamento.class, resource.getURL()))
-			.thenReturn(ctFlussoRiversamento);
+		when(flussoRiversamentoHandler.handle(file)).thenReturn(ctFlussoRiversamento);
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
 
@@ -134,8 +129,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverService)
 			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
-		when(jaxbTrasformerService.unmarshaller(file, CtFlussoRiversamento.class, resource.getURL()))
-			.thenThrow(ActivitiesException.class);
+		when(flussoRiversamentoHandler.handle(file)).thenThrow(ActivitiesException.class);
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
 
