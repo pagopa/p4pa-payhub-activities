@@ -4,5 +4,8 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 
 public interface DebtPositionDao {
 
-     DebtPositionDTO save(DebtPositionDTO debtPosition);
+     /**
+      *  * It will save and return the new DebtPositionDTO entity
+      * */
+     void save(DebtPositionDTO debtPosition);
 }

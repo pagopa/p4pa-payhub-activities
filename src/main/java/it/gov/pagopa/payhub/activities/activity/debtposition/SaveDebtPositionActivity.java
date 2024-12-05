@@ -3,7 +3,19 @@ package it.gov.pagopa.payhub.activities.activity.debtposition;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 
 
+/**
+ * Service class responsible for saving debt positions.
+ */
 public interface SaveDebtPositionActivity {
 
-    DebtPositionDTO saveDebtPosition(DebtPositionDTO debtPosition);
+    /**
+     * Saves a new debt position.
+     * <p>
+     * This method processes the provided {@link DebtPositionDTO} and ensures it is persisted
+     * using the underlying data storage mechanisms.
+     * </p>
+     *
+     * @param debtPosition the {@link DebtPositionDTO} containing the details of the debt position to be saved
+     */
+    void saveDebtPosition(DebtPositionDTO debtPosition);
 }

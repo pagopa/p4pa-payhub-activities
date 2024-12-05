@@ -15,7 +15,7 @@ public class SaveDebtPositionActivityImpl implements SaveDebtPositionActivity{
         this.debtPositionDao = debtPositionDao;
     }
 
-    public DebtPositionDTO saveDebtPosition(DebtPositionDTO debtPosition){
-        return debtPositionDao.save(debtPosition);
+    public void saveDebtPosition(DebtPositionDTO debtPosition){
+        debtPositionDao.save(debtPosition);
     }
 }
