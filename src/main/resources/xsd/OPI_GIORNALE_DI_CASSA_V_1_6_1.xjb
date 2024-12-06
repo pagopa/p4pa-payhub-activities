@@ -12,15 +12,15 @@
         <jaxws:enableAsyncMapping>false</jaxws:enableAsyncMapping>
     </jaxws:bindings>
 
-    <jaxb:bindings schemaLocation="OPI_GIORNALE_DI_CASSA_V_1_4.xsd" node="/xs:schema">
+    <jaxb:bindings schemaLocation="OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd" node="/xs:schema">
       <jaxb:globalBindings>
         <xjc:simple />
       </jaxb:globalBindings>
       <jaxb:schemaBindings>
-        <jaxb:package name="it.gov.pagopa.payhub.activities.xsd.treasury.opi14" />
+        <jaxb:package name="it.gov.pagopa.payhub.activities.xsd.treasury.opi161" />
       </jaxb:schemaBindings>
       <jaxb:bindings node="xs:element[@name='flusso_giornale_di_cassa']/xs:complexType" >
-          <simplify:property name="signaturesAndInformazioniContoEvidenzasAndDataFinePeriodoRiferimentos">
+          <simplify:property name="signaturesAndInformazioniContoEvidenzasAndDataRiferimentoGdCs">
             <simplify:as-element-property/>
           </simplify:property>
       </jaxb:bindings>

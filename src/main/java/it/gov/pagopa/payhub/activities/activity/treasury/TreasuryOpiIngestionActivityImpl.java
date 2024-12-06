@@ -11,7 +11,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
-import it.gov.pagopa.payhub.activities.xsd.treasury.FlussoGiornaleDiCassa;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
