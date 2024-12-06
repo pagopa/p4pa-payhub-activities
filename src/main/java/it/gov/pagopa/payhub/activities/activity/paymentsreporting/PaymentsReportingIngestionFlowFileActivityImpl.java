@@ -3,10 +3,13 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
+import it.gov.pagopa.payhub.activities.service.FlowValidatorService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
+import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -25,15 +28,21 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private final IngestionFlowFileDao ingestionFlowFileDao;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 	private final FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService;
+	private final FlowValidatorService flowValidatorService;
+	private final PaymentsReportingMapperService paymentsReportingMapperService;
 
 	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}")String ingestionflowFileType,
 	                                                      IngestionFlowFileDao ingestionFlowFileDao,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService) {
+	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
+	                                                      FlowValidatorService flowValidatorService,
+	                                                      PaymentsReportingMapperService paymentsReportingMapperService) {
 		this.ingestionflowFileType = ingestionflowFileType;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
+		this.flowValidatorService = flowValidatorService;
+		this.paymentsReportingMapperService = paymentsReportingMapperService;
 	}
 
 	@Override
@@ -52,7 +61,13 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 			CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
 			log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
 
-			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(ctFlussoRiversamento.getIdentificativoFlusso()), true);
+			flowValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
+
+			PaymentsReportingDTO paymentsReportingDTO = paymentsReportingMapperService.apply(ctFlussoRiversamento, ingestionFlowFileDTO);
+
+			ctFlussoRiversamento.getDatiSingoliPagamenti().forEach(item -> paymentsReportingMapperService.toBuilder(paymentsReportingDTO, item));
+
+			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(paymentsReportingDTO.getFlowIdentifierCode()), true);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
 			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
