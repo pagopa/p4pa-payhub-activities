@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
