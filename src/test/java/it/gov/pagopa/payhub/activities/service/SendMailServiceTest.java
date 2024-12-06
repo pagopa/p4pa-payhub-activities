@@ -82,6 +82,7 @@ class SendMailServiceTest {
 				.mailText("Mail Text")
 				.htmlText("Html Text")
 				.templateName("reportingFlow-ok")
+				.attachmentPath(null)
 				.build();
 
 		validMailKo = MailTo.builder()
@@ -91,6 +92,7 @@ class SendMailServiceTest {
 				.mailText("Mail Text")
 				.htmlText("Html Text")
 				.templateName("reportingFlow-ko")
+				.attachmentPath(null)
 				.build();
 
 		invalidMailOk = MailTo.builder()
@@ -100,6 +102,7 @@ class SendMailServiceTest {
 				.mailText("Mail Text")
 				.htmlText("Html Text")
 				.templateName("reportingFlow-ok")
+				.attachmentPath("/tmp/reportingFlow.log")
 				.build();
 
 		invalidMailKo = MailTo.builder()
@@ -109,6 +112,7 @@ class SendMailServiceTest {
 				.mailText("Mail Text")
 				.htmlText("Html Text")
 				.templateName("reportingFlow-ko")
+				.attachmentPath("/tmp/reportingFlow.log")
 				.build();
 	}
 

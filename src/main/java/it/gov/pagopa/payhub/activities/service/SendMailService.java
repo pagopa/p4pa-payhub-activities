@@ -4,10 +4,14 @@ import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 
 @Lazy
 @Service
@@ -18,7 +22,6 @@ public class SendMailService {
     public SendMailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
-
     /**
      * sending mail with JavaMailSender
      * @param mailTo bean containing data to send
@@ -30,7 +33,13 @@ public class SendMailService {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             message.setFrom(mailTo.getEmailFromAddress());
             message.setTo(mailTo.getTo());
-            message.setSubject(mailTo.getMailSubject());
+            if(ArrayUtils.isNotEmpty(mailTo.getCc()))
+                message.setCc(mailTo.getCc());
+            if (mailTo.getAttachmentPath()!=null){
+                File attachment = new File(mailTo.getAttachmentPath());
+                message.addAttachment(attachment.getName(), attachment);
+            }
+           message.setSubject(mailTo.getMailSubject());
             message.setText(mailTo.getHtmlText(), true);
             log.debug("sending mail message.");
         } );

@@ -19,9 +19,11 @@ import java.util.Map;
 public class MailTo {
     Map<String, String> params;
     private String[] to;
+    private String[] cc;
     private String mailSubject;
     private String mailText;
     private String htmlText;
     private String emailFromAddress;
     private String templateName;
+    private String attachmentPath;
 }

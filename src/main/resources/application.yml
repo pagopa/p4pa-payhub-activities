@@ -4,3 +4,6 @@ spring:
     version: ${version}
   config:
     import: mail-templates.yml
+activity:
+  root:
+    path: /DATA/

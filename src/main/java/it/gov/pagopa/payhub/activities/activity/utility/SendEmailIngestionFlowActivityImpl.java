@@ -9,9 +9,14 @@ import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
-import it.gov.pagopa.payhub.activities.service.UserAuthorizationServiceImpl;
+import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.activity.utility.util.Constants.MAIL_DATE_FORMAT;
+import static it.gov.pagopa.payhub.activities.activity.utility.util.Constants.WS_USER;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -30,13 +36,16 @@ import static it.gov.pagopa.payhub.activities.activity.utility.util.Constants.MA
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
-    private final UserAuthorizationServiceImpl userAuthorizationService;
+    private final UserAuthorizationService userAuthorizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowFileDao ingestionFlowFileDao;
 
+    @Value("${activity.root.path}")
+    private String fsRootPath;
+
     public SendEmailIngestionFlowActivityImpl(
             EmailTemplatesConfiguration emailTemplatesConfiguration,
-            UserAuthorizationServiceImpl userAuthorizationService,
+            UserAuthorizationService userAuthorizationService,
             IngestionFlowFileDao ingestionFlowFileDao,
             SendMailService sendMailService) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
@@ -54,12 +63,20 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
      */
     @Override
     public boolean sendEmail(Long ingestionFlowFileId, boolean success) {
+
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
                     .orElseThrow(() -> new IngestionFlowNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
-            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ingestionFlowFileDTO.getOrg().getIpaCode(), ingestionFlowFileDTO.getOperatorName());
+            String ipaCode = ingestionFlowFileDTO.getOrg().getIpaCode();
+            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ipaCode, ingestionFlowFileDTO.getOperatorName());
+            UserInfoDTO organizationUserInfo = userAuthorizationService.getUserInfo(ipaCode,ipaCode+WS_USER);
             MailTo mailTo = getMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
+            if (organizationUserInfo!= null && StringUtils.isNotBlank(organizationUserInfo.getEmail()) &&
+                ! organizationUserInfo.getEmail().equalsIgnoreCase(userInfoDTO.getEmail())) {
+                    mailTo.setCc(new String[]{organizationUserInfo.getEmail()});
+            }
+            mailTo.setHtmlText(mailTo.getHtmlText());
             sendMailService.sendMail(mailTo);
         }
         catch (Exception e){
@@ -90,10 +107,18 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
 
         MailTo mailTo = new MailTo();
         mailTo.setMailSubject(StringSubstitutor.replace(subject, mailTo.getParams(), "{", "}"));
-        mailTo.setHtmlText(StringSubstitutor.replace(body, mailTo.getParams(), "{", "}"));
+        String htmlText = StringSubstitutor.replace(body, mailTo.getParams(), "{", "}");
+        String plainText = Jsoup.clean(htmlText, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false));
+        mailTo.setHtmlText(plainText);
         mailTo.setTemplateName(template);
         mailTo.setParams(mailMap);
         mailTo.setMailSubject(subject);
+
+        if (StringUtils.isNotBlank(ingestionFlowFileDTO.getFilePathName()) && StringUtils.isNotBlank(ingestionFlowFileDTO.getFileName()))  {
+            String relativeDataPath = ingestionFlowFileDTO.getFilePathName()+"/"+ingestionFlowFileDTO.getFileName();
+            mailTo.setAttachmentPath(fsRootPath.concat(Constants.REPORTING_PATH).concat(relativeDataPath));;
+        }
+
         return mailTo;
     }
 
