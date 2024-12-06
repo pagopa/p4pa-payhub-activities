@@ -9,10 +9,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.function.BiFunction;
 
+/**
+ * Service class responsible for mapping payment flow data (`CtFlussoRiversamento`) and ingestion metadata
+ * (`IngestionFlowFileDTO`) into a `PaymentsReportingDTO` object. Implements `BiFunction` for functional programming compatibility.
+ */
 @Lazy
 @Service
 public class PaymentsReportingMapperService implements BiFunction<CtFlussoRiversamento, IngestionFlowFileDTO, PaymentsReportingDTO> {
 
+	/**
+	 * Maps the given `CtFlussoRiversamento` and `IngestionFlowFileDTO` into a `PaymentsReportingDTO` object.
+	 *
+	 * @param ctFlussoRiversamento the flow data object containing information about the transaction flow.
+	 * @param ingestionFlowFileDTO the ingestion metadata containing information about the processing flow.
+	 * @return a fully populated `PaymentsReportingDTO` object containing mapped data.
+	 */
 	@Override
 	public PaymentsReportingDTO apply(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
 		return PaymentsReportingDTO.builder()
@@ -36,6 +47,13 @@ public class PaymentsReportingMapperService implements BiFunction<CtFlussoRivers
 			.build();
 	}
 
+	/**
+	 * Updates a given `PaymentsReportingDTO` with single payment data (`CtDatiSingoliPagamenti`).
+	 *
+	 * @param paymentsReportingDTO the base `PaymentsReportingDTO` to be updated.
+	 * @param singlePaymetdData    the single payment data to map into the DTO.
+	 * @return a new `PaymentsReportingDTO` object with the additional payment data.
+	 */
 	public PaymentsReportingDTO toBuilder(PaymentsReportingDTO paymentsReportingDTO, CtDatiSingoliPagamenti singlePaymetdData) {
 		return paymentsReportingDTO.toBuilder()
 			.creditorReferenceId(singlePaymetdData.getIdentificativoUnivocoVersamento())
