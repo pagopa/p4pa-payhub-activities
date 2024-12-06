@@ -178,7 +178,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	}
 
 	@Test
-	void givenValidationExceptionWhenProcessFileThenFails() throws Exception {
+	void givenNoMapperWhenProcessFileThenFails() throws Exception {
 		// Given
 		long ingestionFlowFileId = 123L;
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
