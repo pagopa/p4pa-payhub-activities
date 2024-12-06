@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ${artifactId}
+    version: ${version}
+email:
+  templates:
+    payments-reporting-flow-ok:
+      subject: ${EMAIL_TEMPLATE_REPORTINGFLOW_OK_SUBJECT:1}
+      body: ${EMAIL_TEMPLATE_REPORTINGFLOW_OK_BODY:2}
+    payments-reporting-flow-ko:
+      subject: ${EMAIL_TEMPLATE_REPORTINGFLOW_OK_SUBJECT:3}
+      body: ${EMAIL_TEMPLATE_REPORTINGFLOW_OK_BODY:4}

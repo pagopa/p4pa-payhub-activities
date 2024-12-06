@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;

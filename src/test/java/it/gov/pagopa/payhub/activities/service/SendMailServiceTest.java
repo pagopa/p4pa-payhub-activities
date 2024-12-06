@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import jakarta.mail.BodyPart;
 import jakarta.mail.MessagingException;
@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class SendMailServiceTest {
 	@MockBean
 	private SendMailService sendMailService ;
+	
 	private JavaMailSenderImpl javaMailSender;
 	private MimeMessage mimeMessage;
 	private MailTo validMailOk;
