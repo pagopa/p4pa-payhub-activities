@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.utility;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.activity.utility.util.Constants;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
