@@ -94,10 +94,14 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
             throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type: "+flowType);
         }
 
-        String subject = success ? emailTemplatesConfiguration.getPaymentsReportingFlowOk().getSubject()
-                : emailTemplatesConfiguration.getPaymentsReportingFlowKo().getSubject();
-        String body = success ? emailTemplatesConfiguration.getPaymentsReportingFlowOk().getBody()
-                : emailTemplatesConfiguration.getPaymentsReportingFlowKo().getBody() ;
+        String subject = (success
+                ? emailTemplatesConfiguration.getPaymentsReportingFlowOk()
+                : emailTemplatesConfiguration.getPaymentsReportingFlowKo()
+                ).getSubject();
+        String body = (success
+                ? emailTemplatesConfiguration.getPaymentsReportingFlowOk()
+                : emailTemplatesConfiguration.getPaymentsReportingFlowKo()
+                ).getBody() ;
 
         Map<String, String> mailMap = new HashMap<>();
         mailMap.put(Constants.ACTUAL_DATE, MAIL_DATE_FORMAT.format(LocalDateTime.now()));
