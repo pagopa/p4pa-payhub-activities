@@ -88,6 +88,7 @@ class SendMailServiceTest {
 				.htmlText("Html Text")
 				.templateName("reportingFlow-ok")
 				.build();
+
 		validMailKo = MailTo.builder()
 				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
@@ -96,6 +97,7 @@ class SendMailServiceTest {
 				.htmlText("Html Text")
 				.templateName("reportingFlow-ko")
 				.build();
+
 		invalidMailOk = MailTo.builder()
 				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
@@ -104,6 +106,7 @@ class SendMailServiceTest {
 				.htmlText("Html Text")
 				.templateName("reportingFlow-ok")
 				.build();
+
 		invalidMailKo = MailTo.builder()
 				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
