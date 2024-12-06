@@ -103,7 +103,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         mailMap.put(Constants.ACTUAL_DATE, MAIL_DATE_FORMAT.format(LocalDateTime.now()));
         mailMap.put(Constants.FILE_NAME, ingestionFlowFileDTO.getFileName());
         mailMap.put(Constants.TOTAL_ROWS_NUMBER, String.valueOf(ingestionFlowFileDTO.getNumTotalRows()));
-        mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(template, mailMap, "{", "}"));
+        mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(body, mailMap, "{", "}"));
 
         MailTo mailTo = new MailTo();
         mailTo.setMailSubject(StringSubstitutor.replace(subject, mailTo.getParams(), "{", "}"));
