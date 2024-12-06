@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity;
 
 import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.*;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
@@ -12,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
@@ -26,37 +27,35 @@ import static org.mockito.ArgumentMatchers.any;
  * test class for send mail for ingestion activity
  */
 @SpringBootTest(
-  classes = {SendEmailIngestionFlowActivityImpl.class},
+  classes = {SendEmailIngestionFlowActivityImpl.class, EmailTemplatesConfiguration.class},
   webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestPropertySource(properties = {
-  "template.OK.body=mail body",
-  "template.OK.subject=mail subject",
+        "email.templates.payments-reporting-flow-ok.body=pippo",
+        "email.templates.payments-reporting-flow-ok.subject=pluto",
+        "email.templates.payments-reporting-flow-ko.body=pippo",
+        "email.templates.payments-reporting-flow-ko.subject=pluto"
 })
 @EnableConfigurationProperties
 @ExtendWith(MockitoExtension.class)
 class SendEmailIngestionFlowActivityTest {
+    @Autowired
+    private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
     @MockBean
     private IngestionFlowFileDao ingestionFlowFileDao;
     @MockBean
     private SendMailService sendMailService;
-
     @MockBean
-    private Environment environment;
-    //private EmailTemplatesConfiguration emailTemplatesConfiguration;
-
+    private UserAuthorizationServiceImpl userAuthorizationService;
 
     private IngestionFlowFileDTO validIngestionFlowFileDTO;
     private IngestionFlowFileDTO invalidIngestionFlowFileDTO;
+    private UserInfoDTO validUserInfoDTO;
+    private UserInfoDTO invalidUserInfoDTO;
 
-    private SendEmailIngestionFlowActivityImpl sendEmailIngestionFlowActivity;
 
     @BeforeEach
     void init() {
         createBeans();
-        //sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(environment, emailTemplatesConfiguration, userAuthorizationService, ingestionFlowFileDao, sendMailService);
-        UserAuthorizationServiceImpl userAuthorizationService = new UserAuthorizationServiceImpl();
-        sendEmailIngestionFlowActivity = new SendEmailIngestionFlowActivityImpl(environment, userAuthorizationService, ingestionFlowFileDao, sendMailService);
-
     }
 
     /**
@@ -67,7 +66,7 @@ class SendEmailIngestionFlowActivityTest {
         boolean sendMailOK = true;
         Long ingestionFlowFileId = 100L;
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
-        //Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
         Mockito.doNothing().when(sendMailService).sendMail(any(MailTo.class));
 
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, sendMailOK));
@@ -117,9 +116,6 @@ class SendEmailIngestionFlowActivityTest {
     }
 
     private void createBeans() {
-        UserInfoDTO validUserInfoDTO;
-        UserInfoDTO invalidUserInfoDTO;
-
         OrganizationDTO organizationDTO = OrganizationDTO.builder()
                 .orgId(1L)
                 .ipaCode("IPA_CODE").build();

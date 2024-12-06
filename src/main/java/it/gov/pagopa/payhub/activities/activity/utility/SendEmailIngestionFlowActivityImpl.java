@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.utility;
 
+import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
@@ -17,9 +18,13 @@ import org.springframework.stereotype.Component;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static it.gov.pagopa.payhub.activities.activity.utility.util.Constants.MAIL_DATE_FORMAT;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -29,20 +34,17 @@ import java.util.Map;
 @Slf4j
 @Component
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
-    private final Environment environment;
-    //private final EmailTemplatesConfiguration emailTemplatesConfiguration;
+    private final EmailTemplatesConfiguration emailTemplatesConfiguration;
     private final UserAuthorizationServiceImpl userAuthorizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowFileDao ingestionFlowFileDao;
 
     public SendEmailIngestionFlowActivityImpl(
-            Environment environment,
-            //EmailTemplatesConfiguration emailTemplatesConfiguration,
+            EmailTemplatesConfiguration emailTemplatesConfiguration,
             UserAuthorizationServiceImpl userAuthorizationService,
             IngestionFlowFileDao ingestionFlowFileDao,
             SendMailService sendMailService) {
-        this.environment = environment;
-        //this.emailTemplatesConfiguration = emailTemplatesConfiguration;
+        this.emailTemplatesConfiguration = emailTemplatesConfiguration;
         this.userAuthorizationService = userAuthorizationService;
         this.ingestionFlowFileDao  = ingestionFlowFileDao;
         this.sendMailService = sendMailService;
@@ -75,59 +77,6 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) throws Exception {
         String template = "";
         String flowType = ingestionFlowFileDTO.getFlowFileType();
-        if (flowType.equals("R")) {
-            template += "reportingFlow-";
-            template += success ? "ok" : "ko";
-        } else {
-            log.error("Sending e-mail not supported for flow type: {}", flowType);
-            throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type: "+flowType);
-        }
-
-        DateFormat parser = new SimpleDateFormat(Constants.DATE_MAILFORMAT);
-        String actualDate = parser.format(new Date());
-
-        Map<String, String> mailMap = new HashMap<>();
-        mailMap.put(Constants.ACTUAL_DATE, actualDate);
-        mailMap.put(Constants.FILE_NAME, ingestionFlowFileDTO.getFileName());
-        mailMap.put(Constants.TOTAL_ROWS_NUMBER, String.valueOf(ingestionFlowFileDTO.getNumTotalRows()));
-        mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(template, mailMap, "{", "}"));
-
-        MailTo mailTo = new MailTo();
-        mailTo.setTemplateName(template);
-        MailTo dto = getMailParameters(mailTo, mailMap);
-        mailTo.setMailSubject(dto.getMailSubject());
-        mailTo.setHtmlText(dto.getHtmlText());
-        return mailTo;
-    }
-
-    /**
-     *  helper for composing e-mail parameters
-     *
-     * @param templateName parameters not updated
-     * @return parameters updated
-     */
-
-    /**
-     *
-     * @param templateName  template name
-     * @param mailMap   Map<String, String> map containing mail data
-     * @return MailTo
-     */
-    public MailTo getMailParameters(MailTo templateName, Map<String, String> mailMap ) {
-        MailTo dto = new MailTo();
-        ///String templateName = mailDTO.getTemplateName();
-        String subject = environment.getProperty("template."+templateName+".subject");
-        String body = environment.getProperty("template."+templateName+".body");
-        dto.setParams(mailMap);
-        dto.setMailSubject(StringSubstitutor.replace(subject, mailMap, "{", "}"));
-        dto.setHtmlText(StringSubstitutor.replace(body, mailMap, "{", "}"));
-        return dto;
-    }
-
-    /*
-    private MailTo getMailFromIngestionFlowNew(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) throws Exception {
-        String template = "";
-        String flowType = ingestionFlowFileDTO.getFlowFileType();
         if (! flowType.equalsIgnoreCase("R")) {
             log.error("Sending e-mail not supported for flow type: {}", flowType);
             throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type: "+flowType);
@@ -139,7 +88,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
                 : emailTemplatesConfiguration.getPaymentsReportingFlowKo().getBody() ;
 
         Map<String, String> mailMap = new HashMap<>();
-        mailMap.put(Constants.ACTUAL_DATE, MAIL_DATE_FORMAT.format(LocalDate.now()));
+        mailMap.put(Constants.ACTUAL_DATE, MAIL_DATE_FORMAT.format(LocalDateTime.now()));
         mailMap.put(Constants.FILE_NAME, ingestionFlowFileDTO.getFileName());
         mailMap.put(Constants.TOTAL_ROWS_NUMBER, String.valueOf(ingestionFlowFileDTO.getNumTotalRows()));
         mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(template, mailMap, "{", "}"));
@@ -152,5 +101,5 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         mailTo.setMailSubject(subject);
         return mailTo;
     }
-*/
+
 }
