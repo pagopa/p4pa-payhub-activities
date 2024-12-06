@@ -77,9 +77,7 @@ dependencies {
 	implementation("org.springframework.retry:spring-retry")
 	implementation("org.jsoup:jsoup:$jsoupVersion")
 
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-
-	//	Testing
+	// Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine")
