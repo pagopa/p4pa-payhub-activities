@@ -18,7 +18,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,10 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(
 		classes = {SendEmailIngestionFlowActivityImpl.class},
 		webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@TestPropertySource(properties = {
-		"template.OK.body=mail body",
-		"template.OK.subject=mail subject",
-})
 @EnableConfigurationProperties
 @ExtendWith(MockitoExtension.class)
 class SendMailServiceTest {
