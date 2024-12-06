@@ -32,7 +32,7 @@ public class PaymentsReportingInsertionService {
 	 * @param paymentsReportingDTO the DTO containing payment reporting data to be inserted.
 	 * @return the number of records successfully inserted.
 	 */
-	public PaymentsReportingDTO savePaymentsReporting(PaymentsReportingDTO paymentsReportingDTO) {
+	public int savePaymentsReporting(PaymentsReportingDTO paymentsReportingDTO) {
 		return paymentsReportingDao.save(paymentsReportingDTO);
 	}
 

@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -22,7 +21,7 @@ import java.io.IOException;
  */
 @Lazy
 @Component
-public class FlussoRiversamentoHandler {
+public class FlussoRiversamentoUnmarshallerService {
 	private final JAXBContext jaxbContext;
 	private final Schema schema;
 	private final XMLUnmarshallerService xmlUnmarshallerService;
@@ -33,15 +32,15 @@ public class FlussoRiversamentoHandler {
 	 * @param paymetsReportingXsdResource the XSD Resource
 	 * @param xmlUnmarshallerService the xml unmarshalling service
 	 */
-	public FlussoRiversamentoHandler(@Value("classpath:xsd/FlussoRiversamento.xsd") Resource paymetsReportingXsdResource,
-	                                 XMLUnmarshallerService xmlUnmarshallerService) {
+	public FlussoRiversamentoUnmarshallerService(@Value("classpath:xsd/FlussoRiversamento.xsd") Resource paymetsReportingXsdResource,
+	                                             XMLUnmarshallerService xmlUnmarshallerService) {
 		try {
 			this.jaxbContext = JAXBContext.newInstance(CtFlussoRiversamento.class);
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			this.schema = schemaFactory.newSchema(paymetsReportingXsdResource.getURL());
 			this.xmlUnmarshallerService = xmlUnmarshallerService;
 		} catch (JAXBException | SAXException | IOException e) {
-			throw new ActivitiesException("Error while creating a new instance for CtFlussoRiversamento");
+			throw new IllegalStateException("Error while creating jaxb context for CtFlussoRiversamento", e);
 		}
 	}
 
@@ -51,7 +50,7 @@ public class FlussoRiversamentoHandler {
 	 * @param file the XML file to parse
 	 * @return the unmarshalled CtFlussoRiversamento object
 	 */
-	public CtFlussoRiversamento handle(File file) {
+	public CtFlussoRiversamento unmarshal(File file) {
 		return xmlUnmarshallerService.unmarshal(file, CtFlussoRiversamento.class, jaxbContext, schema);
 	}
 }

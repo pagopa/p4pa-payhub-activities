@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentsReportingDTO {
@@ -24,7 +24,7 @@ public class PaymentsReportingDTO {
 	private IngestionFlowFileDTO ingestionFlowFile;
 	private String idPsp;
 	private String flowIdentifierCode;
-	private Timestamp flowDateTime;
+	private Date flowDateTime;
 	private String regulationUniqueIdentifier;
 	private Date regulationDate;
 	private String senderPspType;

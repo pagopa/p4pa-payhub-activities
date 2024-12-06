@@ -7,5 +7,5 @@ public interface PaymentsReportingDao {
 	/**
 	 *  * It will insert a new record of the object
 	 * */
-	PaymentsReportingDTO save(PaymentsReportingDTO paymentsReportingDTO);
+	int save(PaymentsReportingDTO paymentsReportingDTO);
 }
