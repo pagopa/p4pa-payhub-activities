@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class FlowValidatorService {
 
-	public void validatOrganization(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
-		if (ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getCodiceIdentificativoUnivoco()
+	public void validateOrganization(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
+		if (!ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getCodiceIdentificativoUnivoco()
 			.equals(ingestionFlowFileDTO.getOrg().getOrgFiscalCode())) {
 			throw new InvalidFlowDataException("Invalid Organization");
 		}
