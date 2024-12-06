@@ -13,5 +13,5 @@ public interface UpdateIngestionFlowStatusActivity {
      * @param newStatus the new status to set.
      * @return true if the update was successful, false otherwise.
      */
-    boolean updateStatus(String id, String newStatus);
+    boolean updateStatus(Long id, String newStatus);
 }
