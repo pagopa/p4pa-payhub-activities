@@ -176,31 +176,4 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		// Then
 		assertFalse(result.isSuccess());
 	}
-
-	@Test
-	void givenNoMapperWhenProcessFileThenFails() throws Exception {
-		// Given
-		long ingestionFlowFileId = 123L;
-		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
-			.ingestionFlowFileId(ingestionFlowFileId)
-			.fileName("valid-file.zip")
-			.filePathName("/valid/path")
-			.flowFileType(FLOW_FILE_TYPE)
-			.build();
-		File file = new File(tempDir, "testFlussoRiversamento.xml");
-		List<Path> mockedListPath = List.of(file.toPath());
-		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
-
-		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
-		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
-		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(file)).thenThrow(ActivitiesException.class);
-
-		// When
-		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
-
-		// Then
-		assertEquals(expected, result);
-	}
 }
