@@ -1,26 +1,21 @@
 package it.gov.pagopa.payhub.activities.activity.utility;
 
+import it.gov.pagopa.payhub.activities.activity.utility.util.Constants;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
-import it.gov.pagopa.payhub.activities.activity.utility.util.Constants;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

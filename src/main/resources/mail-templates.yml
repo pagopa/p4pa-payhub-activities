@@ -1,0 +1,15 @@
+email:
+  templates:
+    payments-reporting-flow-ok:
+      subject: "Rendicontazione: Resoconto Caricamento file: {fileName}"
+      body: "Gentile Utente,<br>\n \
+        questa è una mail generata in automatico dal sistema MyPay, si raccomanda di non rispondere a questo messaggio.<br>\n\n \
+        Contattare l'assistenza per richiedere, se necessario, ulteriori chiarimenti.<br>\n\n \
+        {actualDate}"
+    payments-reporting-flow-ko:
+      subject: "Rendicontazione: Resoconto Caricamento file: {fileName}"
+      body: "Gentile Utente,<br>\n \
+        questa e' una mail generata in automatico dal sistema MyPay, si raccomanda di non rispondere a questo messaggio.<br>\n\n \
+        Contattare l'assistenza per richiedere, se necessario, ulteriori chiarimenti.<br>\n\n \
+        <p>Di seguito il testo del messaggio: {mailText}<br></p>\n\n \
+        {actualDate}"
