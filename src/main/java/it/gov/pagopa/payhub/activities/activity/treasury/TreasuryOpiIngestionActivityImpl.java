@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.treasury;
 
-import generated.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
@@ -12,6 +11,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
+import it.gov.pagopa.payhub.activities.xsd.treasury.FlussoGiornaleDiCassa;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -30,6 +30,7 @@ import java.util.List;
 @Lazy
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
+
     private final String ingestionflowFileType;
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final TreasuryDao treasuryDao;
@@ -67,7 +68,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                     .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
             ingestionFlowFiles.forEach(path -> {
-                        FlussoGiornaleDiCassa flussoGiornaleDiCassa = treasuryUnmarshallerService.unmarshal(path.toFile());
+                FlussoGiornaleDiCassa flussoGiornaleDiCassa = treasuryUnmarshallerService.unmarshal(path.toFile());
                       //  log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa.getCodIdUnivocoFlusso());
 
                         //valida campi

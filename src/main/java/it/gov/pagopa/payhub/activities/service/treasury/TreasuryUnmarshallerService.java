@@ -1,10 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import generated.FlussoGiornaleDiCassa;
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDto;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
+import it.gov.pagopa.payhub.activities.xsd.treasury.FlussoGiornaleDiCassa;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,15 +24,15 @@ public class TreasuryUnmarshallerService {
     /**
      * Initializes the handler with pre-configured JAXBContext and Schema for FlussoRiversamento.
      *
-     * @param paymetsReportingXsdResource the XSD Resource
+     * @param xsdSchemaResource the XSD Resource
      * @param xmlUnmarshallerService the xml unmarshalling service
      */
-    public TreasuryUnmarshallerService(@Value("classpath:xsd/FlussoRiversamento.xsd") Resource paymetsReportingXsdResource,
+    public TreasuryUnmarshallerService(@Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd") Resource xsdSchemaResource,
                                        XMLUnmarshallerService xmlUnmarshallerService) {
         try {
-            this.jaxbContext = JAXBContext.newInstance(CtFlussoRiversamento.class);
+            this.jaxbContext = JAXBContext.newInstance(FlussoGiornaleDiCassa.class);
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            this.schema = schemaFactory.newSchema(paymetsReportingXsdResource.getURL());
+            this.schema = schemaFactory.newSchema(xsdSchemaResource.getURL());
             this.xmlUnmarshallerService = xmlUnmarshallerService;
         } catch (JAXBException | SAXException | IOException e) {
             throw new ActivitiesException("Error while creating a new instance for CtFlussoRiversamento");
