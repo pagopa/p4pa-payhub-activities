@@ -116,16 +116,16 @@ class FlussoRiversamentoUnmarshallerServiceTest {
 	void testJAXBExceptionInConstructor() {
 		Mockito.mockStatic(JAXBContext.class).when(() -> JAXBContext.newInstance(CtFlussoRiversamento.class))
 			.thenThrow(new JAXBException("Simulated JAXBException"));
-		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoUnmarshallerService(resource, null));
+		assertThrows(IllegalStateException.class, () -> new FlussoRiversamentoUnmarshallerService(resource, null));
 	}
 
 	@Test
 	void testIOExceptionInConstructor() throws Exception {
-		// Mock the Resource to simulate an exception during URL retrieval
+		// given
 		Resource mockResource = mock(Resource.class);
 		when(mockResource.getURL()).thenThrow(new IOException("Simulated IOException"));
 
-		// Assert that ActivitiesException is thrown
-		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoUnmarshallerService(mockResource, null));
+		// when then
+		assertThrows(IllegalStateException.class, () -> new FlussoRiversamentoUnmarshallerService(mockResource, null));
 	}
 }
