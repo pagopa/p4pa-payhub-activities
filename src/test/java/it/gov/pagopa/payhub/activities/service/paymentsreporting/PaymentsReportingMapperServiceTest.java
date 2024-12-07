@@ -57,7 +57,7 @@ class PaymentsReportingMapperServiceTest {
 		singlePayment.setIdentificativoUnivocoVersamento("vers123");
 		singlePayment.setIdentificativoUnivocoRiscossione("ris123");
 		singlePayment.setIndiceDatiSingoloPagamento(1);
-		singlePayment.setSingoloImportoPagato(BigDecimal.valueOf(200.0D));
+		singlePayment.setSingoloImportoPagato(BigDecimal.valueOf(200.00D));
 		singlePayment.setCodiceEsitoSingoloPagamento("OK");
 		singlePayment.setDataEsitoSingoloPagamento(toXMLGregorianCalendar(new GregorianCalendar()));
 		
@@ -72,11 +72,10 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("PSP Mittente", result.get(0).getSenderPspName());
 		assertEquals("Org Ricevente", result.get(0).getReceiverOrganizationName());
 		assertEquals(100L, result.get(0).getSumPayments().longValue());
-		assertEquals(1000.50d, result.get(0).getAmountPaid().doubleValue());
+		assertEquals(200.00D, result.get(0).getAmountPaid().doubleValue());
 		assertEquals("vers123", result.get(0).getCreditorReferenceId());
 		assertEquals("ris123", result.get(0).getRegulationId());
 		assertEquals(1, result.get(0).getTransferIndex());
-		assertEquals(200.00D, result.get(0).getAmountPaid().doubleValue());
 		assertEquals("OK", result.get(0).getPaymentOutcomeCode());
 		assertNotNull(result.get(0).getPayDate());
 	}
