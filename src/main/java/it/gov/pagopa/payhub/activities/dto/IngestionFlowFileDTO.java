@@ -32,4 +32,5 @@ public class IngestionFlowFileDTO implements Serializable {
     private Long pdfGenerated;
     private String codRequestToken;
     private String codError;
+    private String discardedFileName;
 }
