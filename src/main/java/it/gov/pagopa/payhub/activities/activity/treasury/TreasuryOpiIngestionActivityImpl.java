@@ -3,13 +3,14 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDto;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.dto.treasury.IufIuvDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIngestionResulDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi14MapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import lombok.extern.slf4j.Slf4j;
@@ -32,65 +33,68 @@ import java.util.List;
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
 
-    private final String ingestionflowFileType;
-    private final IngestionFlowFileDao ingestionFlowFileDao;
-    private final TreasuryDao treasuryDao;
-    private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
-    private final TreasuryUnmarshallerService treasuryUnmarshallerService;
-    private final TreasuryMapperService treasuryMapperService;
+  private final String ingestionflowFileType;
+  private final IngestionFlowFileDao ingestionFlowFileDao;
+  private final TreasuryDao treasuryDao;
+  private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
+  private final TreasuryUnmarshallerService treasuryUnmarshallerService;
+  private final TreasuryOpi14MapperService treasuryOpi14MapperService;
 
 
-
-    public TreasuryOpiIngestionActivityImpl(@Value("${ingestion-flow-file-type:O}") String ingestionflowFileType,
-                                            IngestionFlowFileDao ingestionFlowFileDao, TreasuryDao treasuryDao,
-                                            IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-                                            TreasuryUnmarshallerService treasuryUnmarshallerService,
-                                            TreasuryMapperService treasuryMapperService) {
-        this.ingestionflowFileType = ingestionflowFileType;
-        this.ingestionFlowFileDao = ingestionFlowFileDao;
-        this.treasuryDao = treasuryDao;
-        this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
-        this.treasuryUnmarshallerService = treasuryUnmarshallerService;
-        this.treasuryMapperService = treasuryMapperService;
-    }
-
-
-    @Override
-    public TreasuryIufResult processFile(Long ingestionFlowFileId) {
-        List<String> iufList = new ArrayList<>();
-        try {
-            IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
-                    .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
-            if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
-                throw new IllegalArgumentException("invalid ingestionFlow file type");
-            }
-
-            List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
-                    .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-
-            ingestionFlowFiles.forEach(path -> {
-                File ingestionFlowFile = path.toFile();
-                FlussoGiornaleDiCassa flussoGiornaleDiCassa = treasuryUnmarshallerService.unmarshal(ingestionFlowFile);
-                      //  log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa.getCodIdUnivocoFlusso());
+  public TreasuryOpiIngestionActivityImpl(@Value("${ingestion-flow-file-type:O}") String ingestionflowFileType,
+                                          IngestionFlowFileDao ingestionFlowFileDao, TreasuryDao treasuryDao,
+                                          IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
+                                          TreasuryUnmarshallerService treasuryUnmarshallerService,
+                                          TreasuryOpi14MapperService treasuryOpi14MapperService) {
+    this.ingestionflowFileType = ingestionflowFileType;
+    this.ingestionFlowFileDao = ingestionFlowFileDao;
+    this.treasuryDao = treasuryDao;
+    this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
+    this.treasuryUnmarshallerService = treasuryUnmarshallerService;
+    this.treasuryOpi14MapperService = treasuryOpi14MapperService;
+  }
 
 
-                        //valida campi
+  @Override
+  public TreasuryIngestionResulDTO processFile(Long ingestionFlowFileId) {
+    List<IufIuvDTO> iufIuvList = new ArrayList<>();
+    try {
+      IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
+        .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
+      if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
+        throw new IllegalArgumentException("invalid ingestionFlow file type "+ingestionFlowFileDTO.getFlowFileType());
+      }
+
+      List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
+        .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+
+      ingestionFlowFiles.forEach(path -> {
+          File ingestionFlowFile = path.toFile();
+          FlussoGiornaleDiCassa flussoGiornaleDiCassa = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
+          //  log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa.getCodIdUnivocoFlusso());
 
 
-                        TreasuryDto treasuryDto = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
+          //valida campi
 
-                        treasuryDao.insert(treasuryDto);
 
-                        iufList.add(treasuryDto.getCodIdUnivocoFlusso());
-                    }
-            );
+          TreasuryDTO treasuryDto = treasuryOpi14MapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
-        } catch (Exception e) {
-            log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
-            return new TreasuryIufResult(Collections.emptyList(), false);
+          treasuryDao.insert(treasuryDto);
+
+          iufIuvList.add(IufIuvDTO.builder()
+            .iuf(treasuryDto.getCodIdUnivocoFlusso())
+            .iuv(treasuryDto.getCodIdUnivocoVersamento())
+            .build()
+          );
         }
-        return new TreasuryIufResult(iufList, true);
+      );
+
+    } catch (Exception e) {
+      log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
+      return new TreasuryIngestionResulDTO(Collections.emptyList(), false);
     }
+    return new TreasuryIngestionResulDTO(iufIuvList, true);
+  }
 
 
 }

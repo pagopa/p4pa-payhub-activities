@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.dao;
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDto;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 
 
 public interface TreasuryDao {
 
-    Long insert(TreasuryDto treasuryDto);
+    Long insert(TreasuryDTO treasuryDto);
 
 
 

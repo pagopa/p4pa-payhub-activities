@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * DTO for the TreasuryDto
@@ -13,7 +12,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TreasuryDto {
+public class TreasuryDTO {
     private Long mygovFlussoTesoreriaId;
     private String deAnnoBolletta;
     private String codBolletta;
