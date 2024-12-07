@@ -115,10 +115,13 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         mailTo.setMailSubject(subject);
 
         if (StringUtils.isNotBlank(ingestionFlowFileDTO.getFilePathName()) && StringUtils.isNotBlank(ingestionFlowFileDTO.getFileName()))  {
-            String relativeDataPath = ingestionFlowFileDTO.getFilePathName()+"/"+ingestionFlowFileDTO.getFileName();
-            mailTo.setAttachmentPath(fsRootPath.concat(Constants.REPORTING_PATH).concat(relativeDataPath));;
+            mailTo.setAttachmentPath(
+                    fsRootPath +
+                    Constants.REPORTING_PATH +
+                    ingestionFlowFileDTO.getFilePathName() +
+                    Constants.SLASH +
+                    ingestionFlowFileDTO.getFileName());
         }
-
         return mailTo;
     }
 
