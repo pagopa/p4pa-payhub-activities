@@ -30,7 +30,6 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.setCodiceBicBancaDiRiversamento("BIC123");
 		ctFlussoRiversamento.setNumeroTotalePagamenti(BigDecimal.valueOf(100L));
 		ctFlussoRiversamento.setImportoTotalePagamenti(BigDecimal.valueOf(1000.50d));
-		ctFlussoRiversamento.getDatiSingoliPagamenti().addAll(List.of(new CtDatiSingoliPagamenti()));
 
 		ctFlussoRiversamento.setDataRegolamento(toXMLGregorianCalendar(new GregorianCalendar()));
 		ctFlussoRiversamento.setDataOraFlusso(toXMLGregorianCalendar(new GregorianCalendar()));
@@ -62,7 +61,7 @@ class PaymentsReportingMapperServiceTest {
 		singlePayment.setCodiceEsitoSingoloPagamento("OK");
 		singlePayment.setDataEsitoSingoloPagamento(toXMLGregorianCalendar(new GregorianCalendar()));
 		
-		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
+		ctFlussoRiversamento.getDatiSingoliPagamenti().addAll(List.of(singlePayment));
 
 		// When
 		List<PaymentsReportingDTO> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
