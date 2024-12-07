@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.utility;
+package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 /**
  * Interface for SendEmailIngestionFlowActivity.
