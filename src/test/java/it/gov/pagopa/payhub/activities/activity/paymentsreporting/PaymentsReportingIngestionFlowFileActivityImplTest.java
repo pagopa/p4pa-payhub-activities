@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtDatiSingoliPagamenti;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
@@ -11,6 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.InvalidFlowDataException;
+import it.gov.pagopa.payhub.activities.exception.PaymentsReportingException;
 import it.gov.pagopa.payhub.activities.service.FlowValidatorService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
@@ -52,8 +52,9 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	private PaymentsReportingIngestionFlowFileActivityImpl ingestionActivity;
 
 	@TempDir
-	File tempDir;
+	private File tempDir;
 	private CtFlussoRiversamento ctFlussoRiversamento;
+
 
 	@BeforeEach
 	void setUp() {
@@ -73,9 +74,6 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		istitutoRicevente.setIdentificativoUnivocoRicevente(ctIdentificativoUnivocoPersonaG);
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIstitutoRicevente(istitutoRicevente);
-		CtDatiSingoliPagamenti singlePayment = new CtDatiSingoliPagamenti();
-		singlePayment.setIdentificativoUnivocoVersamento("vers123");
-		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
 		}
 
 	@Test
@@ -87,16 +85,12 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			.fileName("valid-file.zip")
 			.filePathName("/valid/path")
 			.flowFileType(FLOW_FILE_TYPE)
-			.org(OrganizationDTO.builder().orgFiscalCode("80010020011").build())
 			.build();
 		File file = new File(tempDir, "testFlussoRiversamento.xml");
 		List<Path> mockedListPath = List.of(file.toPath());
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-
-		PaymentsReportingDTO mockPaymentsReportingDTO = PaymentsReportingDTO.builder()
-			.ingestionFlowFile(mockFlowDTO)
-			.flowIdentifierCode("idFlow").build();
+		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			new PaymentsReportingIngestionFlowFileActivityResult(List.of(ctFlussoRiversamento.getIdentificativoFlusso()), true);
@@ -107,17 +101,11 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(file)).thenReturn(ctFlussoRiversamento);
 
 		doNothing().when(flowValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
-		when(paymentsReportingMapperServiceMock.apply(ctFlussoRiversamento, mockFlowDTO)).thenReturn(mockPaymentsReportingDTO);
-
-
-		ctFlussoRiversamento.getDatiSingoliPagamenti().forEach(item -> {
-			System.out.println("-");
-			PaymentsReportingDTO updatedDTO = paymentsReportingMapperServiceMock.toBuilder(mockPaymentsReportingDTO, item);
-			when(paymentsReportingInsertionServiceMock.savePaymentsReporting(updatedDTO))
-				.thenReturn(-1);
-		});
+		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
+		doReturn(dtoList).when(paymentsReportingInsertionServiceMock).savePaymentsReporting(dtoList);
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
+
 		// Then
 		assertEquals(expected, result);
 	}
@@ -239,8 +227,8 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		assertEquals(expected, result);
 	}
 
-/**	@Test
-	void processFile_SavingFails() throws Exception {
+	@Test
+	void givenPaymentsReportingExceptionWhenProcessFileThenFails() throws Exception {
 		// Given
 		long ingestionFlowFileId = 123L;
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
@@ -248,16 +236,12 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			.fileName("valid-file.zip")
 			.filePathName("/valid/path")
 			.flowFileType(FLOW_FILE_TYPE)
-			.org(OrganizationDTO.builder().orgFiscalCode("80010020011").build())
 			.build();
 		File file = new File(tempDir, "testFlussoRiversamento.xml");
 		List<Path> mockedListPath = List.of(file.toPath());
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-
-		PaymentsReportingDTO mockPaymentsReportingDTO = PaymentsReportingDTO.builder()
-			.ingestionFlowFile(mockFlowDTO)
-			.flowIdentifierCode("idFlow").build();
+		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
@@ -268,13 +252,13 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(file)).thenReturn(ctFlussoRiversamento);
 
 		doNothing().when(flowValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
-		when(paymentsReportingMapperServiceMock.apply(ctFlussoRiversamento, mockFlowDTO)).thenReturn(mockPaymentsReportingDTO);
-
-
-
+		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
+		doThrow(new PaymentsReportingException("saving fails"))
+			.when(paymentsReportingInsertionServiceMock).savePaymentsReporting(dtoList);
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
+
 		// Then
 		assertEquals(expected, result);
-	}*/
+	}
 }

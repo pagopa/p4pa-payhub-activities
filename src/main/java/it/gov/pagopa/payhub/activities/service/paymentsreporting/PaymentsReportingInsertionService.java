@@ -2,8 +2,11 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.exception.PaymentsReportingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Service class responsible for insert payments reporting data next to the data source.
@@ -27,13 +30,18 @@ public class PaymentsReportingInsertionService {
 	}
 
 	/**
-	 * Inserts a payment reporting record into the data source.
+	 * Saves a list of PaymentsReportingDTO objects to the database.
 	 *
-	 * @param paymentsReportingDTO the DTO containing payment reporting data to be inserted.
-	 * @return the number of records successfully inserted.
+	 * @param dtos the list of PaymentsReportingDTO objects to be saved.
+	 * @return the list of saved PaymentsReportingDTO objects.
+	 * @throws PaymentsReportingException if an error occurs while saving the data.
 	 */
-	public int savePaymentsReporting(PaymentsReportingDTO paymentsReportingDTO) {
-		return paymentsReportingDao.save(paymentsReportingDTO);
+	public List<PaymentsReportingDTO> savePaymentsReporting(List<PaymentsReportingDTO> dtos) {
+		try {
+			return paymentsReportingDao.saveAll(dtos);
+		} catch (Exception e) {
+			throw new PaymentsReportingException("Error occurred while saving payment reports");
+		}
 	}
 
 }

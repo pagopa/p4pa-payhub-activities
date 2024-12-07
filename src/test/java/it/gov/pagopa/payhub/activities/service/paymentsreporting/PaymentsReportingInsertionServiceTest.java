@@ -2,13 +2,16 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.exception.PaymentsReportingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,11 +29,18 @@ class PaymentsReportingInsertionServiceTest {
 
 	@Test
 	void givenPaymentsReportingThenSuccess() {
-		PaymentsReportingDTO paymentsReportingDTO = new PaymentsReportingDTO();
-		when(paymentsReportingDaoMock.save(paymentsReportingDTO)).thenReturn(-1);
+		List<PaymentsReportingDTO> dtoList = List.of(new PaymentsReportingDTO());
+		when(paymentsReportingDaoMock.saveAll(dtoList)).thenReturn(dtoList);
 
-		int actual = service.savePaymentsReporting(paymentsReportingDTO);
+		assertDoesNotThrow(() -> service.savePaymentsReporting(dtoList), "Error occurred while saving");
+	}
 
-		assertEquals(-1, actual);
+	@Test
+	void givenPaymentsReportingThenException() {
+		List<PaymentsReportingDTO> dtoList = List.of(new PaymentsReportingDTO());
+		when(paymentsReportingDaoMock.saveAll(dtoList)).thenThrow(PaymentsReportingException.class);
+
+		assertThrows(PaymentsReportingException.class,
+			() -> service.savePaymentsReporting(dtoList), "Error occurred while saving payment reports");
 	}
 }

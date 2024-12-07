@@ -1,32 +1,33 @@
 package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtDatiSingoliPagamenti;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.function.BiFunction;
+import java.util.List;
 
 /**
- * Service class responsible for mapping payment flow data (`CtFlussoRiversamento`) and ingestion metadata
- * (`IngestionFlowFileDTO`) into a `PaymentsReportingDTO` object. Implements `BiFunction` for functional programming compatibility.
+ * Service class responsible for mapping flow data (`CtFlussoRiversamento`) and ingestion metadata
+ * (`IngestionFlowFileDTO`) into a list of `PaymentsReportingDTO` objects.
  */
 @Lazy
 @Service
-public class PaymentsReportingMapperService implements BiFunction<CtFlussoRiversamento, IngestionFlowFileDTO, PaymentsReportingDTO> {
+public class PaymentsReportingMapperService {
 
 	/**
-	 * Maps the given `CtFlussoRiversamento` and `IngestionFlowFileDTO` into a `PaymentsReportingDTO` object.
+	 * Maps a `CtFlussoRiversamento` object and an `IngestionFlowFileDTO` into a list of `PaymentsReportingDTO` objects.
+	 * Each `PaymentsReportingDTO` in the list corresponds to an individual payment within the flow.
 	 *
-	 * @param ctFlussoRiversamento the flow data object containing information about the transaction flow.
+	 * @param ctFlussoRiversamento the flow data object containing detailed information about the transaction flow,
+	 *                             including details for multiple individual payments.
 	 * @param ingestionFlowFileDTO the ingestion metadata containing information about the processing flow.
-	 * @return a fully populated `PaymentsReportingDTO` object containing mapped data.
+	 * @return a list of `PaymentsReportingDTO` objects, one for each individual payment in the flow.
 	 */
-	@Override
-	public PaymentsReportingDTO apply(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
-		return PaymentsReportingDTO.builder()
+	public List<PaymentsReportingDTO> mapToDtoList(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
+
+		PaymentsReportingDTO.PaymentsReportingDTOBuilder builder = PaymentsReportingDTO.builder()
 			.orgId(ingestionFlowFileDTO.getOrg())
 			.ingestionFlowFile(ingestionFlowFileDTO)
 			.idPsp(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
@@ -43,25 +44,17 @@ public class PaymentsReportingMapperService implements BiFunction<CtFlussoRivers
 			.totalPayments(ctFlussoRiversamento.getDatiSingoliPagamenti().size())
 			.sumPayments(ctFlussoRiversamento.getNumeroTotalePagamenti())
 			.amountPaid(ctFlussoRiversamento.getImportoTotalePagamenti())
-			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento())
-			.build();
-	}
+			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento());
 
-	/**
-	 * Updates a given `PaymentsReportingDTO` with single payment data (`CtDatiSingoliPagamenti`).
-	 *
-	 * @param paymentsReportingDTO the base `PaymentsReportingDTO` to be updated.
-	 * @param singlePaymetdData    the single payment data to map into the DTO.
-	 * @return a new `PaymentsReportingDTO` object with the additional payment data.
-	 */
-	public PaymentsReportingDTO toBuilder(PaymentsReportingDTO paymentsReportingDTO, CtDatiSingoliPagamenti singlePaymetdData) {
-		return paymentsReportingDTO.toBuilder()
-			.creditorReferenceId(singlePaymetdData.getIdentificativoUnivocoVersamento())
-			.regulationId(singlePaymetdData.getIdentificativoUnivocoRiscossione())
-			.transferIndex(singlePaymetdData.getIndiceDatiSingoloPagamento())
-			.amountPaid(singlePaymetdData.getSingoloImportoPagato())
-			.paymentOutcomeCode(singlePaymetdData.getCodiceEsitoSingoloPagamento())
-			.payDate(singlePaymetdData.getDataEsitoSingoloPagamento().toGregorianCalendar().getTime())
-			.build();
+		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
+			.map(item -> builder
+				.creditorReferenceId(item.getIdentificativoUnivocoVersamento())
+				.regulationId(item.getIdentificativoUnivocoRiscossione())
+				.transferIndex(item.getIndiceDatiSingoloPagamento())
+				.amountPaid(item.getSingoloImportoPagato())
+				.paymentOutcomeCode(item.getCodiceEsitoSingoloPagamento())
+				.payDate(item.getDataEsitoSingoloPagamento().toGregorianCalendar().getTime())
+				.build())
+			.toList();
 	}
 }

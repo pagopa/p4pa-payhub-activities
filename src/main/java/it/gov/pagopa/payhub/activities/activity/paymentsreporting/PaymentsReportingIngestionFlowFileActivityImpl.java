@@ -43,10 +43,10 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 		this.ingestionflowFileType = ingestionflowFileType;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
-		this.paymentsReportingInsertionService = paymentsReportingInsertionService;
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
 		this.flowValidatorService = flowValidatorService;
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
+		this.paymentsReportingInsertionService = paymentsReportingInsertionService;
 	}
 
 	@Override
@@ -67,18 +67,14 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 			flowValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-			PaymentsReportingDTO paymentsReportingDTO = paymentsReportingMapperService.apply(ctFlussoRiversamento, ingestionFlowFileDTO);
+			List<PaymentsReportingDTO> dtoListToSave = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
+			List<PaymentsReportingDTO> savedList = paymentsReportingInsertionService.savePaymentsReporting(dtoListToSave);
 
-			ctFlussoRiversamento.getDatiSingoliPagamenti().forEach(item -> {
-				PaymentsReportingDTO updatedDTO = paymentsReportingMapperService.toBuilder(paymentsReportingDTO, item);
-				int i = paymentsReportingInsertionService.savePaymentsReporting(updatedDTO);
-				System.out.println("saved"+i);
-			});
-			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(paymentsReportingDTO.getFlowIdentifierCode()), true);
+			String iuf = savedList.get(0).getFlowIdentifierCode();
+			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(iuf), true);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
 			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
 		}
-
 	}
 }

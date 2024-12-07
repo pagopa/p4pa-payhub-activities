@@ -15,14 +15,13 @@ import java.util.List;
 
 import static it.gov.digitpa.schemas._2011.pagamenti.StTipoIdentificativoUnivoco.B;
 import static it.gov.digitpa.schemas._2011.pagamenti.StTipoIdentificativoUnivocoPersG.G;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PaymentsReportingMapperServiceTest {
 	private PaymentsReportingMapperService mapper = new PaymentsReportingMapperService();
 
 	@Test
-	void testApply() throws DatatypeConfigurationException {
+	void testMapper() throws DatatypeConfigurationException {
 		// Given
 		CtFlussoRiversamento ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("flow123");
@@ -55,22 +54,6 @@ class PaymentsReportingMapperServiceTest {
 		IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
 		ingestionFlowFileDTO.setOrg(new OrganizationDTO());
 
-		// When
-		PaymentsReportingDTO result = mapper.apply(ctFlussoRiversamento, ingestionFlowFileDTO);
-
-		// Then
-		assertEquals("flow123", result.getFlowIdentifierCode());
-		assertEquals("PSP Mittente", result.getSenderPspName());
-		assertEquals("Org Ricevente", result.getReceiverOrganizationName());
-		assertEquals(100L, result.getSumPayments().longValue());
-		assertEquals(1000.50d, result.getAmountPaid().doubleValue());
-	}
-
-	@Test
-	void testToBuilder() throws DatatypeConfigurationException {
-		// given
-		PaymentsReportingDTO initialDto = new PaymentsReportingDTO();
-
 		CtDatiSingoliPagamenti singlePayment = new CtDatiSingoliPagamenti();
 		singlePayment.setIdentificativoUnivocoVersamento("vers123");
 		singlePayment.setIdentificativoUnivocoRiscossione("ris123");
@@ -78,17 +61,25 @@ class PaymentsReportingMapperServiceTest {
 		singlePayment.setSingoloImportoPagato(BigDecimal.valueOf(200.0D));
 		singlePayment.setCodiceEsitoSingoloPagamento("OK");
 		singlePayment.setDataEsitoSingoloPagamento(toXMLGregorianCalendar(new GregorianCalendar()));
+		
+		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
 
-		// when
-		PaymentsReportingDTO updatedDto = mapper.toBuilder(initialDto, singlePayment);
+		// When
+		List<PaymentsReportingDTO> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		// then
-		assertEquals("vers123", updatedDto.getCreditorReferenceId());
-		assertEquals("ris123", updatedDto.getRegulationId());
-		assertEquals(1, updatedDto.getTransferIndex());
-		assertEquals(200.00D, updatedDto.getAmountPaid().doubleValue());
-		assertEquals("OK", updatedDto.getPaymentOutcomeCode());
-		assertNotNull(updatedDto.getPayDate());
+		// Then
+		assertEquals(1, result.size());
+		assertEquals("flow123", result.get(0).getFlowIdentifierCode());
+		assertEquals("PSP Mittente", result.get(0).getSenderPspName());
+		assertEquals("Org Ricevente", result.get(0).getReceiverOrganizationName());
+		assertEquals(100L, result.get(0).getSumPayments().longValue());
+		assertEquals(1000.50d, result.get(0).getAmountPaid().doubleValue());
+		assertEquals("vers123", result.get(0).getCreditorReferenceId());
+		assertEquals("ris123", result.get(0).getRegulationId());
+		assertEquals(1, result.get(0).getTransferIndex());
+		assertEquals(200.00D, result.get(0).getAmountPaid().doubleValue());
+		assertEquals("OK", result.get(0).getPaymentOutcomeCode());
+		assertNotNull(result.get(0).getPayDate());
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {
