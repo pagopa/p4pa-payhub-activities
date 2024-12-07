@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.utility;
 
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivity;
-import it.gov.pagopa.payhub.activities.activity.utility.util.Constants;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
@@ -25,8 +24,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static it.gov.pagopa.payhub.activities.activity.utility.util.Constants.MAIL_DATE_FORMAT;
-import static it.gov.pagopa.payhub.activities.activity.utility.util.Constants.WS_USER;
+import static it.gov.pagopa.payhub.activities.activity.utility.Constants.MAIL_DATE_TIME_FORMATTER;
+import static it.gov.pagopa.payhub.activities.activity.utility.Constants.WS_USER;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -40,6 +39,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     private final UserAuthorizationService userAuthorizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowFileDao ingestionFlowFileDao;
+
 
     @Value("${activity.root.path}")
     private String fsRootPath;
@@ -104,11 +104,6 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
                 : emailTemplatesConfiguration.getPaymentsReportingFlowKo()
                 ).getBody() ;
 
-        Map<String, String> mailMap = new HashMap<>();
-        mailMap.put(Constants.ACTUAL_DATE, MAIL_DATE_FORMAT.format(LocalDateTime.now()));
-        mailMap.put(Constants.FILE_NAME, ingestionFlowFileDTO.getFileName());
-        mailMap.put(Constants.TOTAL_ROWS_NUMBER, String.valueOf(ingestionFlowFileDTO.getNumTotalRows()));
-        mailMap.put(Constants.MAIL_TEXT, StringSubstitutor.replace(body, mailMap, "{", "}"));
 
         MailTo mailTo = new MailTo();
         mailTo.setMailSubject(StringSubstitutor.replace(subject, mailTo.getParams(), "{", "}"));
@@ -116,7 +111,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         String plainText = Jsoup.clean(htmlText, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false));
         mailTo.setHtmlText(plainText);
         mailTo.setTemplateName(template);
-        mailTo.setParams(mailMap);
+        mailTo.setParams(getMailParameters(ingestionFlowFileDTO, body));
         mailTo.setMailSubject(subject);
 
         if (StringUtils.isNotBlank(ingestionFlowFileDTO.getFilePathName()) && StringUtils.isNotBlank(ingestionFlowFileDTO.getFileName()))  {
@@ -125,6 +120,22 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         }
 
         return mailTo;
+    }
+
+    /**
+     *  insert in a map specific mail parameters for ingestion flow
+     *
+     * @param ingestionFlowFileDTO ingestion flow data
+     * @param body  mail body
+     * @return Map containing
+     */
+    private Map<String, String> getMailParameters(IngestionFlowFileDTO ingestionFlowFileDTO, String body) {
+        Map<String, String> mailMap = new HashMap<>();
+        mailMap.put("actualDate", MAIL_DATE_TIME_FORMATTER.format(LocalDateTime.now()));
+        mailMap.put("fileName", ingestionFlowFileDTO.getFileName());
+        mailMap.put("totalRowsNumber", String.valueOf(ingestionFlowFileDTO.getNumTotalRows()));
+        mailMap.put("mailText", StringSubstitutor.replace(body, mailMap, "{", "}"));
+        return mailMap;
     }
 
 }
