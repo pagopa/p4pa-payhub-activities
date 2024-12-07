@@ -5,9 +5,11 @@ import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
+import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedException;
+import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.activity.utility.Constants.MAIL_DATE_TIME_FORMATTER;
-import static it.gov.pagopa.payhub.activities.activity.utility.Constants.WS_USER;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -37,6 +38,7 @@ import static it.gov.pagopa.payhub.activities.activity.utility.Constants.WS_USER
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
     private final UserAuthorizationService userAuthorizationService;
+    private final OrganizationService organizationAuthorizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowFileDao ingestionFlowFileDao;
 
@@ -47,10 +49,12 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     public SendEmailIngestionFlowActivityImpl(
             EmailTemplatesConfiguration emailTemplatesConfiguration,
             UserAuthorizationService userAuthorizationService,
+            OrganizationService organizationAuthorizationService,
             IngestionFlowFileDao ingestionFlowFileDao,
             SendMailService sendMailService) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
         this.userAuthorizationService = userAuthorizationService;
+        this.organizationAuthorizationService = organizationAuthorizationService;
         this.ingestionFlowFileDao  = ingestionFlowFileDao;
         this.sendMailService = sendMailService;
     }
@@ -70,12 +74,12 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
                     .orElseThrow(() -> new IngestionFlowNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
             String ipaCode = ingestionFlowFileDTO.getOrg().getIpaCode();
             UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ipaCode, ingestionFlowFileDTO.getOperatorName());
-            UserInfoDTO organizationUserInfo = userAuthorizationService.getUserInfo(ipaCode,ipaCode+WS_USER);
+            OrganizationDTO organizationDTO = organizationAuthorizationService.getOrganizationInfo(ipaCode);
             MailTo mailTo = getMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
-            if (organizationUserInfo!= null && StringUtils.isNotBlank(organizationUserInfo.getEmail()) &&
-                ! organizationUserInfo.getEmail().equalsIgnoreCase(userInfoDTO.getEmail())) {
-                    mailTo.setCc(new String[]{organizationUserInfo.getEmail()});
+            if (organizationDTO!= null && StringUtils.isNotBlank(organizationDTO.getAdminEmail()) &&
+                ! organizationDTO.getAdminEmail().equalsIgnoreCase(userInfoDTO.getEmail())) {
+                    mailTo.setCc(new String[]{organizationDTO.getAdminEmail()});
             }
             mailTo.setHtmlText(mailTo.getHtmlText());
             sendMailService.sendMail(mailTo);
@@ -88,7 +92,6 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     }
 
     private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) throws Exception {
-        String template = "";
         String flowType = ingestionFlowFileDTO.getFlowFileType();
         if (! flowType.equalsIgnoreCase("R")) {
             log.error("Sending e-mail not supported for flow type: {}", flowType);
@@ -110,15 +113,15 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         String htmlText = StringSubstitutor.replace(body, mailTo.getParams(), "{", "}");
         String plainText = Jsoup.clean(htmlText, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false));
         mailTo.setHtmlText(plainText);
-        mailTo.setTemplateName(template);
         mailTo.setParams(getMailParameters(ingestionFlowFileDTO, body));
         mailTo.setMailSubject(subject);
 
-        if (StringUtils.isNotBlank(ingestionFlowFileDTO.getFilePathName()) && StringUtils.isNotBlank(ingestionFlowFileDTO.getFileName()))  {
+        if (StringUtils.isNotBlank(ingestionFlowFileDTO.getDiscardedFileName()) &&
+                StringUtils.isNotBlank(ingestionFlowFileDTO.getFilePathName()))  {
             mailTo.setAttachmentPath(
                     fsRootPath +
                     Constants.REPORTING_PATH +
-                    ingestionFlowFileDTO.getFilePathName() +
+                    ingestionFlowFileDTO.getDiscardedFileName() +
                     Constants.SLASH +
                     ingestionFlowFileDTO.getFileName());
         }

@@ -81,7 +81,6 @@ class SendMailServiceTest {
 				.to(new String[]{"test_receiver@mailtest.com"})
 				.mailText("Mail Text")
 				.htmlText("Html Text")
-				.templateName("reportingFlow-ok")
 				.attachmentPath(null)
 				.build();
 
@@ -91,7 +90,6 @@ class SendMailServiceTest {
 				.to(new String[]{"test_receiver@mailtest.com"})
 				.mailText("Mail Text")
 				.htmlText("Html Text")
-				.templateName("reportingFlow-ko")
 				.attachmentPath(null)
 				.build();
 
@@ -101,7 +99,6 @@ class SendMailServiceTest {
 				.to(new String[]{})
 				.mailText("Mail Text")
 				.htmlText("Html Text")
-				.templateName("reportingFlow-ok")
 				.attachmentPath("/tmp/reportingFlow.log")
 				.build();
 
@@ -111,7 +108,6 @@ class SendMailServiceTest {
 				.to(new String[]{})
 				.mailText("Mail Text")
 				.htmlText("Html Text")
-				.templateName("reportingFlow-ko")
 				.attachmentPath("/tmp/reportingFlow.log")
 				.build();
 	}
