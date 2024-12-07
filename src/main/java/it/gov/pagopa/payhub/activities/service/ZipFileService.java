@@ -31,7 +31,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  */
 @Lazy
 @Slf4j
-@Service
+@Service("zipFileUtilitiesService")
 public class ZipFileService {
 	/** Maximum number of entries to extract from the ZIP file */
 	private final int maxEntries;

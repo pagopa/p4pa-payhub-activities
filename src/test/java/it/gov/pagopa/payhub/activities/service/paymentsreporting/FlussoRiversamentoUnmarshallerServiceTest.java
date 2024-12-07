@@ -24,7 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FlussoRiversamentoHandlerTest {
+class FlussoRiversamentoUnmarshallerServiceTest {
 	private static final String XML_CONTENT = """
 			<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 			<FlussoRiversamento xmlns="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
@@ -69,7 +69,7 @@ class FlussoRiversamentoHandlerTest {
                 """;
 
 	private Resource resource;
-	private FlussoRiversamentoHandler handler;
+	private FlussoRiversamentoUnmarshallerService handler;
 	private XMLUnmarshallerService xmlUnmarshallerService;
 
 	@TempDir
@@ -79,7 +79,7 @@ class FlussoRiversamentoHandlerTest {
 	void setUp() {
 		xmlUnmarshallerService = new XMLUnmarshallerService();
 		resource = new ClassPathResource("xsd/FlussoRiversamento.xsd");
-		handler = new FlussoRiversamentoHandler(resource, xmlUnmarshallerService);
+		handler = new FlussoRiversamentoUnmarshallerService(resource, xmlUnmarshallerService);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class FlussoRiversamentoHandlerTest {
 			writer.write(XML_CONTENT);
 		}
 		//when
-		CtFlussoRiversamento result = handler.handle(xmlFile);
+		CtFlussoRiversamento result = handler.unmarshal(xmlFile);
 
 		// then
 		assertNotNull(result);
@@ -108,7 +108,7 @@ class FlussoRiversamentoHandlerTest {
 
 		// when then
 		assertThrows(ActivitiesException.class,
-			() -> handler.handle(xmlFile), "Error while parsing file"
+			() -> handler.unmarshal(xmlFile), "Error while parsing file"
 		);
 	}
 
@@ -116,16 +116,16 @@ class FlussoRiversamentoHandlerTest {
 	void testJAXBExceptionInConstructor() {
 		Mockito.mockStatic(JAXBContext.class).when(() -> JAXBContext.newInstance(CtFlussoRiversamento.class))
 			.thenThrow(new JAXBException("Simulated JAXBException"));
-		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoHandler(resource, null));
+		assertThrows(IllegalStateException.class, () -> new FlussoRiversamentoUnmarshallerService(resource, null));
 	}
 
 	@Test
 	void testIOExceptionInConstructor() throws Exception {
-		// Mock the Resource to simulate an exception during URL retrieval
+		// given
 		Resource mockResource = mock(Resource.class);
 		when(mockResource.getURL()).thenThrow(new IOException("Simulated IOException"));
 
-		// Assert that ActivitiesException is thrown
-		assertThrows(ActivitiesException.class, () -> new FlussoRiversamentoHandler(mockResource, null));
+		// when then
+		assertThrows(IllegalStateException.class, () -> new FlussoRiversamentoUnmarshallerService(mockResource, null));
 	}
 }
