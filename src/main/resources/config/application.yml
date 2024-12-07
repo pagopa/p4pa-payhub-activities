@@ -1,0 +1,17 @@
+spring:
+  config:
+    import: mail-templates.yml
+  mail:
+    host: host
+    port: 587
+    username: username
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+activity:
+  root:
+    path: /DATA/

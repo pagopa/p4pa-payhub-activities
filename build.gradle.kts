@@ -57,6 +57,7 @@ val jacksonModuleVersion = "2.18.1"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
+val jsoupVersion = "1.18.1"
 
 
 dependencies {
@@ -75,7 +76,12 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
-	//	Testing
+	// usage: mail
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.retry:spring-retry")
+	implementation("org.jsoup:jsoup:$jsoupVersion")
+
+	// Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine")
