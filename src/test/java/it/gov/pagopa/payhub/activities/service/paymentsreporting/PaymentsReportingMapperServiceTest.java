@@ -10,6 +10,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -22,6 +24,8 @@ class PaymentsReportingMapperServiceTest {
 
 	@Test
 	void testMapper() throws DatatypeConfigurationException {
+		GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, 12, 25);
+
 		// Given
 		CtFlussoRiversamento ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("flow123");
@@ -30,10 +34,9 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.setCodiceBicBancaDiRiversamento("BIC123");
 		ctFlussoRiversamento.setNumeroTotalePagamenti(BigDecimal.valueOf(100L));
 		ctFlussoRiversamento.setImportoTotalePagamenti(BigDecimal.valueOf(1000.50d));
-		ctFlussoRiversamento.getDatiSingoliPagamenti().addAll(List.of(new CtDatiSingoliPagamenti()));
 
-		ctFlussoRiversamento.setDataRegolamento(toXMLGregorianCalendar(new GregorianCalendar()));
-		ctFlussoRiversamento.setDataOraFlusso(toXMLGregorianCalendar(new GregorianCalendar()));
+		ctFlussoRiversamento.setDataRegolamento(toXMLGregorianCalendar(gregorianCalendar));
+		ctFlussoRiversamento.setDataOraFlusso(toXMLGregorianCalendar(gregorianCalendar));
 
 		CtIstitutoMittente istitutoMittente = new CtIstitutoMittente();
 		istitutoMittente.setDenominazioneMittente("PSP Mittente");
@@ -58,11 +61,11 @@ class PaymentsReportingMapperServiceTest {
 		singlePayment.setIdentificativoUnivocoVersamento("vers123");
 		singlePayment.setIdentificativoUnivocoRiscossione("ris123");
 		singlePayment.setIndiceDatiSingoloPagamento(1);
-		singlePayment.setSingoloImportoPagato(BigDecimal.valueOf(200.0D));
+		singlePayment.setSingoloImportoPagato(BigDecimal.valueOf(200.00D));
 		singlePayment.setCodiceEsitoSingoloPagamento("OK");
-		singlePayment.setDataEsitoSingoloPagamento(toXMLGregorianCalendar(new GregorianCalendar()));
-		
-		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
+		singlePayment.setDataEsitoSingoloPagamento(toXMLGregorianCalendar(gregorianCalendar));
+
+		ctFlussoRiversamento.getDatiSingoliPagamenti().addAll(List.of(singlePayment));
 
 		// When
 		List<PaymentsReportingDTO> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
@@ -73,7 +76,7 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("PSP Mittente", result.get(0).getSenderPspName());
 		assertEquals("Org Ricevente", result.get(0).getReceiverOrganizationName());
 		assertEquals(100L, result.get(0).getSumPayments().longValue());
-		assertEquals(1000.50d, result.get(0).getAmountPaid().doubleValue());
+		assertEquals(200.00d, result.get(0).getAmountPaid().doubleValue());
 		assertEquals("vers123", result.get(0).getCreditorReferenceId());
 		assertEquals("ris123", result.get(0).getRegulationId());
 		assertEquals(1, result.get(0).getTransferIndex());
@@ -83,6 +86,6 @@ class PaymentsReportingMapperServiceTest {
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {
-		return  DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
+		return DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
 	}
 }
