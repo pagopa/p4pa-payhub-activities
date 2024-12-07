@@ -24,6 +24,5 @@ public class MailTo {
     private String mailText;
     private String htmlText;
     private String emailFromAddress;
-    private String templateName;
     private String attachmentPath;
 }
