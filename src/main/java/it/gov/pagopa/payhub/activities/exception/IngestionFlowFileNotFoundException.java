@@ -12,8 +12,7 @@ public class IngestionFlowFileNotFoundException extends ActivitiesException {
 	 *
 	 * @param message the detail message explaining the cause of the exception.
 	 */
-	public IngestionFlowFileNotFoundException(String message) {
-		super(message);
+	public IngestionFlowFileNotFoundException(String message) {super(message);
 	}
 }
 
