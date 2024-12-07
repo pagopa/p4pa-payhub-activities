@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.StringUtils;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +42,7 @@ class SendMailServiceTest {
 	private MailTo validMailKoAttachment;
 	private MailTo validMailKo;
 	private MailTo invalidMailKo;
+	private MailTo invalidBlankMail;
 
 	@BeforeEach
 	void setup() {
@@ -92,7 +94,23 @@ class SendMailServiceTest {
 				sendMailService.sendMail(invalidMailKo), "Error in mail data");
 	}
 
+	@Test
+	void testSendInvalidBlankMail() throws MessagingException {
+		setMimeMessage(invalidBlankMail);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(invalidBlankMail), "Invalid blank mail");
+	}
+
 	private void createBeans() {
+		invalidBlankMail =  MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("")
+				.to(new String[]{})
+				.mailText("")
+				.htmlText("")
+				.attachmentPath("")
+				.build();
+
 		validMailOk = MailTo.builder()
 				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
@@ -179,13 +197,15 @@ class SendMailServiceTest {
 		mimeMessage.setSubject("SUBJECT");
 
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-		helper.setFrom(mailTo.getEmailFromAddress());
-		helper.setTo(mailTo.getTo());
-		helper.setSubject(mailTo.getMailSubject());
-		helper.setText(mailTo.getHtmlText());
-		if (mailTo.getAttachmentPath()!=null){
-			File attachment = new File(mailTo.getAttachmentPath());
-			helper.addAttachment(attachment.getName(), attachment);
+		if (mailTo!=null) {
+			helper.setFrom(mailTo.getEmailFromAddress());
+			helper.setTo(mailTo.getTo());
+			helper.setSubject(mailTo.getMailSubject());
+			helper.setText(mailTo.getHtmlText());
+			if (mailTo.getAttachmentPath()!=null){
+				File attachment = new File(mailTo.getAttachmentPath());
+				helper.addAttachment(attachment.getName(), attachment);
+			}
 		}
 	}
 }
