@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,11 +69,15 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                     .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
             ingestionFlowFiles.forEach(path -> {
-                FlussoGiornaleDiCassa flussoGiornaleDiCassa = treasuryUnmarshallerService.unmarshal(path.toFile());
+                File ingestionFlowFile = path.toFile();
+                FlussoGiornaleDiCassa flussoGiornaleDiCassa = treasuryUnmarshallerService.unmarshal(ingestionFlowFile);
                       //  log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa.getCodIdUnivocoFlusso());
 
+
                         //valida campi
-                        TreasuryDto treasuryDto = treasuryMapperService.apply(flussoGiornaleDiCassa);
+
+
+                        TreasuryDto treasuryDto = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
                         treasuryDao.insert(treasuryDto);
 

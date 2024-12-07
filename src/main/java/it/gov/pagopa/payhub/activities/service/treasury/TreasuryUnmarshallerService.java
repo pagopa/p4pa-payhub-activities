@@ -6,7 +6,9 @@ import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -15,6 +17,8 @@ import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.IOException;
 
+@Lazy
+@Component
 public class TreasuryUnmarshallerService {
 
     private final JAXBContext jaxbContext;
@@ -22,7 +26,7 @@ public class TreasuryUnmarshallerService {
     private final XMLUnmarshallerService xmlUnmarshallerService;
 
     /**
-     * Initializes the handler with pre-configured JAXBContext and Schema for FlussoRiversamento.
+     * Initializes the handler with pre-configured JAXBContext and Schema for FlussoGiornaleDiCassa.
      *
      * @param xsdSchemaResource the XSD Resource
      * @param xmlUnmarshallerService the xml unmarshalling service
@@ -35,15 +39,15 @@ public class TreasuryUnmarshallerService {
             this.schema = schemaFactory.newSchema(xsdSchemaResource.getURL());
             this.xmlUnmarshallerService = xmlUnmarshallerService;
         } catch (JAXBException | SAXException | IOException e) {
-            throw new ActivitiesException("Error while creating a new instance for CtFlussoRiversamento");
+            throw new ActivitiesException("Error while creating a new instance for TreasuryUnmarshallerService");
         }
     }
 
     /**
-     * Unmarshals a file into a CtFlussoRiversamento object.
+     * Unmarshals a file into a FlussoGiornaleDiCassa object.
      *
      * @param file the XML file to parse
-     * @return the unmarshalled CtFlussoRiversamento object
+     * @return the unmarshalled FlussoGiornaleDiCassa object
      */
     public FlussoGiornaleDiCassa unmarshal(File file) {
         return xmlUnmarshallerService.unmarshal(file, FlussoGiornaleDiCassa.class, jaxbContext, schema);
