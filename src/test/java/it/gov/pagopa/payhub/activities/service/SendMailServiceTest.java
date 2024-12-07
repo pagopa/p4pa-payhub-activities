@@ -19,6 +19,8 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -34,7 +36,9 @@ class SendMailServiceTest {
 	private JavaMailSenderImpl javaMailSender;
 	private MimeMessage mimeMessage;
 	private MailTo validMailOk;
+	private MailTo validMailOkAttachment;
 	private MailTo invalidMailOk;
+	private MailTo validMailKoAttachment;
 	private MailTo validMailKo;
 	private MailTo invalidMailKo;
 
@@ -58,6 +62,20 @@ class SendMailServiceTest {
 		setMimeMessage(validMailKo);
 		assertThrows(MailSendException.class, () ->
 				sendMailService.sendMail(validMailKo), "Mail sender error encountered");
+	}
+
+	@Test
+	void testSendEmailFileLoadedAttachSuccess() throws MessagingException {
+		setMimeMessage(validMailOkAttachment);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(validMailOkAttachment), "Mail sender error encountered");
+	}
+
+	@Test
+	void testSendEmailFileNotLoadedAttachSuccess() throws MessagingException {
+		setMimeMessage(validMailKoAttachment);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(validMailKoAttachment), "Mail sender error encountered");
 	}
 
 	@Test
@@ -93,6 +111,24 @@ class SendMailServiceTest {
 				.attachmentPath(null)
 				.build();
 
+		validMailOk = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{"test_receiver@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/TMP")
+				.build();
+
+		validMailKo = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{"test_receiver@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/TMP")
+				.build();
+
 		invalidMailOk = MailTo.builder()
 				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
@@ -103,6 +139,24 @@ class SendMailServiceTest {
 				.build();
 
 		invalidMailKo = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/tmp/reportingFlow.log")
+				.build();
+
+		validMailOkAttachment = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/tmp/reportingFlow.log")
+				.build();
+
+		validMailKoAttachment = MailTo.builder()
 				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
 				.to(new String[]{})
@@ -129,5 +183,9 @@ class SendMailServiceTest {
 		helper.setTo(mailTo.getTo());
 		helper.setSubject(mailTo.getMailSubject());
 		helper.setText(mailTo.getHtmlText());
+		if (mailTo.getAttachmentPath()!=null){
+			File attachment = new File(mailTo.getAttachmentPath());
+			helper.addAttachment(attachment.getName(), attachment);
+		}
 	}
 }
