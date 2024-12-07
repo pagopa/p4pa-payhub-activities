@@ -63,11 +63,10 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 			flowValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-			PaymentsReportingDTO paymentsReportingDTO = paymentsReportingMapperService.apply(ctFlussoRiversamento, ingestionFlowFileDTO);
+			List<PaymentsReportingDTO> dtoListToSave = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-			ctFlussoRiversamento.getDatiSingoliPagamenti().forEach(item -> paymentsReportingMapperService.toBuilder(paymentsReportingDTO, item));
-
-			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(paymentsReportingDTO.getFlowIdentifierCode()), true);
+			String iuf = dtoListToSave.get(0).getFlowIdentifierCode();
+			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(iuf), true);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
 			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
