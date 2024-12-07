@@ -35,6 +35,7 @@ class SendMailServiceTest {
 	
 	private JavaMailSenderImpl javaMailSender;
 	private MimeMessage mimeMessage;
+
 	private MailTo validMailOk;
 	private MailTo validMailOkAttachment;
 	private MailTo invalidMailOk;
@@ -42,6 +43,14 @@ class SendMailServiceTest {
 	private MailTo validMailKo;
 	private MailTo invalidMailKo;
 	private MailTo invalidBlankMail;
+
+	private MailTo validMailOkCC;
+	private MailTo validMailOkAttachmentCC;
+	private MailTo invalidMailOkCC;
+	private MailTo validMailKoAttachmentCC;
+	private MailTo validMailKoCC;
+	private MailTo invalidMailKoCC;
+	private MailTo invalidBlankMailCC;
 
 	@BeforeEach
 	void setup() {
@@ -98,6 +107,56 @@ class SendMailServiceTest {
 		setMimeMessage(invalidBlankMail);
 		assertThrows(MessagingException.class, () ->
 				sendMailService.sendMail(invalidBlankMail), "Invalid blank mail");
+	}
+
+	// cc present
+	@Test
+	void testSendEmailFileLoadedSuccessCC() throws MessagingException {
+		setMimeMessage(validMailOkCC);
+		assertThrows(MailSendException.class, () ->
+				sendMailService.sendMail(validMailOkCC), "Mail sender error encountered");
+	}
+
+	@Test
+	void testSendEmailFileNotLoadedSuccessCC() throws MessagingException {
+		setMimeMessage(validMailKoCC);
+		assertThrows(MailSendException.class, () ->
+				sendMailService.sendMail(validMailKoCC), "Mail sender error encountered");
+	}
+
+	@Test
+	void testSendEmailFileLoadedAttachSuccessCC() throws MessagingException {
+		setMimeMessage(validMailOkAttachmentCC);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(validMailOkAttachmentCC), "Mail sender error encountered");
+	}
+
+	@Test
+	void testSendEmailFileNotLoadedAttachSuccessCC() throws MessagingException {
+		setMimeMessage(validMailKoAttachmentCC);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(validMailKoAttachmentCC), "Mail sender error encountered");
+	}
+
+	@Test
+	void testSendEmailFileLoadedFailedCC() throws MessagingException {
+		setMimeMessage(invalidMailOkCC);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(invalidMailOkCC), "Error in mail data");
+	}
+
+	@Test
+	void testSendEmailFileNotLoadedFailedCC() throws MessagingException {
+		setMimeMessage(invalidMailKoCC);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(invalidMailKoCC), "Error in mail data");
+	}
+
+	@Test
+	void testSendInvalidBlankMailCC() throws MessagingException {
+		setMimeMessage(invalidBlankMailCC);
+		assertThrows(MessagingException.class, () ->
+				sendMailService.sendMail(invalidBlankMailCC), "Invalid blank mail");
 	}
 
 	private void createBeans() {
@@ -177,6 +236,96 @@ class SendMailServiceTest {
 				.emailFromAddress("test_sender@mailtest.com")
 				.mailSubject("Subject")
 				.to(new String[]{})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/tmp/reportingFlow.log")
+				.build();
+
+		invalidBlankMailCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("")
+				.to(new String[]{})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("")
+				.htmlText("")
+				.attachmentPath("")
+				.build();
+
+		validMailOkCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{"test_receiver@mailtest.com"})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath(null)
+				.build();
+
+		validMailKoCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{"test_receiver@mailtest.com"})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath(null)
+				.build();
+
+		validMailOkCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{"test_receiver@mailtest.com"})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/TMP")
+				.build();
+
+		validMailKoCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{"test_receiver@mailtest.com"})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/TMP")
+				.build();
+
+		invalidMailOkCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/tmp/reportingFlow.log")
+				.build();
+
+		invalidMailKoCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/tmp/reportingFlow.log")
+				.build();
+
+		validMailOkAttachmentCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{})
+				.cc(new String[]{"test_cc@mailtest.com"})
+				.mailText("Mail Text")
+				.htmlText("Html Text")
+				.attachmentPath("/tmp/reportingFlow.log")
+				.build();
+
+		validMailKoAttachmentCC = MailTo.builder()
+				.emailFromAddress("test_sender@mailtest.com")
+				.mailSubject("Subject")
+				.to(new String[]{})
+				.cc(new String[]{"test_cc@mailtest.com"})
 				.mailText("Mail Text")
 				.htmlText("Html Text")
 				.attachmentPath("/tmp/reportingFlow.log")
