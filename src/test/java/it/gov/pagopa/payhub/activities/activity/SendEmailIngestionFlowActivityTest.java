@@ -50,6 +50,7 @@ class SendEmailIngestionFlowActivityTest {
 
     private IngestionFlowFileDTO validIngestionFlowFileDTO;
     private IngestionFlowFileDTO invalidIngestionFlowFileDTO;
+    private IngestionFlowFileDTO invalidPathIngestionFlowFileDTO;
     private UserInfoDTO validUserInfoDTO;
     private UserInfoDTO invalidUserInfoDTO;
     private OrganizationDTO validOrganizationInfoDTO;
@@ -173,6 +174,29 @@ class SendEmailIngestionFlowActivityTest {
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
     }
 
+
+    @Test
+    void sendEmailIngestionOkInvalidUserInvalidFlowInvalidPathFailed() throws MessagingException {
+        Long ingestionFlowFileId = 100L;
+        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidPathIngestionFlowFileDTO));
+        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
+        Mockito.when(organizationService.getOrganizationInfo(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(expectedMailTo);
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
+    }
+
+    @Test
+    void sendEmailIngestionKoInvalidUserInvalidFlowInvalidPathFailed() throws MessagingException {
+        Long ingestionFlowFileId = 100L;
+        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidPathIngestionFlowFileDTO));
+        Mockito.when(organizationService.getOrganizationInfo(validOrganizationInfoDTO.getIpaCode())).thenReturn(invalidOrganizationInfoDTO);
+        Mockito.when(userAuthorizationService.getUserInfo(invalidIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(expectedMailTo);
+
+        Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
+    }
+
     private void createBeans() {
         expectedMailTo = MailTo.builder()
                 .emailFromAddress("test_sender@mailtest.com")
@@ -214,6 +238,15 @@ class SendEmailIngestionFlowActivityTest {
                 .fileName("FILE_NAME")
                 .numTotalRows(123L)
                 .build();
+        invalidPathIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
+                .org(validOrganizationInfoDTO)
+                .operatorName("VALID_USER")
+                .flowFileType("WRONG_FLOW")
+                .discardedFileName("DISCARDED_FILE")
+                .fileName("FILE_NAME")
+                .numTotalRows(123L)
+                .build();
+
     }
 
 
