@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -18,8 +15,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Service class for performing common file operations, including
@@ -222,7 +217,7 @@ public class ZipFileService {
 	 * @return the file name if it is deemed safe.
 	 * @throws InvalidIngestionFileException if the file name is deemed unsafe.
 	 */
-	private static String checkFileName(String fileName) {
+	private String checkFileName(String fileName) {
 		if (!Character.isLetterOrDigit(fileName.charAt(0)) || fileName.contains("..")) {
 			throw new InvalidIngestionFileException("Potential Zip Slip exploit detected: " + fileName);
 		}
@@ -239,56 +234,11 @@ public class ZipFileService {
 	 * @param entry the ZIP entry to validate.
 	 * @return the original {@code ZipEntry} if the file name is deemed safe.
 	 */
-	private static ZipEntry checkFileName(ZipEntry entry) {
+	private ZipEntry checkFileName(ZipEntry entry) {
 		checkFileName(entry.getName());
 		return entry;
 	}
 
-	/**
-	 * Moves the specified file to the target directory, keeping the original file name.
-	 *
-	 * This method performs the following operations:
-	 * <ul>
-	 *   <li>Copies the file to the target directory.</li>
-	 *   <li>Deletes the original file after a successful copy.</li>
-	 * </ul>
-	 *
-	 * If the target directory already contains a file with the same name, the existing file
-	 * will be replaced.
-	 *
-	 * @param file   the file to be moved
-	 * @param target the target directory where the file will be moved
-	 */
-	public static void moveFile(File file, Path target) {
-		moveFile(file, target, file.getName());
-	}
-
-	/**
-	 * Moves the specified file to the target directory with a new file name.
-	 *
-	 * This method performs the following operations:
-	 * <ul>
-	 *   <li>Copies the file to the target directory with the specified new file name.</li>
-	 *   <li>Deletes the original file after a successful copy.</li>
-	 * </ul>
-	 *
-	 * If the target directory already contains a file with the same new name, the existing file
-	 * will be replaced.
-	 *
-	 * @param originalFile the file to be moved
-	 * @param target       the target directory where the file will be moved
-	 * @param newFileName  the new name for the file in the target directory
-	 * @throws InvalidIngestionFileException if an I/O error occurs during the file move operation
-	 *                      (e.g., the file or directory does not exist, or the file cannot be copied).
-	 */
-	public static void moveFile(File originalFile, Path target, String newFileName) {
-		try {
-			Files.copy(originalFile.toPath(), target.resolve(newFileName), REPLACE_EXISTING);
-			Files.delete(originalFile.toPath());
-		} catch (IOException e) {
-			throw new InvalidIngestionFileException("Error while moving: " + originalFile);
-		}
-	}
 
 	/**
 	 * Compresses the specified files into a single ZIP archive at the given ZIP file path.

@@ -1,69 +1,106 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
+import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class IngestionFlowFileAchiverServiceTest {
-	private static final String TEST_CIPHER_PSW = "testPassword";
-	private static final String STORE_PATH = "/processed/";
-	private static final String TEMPORARY_PATH = "/tmp/";
+	private static final String TEST_PASSWORD = "mockPassword";
 
-	private ZipFileService zipFileService;
+	@Mock
+	private ZipFileService zipFileServiceMock;
+
 	private IngestionFlowFileAchiverService service;
 
 	@TempDir
-	private Path tempDir;
+	Path tempDir;
 
 	@BeforeEach
-	void setup() {
-		zipFileService = new ZipFileService(1000, 50 * 1024 * 1024L, 0.1);
-		service = new IngestionFlowFileAchiverService(STORE_PATH, TEST_CIPHER_PSW, zipFileService);
+	void setUp() {
+		service = new IngestionFlowFileAchiverService(tempDir.toString(), TEST_PASSWORD, zipFileServiceMock);
 	}
 
 	@Test
-	void testCompressAndArchiveFile() throws IOException {
-		Path workingPath = tempDir.resolve(TEMPORARY_PATH);
-		Files.createDirectories(workingPath);
-		Path targetDir = tempDir.resolve(STORE_PATH);
-		Files.createDirectories(targetDir);
+	void givenSuccessfullConditionsWhenCompressArchiveFileCleanUpThenOk(@TempDir Path sourceDir) throws Exception {
+		//given
+		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
+		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
+		List<Path> mockFiles = List.of(file1, file2);
 
-		Path testFile1 = Files.createFile(workingPath.resolve("test_1.txt"));
-		Path testFile2 = Files.createFile(workingPath.resolve("test_2.txt"));
-		List<Path> files = List.of(testFile1, testFile2);
+		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
+		File mockZippedFile = zipFilePath.toFile();
+		Path mockEncryptedFile = Files.copy(zipFilePath, sourceDir.resolve(zipFilePath.getFileName() + AESUtils.CIPHER_EXTENSION));
 
-		Path zipFilePath = workingPath.resolve("output.zip");
+		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenReturn(mockZippedFile);
 
-		try (var aesUtilsMocked = mockStatic(AESUtils.class)) {
-			File zippedFile = zipFileService.zipper(zipFilePath, files);
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, mockZippedFile)).thenReturn(mockEncryptedFile.toFile());
 
-			aesUtilsMocked.when(() -> AESUtils.encrypt(TEST_CIPHER_PSW, zippedFile)).then(invocation -> null);
-			AESUtils.encrypt(TEST_CIPHER_PSW, zippedFile);
+			// when
+			assertDoesNotThrow(
+				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir.toString(), "output"));
 
-			zipFileService.moveFile(zippedFile, targetDir);
-
-			Path movedFile = targetDir.resolve("output.zip");
-			assertTrue(Files.exists(movedFile), "The file should have been moved to the target directory");
-			aesUtilsMocked.verify(() -> AESUtils.encrypt(TEST_CIPHER_PSW, zippedFile), times(1));
+			Path targetFile = tempDir.resolve(mockEncryptedFile.getFileName());
+			//then
+			assertTrue(Files.exists(targetFile));
+			assertFalse(Files.exists(zipFilePath));
 		}
-		Files.walk(workingPath)
-			.sorted(Comparator.reverseOrder())
-			.map(Path::toFile)
-			.forEach(File::delete);
-		assertFalse(Files.exists(workingPath), "The workingPath should have been removed");
+	}
+
+	@Test
+	void givenExceptionOnEncryptionWhenCompressArchiveFileCleanUpThenThrowsIllegalStateException(@TempDir Path sourceDir) throws Exception {
+		//given
+		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
+		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
+		List<Path> mockFiles = List.of(file1, file2);
+
+		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
+		File mockZippedFile = zipFilePath.toFile();
+		Path mockEncryptedFile = Files.copy(zipFilePath, sourceDir.resolve(zipFilePath.getFileName() + AESUtils.CIPHER_EXTENSION));
+
+		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenReturn(mockZippedFile);
+
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, mockZippedFile)).thenThrow(IllegalStateException.class);
+
+			// when then
+			assertThrows(IllegalStateException.class,
+				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir.toString(), "output"),
+				"encryption failed");
+		}
+	}
+
+	@Test
+	void givenExceptionOnZippingWhenCompressArchiveFileCleanUpThenThrows(@TempDir Path sourceDir) throws Exception {
+		//given
+		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
+		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
+		List<Path> mockFiles = List.of(file1, file2);
+
+		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
+
+		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenThrow(InvalidIngestionFileException.class);
+
+			// when then
+			assertThrows(InvalidIngestionFileException.class,
+				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir.toString(), "output"),
+				"zipping failed");
 	}
 }

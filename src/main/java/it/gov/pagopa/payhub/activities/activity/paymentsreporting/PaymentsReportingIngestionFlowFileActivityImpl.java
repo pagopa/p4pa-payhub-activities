@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.FlowValidatorService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileAchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingInsertionService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
@@ -32,6 +33,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private final FlowValidatorService flowValidatorService;
 	private final PaymentsReportingMapperService paymentsReportingMapperService;
 	private final PaymentsReportingInsertionService paymentsReportingInsertionService;
+	private final IngestionFlowFileAchiverService ingestionFlowFileAchiverService;
 
 	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}")String ingestionflowFileType,
 	                                                      IngestionFlowFileDao ingestionFlowFileDao,
@@ -39,7 +41,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
 	                                                      FlowValidatorService flowValidatorService,
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
-	                                                      PaymentsReportingInsertionService paymentsReportingInsertionService) {
+	                                                      PaymentsReportingInsertionService paymentsReportingInsertionService,
+	                                                      IngestionFlowFileAchiverService ingestionFlowFileAchiverService) {
 		this.ingestionflowFileType = ingestionflowFileType;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
@@ -47,6 +50,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 		this.flowValidatorService = flowValidatorService;
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
 		this.paymentsReportingInsertionService = paymentsReportingInsertionService;
+		this.ingestionFlowFileAchiverService = ingestionFlowFileAchiverService;
 	}
 
 	@Override
@@ -69,7 +73,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 			List<PaymentsReportingDTO> dtoListToSave = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 			List<PaymentsReportingDTO> savedList = paymentsReportingInsertionService.savePaymentsReporting(dtoListToSave);
-
+			ingestionFlowFileAchiverService.compressArchiveFileAndCleanUp(ingestionFlowFiles, ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
 			String iuf = savedList.get(0).getFlowIdentifierCode();
 			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(iuf), true);
 		} catch (Exception e) {
