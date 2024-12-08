@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -16,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Service class for performing common file operations, including
@@ -216,9 +215,9 @@ public class ZipFileService {
 	 *
 	 * @param fileName the name of the ZIP entry to validate.
 	 * @return the file name if it is deemed safe.
-	 * @throws IllegalArgumentException if the file name is deemed unsafe.
+	 * @throws InvalidIngestionFileException if the file name is deemed unsafe.
 	 */
-	private static String checkFileName(String fileName) throws IllegalArgumentException {
+	private String checkFileName(String fileName) {
 		if (!Character.isLetterOrDigit(fileName.charAt(0)) || fileName.contains("..")) {
 			throw new InvalidIngestionFileException("Potential Zip Slip exploit detected: " + fileName);
 		}
@@ -234,10 +233,43 @@ public class ZipFileService {
 	 *
 	 * @param entry the ZIP entry to validate.
 	 * @return the original {@code ZipEntry} if the file name is deemed safe.
-	 * @throws IllegalArgumentException if the file name of the ZIP entry is deemed unsafe.
 	 */
-	private static ZipEntry checkFileName(ZipEntry entry) throws IllegalArgumentException {
+	private ZipEntry checkFileName(ZipEntry entry) {
 		checkFileName(entry.getName());
 		return entry;
+	}
+
+
+	/**
+	 * Compresses the specified files into a single ZIP archive at the given ZIP file path.
+	 *
+	 * This method performs the following operations:
+	 * <ul>
+	 *   <li>Creates a ZIP archive at the specified path.</li>
+	 *   <li>Compresses each specified file into the ZIP archive.</li>
+	 * </ul>
+	 *
+	 * @param zipFilePath the path where the ZIP file will be created, including the desired filename
+	 * @param filesToZip  a list of {@link Path} objects representing the files to be compressed
+	 * @return a {@link File} object representing the created ZIP archive
+	 * @throws InvalidIngestionFileException if
+	 *         <ul>
+	 *           <li>the file list is null or empty, or if the ZIP file path is invalid.</li>
+	 *           <li>if any I/O error occurs during compression
+	 *               (e.g., file not found, read/write issues, invalid paths).</li>
+	 *         </ul>
+	 */
+	public File zipper(Path zipFilePath, List<Path> filesToZip) {
+		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFilePath.toFile()))) {
+			for (Path file : filesToZip) {
+				String checkedFilename = checkFileName(file.getFileName().toString());
+				ZipEntry zipEntry = new ZipEntry(checkedFilename);
+				zos.putNextEntry(zipEntry);
+				Files.copy(file, zos);
+			}
+			return zipFilePath.toFile();
+		} catch (IOException e) {
+			throw new InvalidIngestionFileException("Error while zipping: " + zipFilePath);
+		}
 	}
 }
