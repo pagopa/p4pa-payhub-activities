@@ -127,10 +127,18 @@ class ZipFileServiceTest {
 		Files.writeString(file2, "Content of file2");
 
 		Path zipPath = tempDir.resolve("output.zip");
-		File zipFile = service.zipper(zipPath, List.of(file1, file2));
+		File zipped = service.zipper(zipPath, List.of(file1, file2));
 
-		assertTrue(zipFile.exists());
-		assertTrue(zipFile.isFile());
+		assertTrue(zipped.exists());
+		assertTrue(zipped.isFile());
+	}
+
+	@Test
+	void testZipperWithInvalidFileName() {
+		Path zipPath = tempDir.resolve("output.zip");
+		assertThrows(InvalidIngestionFileException.class,
+			() -> service.zipper(zipPath, List.of(Path.of("/no/such/place"))),
+			"Error compressing non-existent file");
 	}
 
 	/** Helper method to add entries to the ZIP file */
