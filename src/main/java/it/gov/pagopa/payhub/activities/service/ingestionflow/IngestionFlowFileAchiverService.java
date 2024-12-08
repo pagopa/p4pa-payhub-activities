@@ -50,8 +50,8 @@ public class IngestionFlowFileAchiverService {
 	 * @param outputFilename the name of the output ZIP file.
 	 * @throws IOException if an I/O error occurs during compression, encryption, moving, or cleanup.
 	 */
-	public void compressArchiveFileAndCleanUp(List<Path> files, String sourcePath, String outputFilename) throws IOException {
-		Path zipFilePath = Path.of(sourcePath, outputFilename + ".zip");
+	public void compressArchiveFileAndCleanUp(List<Path> files, Path sourcePath, String outputFilename) throws IOException {
+		Path zipFilePath = sourcePath.resolve(outputFilename + ".zip");
 		File zipped = zipFileService.zipper(zipFilePath, files);
 
 		File encryptedFile = AESUtils.encrypt(dataCipherPsw, zipped);

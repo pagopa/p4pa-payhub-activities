@@ -110,7 +110,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doReturn(dtoList).when(paymentsReportingInsertionServiceMock).savePaymentsReporting(dtoList);
 
 		doNothing().when(ingestionFlowFileAchiverServiceMock)
-			.compressArchiveFileAndCleanUp(mockedListPath, mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+			.compressArchiveFileAndCleanUp(mockedListPath, Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
 
@@ -299,7 +299,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doReturn(dtoList).when(paymentsReportingInsertionServiceMock).savePaymentsReporting(dtoList);
 
 		doThrow(IOException.class).when(ingestionFlowFileAchiverServiceMock)
-			.compressArchiveFileAndCleanUp(mockedListPath, mockFlowDTO.getFilePathName(), mockFlowDTO.getFileName());
+			.compressArchiveFileAndCleanUp(mockedListPath, Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
 
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);

@@ -55,7 +55,7 @@ class IngestionFlowFileAchiverServiceTest {
 
 			// when
 			assertDoesNotThrow(
-				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir.toString(), "output"));
+				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir, "output"));
 
 			Path targetFile = tempDir.resolve(mockEncryptedFile.getFileName());
 			//then
@@ -73,7 +73,6 @@ class IngestionFlowFileAchiverServiceTest {
 
 		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
 		File mockZippedFile = zipFilePath.toFile();
-		Path mockEncryptedFile = Files.copy(zipFilePath, sourceDir.resolve(zipFilePath.getFileName() + AESUtils.CIPHER_EXTENSION));
 
 		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenReturn(mockZippedFile);
 
@@ -82,7 +81,7 @@ class IngestionFlowFileAchiverServiceTest {
 
 			// when then
 			assertThrows(IllegalStateException.class,
-				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir.toString(), "output"),
+				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir, "output"),
 				"encryption failed");
 		}
 	}
@@ -100,7 +99,7 @@ class IngestionFlowFileAchiverServiceTest {
 
 			// when then
 			assertThrows(InvalidIngestionFileException.class,
-				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir.toString(), "output"),
+				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir, "output"),
 				"zipping failed");
 	}
 }

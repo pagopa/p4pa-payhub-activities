@@ -73,7 +73,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 			List<PaymentsReportingDTO> dtoListToSave = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 			List<PaymentsReportingDTO> savedList = paymentsReportingInsertionService.savePaymentsReporting(dtoListToSave);
-			ingestionFlowFileAchiverService.compressArchiveFileAndCleanUp(ingestionFlowFiles, ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+			ingestionFlowFileAchiverService
+				.compressArchiveFileAndCleanUp(ingestionFlowFiles, Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 			String iuf = savedList.get(0).getFlowIdentifierCode();
 			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(iuf), true);
 		} catch (Exception e) {

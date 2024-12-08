@@ -5,9 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -100,6 +102,35 @@ class ZipFileServiceTest {
 		assertDoesNotThrow(() -> service.unzip(zipFile, outputDir));
 
 		assertTrue(Files.exists(outputDir.resolve("empty.txt")), "Expected empty.txt to exist");
+	}
+
+	@Test
+	void testUnzipWithExcessiveUncompressedSize() throws IOException {
+		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
+			byte[] largeContent = new byte[(int) (MAX_UNCOMPRESSED_SIZE / 2)];
+			for (int i = 0; i < 3; i++) {
+				addZipEntry(zos, "largeFile" + i + ".txt", new String(largeContent));
+			}
+		}
+
+		Path outputDir = tempDir.resolve("output");
+		assertThrows(InvalidIngestionFileException.class,
+			() -> service.unzip(zipFile, outputDir), "ZIP file exceeds the maximum allowed uncompressed size");
+	}
+
+	@Test
+	void testZipperValidFiles() throws IOException {
+		Path file1 = tempDir.resolve("file1.txt");
+		Path file2 = tempDir.resolve("file2.txt");
+
+		Files.writeString(file1, "Content of file1");
+		Files.writeString(file2, "Content of file2");
+
+		Path zipPath = tempDir.resolve("output.zip");
+		File zipFile = service.zipper(zipPath, List.of(file1, file2));
+
+		assertTrue(zipFile.exists());
+		assertTrue(zipFile.isFile());
 	}
 
 	/** Helper method to add entries to the ZIP file */
