@@ -135,9 +135,11 @@ class ZipFileServiceTest {
 
 	@Test
 	void testZipperWithInvalidFileName() {
+		Path noSuchPlace = Path.of("/no/such/place");
+		List<Path> list = List.of(noSuchPlace);
 		Path zipPath = tempDir.resolve("output.zip");
 		assertThrows(InvalidIngestionFileException.class,
-			() -> service.zipper(zipPath, List.of(Path.of("/no/such/place"))),
+			() -> service.zipper(zipPath, list),
 			"Error compressing non-existent file");
 	}
 
