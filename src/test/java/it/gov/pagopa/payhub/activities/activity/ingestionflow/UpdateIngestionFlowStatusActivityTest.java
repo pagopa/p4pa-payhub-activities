@@ -55,7 +55,7 @@ class UpdateIngestionFlowStatusActivityTest {
 
   @Test
   void givenIdAndNullNewStatusWhenUpdateStatusThenException(){
-    String expectedError = "A null IngestionFlowFile status was provided when updating the id " + VALID_ID;;
+    String expectedError = "A null IngestionFlowFile status was provided when updating the id " + VALID_ID;
     //verify
     IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
       () -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, null));
