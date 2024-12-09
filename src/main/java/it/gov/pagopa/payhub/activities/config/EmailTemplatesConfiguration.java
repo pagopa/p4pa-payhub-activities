@@ -10,5 +10,6 @@ import org.springframework.context.annotation.Configuration;
 public class EmailTemplatesConfiguration {
     private EmailTemplate paymentsReportingFlowOk;
     private EmailTemplate paymentsReportingFlowKo;
-
+    private String mailTextLoadOk;
+    private String mailTextLoadKo;
 }
