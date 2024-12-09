@@ -90,7 +90,8 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         return true;
     }
 
-    private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) throws Exception {
+    private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success)
+            throws IngestionFlowTypeNotSupportedException, DiscardedIngestionFlowFileNotFoundException {
         Map<String, String> textMap = new HashMap<>();
         String flowType = ingestionFlowFileDTO.getFlowFileType();
         if (! flowType.equalsIgnoreCase("R")) {
