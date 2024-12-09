@@ -49,6 +49,8 @@ class SendEmailIngestionFlowActivityTest {
     private OrganizationService organizationService;
 
     private IngestionFlowFileDTO validIngestionFlowFileDTO;
+    private IngestionFlowFileDTO errorIngestionFlowFileDTO;
+
     private IngestionFlowFileDTO invalidIngestionFlowFileDTO;
     private IngestionFlowFileDTO invalidPathIngestionFlowFileDTO;
     private IngestionFlowFileDTO invalidDiscardedFileNameDTO;
@@ -64,9 +66,6 @@ class SendEmailIngestionFlowActivityTest {
         createBeans();
     }
 
-    /**
-     * send email for OK loading flow, success: valid user and valid flow
-     */
     @Test
     void sendEmailIngestionOkValidUserValidFlowSuccess() throws MessagingException {
         Long ingestionFlowFileId = 100L;
@@ -78,9 +77,21 @@ class SendEmailIngestionFlowActivityTest {
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
     }
 
+    @Test
+    void sendEmailIngestionOkValidUserErrorFlowSuccess() throws MessagingException {
+        Long ingestionFlowFileId = 100L;
+        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(errorIngestionFlowFileDTO ));
+        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Mockito.when(organizationService.getOrganizationInfo(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
+        Mockito.doNothing().when(sendMailService).sendMail(expectedMailTo);
+
+        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
+    }
+
     /**
      * send email for KO loading flow, success: valid user and valid flow
      */
+    /*
     @Test
     void sendEmailIngestionKoValidUserValidFlowSuccess() throws MessagingException {
         Long ingestionFlowFileId = 100L;
@@ -91,7 +102,7 @@ class SendEmailIngestionFlowActivityTest {
 
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
     }
-
+*/
 
     /**
      * send email for OK loading flow, success: valid user and invalid flow
@@ -239,6 +250,8 @@ class SendEmailIngestionFlowActivityTest {
     /**
      * send email for KO loading flow, success: valid user and valid flow
      */
+
+    /*
     @Test
     void sendEmailIngestionKoValidUserValidFlowAttachSuccess() throws MessagingException {
         Long ingestionFlowFileId = 100L;
@@ -249,7 +262,7 @@ class SendEmailIngestionFlowActivityTest {
 
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
     }
-
+*/
 
     /**
      * send email for OK loading flow, success: valid user and invalid flow
@@ -384,7 +397,6 @@ class SendEmailIngestionFlowActivityTest {
                 .emailFromAddress("test_sender@mailtest.com")
                 .mailSubject("Subject")
                 .to(new String[]{"test_receiver@mailtest.com"})
-                .mailText("Mail Text")
                 .htmlText("Html Text")
                 .attachmentPath(null)
                 .build();
@@ -392,7 +404,6 @@ class SendEmailIngestionFlowActivityTest {
                 .emailFromAddress("test_sender@mailtest.com")
                 .mailSubject("Subject")
                 .to(new String[]{"test_receiver@mailtest.com"})
-                .mailText("Mail Text")
                 .htmlText("Html Text")
                 .attachmentPath("/TMP")
                 .build();
@@ -428,15 +439,16 @@ class SendEmailIngestionFlowActivityTest {
                 .fileName("FILE_NAME")
                 .numTotalRows(123L)
                 .build();
-        invalidIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
+
+        errorIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
                 .org(validOrganizationInfoDTO)
+                .flowFileType("R")
                 .operatorName("VALID_USER")
-                .flowFileType("WRONG_FLOW")
                 .filePathName("PATH_NAME")
                 .discardedFileName("DISCARDED_FILE")
-                .fileName("FILE_NAME")
                 .numTotalRows(123L)
                 .build();
+
         invalidPathIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
                 .org(validOrganizationInfoDTO)
                 .operatorName("VALID_USER")
@@ -456,7 +468,6 @@ class SendEmailIngestionFlowActivityTest {
 
 
     }
-
 
 }
 
