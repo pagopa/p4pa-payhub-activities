@@ -17,11 +17,10 @@ import java.util.Map;
 @AllArgsConstructor
 @Lazy
 public class MailTo {
-    Map<String, String> params;
+    private Map<String, String> params;
     private String[] to;
     private String[] cc;
     private String mailSubject;
-    private String mailText;
     private String htmlText;
     private String emailFromAddress;
     private String attachmentPath;
