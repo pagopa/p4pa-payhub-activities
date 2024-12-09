@@ -7,7 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
-import it.gov.pagopa.payhub.activities.exception.ValidationException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.utility.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -34,16 +34,16 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
         if (debtPositionDTO.getDebtPositionTypeOrg() == null ||
                 debtPositionDTO.getDebtPositionTypeOrg().getDebtPositionType() == null ||
                 StringUtils.isBlank(debtPositionDTO.getDebtPositionTypeOrg().getDebtPositionType().getCode())) {
-            throw new ValidationException("Debt position type organization is mandatory");
+            throw new InvalidValueException("Debt position type organization is mandatory");
         }
 
         if (CollectionUtils.isEmpty(debtPositionDTO.getPaymentOptions())) {
-            throw new ValidationException("Debt position payment options is mandatory");
+            throw new InvalidValueException("Debt position payment options is mandatory");
         }
 
         for (PaymentOptionDTO paymentOptionDTO : debtPositionDTO.getPaymentOptions()) {
             if (CollectionUtils.isEmpty(paymentOptionDTO.getInstallments())) {
-                throw new ValidationException("At least one installment of the debt position is mandatory");
+                throw new InvalidValueException("At least one installment of the debt position is mandatory");
             }
             for (InstallmentDTO installmentDTO : paymentOptionDTO.getInstallments()) {
                 validateInstallment(installmentDTO, debtPositionDTO.getDebtPositionTypeOrg());
@@ -55,77 +55,77 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
 
     private void validateInstallment(InstallmentDTO installmentDTO, DebtPositionTypeOrgDTO debtPositionTypeOrgDTO) {
         if (StringUtils.isBlank(installmentDTO.getRemittanceInformation())) {
-            throw new ValidationException("Remittance information is mandatory");
+            throw new InvalidValueException("Remittance information is mandatory");
         }
         if (installmentDTO.getDueDate() != null && installmentDTO.getDueDate().isBefore(LocalDate.now())) {
-            throw new ValidationException("The due date cannot be retroactive");
+            throw new InvalidValueException("The due date cannot be retroactive");
         }
         if (debtPositionTypeOrgDTO.isFlagMandatoryDueDate() && installmentDTO.getDueDate() == null) {
-            throw new ValidationException("The due date is mandatory");
+            throw new InvalidValueException("The due date is mandatory");
         }
         if (installmentDTO.getAmount() == null) {
-            throw new ValidationException("Amount is mandatory");
+            throw new InvalidValueException("Amount is mandatory");
         }
         if (installmentDTO.getAmount() < 0) {
-            throw new ValidationException("Amount is not valid");
+            throw new InvalidValueException("Amount is not valid");
         }
         if (debtPositionTypeOrgDTO.getAmount() != null && !installmentDTO.getAmount().equals(debtPositionTypeOrgDTO.getAmount())) {
-            throw new ValidationException("Amount is not valid for this debt position type org");
+            throw new InvalidValueException("Amount is not valid for this debt position type org");
         }
     }
 
     private void validatePersonData(PersonDTO personDTO, DebtPositionTypeOrgDTO debtPositionTypeOrgDTO) {
         if (personDTO == null) {
-            throw new ValidationException("The debtor is mandatory for installment");
+            throw new InvalidValueException("The debtor is mandatory for installment");
         }
         if (StringUtils.isBlank(personDTO.getUniqueIdentifierCode())) {
-            throw new ValidationException("Unique identification code is mandatory");
+            throw new InvalidValueException("Unique identification code is mandatory");
         }
         if (!debtPositionTypeOrgDTO.isFlagAnonymousFiscalCode() && personDTO.getUniqueIdentifierCode().equals("ANONIMO")) {
-            throw new ValidationException("This organization installment type or installment does not allow an anonymous unique identification code");
+            throw new InvalidValueException("This organization installment type or installment does not allow an anonymous unique identification code");
         }
         if (StringUtils.isBlank(personDTO.getFullName())) {
-            throw new ValidationException("Beneficiary name is mandatory");
+            throw new InvalidValueException("Beneficiary name is mandatory");
         }
         if (StringUtils.isBlank(personDTO.getEmail()) ||
                 !Utilities.isValidEmail(personDTO.getEmail())) {
-            throw new ValidationException("Email is not valid");
+            throw new InvalidValueException("Email is not valid");
         }
     }
 
     private void validateTransfers(List<TransferDTO> transferDTOList) {
         if(CollectionUtils.isEmpty(transferDTOList)){
-            throw new ValidationException("At least one transfer is mandatory for installment");
+            throw new InvalidValueException("At least one transfer is mandatory for installment");
         }
 
         if (transferDTOList.size() > 1) {
             TransferDTO transferSecondaryBeneficiary = transferDTOList.stream()
                     .filter(transfer -> (transfer.getTransferIndex() == 2)).findAny()
-                    .orElseThrow(() -> new ValidationException("Mismatch with transfers list"));
+                    .orElseThrow(() -> new InvalidValueException("Mismatch with transfers list"));
 
             if (StringUtils.isBlank(transferSecondaryBeneficiary.getOrgFiscalCode()) ||
                     !isValidPIVA(transferSecondaryBeneficiary.getOrgFiscalCode())) {
-                throw new ValidationException("Fiscal code of secondary beneficiary is not valid");
+                throw new InvalidValueException("Fiscal code of secondary beneficiary is not valid");
             }
             if (!isValidIban(transferSecondaryBeneficiary.getIban())) {
-                throw new ValidationException("Iban of secondary beneficiary is not valid");
+                throw new InvalidValueException("Iban of secondary beneficiary is not valid");
             }
             checkTaxonomyCategory(transferSecondaryBeneficiary.getCategory());
 
             if (transferSecondaryBeneficiary.getAmount() == null || transferSecondaryBeneficiary.getAmount() < 0) {
-                throw new ValidationException("The amount of secondary beneficiary is not valid");
+                throw new InvalidValueException("The amount of secondary beneficiary is not valid");
             }
         }
     }
 
     private void checkTaxonomyCategory(String category) {
         if (StringUtils.isBlank(category)) {
-            throw new ValidationException("Category of secondary beneficiary is mandatory");
+            throw new InvalidValueException("Category of secondary beneficiary is mandatory");
         } else {
             String categoryCode = StringUtils.substringBeforeLast(category, "/") + "/";
             Boolean categoryCodeExists = taxonomyDao.verifyCategory(categoryCode);
             if (!Boolean.TRUE.equals(categoryCodeExists)) {
-                throw new ValidationException("The category code does not exist in the archive");
+                throw new InvalidValueException("The category code does not exist in the archive");
             }
         }
     }
