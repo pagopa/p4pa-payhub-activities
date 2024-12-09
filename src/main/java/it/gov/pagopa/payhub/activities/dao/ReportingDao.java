@@ -16,7 +16,7 @@ public interface ReportingDao {
 	 *
 	 * @param organizationId organization id
 	 * @param iuf identifies a specific reporting code
-	 * @return List<ClassificationDTO> of iuv data that may be an empty list
+	 * @return List<ReportingDTO> of iuv data that may be an empty list
 	 */
 	List<ReportingDTO> findById(String organizationId, String iuf);
 }
