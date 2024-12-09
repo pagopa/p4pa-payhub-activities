@@ -53,11 +53,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity{
                 .build();
     }
 
-    private boolean verifyParameters(String organizationId, String iuf) throws IufClassificationException  {
-        if (organizationId == null || organizationId.isBlank())
-            return false;
-        if (iuf == null || iuf.isBlank())
-            return false;
-        return true;
+    private boolean verifyParameters(String organizationId, String iuf) {
+        return !(organizationId == null || organizationId.isBlank() || iuf == null || iuf.isBlank());
     }
 }
