@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.dao;
 
-import it.gov.pagopa.payhub.activities.dto.ClassificationDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.ReportingDTO;
 
 import java.util.List;
 
@@ -18,6 +18,6 @@ public interface ReportingDao {
 	 * @param iuf identifies a specific reporting code
 	 * @return List<ClassificationDTO> of iuv data that may be an empty list
 	 */
-	List<ClassificationDTO> findById(String organizationId, String iuf);
+	List<ReportingDTO> findById(String organizationId, String iuf);
 }
 

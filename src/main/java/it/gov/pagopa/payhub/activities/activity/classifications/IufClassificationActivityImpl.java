@@ -1,13 +1,17 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ReportingDao;
-import it.gov.pagopa.payhub.activities.dto.ClassificationDTO;
-import it.gov.pagopa.payhub.activities.exception.OperatorNotAuthorizedException;
+import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.ReportingDTO;
+import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.exception.IufClassificationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,7 +21,6 @@ import java.util.List;
 @Lazy
 @Component
 public class IufClassificationActivityImpl implements IufClassificationActivity{
-
     private final ReportingDao reportingDao;
 
     public IufClassificationActivityImpl(ReportingDao reportingDao) {
@@ -29,13 +32,32 @@ public class IufClassificationActivityImpl implements IufClassificationActivity{
      *
      * @param organizationId the unique identifier of the organization
      * @param iuf            the unique identifier of the payment reporting flow (IUF)
-     * @return List<ClassificationDTO> list of classifications
+     * @return IufClassificationDTO contains list of classifications and boolean value
      */
-    public List<ClassificationDTO> classify(String organizationId, String iuf) {
-        List<ClassificationDTO> classificationDTOS = reportingDao.findById(organizationId, iuf);
-        if (classificationDTOS.isEmpty()) {
-            log.error("Empty list of classifications returned");
+
+    @Override
+    public IufClassificationDTO classify(String organizationId, String iuf) {
+        if (verifyParameters(organizationId, iuf)) {
+            List<ReportingDTO> reportingDTOS = reportingDao.findById(organizationId, iuf);
+            if (! reportingDTOS.isEmpty()) {
+                return IufClassificationDTO.builder()
+                        .reportingDTOList(reportingDTOS)
+                        .success(true)
+                        .build();
+            }
         }
-        return  classificationDTOS;
+        log.error("Empty list of classifications returned");
+        return IufClassificationDTO.builder()
+                .reportingDTOList(new ArrayList<>())
+                .success(false)
+                .build();
+    }
+
+    private boolean verifyParameters(String organizationId, String iuf) throws IufClassificationException  {
+        if (organizationId == null || organizationId.isBlank())
+            return false;
+        if (iuf == null || iuf.isBlank())
+            return false;
+        return true;
     }
 }
