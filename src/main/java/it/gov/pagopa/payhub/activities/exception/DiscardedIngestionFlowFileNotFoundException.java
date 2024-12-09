@@ -5,14 +5,14 @@ package it.gov.pagopa.payhub.activities.exception;
  * in the application's processing logic.
  *
  */
-public class IngestionFlowNotFoundException extends ActivitiesException {
+public class DiscardedIngestionFlowFileNotFoundException extends ActivitiesException {
 
 	/**
 	 * Constructs a new {@code IngestionFlowFileNotFoundException} with the specified detail message.
 	 *
 	 * @param message the detail message explaining the cause of the exception.
 	 */
-	public IngestionFlowNotFoundException(String message) {
+	public DiscardedIngestionFlowFileNotFoundException(String message) {
 		super(message);
 	}
 }
