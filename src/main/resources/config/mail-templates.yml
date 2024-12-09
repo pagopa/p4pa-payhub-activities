@@ -11,5 +11,9 @@ email:
       body: "Gentile Utente,<br>\n \
         questa e' una mail generata in automatico dal sistema MyPay, si raccomanda di non rispondere a questo messaggio.<br>\n\n \
         Contattare l'assistenza per richiedere, se necessario, ulteriori chiarimenti.<br>\n\n \
-        <p>Di seguito il testo del messaggio: {mailText}<br></p>\n\n \
+        <p>Di seguito il testo del messaggio: {text}<br></p>\n\n \
         {actualDate}"
+    mailTextLoadOk: "File {fileName} caricato correttamente"
+    mailTextLoadKo: "Errore caricamento file {fileName} \r\n \ 
+            Clicca sul link qui sotto per scaricare il file contenete gli errori: \
+            File errori: {errorFileLink}"
