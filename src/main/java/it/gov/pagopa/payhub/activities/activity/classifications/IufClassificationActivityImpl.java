@@ -3,15 +3,11 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 import it.gov.pagopa.payhub.activities.dao.ReportingDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.ReportingDTO;
-import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingIngestionFlowFileActivityResult;
-import it.gov.pagopa.payhub.activities.exception.IufClassificationException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +28,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity{
      *
      * @param organizationId the unique identifier of the organization
      * @param iuf            the unique identifier of the payment reporting flow (IUF)
-     * @return IufClassificationDTO contains list of classifications and boolean value
+     * @return IufClassificationDTO contains list of classifications and boolean value for process OK or KO
      */
 
     @Override
