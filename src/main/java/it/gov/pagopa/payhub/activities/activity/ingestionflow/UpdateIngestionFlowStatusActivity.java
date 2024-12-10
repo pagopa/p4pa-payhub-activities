@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.fdr;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 /**
  * Interface for the UpdateIngestionFlowStatusActivity.
@@ -13,5 +13,5 @@ public interface UpdateIngestionFlowStatusActivity {
      * @param newStatus the new status to set.
      * @return true if the update was successful, false otherwise.
      */
-    boolean updateStatus(String id, String newStatus);
+    boolean updateStatus(Long id, String newStatus);
 }
