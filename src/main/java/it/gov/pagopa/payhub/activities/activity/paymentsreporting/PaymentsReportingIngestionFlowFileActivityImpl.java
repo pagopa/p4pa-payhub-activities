@@ -76,8 +76,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
 		List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
 			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-		File ingestionFlowFile = ingestionFlowFiles.get(0).toFile();
-		return ingestionFlowFile;
+		return ingestionFlowFiles.get(0).toFile();
 	}
 
 	private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
