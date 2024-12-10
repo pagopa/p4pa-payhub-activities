@@ -48,68 +48,68 @@ class SendMailServiceTest {
 	}
 
 	@Test
-	void testSendEmailFileLoadedSuccess() throws MessagingException {
+	void testSendEmailFileLoadedSuccess() {
 		assertThrows(MailSendException.class, () ->
 				sendMailService.sendMail(validMailOk), "Mail sender error encountered");
 	}
 
 	@Test
-	void testSendEmailFileNotLoadedSuccess() throws MessagingException {
+	void testSendEmailFileNotLoadedSuccess() {
 		assertThrows(MailSendException.class, () ->
 				sendMailService.sendMail(validMailKo), "Mail sender error encountered");
 	}
 
 	@Test
-	void testSendEmailFileLoadedAttachSuccess() throws MessagingException {
+	void testSendEmailFileLoadedAttachSuccess() {
 		assertThrows(MessagingException.class, () ->
 				sendMailService.sendMail(validMailOkAttachment), "Mail sender error encountered");
 	}
 
 	@Test
-	void testSendEmailFileLoadedFailed() throws MessagingException {
+	void testSendEmailFileLoadedFailed() {
 		assertThrows(MessagingException.class, () ->
 		sendMailService.sendMail(invalidMailOk), "Error in mail data");
 	}
 
 	@Test
-	void testSendEmailFileNotLoadedFailed() throws MessagingException {
+	void testSendEmailFileNotLoadedFailed() {
 		assertThrows(MessagingException.class, () ->
 				sendMailService.sendMail(invalidMailKo), "Error in mail data");
 	}
 
 	@Test
-	void testSendInvalidBlankMail() throws MessagingException {
+	void testSendInvalidBlankMail() {
 		assertThrows(MessagingException.class, () ->
 				sendMailService.sendMail(invalidBlankMail), "Invalid blank mail");
 	}
 
 	// cc present
 	@Test
-	void testSendEmailFileLoadedSuccessCC() throws MessagingException {
+	void testSendEmailFileLoadedSuccessCC() {
 		assertThrows(MailSendException.class, () ->
 				sendMailService.sendMail(validMailOkCC), "Mail sender error encountered");
 	}
 
 	@Test
-	void testSendEmailFileNotLoadedSuccessCC() throws MessagingException {
+	void testSendEmailFileNotLoadedSuccessCC() {
 		assertThrows(MailSendException.class, () ->
 				sendMailService.sendMail(validMailKoCC), "Mail sender error encountered");
 	}
 
 	@Test
-	void testSendEmailFileLoadedFailedCC() throws MessagingException {
+	void testSendEmailFileLoadedFailedCC() {
 		assertThrows(MessagingException.class, () ->
 				sendMailService.sendMail(invalidMailOkCC), "Error in mail data");
 	}
 
 	@Test
-	void testSendEmailFileNotLoadedFailedCC() throws MessagingException {
+	void testSendEmailFileNotLoadedFailedCC() {
 		assertThrows(MessagingException.class, () ->
 				sendMailService.sendMail(invalidMailKoCC), "Error in mail data");
 	}
 
 	@Test
-	void testSendInvalidBlankMailCC() throws MessagingException {
+	void testSendInvalidBlankMailCC() {
 		assertThrows(MessagingException.class, () ->
 				sendMailService.sendMail(invalidBlankMailCC), "Invalid blank mail");
 	}

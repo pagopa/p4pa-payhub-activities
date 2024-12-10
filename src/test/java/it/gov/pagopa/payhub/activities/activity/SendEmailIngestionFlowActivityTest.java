@@ -11,7 +11,6 @@ import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
-import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
