@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundExcept
 
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -28,14 +29,17 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
   private final String ingestionflowFileType;
   private final IngestionFlowFileDao ingestionFlowFileDao;
   private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
+  private final TreasuryUnmarshallerService treasuryUnmarshallerService;
 
 
   public TreasuryOpiIngestionActivityImpl(@Value("${ingestion-flow-file-type:O}") String ingestionflowFileType,
                                           IngestionFlowFileDao ingestionFlowFileDao,
-                                          IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService) {
+                                          IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
+                                          TreasuryUnmarshallerService treasuryUnmarshallerService) {
     this.ingestionflowFileType = ingestionflowFileType;
     this.ingestionFlowFileDao = ingestionFlowFileDao;
     this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
+    this.treasuryUnmarshallerService = treasuryUnmarshallerService;
   }
 
 
@@ -55,6 +59,17 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
       ingestionFlowFiles.forEach(path -> {
         File ingestionFlowFile = path.toFile();
         log.debug("file from zip archive with name {} loaded successfully ", ingestionFlowFile.getName());
+
+
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa flussoGiornaleDiCassa14 = null;
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa161;
+
+        flussoGiornaleDiCassa161 = treasuryUnmarshallerService.unmarshalOpi161(ingestionFlowFile);
+        log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa161.getId());
+        if (flussoGiornaleDiCassa161.getDataRiferimentoGdC() == null) {
+          flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
+          log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
+        }
 
       });
 

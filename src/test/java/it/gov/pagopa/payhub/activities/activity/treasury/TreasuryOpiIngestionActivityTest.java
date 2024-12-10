@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIngestionResultDTO;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ class TreasuryOpiIngestionActivityTest {
   private IngestionFlowFileDao ingestionFlowFileDao;
   @Mock
   private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
+  @Mock
+  private TreasuryUnmarshallerService treasuryUnmarshallerService;
 
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
 
@@ -32,7 +35,8 @@ class TreasuryOpiIngestionActivityTest {
   void setUp() {
     treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(VALID_INGESTION_FLOW_TYPE,
             ingestionFlowFileDao,
-            ingestionFlowFileRetrieverService);
+            ingestionFlowFileRetrieverService,
+            treasuryUnmarshallerService);
   }
 
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
