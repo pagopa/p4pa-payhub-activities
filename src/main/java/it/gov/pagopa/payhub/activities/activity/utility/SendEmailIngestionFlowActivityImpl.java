@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.enums.FlowFileType;
 import it.gov.pagopa.payhub.activities.exception.DiscardedIngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
@@ -15,6 +14,7 @@ import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
 import it.gov.pagopa.payhub.activities.util.Utility;
+import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -71,7 +71,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
             IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
                     .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot find ingestionFlow having id: "+ ingestionFlowFileId));
             String ipaCode = ingestionFlowFileDTO.getOrg().getIpaCode();
-            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ipaCode, ingestionFlowFileDTO.getMappedExternalUserId());
+            UserInfo userInfoDTO = userAuthorizationService.getUserInfo(ipaCode, ingestionFlowFileDTO.getMappedExternalUserId());
             OrganizationDTO organizationDTO = organizationService.getOrganizationInfo(ipaCode);
             MailTo mailTo = configureMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});

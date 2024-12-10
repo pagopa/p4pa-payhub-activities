@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
+import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Lazy
 @Service
 public interface UserAuthorizationService {
-    UserInfoDTO getUserInfo(String ipaCode, String mappedExternalUserId);
+    UserInfo getUserInfo(String ipaCode, String mappedExternalUserId);
 }

@@ -6,10 +6,10 @@ import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
+import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,8 +53,8 @@ class SendEmailIngestionFlowActivityTest {
     private IngestionFlowFileDTO invalidIngestionFlowFileDTO;
     private IngestionFlowFileDTO invalidPathIngestionFlowFileDTO;
     private IngestionFlowFileDTO invalidDiscardedFileNameDTO;
-    private UserInfoDTO validUserInfoDTO;
-    private UserInfoDTO invalidUserInfoDTO;
+    private UserInfo validUserInfoDTO;
+    private UserInfo invalidUserInfoDTO;
     private OrganizationDTO validOrganizationInfoDTO;
     private OrganizationDTO invalidOrganizationInfoDTO;
 
@@ -208,6 +208,7 @@ class SendEmailIngestionFlowActivityTest {
     }
 
     private void createBeans() {
+        String userMail = "usertest@testuser.com";
         validOrganizationInfoDTO = OrganizationDTO.builder()
                 .ipaCode("IPA_CODE")
                 .adminEmail("codIpaOrg@testuser.com")
@@ -215,14 +216,15 @@ class SendEmailIngestionFlowActivityTest {
         invalidOrganizationInfoDTO = OrganizationDTO.builder()
                 .applicationCode("")
                 .build();
-        validUserInfoDTO = UserInfoDTO.builder()
-                .mappedExternalUserId("VALID_USER")
-                .email("usertest@testuser.com")
-                .build();
-        invalidUserInfoDTO = UserInfoDTO.builder()
-                .mappedExternalUserId(null)
-                .email("usertest@testuser.com")
-                .build();
+
+        validUserInfoDTO = new UserInfo();
+        validUserInfoDTO.setMappedExternalUserId("VALID_USER");
+        validUserInfoDTO.setEmail(userMail);
+
+        invalidUserInfoDTO = new UserInfo();
+        invalidUserInfoDTO.mappedExternalUserId(null);
+        invalidUserInfoDTO.setEmail(userMail);
+
         validIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
                 .org(validOrganizationInfoDTO)
                 .mappedExternalUserId("VALID_USER")
