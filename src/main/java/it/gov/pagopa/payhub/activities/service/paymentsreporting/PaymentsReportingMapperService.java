@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
