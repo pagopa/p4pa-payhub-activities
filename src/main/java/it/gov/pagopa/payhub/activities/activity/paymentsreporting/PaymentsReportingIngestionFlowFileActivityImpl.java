@@ -47,16 +47,6 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
 	}
 
-	/**
-	 * Processes the ingestion flow file for the given ID. The process includes the following steps:
-	 * - Retrieve the corresponding ingestion flow file record
-	 * - Extract and retrieve the physical file
-	 * - Parse the file to validate its content and map it to DTOs
-	 * - Produce the result containing the flow file identifier and processing success flag
-	 *
-	 * @param ingestionFlowFileId the ID of the ingestion flow file to process
-	 * @return a {@link PaymentsReportingIngestionFlowFileActivityResult} containing the result of the processing
-	 */
 	@Override
 	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
 		try {
