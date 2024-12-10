@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service class responsible for mapping flow data (`CtFlussoRiversamento`) and ingestion metadata
