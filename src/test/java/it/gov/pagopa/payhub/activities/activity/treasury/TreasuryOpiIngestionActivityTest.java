@@ -4,6 +4,9 @@ import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIngestionResultDTO;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.ObjectFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +28,8 @@ class TreasuryOpiIngestionActivityTest {
   private IngestionFlowFileDao ingestionFlowFileDao;
   @Mock
   private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
+  @Mock
+  private TreasuryUnmarshallerService treasuryUnmarshallerService;
 
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
 
@@ -32,7 +37,8 @@ class TreasuryOpiIngestionActivityTest {
   void setUp() {
     treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(VALID_INGESTION_FLOW_TYPE,
             ingestionFlowFileDao,
-            ingestionFlowFileRetrieverService);
+            ingestionFlowFileRetrieverService,
+            treasuryUnmarshallerService);
   }
 
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
@@ -58,6 +64,9 @@ class TreasuryOpiIngestionActivityTest {
           Path.of("VALID_PATH_FILE_1"),
           Path.of("VALID_PATH_FILE_2")
   );
+  private static final List<FlussoGiornaleDiCassa> VALID_FLUSSO_OPI14_LIST = List.of(
+          new ObjectFactory().createFlussoGiornaleDiCassa(),
+          new ObjectFactory().createFlussoGiornaleDiCassa());
 
 
   @Test
@@ -65,7 +74,10 @@ class TreasuryOpiIngestionActivityTest {
     //given
     Mockito.when(ingestionFlowFileDao.findById(VALID_INGESTION_FLOW_ID)).thenReturn(VALID_INGESTION_FLOW);
     Mockito.when(ingestionFlowFileRetrieverService.retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE)).thenReturn(VALID_FILE_PATH_LIST);
+    for (int i = 0; i < VALID_FILE_PATH_LIST.size(); i++) {
+      Mockito.when(treasuryUnmarshallerService.unmarshalOpi14(VALID_FILE_PATH_LIST.get(i).toFile())).thenReturn(VALID_FLUSSO_OPI14_LIST.get(i));
 
+    }
     //when
     TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(VALID_INGESTION_FLOW_ID);
 
@@ -74,6 +86,9 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertEquals(result.getIufIuvs(), new ArrayList<>());
     Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(VALID_INGESTION_FLOW_ID);
     Mockito.verify(ingestionFlowFileRetrieverService, Mockito.times(1)).retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE);
+    for (int i = 0; i < VALID_FILE_PATH_LIST.size(); i++) {
+      Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi14(VALID_FILE_PATH_LIST.get(i).toFile());
+    }
   }
 
   @Test
