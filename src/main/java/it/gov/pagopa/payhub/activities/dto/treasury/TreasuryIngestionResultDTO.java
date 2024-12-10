@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.dto.treasury;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,9 +12,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TreasuryIufResult {
-    /** List of extracted IUFs */
-    private List<String> iufs;
+public class TreasuryIngestionResultDTO implements Serializable {
+    /** List of extracted IUFs and IUVs */
+    private List<IufIuvDTO> iufIuvs;
     /** Success flag for the operation */
     private boolean success;
 }
