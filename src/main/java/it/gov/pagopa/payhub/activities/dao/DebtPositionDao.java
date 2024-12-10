@@ -7,5 +7,5 @@ public interface DebtPositionDao {
      /**
       *  * It will save and return the new DebtPositionDTO entity
       * */
-     void save(DebtPositionDTO debtPosition);
+     DebtPositionDTO save(DebtPositionDTO debtPosition);
 }

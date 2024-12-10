@@ -17,5 +17,5 @@ public interface SaveDebtPositionActivity {
      *
      * @param debtPosition the {@link DebtPositionDTO} containing the details of the debt position to be saved
      */
-    void saveDebtPosition(DebtPositionDTO debtPosition);
+    DebtPositionDTO saveDebtPosition(DebtPositionDTO debtPosition);
 }
