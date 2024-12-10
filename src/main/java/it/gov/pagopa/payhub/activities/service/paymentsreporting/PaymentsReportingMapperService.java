@@ -49,13 +49,13 @@ public class PaymentsReportingMapperService {
 			.receiverOrganizationType(ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getTipoIdentificativoUnivoco().value())
 			.totalAmountCents(ctFlussoRiversamento.getImportoTotalePagamenti().movePointRight(2).longValueExact())
 			.totalPayments(ctFlussoRiversamento.getNumeroTotalePagamenti().longValueExact())
-			.bicCodePouringBank(Optional.ofNullable(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento()).orElse(null));
+			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento());
 
 		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
 			.map(item -> builder
 				.creditorReferenceId(item.getIdentificativoUnivocoVersamento())
 				.regulationId(item.getIdentificativoUnivocoRiscossione())
-				.transferIndex(Optional.ofNullable(item.getIndiceDatiSingoloPagamento()).orElse(null))
+				.transferIndex(item.getIndiceDatiSingoloPagamento())
 				.amountPaidCents(item.getSingoloImportoPagato().movePointRight(2).longValueExact())
 				.paymentOutcomeCode(item.getCodiceEsitoSingoloPagamento())
 				.payDate(item.getDataEsitoSingoloPagamento().toGregorianCalendar().toZonedDateTime().toLocalDate())
