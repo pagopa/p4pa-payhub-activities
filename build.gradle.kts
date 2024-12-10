@@ -64,6 +64,7 @@ dependencies {
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
+	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
 
 	//apache commons
 	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
@@ -87,12 +88,13 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 
 	//jaxb
-	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
-	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
-	implementation("com.sun.xml.bind:jaxb-jxc:$jaxbVersion")
-	implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")
-	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
-	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
+	jaxb("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+	jaxb("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
+	jaxb("com.sun.xml.bind:jaxb-jxc:$jaxbVersion")
+	jaxb("com.sun.xml.bind:jaxb-core:$jaxbVersion")
+
+	jaxbext("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
+	jaxbext("jakarta.activation:jakarta.activation-api:$activationVersion")
 }
 
 
