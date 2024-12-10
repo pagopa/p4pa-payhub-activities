@@ -16,7 +16,7 @@ import java.util.Optional;
   classes = {OrganizationService.class},
   webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @EnableConfigurationProperties
-public class OrganizationServiceTest {
+class OrganizationServiceTest {
 
   @MockBean
   private OrganizationDao organizationDao;
@@ -24,16 +24,16 @@ public class OrganizationServiceTest {
   @Autowired
   private OrganizationService organizationService;
 
-  private final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
-  private final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
-  private final String VALID_APPLICATION_CODE = "01";
-  private final Optional<OrganizationDTO> VALID_ORG = Optional.of(OrganizationDTO.builder()
+  private static final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
+  private static final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
+  private static final String VALID_APPLICATION_CODE = "01";
+  private static final Optional<OrganizationDTO> VALID_ORG = Optional.of(OrganizationDTO.builder()
     .orgId(1L)
     .orgFiscalCode(VALID_ORG_FISCAL_CODE)
     .ipaCode(VALID_ORG_IPA_CODE)
     .applicationCode(VALID_APPLICATION_CODE)
     .build());
-  private final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
+  private static final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
 
   @Test
   void givenValidOrgWhenGetOrganizationByFiscalCodeThenFound(){

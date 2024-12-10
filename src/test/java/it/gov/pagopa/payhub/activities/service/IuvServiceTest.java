@@ -22,7 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 })
 @EnableConfigurationProperties
 @ExtendWith(MockitoExtension.class)
-public class IuvServiceTest {
+class IuvServiceTest {
 
   @MockBean
   private IuvSequenceNumberDao iuvSequenceNumberDao;
@@ -30,24 +30,24 @@ public class IuvServiceTest {
   @Autowired
   private IuvService iuvService;
 
-  private final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
-  private final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
-  private final String VALID_APPLICATION_CODE = "01";
-  private final OrganizationDTO VALID_ORG = OrganizationDTO.builder()
+  private static final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
+  private static final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
+  private static final String VALID_APPLICATION_CODE = "01";
+  private static final OrganizationDTO VALID_ORG = OrganizationDTO.builder()
     .orgId(1L)
     .orgFiscalCode(VALID_ORG_FISCAL_CODE)
     .ipaCode(VALID_ORG_IPA_CODE)
     .applicationCode(VALID_APPLICATION_CODE)
     .build();
-  private final long VALID_PAYMENT_INDEX = 42L;
-  private final String VALID_IUV = "01000000000004285";
-  private final String WRONG_CHECK_IUV = "01000000000004286";
-  private final String WRONG_LENGTH_IUV = "010000000000004285";
+  private static final long VALID_PAYMENT_INDEX = 42L;
+  private static final String VALID_IUV = "01000000000004285";
+  private static final String WRONG_CHECK_IUV = "01000000000004286";
+  private static final String WRONG_LENGTH_IUV = "010000000000004285";
 
-  private final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
-  private final String INVALID_ORG_IPA_CODE = "INVALID_IPA_CODE";
-  private final long INVALID_PAYMENT_INDEX = 0L;
-  private final OrganizationDTO INVALID_ORG = OrganizationDTO.builder()
+  private static final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
+  private static final String INVALID_ORG_IPA_CODE = "INVALID_IPA_CODE";
+  private static final long INVALID_PAYMENT_INDEX = 0L;
+  private static final OrganizationDTO INVALID_ORG = OrganizationDTO.builder()
     .orgId(99L)
     .orgFiscalCode(INVALID_ORG_FISCAL_CODE)
     .ipaCode(INVALID_ORG_IPA_CODE)

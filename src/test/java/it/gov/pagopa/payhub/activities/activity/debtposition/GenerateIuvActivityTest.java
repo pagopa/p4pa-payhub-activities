@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class GenerateIuvActivityTest {
+class GenerateIuvActivityTest {
 
   @Mock
   private OrganizationService organizationService;
@@ -26,16 +26,16 @@ public class GenerateIuvActivityTest {
   @InjectMocks
   private GenerateIuvActivityImpl generateIuvActivity;
 
-  private final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
-  private final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
-  private final OrganizationDTO VALID_ORG = OrganizationDTO.builder()
+  private static final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
+  private static final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
+  private static final OrganizationDTO VALID_ORG = OrganizationDTO.builder()
     .orgId(1L)
     .orgFiscalCode(VALID_ORG_FISCAL_CODE)
     .ipaCode(VALID_ORG_IPA_CODE)
     .build();
-  private final String VALID_IUV = "12345678901234567";
+  private static final String VALID_IUV = "12345678901234567";
 
-  private final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
+  private static final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
 
   @Test
   void givenValidOrgWhenGenerateIuvThenOk(){
