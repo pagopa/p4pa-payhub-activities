@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
@@ -10,7 +11,6 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileAc
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
-import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingInsertionService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,7 +34,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private final FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService;
 	private final PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService;
 	private final PaymentsReportingMapperService paymentsReportingMapperService;
-	private final PaymentsReportingInsertionService paymentsReportingInsertionService;
+	private final PaymentsReportingDao paymentsReportingDao;
 	private final IngestionFlowFileAchiverService ingestionFlowFileAchiverService;
 
 	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}")String ingestionflowFileType,
@@ -43,7 +43,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
 	                                                      PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService,
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
-	                                                      PaymentsReportingInsertionService paymentsReportingInsertionService,
+	                                                      PaymentsReportingDao paymentsReportingDao,
 	                                                      IngestionFlowFileAchiverService ingestionFlowFileAchiverService) {
 		this.ingestionflowFileType = ingestionflowFileType;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
@@ -51,7 +51,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
 		this.paymentsReportingIngestionFlowFileValidatorService = paymentsReportingIngestionFlowFileValidatorService;
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
-		this.paymentsReportingInsertionService = paymentsReportingInsertionService;
+		this.paymentsReportingDao = paymentsReportingDao;
 		this.ingestionFlowFileAchiverService = ingestionFlowFileAchiverService;
 	}
 
@@ -63,7 +63,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 			List<Path> filePaths = retrieveFile(ingestionFlowFileDTO);
 
 			Pair<String, List<PaymentsReportingDTO>> pair = parseData(filePaths.get(0).toFile(), ingestionFlowFileDTO);
-			paymentsReportingInsertionService.savePaymentsReporting(pair.getRight());
+			paymentsReportingDao.saveAll(pair.getRight());
 			ingestionFlowFileAchiverService
 				.compressArchiveFileAndCleanUp(filePaths, Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true);
@@ -96,7 +96,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * extracting it from the specified file path.
 	 *
 	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing file details
-	 * @return the extracted {@link File} from the ingestion flow
+	 * @return the extracted {@link List} from the ingestion flow
 	 * @throws IOException if there is an error during file retrieval or extraction
 	 */
 	private List<Path> retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {

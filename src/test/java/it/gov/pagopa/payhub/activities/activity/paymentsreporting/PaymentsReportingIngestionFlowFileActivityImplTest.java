@@ -4,18 +4,17 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
-import it.gov.pagopa.payhub.activities.exception.PaymentsReportingException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileAchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
-import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingInsertionService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	@Mock
 	private PaymentsReportingMapperService paymentsReportingMapperServiceMock;
 	@Mock
-	private PaymentsReportingInsertionService paymentsReportingInsertionServiceMock;
+	private PaymentsReportingDao paymentsReportingDaoMock;
 	@Mock
 	private IngestionFlowFileAchiverService ingestionFlowFileAchiverServiceMock;
 
@@ -69,7 +68,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			flussoRiversamentoUnmarshallerServiceMock,
 			paymentsReportingIngestionFlowFileValidatorServiceMock,
 			paymentsReportingMapperServiceMock,
-			paymentsReportingInsertionServiceMock,
+			paymentsReportingDaoMock,
 			ingestionFlowFileAchiverServiceMock
 		);
 
@@ -106,7 +105,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
-		doReturn(dtoList).when(paymentsReportingInsertionServiceMock).savePaymentsReporting(dtoList);
+		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
 
 		doNothing().when(ingestionFlowFileAchiverServiceMock)
 			.compressArchiveFileAndCleanUp(mockedListPath, Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
@@ -233,6 +232,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		// Then
 		assertEquals(expected, result);
 	}
+
 	@Test
 	void givenPaymentsReportingExceptionWhenProcessFileThenFails() throws Exception {
 		// Given
@@ -259,8 +259,8 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
-		doThrow(new PaymentsReportingException("saving fails"))
-			.when(paymentsReportingInsertionServiceMock).savePaymentsReporting(dtoList);
+		doThrow(new ActivitiesException("saving fails"))
+			.when(paymentsReportingDaoMock).saveAll(dtoList);
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
 
@@ -294,7 +294,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
-		doReturn(dtoList).when(paymentsReportingInsertionServiceMock).savePaymentsReporting(dtoList);
+		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
 
 		doThrow(IOException.class).when(ingestionFlowFileAchiverServiceMock)
 			.compressArchiveFileAndCleanUp(mockedListPath, Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
@@ -306,4 +306,3 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		assertEquals(expected, result);
 	}
 }
-
