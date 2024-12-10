@@ -62,7 +62,7 @@ class SendEmailIngestionFlowActivityTest {
     void init() {
         String blank = "";
         String host = "HOST";
-        createBeans();
+        createTestData();
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         sendMailService  = new SendMailService(host, blank, blank,blank,blank,blank,blank, javaMailSender);
     }
@@ -207,7 +207,7 @@ class SendEmailIngestionFlowActivityTest {
         Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
     }
 
-    private void createBeans() {
+    private void createTestData() {
         String userMail = "usertest@testuser.com";
         validOrganizationInfoDTO = OrganizationDTO.builder()
                 .ipaCode("IPA_CODE")
