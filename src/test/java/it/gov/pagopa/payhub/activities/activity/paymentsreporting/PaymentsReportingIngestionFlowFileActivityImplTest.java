@@ -78,7 +78,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		istitutoRicevente.setIdentificativoUnivocoRicevente(ctIdentificativoUnivocoPersonaG);
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIstitutoRicevente(istitutoRicevente);
-		}
+	}
 
 	@Test
 	void givenSuccessfullConditionsWhenProcessFileThenOk() throws IOException {
@@ -106,7 +106,6 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
 		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
-
 		doNothing().when(ingestionFlowFileAchiverServiceMock)
 			.compressArchiveFileAndCleanUp(mockedListPath, Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
 
