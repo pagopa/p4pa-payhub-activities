@@ -83,7 +83,6 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			.build();
 		File file = new File(tempDir, "testFlussoRiversamento.xml");
 		List<Path> mockedListPath = List.of(file.toPath());
-		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
 		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
 
@@ -203,7 +202,6 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			.build();
 		File file = new File(tempDir, "testFlussoRiversamento.xml");
 		List<Path> mockedListPath = List.of(file.toPath());
-		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);

@@ -87,7 +87,7 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("OK", firstDTO.getPaymentOutcomeCode());
 		assertNotNull(firstDTO.getPayDate());
 
-		TestUtils.checkNotNullFields(firstDTO, "creationDate", "lastChangeDate", "paymentsReportingId");
+		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId");
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {

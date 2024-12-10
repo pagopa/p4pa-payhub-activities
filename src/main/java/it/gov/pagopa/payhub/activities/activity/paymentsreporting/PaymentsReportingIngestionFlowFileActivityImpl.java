@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.reportingflow.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
@@ -10,14 +11,17 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Lazy
@@ -47,27 +51,42 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	@Override
 	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
 		try {
-			IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
-				.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
-			if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
-				throw new IllegalArgumentException("invalid ingestionFlow file type");
-			}
+			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
-			List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
-				.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-			File ingestionFlowFile = ingestionFlowFiles.get(0).toFile();
+			File ingestionFlowFile = retrieveFile(ingestionFlowFileDTO);
 
-			CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
-			log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
+			Pair<String, List<PaymentsReportingDTO>> pair = parseData(ingestionFlowFile, ingestionFlowFileDTO);
 
-			paymentsReportingIngestionFlowFileValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
-
-			paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
-
-			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(ctFlussoRiversamento.getIdentificativoFlusso()), true);
+			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
 			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
 		}
+	}
+
+	private Pair<String, List<PaymentsReportingDTO>> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
+		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
+		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
+
+		paymentsReportingIngestionFlowFileValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
+
+		List<PaymentsReportingDTO> dtoList = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
+		return Pair.of(ctFlussoRiversamento.getIdentificativoFlusso(), dtoList);
+	}
+
+	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
+		List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
+			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+		File ingestionFlowFile = ingestionFlowFiles.get(0).toFile();
+		return ingestionFlowFile;
+	}
+
+	private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
+		IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
+			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
+		if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
+			throw new IllegalArgumentException("invalid ingestionFlow file type");
+		}
+		return ingestionFlowFileDTO;
 	}
 }

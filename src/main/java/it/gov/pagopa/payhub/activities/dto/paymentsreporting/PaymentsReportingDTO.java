@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
@@ -22,7 +23,7 @@ public class PaymentsReportingDTO {
 	private Long ingestionFlowFileId;
 	private String pspIdentifier;
 	private String flowIdentifierCode;
-	private LocalDate flowDateTime;
+	private LocalDateTime flowDateTime;
 	private String regulationUniqueIdentifier;
 	private LocalDate regulationDate;
 	private String senderPspType;
