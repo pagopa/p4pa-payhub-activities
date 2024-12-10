@@ -1,17 +1,16 @@
 spring:
   config:
     import: mail-templates.yml
+activity:
   mail:
-    host: host
-    port: 587
-    username: username
+    host: ${MYPAY4_SPRING_MAIL_HOST:host}
+    port: ${MYPAY4_SPRING_MAIL_PORT:587}
+    username: ${MYPAY4_SPRING_MAIL_USERNAME:username}
+    password: ${MYPAY4_SPRING_MAIL_PASSWORD:password}
     properties:
       mail:
         smtp:
-          auth: true
+          auth: ${MYPAY4_SPRING_MAIL_SMTP_AUTH:true}
           starttls:
-            enable: true
-            required: true
-activity:
-  root:
-    path: /DATA/
+            enable: ${MYPAY4_SPRING_MAIL_SMTP_STARTTLS:true}
+            required: ${MYPAY4_SPRING_MAIL_SMTP_STARTTLS_REQUIRED:true}
