@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Interface for the TreasuryOpiIngestionActivity.
@@ -46,6 +47,8 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
   @Override
   public TreasuryIngestionResultDTO processFile(Long ingestionFlowFileId) {
     List<IufIuvDTO> iufIuvList = new ArrayList<>();
+    List<Path> ingestionFlowFiles = null;
+    AtomicBoolean success = new AtomicBoolean(true);
     try {
       IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
               .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
@@ -53,32 +56,39 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
         throw new IllegalArgumentException("invalid ingestionFlow file type " + ingestionFlowFileDTO.getFlowFileType());
       }
 
-      List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
+      ingestionFlowFiles = ingestionFlowFileRetrieverService
               .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+    } catch (Exception e) {
+      log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
+      return new TreasuryIngestionResultDTO(Collections.emptyList(), false);
+    }
 
+    if (ingestionFlowFiles != null && !ingestionFlowFiles.isEmpty()) {
       ingestionFlowFiles.forEach(path -> {
         File ingestionFlowFile = path.toFile();
         log.debug("file from zip archive with name {} loaded successfully ", ingestionFlowFile.getName());
 
 
         it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa flussoGiornaleDiCassa14 = null;
-        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa161;
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa161 = null;
 
-        flussoGiornaleDiCassa161 = treasuryUnmarshallerService.unmarshalOpi161(ingestionFlowFile);
-        log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa161.getId());
-        if (flussoGiornaleDiCassa161.getDataRiferimentoGdC() == null) {
-          flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
-          log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
+        try {
+          flussoGiornaleDiCassa161 = treasuryUnmarshallerService.unmarshalOpi161(ingestionFlowFile);
+          log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa161.getId());
+        } catch (Exception e) {
+          log.error("file flussoGiornaleDiCassa parsing error with opi 1.6.1 format {} ", e.getMessage());
         }
-
+        if (flussoGiornaleDiCassa161 == null) {
+          try {
+            flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
+            log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
+          } catch (Exception e) {
+            log.error("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
+            success.set(false);
+          }
+        }
       });
-
-    } catch (Exception e) {
-      log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-      return new TreasuryIngestionResultDTO(Collections.emptyList(), false);
     }
-    return new TreasuryIngestionResultDTO(iufIuvList, true);
+    return new TreasuryIngestionResultDTO(iufIuvList, success.get());
   }
-
-
 }
