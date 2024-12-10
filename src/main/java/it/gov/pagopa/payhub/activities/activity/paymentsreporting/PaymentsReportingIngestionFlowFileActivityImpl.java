@@ -6,18 +6,20 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
-import it.gov.pagopa.payhub.activities.service.FlowValidatorService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileAchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
-import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingInsertionService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
+import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
+import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingInsertionService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +32,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private final IngestionFlowFileDao ingestionFlowFileDao;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 	private final FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService;
-	private final FlowValidatorService flowValidatorService;
+	private final PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService;
 	private final PaymentsReportingMapperService paymentsReportingMapperService;
 	private final PaymentsReportingInsertionService paymentsReportingInsertionService;
 	private final IngestionFlowFileAchiverService ingestionFlowFileAchiverService;
@@ -39,7 +41,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	                                                      IngestionFlowFileDao ingestionFlowFileDao,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
-	                                                      FlowValidatorService flowValidatorService,
+	                                                      PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService,
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
 	                                                      PaymentsReportingInsertionService paymentsReportingInsertionService,
 	                                                      IngestionFlowFileAchiverService ingestionFlowFileAchiverService) {
@@ -47,7 +49,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
-		this.flowValidatorService = flowValidatorService;
+		this.paymentsReportingIngestionFlowFileValidatorService = paymentsReportingIngestionFlowFileValidatorService;
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
 		this.paymentsReportingInsertionService = paymentsReportingInsertionService;
 		this.ingestionFlowFileAchiverService = ingestionFlowFileAchiverService;
@@ -56,30 +58,68 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	@Override
 	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
 		try {
-			IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
-				.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
-			if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
-				throw new IllegalArgumentException("invalid ingestionFlow file type");
-			}
+			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
-			List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
-				.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-			File ingestionFlowFile = ingestionFlowFiles.get(0).toFile();
+			List<Path> filePaths = retrieveFile(ingestionFlowFileDTO);
 
-			CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
-			log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
-
-			flowValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
-
-			List<PaymentsReportingDTO> dtoListToSave = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
-			List<PaymentsReportingDTO> savedList = paymentsReportingInsertionService.savePaymentsReporting(dtoListToSave);
+			Pair<String, List<PaymentsReportingDTO>> pair = parseData(filePaths.get(0).toFile(), ingestionFlowFileDTO);
+			paymentsReportingInsertionService.savePaymentsReporting(pair.getRight());
 			ingestionFlowFileAchiverService
-				.compressArchiveFileAndCleanUp(ingestionFlowFiles, Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-			String iuf = savedList.get(0).getFlowIdentifierCode();
-			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(iuf), true);
+				.compressArchiveFileAndCleanUp(filePaths, Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
 			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
 		}
+	}
+
+	/**
+	 * Retrieves the {@link IngestionFlowFileDTO} record for the given ID. If no record is found, throws
+	 * an {@link IngestionFlowFileNotFoundException}. Validates the flow file type before returning.
+	 *
+	 * @param ingestionFlowFileId the ID of the ingestion flow file to retrieve
+	 * @return the {@link IngestionFlowFileDTO} corresponding to the given ID
+	 * @throws IngestionFlowFileNotFoundException if the record is not found
+	 * @throws IllegalArgumentException if the flow file type is invalid
+	 */
+	private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
+		IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
+			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
+		if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
+			throw new IllegalArgumentException("invalid ingestionFlow file type");
+		}
+		return ingestionFlowFileDTO;
+	}
+
+	/**
+	 * Retrieves the file associated with the provided {@link IngestionFlowFileDTO} by unzipping and
+	 * extracting it from the specified file path.
+	 *
+	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing file details
+	 * @return the extracted {@link File} from the ingestion flow
+	 * @throws IOException if there is an error during file retrieval or extraction
+	 */
+	private List<Path> retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
+		return ingestionFlowFileRetrieverService
+			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+	}
+
+	/**
+	 * Parses the provided file into a {@link CtFlussoRiversamento} object and maps its content into a list
+	 * of {@link PaymentsReportingDTO}. Validates the file's organization data.
+	 *
+	 * @param ingestionFlowFile the file to be parsed
+	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing additional context
+	 * @return a {@link Pair} containing the flow file identifier and the list of {@link PaymentsReportingDTO}
+	 * @throws IllegalArgumentException if the file content does not conform to the expected structure
+	 */
+	private Pair<String, List<PaymentsReportingDTO>> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
+		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
+		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
+
+		paymentsReportingIngestionFlowFileValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
+
+		List<PaymentsReportingDTO> dtoList = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
+		return Pair.of(ctFlussoRiversamento.getIdentificativoFlusso(), dtoList);
 	}
 }

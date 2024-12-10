@@ -6,6 +6,8 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -28,22 +30,24 @@ public class PaymentsReportingMapperService {
 	public List<PaymentsReportingDTO> mapToDtoList(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
 
 		PaymentsReportingDTO.PaymentsReportingDTOBuilder builder = PaymentsReportingDTO.builder()
-			.orgId(ingestionFlowFileDTO.getOrg())
-			.ingestionFlowFile(ingestionFlowFileDTO)
-			.idPsp(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
+			.creationDate(Instant.now())
+			.lastUpdateDate(Instant.now())
+			.acquiringDate(ingestionFlowFileDTO.getCreationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+			.organizationId(ingestionFlowFileDTO.getOrg().getOrgId())
+			.ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
+			.pspIdentifier(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
 			.flowIdentifierCode(ctFlussoRiversamento.getIdentificativoFlusso())
-			.flowDateTime(ctFlussoRiversamento.getDataOraFlusso().toGregorianCalendar().getTime())
+			.flowDateTime(ctFlussoRiversamento.getDataOraFlusso().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
 			.regulationUniqueIdentifier(ctFlussoRiversamento.getIdentificativoUnivocoRegolamento())
-			.regulationDate(ctFlussoRiversamento.getDataRegolamento().toGregorianCalendar().getTime())
+			.regulationDate(ctFlussoRiversamento.getDataRegolamento().toGregorianCalendar().toZonedDateTime().toLocalDate())
 			.senderPspName(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
 			.senderPspCode(ctFlussoRiversamento.getIstitutoMittente().getIdentificativoUnivocoMittente().getCodiceIdentificativoUnivoco())
 			.senderPspType(ctFlussoRiversamento.getIstitutoMittente().getIdentificativoUnivocoMittente().getTipoIdentificativoUnivoco().value())
 			.receiverOrganizationName(ctFlussoRiversamento.getIstitutoRicevente().getDenominazioneRicevente())
-			.receiverOrganizationId(ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getCodiceIdentificativoUnivoco())
+			.receiverOrganizationCode(ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getCodiceIdentificativoUnivoco())
 			.receiverOrganizationType(ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getTipoIdentificativoUnivoco().value())
-			.totalPayments(ctFlussoRiversamento.getDatiSingoliPagamenti().size())
-			.sumPayments(ctFlussoRiversamento.getNumeroTotalePagamenti())
-			.amountPaid(ctFlussoRiversamento.getImportoTotalePagamenti())
+			.totalAmountCents(ctFlussoRiversamento.getImportoTotalePagamenti().movePointRight(2).longValueExact())
+			.totalPayments(ctFlussoRiversamento.getNumeroTotalePagamenti().longValueExact())
 			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento());
 
 		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
@@ -51,9 +55,9 @@ public class PaymentsReportingMapperService {
 				.creditorReferenceId(item.getIdentificativoUnivocoVersamento())
 				.regulationId(item.getIdentificativoUnivocoRiscossione())
 				.transferIndex(item.getIndiceDatiSingoloPagamento())
-				.amountPaid(item.getSingoloImportoPagato())
+				.amountPaidCents(item.getSingoloImportoPagato().movePointRight(2).longValueExact())
 				.paymentOutcomeCode(item.getCodiceEsitoSingoloPagamento())
-				.payDate(item.getDataEsitoSingoloPagamento().toGregorianCalendar().getTime())
+				.payDate(item.getDataEsitoSingoloPagamento().toGregorianCalendar().toZonedDateTime().toLocalDate())
 				.build())
 			.toList();
 	}
