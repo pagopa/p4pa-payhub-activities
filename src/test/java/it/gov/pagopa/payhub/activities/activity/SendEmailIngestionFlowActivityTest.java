@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity;
 
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.SendEmailIngestionFlowActivity;
-import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.SendEmailIngestionFlowActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.config;
+package it.gov.pagopa.payhub.activities.dto;
 
 import lombok.Data;
 

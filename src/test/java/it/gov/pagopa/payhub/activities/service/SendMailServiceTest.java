@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
