@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Interface for defining an activity to process payment reporting classifications based on IUF.
+ * Implementation for defining an activity to process payment reporting classifications based on IUF.
  */
 @Slf4j
 @Lazy
@@ -27,10 +27,9 @@ public class IufClassificationActivityImpl implements IufClassificationActivity{
      * Processes IUF classification based on the provided parameters.
      *
      * @param organizationId the unique identifier of the organization
-     * @param iuf            the unique identifier of the payment reporting flow (IUF)
-     * @return IufClassificationDTO contains list of classifications and boolean value for process OK or KO
+     * @param iuf the unique identifier of the payment reporting flow
+     * @return dto IufClassificationDTO that contains list of classifications and boolean value for process OK or KO
      */
-
     @Override
     public IufClassificationDTO classify(String organizationId, String iuf) {
         if (verifyParameters(organizationId, iuf)) {
@@ -49,6 +48,12 @@ public class IufClassificationActivityImpl implements IufClassificationActivity{
                 .build();
     }
 
+    /**
+     * verify activity input parameters
+     * @param organizationId the unique identifier of the organization
+     * @param iuf the unique identifier of the payment reporting flow
+     * @return boolean if parameters are verified otherwise false
+     */
     private boolean verifyParameters(String organizationId, String iuf) {
         return !(organizationId == null || organizationId.isBlank() || iuf == null || iuf.isBlank());
     }
