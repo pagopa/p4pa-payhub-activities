@@ -9,6 +9,7 @@ plugins {
 	`maven-publish`
 	jacoco
 	id("com.intershop.gradle.jaxb") version "7.0.0"
+	id("org.openapi.generator") version "7.9.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -58,10 +59,12 @@ val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
 val jsoupVersion = "1.18.1"
+val openApiToolsVersion = "0.2.6"
 
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
@@ -99,8 +102,10 @@ dependencies {
 	implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
 	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
-}
 
+	//openapi
+	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+}
 
 val projectInfo = mapOf(
 		"artifactId" to project.name,
@@ -139,6 +144,10 @@ configure<SourceSetContainer> {
 	}
 }
 
+tasks.compileJava {
+	dependsOn("openApiGenerateAuth")
+}
+
 tasks.register<Jar>("sourcesJar") {
 	group = "build"
 	description = "Assembles a JAR archive containing the main source code."
@@ -154,6 +163,27 @@ tasks.register<Jar>("javadocJar") {
 	dependsOn(tasks.javadoc)
 	from(tasks.javadoc.get().destinationDir)
 	archiveClassifier.set("javadoc")
+}
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateAuth") {
+	group = "openapi"
+	description = "description"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://github.com/pagopa/p4pa-auth/raw/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
+	outputDir.set("$projectDir/build/generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paauth.dto.generated")
+	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java17",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true"
+	))
+	library.set("resttemplate")
 }
 
 publishing {
