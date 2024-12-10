@@ -32,7 +32,7 @@ class PaymentsReportingMapperServiceTest {
 
 		ctFlussoRiversamento.setIdentificativoUnivocoRegolamento("reg123");
 		ctFlussoRiversamento.setCodiceBicBancaDiRiversamento("BIC123");
-		ctFlussoRiversamento.setNumeroTotalePagamenti(BigDecimal.valueOf(100L));
+		ctFlussoRiversamento.setNumeroTotalePagamenti(BigDecimal.valueOf(1L));
 		ctFlussoRiversamento.setImportoTotalePagamenti(BigDecimal.valueOf(1_000.50D));
 
 		ctFlussoRiversamento.setDataRegolamento(toXMLGregorianCalendar(gregorianCalendar));
@@ -78,8 +78,8 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("flow123", firstDTO.getFlowIdentifierCode());
 		assertEquals("PSP Mittente", firstDTO.getSenderPspName());
 		assertEquals("Org Ricevente", firstDTO.getReceiverOrganizationName());
-		assertEquals(100L, firstDTO.getTotalAmountCents());
-		assertEquals(100_050L, firstDTO.getTotalPayments());
+		assertEquals(1L, firstDTO.getTotalPayments());
+		assertEquals(100_050L, firstDTO.getTotalAmountCents());
 		assertEquals("vers123", firstDTO.getCreditorReferenceId());
 		assertEquals("ris123", firstDTO.getRegulationId());
 		assertEquals(1, firstDTO.getTransferIndex());
