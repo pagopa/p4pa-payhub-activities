@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowAc
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
@@ -58,7 +57,6 @@ class SendEmailIngestionFlowActivityTest {
     private UserInfoDTO invalidUserInfoDTO;
     private OrganizationDTO validOrganizationInfoDTO;
     private OrganizationDTO invalidOrganizationInfoDTO;
-    private MailTo expectedMailTo;
 
     @BeforeEach
     void init() {
@@ -210,12 +208,6 @@ class SendEmailIngestionFlowActivityTest {
     }
 
     private void createBeans() {
-        expectedMailTo = MailTo.builder()
-                .emailFromAddress("test_sender@mailtest.com")
-                .mailSubject("Subject")
-                .to(new String[]{"test_receiver@mailtest.com"})
-                .htmlText("Html Text")
-                .build();
         validOrganizationInfoDTO = OrganizationDTO.builder()
                 .ipaCode("IPA_CODE")
                 .adminEmail("codIpaOrg@testuser.com")
