@@ -62,7 +62,7 @@ public class SendMailService {
                 message.setCc(mailTo.getCc());
             message.setSubject(mailTo.getMailSubject());
             message.setText(mailTo.getHtmlText(), true);
-            log.debug("sending mail message.");
+            log.debug("sending mail message");
         } );
     }
 

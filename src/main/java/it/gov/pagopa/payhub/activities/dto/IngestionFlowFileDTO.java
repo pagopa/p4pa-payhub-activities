@@ -16,6 +16,7 @@ public class IngestionFlowFileDTO implements Serializable {
 
     private Long ingestionFlowFileId;
     private String flowFileType;
+    private String mappedExternalUserId;
     private int version;
     private OrganizationDTO org;
     private String status;

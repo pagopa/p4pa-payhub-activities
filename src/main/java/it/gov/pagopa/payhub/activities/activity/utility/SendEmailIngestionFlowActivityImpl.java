@@ -7,27 +7,27 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.UserInfoDTO;
+import it.gov.pagopa.payhub.activities.enums.FlowFileType;
 import it.gov.pagopa.payhub.activities.exception.DiscardedIngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
+import it.gov.pagopa.payhub.activities.util.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
-import static it.gov.pagopa.payhub.activities.activity.utility.Constants.MAIL_DATE_TIME_FORMATTER;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -39,24 +39,22 @@ import static it.gov.pagopa.payhub.activities.activity.utility.Constants.MAIL_DA
 public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlowActivity {
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
     private final UserAuthorizationService userAuthorizationService;
-    private final OrganizationService organizationAuthorizationService;
+    private final OrganizationService organizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowFileDao ingestionFlowFileDao;
-    private final String baseUrl;
+    public static DateTimeFormatter MAIL_DATE_TIME_FORMATTER =  DateTimeFormatter.ofPattern("EEE, MMM dd yyyy, hh:mm:ss");
 
     public SendEmailIngestionFlowActivityImpl(
             EmailTemplatesConfiguration emailTemplatesConfiguration,
             UserAuthorizationService userAuthorizationService,
-            OrganizationService organizationAuthorizationService,
+            OrganizationService organizationService,
             IngestionFlowFileDao ingestionFlowFileDao,
-            SendMailService sendMailService,
-            @Value("activity.baseUrl") String baseUrl) {
+            SendMailService sendMailService) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
         this.userAuthorizationService = userAuthorizationService;
-        this.organizationAuthorizationService = organizationAuthorizationService;
+        this.organizationService = organizationService;
         this.ingestionFlowFileDao  = ingestionFlowFileDao;
         this.sendMailService = sendMailService;
-        this.baseUrl = baseUrl;
     }
 
     /**
@@ -71,11 +69,11 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
 
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
-                    .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
+                    .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot find ingestionFlow having id: "+ ingestionFlowFileId));
             String ipaCode = ingestionFlowFileDTO.getOrg().getIpaCode();
-            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ipaCode, ingestionFlowFileDTO.getOperatorName());
-            OrganizationDTO organizationDTO = organizationAuthorizationService.getOrganizationInfo(ipaCode);
-            MailTo mailTo = getMailFromIngestionFlow(ingestionFlowFileDTO, success);
+            UserInfoDTO userInfoDTO = userAuthorizationService.getUserInfo(ipaCode, ingestionFlowFileDTO.getMappedExternalUserId());
+            OrganizationDTO organizationDTO = organizationService.getOrganizationInfo(ipaCode);
+            MailTo mailTo = configureMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
             if (organizationDTO!= null && StringUtils.isNotBlank(organizationDTO.getAdminEmail()) &&
                 ! organizationDTO.getAdminEmail().equalsIgnoreCase(userInfoDTO.getEmail())) {
@@ -90,11 +88,11 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         return true;
     }
 
-    private MailTo getMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success)
+    private MailTo configureMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success)
             throws IngestionFlowTypeNotSupportedException, DiscardedIngestionFlowFileNotFoundException {
         Map<String, String> textMap = new HashMap<>();
         String flowType = ingestionFlowFileDTO.getFlowFileType();
-        if (! flowType.equalsIgnoreCase("R")) {
+        if (! flowType.equalsIgnoreCase(FlowFileType.REPORTING_FLOW_TYPE.getFlowFileType())) {
             log.error("Sending e-mail not supported for flow type: {}", flowType);
             throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type: "+flowType);
         }
@@ -142,14 +140,20 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
             mailMap.put("fileName", ingestionFlowFileDTO.getFileName());
         }
         else  {
-            String errorFile = baseUrl +
-                    Constants.SLASH + Constants.REPORTING_PATH +
-                    Constants.SLASH + Constants.WASTE +
-                    Constants.SLASH + ingestionFlowFileDTO.getFilePathName()+
-                    Constants.SLASH + ingestionFlowFileDTO.getDiscardedFileName();
+            String errorLink = geErrorFileLink(ingestionFlowFileDTO.getIngestionFlowFileId());
             mailMap.put("fileName", ingestionFlowFileDTO.getDiscardedFileName());
-            mailMap.put("errorFileLink", errorFile);
+            if (Utility.isNotNullOrEmpty(errorLink)) {
+                mailMap.put("errorFileLink", errorLink);
+            }
+            else {
+                mailMap.put("errorFileLink", "");
+            }
         }
         return mailMap;
     }
+
+    public String geErrorFileLink(Long ingestionFlowFileId) {
+        return ingestionFlowFileDao.findErrorFileUrl(ingestionFlowFileId);
+    }
+
 }

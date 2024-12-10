@@ -25,5 +25,12 @@ public interface IngestionFlowFileDao {
 	 *         or an empty {@link Optional} if no matching entity exists.
 	 */
 	Optional<IngestionFlowFileDTO> findById(Long ingestionFlowFileId);
+
+	/**
+	 *
+	 * @param ingestionFlowFileId  ingestionFlowFileId the unique identifier of the ingestion flow to be retrieved.
+	 * @return String url of the error file
+	 */
+	String findErrorFileUrl(Long ingestionFlowFileId);
 }
 
