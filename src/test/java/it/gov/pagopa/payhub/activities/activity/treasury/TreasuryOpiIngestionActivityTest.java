@@ -13,14 +13,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class TreasuryOpiIngestionActivityTest {
+class TreasuryOpiIngestionActivityTest {
 
   @Mock
   private IngestionFlowFileDao ingestionFlowFileDao;
@@ -36,44 +35,36 @@ public class TreasuryOpiIngestionActivityTest {
             ingestionFlowFileRetrieverService);
   }
 
-  private final static Long VALID_INGESTION_FLOW_ID = 1L;
-  private final static Long NOT_FOUND_INGESTION_FLOW_ID = 8L;
-  private final static Long INVALID_INGESTION_FLOW_ID = 9L;
-  private final static String VALID_INGESTION_FLOW_TYPE = "VALID_TYPE";
-  private final static String INVALID_INGESTION_FLOW_TYPE = "INVALID_TYPE";
-  private final static Path VALID_INGESTION_FLOW_PATH = Path.of("VALID_PATH");
-  private final static String VALID_INGESTION_FLOW_FILE = "VALID_FILE";
-  private final static String VALID_INGESTION_FLOW_IUF = "VALID_IUF";
-  private final static String PII_COGNOME = "PII_COGNOME";
-  private final static String PII_DE_CAUSALE = "PII_DE_CAUSALE";
-  private final static String KEY_MAP = "INSERT";
-  private final static Optional<IngestionFlowFileDTO> VALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
+  private static final Long VALID_INGESTION_FLOW_ID = 1L;
+  private static final Long NOT_FOUND_INGESTION_FLOW_ID = 8L;
+  private static final Long INVALID_INGESTION_FLOW_ID = 9L;
+  private static final String VALID_INGESTION_FLOW_TYPE = "VALID_TYPE";
+  private static final String INVALID_INGESTION_FLOW_TYPE = "INVALID_TYPE";
+  private static final Path VALID_INGESTION_FLOW_PATH = Path.of("VALID_PATH");
+  private static final String VALID_INGESTION_FLOW_FILE = "VALID_FILE";
+  private static final String VALID_INGESTION_FLOW_IUF = "VALID_IUF";
+  private static final Optional<IngestionFlowFileDTO> VALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
           .ingestionFlowFileId(VALID_INGESTION_FLOW_ID)
           .flowFileType(VALID_INGESTION_FLOW_TYPE)
           .filePathName(VALID_INGESTION_FLOW_PATH.toString())
           .fileName(VALID_INGESTION_FLOW_FILE)
           .iuf(VALID_INGESTION_FLOW_IUF)
           .build());
-  private final static Optional<IngestionFlowFileDTO> INVALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
+  private static final Optional<IngestionFlowFileDTO> INVALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
           .ingestionFlowFileId(INVALID_INGESTION_FLOW_ID)
           .flowFileType(INVALID_INGESTION_FLOW_TYPE)
           .build());
-  private final static List<Path> VALID_FILE_PATH_LIST = List.of(
+  private static final List<Path> VALID_FILE_PATH_LIST = List.of(
           Path.of("VALID_PATH_FILE_1"),
           Path.of("VALID_PATH_FILE_2")
   );
 
-  private final static List<String> VALID_IUV_LIST = List.of(
-          "VALID_IUV_1",
-          "VALID_IUV_2");
 
   @Test
   void givenValidIngestionFlowWhenProcessFileThenOk() throws IOException {
     //given
     Mockito.when(ingestionFlowFileDao.findById(VALID_INGESTION_FLOW_ID)).thenReturn(VALID_INGESTION_FLOW);
     Mockito.when(ingestionFlowFileRetrieverService.retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE)).thenReturn(VALID_FILE_PATH_LIST);
-    for (int i = 0; i < VALID_FILE_PATH_LIST.size(); i++) {
-    }
 
     //when
     TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(VALID_INGESTION_FLOW_ID);
