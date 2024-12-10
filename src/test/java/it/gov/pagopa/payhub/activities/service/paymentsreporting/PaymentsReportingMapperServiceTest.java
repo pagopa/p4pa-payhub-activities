@@ -4,6 +4,7 @@ import it.gov.digitpa.schemas._2011.pagamenti.*;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -32,7 +33,7 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.setIdentificativoUnivocoRegolamento("reg123");
 		ctFlussoRiversamento.setCodiceBicBancaDiRiversamento("BIC123");
 		ctFlussoRiversamento.setNumeroTotalePagamenti(BigDecimal.valueOf(100L));
-		ctFlussoRiversamento.setImportoTotalePagamenti(BigDecimal.valueOf(1000.50d));
+		ctFlussoRiversamento.setImportoTotalePagamenti(BigDecimal.valueOf(1_000.50D));
 
 		ctFlussoRiversamento.setDataRegolamento(toXMLGregorianCalendar(gregorianCalendar));
 		ctFlussoRiversamento.setDataOraFlusso(toXMLGregorianCalendar(gregorianCalendar));
@@ -54,7 +55,9 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.setIstitutoRicevente(istitutoRicevente);
 
 		IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
-		ingestionFlowFileDTO.setOrg(new OrganizationDTO());
+		ingestionFlowFileDTO.setOrg(OrganizationDTO.builder().orgId(1L).build());
+		ingestionFlowFileDTO.setIngestionFlowFileId(1L);
+		ingestionFlowFileDTO.setCreationDate(TestUtils.DATE);
 
 		CtDatiSingoliPagamenti singlePayment = new CtDatiSingoliPagamenti();
 		singlePayment.setIdentificativoUnivocoVersamento("vers123");
@@ -69,19 +72,22 @@ class PaymentsReportingMapperServiceTest {
 		// When
 		List<PaymentsReportingDTO> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 
+		PaymentsReportingDTO firstDTO = result.get(0);
 		// Then
 		assertEquals(1, result.size());
-		assertEquals("flow123", result.get(0).getFlowIdentifierCode());
-		assertEquals("PSP Mittente", result.get(0).getSenderPspName());
-		assertEquals("Org Ricevente", result.get(0).getReceiverOrganizationName());
-		assertEquals(100L, result.get(0).getSumPayments().longValue());
-		assertEquals(200.00d, result.get(0).getAmountPaid().doubleValue());
-		assertEquals("vers123", result.get(0).getCreditorReferenceId());
-		assertEquals("ris123", result.get(0).getRegulationId());
-		assertEquals(1, result.get(0).getTransferIndex());
-		assertEquals(200.00D, result.get(0).getAmountPaid().doubleValue());
-		assertEquals("OK", result.get(0).getPaymentOutcomeCode());
-		assertNotNull(result.get(0).getPayDate());
+		assertEquals("flow123", firstDTO.getFlowIdentifierCode());
+		assertEquals("PSP Mittente", firstDTO.getSenderPspName());
+		assertEquals("Org Ricevente", firstDTO.getReceiverOrganizationName());
+		assertEquals(100L, firstDTO.getTotalAmountCents());
+		assertEquals(100_050L, firstDTO.getTotalPayments());
+		assertEquals("vers123", firstDTO.getCreditorReferenceId());
+		assertEquals("ris123", firstDTO.getRegulationId());
+		assertEquals(1, firstDTO.getTransferIndex());
+		assertEquals(20_000L, firstDTO.getAmountPaidCents());
+		assertEquals("OK", firstDTO.getPaymentOutcomeCode());
+		assertNotNull(firstDTO.getPayDate());
+
+		TestUtils.checkNotNullFields(firstDTO, "creationDate", "lastChangeDate", "acquiringDate");
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {

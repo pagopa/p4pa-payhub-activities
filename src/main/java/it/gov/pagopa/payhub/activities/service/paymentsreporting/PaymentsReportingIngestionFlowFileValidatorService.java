@@ -1,8 +1,8 @@
-package it.gov.pagopa.payhub.activities.service;
+package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidFlowDataException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  */
 @Lazy
 @Service
-public class FlowValidatorService {
+public class PaymentsReportingIngestionFlowFileValidatorService {
 
 	/**
 	 * Validates that the organization specified in the flow (`CtFlussoRiversamento`) matches
@@ -20,14 +20,14 @@ public class FlowValidatorService {
 	 *
 	 * @param ctFlussoRiversamento the flow data object containing information about the transaction flow.
 	 * @param ingestionFlowFileDTO the ingestion flow file containing metadata about the ingestion process.
-	 * @throws InvalidFlowDataException if the organization details in `ctFlussoRiversamento` do not match
+	 * @throws InvalidIngestionFlowFileDataException if the organization details in `ctFlussoRiversamento` do not match
 	 *                                  the expected organization in `ingestionFlowFileDTO`.
 	 */
 	public void validateOrganization(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
 		String fileOrgFiscalcode = ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getCodiceIdentificativoUnivoco();
 		String ingestionFlowFileOrgFiscalcode = ingestionFlowFileDTO.getOrg().getOrgFiscalCode();
 		if (!fileOrgFiscalcode.equals(ingestionFlowFileOrgFiscalcode)) {
-			throw new InvalidFlowDataException("Non matching Organization: " + ingestionFlowFileOrgFiscalcode + "/" + fileOrgFiscalcode);
+			throw new InvalidIngestionFlowFileDataException("Non matching Organization: " + ingestionFlowFileOrgFiscalcode + "/" + fileOrgFiscalcode);
 		}
 	}
 }

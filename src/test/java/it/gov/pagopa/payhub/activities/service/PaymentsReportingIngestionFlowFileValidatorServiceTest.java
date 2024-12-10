@@ -5,21 +5,22 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidFlowDataException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
+import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FlowValidatorServiceTest {
+class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 
 	private CtFlussoRiversamento ctFlussoRiversamento;
 
-	private FlowValidatorService service;
+	private PaymentsReportingIngestionFlowFileValidatorService service;
 
 	@BeforeEach
 	void setup() {
-		service = new FlowValidatorService();
+		service = new PaymentsReportingIngestionFlowFileValidatorService();
 		CtIdentificativoUnivocoPersonaG ctIdentificativoUnivocoPersonaG = new CtIdentificativoUnivocoPersonaG();
 		ctIdentificativoUnivocoPersonaG.setCodiceIdentificativoUnivoco("80010020011");
 		CtIstitutoRicevente istitutoRicevente = new CtIstitutoRicevente();
@@ -29,7 +30,7 @@ class FlowValidatorServiceTest {
 	}
 
 	@Test
-	void givenDataWhenValidateThenSuccess() {
+	void givenValidDataWhenValidateThenSuccess() {
 		//given
 		IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
 			.org(OrganizationDTO.builder()
@@ -41,7 +42,7 @@ class FlowValidatorServiceTest {
 	}
 
 	@Test
-	void givenDataWhenValidateThenThrowInvalidFlowDataException() {
+	void givenInvalidOrganizationWhenValidateThenThrowInvalidIngestionFlowFileDataException() {
 		//given
 		IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
 			.org(OrganizationDTO.builder()
@@ -49,7 +50,7 @@ class FlowValidatorServiceTest {
 				.build())
 			.build();
 		// when then
-		assertThrows(InvalidFlowDataException.class,
+		assertThrows(InvalidIngestionFlowFileDataException.class,
 			() -> service.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO), "Invalid Organization");
 	}
 }
