@@ -14,11 +14,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -62,25 +60,15 @@ class SendEmailIngestionFlowActivityTest {
     private UserInfo invalidUserInfoDTO;
     private OrganizationDTO validOrganizationInfoDTO;
     private OrganizationDTO invalidOrganizationInfoDTO;
-
     @BeforeEach
     void init() {
-        String host = "HOST";
-        String port = "587";
-        String username="USER";
-        String password="PWD";
-        String smtpAuth = "true";
-        String smtpStarttlsEnable = "true";
-        String smtpStarttlsRequired = "true";
-
         createTestData();
-        sendMailService  = new SendMailService(host,port,username,password,
-                smtpAuth,smtpStarttlsEnable,smtpStarttlsRequired,javaMailSender);
     }
 
     @Test
     void sendEmailIngestionOkValidUserValidFlowSuccess() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
@@ -89,6 +77,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionOkValidUserErrorFlowSuccess() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(errorIngestionFlowFileDTO ));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
@@ -99,6 +88,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionKoValidUserValidFlowSuccess() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(errorIngestionFlowFileDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
@@ -109,6 +99,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionOkValidUserInvalidFlowFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidIngestionFlowFileDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(invalidIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
@@ -119,6 +110,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionKoValidUserInvalidFlowFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidIngestionFlowFileDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(invalidIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
@@ -129,6 +121,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionOkInvalidUserInvalidFlowFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidIngestionFlowFileDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(invalidIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
@@ -139,6 +132,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionOkInvalidUserValidFlowFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
@@ -149,6 +143,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionKoInvalidUserValidFlowFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
@@ -159,6 +154,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionKoInvalidUserInvalidFlowFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidIngestionFlowFileDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(invalidOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(invalidIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
@@ -169,6 +165,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionOkValidUserValidFlowInvalidOrgFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
         Mockito.when(organizationService.getOrganizationByIpaCode(invalidOrganizationInfoDTO.getIpaCode())).thenReturn(invalidOrganizationInfoDTO);
@@ -179,6 +176,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionOkInvalidUserInvalidFlowInvalidPathFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidPathIngestionFlowFileDTO));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
@@ -189,6 +187,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionKoInvalidUserInvalidFlowInvalidPathFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidPathIngestionFlowFileDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(invalidOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(invalidIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
@@ -200,6 +199,7 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionOkInvalidUserInvalidDiscardedFileFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidDiscardedFileNameDTO));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(validOrganizationInfoDTO);
@@ -210,11 +210,79 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void sendEmailIngestionKoInvalidUserInvalidDiscardedFileFailed() {
         Long ingestionFlowFileId = 100L;
+        createMailServiceData();
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(invalidDiscardedFileNameDTO));
         Mockito.when(organizationService.getOrganizationByIpaCode(validOrganizationInfoDTO.getIpaCode())).thenReturn(invalidOrganizationInfoDTO);
         Mockito.when(userAuthorizationService.getUserInfo(invalidIngestionFlowFileDTO.getOrg().getIpaCode(), invalidUserInfoDTO.getMappedExternalUserId())).thenReturn(invalidUserInfoDTO);
 
         Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
+    }
+
+
+    @Test
+    void sendEmailIngestionOkValidUserValidFlowHostSuccess() {
+        Long ingestionFlowFileId = 100L;
+        createMailServiceData("host");
+        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
+        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
+    }
+
+    @Test
+    void sendEmailIngestionOkValidUserValidFlowPortSuccess() {
+        Long ingestionFlowFileId = 100L;
+        createMailServiceData("port");
+        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
+        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
+    }
+
+    @Test
+    void sendEmailIngestionOkValidUserValidFlowUsernameSuccess() {
+        Long ingestionFlowFileId = 100L;
+        createMailServiceData("username");
+        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
+        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
+    }
+
+    @Test
+    void sendEmailIngestionOkValidUserValidFlowPasswordSuccess() {
+        Long ingestionFlowFileId = 100L;
+        createMailServiceData("password");
+        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
+        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
+        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
+    }
+
+    private void createMailServiceData() {
+        createMailServiceData("blank");
+    }
+
+    private void createMailServiceData(String param) {
+        String blank = "";
+        String host = "HOST";
+        String port = "587";
+        String username="USER";
+        String password="PWD";
+        switch (param) {
+            case "blank":
+                sendMailService  = new SendMailService(blank,blank,blank,blank,blank,blank,blank,javaMailSender);
+                break;
+            case "host":
+                sendMailService  = new SendMailService(host,blank,blank,blank,blank,blank,blank,javaMailSender);
+                break;
+            case "port":
+                sendMailService  = new SendMailService(blank,port,blank,blank,blank,blank,blank,javaMailSender);
+                break;
+            case "username":
+                sendMailService  = new SendMailService(blank,blank,username,blank,blank,blank,blank,javaMailSender);
+                break;
+            case "password":
+                sendMailService  = new SendMailService(blank,blank,blank,password,blank,blank,blank,javaMailSender);
+                break;
+        }
+
     }
 
     private void createTestData() {
