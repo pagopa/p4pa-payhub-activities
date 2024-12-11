@@ -38,7 +38,8 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
             try {
                 return paymentsClassificationDao.save(paymentsClassificationDTO);
             }
-            catch (Exception e){
+            catch (PaymentsClassificatioSaveException e){
+                log.error("Error saving classification: "+e.getMessage());
                 throw new PaymentsClassificatioSaveException("Error saving classification");
             }
         }
