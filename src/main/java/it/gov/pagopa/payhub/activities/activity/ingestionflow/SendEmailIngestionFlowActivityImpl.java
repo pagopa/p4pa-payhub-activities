@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementation of SendEmailIngestionFlowActivity for send email ingestion flow activity.
@@ -71,7 +72,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
                     .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot find ingestionFlow having id: "+ ingestionFlowFileId));
             String ipaCode = ingestionFlowFileDTO.getOrg().getIpaCode();
             UserInfo userInfoDTO = userAuthorizationService.getUserInfo(ipaCode, ingestionFlowFileDTO.getMappedExternalUserId());
-            OrganizationDTO organizationDTO = organizationService.getOrganizationInfo(ipaCode);
+            OrganizationDTO organizationDTO = organizationService.getOrganizationByIpaCode(ipaCode);
             MailTo mailTo = configureMailFromIngestionFlow(ingestionFlowFileDTO, success);
             mailTo.setTo(new String[]{userInfoDTO.getEmail()});
             if (organizationDTO!= null && StringUtils.isNotBlank(organizationDTO.getAdminEmail()) &&

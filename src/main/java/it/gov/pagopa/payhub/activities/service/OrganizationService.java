@@ -12,8 +12,6 @@ import java.util.Optional;
  */
 @Lazy
 @Service
-public interface OrganizationService {
-    OrganizationDTO getOrganizationInfo(String ipaCode);
 public class OrganizationService {
 
   private final OrganizationDao organizationDao;
@@ -30,4 +28,10 @@ public class OrganizationService {
   public Optional<OrganizationDTO> getOrganizationByFiscalCode(String orgFiscalCode){
     return organizationDao.getOrganizationByFiscalCode(orgFiscalCode);
   }
+
+  public OrganizationDTO getOrganizationByIpaCode(String ipaCode){
+    return organizationDao.getOrganizationByIpaCode(ipaCode);
+  }
+
+
 }
