@@ -32,5 +32,15 @@ public interface IngestionFlowFileDao {
 	 * @return String url of the error file
 	 */
 	String findErrorFileUrl(Long ingestionFlowFileId);
+
+	/**
+	 * update ingestion flow file status
+	 *
+	 * @param ingestionFlowFileId the unique identifier of the ingestion flow file id
+	 * @param status new status
+	 * @return boolean true if the status has been updated
+	 */
+	boolean updateStatus(Long ingestionFlowFileId, String status);
+
 }
 
