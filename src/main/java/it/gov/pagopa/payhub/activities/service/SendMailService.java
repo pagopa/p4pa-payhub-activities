@@ -46,10 +46,12 @@ public class SendMailService {
         this.smtpStarttlsRequired = smtpStarttlsRequired;
         this.mailSender = mailSender;
     }
+
     /**
      * sending mail with JavaMailSender
      * @param mailTo bean containing data to send
-     * throws MessagingException if message is not sent
+     * @return true if the mail is sent, otherwise Exception
+     * @throws MessagingException if message is not sent
      */
     public boolean sendMail(MailTo mailTo) throws MessagingException {
         wrongData(mailTo);
