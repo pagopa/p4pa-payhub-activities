@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -43,14 +44,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
   public TreasuryIngestionResultDTO processFile(Long ingestionFlowFileId) {
     List<IufIuvDTO> iufIuvList = new ArrayList<>();
     try {
-      IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
-              .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
-      if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
-        throw new IllegalArgumentException("invalid ingestionFlow file type " + ingestionFlowFileDTO.getFlowFileType());
-      }
+      IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
-      List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
-              .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+      List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
 
       ingestionFlowFiles.forEach(path -> {
         File ingestionFlowFile = path.toFile();
@@ -66,4 +62,19 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
   }
 
 
+
+  private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
+      IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
+              .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
+      if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
+        throw new IllegalArgumentException("invalid ingestionFlow file type " + ingestionFlowFileDTO.getFlowFileType());
+      }
+    return ingestionFlowFileDTO;
+  }
+
+  private  List<Path> retrieveFiles(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
+
+      return ingestionFlowFileRetrieverService
+            .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+  }
 }
