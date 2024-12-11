@@ -14,9 +14,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -47,6 +49,9 @@ class SendEmailIngestionFlowActivityTest {
     @MockBean
     private OrganizationService organizationService;
 
+    @MockBean
+    JavaMailSenderImpl javaMailSender;
+
     private IngestionFlowFileDTO validIngestionFlowFileDTO;
     private IngestionFlowFileDTO errorIngestionFlowFileDTO;
 
@@ -60,11 +65,17 @@ class SendEmailIngestionFlowActivityTest {
 
     @BeforeEach
     void init() {
-        String blank = "";
         String host = "HOST";
+        String port = "587";
+        String username="USER";
+        String password="PWD";
+        String smtpAuth = "true";
+        String smtpStarttlsEnable = "true";
+        String smtpStarttlsRequired = "true";
+
         createTestData();
-        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-        sendMailService  = new SendMailService(host, blank, blank,blank,blank,blank,blank, javaMailSender);
+        sendMailService  = new SendMailService(host,port,username,password,
+                smtpAuth,smtpStarttlsEnable,smtpStarttlsRequired,javaMailSender);
     }
 
     @Test
