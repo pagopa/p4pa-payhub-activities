@@ -22,13 +22,9 @@ public class OrganizationDTO implements Serializable {
     private String adminEmail;
     private Instant creationDate;
     private Instant lastUpdateDate;
-    private String paymentTypeCode;
     private Long fee;
     private String iban;
-    private String myBoxClientKey;
-    private String myBoxClientSecret;
     private String urlOrgSendSILPaymentResult;
-    private String codeGlobalLocationNumber;
     private String password;
     private Boolean creditBicSeller;
     private String beneficiaryOrgName;

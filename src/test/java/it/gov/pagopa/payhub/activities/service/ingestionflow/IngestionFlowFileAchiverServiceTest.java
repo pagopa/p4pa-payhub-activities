@@ -102,7 +102,7 @@ class IngestionFlowFileAchiverServiceTest {
 	}
 
 	@Test
-	void testMoveToTargetAndCleanUp(@TempDir Path sourceDir) throws IOException {
+	void givenFilesWhenMoveToTargetAndCleanUpThenOk(@TempDir Path sourceDir) throws IOException {
 		// given
 		Path fileLocation = Files.createFile(sourceDir.resolve("testFile.txt"));
 		Path fileToDelete1 = Files.createFile(sourceDir.resolve("deleteMe1.txt"));
@@ -120,7 +120,7 @@ class IngestionFlowFileAchiverServiceTest {
 	}
 
 	@Test
-	void testMoveToTargetAndCleanUp_NoFilesToDelete(@TempDir Path sourceDir) throws IOException {
+	void givenFileWhenMoveToTargetAndCleanUpThenNoExtraFilesToDelete(@TempDir Path sourceDir) throws IOException {
 		// given
 		Path fileLocation = Files.createFile(sourceDir.resolve("testFile.txt"));
 
@@ -134,7 +134,7 @@ class IngestionFlowFileAchiverServiceTest {
 	}
 
 	@Test
-	void testMoveToTargetAndCleanUp_FileNotExists(@TempDir Path sourceDir) {
+	void givenNonExistentFileWhenMoveToTargetAndCleanUpThenIOException(@TempDir Path sourceDir) {
 		// given
 		Path nonExistentFile = sourceDir.resolve("nonExistent.txt");
 		// When & Then
