@@ -48,7 +48,7 @@ public class TreasuryOpi161MapperService implements BiFunction<FlussoGiornaleDiC
         OrganizationDTO organizationDTO = ingestionFlowFileDTO.getOrg();
 
         Date dataValutaRegione = movContoEvidenza.getDataValutaEnte().toGregorianCalendar().getTime();
-        ;
+
         if (dataValutaRegione == null)
           dataValutaRegione = movContoEvidenza.getDataMovimento().toGregorianCalendar().getTime();
 
