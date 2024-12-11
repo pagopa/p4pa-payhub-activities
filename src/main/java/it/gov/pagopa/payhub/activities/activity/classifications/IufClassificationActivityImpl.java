@@ -32,14 +32,14 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
      */
 
     @Override
-    public boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws Exception {
+    public boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws PaymentsClassificatioSaveException {
         boolean goodClassification = (paymentsClassificationDTO!=null);
         if (goodClassification) {
             try {
                 return paymentsClassificationDao.save(paymentsClassificationDTO);
             }
             catch (Exception e){
-                throw new PaymentsClassificatioSaveException("Error saving classification code: {]", paymentsClassificationDTO.getClassificationCode());
+                throw new PaymentsClassificatioSaveException("Error saving classification");
             }
         }
         return false;
