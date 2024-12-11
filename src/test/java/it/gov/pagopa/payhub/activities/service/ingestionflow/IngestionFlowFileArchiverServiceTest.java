@@ -22,20 +22,20 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class IngestionFlowFileAchiverServiceTest {
+class IngestionFlowFileArchiverServiceTest {
 	private static final String TEST_PASSWORD = "mockPassword";
 
 	@Mock
 	private ZipFileService zipFileServiceMock;
 
-	private IngestionFlowFileAchiverService service;
+	private IngestionFlowFileArchiverService service;
 
 	@TempDir
 	Path tempDir;
 
 	@BeforeEach
 	void setUp() {
-		service = new IngestionFlowFileAchiverService(tempDir.toString(), TEST_PASSWORD, zipFileServiceMock);
+		service = new IngestionFlowFileArchiverService(tempDir.toString(), TEST_PASSWORD, zipFileServiceMock);
 	}
 
 	@Test

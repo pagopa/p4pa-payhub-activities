@@ -20,7 +20,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  */
 @Lazy
 @Service
-public class IngestionFlowFileAchiverService {
+public class IngestionFlowFileArchiverService {
 	/**
 	 * The target directory used for storing processed files.
 	 */
@@ -33,9 +33,9 @@ public class IngestionFlowFileAchiverService {
 
 	private final ZipFileService zipFileService;
 
-	public IngestionFlowFileAchiverService(@Value("${stored-dir:/processed/}") String targetDirectory,
-	                                       @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
-	                                       ZipFileService zipFileService) {
+	public IngestionFlowFileArchiverService(@Value("${stored-dir:/processed/}") String targetDirectory,
+	                                        @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
+	                                        ZipFileService zipFileService) {
 		this.targetDirectory = targetDirectory;
 		this.dataCipherPsw = dataCipherPsw;
 		this.zipFileService = zipFileService;
