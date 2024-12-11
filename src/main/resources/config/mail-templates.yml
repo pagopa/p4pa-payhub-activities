@@ -15,5 +15,5 @@ email:
         {actualDate}"
     mailTextLoadOk: "File {fileName} caricato correttamente"
     mailTextLoadKo: "Errore caricamento file {fileName} \r\n \ 
-            Clicca sul link qui sotto per scaricare il file contenete gli errori: \
+            Clicca sul link qui sotto per scaricare il file contenente gli errori: \r\n \
             File errori: {errorFileLink}"
