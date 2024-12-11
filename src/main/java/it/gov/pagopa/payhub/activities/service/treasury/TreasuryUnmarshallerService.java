@@ -36,7 +36,7 @@ public class TreasuryUnmarshallerService {
    * @param xmlUnmarshallerService the xml unmarshalling service
    */
   public TreasuryUnmarshallerService(@Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd") Resource xsdSchemaResourceOpi14,
-                                     @Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd") Resource xsdSchemaResourceOpi161,
+                                     @Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd") Resource xsdSchemaResourceOpi161,
                                      XMLUnmarshallerService xmlUnmarshallerService) {
     try {
       this.jaxbContextOpi14 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class);
