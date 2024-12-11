@@ -51,7 +51,7 @@ public class SendMailService {
      * @param mailTo bean containing data to send
      * throws MessagingException if message is not sent
      */
-    public void sendMail(MailTo mailTo) throws MessagingException {
+    public boolean sendMail(MailTo mailTo) throws MessagingException {
         wrongData(mailTo);
         setMailSender();
         mailSender.send( mimeMessage -> {
@@ -64,6 +64,7 @@ public class SendMailService {
             message.setText(mailTo.getHtmlText(), true);
             log.debug("sending mail message");
         } );
+        return true;
     }
 
     /**

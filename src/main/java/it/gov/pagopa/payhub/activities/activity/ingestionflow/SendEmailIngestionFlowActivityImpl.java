@@ -79,13 +79,12 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
                 ! organizationDTO.getAdminEmail().equalsIgnoreCase(userInfoDTO.getEmail())) {
                     mailTo.setCc(new String[]{organizationDTO.getAdminEmail()});
             }
-            sendMailService.sendMail(mailTo);
+            return sendMailService.sendMail(mailTo);
         }
         catch (Exception e){
             log.error("Sending mail failed", e);
             return false;
         }
-        return true;
     }
 
     private MailTo configureMailFromIngestionFlow(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success)
