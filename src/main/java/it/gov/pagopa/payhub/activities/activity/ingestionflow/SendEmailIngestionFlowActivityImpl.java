@@ -42,7 +42,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     private final OrganizationService organizationService;
     private final SendMailService sendMailService;
     private final IngestionFlowFileDao ingestionFlowFileDao;
-    public static DateTimeFormatter MAIL_DATE_TIME_FORMATTER =  DateTimeFormatter.ofPattern("EEE, MMM dd yyyy, hh:mm:ss");
+    private static final DateTimeFormatter MAILDATETIMEFORMATTER =  DateTimeFormatter.ofPattern("EEE, MMM dd yyyy, hh:mm:ss");
 
     public SendEmailIngestionFlowActivityImpl(
             EmailTemplatesConfiguration emailTemplatesConfiguration,
@@ -134,7 +134,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
      */
     private Map<String, String> getMailParameters(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) {
         Map<String, String> mailMap = new HashMap<>();
-        mailMap.put("actualDate", MAIL_DATE_TIME_FORMATTER.format(LocalDateTime.now()));
+        mailMap.put("actualDate", MAILDATETIMEFORMATTER.format(LocalDateTime.now()));
         mailMap.put("totalRowsNumber", String.valueOf(ingestionFlowFileDTO.getNumTotalRows()));
         if (success) {
             mailMap.put("fileName", ingestionFlowFileDTO.getFileName());
