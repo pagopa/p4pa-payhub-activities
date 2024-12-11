@@ -154,6 +154,7 @@ tasks.register<Jar>("sourcesJar") {
 
 	from(sourceSets["main"].allSource)
 	archiveClassifier.set("sources")
+	dependsOn("openApiGenerateAuth")
 }
 
 tasks.register<Jar>("javadocJar") {
