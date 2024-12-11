@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
@@ -18,6 +19,7 @@ import java.io.IOException;
 
 @Lazy
 @Component
+@Slf4j
 public class TreasuryUnmarshallerService {
 
   private final JAXBContext jaxbContextOpi14;
@@ -38,12 +40,13 @@ public class TreasuryUnmarshallerService {
                                      XMLUnmarshallerService xmlUnmarshallerService) {
     try {
       this.jaxbContextOpi14 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class);
+      this.jaxbContextOpi161 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class);
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
       this.schemaOpi14 = schemaFactory.newSchema(xsdSchemaResourceOpi14.getURL());
-      this.jaxbContextOpi161 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class);
       this.schemaOpi161 = schemaFactory.newSchema(xsdSchemaResourceOpi161.getURL());
       this.xmlUnmarshallerService = xmlUnmarshallerService;
     } catch (JAXBException | SAXException | IOException e) {
+      log.error("Error while creating a new instance for TreasuryUnmarshallerService", e);
       throw new ActivitiesException("Error while creating a new instance for TreasuryUnmarshallerService");
     }
   }
