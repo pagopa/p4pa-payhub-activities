@@ -12,6 +12,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -38,7 +39,7 @@ class IngestionFlowFileAchiverServiceTest {
 	}
 
 	@Test
-	void givenSuccessfullConditionsWhenCompressArchiveFileCleanUpThenOk(@TempDir Path sourceDir) throws Exception {
+	void givenSuccessfullConditionsWhenCompressAndArchiveThenOk(@TempDir Path sourceDir) throws Exception {
 		//given
 		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
 		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
@@ -54,18 +55,15 @@ class IngestionFlowFileAchiverServiceTest {
 			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, mockZippedFile)).thenReturn(mockEncryptedFile.toFile());
 
 			// when
-			assertDoesNotThrow(
-				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir, "output"));
+			File result = service.compressAndArchive(mockFiles, zipFilePath);
 
-			Path targetFile = tempDir.resolve(mockEncryptedFile.getFileName());
 			//then
-			assertTrue(Files.exists(targetFile));
-			assertFalse(Files.exists(zipFilePath));
+			assertTrue(Files.exists(result.toPath()));
 		}
 	}
 
 	@Test
-	void givenExceptionOnEncryptionWhenCompressArchiveFileCleanUpThenThrowsIllegalStateException(@TempDir Path sourceDir) throws Exception {
+	void givenExceptionOnEncryptionWhenCompressAndArchiveThenThrowsIllegalStateException(@TempDir Path sourceDir) throws Exception {
 		//given
 		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
 		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
@@ -81,13 +79,13 @@ class IngestionFlowFileAchiverServiceTest {
 
 			// when then
 			assertThrows(IllegalStateException.class,
-				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir, "output"),
+				() -> service.compressAndArchive(mockFiles, zipFilePath),
 				"encryption failed");
 		}
 	}
 
 	@Test
-	void givenExceptionOnZippingWhenCompressArchiveFileCleanUpThenThrows(@TempDir Path sourceDir) throws Exception {
+	void givenExceptionOnZippingWhenCompressAndArchiveThenThrowsInvalidIngestionFileException(@TempDir Path sourceDir) throws Exception {
 		//given
 		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
 		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
@@ -99,7 +97,48 @@ class IngestionFlowFileAchiverServiceTest {
 
 			// when then
 			assertThrows(InvalidIngestionFileException.class,
-				() -> service.compressArchiveFileAndCleanUp(mockFiles, sourceDir, "output"),
+				() -> service.compressAndArchive(mockFiles, zipFilePath),
 				"zipping failed");
+	}
+
+	@Test
+	void testMoveToTargetAndCleanUp(@TempDir Path sourceDir) throws IOException {
+		// given
+		Path fileLocation = Files.createFile(sourceDir.resolve("testFile.txt"));
+		Path fileToDelete1 = Files.createFile(sourceDir.resolve("deleteMe1.txt"));
+		Path fileToDelete2 = Files.createFile(sourceDir.resolve("deleteMe2.txt"));
+
+		// When
+		service.moveToTargetAndCleanUp(fileLocation, fileToDelete1, fileToDelete2);
+
+		// Then
+		Path movedFile = tempDir.resolve(fileLocation.getFileName());
+		assertTrue(Files.exists(movedFile), "File should be moved to the target directory");
+		assertFalse(Files.exists(fileLocation), "Original file should be deleted");
+		assertFalse(Files.exists(fileToDelete1), "First file to delete should be deleted");
+		assertFalse(Files.exists(fileToDelete2), "Second file to delete should be deleted");
+	}
+
+	@Test
+	void testMoveToTargetAndCleanUp_NoFilesToDelete(@TempDir Path sourceDir) throws IOException {
+		// given
+		Path fileLocation = Files.createFile(sourceDir.resolve("testFile.txt"));
+
+		// When
+		service.moveToTargetAndCleanUp(fileLocation);
+
+		// Then
+		Path movedFile = tempDir.resolve(fileLocation.getFileName());
+		assertTrue(Files.exists(movedFile), "File should be moved to the target directory");
+		assertFalse(Files.exists(fileLocation), "Original file should be deleted");
+	}
+
+	@Test
+	void testMoveToTargetAndCleanUp_FileNotExists(@TempDir Path sourceDir) {
+		// given
+		Path nonExistentFile = sourceDir.resolve("nonExistent.txt");
+		// When & Then
+		assertThrows(IOException.class, () ->
+			service.moveToTargetAndCleanUp(nonExistentFile), "Expected IOException for non-existent file");
 	}
 }

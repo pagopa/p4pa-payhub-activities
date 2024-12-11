@@ -42,28 +42,32 @@ public class IngestionFlowFileAchiverService {
 	}
 
 	/**
-	 * Compresses a list of files into a ZIP archive, encrypts the archive, moves it to a target directory,
-	 * and cleans up the working directory.
+	 * Compresses the given list of files into a single archive and encrypts the result.
 	 *
-	 * @param files the list of files to compress.
-	 * @param sourcePath the source directory path.
-	 * @param outputFilename the name of the output ZIP file.
-	 * @throws IOException if an I/O error occurs during compression, encryption, moving, or cleanup.
+	 * @param files      the list of files to be compressed.
+	 * @param outputFile the path of the output compressed and encrypted file.
+	 * @return the encrypted file resulting from the compression and encryption process.
 	 */
-	public void compressArchiveFileAndCleanUp(List<Path> files, Path sourcePath, String outputFilename) throws IOException {
-		Path zipFilePath = sourcePath.resolve(outputFilename + ".zip");
-		File zipped = zipFileService.zipper(zipFilePath, files);
+	public File compressAndArchive(List<Path> files, Path outputFile) {
+		File zipped = zipFileService.zipper(outputFile, files);
+		return AESUtils.encrypt(dataCipherPsw, zipped);
+	}
 
-		File encryptedFile = AESUtils.encrypt(dataCipherPsw, zipped);
-
-		Path targetPath = Path.of(targetDirectory, encryptedFile.getName());
-		Files.createDirectories(targetPath.getParent());
-		Files.move(encryptedFile.toPath(), targetPath, REPLACE_EXISTING);
-
-		for (Path file : files) {
+	/**
+	 * Moves the specified file to a target directory and deletes additional specified files.
+	 *
+	 * @param fileLocation  the path of the file to move to the target directory.
+	 * @param workingPathsToDelete additional files to be deleted after the move.
+	 * @throws IOException if an I/O error occurs during file operations.
+	 */
+	public void moveToTargetAndCleanUp(Path fileLocation, Path... workingPathsToDelete) throws IOException {
+		Path target = fileLocation.getParent().resolve(targetDirectory);
+		Files.createDirectories(target);
+		Files.copy(fileLocation, target.resolve(fileLocation.toFile().getName()), REPLACE_EXISTING);
+		Files.delete(fileLocation);
+		for (Path file : workingPathsToDelete) {
 			Files.deleteIfExists(file);
 		}
-		Files.deleteIfExists(zipped.toPath());
 	}
 }
 

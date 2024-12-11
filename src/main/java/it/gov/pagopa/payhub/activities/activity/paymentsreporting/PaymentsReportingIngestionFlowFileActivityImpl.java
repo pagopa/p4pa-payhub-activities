@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,8 +65,9 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 			Pair<String, List<PaymentsReportingDTO>> pair = parseData(filePaths.get(0).toFile(), ingestionFlowFileDTO);
 			paymentsReportingDao.saveAll(pair.getRight());
+			Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
 			ingestionFlowFileAchiverService
-				.compressArchiveFileAndCleanUp(filePaths, Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+				.moveToTargetAndCleanUp(originalFilePath, filePaths.stream().toArray(Path[]::new));
 			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
