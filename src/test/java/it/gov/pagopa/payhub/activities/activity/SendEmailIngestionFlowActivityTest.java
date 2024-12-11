@@ -281,6 +281,8 @@ class SendEmailIngestionFlowActivityTest {
             case "password":
                 sendMailService  = new SendMailService(blank,blank,blank,password,blank,blank,blank,javaMailSender);
                 break;
+            default:
+                break;
         }
 
     }
