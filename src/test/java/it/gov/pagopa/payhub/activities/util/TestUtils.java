@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -8,6 +9,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 public class TestUtils {
@@ -31,4 +34,23 @@ public class TestUtils {
             .atZone(ZoneId.systemDefault())
             .toInstant()
     );
+
+    @Test
+    void testIsNotNullOrEmptyString(){
+        String value = "value";
+        Assertions.assertTrue(Utility.isNotNullOrEmpty(value));
+    }
+
+    @Test
+    void testIsNotEmptyString(){
+        String value = "xxx";
+        Assertions.assertTrue(Utility.isNotNullOrEmpty(value));
+    }
+
+    @Test
+    void testIsNullString(){
+        String value = "";
+        Assertions.assertTrue(Utility.isNullOrEmptyString(value));
+    }
+
 }
