@@ -5,32 +5,28 @@ import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 
-
+@SpringBootTest(
+  classes = {TreasuryUnmarshallerService.class, XMLUnmarshallerService.class},
+  webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@EnableConfigurationProperties
 @ExtendWith(MockitoExtension.class)
 class TreasuryUnmarshallerServiceTest {
 
-  private Resource xsdOpi14Resource;
-  private Resource xsdOpi161Resource;
+  @Autowired
   private TreasuryUnmarshallerService treasuryUnmarshallerService;
-
-  @BeforeEach
-  void setUp() {
-    XMLUnmarshallerService xmlUnmarshallerService = new XMLUnmarshallerService();
-    xsdOpi14Resource = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd");
-    xsdOpi161Resource = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd");
-    treasuryUnmarshallerService = new TreasuryUnmarshallerService(xsdOpi14Resource, xsdOpi161Resource, xmlUnmarshallerService);
-  }
 
   @Test
   void givenValidXmlWhenUnmarshalOpi14ThenOk() throws Exception {
@@ -87,7 +83,7 @@ class TreasuryUnmarshallerServiceTest {
     try(MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
       mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class))
               .thenThrow(new JAXBException("Simulated JAXBException"));
-      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(xsdOpi14Resource, xsdOpi161Resource, null));
+      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(null, null, null));
     }
   }
 
@@ -96,7 +92,7 @@ class TreasuryUnmarshallerServiceTest {
     try(MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
       mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
               .thenThrow(new JAXBException("Simulated JAXBException"));
-      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(xsdOpi14Resource, xsdOpi161Resource, null));
+      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(null, null, null));
     }
   }
 
@@ -107,6 +103,6 @@ class TreasuryUnmarshallerServiceTest {
     Mockito.when(mockResource.getURL()).thenThrow(new IOException("Simulated IOException"));
 
     // when then
-    Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(mockResource, xsdOpi161Resource, null));
+    Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(mockResource, null, null));
   }
 }
