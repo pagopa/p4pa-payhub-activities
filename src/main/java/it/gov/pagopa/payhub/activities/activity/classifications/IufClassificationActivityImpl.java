@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.PaymentsClassificationDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsClassificationDTO;
-import it.gov.pagopa.payhub.activities.exception.PaymentsClassificatioSaveException;
+import it.gov.pagopa.payhub.activities.exception.PaymentsClassificationSaveException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -20,11 +20,6 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         this.paymentsClassificationDao = paymentsClassificationDao;
     }
 
-    @Override
-    public boolean classify(String organizationId, String iuf) {
-        return true;
-    }
-
     /**
      * save payment classification
      * @param paymentsClassificationDTO dto containing data to save
@@ -32,15 +27,15 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
      */
 
     @Override
-    public boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws PaymentsClassificatioSaveException {
+    public boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws PaymentsClassificationSaveException {
         boolean goodClassification = (paymentsClassificationDTO!=null);
         if (goodClassification) {
             try {
                 return paymentsClassificationDao.save(paymentsClassificationDTO);
             }
-            catch (PaymentsClassificatioSaveException e){
+            catch (PaymentsClassificationSaveException e){
                 log.error("Error saving classification: "+e.getMessage());
-                throw new PaymentsClassificatioSaveException("Error saving classification");
+                throw new PaymentsClassificationSaveException("Error saving classification");
             }
         }
         return false;

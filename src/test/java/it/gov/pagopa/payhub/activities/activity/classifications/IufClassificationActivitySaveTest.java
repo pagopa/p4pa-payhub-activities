@@ -39,9 +39,8 @@ class IufClassificationActivitySaveTest {
 
     @Test
     void saveClassificationThenFailed() {
-        paymentsClassificationDTO = null;
         try {
-           assertFalse(iufClassificationActivity.save(paymentsClassificationDTO));
+           assertFalse(iufClassificationActivity.save(null));
         } catch (Exception e){
             System.out.println("Error saving classification: "+e.getMessage());
         }
