@@ -1,6 +1,3 @@
-spring:
-  config:
-    import: mail-templates.yml
 activity:
   mail:
     host: "\${MYPAY4_SPRING_MAIL_HOST:}"

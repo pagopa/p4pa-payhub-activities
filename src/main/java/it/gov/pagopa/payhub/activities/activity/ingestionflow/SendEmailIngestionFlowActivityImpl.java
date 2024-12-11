@@ -115,8 +115,8 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
 
         MailTo mailTo = new MailTo();
         mailTo.setParams(getMailParameters(ingestionFlowFileDTO, success));
-        String mailSubject = StringSubstitutor.replace(mailText, mailTo.getParams(), "{", "}");
-        textMap.put("text", mailSubject);
+        String mailSubject = StringSubstitutor.replace(subject, mailTo.getParams(), "{", "}");
+        textMap.put("text", mailText);
         String htmlText = StringSubstitutor.replace(body, mailTo.getParams(), "{", "}");
         String newHtmlText = StringSubstitutor.replace(htmlText, textMap, "{", "}");
         String plainText = Jsoup.clean(newHtmlText, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false));
