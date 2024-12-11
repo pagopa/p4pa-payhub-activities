@@ -20,27 +20,29 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         this.paymentsClassificationDao = paymentsClassificationDao;
     }
 
-    /**
-     *
-     * @param paymentsClassificationDTO dto containing data to save
-     * @return true if the payments classification save is successful, false otherwise
-     */
-    public boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws Exception {
-        if (paymentsClassificationDTO!=null) {
-            try {
-                boolean saveFlag = paymentsClassificationDao.save(paymentsClassificationDTO);
-                return saveFlag;
-            }
-            catch (Exception e){
-                throw new PaymentsClassificatioSaveException("Error saving classification code: "+paymentsClassificationDTO.getClassificationCode());
-            }
-        }
-        return false;
-    }
-
     @Override
     public boolean classify(String organizationId, String iuf) {
         return true;
+    }
+
+    /**
+     * save payment classification
+     * @param paymentsClassificationDTO dto containing data to save
+     * @return true if the payments classification save is successful, false otherwise
+     */
+
+    @Override
+    public boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws Exception {
+        boolean goodClassification = (paymentsClassificationDTO!=null);
+        if (goodClassification) {
+            try {
+                return paymentsClassificationDao.save(paymentsClassificationDTO);
+            }
+            catch (Exception e){
+                throw new PaymentsClassificatioSaveException("Error saving classification code: {]", paymentsClassificationDTO.getClassificationCode());
+            }
+        }
+        return false;
     }
 
 }

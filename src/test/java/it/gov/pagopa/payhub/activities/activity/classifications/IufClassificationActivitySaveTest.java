@@ -2,11 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.PaymentsClassificationDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsClassificationDTO;
-import it.gov.pagopa.payhub.activities.exception.PaymentsClassificatioSaveException;
-import jakarta.validation.constraints.AssertTrue;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,8 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-
+import static it.gov.pagopa.payhub.activities.utility.faker.ClassificationFaker.buildPaymentsClassification;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -24,17 +19,19 @@ class IufClassificationActivitySaveTest {
 
     @Mock
     private PaymentsClassificationDao paymentsClassificationDao;
-    @Mock
-    private PaymentsClassificationDTO classificationDTO;
     @InjectMocks
     private IufClassificationActivityImpl iufClassificationActivity;
 
+    @Mock
+    private PaymentsClassificationDTO paymentsClassificationDTO;
+
     @Test
     void saveClassificationThenSuccess() {
-        buildDto();
+        paymentsClassificationDTO = buildPaymentsClassification();
         try {
-            boolean result = iufClassificationActivity.save(classificationDTO);
-            assertTrue(result);
+            Mockito.when(paymentsClassificationDao.save(paymentsClassificationDTO))
+                    .thenReturn(true);
+            assertTrue(iufClassificationActivity.save(paymentsClassificationDTO));
         } catch (Exception e){
             System.out.println("Error saving classification");
         }
@@ -42,26 +39,12 @@ class IufClassificationActivitySaveTest {
 
     @Test
     void saveClassificationThenFailed() {
-        buildDto();
-        boolean result = false;
+        paymentsClassificationDTO = null;
         try {
-            result = iufClassificationActivity.save(null);
+           assertFalse(iufClassificationActivity.save(paymentsClassificationDTO));
         } catch (Exception e){
-            System.out.println("Error saving classification");
+            System.out.println("Error saving classification: "+e.getMessage());
         }
-        assertFalse(result);
     }
 
-    private void buildDto()  {
-        classificationDTO = PaymentsClassificationDTO
-                .builder()
-                .transferId(1L)
-                .classificationCode("CLASSIFICATION_CODE")
-                .creationDate(LocalDate.now())
-                .organizationId(1L)
-                .paymentNotifyId(1L)
-                .paymentReportingId(1L)
-                .treasuryId(1L)
-                .build();
-    }
 }

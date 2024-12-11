@@ -10,9 +10,10 @@ public class PaymentsClassificatioSaveException extends ActivitiesException {
 	/**
 	 * Constructs a new {@code PaymentsClassificatioSaveException} with the specified detail message.
 	 *
-	 * @param message the detail message explaining the cause of the exception.
+	 * @param message            the detail message explaining the cause of the exception.
+	 * @param classificationCode
 	 */
-	public PaymentsClassificatioSaveException(String message) {
+	public PaymentsClassificatioSaveException(String message, String classificationCode) {
 		super(message);
 	}
 }
