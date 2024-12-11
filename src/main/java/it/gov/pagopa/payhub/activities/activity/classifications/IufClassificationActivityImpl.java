@@ -23,22 +23,26 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     /**
      * save payment classification
      * @param paymentsClassificationDTO dto containing data to save
-     * @return true if the payments classification save is successful, false otherwise
+     * @return true if the payments classification save is successful, Exception otherwise
      */
 
+
+    /**
+     *
+     * @param paymentsClassificationDTO dto containing data to save
+     * @return true if the payments classification save is successful, Exception otherwise
+     * @throws PaymentsClassificationSaveException in case of errors
+     */
     @Override
     public boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws PaymentsClassificationSaveException {
         boolean goodClassification = (paymentsClassificationDTO!=null);
         if (goodClassification) {
-            try {
-                return paymentsClassificationDao.save(paymentsClassificationDTO);
-            }
-            catch (PaymentsClassificationSaveException e){
-                log.error("Error saving classification: "+e.getMessage());
-                throw new PaymentsClassificationSaveException("Error saving classification");
-            }
+            return paymentsClassificationDao.save(paymentsClassificationDTO);
         }
-        return false;
+        else {
+            log.error("Null payment classification not valid");
+            throw new PaymentsClassificationSaveException("Null payment classification not valid");
+        }
     }
 
 }
