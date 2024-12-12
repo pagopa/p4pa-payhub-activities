@@ -48,11 +48,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
       List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
 
-      ingestionFlowFiles.forEach(path -> {
-        File ingestionFlowFile = path.toFile();
-        log.debug("file from zip archive with name {} loaded successfully ", ingestionFlowFile.getName());
-
-      });
+     log.debug("Successfully retrieved the following files related to the ingestionFlowFileId {}: {}", ingestionFlowFileId, ingestionFlowFiles);
 
     } catch (Exception e) {
       log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
