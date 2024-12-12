@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryRetrieveIufActivityResult;
 import it.gov.pagopa.payhub.activities.exception.RetrieveIufFromTesException;
-import it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,5 +72,3 @@ class RetrieveIufFromTesActivityTest {
                 retrieveIufFromTesActivity.searchByIuf(iufToSearch), "List of treasury null or empty");
     }
 }
-
-
