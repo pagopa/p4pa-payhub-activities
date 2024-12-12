@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.*;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
 
-    private final String ingestionflowFileType;
+    private final IngestionFlowFileType ingestionflowFileType;
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final TreasuryDao treasuryDao;
     private final FlussoTesoreriaPIIDao flussoTesoreriaPIIDao;
@@ -43,12 +44,12 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private final TreasuryValidatorService treasuryValidatorService;
 
 
-    public TreasuryOpiIngestionActivityImpl(@Value("${ingestion-flow-file-type:O}") String ingestionflowFileType,
+    public TreasuryOpiIngestionActivityImpl(
                                             IngestionFlowFileDao ingestionFlowFileDao, TreasuryDao treasuryDao, FlussoTesoreriaPIIDao flussoTesoreriaPIIDao,
                                             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
                                             TreasuryUnmarshallerService treasuryUnmarshallerService,
                                             TreasuryOpi14MapperService treasuryOpi14MapperService, TreasuryOpi161MapperService treasuryOpi161MapperService, TreasuryValidatorService treasuryValidatorService) {
-        this.ingestionflowFileType = ingestionflowFileType;
+        this.ingestionflowFileType = IngestionFlowFileType.OPI;
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.treasuryDao = treasuryDao;
         this.flussoTesoreriaPIIDao = flussoTesoreriaPIIDao;
@@ -61,12 +62,11 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
 
     @Override
-    public TreasuryIngestionResultDTO processFile(Long ingestionFlowFileId) {
-        List<IufIuvDTO> iufIuvList = new ArrayList<>();
+    public TreasuryIufResult processFile(Long ingestionFlowFileId) {
+        List<String> iufIuvList = new ArrayList<>();
         List<Path> ingestionFlowFiles = new ArrayList<>();
         IngestionFlowFileDTO ingestionFlowFileDTO = null;
-        AtomicReference<TreasuryIngestionResultDTO> treasuryIngestionResultDTO = new AtomicReference<>();
-        int zipFileSize;
+        AtomicReference<TreasuryIufResult> treasuryIufResult = new AtomicReference<>();
 
         try {
             ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
@@ -75,7 +75,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-            return new TreasuryIngestionResultDTO(Collections.emptyList(), false);
+            return new TreasuryIufResult(Collections.emptyList(), false);
         }
 
         if (ingestionFlowFiles != null && !ingestionFlowFiles.isEmpty()) {
@@ -86,12 +86,12 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                 File ingestionFlowFile = path.toFile();
                 log.debug("file from zip archive with name {} loaded successfully ", ingestionFlowFile.getName());
 
-                treasuryIngestionResultDTO.set(parseData(ingestionFlowFile, finalIngestionFlowFileDTO, finalIngestionFlowFiles.size() ));
+                treasuryIufResult.set(parseData(ingestionFlowFile, finalIngestionFlowFileDTO, finalIngestionFlowFiles.size() ));
 
 
             });
         }
-        return treasuryIngestionResultDTO.get();
+        return treasuryIufResult.get();
     }
 
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
@@ -109,10 +109,10 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                 .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
     }
 
-    private TreasuryIngestionResultDTO parseData(File ingestionFlowFile, IngestionFlowFileDTO finalIngestionFlowFileDTO, int zipFileSize) {
+    private TreasuryIufResult parseData(File ingestionFlowFile, IngestionFlowFileDTO finalIngestionFlowFileDTO, int zipFileSize) {
         Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> treasuryDtoMap = null;
         String versione = null;
-        List<IufIuvDTO> iufIuvList = new ArrayList<>();
+        List<String> iufList = new ArrayList<>();
         boolean success = true;
 
         it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa flussoGiornaleDiCassa14 = null;
@@ -137,10 +137,10 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             versione = TreasuryValidatorService.v161;
 
         assert versione != null;
-        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
-          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
-          throw new RuntimeException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " versione " + versione);
-        }
+//        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
+//          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
+//          throw new RuntimeException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " versione " + versione);
+//        }
 
         treasuryDtoMap = switch (versione) {
             case TreasuryValidatorService.v14 ->
@@ -157,15 +157,11 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             TreasuryDTO treasuryDTO = pair.getLeft();
             treasuryDTO.setPersonalDataId(idFlussoTesoreriaPiiId);
             treasuryDao.insert(treasuryDTO);
-            iufIuvList.add(IufIuvDTO.builder()
-                    .iuf(treasuryDTO.getCodIdUnivocoFlusso())
-                    .iuv(treasuryDTO.getCodIdUnivocoVersamento())
-                    .build()
-            );
+            iufList.add(treasuryDTO.getCodIdUnivocoFlusso());
         });
 
 
-        return new TreasuryIngestionResultDTO(iufIuvList, success);
+        return new TreasuryIufResult(iufList, success);
     }
 
 

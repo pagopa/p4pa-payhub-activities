@@ -6,7 +6,8 @@ import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.FlussoTesoreriaPIIDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIngestionResultDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi14MapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi161MapperService;
@@ -53,7 +54,7 @@ public class TreasuryOpiIngestionActivityTest {
 
   @BeforeEach
   void setUp() {
-    treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(VALID_INGESTION_FLOW_TYPE,
+    treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(
             ingestionFlowFileDao,
             treasuryDao,
             flussoTesoreriaPIIDao,
@@ -67,8 +68,8 @@ public class TreasuryOpiIngestionActivityTest {
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
   private static final Long NOT_FOUND_INGESTION_FLOW_ID = 8L;
   private static final Long INVALID_INGESTION_FLOW_ID = 9L;
-  private static final String VALID_INGESTION_FLOW_TYPE = "VALID_TYPE";
-  private static final String INVALID_INGESTION_FLOW_TYPE = "INVALID_TYPE";
+  private static final IngestionFlowFileType VALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.OPI;
+  private static final IngestionFlowFileType INVALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
   private static final Path VALID_INGESTION_FLOW_PATH = Path.of("VALID_PATH");
   private static final String VALID_INGESTION_FLOW_FILE = "VALID_FILE";
   private static final String VALID_INGESTION_FLOW_IUF = "VALID_IUF";
@@ -123,17 +124,16 @@ public class TreasuryOpiIngestionActivityTest {
     }
 
     //when
-    TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(VALID_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(VALID_INGESTION_FLOW_ID);
 
     //verify
     Assertions.assertTrue(result.isSuccess());
-    Assertions.assertNotNull(result.getIufIuvs());
-    Assertions.assertEquals(2, result.getIufIuvs().size());
+    Assertions.assertNotNull(result.getIufs());
+    Assertions.assertEquals(2, result.getIufs().size());
     Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(VALID_INGESTION_FLOW_ID);
     Mockito.verify(ingestionFlowFileRetrieverService, Mockito.times(1)).retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE);
     for (int i = 0; i < VALID_FILE_PATH_LIST.size(); i++) {
-      Assertions.assertEquals(VALID_INGESTION_FLOW_IUF, result.getIufIuvs().get(i).getIuf());
-      Assertions.assertEquals(VALID_IUV_LIST.get(i), result.getIufIuvs().get(i).getIuv());
+      Assertions.assertEquals(VALID_INGESTION_FLOW_IUF, result.getIufs());
       Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi14(VALID_FILE_PATH_LIST.get(i).toFile());
       Mockito.verify(treasuryOpi14MapperService, Mockito.times(1)).apply(VALID_FLUSSO_OPI14_LIST.get(i), VALID_INGESTION_FLOW.orElseThrow());
       Mockito.verify(treasuryDao, Mockito.times(1)).insert(VALID_TREASURY_MAP.get(KEY_MAP).get(i).getLeft());
@@ -146,12 +146,12 @@ public class TreasuryOpiIngestionActivityTest {
     Mockito.when(ingestionFlowFileDao.findById(NOT_FOUND_INGESTION_FLOW_ID)).thenReturn(Optional.empty());
 
     //when
-    TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(NOT_FOUND_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(NOT_FOUND_INGESTION_FLOW_ID);
 
     //verify
     Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufIuvs());
-    Assertions.assertEquals(0, result.getIufIuvs().size());
+    Assertions.assertNotNull(result.getIufs());
+    Assertions.assertEquals(0, result.getIufs().size());
     Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryDao, ingestionFlowFileRetrieverService, treasuryUnmarshallerService, treasuryOpi14MapperService);
   }
@@ -162,12 +162,12 @@ public class TreasuryOpiIngestionActivityTest {
     Mockito.when(ingestionFlowFileDao.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(INVALID_INGESTION_FLOW);
 
     //when
-    TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(INVALID_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(INVALID_INGESTION_FLOW_ID);
 
     //verify
     Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufIuvs());
-    Assertions.assertEquals(0, result.getIufIuvs().size());
+    Assertions.assertNotNull(result.getIufs());
+    Assertions.assertEquals(0, result.getIufs().size());
     Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryDao, ingestionFlowFileRetrieverService, treasuryUnmarshallerService, treasuryOpi14MapperService);
   }
