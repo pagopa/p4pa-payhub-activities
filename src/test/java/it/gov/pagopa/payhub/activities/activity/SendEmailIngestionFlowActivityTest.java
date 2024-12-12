@@ -218,42 +218,42 @@ class SendEmailIngestionFlowActivityTest {
         Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
     }
 
-
     @Test
     void sendEmailIngestionOkValidUserValidFlowHostSuccess() {
         Long ingestionFlowFileId = 100L;
-        createMailServiceData("host");
-        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
-        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
-        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
+        String param = "host";
+        sendEmailWithOneParam(ingestionFlowFileId, param);
     }
 
     @Test
     void sendEmailIngestionOkValidUserValidFlowPortSuccess() {
         Long ingestionFlowFileId = 100L;
-        createMailServiceData("port");
-        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
-        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
-        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
+        String param = "port";
+        sendEmailWithOneParam(ingestionFlowFileId, param);
     }
 
     @Test
     void sendEmailIngestionOkValidUserValidFlowUsernameSuccess() {
         Long ingestionFlowFileId = 100L;
-        createMailServiceData("username");
-        Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
-        Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
-        Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
+        String param = "username";
+        sendEmailWithOneParam(ingestionFlowFileId, param);
     }
 
     @Test
     void sendEmailIngestionOkValidUserValidFlowPasswordSuccess() {
         Long ingestionFlowFileId = 100L;
-        createMailServiceData("password");
+        String param = "password";
+        sendEmailWithOneParam(ingestionFlowFileId, param);
+    }
+
+
+    void sendEmailWithOneParam(Long ingestionFlowFileId, String param) {
+        createMailServiceData(param);
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
     }
+
 
     private void createMailServiceData() {
         createMailServiceData("blank");
