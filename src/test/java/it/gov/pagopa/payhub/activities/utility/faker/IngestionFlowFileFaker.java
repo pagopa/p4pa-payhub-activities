@@ -23,7 +23,7 @@ public class IngestionFlowFileFaker {
                 .flagActive(true)
                 .operatorName("operatorName")
                 .flagSpontaneous(Boolean.TRUE)
-                .filePathName("filePathName")
+                .filePath("filePathName")
                 .fileName("fileName")
                 .pdfGenerated(2L)
                 .codRequestToken("codRequestToken")
