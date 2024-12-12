@@ -16,6 +16,7 @@ public class IngestionFlowFileDTO implements Serializable {
 
     private Long ingestionFlowFileId;
     private String flowFileType;
+    private String mappedExternalUserId;
     private int version;
     private OrganizationDTO org;
     private String status;
@@ -32,4 +33,5 @@ public class IngestionFlowFileDTO implements Serializable {
     private Long pdfGenerated;
     private String codRequestToken;
     private String codError;
+    private String discardedFileName;
 }
