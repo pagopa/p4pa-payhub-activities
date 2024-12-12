@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,42 +220,15 @@ class SendEmailIngestionFlowActivityTest {
         Assertions.assertFalse(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, false));
     }
 
-    @Test
-    void sendEmailIngestionOkValidUserValidFlowHostSuccess() {
-        Long ingestionFlowFileId = 100L;
-        String param = "host";
-        sendEmailWithOneParam(ingestionFlowFileId, param);
-    }
-
-    @Test
-    void sendEmailIngestionOkValidUserValidFlowPortSuccess() {
-        Long ingestionFlowFileId = 100L;
-        String param = "port";
-        sendEmailWithOneParam(ingestionFlowFileId, param);
-    }
-
-    @Test
-    void sendEmailIngestionOkValidUserValidFlowUsernameSuccess() {
-        Long ingestionFlowFileId = 100L;
-        String param = "username";
-        sendEmailWithOneParam(ingestionFlowFileId, param);
-    }
-
-    @Test
-    void sendEmailIngestionOkValidUserValidFlowPasswordSuccess() {
-        Long ingestionFlowFileId = 100L;
-        String param = "password";
-        sendEmailWithOneParam(ingestionFlowFileId, param);
-    }
-
-
-    void sendEmailWithOneParam(Long ingestionFlowFileId, String param) {
+    @ParameterizedTest
+    @ValueSource(strings = {"host","port", "username", "password"})
+    void sendEmailWithOneParam(String param) {
+        Long ingestionFlowFileId = 10L;
         createMailServiceData(param);
         Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(validIngestionFlowFileDTO));
         Mockito.when(userAuthorizationService.getUserInfo(validIngestionFlowFileDTO.getOrg().getIpaCode(), validUserInfoDTO.getMappedExternalUserId())).thenReturn(validUserInfoDTO);
         Assertions.assertTrue(sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, true));
     }
-
 
     private void createMailServiceData() {
         createMailServiceData("blank");
