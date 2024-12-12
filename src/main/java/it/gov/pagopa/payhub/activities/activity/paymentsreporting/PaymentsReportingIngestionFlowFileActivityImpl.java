@@ -150,7 +150,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * Delete the specified file if not null.
 	 *
 	 * @param file2Delete the file to delete.
-	 * @throws IOException if an error occurs during directory deletion.
+	 * @throws IOException if an error occurs during deletion.
 	 */
 	private void deletion(File file2Delete) {
 		if(file2Delete != null) {
