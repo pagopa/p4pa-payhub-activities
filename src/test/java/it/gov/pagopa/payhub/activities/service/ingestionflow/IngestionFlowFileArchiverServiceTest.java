@@ -12,11 +12,11 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -31,11 +31,11 @@ class IngestionFlowFileArchiverServiceTest {
 	private IngestionFlowFileArchiverService service;
 
 	@TempDir
-	Path tempDir;
+	Path targetDir;
 
 	@BeforeEach
 	void setUp() {
-		service = new IngestionFlowFileArchiverService(tempDir.toString(), TEST_PASSWORD, zipFileServiceMock);
+		service = new IngestionFlowFileArchiverService(TEST_PASSWORD, zipFileServiceMock);
 	}
 
 	@Test
@@ -43,22 +43,30 @@ class IngestionFlowFileArchiverServiceTest {
 		//given
 		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
 		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
-		List<Path> mockFiles = List.of(file1, file2);
+		List<Path> files = List.of(file1, file2);
 
 		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
 		File mockZippedFile = zipFilePath.toFile();
 		Path mockEncryptedFile = Files.copy(zipFilePath, sourceDir.resolve(zipFilePath.getFileName() + AESUtils.CIPHER_EXTENSION));
+		Path moved = Files.createFile(targetDir.resolve("output.zip" + AESUtils.CIPHER_EXTENSION));
 
-		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenReturn(mockZippedFile);
+		when(zipFileServiceMock.zipper(zipFilePath, files)).thenReturn(mockZippedFile);
+			assertTrue(Files.exists(mockEncryptedFile));
 
-		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class);
+		     MockedStatic<Path> mockPath = mockStatic(Path.class)) {
+
 			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, mockZippedFile)).thenReturn(mockEncryptedFile.toFile());
+			mockPath.when(() -> Files.copy(mockEncryptedFile, targetDir, REPLACE_EXISTING))
+				.thenReturn(moved);
 
 			// when
-			File result = service.compressAndArchive(mockFiles, zipFilePath);
+			service.compressAndArchive(files, zipFilePath, targetDir);
 
 			//then
-			assertTrue(Files.exists(result.toPath()));
+			assertFalse(zipFilePath.toFile().exists(), "zipped file should be deleted");
+			assertFalse(mockEncryptedFile.toFile().exists(), "encrypted file should be deleted from source directory");
+			assertTrue(targetDir.resolve("output.zip" + AESUtils.CIPHER_EXTENSION).toFile().exists(), "Success");
 		}
 	}
 
@@ -79,7 +87,7 @@ class IngestionFlowFileArchiverServiceTest {
 
 			// when then
 			assertThrows(IllegalStateException.class,
-				() -> service.compressAndArchive(mockFiles, zipFilePath),
+				() -> service.compressAndArchive(mockFiles, zipFilePath, targetDir),
 				"encryption failed");
 		}
 	}
@@ -90,55 +98,14 @@ class IngestionFlowFileArchiverServiceTest {
 		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
 		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
 		List<Path> mockFiles = List.of(file1, file2);
-
+;
 		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
 
 		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenThrow(InvalidIngestionFileException.class);
 
 			// when then
 			assertThrows(InvalidIngestionFileException.class,
-				() -> service.compressAndArchive(mockFiles, zipFilePath),
+				() -> service.compressAndArchive(mockFiles, zipFilePath, targetDir),
 				"zipping failed");
-	}
-
-	@Test
-	void givenFilesWhenMoveToTargetAndCleanUpThenOk(@TempDir Path sourceDir) throws IOException {
-		// given
-		Path fileLocation = Files.createFile(sourceDir.resolve("testFile.txt"));
-		Path fileToDelete1 = Files.createFile(sourceDir.resolve("deleteMe1.txt"));
-		Path fileToDelete2 = Files.createFile(sourceDir.resolve("deleteMe2.txt"));
-
-		// When
-		service.moveToTargetAndCleanUp(fileLocation, fileToDelete1, fileToDelete2);
-
-		// Then
-		Path movedFile = tempDir.resolve(fileLocation.getFileName());
-		assertTrue(Files.exists(movedFile), "File should be moved to the target directory");
-		assertFalse(Files.exists(fileLocation), "Original file should be deleted");
-		assertFalse(Files.exists(fileToDelete1), "First file to delete should be deleted");
-		assertFalse(Files.exists(fileToDelete2), "Second file to delete should be deleted");
-	}
-
-	@Test
-	void givenFileWhenMoveToTargetAndCleanUpThenNoExtraFilesToDelete(@TempDir Path sourceDir) throws IOException {
-		// given
-		Path fileLocation = Files.createFile(sourceDir.resolve("testFile.txt"));
-
-		// When
-		service.moveToTargetAndCleanUp(fileLocation);
-
-		// Then
-		Path movedFile = tempDir.resolve(fileLocation.getFileName());
-		assertTrue(Files.exists(movedFile), "File should be moved to the target directory");
-		assertFalse(Files.exists(fileLocation), "Original file should be deleted");
-	}
-
-	@Test
-	void givenNonExistentFileWhenMoveToTargetAndCleanUpThenIOException(@TempDir Path sourceDir) {
-		// given
-		Path nonExistentFile = sourceDir.resolve("nonExistent.txt");
-		// When & Then
-		assertThrows(IOException.class, () ->
-			service.moveToTargetAndCleanUp(nonExistentFile), "Expected IOException for non-existent file");
 	}
 }
