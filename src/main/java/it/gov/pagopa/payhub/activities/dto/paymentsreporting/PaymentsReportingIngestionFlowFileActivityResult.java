@@ -17,4 +17,6 @@ public class PaymentsReportingIngestionFlowFileActivityResult {
     private List<String> iufs;
     /** Success flag for the operation */
     private boolean success;
+    /** the error description */
+    private String errorDescription;
 }
