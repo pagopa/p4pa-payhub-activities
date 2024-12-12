@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
@@ -27,7 +28,7 @@ import java.util.List;
 @Lazy
 @Component
 public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsReportingIngestionFlowFileActivity {
-	private final String ingestionflowFileType;
+	private final IngestionFlowFileType ingestionflowFileType;
 	private final IngestionFlowFileDao ingestionFlowFileDao;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 	private final FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService;
@@ -35,14 +36,13 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private final PaymentsReportingMapperService paymentsReportingMapperService;
 	private final PaymentsReportingDao paymentsReportingDao;
 
-	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}")String ingestionflowFileType,
-	                                                      IngestionFlowFileDao ingestionFlowFileDao,
+	public PaymentsReportingIngestionFlowFileActivityImpl(IngestionFlowFileDao ingestionFlowFileDao,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
 	                                                      PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService,
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
 	                                                      PaymentsReportingDao paymentsReportingDao) {
-		this.ingestionflowFileType = ingestionflowFileType;
+		this.ingestionflowFileType = IngestionFlowFileType.PAYMENTS_REPORTING;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
