@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.dao;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 
 import java.util.List;
