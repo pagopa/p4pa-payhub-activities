@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.classifications;
 
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IufClassificationDTO {
-    private List<ReportingDTO> reportingDTOList;
+    private List<PaymentsReportingDTO> paymentsReportingDTOS;
     private boolean success;
 }

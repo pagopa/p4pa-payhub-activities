@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ReportingDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationDTO;
-import it.gov.pagopa.payhub.activities.dto.classifications.ReportingDTO;
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,28 +30,29 @@ class IufClassificationActivityTest {
 
     @Test
     void givenClassificationThenSuccess() {
-        String organizationId = "1";
+        Long organizationId = 1L;
         String iuf = "IUF_TO_SEARCH";
 
-        ReportingDTO firstClassification =
-                ReportingDTO.builder()
-                    .iuv("IUV")
-                    .orgId(Long.valueOf(organizationId))
-                    .receiptId(2L)
-                    .amount(10L)
-                    .transferId(123L)
-                    .transferIndex(1L)
+        PaymentsReportingDTO firstClassification =
+                PaymentsReportingDTO
+                        .builder()
+                        .organizationId(organizationId)
+                        .creditorReferenceId(iuf)
+                        .regulationId("REGULATION_ID")
+                        .amountPaidCents(123L)
+                        .transferIndex(1)
+                        .flowIdentifierCode("FLOW")
                     .build();
 
-        List<ReportingDTO> expectedClassificationDTOS = new ArrayList<>();
+        List<PaymentsReportingDTO> expectedClassificationDTOS = new ArrayList<>();
         expectedClassificationDTOS.add(firstClassification);
 
         IufClassificationDTO expectedIufClassificationDTO = IufClassificationDTO.builder()
-                .reportingDTOList(expectedClassificationDTOS)
+                .paymentsReportingDTOS(expectedClassificationDTOS)
                 .success(true)
                 .build();
 
-        when(reportingDao.findById(organizationId, iuf)).thenReturn(expectedClassificationDTOS)
+        when(reportingDao.findByOrganizationIdFlowIdentifierCode(organizationId, iuf)).thenReturn(expectedClassificationDTOS)
             .thenReturn(expectedClassificationDTOS);
 
         IufClassificationDTO result = iufClassificationActivity.classify(organizationId, iuf);
@@ -61,27 +62,27 @@ class IufClassificationActivityTest {
 
     @Test
     void givenClassificationOrganizationBlankThenFailed() {
-        String organizationId = "";
-        String iuf = "IUF_TO_SEARCH";
+        Long organizationId = 0L;
+        String flowIdentifierCode = "IUF_TO_SEARCH";
 
         IufClassificationDTO expectedIufClassificationDTO = IufClassificationDTO.builder()
-                .reportingDTOList(new ArrayList<>())
+                .paymentsReportingDTOS(new ArrayList<>())
                 .success(false)
                 .build();
-        IufClassificationDTO result = iufClassificationActivity.classify(organizationId, iuf);
+        IufClassificationDTO result = iufClassificationActivity.classify(organizationId, flowIdentifierCode);
         assertEquals(expectedIufClassificationDTO, result);
     }
 
     @Test
     void givenClassificationIufBlankThenFailed() {
-        String organizationId = "10";
-        String iuf = "";
+        Long organizationId = 10L;
+        String flowIdentifierCode = "";
 
         IufClassificationDTO expectedIufClassificationDTO = IufClassificationDTO.builder()
-                .reportingDTOList(new ArrayList<>())
+                .paymentsReportingDTOS(new ArrayList<>())
                 .success(false)
                 .build();
-        IufClassificationDTO result = iufClassificationActivity.classify(organizationId, iuf);
+        IufClassificationDTO result = iufClassificationActivity.classify(organizationId, flowIdentifierCode);
         assertEquals(expectedIufClassificationDTO, result);
     }
 

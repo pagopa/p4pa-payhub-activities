@@ -11,8 +11,8 @@ public interface IufClassificationActivity {
      * Processes IUF classification based on the provided parameters.
      *
      * @param organizationId the unique identifier of the organization
-     * @param iuf            the unique identifier of the payment reporting flow (IUF)
+     * @param flowIdentifierCode the unique identifier of the payment reporting flow (IUF)
      * @return do IufClassificationDTO containing list of classifications and boolean value for process OK or KO
      */
-    IufClassificationDTO classify(String organizationId, String iuf);
+    IufClassificationDTO classify(Long organizationId, String flowIdentifierCode);
 }
