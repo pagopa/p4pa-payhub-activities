@@ -12,6 +12,7 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIn
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
@@ -23,8 +24,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PaymentsReportingIngestionFlowFileActivityImplTest {
 	private static final IngestionFlowFileType FLOW_FILE_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
+    private static final String TARGET_DIR = "/target/";
 	@Mock
 	private IngestionFlowFileDao ingestionFlowFileDaoMock;
 	@Mock
@@ -49,23 +51,27 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	private PaymentsReportingMapperService paymentsReportingMapperServiceMock;
 	@Mock
 	private PaymentsReportingDao paymentsReportingDaoMock;
+	@Mock
+	private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
 
 	private PaymentsReportingIngestionFlowFileActivityImpl ingestionActivity;
 
-	@TempDir
-	private File tempDir;
 	private CtFlussoRiversamento ctFlussoRiversamento;
 
+	@TempDir
+	Path workingDir;
 
 	@BeforeEach
 	void setUp() {
 		ingestionActivity = new PaymentsReportingIngestionFlowFileActivityImpl(
+			TARGET_DIR,
 			ingestionFlowFileDaoMock,
 			ingestionFlowFileRetrieverServiceMock,
 			flussoRiversamentoUnmarshallerServiceMock,
 			paymentsReportingIngestionFlowFileValidatorServiceMock,
 			paymentsReportingMapperServiceMock,
-			paymentsReportingDaoMock
+			paymentsReportingDaoMock,
+			ingestionFlowFileArchiverServiceMock
 		);
 
 		CtIdentificativoUnivocoPersonaG ctIdentificativoUnivocoPersonaG = new CtIdentificativoUnivocoPersonaG();
@@ -83,25 +89,28 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
-			.filePathName("/valid/path")
+			.filePath(workingDir.toString())
 			.flowFileType(FLOW_FILE_TYPE)
 			.build();
-		File file = new File(tempDir, "testFlussoRiversamento.xml");
-		List<Path> mockedListPath = List.of(file.toPath());
+		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePath()).resolve(mockFlowDTO.getFileName()));
+		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
 		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(List.of(ctFlussoRiversamento.getIdentificativoFlusso()), true);
+			new PaymentsReportingIngestionFlowFileActivityResult(List.of(ctFlussoRiversamento.getIdentificativoFlusso()), true, null);
 
 		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
-		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(file)).thenReturn(ctFlussoRiversamento);
+			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePath()), mockFlowDTO.getFileName());
+		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(filePath.toFile())).thenReturn(ctFlussoRiversamento);
 
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
 		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
+		doNothing().when(ingestionFlowFileArchiverServiceMock)
+			.archive(mockedListPath, Path.of(mockFlowDTO.getFilePath(), TARGET_DIR));
+
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
 
@@ -131,7 +140,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
-			.filePathName("/valid/path")
+			.filePath(workingDir.toString())
 			.flowFileType(FLOW_FILE_TYPE)
 			.build();
 
@@ -139,7 +148,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 
 		doThrow(new RuntimeException("Setup process failed"))
 			.when(ingestionFlowFileRetrieverServiceMock)
-			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
+			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePath()), mockFlowDTO.getFileName());
 
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
@@ -148,7 +157,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		assertFalse(result.isSuccess());
 		verify(ingestionFlowFileDaoMock, times(1)).findById(ingestionFlowFileId);
 		verify(ingestionFlowFileRetrieverServiceMock, times(1))
-			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
+			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePath()), mockFlowDTO.getFileName());
 	}
 
 	@Test
@@ -158,18 +167,18 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
-			.filePathName("/valid/path")
+			.filePath(workingDir.toString())
 			.flowFileType(FLOW_FILE_TYPE)
 			.build();
-		File file = new File(tempDir, "testFlussoRiversamento.xml");
-		List<Path> mockedListPath = List.of(file.toPath());
+		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePath()).resolve(mockFlowDTO.getFileName()));
+		List<Path> mockedListPath = List.of(filePath);
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "error occured");
 
 		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
-		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(file)).thenThrow(ActivitiesException.class);
+			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePath()), mockFlowDTO.getFileName());
+		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(filePath.toFile())).thenThrow(new ActivitiesException("error occured"));
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
 
@@ -201,20 +210,20 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
-			.filePathName("/valid/path")
+			.filePath(workingDir.toString())
 			.flowFileType(FLOW_FILE_TYPE)
 			.org(OrganizationDTO.builder().orgFiscalCode("0").build())
 			.build();
-		File file = new File(tempDir, "testFlussoRiversamento.xml");
-		List<Path> mockedListPath = List.of(file.toPath());
+		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePath()).resolve(mockFlowDTO.getFileName()));
+		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "invalid");
 
 		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
-		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(file)).thenReturn(ctFlussoRiversamento);
+			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePath()), mockFlowDTO.getFileName());
+		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(filePath.toFile())).thenReturn(ctFlussoRiversamento);
 		doThrow(new InvalidIngestionFlowFileDataException("invalid"))
 			.when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
 
@@ -232,27 +241,65 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
-			.filePathName("/valid/path")
+			.filePath(workingDir.toString())
 			.flowFileType(FLOW_FILE_TYPE)
 			.build();
-		File file = new File(tempDir, "testFlussoRiversamento.xml");
-		List<Path> mockedListPath = List.of(file.toPath());
+		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePath()).resolve(mockFlowDTO.getFileName()));
+		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
 		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "saving fails");
 
 		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePathName()), mockFlowDTO.getFileName());
-		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(file)).thenReturn(ctFlussoRiversamento);
+			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePath()), mockFlowDTO.getFileName());
+		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(filePath.toFile())).thenReturn(ctFlussoRiversamento);
 
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
 		doThrow(new ActivitiesException("saving fails"))
 			.when(paymentsReportingDaoMock).saveAll(dtoList);
+		// When
+		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
+
+		// Then
+		assertEquals(expected, result);
+	}
+
+	@Test
+	void givenIOExceptionWhenProcessFileThenFails() throws IOException {
+		// Given
+		long ingestionFlowFileId = 123L;
+		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
+			.ingestionFlowFileId(ingestionFlowFileId)
+			.fileName("valid-file.zip")
+			.filePath(workingDir.toString())
+			.flowFileType(FLOW_FILE_TYPE)
+			.build();
+		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePath()).resolve(mockFlowDTO.getFileName()));
+		List<Path> mockedListPath = List.of(filePath);
+		ctFlussoRiversamento = new CtFlussoRiversamento();
+		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
+		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
+
+		PaymentsReportingIngestionFlowFileActivityResult expected =
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "error occured");
+
+		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
+		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
+			.retrieveAndUnzipFile(Path.of(mockFlowDTO.getFilePath()), mockFlowDTO.getFileName());
+		when(flussoRiversamentoUnmarshallerServiceMock.unmarshal(filePath.toFile())).thenReturn(ctFlussoRiversamento);
+
+		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateOrganization(ctFlussoRiversamento, mockFlowDTO);
+		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
+		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
+
+		doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
+			.archive(mockedListPath, Path.of(mockFlowDTO.getFilePath(), TARGET_DIR));
+
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
 
