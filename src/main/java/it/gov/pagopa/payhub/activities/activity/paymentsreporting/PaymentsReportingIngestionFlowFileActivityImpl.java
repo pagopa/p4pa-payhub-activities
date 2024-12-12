@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Lazy
@@ -62,7 +63,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 	@Override
 	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) throws IOException {
-		File retrievedFile = null;
+		Optional<File> retrievedFile = Optional.empty();
 		try {
 			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
@@ -76,7 +77,9 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true, null);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
-			Files.deleteIfExists(retrievedFile.toPath());
+			if (retrievedFile.isPresent()) {
+				Files.delete(retrievedFile.get().toPath());
+			}
 			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, e.getMessage());
 		}
 	}
@@ -107,10 +110,10 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * @return the extracted {@link List} from the ingestion flow
 	 * @throws IOException if there is an error during file retrieval or extraction
 	 */
-	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
+	private Optional<File> retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
 		List<Path> paths = ingestionFlowFileRetrieverService
 			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
-		return paths.get(0).toFile();
+		return Optional.of(paths.get(0).toFile());
 	}
 
 	/**
@@ -122,8 +125,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * @return a {@link Pair} containing the flow file identifier and the list of {@link PaymentsReportingDTO}
 	 * @throws IllegalArgumentException if the file content does not conform to the expected structure
 	 */
-	private Pair<String, List<PaymentsReportingDTO>> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
-		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
+	private Pair<String, List<PaymentsReportingDTO>> parseData(Optional<File> ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
+		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile.get());
 		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
 
 		paymentsReportingIngestionFlowFileValidatorService.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO);
