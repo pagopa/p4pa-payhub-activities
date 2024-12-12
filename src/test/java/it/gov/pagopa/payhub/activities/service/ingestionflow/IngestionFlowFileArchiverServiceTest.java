@@ -91,7 +91,7 @@ class IngestionFlowFileArchiverServiceTest {
 		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
 		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
 		List<Path> mockFiles = List.of(file1, file2);
-;
+
 		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
 
 		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenThrow(InvalidIngestionFileException.class);
