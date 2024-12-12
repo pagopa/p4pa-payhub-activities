@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.IufIuvDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIngestionResultDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
@@ -26,23 +26,22 @@ import java.util.*;
 @Lazy
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
-  private final String ingestionflowFileType;
+  private final IngestionFlowFileType ingestionflowFileType;
   private final IngestionFlowFileDao ingestionFlowFileDao;
   private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 
 
-  public TreasuryOpiIngestionActivityImpl(@Value("${ingestion-flow-file-type:O}") String ingestionflowFileType,
-                                          IngestionFlowFileDao ingestionFlowFileDao,
+  public TreasuryOpiIngestionActivityImpl(IngestionFlowFileDao ingestionFlowFileDao,
                                           IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService) {
-    this.ingestionflowFileType = ingestionflowFileType;
+    this.ingestionflowFileType = IngestionFlowFileType.OPI;
     this.ingestionFlowFileDao = ingestionFlowFileDao;
     this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
   }
 
 
   @Override
-  public TreasuryIngestionResultDTO processFile(Long ingestionFlowFileId) {
-    List<IufIuvDTO> iufIuvList = new ArrayList<>();
+  public TreasuryIufResult processFile(Long ingestionFlowFileId) {
+    List<String> iufIuvList = new ArrayList<>();
     try {
       IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
@@ -52,9 +51,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
     } catch (Exception e) {
       log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-      return new TreasuryIngestionResultDTO(Collections.emptyList(), false);
+      return new TreasuryIufResult(Collections.emptyList(), false);
     }
-    return new TreasuryIngestionResultDTO(iufIuvList, true);
+    return new TreasuryIufResult(iufIuvList, true);
   }
 
 

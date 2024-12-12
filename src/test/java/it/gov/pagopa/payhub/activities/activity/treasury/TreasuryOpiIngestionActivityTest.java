@@ -2,7 +2,8 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIngestionResultDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,16 +31,15 @@ class TreasuryOpiIngestionActivityTest {
 
   @BeforeEach
   void setUp() {
-    treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(VALID_INGESTION_FLOW_TYPE,
-            ingestionFlowFileDao,
+    treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(ingestionFlowFileDao,
             ingestionFlowFileRetrieverService);
   }
 
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
   private static final Long NOT_FOUND_INGESTION_FLOW_ID = 8L;
   private static final Long INVALID_INGESTION_FLOW_ID = 9L;
-  private static final String VALID_INGESTION_FLOW_TYPE = "VALID_TYPE";
-  private static final String INVALID_INGESTION_FLOW_TYPE = "INVALID_TYPE";
+  private static final IngestionFlowFileType VALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.OPI;
+  private static final IngestionFlowFileType INVALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
   private static final Path VALID_INGESTION_FLOW_PATH = Path.of("VALID_PATH");
   private static final String VALID_INGESTION_FLOW_FILE = "VALID_FILE";
   private static final String VALID_INGESTION_FLOW_IUF = "VALID_IUF";
@@ -67,11 +67,11 @@ class TreasuryOpiIngestionActivityTest {
     Mockito.when(ingestionFlowFileRetrieverService.retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE)).thenReturn(VALID_FILE_PATH_LIST);
 
     //when
-    TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(VALID_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(VALID_INGESTION_FLOW_ID);
 
     //verify
-    Assertions.assertNotNull(result.getIufIuvs());
-    Assertions.assertEquals(result.getIufIuvs(), new ArrayList<>());
+    Assertions.assertNotNull(result.getIufs());
+    Assertions.assertEquals(result.getIufs(), new ArrayList<>());
     Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(VALID_INGESTION_FLOW_ID);
     Mockito.verify(ingestionFlowFileRetrieverService, Mockito.times(1)).retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE);
   }
@@ -82,12 +82,12 @@ class TreasuryOpiIngestionActivityTest {
     Mockito.when(ingestionFlowFileDao.findById(NOT_FOUND_INGESTION_FLOW_ID)).thenReturn(Optional.empty());
 
     //when
-    TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(NOT_FOUND_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(NOT_FOUND_INGESTION_FLOW_ID);
 
     //verify
     Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufIuvs());
-    Assertions.assertEquals(0, result.getIufIuvs().size());
+    Assertions.assertNotNull(result.getIufs());
+    Assertions.assertEquals(0, result.getIufs().size());
     Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
   }
 
@@ -97,12 +97,12 @@ class TreasuryOpiIngestionActivityTest {
     Mockito.when(ingestionFlowFileDao.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(INVALID_INGESTION_FLOW);
 
     //when
-    TreasuryIngestionResultDTO result = treasuryOpiIngestionActivity.processFile(INVALID_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(INVALID_INGESTION_FLOW_ID);
 
     //verify
     Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufIuvs());
-    Assertions.assertEquals(0, result.getIufIuvs().size());
+    Assertions.assertNotNull(result.getIufs());
+    Assertions.assertEquals(0, result.getIufs().size());
     Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
   }
 
