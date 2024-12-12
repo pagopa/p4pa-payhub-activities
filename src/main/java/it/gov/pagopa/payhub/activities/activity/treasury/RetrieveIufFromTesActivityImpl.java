@@ -41,7 +41,7 @@ public class RetrieveIufFromTesActivityImpl implements RetrieveIufFromTesActivit
         List<TreasuryDTO> treasuryDTOS = treasuryDao.searchByIuf(iuf);
         if (CollectionUtils.isEmpty(treasuryDTOS)) {
             log.error("List of treasury null or empty");
-            throw new RetrieveIufFromTesException("List of classifications null or empty");
+            throw new RetrieveIufFromTesException("List of treasury null or empty");
         }
         treasuryRetrieveIufActivityResult.setReportingDTOList(treasuryDTOS);
         treasuryRetrieveIufActivityResult.setSuccess(true);
