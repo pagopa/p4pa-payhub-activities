@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,27 +30,33 @@ import java.util.List;
 @Component
 public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsReportingIngestionFlowFileActivity {
 	private final String ingestionflowFileType;
+	private final String archiveDirectory;
 	private final IngestionFlowFileDao ingestionFlowFileDao;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 	private final FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService;
 	private final PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService;
 	private final PaymentsReportingMapperService paymentsReportingMapperService;
 	private final PaymentsReportingDao paymentsReportingDao;
+	private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
 
-	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}")String ingestionflowFileType,
+	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}") String ingestionflowFileType,
+	                                                      @Value("${archive-dir:/processed/}") String archiveDirectory,
 	                                                      IngestionFlowFileDao ingestionFlowFileDao,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
 	                                                      PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService,
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
-	                                                      PaymentsReportingDao paymentsReportingDao) {
+	                                                      PaymentsReportingDao paymentsReportingDao,
+	                                                      IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
 		this.ingestionflowFileType = ingestionflowFileType;
+		this.archiveDirectory = archiveDirectory;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
 		this.paymentsReportingIngestionFlowFileValidatorService = paymentsReportingIngestionFlowFileValidatorService;
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
 		this.paymentsReportingDao = paymentsReportingDao;
+		this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
 	}
 
 	@Override
@@ -56,10 +64,12 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 		try {
 			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
-			File ingestionFlowFile = retrieveFile(ingestionFlowFileDTO);
+			File retrievedFile = retrieveFile(ingestionFlowFileDTO);
 
-			Pair<String, List<PaymentsReportingDTO>> pair = parseData(ingestionFlowFile, ingestionFlowFileDTO);
+			Pair<String, List<PaymentsReportingDTO>> pair = parseData(retrievedFile, ingestionFlowFileDTO);
+
 			paymentsReportingDao.saveAll(pair.getRight());
+			archive(ingestionFlowFileDTO);
 
 			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true);
 		} catch (Exception e) {
@@ -91,13 +101,13 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * extracting it from the specified file path.
 	 *
 	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing file details
-	 * @return the extracted {@link File} from the ingestion flow
+	 * @return the extracted {@link List} from the ingestion flow
 	 * @throws IOException if there is an error during file retrieval or extraction
 	 */
 	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-		List<Path> ingestionFlowFiles = ingestionFlowFileRetrieverService
+		List<Path> paths = ingestionFlowFileRetrieverService
 			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-		return ingestionFlowFiles.get(0).toFile();
+		return paths.get(0).toFile();
 	}
 
 	/**
@@ -117,5 +127,18 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 		List<PaymentsReportingDTO> dtoList = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 		return Pair.of(ctFlussoRiversamento.getIdentificativoFlusso(), dtoList);
+	}
+
+	/**
+	 * Archives the file specified in the given {@link IngestionFlowFileDTO}. The file is moved to
+	 * the archive directory located within the same file path.
+	 *
+	 * @param ingestionFlowFileDTO the DTO containing details of the file to be archived.
+	 * @throws IOException if an error occurs during file movement or directory creation.
+	 */
+	private void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
+		Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+		Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePathName(), archiveDirectory);
+		ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
 	}
 }
