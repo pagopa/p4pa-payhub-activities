@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -48,18 +47,12 @@ class IngestionFlowFileArchiverServiceTest {
 		Path zipFilePath = Files.createFile(sourceDir.resolve("output.zip"));
 		File mockZippedFile = zipFilePath.toFile();
 		Path mockEncryptedFile = Files.copy(zipFilePath, sourceDir.resolve(zipFilePath.getFileName() + AESUtils.CIPHER_EXTENSION));
-		Path moved = Files.createFile(targetDir.resolve("output.zip" + AESUtils.CIPHER_EXTENSION));
 
 		when(zipFileServiceMock.zipper(zipFilePath, files)).thenReturn(mockZippedFile);
 			assertTrue(Files.exists(mockEncryptedFile));
 
-		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class);
-		     MockedStatic<Path> mockPath = mockStatic(Path.class)) {
-
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
 			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, mockZippedFile)).thenReturn(mockEncryptedFile.toFile());
-			mockPath.when(() -> Files.copy(mockEncryptedFile, targetDir, REPLACE_EXISTING))
-				.thenReturn(moved);
-
 			// when
 			service.compressAndArchive(files, zipFilePath, targetDir);
 
@@ -103,9 +96,9 @@ class IngestionFlowFileArchiverServiceTest {
 
 		when(zipFileServiceMock.zipper(zipFilePath, mockFiles)).thenThrow(InvalidIngestionFileException.class);
 
-			// when then
-			assertThrows(InvalidIngestionFileException.class,
-				() -> service.compressAndArchive(mockFiles, zipFilePath, targetDir),
-				"zipping failed");
+		// when then
+		assertThrows(InvalidIngestionFileException.class,
+			() -> service.compressAndArchive(mockFiles, zipFilePath, targetDir),
+			"zipping failed");
 	}
 }

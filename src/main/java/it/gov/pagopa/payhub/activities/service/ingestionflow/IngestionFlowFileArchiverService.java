@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
+import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +62,7 @@ public class IngestionFlowFileArchiverService {
 	public void archive(List<Path> files2Archive, Path targetPath) throws IOException {
 		Files.createDirectories(targetPath);
 		for (Path file : files2Archive) {
-			Files.copy(file, targetPath, REPLACE_EXISTING);
+			Files.copy(file, targetPath.resolve(file.toFile().getName()), REPLACE_EXISTING);
 			Files.deleteIfExists(file);
 		}
 	}
