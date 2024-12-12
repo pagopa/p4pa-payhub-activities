@@ -70,6 +70,6 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
   private  List<Path> retrieveFiles(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
 
       return ingestionFlowFileRetrieverService
-            .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+            .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
   }
 }

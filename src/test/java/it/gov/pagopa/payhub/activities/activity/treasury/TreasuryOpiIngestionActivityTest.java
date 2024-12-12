@@ -46,7 +46,7 @@ class TreasuryOpiIngestionActivityTest {
   private static final Optional<IngestionFlowFileDTO> VALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
           .ingestionFlowFileId(VALID_INGESTION_FLOW_ID)
           .flowFileType(VALID_INGESTION_FLOW_TYPE)
-          .filePathName(VALID_INGESTION_FLOW_PATH.toString())
+          .filePath(VALID_INGESTION_FLOW_PATH.toString())
           .fileName(VALID_INGESTION_FLOW_FILE)
           .iuf(VALID_INGESTION_FLOW_IUF)
           .build());
