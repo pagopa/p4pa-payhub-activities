@@ -119,7 +119,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	}
 
 	@Test
-	void givenNotExistentIngestionFlowFileWhenProcessFileThenFails() throws IOException {
+	void givenNotExistentIngestionFlowFileWhenProcessFileThenFails() {
 		// Given
 		long ingestionFlowFileId = 123L;
 		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenThrow(new RuntimeException("Flow retriever failed"));
@@ -187,7 +187,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	}
 
 	@Test
-	void givenWrongTypeIngestionFlowFileWhenProcessFileThenFails() throws IOException {
+	void givenWrongTypeIngestionFlowFileWhenProcessFileThenFails() {
 		// Given
 		long ingestionFlowFileId = 123L;
 		IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
