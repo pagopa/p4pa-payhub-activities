@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 
+import java.io.IOException;
+
 /**
  * Interface for the PaymentsReportingIngestionFlowFileActivity.
  * Defines methods for processing payments reporting files based on an IngestionFlowFile ID.
@@ -13,5 +15,5 @@ public interface PaymentsReportingIngestionFlowFileActivity {
      * @param ingestionFlowFileId the unique identifier related to the file to process.
      * @return {@link PaymentsReportingIngestionFlowFileActivityResult} containing the list of IUFs and status.
      */
-    PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId);
+    PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) throws IOException;
 }

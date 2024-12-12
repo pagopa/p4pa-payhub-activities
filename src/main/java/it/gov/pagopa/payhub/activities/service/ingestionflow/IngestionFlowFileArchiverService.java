@@ -61,7 +61,7 @@ public class IngestionFlowFileArchiverService {
 	public void archive(List<Path> files2Archive, Path targetPath) throws IOException {
 		Files.createDirectories(targetPath);
 		for (Path file : files2Archive) {
-			Files.copy(file, targetPath.resolve(file.toFile().getName()), REPLACE_EXISTING);
+			Files.copy(file, targetPath.resolve(file.getFileName()), REPLACE_EXISTING);
 			Files.deleteIfExists(file);
 		}
 	}

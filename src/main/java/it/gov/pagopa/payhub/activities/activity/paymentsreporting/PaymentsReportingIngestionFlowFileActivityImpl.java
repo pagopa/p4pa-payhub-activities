@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -40,7 +41,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
 
 	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}") String ingestionflowFileType,
-	                                                      @Value("${archive-dir:/processed/}") String archiveDirectory,
+	                                                      @Value("${archive-relative-path:processed/}") String archiveRelativePathDirectory,
 	                                                      IngestionFlowFileDao ingestionFlowFileDao,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
@@ -49,7 +50,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	                                                      PaymentsReportingDao paymentsReportingDao,
 	                                                      IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
 		this.ingestionflowFileType = ingestionflowFileType;
-		this.archiveDirectory = archiveDirectory;
+		this.archiveDirectory = archiveRelativePathDirectory;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
@@ -60,11 +61,12 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	}
 
 	@Override
-	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
+	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) throws IOException {
+		File retrievedFile = null;
 		try {
 			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
-			File retrievedFile = retrieveFile(ingestionFlowFileDTO);
+			retrievedFile = retrieveFile(ingestionFlowFileDTO);
 
 			Pair<String, List<PaymentsReportingDTO>> pair = parseData(retrievedFile, ingestionFlowFileDTO);
 
@@ -74,6 +76,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
+			Files.deleteIfExists(retrievedFile.toPath());
 			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
 		}
 	}
@@ -106,7 +109,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 */
 	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
 		List<Path> paths = ingestionFlowFileRetrieverService
-			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
 		return paths.get(0).toFile();
 	}
 
@@ -137,8 +140,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * @throws IOException if an error occurs during file movement or directory creation.
 	 */
 	private void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-		Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
-		Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePathName(), archiveDirectory);
+		Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePath(), ingestionFlowFileDTO.getFileName());
+		Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePath(), archiveDirectory);
 		ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
 	}
 }
