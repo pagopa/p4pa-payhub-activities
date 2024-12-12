@@ -73,11 +73,11 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 			paymentsReportingDao.saveAll(pair.getRight());
 			archive(ingestionFlowFileDTO);
 
-			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true);
+			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true, null);
 		} catch (Exception e) {
 			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
 			Files.deleteIfExists(retrievedFile.toPath());
-			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false);
+			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, e.getMessage());
 		}
 	}
 
