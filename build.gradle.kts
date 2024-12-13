@@ -57,6 +57,7 @@ val jacksonModuleVersion = "2.18.1"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
+val openCsvVersion = "5.9"
 
 
 dependencies {
@@ -86,6 +87,9 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 
+	//openCsv
+	implementation("com.opencsv:opencsv:$openCsvVersion")
+
 	//jaxb
 	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
@@ -94,8 +98,12 @@ dependencies {
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
 	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
 
+
+
 	jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
 	jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
+
+
 }
 
 

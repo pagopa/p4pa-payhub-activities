@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.FlussoTesoreriaPIIDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi14MapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi161MapperService;
@@ -53,6 +54,11 @@ public class TreasuryOpiIngestionActivityTest {
 
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
 
+  private String archiveDirectory;
+
+  @Mock
+  private IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+
   @BeforeEach
   void setUp() {
     treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(
@@ -63,7 +69,9 @@ public class TreasuryOpiIngestionActivityTest {
             treasuryUnmarshallerService,
             treasuryOpi14MapperService,
             treasuryOpi161MapperService,
-            treasuryValidatorService);
+            treasuryValidatorService,
+            ingestionFlowFileArchiverService,
+            archiveDirectory);
   }
 
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
