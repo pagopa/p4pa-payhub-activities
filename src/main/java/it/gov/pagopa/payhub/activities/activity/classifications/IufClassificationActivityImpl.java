@@ -67,13 +67,6 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
 
     /**
      *
-     * @param treasuryId primary key of Treasury
-     * @throws PaymentsClassificationSaveException specific exception
-     */
-
-
-    /**
-     *
      * @param paymentsReportingSize size of the list of payments reporting found
      * @param treasuryId primary key of Treasury
      * @throws PaymentsClassificationSaveException exception
