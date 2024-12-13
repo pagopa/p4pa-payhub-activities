@@ -54,7 +54,7 @@ public class TreasuryOpiIngestionActivityTest {
 
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
 
-  private String archiveDirectory;
+  private static final String TARGET_DIR = "/target/";
 
   @Mock
   private IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
@@ -71,7 +71,7 @@ public class TreasuryOpiIngestionActivityTest {
             treasuryOpi161MapperService,
             treasuryValidatorService,
             ingestionFlowFileArchiverService,
-            archiveDirectory);
+            TARGET_DIR);
   }
 
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
