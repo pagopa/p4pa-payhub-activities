@@ -1,49 +1,94 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import it.gov.pagopa.payhub.activities.dao.PaymentsClassificationDao;
-import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsClassificationDTO;
-import lombok.extern.slf4j.Slf4j;
+import it.gov.pagopa.payhub.activities.dao.ClassifyDao;
+import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
+import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
+import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
+import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.exception.PaymentsClassificationSaveException;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.ClassificationFaker.buildPaymentsClassification;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@Slf4j
+import static it.gov.pagopa.payhub.activities.utility.faker.ClassificationFaker.buildClassifyDTO;
+import static it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker.buildPaymentsReportingDTO;
+import static it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker.buildTreasuryDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class IufClassificationActivitySaveTest {
 
     @Mock
-    private PaymentsClassificationDao paymentsClassificationDao;
-    @InjectMocks
-    private IufClassificationActivityImpl iufClassificationActivity;
-
+    private PaymentsReportingDao paymentsReportingDao;
     @Mock
-    private PaymentsClassificationDTO paymentsClassificationDTO;
+    TreasuryDao treasuryDao;
+    @Mock
+    private ClassifyDao classifyDao;
 
-    @Test
-    void saveClassificationThenSuccess() {
-        paymentsClassificationDTO = buildPaymentsClassification();
-        try {
-            Mockito.when(paymentsClassificationDao.save(paymentsClassificationDTO))
-                    .thenReturn(true);
-            assertTrue(iufClassificationActivity.save(paymentsClassificationDTO));
-        } catch (Exception e){
-            System.out.println("Error saving classification");
-        }
+    private IufClassificationActivity iufClassificationActivity;
+
+    @BeforeEach
+    void init() {
+        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingDao, treasuryDao, classifyDao);
     }
 
     @Test
-    void saveClassificationThenFailed() {
-        try {
-           assertFalse(iufClassificationActivity.save(null));
-        } catch (Exception e){
-            System.out.println("Error saving classification: "+e.getMessage());
-        }
+    void saveClassificationSuccess() {
+        PaymentsReportingDTO expectedReportingDTO = buildPaymentsReportingDTO();
+        List<PaymentsReportingDTO> expectedPaymentsReportingDTOS = new ArrayList<>();
+        expectedPaymentsReportingDTOS.add(expectedReportingDTO);
+
+        TreasuryDTO expectedTreasuryDTO = buildTreasuryDTO();
+        List<TreasuryDTO> expectedTreasuryDTOS = new ArrayList<>();
+        expectedTreasuryDTOS.add(expectedTreasuryDTO);
+
+        IufClassificationActivityResult expectedIufClassificationActivityResult =
+                IufClassificationActivityResult
+                        .builder()
+                        .paymentsReportingDTOS(expectedPaymentsReportingDTOS)
+                        .success(true)
+                        .build();
+        String flowIdentifierCode = expectedTreasuryDTO.getCodIdUnivocoFlusso();
+        Long expectedOrganizationId = expectedReportingDTO.getOrganizationId();
+
+        when(paymentsReportingDao.findByOrganizationIdFlowIdentifierCode(expectedOrganizationId, flowIdentifierCode))
+                .thenReturn(expectedPaymentsReportingDTOS);
+
+        when(treasuryDao.searchByIuf(flowIdentifierCode))
+                .thenReturn(expectedTreasuryDTOS);
+
+        IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.save(expectedOrganizationId, flowIdentifierCode);
+        assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
     }
 
+    @Test
+    void saveClassificationIufNullFailed() {
+        PaymentsReportingDTO expectedReportingDTO = buildPaymentsReportingDTO();
+        Long expectedOrganizationId = expectedReportingDTO.getOrganizationId();
+        PaymentsClassificationSaveException paymentsClassificationSaveException =
+                assertThrows(PaymentsClassificationSaveException.class, () ->
+                        iufClassificationActivity.save(expectedOrganizationId, null));
+        assertEquals("iuf may be not null or blank", paymentsClassificationSaveException.getMessage());
+    }
+
+    @Test
+    void saveClassificationOrganizationIdNullFailed() {
+        TreasuryDTO expectedTreasuryDTO = buildTreasuryDTO();
+        String flowIdentifierCode = expectedTreasuryDTO.getCodIdUnivocoFlusso();
+
+        PaymentsClassificationSaveException paymentsClassificationSaveException =
+                assertThrows(PaymentsClassificationSaveException.class, () ->
+                        iufClassificationActivity.save(null, flowIdentifierCode));
+        assertEquals("organization id may be not null", paymentsClassificationSaveException.getMessage());
+    }
 }
+

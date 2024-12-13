@@ -1,16 +1,18 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsClassificationDTO;
-import it.gov.pagopa.payhub.activities.exception.PaymentsClassificationSaveException;
+import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 
 /**
  * Interface for defining an activity to process payment reporting classifications based on IUF.
  */
 public interface IufClassificationActivity {
+
     /**
+     * Save classification based on the provided parameters.
      *
-     * @param paymentsClassificationDTO dto containing data to save
-     * @return true if the payments classification save is successful, false otherwise
+     * @param organizationId the unique identifier of the organization
+     * @param iuf            the unique identifier of the payment reporting flow (IUF)
+     * @return IufClassificationActivityResult containing PaymentsReportingDTO list and success flag
      */
-    boolean save(PaymentsClassificationDTO paymentsClassificationDTO) throws PaymentsClassificationSaveException;
+    IufClassificationActivityResult save(Long organizationId, String iuf);
 }
