@@ -29,6 +29,7 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
      * @return boolean true for a successful deletion otherwise false
      */
     public boolean deleteClassificationByIuf(String iuf, ClassifyDTO classifyDTO) throws ClearClassifyIufException {
+        boolean deletedSuccessfully = true;
         String classification = classifyDTO.getClassificationCode();
         verifyParameters(iuf, classifyDTO.getClassificationCode());
 
@@ -36,12 +37,12 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
             try {
                 classifyDao.deleteClassificationByIuf(treasuryDTO.getCodIdUnivocoFlusso(), classification);
             }
-            catch (Exception e) {
+            catch (ClearClassifyIufException ex) {
                 log.error("Error deleting classification");
-                return false;
+                deletedSuccessfully = false;
             }
         }
-        return true;
+        return deletedSuccessfully;
     }
 
     /**
