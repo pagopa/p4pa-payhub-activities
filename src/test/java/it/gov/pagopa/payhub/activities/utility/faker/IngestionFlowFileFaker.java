@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 
 import java.math.BigInteger;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class IngestionFlowFileFaker {
@@ -30,8 +31,7 @@ public class IngestionFlowFileFaker {
                 .codRequestToken("codRequestToken")
                 .codError("codError")
                 .pspIdentifier("PspId")
-                .flowDateTime(now)
-                .state(new BigInteger("999"))
+                .flowDateTime(now.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .fileSourceCode("FileSourceCode")
                 .discardFileName("DiscardFileName")
                 .build();
