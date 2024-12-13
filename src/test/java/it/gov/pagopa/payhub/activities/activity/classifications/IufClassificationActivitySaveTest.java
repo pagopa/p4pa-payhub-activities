@@ -65,7 +65,7 @@ class IufClassificationActivitySaveTest {
         when(treasuryDao.searchByIuf(flowIdentifierCode))
                 .thenReturn(expectedTreasuryDTOS);
 
-        IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.save(expectedOrganizationId, flowIdentifierCode);
+        IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classify(expectedOrganizationId, flowIdentifierCode);
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
     }
 
@@ -89,7 +89,7 @@ class IufClassificationActivitySaveTest {
         when(treasuryDao.searchByIuf(flowIdentifierCode))
                 .thenReturn(expectedTreasuryDTOS);
 
-        IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.save(expectedOrganizationId, flowIdentifierCode);
+        IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classify(expectedOrganizationId, flowIdentifierCode);
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
     }
 
@@ -100,7 +100,7 @@ class IufClassificationActivitySaveTest {
         Long expectedOrganizationId = expectedReportingDTO.getOrganizationId();
         PaymentsClassificationSaveException paymentsClassificationSaveException =
                 assertThrows(PaymentsClassificationSaveException.class, () ->
-                        iufClassificationActivity.save(expectedOrganizationId, null));
+                        iufClassificationActivity.classify(expectedOrganizationId, null));
         assertEquals("iuf may be not null or blank", paymentsClassificationSaveException.getMessage());
     }
 
@@ -110,7 +110,7 @@ class IufClassificationActivitySaveTest {
         Long expectedOrganizationId = expectedReportingDTO.getOrganizationId();
         PaymentsClassificationSaveException paymentsClassificationSaveException =
                 assertThrows(PaymentsClassificationSaveException.class, () ->
-                        iufClassificationActivity.save(expectedOrganizationId, ""));
+                        iufClassificationActivity.classify(expectedOrganizationId, ""));
         assertEquals("iuf may be not null or blank", paymentsClassificationSaveException.getMessage());
     }
 
@@ -121,7 +121,7 @@ class IufClassificationActivitySaveTest {
 
         PaymentsClassificationSaveException paymentsClassificationSaveException =
                 assertThrows(PaymentsClassificationSaveException.class, () ->
-                        iufClassificationActivity.save(null, flowIdentifierCode));
+                        iufClassificationActivity.classify(null, flowIdentifierCode));
         assertEquals("organization id may be not null or zero", paymentsClassificationSaveException.getMessage());
     }
     @Test
@@ -131,7 +131,7 @@ class IufClassificationActivitySaveTest {
 
         PaymentsClassificationSaveException paymentsClassificationSaveException =
                 assertThrows(PaymentsClassificationSaveException.class, () ->
-                        iufClassificationActivity.save(0L, flowIdentifierCode));
+                        iufClassificationActivity.classify(0L, flowIdentifierCode));
         assertEquals("organization id may be not null or zero", paymentsClassificationSaveException.getMessage());
     }
 

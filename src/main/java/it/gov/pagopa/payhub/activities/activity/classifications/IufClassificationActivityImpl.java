@@ -34,14 +34,14 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     }
 
     /**
-     * Save classification based on the provided parameters.
+     * Processes IUF classification based on the provided parameters.
      *
      * @param organizationId the unique identifier of the organization
      * @param iuf            the unique identifier of the payment reporting flow (IUF)
      * @return IufClassificationActivityResult containing PaymentsReportingDTO list and success flag
      */
     @Override
-    public IufClassificationActivityResult save(Long organizationId, String iuf) {
+    public IufClassificationActivityResult classify(Long organizationId, String iuf) {
         if (organizationId==null || organizationId.equals(0L))
             throw new PaymentsClassificationSaveException("organization id may be not null or zero");
         if (iuf==null || iuf.isEmpty())

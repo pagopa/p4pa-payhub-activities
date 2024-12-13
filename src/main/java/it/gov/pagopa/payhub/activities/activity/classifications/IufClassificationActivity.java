@@ -8,11 +8,11 @@ import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActi
 public interface IufClassificationActivity {
 
     /**
-     * Save classification based on the provided parameters.
+     * Processes IUF classification based on the provided parameters.
      *
      * @param organizationId the unique identifier of the organization
      * @param iuf            the unique identifier of the payment reporting flow (IUF)
      * @return IufClassificationActivityResult containing PaymentsReportingDTO list and success flag
      */
-    IufClassificationActivityResult save(Long organizationId, String iuf);
+    IufClassificationActivityResult classify(Long organizationId, String iuf);
 }
