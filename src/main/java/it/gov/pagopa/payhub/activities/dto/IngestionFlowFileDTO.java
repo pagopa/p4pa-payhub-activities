@@ -35,7 +35,7 @@ public class IngestionFlowFileDTO implements Serializable {
     private String codRequestToken;
     private String codError;
     private String pspIdentifier;
-    private Date flowDateTime;
+    private LocalDateTime flowDateTime;
     private BigInteger state;
     private String fileSourceCode;
     private String discardFileName;
