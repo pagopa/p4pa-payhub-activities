@@ -25,7 +25,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     private final TreasuryDao treasuryDao;
     private final ClassifyDao classifyDao;
 
-    private final static String TES_NO_MATCH = "TES_NO_MATCH";
+    private static final String TES_NO_MATCH = "TES_NO_MATCH";
 
     public IufClassificationActivityImpl(PaymentsReportingDao paymentsReportingDao, TreasuryDao treasuryDao, ClassifyDao classifyDao) {
         this.paymentsReportingDao = paymentsReportingDao;
@@ -52,9 +52,9 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
 
         for (TreasuryDTO treasuryDTO : treasuryDao.searchByIuf(iuf)) {
             try {
-                setAndSave(treasuryDTO.getMygovFlussoTesoreriaId());
+                setAndSave(paymentsReportingDTOS.size(), treasuryDTO.getMygovFlussoTesoreriaId());
             }
-            catch (Exception e) {
+            catch (PaymentsClassificationSaveException paymentsClassificationSaveException) {
                 log.error("Error saving classification");
                 throw new PaymentsClassificationSaveException("Error saving classification");
             }
@@ -70,8 +70,16 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
      * @param treasuryId primary key of Treasury
      * @throws PaymentsClassificationSaveException specific exception
      */
-    private void setAndSave(Long treasuryId) throws PaymentsClassificationSaveException {
-        if (treasuryId!=null) {
+
+
+    /**
+     *
+     * @param paymentsReportingSize size of the list of payments reporting found
+     * @param treasuryId primary key of Treasury
+     * @throws PaymentsClassificationSaveException exception
+     */
+    private void setAndSave(int paymentsReportingSize, Long treasuryId) throws PaymentsClassificationSaveException {
+        if (paymentsReportingSize==0 && treasuryId!=null) {
             ClassifyDTO classifyDTO = ClassifyDTO.builder()
                     .classificationCode(TES_NO_MATCH)
                     .treasuryId(treasuryId)

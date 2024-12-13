@@ -1,9 +1,6 @@
 package it.gov.pagopa.payhub.activities.utility.faker;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-
-import static it.gov.pagopa.payhub.activities.utility.TestUtils.DATE;
 
 public class PaymentsReportingFaker {
 

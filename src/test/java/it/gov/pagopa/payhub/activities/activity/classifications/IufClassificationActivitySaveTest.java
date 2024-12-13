@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.ClassificationFaker.buildClassifyDTO;
 import static it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker.buildPaymentsReportingDTO;
 import static it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker.buildTreasuryDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
