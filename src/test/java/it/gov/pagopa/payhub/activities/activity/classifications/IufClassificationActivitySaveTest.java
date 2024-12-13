@@ -70,12 +70,47 @@ class IufClassificationActivitySaveTest {
     }
 
     @Test
+    void saveClassificationNoReportingSuccess() {
+        Long expectedOrganizationId = 1L;
+        List<PaymentsReportingDTO> expectedPaymentsReportingDTOS = new ArrayList<>();
+
+        TreasuryDTO expectedTreasuryDTO = buildTreasuryDTO();
+        List<TreasuryDTO> expectedTreasuryDTOS = new ArrayList<>();
+        expectedTreasuryDTOS.add(expectedTreasuryDTO);
+
+        IufClassificationActivityResult expectedIufClassificationActivityResult =
+                IufClassificationActivityResult
+                        .builder()
+                        .paymentsReportingDTOS(expectedPaymentsReportingDTOS)
+                        .success(true)
+                        .build();
+        String flowIdentifierCode = expectedTreasuryDTO.getCodIdUnivocoFlusso();
+
+        when(treasuryDao.searchByIuf(flowIdentifierCode))
+                .thenReturn(expectedTreasuryDTOS);
+
+        IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.save(expectedOrganizationId, flowIdentifierCode);
+        assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
+    }
+
+
+    @Test
     void saveClassificationIufNullFailed() {
         PaymentsReportingDTO expectedReportingDTO = buildPaymentsReportingDTO();
         Long expectedOrganizationId = expectedReportingDTO.getOrganizationId();
         PaymentsClassificationSaveException paymentsClassificationSaveException =
                 assertThrows(PaymentsClassificationSaveException.class, () ->
                         iufClassificationActivity.save(expectedOrganizationId, null));
+        assertEquals("iuf may be not null or blank", paymentsClassificationSaveException.getMessage());
+    }
+
+    @Test
+    void saveClassificationIufBlankFailed() {
+        PaymentsReportingDTO expectedReportingDTO = buildPaymentsReportingDTO();
+        Long expectedOrganizationId = expectedReportingDTO.getOrganizationId();
+        PaymentsClassificationSaveException paymentsClassificationSaveException =
+                assertThrows(PaymentsClassificationSaveException.class, () ->
+                        iufClassificationActivity.save(expectedOrganizationId, ""));
         assertEquals("iuf may be not null or blank", paymentsClassificationSaveException.getMessage());
     }
 
@@ -87,7 +122,18 @@ class IufClassificationActivitySaveTest {
         PaymentsClassificationSaveException paymentsClassificationSaveException =
                 assertThrows(PaymentsClassificationSaveException.class, () ->
                         iufClassificationActivity.save(null, flowIdentifierCode));
-        assertEquals("organization id may be not null", paymentsClassificationSaveException.getMessage());
+        assertEquals("organization id may be not null or zero", paymentsClassificationSaveException.getMessage());
     }
+    @Test
+    void saveClassificationOrganizationIdZeroFailed() {
+        TreasuryDTO expectedTreasuryDTO = buildTreasuryDTO();
+        String flowIdentifierCode = expectedTreasuryDTO.getCodIdUnivocoFlusso();
+
+        PaymentsClassificationSaveException paymentsClassificationSaveException =
+                assertThrows(PaymentsClassificationSaveException.class, () ->
+                        iufClassificationActivity.save(0L, flowIdentifierCode));
+        assertEquals("organization id may be not null or zero", paymentsClassificationSaveException.getMessage());
+    }
+
 }
 

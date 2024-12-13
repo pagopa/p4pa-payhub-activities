@@ -42,8 +42,8 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
      */
     @Override
     public IufClassificationActivityResult save(Long organizationId, String iuf) {
-        if (organizationId==null)
-            throw new PaymentsClassificationSaveException("organization id may be not null");
+        if (organizationId==null || organizationId.equals(0L))
+            throw new PaymentsClassificationSaveException("organization id may be not null or zero");
         if (iuf==null || iuf.isEmpty())
             throw new PaymentsClassificationSaveException("iuf may be not null or blank");
 
@@ -61,7 +61,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         }
         return iufClassificationActivityResult.toBuilder()
                 .paymentsReportingDTOS(paymentsReportingDTOS)
-                .success(!paymentsReportingDTOS.isEmpty())
+                .success(true)
                 .build();
     }
 
