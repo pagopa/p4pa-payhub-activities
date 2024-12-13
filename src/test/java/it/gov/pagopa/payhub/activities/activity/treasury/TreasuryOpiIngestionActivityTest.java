@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,7 +73,7 @@ public class TreasuryOpiIngestionActivityTest {
   private static final IngestionFlowFileType INVALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
   private static final Path VALID_INGESTION_FLOW_PATH = Path.of("VALID_PATH");
   private static final String VALID_INGESTION_FLOW_FILE = "VALID_FILE";
-  private static final String VALID_INGESTION_FLOW_IUF = "VALID_IUF";
+  private static final List<String> VALID_INGESTION_FLOW_IUF = List.of("VALID_IUF_1", "VALID_IUF_2");
   private static final String PII_COGNOME = "PII_COGNOME";
   private static final String PII_DE_CAUSALE = "PII_DE_CAUSALE";
   private static final String KEY_MAP = "INSERT";
@@ -81,7 +82,7 @@ public class TreasuryOpiIngestionActivityTest {
           .flowFileType(VALID_INGESTION_FLOW_TYPE)
           .filePath(VALID_INGESTION_FLOW_PATH.toString())
           .fileName(VALID_INGESTION_FLOW_FILE)
-          .iuf(VALID_INGESTION_FLOW_IUF)
+          .iuf(VALID_INGESTION_FLOW_IUF.get(0))
           .build());
   private static final Optional<IngestionFlowFileDTO> INVALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
           .ingestionFlowFileId(INVALID_INGESTION_FLOW_ID)
@@ -98,20 +99,25 @@ public class TreasuryOpiIngestionActivityTest {
           "VALID_IUV_1",
           "VALID_IUV_2");
   private static final Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> VALID_TREASURY_MAP =
-          Map.of(KEY_MAP, List.of(Pair.of(TreasuryDTO.builder()
-                          .codIdUnivocoFlusso(VALID_INGESTION_FLOW_IUF)
-                          .codIdUnivocoVersamento(VALID_IUV_LIST.get(0))
-                          .build(),
-                  FlussoTesoreriaPIIDTO.builder()
-                          .deCognome(PII_COGNOME)
-                          .deCausale(PII_DE_CAUSALE)
-                          .build()), Pair.of(TreasuryDTO.builder()
-                  .codIdUnivocoFlusso(VALID_INGESTION_FLOW_IUF)
-                  .codIdUnivocoVersamento(VALID_IUV_LIST.get(1))
-                  .build(), FlussoTesoreriaPIIDTO.builder()
-                  .deCognome(PII_COGNOME)
-                  .deCausale(PII_DE_CAUSALE)
-                  .build())));
+          Map.of(KEY_MAP, List.of(
+                  Pair.of(
+                          TreasuryDTO.builder()
+                                  .codIdUnivocoFlusso(VALID_INGESTION_FLOW_IUF.get(0))
+                                  .codIdUnivocoVersamento(VALID_IUV_LIST.get(0))
+                                  .build(),
+                          FlussoTesoreriaPIIDTO.builder()
+                                  .deCognome(PII_COGNOME)
+                                  .deCausale(PII_DE_CAUSALE)
+                                  .build()),
+                  Pair.of(
+                          TreasuryDTO.builder()
+                                  .codIdUnivocoFlusso(VALID_INGESTION_FLOW_IUF.get(1))
+                                  .codIdUnivocoVersamento(VALID_IUV_LIST.get(1))
+                                  .build(),
+                          FlussoTesoreriaPIIDTO.builder()
+                                  .deCognome(PII_COGNOME)
+                                  .deCausale(PII_DE_CAUSALE)
+                                  .build())));
   @Test
   void givenValidIngestionFlowWhenProcessFileThenOk() throws IOException {
     //given
@@ -136,7 +142,7 @@ public class TreasuryOpiIngestionActivityTest {
       Assertions.assertEquals(VALID_INGESTION_FLOW_IUF, result.getIufs());
       Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi14(VALID_FILE_PATH_LIST.get(i).toFile());
       Mockito.verify(treasuryOpi14MapperService, Mockito.times(1)).apply(VALID_FLUSSO_OPI14_LIST.get(i), VALID_INGESTION_FLOW.orElseThrow());
-      Mockito.verify(treasuryDao, Mockito.times(1)).insert(VALID_TREASURY_MAP.get(KEY_MAP).get(i).getLeft());
+      Mockito.verify(treasuryDao, Mockito.times(2)).insert(VALID_TREASURY_MAP.get(KEY_MAP).get(i).getLeft());
     }
   }
 
