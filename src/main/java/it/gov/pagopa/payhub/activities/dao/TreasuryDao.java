@@ -12,4 +12,5 @@ public interface TreasuryDao {
       * @return list of treasury records associated to the iuf
       */
      List<TreasuryDTO> searchByIuf(String iuf);
+
 }
