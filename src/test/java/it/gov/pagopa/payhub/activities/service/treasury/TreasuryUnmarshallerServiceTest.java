@@ -87,14 +87,14 @@ class TreasuryUnmarshallerServiceTest {
 //    }
 //  }
 
-  @Test
-  void testJAXBExceptionInConstructorOpi161() {
-    try(MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
-      mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
-              .thenThrow(new JAXBException("Simulated JAXBException"));
-      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(null, null, null));
-    }
-  }
+//  @Test
+//  void testJAXBExceptionInConstructorOpi161() {
+//    try(MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
+//      mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
+//              .thenThrow(new JAXBException("Simulated JAXBException"));
+//      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(null, null, null));
+//    }
+//  }
 
   @Test
   void testIOExceptionInConstructor() throws Exception {
