@@ -4,12 +4,11 @@ import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyDTO;
 
 public interface ClearClassifyIufActivity {
     /**
-     * deletion of a classification based on the provided parameters
+     * deletion of a classification based on the provided dto parameter
      *
-     * @param iuf the unique identifier of the payment reporting flow (IUF)
      * @param classifyDTO classification dto
-     * @return boolean true for a successful deletion otherwise false
+     * @return  boolean true for a successful deletion otherwise false
      */
-    boolean deleteClassificationByIuf(String iuf, ClassifyDTO classifyDTO);
+    boolean deleteClassificationByIuf(ClassifyDTO classifyDTO);
 
 }

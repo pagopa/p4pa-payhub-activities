@@ -24,74 +24,98 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ClearClassifyIufActivityTest {
     @Mock
-    TreasuryDao treasuryDao;
-    @Mock
     private ClassifyDao classifyDao;
 
     private ClearClassifyIufActivity clearClassifyIufActivity;
 
     @BeforeEach
     void init() {
-        clearClassifyIufActivity = new ClearClassifyIufActivityImpl(treasuryDao, classifyDao);
+        clearClassifyIufActivity = new ClearClassifyIufActivityImpl(classifyDao);
     }
 
+    /*
     @Test
     void deleteClassificationSuccess() {
         ClassifyDTO expectedClassifyDTO = ClassificationFaker.buildClassifyDTO();
 
-        TreasuryDTO expectedTreasuryDTO = buildTreasuryDTO();
-        List<TreasuryDTO> expectedTreasuryDTOS = new ArrayList<>();
-        expectedTreasuryDTOS.add(expectedTreasuryDTO);
-
-        String flowIdentifierCode = expectedTreasuryDTO.getCodIdUnivocoFlusso();
-
-        when(treasuryDao.searchByIuf(flowIdentifierCode))
-                .thenReturn(expectedTreasuryDTOS);
-
         assertTrue(clearClassifyIufActivity
-                .deleteClassificationByIuf(flowIdentifierCode,expectedClassifyDTO));
+                .deleteClassificationByIuf(expectedClassifyDTO));
     }
+     */
 
     @ParameterizedTest
-    @ValueSource(strings = {"A","B", "C", "D"})
-    void deleteClassificationFailed(String params) {
-        String iuf = "";
-        String classification = "";
+    @ValueSource(strings = {"OK","KO_1","KO_2","KO_3","KO_4","KO_5","KO_6","KO_7","KO_8"})
+    void deleteClassification(String params) {
+        Long paymentReportingId = 2L;
+        String classification = "0";
         String error = "";
 
         switch (params)  {
-            case "A":
-                iuf = "IUF";
+            case "OK":
+                ClassifyDTO expectedClassifyDTO = ClassificationFaker.buildClassifyDTO();
+                assertTrue(clearClassifyIufActivity.deleteClassificationByIuf(expectedClassifyDTO));
+                break;
+            case "KO_1":
+                paymentReportingId = 1L;
                 classification = "";
                 error = "classification may be not null or blank";
+                deleteSingleClassification(paymentReportingId, classification, error);
                 break;
-            case "B":
-                iuf = "IUF";
+            case "KO_2":
+                paymentReportingId =  1L;;
                 classification = null;
                 error = "classification may be not null or blank";
+                deleteSingleClassification(paymentReportingId, classification, error);
                 break;
-            case "C":
-                iuf = "";
+            case "KO_3":
+                paymentReportingId =  0L;;
                 classification = "CLASSIFICATION";
-                error = "iuf may be not null or blank";
+                error = "payment reporting id may be not null or zero";
+                deleteSingleClassification(paymentReportingId, classification, error);
                 break;
-            case "D":
-                iuf = null;
+            case "KO_4":
+                paymentReportingId = null;;
                 classification = "CLASSIFICATION";
-                error = "iuf may be not null or blank";
+                error = "payment reporting id may be not null or zero";
+                deleteSingleClassification(paymentReportingId, classification, error);
                 break;
+            case "KO_5":
+                paymentReportingId = null;;
+                classification = "";
+                error = "payment reporting id may be not null or zero";
+                deleteSingleClassification(paymentReportingId, classification, error);
+                break;
+            case "KO_6":
+                paymentReportingId = 0L;
+                classification = "";
+                error = "payment reporting id may be not null or zero";
+                deleteSingleClassification(paymentReportingId, classification, error);
+                break;
+            case "KO_7":
+                paymentReportingId = 0L;
+                classification = null;
+                error = "payment reporting id may be not null or zero";
+                deleteSingleClassification(paymentReportingId, classification, error);
+                break;
+            case "KO_8":
+                paymentReportingId = null;
+                classification = null;
+                error = "payment reporting id may be not null or zero";
+                deleteSingleClassification(paymentReportingId, classification, error);
+                break;
+
             default:
                 break;
         }
+    }
 
+    private void deleteSingleClassification(Long paymentReportingId, String classification, String error)  {
         ClassifyDTO expectedClassifyDTO = ClassificationFaker.buildClassifyDTO();
+        expectedClassifyDTO.setPaymentReportingId(paymentReportingId);
         expectedClassifyDTO.setClassificationCode(classification);
-
-        String finalIuf = iuf;
         ClearClassifyIufException clearClassifyIufException =
                 assertThrows(ClearClassifyIufException.class, () ->
-                        clearClassifyIufActivity.deleteClassificationByIuf(finalIuf, expectedClassifyDTO));
-
+                        clearClassifyIufActivity.deleteClassificationByIuf(expectedClassifyDTO));
         assertEquals(error, clearClassifyIufException.getMessage());
     }
 

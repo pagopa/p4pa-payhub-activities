@@ -1,10 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassifyDao;
-import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.exception.ClearClassifyIufException;
+import it.gov.pagopa.payhub.activities.utility.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -13,48 +12,42 @@ import org.springframework.stereotype.Component;
 @Lazy
 @Component
 public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
-    private final TreasuryDao treasuryDao;
     private final ClassifyDao classifyDao;
 
-    public ClearClassifyIufActivityImpl(TreasuryDao treasuryDao, ClassifyDao classifyDao) {
-        this.treasuryDao = treasuryDao;
+    public ClearClassifyIufActivityImpl(ClassifyDao classifyDao) {
         this.classifyDao = classifyDao;
     }
 
     /**
-     *  deletion of a classification based on the provided parameters
      *
-     * @param iuf the unique identifier of the payment reporting flow (IUF)
      * @param classifyDTO dto containing classification to delete
      * @return boolean true for a successful deletion otherwise false
+     * @throws ClearClassifyIufException specific exception thrown
      */
-    public boolean deleteClassificationByIuf(String iuf, ClassifyDTO classifyDTO) throws ClearClassifyIufException {
+    public boolean deleteClassificationByIuf(ClassifyDTO classifyDTO) throws ClearClassifyIufException {
         boolean deletedSuccessfully = true;
         String classification = classifyDTO.getClassificationCode();
-        verifyParameters(iuf, classifyDTO.getClassificationCode());
-
-        for (TreasuryDTO treasuryDTO : treasuryDao.searchByIuf(iuf)) {
-            try {
-                classifyDao.deleteClassificationByIuf(treasuryDTO.getCodIdUnivocoFlusso(), classification);
-            }
-            catch (ClearClassifyIufException ex) {
-                log.error("Error deleting classification");
-                deletedSuccessfully = false;
-            }
+        Long paymentReportingId = classifyDTO.getPaymentReportingId();
+        verifyParameters(paymentReportingId, classification);
+        try {
+            classifyDao.deleteClassificationByIuf(paymentReportingId, classification);
+        }
+        catch (ClearClassifyIufException ex) {
+            log.error("Error deleting classification: {} for reporting id {}", classification, paymentReportingId);
+            deletedSuccessfully = false;
         }
         return deletedSuccessfully;
     }
 
     /**
      *
-     * @param iuf unique identifier of the payment reporting flow (IUF)
+     * @param paymentReportingId unique identifier of the payment reporting flow (IUF)
      * @param classification classification
      */
-    private static void verifyParameters(String iuf, String classification) {
-        if (classification ==null || classification.isEmpty())
+    private static void verifyParameters(Long paymentReportingId, String classification) {
+        if (Utilities.isInvalidIdentifier(paymentReportingId))
+            throw new ClearClassifyIufException ("payment reporting id may be not null or zero");
+        if (Utilities.isNullOrEmptyString(classification))
             throw new ClearClassifyIufException("classification may be not null or blank");
-        if (iuf ==null || iuf.isEmpty())
-            throw new ClearClassifyIufException ("iuf may be not null or blank");
     }
-
 }

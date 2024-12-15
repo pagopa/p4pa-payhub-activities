@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UtilitiesTest {
 
@@ -20,6 +21,38 @@ class UtilitiesTest {
     void testValidateEmptyPIVA(String piva){
         boolean result = Utilities.isValidPIVA(piva);
         assertFalse(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"null", "zero"})
+    void testInvalidIdentifier(String params){
+        switch (params)  {
+            case "null":
+                Long identifier1 = null;
+                assertTrue(Utilities.isInvalidIdentifier(identifier1));
+                break;
+            case "zero":
+                Long identifier2 = 0L;
+                assertTrue(Utilities.isInvalidIdentifier(identifier2));
+                break;
+            default:
+                break;
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"null", "blank"})
+    void testValidateString(String str){
+        switch (str)  {
+            case "null":
+                assertTrue(Utilities.isNullOrEmptyString(""));
+                break;
+            case "blank":
+                assertTrue(Utilities.isInvalidIdentifier(null));
+                break;
+            default:
+                break;
+        }
     }
 
 }
