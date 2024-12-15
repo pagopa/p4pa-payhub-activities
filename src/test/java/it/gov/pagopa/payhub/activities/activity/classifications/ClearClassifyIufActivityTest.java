@@ -62,25 +62,25 @@ class ClearClassifyIufActivityTest {
                 deleteSingleClassification(paymentReportingId, classification, error);
                 break;
             case "KO_2":
-                paymentReportingId =  1L;;
+                paymentReportingId =  1L;
                 classification = null;
                 error = "classification may be not null or blank";
                 deleteSingleClassification(paymentReportingId, classification, error);
                 break;
             case "KO_3":
-                paymentReportingId =  0L;;
+                paymentReportingId =  0L;
                 classification = "CLASSIFICATION";
                 error = "payment reporting id may be not null or zero";
                 deleteSingleClassification(paymentReportingId, classification, error);
                 break;
             case "KO_4":
-                paymentReportingId = null;;
+                paymentReportingId = null;
                 classification = "CLASSIFICATION";
                 error = "payment reporting id may be not null or zero";
                 deleteSingleClassification(paymentReportingId, classification, error);
                 break;
             case "KO_5":
-                paymentReportingId = null;;
+                paymentReportingId = null;
                 classification = "";
                 error = "payment reporting id may be not null or zero";
                 deleteSingleClassification(paymentReportingId, classification, error);
