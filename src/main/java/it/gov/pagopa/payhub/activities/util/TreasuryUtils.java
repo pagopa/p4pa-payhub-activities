@@ -12,35 +12,6 @@ import java.util.regex.Pattern;
 
 public class TreasuryUtils {
 
-  static final String DATA_ORDINE = "\\s*D\\s*a\\s*t\\s*a\\s*O\\s*r\\s*d\\s*i\\s*n\\s*e\\s*:";
-  static final String DESCRIZIONE_ORDINANTE = "\\s*D\\s*e\\s*s\\s*c\\s*r\\s*i\\s*z\\s*i\\s*o\\s*n\\s*e\\s*O\\s*r\\s*d\\s*i\\s*n\\s*a\\s*n\\s*t\\s*e\\s*:";
-
-  static final public String BI2 = ":\\s*B\\s*I\\s*2\\s*:";
-  static final public String BE1 = ":\\s*B\\s*E\\s*1\\s*:";
-  static final public String IB1 = ":\\s*I\\s*B\\s*1\\s*:";
-  static final public String IB2 = ":\\s*I\\s*B\\s*2\\s*:";
-  static final public String IB4 = ":\\s*I\\s*B\\s*4\\s*:";
-  static final public String TID = ":\\s*T\\s*I\\s*D\\s*:";
-  static final public String DTE = ":\\s*D\\s*T\\s*E\\s*:";
-  static final public String DTN = ":\\s*D\\s*T\\s*N\\s*:";
-  static final public String ERI = ":\\s*E\\s*R\\s*I\\s*:";
-  static final public String IM2 = ":\\s*I\\s*M\\s*2\\s*:";
-  static final public String MA2 = ":\\s*M\\s*A\\s*2\\s*:";
-  static final public String RI3 = ":\\s*R\\s*I\\s*3\\s*:";
-  static final public String RI3_v2 = ":\\s*R\\s* I\\s*3\\s*:";
-  static final public String OR1 = ":\\s*O\\s*R\\s*1\\s*:";
-  static final public String SC2 = ":\\s*S\\s*C\\s*2\\s*:";
-  static final public String TR1 = ":\\s*T\\s*R\\s*1\\s*:";
-  static final public String SEC = ":\\s*S\\s*E\\s*C\\s*:";
-  static final public String IOR = ":\\s*I\\s*O\\s*R\\s*:";
-
-  static final String SEPARATORE_DUE_PUNTI = "[:]";
-  static final String SEPARATORE_PUNTO_VIRGOLA = "[;]";
-
-  static final public String PRE_IUF = "/PUR/LGPE-RIVERSAMENTO/URI/";
-  static final public String PRE_IUV_RFS = "/RFS/";
-  static final public String PRE_IUV_RFB = "/RFB/";
-
   public static final String PRE_IUF_NEW = "LGPE-RIVERSAMENTO";
   public static final String PRE_IUF_NEW_v2 = "LGPE- RIVERSAMENTO";
   public static final String PRE_IUF_NEW_v3 = "LGPE -RIVERSAMENTO";
@@ -53,84 +24,6 @@ public class TreasuryUtils {
   public static final String IUV = "IUV";
 
   public static final String DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
-
-
-
-  public static final String getIufValue(final String value) {
-    if (StringUtils.isNotEmpty(value)) {
-      String regexString = Pattern.quote(PRE_IUF) + "([A-Za-z0-9-_]+)";
-      Pattern pattern = Pattern.compile(regexString);
-      Matcher matcher = pattern.matcher(value);
-      while (matcher.find()) {
-        return matcher.group(1);
-      }
-    }
-    return null;
-  }
-
-  public static final String getIuvValue(final String value) {
-
-    String result = null;
-    if (StringUtils.isNotEmpty(value)) {
-      String regexStringRFB = Pattern.quote(PRE_IUV_RFB) + "(.*?)" + Pattern.quote("/");
-      Pattern patternRFB = Pattern.compile(regexStringRFB);
-      Matcher matcherRFB = patternRFB.matcher(value + "/");
-      while (matcherRFB.find()) {
-        result = matcherRFB.group(1);
-      }
-
-      if (StringUtils.isNotEmpty(result)) {
-        return result;
-      }
-
-      String regexStringRFS = Pattern.quote(PRE_IUV_RFS) + "(.*?)" + Pattern.quote("/");
-      Pattern patternRFS = Pattern.compile(regexStringRFS);
-      Matcher matcherRFS = patternRFS.matcher(value);
-      while (matcherRFS.find()) {
-        result = matcherRFS.group(1);
-      }
-    }
-    return result;
-  }
-
-  public static final Date getDataOrdine(final String value) {
-
-    String regexString = DATA_ORDINE + "(.*?)" + SEPARATORE_PUNTO_VIRGOLA;
-    Pattern pattern = Pattern.compile(regexString);
-    Matcher matcher = pattern.matcher(value);
-    while (matcher.find()) {
-      try {
-        return new SimpleDateFormat("dd/MM/yyyy").parse(matcher.group(1).trim());
-      } catch (ParseException e) {
-        return null;
-      }
-    }
-    return null;
-  }
-
-  public static final String getDescrizioneOrdinante(final String value) {
-
-    String regexString = DESCRIZIONE_ORDINANTE + "(.*?)" + SEPARATORE_DUE_PUNTI;
-    Pattern pattern = Pattern.compile(regexString);
-    Matcher matcher = pattern.matcher(value);
-    while (matcher.find()) {
-      return matcher.group(1).trim();
-    }
-    return null;
-  }
-
-  public static final String catchIdentificativo(final String value, final String code) throws Exception {
-
-    if (value != null) {
-      String regexString = code + "(.*?)" + SEPARATORE_DUE_PUNTI;
-      Pattern pattern = Pattern.compile(regexString);
-      Matcher matcher = pattern.matcher(value);
-      while (matcher.find()) {
-        return matcher.group(1).trim();
-      }
-    }
-    return null;
-  }
 
   public static final String getIdentificativo(String value, final String type) {
     value = value.replaceAll("/TXT/([0-9])/", "/");
@@ -255,21 +148,6 @@ public class TreasuryUtils {
     return null;
   }
 
-  public static String getIdentificativoPSPDaIUF(final String value) {
-    if (StringUtils.isNotBlank(value)) {
-      String data = getDataFromIuf(value);
-      if (StringUtils.isNotBlank(data)) {
-        String valueSenzaData = StringUtils.remove(value, data);
-        String regexString = "\\w+";
-        Pattern pattern = Pattern.compile(regexString);
-        Matcher matcher = pattern.matcher(valueSenzaData);
-        while (matcher.find()) {
-          return matcher.group(0);
-        }
-      }
-    }
-    return null;
-  }
 
   public static String getDataFromIuf(final String value) {
     String regexString = DATE_PATTERN;
