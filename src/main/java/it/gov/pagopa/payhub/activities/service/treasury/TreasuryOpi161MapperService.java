@@ -20,8 +20,8 @@ import java.util.function.BiFunction;
 public class TreasuryOpi161MapperService implements BiFunction<FlussoGiornaleDiCassa, IngestionFlowFileDTO,  Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>>> {
 
   private static DataCipherService dataCipherService;
-  public static final String insert = "INSERT";
-  public static final String delete = "DELETE";
+  public static final String INSERT = "INSERT";
+  public static final String DELETE = "DELETE";
 
   public TreasuryOpi161MapperService(DataCipherService dataCipherService) {
     TreasuryOpi161MapperService.dataCipherService = dataCipherService;
@@ -87,8 +87,8 @@ public class TreasuryOpi161MapperService implements BiFunction<FlussoGiornaleDiC
 
       });
     });
-    resultMap.put(insert, insertList);
-    resultMap.put(delete, deleteList);
+    resultMap.put(INSERT, insertList);
+    resultMap.put(DELETE, deleteList);
     return resultMap;
   }
 }

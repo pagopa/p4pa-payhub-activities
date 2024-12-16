@@ -16,7 +16,6 @@ import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi14MapperServi
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi161MapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryValidatorService;
-import it.gov.pagopa.payhub.activities.util.CsvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -30,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -197,7 +195,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             default -> treasuryDtoMap;
         };
 
-        List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> pairs = treasuryDtoMap.get(StringUtils.firstNonBlank(TreasuryOpi161MapperService.insert, TreasuryOpi14MapperService.INSERT));
+        List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> pairs = treasuryDtoMap.get(StringUtils.firstNonBlank(TreasuryOpi161MapperService.INSERT, TreasuryOpi14MapperService.INSERT));
         pairs.forEach(pair -> {
             long idFlussoTesoreriaPiiId = flussoTesoreriaPIIDao.insert(pair.getRight());
             TreasuryDTO treasuryDTO = pair.getLeft();
