@@ -14,6 +14,7 @@ import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi14MapperServi
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi161MapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryValidatorService;
+import it.gov.pagopa.payhub.activities.util.CsvUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.ObjectFactory;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,7 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,10 +51,13 @@ public class TreasuryOpiIngestionActivityTest {
   private TreasuryOpi161MapperService treasuryOpi161MapperService;
   @Mock
   private TreasuryValidatorService treasuryValidatorService;
+  @Mock
+  private CsvUtils csvUtils;
 
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
 
   private static final String TARGET_DIR = "/target/";
+  private static final String ERROR_DIR = "/error/";
 
   @Mock
   private IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
@@ -71,7 +74,8 @@ public class TreasuryOpiIngestionActivityTest {
             treasuryOpi161MapperService,
             treasuryValidatorService,
             ingestionFlowFileArchiverService,
-            TARGET_DIR);
+            TARGET_DIR,
+            ERROR_DIR);
   }
 
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
@@ -103,6 +107,11 @@ public class TreasuryOpiIngestionActivityTest {
   private static final List<FlussoGiornaleDiCassa> VALID_FLUSSO_OPI14_LIST = List.of(
           new ObjectFactory().createFlussoGiornaleDiCassa(),
           new ObjectFactory().createFlussoGiornaleDiCassa());
+
+  private static final List<it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa> VALID_FLUSSO_OPI161_LIST = List.of(
+          new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.ObjectFactory().createFlussoGiornaleDiCassa(),
+          new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.ObjectFactory().createFlussoGiornaleDiCassa());
+
   private static final List<String> VALID_IUV_LIST = List.of(
           "VALID_IUV_1",
           "VALID_IUV_2");
@@ -134,7 +143,10 @@ public class TreasuryOpiIngestionActivityTest {
     for (int i = 0; i < VALID_FILE_PATH_LIST.size(); i++) {
       Mockito.when(treasuryUnmarshallerService.unmarshalOpi14(VALID_FILE_PATH_LIST.get(i).toFile())).thenReturn(VALID_FLUSSO_OPI14_LIST.get(i));
       Mockito.when(treasuryOpi14MapperService.apply(VALID_FLUSSO_OPI14_LIST.get(i), VALID_INGESTION_FLOW.orElseThrow())).thenReturn(VALID_TREASURY_MAP);
+//      Mockito.when(treasuryOpi161MapperService.apply(VALID_FLUSSO_OPI161_LIST.get(i), VALID_INGESTION_FLOW.orElseThrow())).thenReturn(VALID_TREASURY_MAP);
+//      Mockito.when(treasuryValidatorService.validatePageSize(VALID_FLUSSO_OPI14_LIST.get(i), VALID_FLUSSO_OPI161_LIST.get(i), 1, "V14")).thenReturn(true);
       Mockito.when(treasuryDao.insert(VALID_TREASURY_MAP.get(KEY_MAP).get(i).getLeft())).thenReturn(1L);
+//      Mockito.doNothing().when(csvUtils).createCsv("testFile", List.of(), List.of());
     }
 
     //when

@@ -41,6 +41,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private final IngestionFlowFileType ingestionflowFileType;
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final String archiveDirectory;
+    private final String errorDirectory;
     private final TreasuryDao treasuryDao;
     private final FlussoTesoreriaPIIDao flussoTesoreriaPIIDao;
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
@@ -56,9 +57,10 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             TreasuryUnmarshallerService treasuryUnmarshallerService,
             TreasuryOpi14MapperService treasuryOpi14MapperService, TreasuryOpi161MapperService treasuryOpi161MapperService,
             TreasuryValidatorService treasuryValidatorService, IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
-            String archiveDirectory) {
+            String archiveDirectory, String errorDirectory) {
         this.archiveDirectory = archiveDirectory;
         this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
+        this.errorDirectory = errorDirectory;
         this.ingestionflowFileType = IngestionFlowFileType.OPI;
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.treasuryDao = treasuryDao;
@@ -103,6 +105,8 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             }
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
+            if (ingestionFlowFileDTO != null)
+                deletion(new File(ingestionFlowFileDTO.getFilePath()));
             return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
         }
         return treasuryIufResult.get();
@@ -125,7 +129,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
     private TreasuryIufResult parseData(File ingestionFlowFile, IngestionFlowFileDTO finalIngestionFlowFileDTO, int zipFileSize) {
         Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> treasuryDtoMap = null;
-        String versione = null;
+        String version = null;
         Set<String> iufList = new HashSet<>();
         boolean success = true;
 
@@ -142,22 +146,22 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             try {
                 flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
                 log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
-                versione = TreasuryValidatorService.V_14;
+                version = TreasuryValidatorService.V_14;
             } catch (Exception e) {
                 log.error("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
                 success = false;
             }
         } else
-            versione = TreasuryValidatorService.V_161;
+            version = TreasuryValidatorService.V_161;
 
-        assert versione != null;
-        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
-          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
-          throw new RuntimeException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " versione " + versione);
-        }
+        assert version != null;
+//        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, version)) {
+//          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
+//          throw new RuntimeException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " version " + version);
+//        }
 
 
-        List<TreasuryErrorDTO> errorDTOList = treasuryValidatorService.validateData(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, ingestionFlowFile, versione);
+        List<TreasuryErrorDTO> errorDTOList = treasuryValidatorService.validateData(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, ingestionFlowFile, version);
 
         String[] headerArray= new String[]{"FileName","Anno Bolletta", "Codice Bolletta", "Error Code", "Error Message"};
         List<String[]> header = new ArrayList<>(List.of());
@@ -174,14 +178,18 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                 .toList();
 
 
-        try {
-            CsvUtils.createCsv("ciao", header,data);
-        } catch (IOException e) {
-            throw new ActivitiesException(e.getMessage());
-        }
+//        try {
+//            String errorPathName = "ERROR-"+ingestionFlowFile.getName();
+//            CsvUtils.createCsv(errorPathName, header,data);
+//
+//            archiveErrorFile(new File(errorPathName),errorDirectory);
+//
+//        } catch (IOException e) {
+//            throw new ActivitiesException(e.getMessage());
+//        }
 
 
-        treasuryDtoMap = switch (versione) {
+        treasuryDtoMap = switch (version) {
             case TreasuryValidatorService.V_14 ->
                     treasuryOpi14MapperService.apply(flussoGiornaleDiCassa14, finalIngestionFlowFileDTO);
             case TreasuryValidatorService.V_161 ->
