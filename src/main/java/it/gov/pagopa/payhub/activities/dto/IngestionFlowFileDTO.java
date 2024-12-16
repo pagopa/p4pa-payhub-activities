@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -35,8 +35,7 @@ public class IngestionFlowFileDTO implements Serializable {
     private String codRequestToken;
     private String codError;
     private String pspIdentifier;
-    private Date flowDateTime;
-    private BigInteger state;
+    private LocalDateTime flowDateTime;
     private String fileSourceCode;
     private String discardFileName;
 
