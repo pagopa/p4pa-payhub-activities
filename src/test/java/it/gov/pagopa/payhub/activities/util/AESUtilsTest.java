@@ -44,4 +44,35 @@ class AESUtilsTest {
         // Then
         Assertions.assertEquals(Files.readAllLines(decryptedFile), List.of(plain));
     }
+
+    @Test
+    void testEncryptString() {
+        //Given
+        String password = "password";
+        String plainMessage = "plain message";
+
+        //When
+        byte[] encryptedMessage = AESUtils.encrypt(password, plainMessage);
+
+        //Then
+        Assertions.assertNotNull(encryptedMessage);
+        Assertions.assertTrue(encryptedMessage.length > 0);
+    }
+
+
+    @Test
+    void testDecryptString() {
+        //Given
+        String password = "password";
+        String plainMessage = "plain message";
+
+        //When
+        byte[] encryptedMessage = AESUtils.encrypt(password, plainMessage);
+        String decryptedMessage = AESUtils.decrypt(password, encryptedMessage);
+
+        //Then
+        Assertions.assertEquals(plainMessage, decryptedMessage);
+    }
+
+
 }

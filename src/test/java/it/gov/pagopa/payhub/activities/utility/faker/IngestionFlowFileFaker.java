@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.utility.faker;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 
+import java.time.ZoneId;
 import java.util.Date;
 
 public class IngestionFlowFileFaker {
@@ -28,6 +29,10 @@ public class IngestionFlowFileFaker {
                 .pdfGenerated(2L)
                 .codRequestToken("codRequestToken")
                 .codError("codError")
+                .pspIdentifier("PspId")
+                .flowDateTime(now.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .fileSourceCode("FileSourceCode")
+                .discardFileName("DiscardFileName")
                 .build();
     }
 

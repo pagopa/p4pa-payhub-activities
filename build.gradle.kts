@@ -60,6 +60,7 @@ val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
 val openApiToolsVersion = "0.2.6"
+val openCsvVersion = "5.9"
 
 
 dependencies {
@@ -90,6 +91,9 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 
+	//openCsv
+	implementation("com.opencsv:opencsv:$openCsvVersion")
+
 	//jaxb
 	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
@@ -100,6 +104,15 @@ dependencies {
 
 	// openApi
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+
+    jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
+    jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
+
+
+	jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
+	jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
+
+
 }
 
 
@@ -124,6 +137,20 @@ jaxb {
 			outputDir = file("$projectDir/build/generated/jaxb/java")
 			schema = file("src/main/resources/xsd/FlussoRiversamento.xsd")
 			bindings = layout.files("src/main/resources/xsd/FlussoRiversamento.xjb")
+		}
+		register("Opi14TresauryFlow") {
+			extension = true
+			args = listOf("-xmlschema","-Xsimplify")
+			outputDir = file("$projectDir/build/generated/jaxb/java")
+			schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd")
+			bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xjb")
+		}
+		register("Opi161TresauryFlow") {
+			extension = true
+			args = listOf("-xmlschema","-Xsimplify")
+			outputDir = file("$projectDir/build/generated/jaxb/java")
+			schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd")
+			bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xjb")
 		}
 	}
 }
