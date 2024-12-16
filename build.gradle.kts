@@ -145,6 +145,8 @@ tasks.register<Jar>("sourcesJar") {
 	description = "Assembles a JAR archive containing the main source code."
 
 	from(sourceSets["main"].allSource)
+	inputs.dir("$projectDir/build/generated/ionotification/src/main/java")
+	dependsOn("openApiGenerateIONOTIFICATION")
 	archiveClassifier.set("sources")
 }
 
