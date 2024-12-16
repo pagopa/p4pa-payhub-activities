@@ -28,7 +28,7 @@ public class IngestionFlowFileDTO implements Serializable {
     private boolean flagActive;
     private String operatorName;
     private Boolean flagSpontaneous;
-    private String filePathName;
+    private String filePath;
     private String fileName;
     private Long pdfGenerated;
     private String codRequestToken;
