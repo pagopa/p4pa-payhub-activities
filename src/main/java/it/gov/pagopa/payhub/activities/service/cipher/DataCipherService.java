@@ -4,9 +4,12 @@ package it.gov.pagopa.payhub.activities.service.cipher;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 
+@Lazy
+@Service
 public class DataCipherService {
 
   private final String encryptPsw;

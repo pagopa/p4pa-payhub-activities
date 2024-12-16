@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Lazy
-@Component
+@Service
 @Slf4j
 public class TreasuryUnmarshallerService {
 
