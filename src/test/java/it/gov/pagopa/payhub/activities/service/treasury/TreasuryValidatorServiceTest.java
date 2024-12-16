@@ -16,10 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class TreasuryValidatorServiceTest {
 
     private TreasuryValidatorService treasuryValidatorService;
-    private FlussoGiornaleDiCassa mockFlussoV14;
-    private FlussoGiornaleDiCassa mockFlussoV14NoIufNoIuv;
-    private it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa mockFlussoV161;
-    private it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa mockFlussoV161NoIufNoIuv;
+    private FlussoGiornaleDiCassa mockFlussoV14, mockFlussoV14NoIufNoIuv, mockFlussoV14NoEsercizio;
+    private it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa mockFlussoV161, mockFlussoV161NoIufNoIuv, mockFlussoV161NoEsercizio;
     private File mockFile;
 
     @BeforeEach
@@ -63,16 +61,27 @@ class TreasuryValidatorServiceTest {
         informazioniContoEvidenza161NoIufNoIuv.getMovimentoContoEvidenzas().add(movimentoContoEvidenza161NoIufNoIuv);
         mockFlussoV161NoIufNoIuv.getInformazioniContoEvidenza().add(informazioniContoEvidenza161NoIufNoIuv);
 
+        mockFlussoV14NoEsercizio = new FlussoGiornaleDiCassa();
+        InformazioniContoEvidenza informazioniContoEvidenza14NoEsercizio = new InformazioniContoEvidenza();
+        InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza14NoEsercizio = new InformazioniContoEvidenza.MovimentoContoEvidenza();
+        informazioniContoEvidenza14NoEsercizio.getMovimentoContoEvidenzas().add(movimentoContoEvidenza14NoEsercizio);
+        mockFlussoV14NoEsercizio.getInformazioniContoEvidenza().add(informazioniContoEvidenza14NoEsercizio);
+
+        mockFlussoV161NoEsercizio = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa();
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza informazioniContoEvidenza161NoEsercizio = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza();
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza161NoEsercizio = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza();
+        informazioniContoEvidenza161NoEsercizio.getMovimentoContoEvidenzas().add(movimentoContoEvidenza161NoEsercizio);
+        mockFlussoV161NoEsercizio.getInformazioniContoEvidenza().add(informazioniContoEvidenza161NoEsercizio);
+
     }
 
     @Test
     void validateDataV14() {
         // Given
-        //when(mockFlussoV14.getInformazioniContoEvidenza()).thenReturn(mockFlussoV14.getInformazioniContoEvidenza());
-       // when(mockFlussoV161.getInformazioniContoEvidenza()).thenReturn(Collections.singletonList("AnotherExceedinglyLongStringThatShouldTriggerAnErrorBecauseItIsTooLong"));
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(mockFlussoV14, mockFlussoV161, mockFile, TreasuryValidatorService.v14);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.v14);
 
         // Then
         assertNotNull(result);
@@ -87,11 +96,10 @@ class TreasuryValidatorServiceTest {
     @Test
     void validateDataV14NoIufNoIuv() {
         // Given
-        //when(mockFlussoV14.getInformazioniContoEvidenza()).thenReturn(mockFlussoV14.getInformazioniContoEvidenza());
-       // when(mockFlussoV161.getInformazioniContoEvidenza()).thenReturn(Collections.singletonList("AnotherExceedinglyLongStringThatShouldTriggerAnErrorBecauseItIsTooLong"));
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(mockFlussoV14NoIufNoIuv, mockFlussoV161, mockFile, TreasuryValidatorService.v14);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.v14);
 
         // Then
         assertNotNull(result);
@@ -103,17 +111,33 @@ class TreasuryValidatorServiceTest {
     }
 
     @Test
-    void validateDataV16() {
+    void validateDataV14NoEsercizio() {
         // Given
-        //when(mockFlussoV14.getInformazioniContoEvidenza()).thenReturn(mockFlussoV14.getInformazioniContoEvidenza());
-        // when(mockFlussoV161.getInformazioniContoEvidenza()).thenReturn(Collections.singletonList("AnotherExceedinglyLongStringThatShouldTriggerAnErrorBecauseItIsTooLong"));
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoEsercizio;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(mockFlussoV14, mockFlussoV161, mockFile, TreasuryValidatorService.v161);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.v14);
 
         // Then
         assertNotNull(result);
         //assertFalse(result.isEmpty());
+        assertEquals(13, result.size());
+
+        assertEquals("Esercizio field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
+    }
+
+    @Test
+    void validateDataV16() {
+        // Given
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161;
+
+        // When
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.v161);
+
+        // Then
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
         assertEquals(11, result.size());
 
         assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
@@ -124,20 +148,37 @@ class TreasuryValidatorServiceTest {
     @Test
     void validateDataV161NoIufNoIuv() {
         // Given
-        //when(mockFlussoV14.getInformazioniContoEvidenza()).thenReturn(mockFlussoV14.getInformazioniContoEvidenza());
-        // when(mockFlussoV161.getInformazioniContoEvidenza()).thenReturn(Collections.singletonList("AnotherExceedinglyLongStringThatShouldTriggerAnErrorBecauseItIsTooLong"));
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(mockFlussoV14NoIufNoIuv, mockFlussoV161, mockFile, TreasuryValidatorService.v161);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.v161);
 
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
         assertEquals(11, result.size());
 
-        assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
-        assertEquals("Codice univoco Versamento exceed max length of 35 chars", result.get(1).getErrorMessage());
-        assertEquals("Tipo movimento field is not valorized but it is required", result.get(2).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Tipo operazione field is not valorized but it is required", result.get(2).getErrorMessage());
+    }
+
+
+    @Test
+    void validateDataV161NoEsercizio() {
+        // Given
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoEsercizio;
+
+        // When
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.v161);
+
+        // Then
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(13, result.size());
+
+        assertEquals("Esercizio field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
 
