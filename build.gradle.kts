@@ -9,6 +9,8 @@ plugins {
 	`maven-publish`
 	jacoco
 	id("com.intershop.gradle.jaxb") version "7.0.0"
+	id("org.openapi.generator") version "7.9.0"
+	id("org.ajoberstar.grgit") version "5.3.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -57,10 +59,12 @@ val jacksonModuleVersion = "2.18.1"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
+val openApiToolsVersion = "0.2.6"
 
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
@@ -94,8 +98,11 @@ dependencies {
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
 	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
 
-	jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
-	jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
+	// openApi
+	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+
+    jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
+    jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
 }
 
 
@@ -146,7 +153,7 @@ configurations {
 
 configure<SourceSetContainer> {
 	named("main") {
-		java.srcDir("$projectDir/build/generated/src/main/java")
+		java.srcDir("$projectDir/build/generated/ionotification/src/main/java")
 	}
 }
 
@@ -155,6 +162,8 @@ tasks.register<Jar>("sourcesJar") {
 	description = "Assembles a JAR archive containing the main source code."
 
 	from(sourceSets["main"].allSource)
+	inputs.dir("$projectDir/build/generated/ionotification/src/main/java")
+	dependsOn("openApiGenerateIONOTIFICATION")
 	archiveClassifier.set("sources")
 }
 
@@ -198,9 +207,34 @@ tasks.withType<BootJar> {
 }
 
 
-configurations {
-	compileClasspath {
-		resolutionStrategy.activateDependencyLocking()
-	}
+tasks.compileJava {
+	dependsOn("openApiGenerateIONOTIFICATION")
+}
+
+var targetEnv = when (grgit.branch.current().name) {
+	"uat" -> "uat"
+	"main" -> "main"
+	else -> "develop"
+}
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateIONOTIFICATION") {
+	group = "openapi"
+	description = "description"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/$targetEnv/openapi/p4pa-io-notification.openapi.yaml")
+	outputDir.set("$projectDir/build/generated/ionotification")
+	apiPackage.set("it.gov.pagopa.pu.p4paionotification.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paionotification.model.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java17",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true"
+	))
+	library.set("resttemplate")
 }
 
