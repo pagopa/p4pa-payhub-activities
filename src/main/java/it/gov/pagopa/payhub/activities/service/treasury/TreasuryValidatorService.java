@@ -347,16 +347,15 @@ public class TreasuryValidatorService {
 
 
     public boolean validatePageSize(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, int sizeZipFile, String version) {
-        boolean valid = true;
-        if (version.equals(V_14)) {
+        boolean valid = false;
+        if (version.equals(V_14) && fGC14 != null) {
             int pageTotalNumber = fGC14.getPagineTotali().get(0);
-            if (pageTotalNumber != sizeZipFile)
-                valid = false;
-        } else {
+            if (pageTotalNumber == sizeZipFile)
+                valid = true;
+        } else if (version.equals(V_161) && fGC161 != null){
             int pageTotalNumber = fGC161.getPagineTotali().get(0);
-            log.error("page total number from xml {} - size zip file {}", pageTotalNumber, sizeZipFile);
-            if (pageTotalNumber != sizeZipFile)
-                valid = false;
+            if (pageTotalNumber == sizeZipFile)
+                valid = true;
         }
         return valid;
     }

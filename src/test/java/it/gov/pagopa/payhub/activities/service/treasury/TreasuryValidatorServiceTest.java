@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -25,6 +26,7 @@ class TreasuryValidatorServiceTest {
         treasuryValidatorService = new TreasuryValidatorService();
         mockFlussoV14 = new FlussoGiornaleDiCassa();
         mockFlussoV14.getEsercizio().add(2024);
+        mockFlussoV14.getPagineTotali().add(2);
         InformazioniContoEvidenza informazioniContoEvidenza14 = new InformazioniContoEvidenza();
         InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza14 = new InformazioniContoEvidenza.MovimentoContoEvidenza();
         movimentoContoEvidenza14.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890123456789213456789234567892345t6y7890 RFB oh948jgvndfsjvhfugf089rweuvjnfeeoknjbv908354ug890uboinfk4j2-90rui354809g4truihbnr4gf-90o43uitg089435huighn53riog345r09ugf80453yg9r4thior4tg0ir4");
@@ -34,6 +36,7 @@ class TreasuryValidatorServiceTest {
 
         mockFlussoV161 = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa();
         mockFlussoV161.getEsercizio().add(2024);
+        mockFlussoV161.getPagineTotali().add(2);
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza informazioniContoEvidenza161 = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza();
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza161 = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza();
         movimentoContoEvidenza161.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890123456789213456789234567892345t6y7890 RFB oh948jgvndfsjvhfugf089rweuvjnfeeoknjbv908354ug890uboinfk4j2-90rui354809g4truihbnr4gf-90o43uitg089435huighn53riog345r09ugf80453yg9r4thior4tg0ir4");
@@ -181,5 +184,40 @@ class TreasuryValidatorServiceTest {
         assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
+    @Test
+    void validatePageSize_Ok() {
+        //Given
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa = mockFlussoV14;
+
+        //When
+        boolean res=treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa,null,2,TreasuryValidatorService.V_14);
+
+        //Then
+        assertTrue(res);
+    }
+
+    @Test
+    void validatePageSize_Ko() {
+        //Given
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa = mockFlussoV161;
+
+        //When
+        boolean res=treasuryValidatorService.validatePageSize(null,flussoGiornaleDiCassa,6,TreasuryValidatorService.V_161);
+
+        //Then
+        assertFalse(res);
+    }
+
+    @Test
+    void validatePageSize_KoWithNullFgc() {
+        //Given
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa = mockFlussoV161;
+
+        //When
+        boolean res=treasuryValidatorService.validatePageSize(null,null,6,TreasuryValidatorService.V_161);
+
+        //Then
+        assertFalse(res);
+    }
 
 }
