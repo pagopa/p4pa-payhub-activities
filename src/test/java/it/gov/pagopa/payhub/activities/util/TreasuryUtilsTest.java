@@ -27,6 +27,19 @@ class TreasuryUtilsTest {
         assertNotNull(result);
         assertEquals("2024-12-15IUV_VALID", result);
     }
+
+    @Test
+    void testGetIdentificativo_withIUFAndSpace_case1() {
+        // Give
+        String value = "ACCREDITI VARI "+PRE_IUF_1+" URI 2024-12-15 IUV_VALID";
+
+        // When
+        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("2024-12-15IUV_VALID", result);
+    }
  @Test
     void testGetIdentificativo_withIUF_case2() {
         // Give
@@ -100,6 +113,20 @@ class TreasuryUtilsTest {
         assertNotNull(result);
         assertEquals("IUV_TEST_RFS", result);
     }
+
+    @Test
+    void testGetIdentificativo_withIUV_RFS_Over25Char() {
+        // Give
+        String value = "RFS/URI/2024-12-15 "+PRE_IUV_RFS+"/IUV_TEST_RFS12345678901234567890";
+
+        // When
+        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUV);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("IUV_TEST_RFS", result);
+    }
+
  @Test
     void testGetIdentificativo_withIUV_RFB() {
         // Give
