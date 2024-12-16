@@ -24,7 +24,7 @@ public class TreasuryOpi161MapperService implements BiFunction<FlussoGiornaleDiC
   public static final String delete = "DELETE";
 
   public TreasuryOpi161MapperService(DataCipherService dataCipherService) {
-    this.dataCipherService = dataCipherService;
+    TreasuryOpi161MapperService.dataCipherService = dataCipherService;
   }
 
 

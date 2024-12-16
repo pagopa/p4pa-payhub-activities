@@ -25,7 +25,7 @@ public class TreasuryUtils {
 
   public static final String DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
 
-  public static final String getIdentificativo(String value, final String type) {
+  public static String getIdentificativo(String value, final String type) {
     if(StringUtils.isBlank(value))
       return null;
     value = value.replaceAll("/TXT/([0-9])/", "/");
