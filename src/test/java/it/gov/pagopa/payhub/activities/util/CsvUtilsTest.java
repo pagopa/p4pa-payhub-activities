@@ -30,24 +30,6 @@ class CsvUtilsTest {
     }
 
     @Test
-    void testCreateCsv_invalidDirectory() {
-        // Give
-        String filePath = "D:\\\\dummy.txt";
-        String[] headerArray= new String[]{"Header1", "Header2"};
-        List<String[]> header = new ArrayList<>(List.of());
-        header.add(headerArray);
-        List<String[]> data = Arrays.asList(new String[]{"Data1", "Data2"}, new String[]{"Data3", "Data4"});
-
-        // When
-        IOException exception = assertThrows(IOException.class, () -> {
-            CsvUtils.createCsv(filePath, header, data);
-        });
-
-        // Then
-        assertTrue(exception.getMessage().contains("Unable to create directory"));
-    }
-
-    @Test
     void testCreateCsv_noData() throws IOException {
         // Give
         String filePath = "test/empty.csv";

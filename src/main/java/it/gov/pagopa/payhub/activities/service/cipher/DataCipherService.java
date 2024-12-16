@@ -40,8 +40,6 @@ public class DataCipherService {
       return objectMapper.readValue(decrypt(cipherData), clazz);
     } catch (JsonProcessingException e) {
       throw new IllegalStateException("Cannot deserialize object as JSON", e);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
 
