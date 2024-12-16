@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service;
 
 import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
-import it.gov.pagopa.payhub.activities.util.Utility;
+import it.gov.pagopa.payhub.activities.utility.Utilities;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -54,18 +54,23 @@ public class SendMailService {
      * @throws MessagingException if message is not sent
      */
     public boolean sendMail(MailTo mailTo) throws MessagingException {
-        wrongData(mailTo);
-        setMailSender();
-        mailSender.send( mimeMessage -> {
-            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            message.setFrom(mailTo.getEmailFromAddress());
-            message.setTo(mailTo.getTo());
-            if(ArrayUtils.isNotEmpty(mailTo.getCc()))
-                message.setCc(mailTo.getCc());
-            message.setSubject(mailTo.getMailSubject());
-            message.setText(mailTo.getHtmlText(), true);
-            log.debug("sending mail message");
-        } );
+        try  {
+            wrongData(mailTo);
+            setMailSender();
+            mailSender.send( mimeMessage -> {
+                MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                message.setFrom(mailTo.getEmailFromAddress());
+                message.setTo(mailTo.getTo());
+                if(ArrayUtils.isNotEmpty(mailTo.getCc()))
+                    message.setCc(mailTo.getCc());
+                message.setSubject(mailTo.getMailSubject());
+                message.setText(mailTo.getHtmlText(), true);
+                log.debug("sending mail message");
+            } );
+        } catch (Exception e) {
+            log.error("Mail not sent: {}", e.getMessage());
+            throw e;
+        }
         return true;
     }
 
@@ -89,21 +94,21 @@ public class SendMailService {
     }
 
     private void setMailSender() {
-        if (Utility.isNotNullOrEmpty(host))
+        if (Utilities.isNotNullOrEmptyString(host))
             mailSender.setHost(host);
-        if (Utility.isNotNullOrEmpty(port))
+        if (Utilities.isNotNullOrEmptyString(port))
             mailSender.setPort(Integer.parseInt(port));
-        if (Utility.isNotNullOrEmpty(username))
+        if (Utilities.isNotNullOrEmptyString(username))
             mailSender.setUsername(username);
-        if (Utility.isNotNullOrEmpty(password))
+        if (Utilities.isNotNullOrEmptyString(password))
             mailSender.setPassword(password);
 
         Properties props = mailSender.getJavaMailProperties();
-        if (Utility.isNotNullOrEmpty(smtpAuth))
+        if (Utilities.isNotNullOrEmptyString(smtpAuth))
             props.put("mail.smtp.auth", smtpAuth);
-        if (Utility.isNotNullOrEmpty(smtpStarttlsEnable))
+        if (Utilities.isNotNullOrEmptyString(smtpStarttlsEnable))
             props.put("mail.smtp.starttls.enable", smtpStarttlsEnable);
-        if (Utility.isNotNullOrEmpty(smtpStarttlsRequired))
+        if (Utilities.isNotNullOrEmptyString(smtpStarttlsRequired))
             props.put("mail.smtp.starttls.required", smtpStarttlsRequired);
     }
 }

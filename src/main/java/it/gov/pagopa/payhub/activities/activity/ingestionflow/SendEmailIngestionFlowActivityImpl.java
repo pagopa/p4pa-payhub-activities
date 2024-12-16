@@ -12,7 +12,7 @@ import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedEx
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
-import it.gov.pagopa.payhub.activities.util.Utility;
+import it.gov.pagopa.payhub.activities.utility.Utilities;
 import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -141,7 +141,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         else  {
             String errorLink = geErrorFileLink(ingestionFlowFileDTO.getIngestionFlowFileId());
             mailMap.put("fileName", ingestionFlowFileDTO.getDiscardedFileName());
-            if (Utility.isNotNullOrEmpty(errorLink)) {
+            if (Utilities.isNotNullOrEmptyString(errorLink)) {
                 mailMap.put("errorFileLink", errorLink);
             }
             else {
@@ -154,5 +154,4 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
     public String geErrorFileLink(Long ingestionFlowFileId) {
         return ingestionFlowFileDao.findErrorFileUrl(ingestionFlowFileId);
     }
-
 }
