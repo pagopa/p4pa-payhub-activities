@@ -124,7 +124,7 @@ class TreasuryUtilsTest {
 
         // Then
         assertNotNull(result);
-        assertEquals("IUV_TEST_RFS", result);
+        assertEquals("IUV_TEST_RFS1234567890123", result);
     }
 
  @Test
