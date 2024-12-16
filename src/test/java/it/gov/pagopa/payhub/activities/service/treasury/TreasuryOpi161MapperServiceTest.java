@@ -49,7 +49,7 @@ class TreasuryOpi161MapperServiceTest {
 		// When
 		Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> result = treasuryOpi161MapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
-		List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> pairs=result.get(TreasuryOpi14MapperService.insert);
+		List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> pairs=result.get(TreasuryOpi14MapperService.INSERT);
 
 		TreasuryDTO firstDTO = pairs.get(0).getLeft();
 		// Then

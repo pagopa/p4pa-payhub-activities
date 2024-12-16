@@ -81,7 +81,7 @@ class TreasuryValidatorServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.v14);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.V_14);
 
         // Then
         assertNotNull(result);
@@ -99,7 +99,7 @@ class TreasuryValidatorServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.v14);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.V_14);
 
         // Then
         assertNotNull(result);
@@ -116,7 +116,7 @@ class TreasuryValidatorServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoEsercizio;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.v14);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.V_14);
 
         // Then
         assertNotNull(result);
@@ -133,7 +133,7 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.v161);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.V_161);
 
         // Then
         assertNotNull(result);
@@ -151,7 +151,7 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.v161);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.V_161);
 
         // Then
         assertNotNull(result);
@@ -170,7 +170,7 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoEsercizio;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.v161);
+        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.V_161);
 
         // Then
         assertNotNull(result);

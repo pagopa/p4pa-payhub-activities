@@ -2,24 +2,22 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Lazy
 @Service
 @Slf4j
 public class TreasuryValidatorService {
-    public static final String v14 = "v14";
-    public static final String v161 = "v161";
+    public static final String V_14 = "v14";
+    public static final String V_161 = "v161";
     List<TreasuryErrorDTO> treasuryErrorDTOList;
 
     public TreasuryValidatorService() {
@@ -34,8 +32,8 @@ public class TreasuryValidatorService {
     }
 
 
-    private List<TreasuryErrorDTO> maxLengthFields(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, File file, String version) {
-        if (version.equals(v14)) {
+    private void maxLengthFields(FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, File file, String version) {
+        if (version.equals(V_14)) {
             fGC14.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza -> {
                 informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
                     String iuf = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF);
@@ -64,7 +62,7 @@ public class TreasuryValidatorService {
                     }
                 });
             });
-        } else if (version.equals(v161)) {
+        } else if (version.equals(V_161)) {
             fGC161.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza -> {
                 informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
                     String iuf = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF);
@@ -94,12 +92,11 @@ public class TreasuryValidatorService {
                 });
             });
         }
-        return treasuryErrorDTOList;
     }
 
     private void mandatoryFields(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, File file, String version) {
         switch (version) {
-            case v14:
+            case V_14:
                 fGC14.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza ->
                         informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
                             String codBolletta = "Non disponibile";
@@ -220,7 +217,7 @@ public class TreasuryValidatorService {
                                         .build());
                         }));
                 break;
-            case v161:
+            case V_161:
                 fGC161.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza ->
                         informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
                             String codBolletta = "Non disponibile";
@@ -340,34 +337,22 @@ public class TreasuryValidatorService {
                                         .errorMessage("End to end id field is not valorized but it is required")
                                         .build());
                         }));
-
                 break;
         }
-
     }
 
 
     public boolean validatePageSize(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, int sizeZipFile, String version) {
         boolean valid = true;
-        if (version.equals(v14)) {
+        if (version.equals(V_14)) {
             int pageTotalNumber = fGC14.getPagineTotali().get(0);
-//      fGC14.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza -> {
-//        informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
-//          log.error("page total number from xml {} - size zip file {}", pageTotalNumber, sizeZipFile);
             if (pageTotalNumber != sizeZipFile)
                 valid = false;
-
-//        });
-//      });
         } else {
             int pageTotalNumber = fGC161.getPagineTotali().get(0);
-//      fGC161.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza -> {
-//        informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
             log.error("page total number from xml {} - size zip file {}", pageTotalNumber, sizeZipFile);
             if (pageTotalNumber != sizeZipFile)
                 valid = false;
-//        });
-//      });
         }
         return valid;
     }
