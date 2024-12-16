@@ -73,8 +73,8 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
     @Override
     public TreasuryIufResult processFile(Long ingestionFlowFileId) {
-        List<String> iufIuvList = new ArrayList<>();
-        List<Path> ingestionFlowFiles = new ArrayList<>();
+//        List<String> iufIuvList = new ArrayList<>();
+        List<Path> ingestionFlowFiles;
         IngestionFlowFileDTO ingestionFlowFileDTO = null;
         AtomicReference<TreasuryIufResult> treasuryIufResult = new AtomicReference<>();
 
@@ -87,16 +87,15 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             if (ingestionFlowFiles != null && !ingestionFlowFiles.isEmpty()) {
 
                 IngestionFlowFileDTO finalIngestionFlowFileDTO = ingestionFlowFileDTO;
-                List<Path> finalIngestionFlowFiles = ingestionFlowFiles;
                 ingestionFlowFiles.forEach(path -> {
                     File ingestionFlowFile = path.toFile();
                     log.debug("file from zip archive with name {} loaded successfully ", ingestionFlowFile.getName());
 
-                    treasuryIufResult.set(parseData(ingestionFlowFile, finalIngestionFlowFileDTO, finalIngestionFlowFiles.size()));
+                    treasuryIufResult.set(parseData(ingestionFlowFile, finalIngestionFlowFileDTO, ingestionFlowFiles.size()));
                     try {
                         archive(finalIngestionFlowFileDTO);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new ActivitiesException(e.getMessage());
                     }
 
 
@@ -152,10 +151,10 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             versione = TreasuryValidatorService.V_161;
 
         assert versione != null;
-//        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
-//          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
-//          throw new RuntimeException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " versione " + versione);
-//        }
+        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
+          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
+          throw new RuntimeException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " versione " + versione);
+        }
 
 
         List<TreasuryErrorDTO> errorDTOList = treasuryValidatorService.validateData(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, ingestionFlowFile, versione);
@@ -172,13 +171,13 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                         errorDTO.getErrorCode(),
                         errorDTO.getErrorMessage()
                 })
-                .collect(Collectors.toList());
+                .toList();
 
 
         try {
             CsvUtils.createCsv("ciao", header,data);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ActivitiesException(e.getMessage());
         }
 
 

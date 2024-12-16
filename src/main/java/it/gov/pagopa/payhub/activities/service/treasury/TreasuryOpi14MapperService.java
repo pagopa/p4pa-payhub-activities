@@ -83,8 +83,9 @@ public class TreasuryOpi14MapperService implements BiFunction<FlussoGiornaleDiCa
                     .build();
 
             insertList.add(Pair.of(treasuryDTO, flussoTesoreriaPIIDTO));
-          } else if (movContoEvidenza.getTipoOperazione().equals("STORNATO"))
+          } else if (movContoEvidenza.getTipoOperazione().equals("STORNATO")) {
             deleteList.add(Pair.of(treasuryDTO, null));
+          }
 
 
       });

@@ -18,6 +18,8 @@ import java.util.List;
 public class TreasuryValidatorService {
     public static final String V_14 = "v14";
     public static final String V_161 = "v161";
+    private static final String NOT_AVAILABLE = "Not available";
+    
     List<TreasuryErrorDTO> treasuryErrorDTOList;
 
     public TreasuryValidatorService() {
@@ -38,8 +40,8 @@ public class TreasuryValidatorService {
                 informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
                     String iuf = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF);
                     String iuv = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUV);
-                    String codBolletta = "Non disponibile";
-                    String codEsercizio = "Non disponibile";
+                    String codBolletta = NOT_AVAILABLE;
+                    String codEsercizio = NOT_AVAILABLE;
                     codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
                     codEsercizio = fGC14.getEsercizio().size()>0  ? fGC14.getEsercizio().get(0).toString() : codEsercizio;;
                     if (StringUtils.isNotBlank(iuf) && iuf.length() > 34) {
@@ -67,8 +69,8 @@ public class TreasuryValidatorService {
                 informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
                     String iuf = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF);
                     String iuv = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUV);
-                    String codBolletta = "Non disponibile";
-                    String codEsercizio = "Non disponibile";
+                    String codBolletta = NOT_AVAILABLE;
+                    String codEsercizio = NOT_AVAILABLE;
                     codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
                     codEsercizio = fGC161.getEsercizio().size()>0  ? fGC161.getEsercizio().get(0).toString() : codEsercizio;
                     if (StringUtils.isNotBlank(iuf) && iuf.length() > 34) {
@@ -99,8 +101,8 @@ public class TreasuryValidatorService {
             case V_14:
                 fGC14.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza ->
                         informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
-                            String codBolletta = "Non disponibile";
-                            String codEsercizio = "Non disponibile";
+                            String codBolletta = NOT_AVAILABLE;
+                            String codEsercizio = NOT_AVAILABLE;
                             codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
                             codEsercizio = fGC14.getEsercizio().size()>0  ? fGC14.getEsercizio().get(0).toString() : codEsercizio;
                             if (fGC14.getEsercizio() == null || fGC14.getEsercizio().isEmpty())
@@ -220,8 +222,8 @@ public class TreasuryValidatorService {
             case V_161:
                 fGC161.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza ->
                         informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
-                            String codBolletta = "Non disponibile";
-                            String codEsercizio = "Non disponibile";
+                            String codBolletta = NOT_AVAILABLE;
+                            String codEsercizio = NOT_AVAILABLE;
                             codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
                             codEsercizio = fGC161.getEsercizio().size()>0  ? fGC161.getEsercizio().get(0).toString() : codEsercizio;
                             if (fGC161.getEsercizio() == null || fGC161.getEsercizio().isEmpty())
@@ -337,6 +339,8 @@ public class TreasuryValidatorService {
                                         .errorMessage("End to end id field is not valorized but it is required")
                                         .build());
                         }));
+                break;
+            default:
                 break;
         }
     }

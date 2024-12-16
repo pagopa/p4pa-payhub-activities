@@ -45,7 +45,7 @@ public class DataCipherService {
 
   public byte[] hash(String value){
     if(value==null){
-      return null;
+      return new byte[]{};
     }
     return hashAlgorithm.apply(value.toUpperCase());
   }
