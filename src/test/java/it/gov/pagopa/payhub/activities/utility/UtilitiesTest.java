@@ -40,19 +40,4 @@ class UtilitiesTest {
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"null", "blank"})
-    void testValidateString(String str){
-        switch (str)  {
-            case "null":
-                assertTrue(Utilities.isNullOrEmptyString(""));
-                break;
-            case "blank":
-                assertTrue(Utilities.isInvalidIdentifier(null));
-                break;
-            default:
-                break;
-        }
-    }
-
 }
