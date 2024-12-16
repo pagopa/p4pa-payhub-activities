@@ -40,7 +40,7 @@ class SendMailServiceTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"01","02","03","04","05","06","07","08","09"})
 	void testSendEmailParametrized(String param) {
-		MailTo mailTo = buildMailTo();;
+		MailTo mailTo = buildMailTo();
 		String errDataNotValued = "Mail data null or not valued";
 		switch (param)  {
 			case "01":
