@@ -95,7 +95,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
             log.error("Sending e-mail not supported for flow type: {}", flowType);
             throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type: "+flowType);
         }
-        if (! success && (StringUtils.isBlank(ingestionFlowFileDTO.getDiscardedFileName()) || StringUtils.isBlank(ingestionFlowFileDTO.getFilePathName())))  {
+        if (! success && (StringUtils.isBlank(ingestionFlowFileDTO.getDiscardedFileName()) || StringUtils.isBlank(ingestionFlowFileDTO.getFilePath())))  {
             log.error("Sending error mail when discarded fine not exists not supported");
             throw new DiscardedIngestionFlowFileNotFoundException("Sending error mail when discarded fine not exists not supported");
         }
