@@ -1,13 +1,15 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassifyDao;
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyDTO;
-import it.gov.pagopa.payhub.activities.exception.ClearClassifyIufException;
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.utility.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+/**
+ * Implementation for defining an activity to delete classifications based on IUF.
+ */
 @Slf4j
 @Lazy
 @Component
@@ -19,35 +21,23 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
     }
 
     /**
+     * deletion of a classification based on the provided parameters
      *
-     * @param classifyDTO dto containing classification to delete
-     * @return boolean true for a successful deletion otherwise false
-     * @throws ClearClassifyIufException specific exception thrown
+     * @param organizationId organization id
+     * @param iuf flow identifier
+     * @throws Exception exception thrown
      */
-    public boolean deleteClassificationByIuf(ClassifyDTO classifyDTO) throws ClearClassifyIufException {
-        boolean deletedSuccessfully = true;
-        String classification = classifyDTO.getClassificationCode();
-        Long paymentReportingId = classifyDTO.getPaymentReportingId();
-        verifyParameters(paymentReportingId, classification);
+    public void deleteClassificationByIuf(Long organizationId, String iuf) throws Exception {
         try {
-            classifyDao.deleteClassificationByIuf(paymentReportingId, classification);
+            classifyDao.deleteClassificationByIuf(organizationId, iuf, Utilities.CLASSIFICATION.TES_NO_MATCH.getValue());
         }
-        catch (ClearClassifyIufException ex) {
-            log.error("Error deleting classification: {} for reporting id {}", classification, paymentReportingId);
-            deletedSuccessfully = false;
+        catch (NotRetryableActivityException notRetryableActivityException) {
+            log.error("Activity not retryable for errors in deleting classification TES_NO_MATCH for organizationId id {} and iuf {}", organizationId, iuf);
+            throw notRetryableActivityException;
         }
-        return deletedSuccessfully;
-    }
-
-    /**
-     *
-     * @param paymentReportingId unique identifier of the payment reporting flow (IUF)
-     * @param classification classification
-     */
-    private static void verifyParameters(Long paymentReportingId, String classification) {
-        if (Utilities.isInvalidIdentifier(paymentReportingId))
-            throw new ClearClassifyIufException ("payment reporting id may be not null or zero");
-        if (Utilities.isNullOrEmptyString(classification))
-            throw new ClearClassifyIufException("classification may be not null or blank");
+        catch (Exception exception) {
+            log.error("Error deleting classification TES_NO_MATCH for organizationId id {} and iuf {}", organizationId, iuf);
+            throw exception;
+        }
     }
 }

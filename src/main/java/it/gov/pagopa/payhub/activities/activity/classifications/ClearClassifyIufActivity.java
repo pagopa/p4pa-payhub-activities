@@ -1,14 +1,16 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyDTO;
-
+/**
+ * Interface for defining an activity to delete classifications based on IUF.
+ */
 public interface ClearClassifyIufActivity {
     /**
-     * deletion of a classification based on the provided dto parameter
+     * deletion of a classification based on the provided parameters
      *
-     * @param classifyDTO classification dto
-     * @return  boolean true for a successful deletion otherwise false
+     * @param organizationId organization id
+     * @param iuf flow identifier
+     * @throws Exception possible exception
      */
-    boolean deleteClassificationByIuf(ClassifyDTO classifyDTO);
+    void deleteClassificationByIuf(Long organizationId, String iuf) throws Exception;
 
 }
