@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.activities.dto;
 
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -15,7 +17,7 @@ import java.util.Date;
 public class IngestionFlowFileDTO implements Serializable {
 
     private Long ingestionFlowFileId;
-    private String flowFileType;
+    private IngestionFlowFileType flowFileType;
     private int version;
     private OrganizationDTO org;
     private String status;
@@ -32,4 +34,9 @@ public class IngestionFlowFileDTO implements Serializable {
     private Long pdfGenerated;
     private String codRequestToken;
     private String codError;
+    private String pspIdentifier;
+    private LocalDateTime flowDateTime;
+    private String fileSourceCode;
+    private String discardFileName;
+
 }
