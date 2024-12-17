@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassifyDao;
-import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
-import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import it.gov.pagopa.payhub.activities.utility.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
