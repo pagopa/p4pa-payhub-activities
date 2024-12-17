@@ -1,9 +1,11 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
-
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
 /**
  * Interface for the UpdateIngestionFlowStatusActivity.
  * Updates the status of a IngestionFlow record identified by the provided ID.
  */
+@ActivityInterface
 public interface UpdateIngestionFlowStatusActivity {
 
     /**
@@ -13,5 +15,6 @@ public interface UpdateIngestionFlowStatusActivity {
      * @param newStatus the new status to set.
      * @return true if the update was successful, false otherwise.
      */
+    @ActivityMethod
     boolean updateStatus(Long id, String newStatus);
 }
