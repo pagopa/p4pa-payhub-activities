@@ -9,8 +9,7 @@ public interface ClearClassifyIufActivity {
      *
      * @param organizationId organization id
      * @param iuf flow identifier
-     * @throws Exception possible exception
+     * @return boolean true if success deletion or exception
      */
-    void deleteClassificationByIuf(Long organizationId, String iuf) throws Exception;
-
+    boolean deleteClassificationByIuf(Long organizationId, String iuf);
 }

@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassifyDao;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
+import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import it.gov.pagopa.payhub.activities.utility.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -21,23 +22,13 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
     }
 
     /**
-     * deletion of a classification based on the provided parameters
+     * delete classification
      *
      * @param organizationId organization id
      * @param iuf flow identifier
-     * @throws Exception exception thrown
+     * @return boolean true if success deletion or exception
      */
-    public void deleteClassificationByIuf(Long organizationId, String iuf) throws Exception {
-        try {
-            classifyDao.deleteClassificationByIuf(organizationId, iuf, Utilities.CLASSIFICATION.TES_NO_MATCH.getValue());
-        }
-        catch (NotRetryableActivityException notRetryableActivityException) {
-            log.error("Activity not retryable for errors in deleting classification TES_NO_MATCH for organizationId id {} and iuf {}", organizationId, iuf);
-            throw notRetryableActivityException;
-        }
-        catch (Exception exception) {
-            log.error("Error deleting classification TES_NO_MATCH for organizationId id {} and iuf {}", organizationId, iuf);
-            throw exception;
-        }
+    public boolean deleteClassificationByIuf(Long organizationId, String iuf) {
+        return classifyDao.deleteClassificationByIuf(organizationId, iuf, Utilities.CLASSIFICATION.TES_NO_MATCH.getValue());
     }
 }
