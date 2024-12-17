@@ -60,7 +60,8 @@ val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
 val openApiToolsVersion = "0.2.6"
-
+val wiremockSpringBootVersion = "2.1.3"
+val temporalVersion = "1.27.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -79,6 +80,8 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
+    //temporal
+	implementation("io.temporal:temporal-sdk:$temporalVersion")
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
@@ -86,6 +89,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation ("org.projectlombok:lombok")
 	testImplementation ("org.wiremock:wiremock-standalone:$wiremockVersion")
+	testImplementation ("com.maciejwalkowiak.spring:wiremock-spring-boot:$wiremockSpringBootVersion")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
@@ -142,7 +146,7 @@ configure<SourceSetContainer> {
 }
 
 tasks.compileJava {
-	dependsOn("openApiGenerateAuth")
+	dependsOn("openApiGenerateP4PAAUTH")
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -219,6 +223,7 @@ tasks.withType<BootJar> {
 
 tasks.compileJava {
 	dependsOn("openApiGenerateIONOTIFICATION")
+	dependsOn("openApiGenerateP4PAAUTH")
 }
 
 var targetEnv = when (grgit.branch.current().name) {
@@ -236,6 +241,27 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 	outputDir.set("$projectDir/build/generated/ionotification")
 	apiPackage.set("it.gov.pagopa.pu.p4paionotification.controller.generated")
 	modelPackage.set("it.gov.pagopa.pu.p4paionotification.model.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java17",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true"
+	))
+	library.set("resttemplate")
+}
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateP4PAAUTH") {
+	group = "openapi"
+	description = "description"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
+	outputDir.set("$projectDir/build/generated")
+	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paauth.model.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
