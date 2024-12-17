@@ -2,9 +2,11 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
+import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
@@ -16,17 +18,27 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
-@SpringBootTest(
-  classes = {TreasuryUnmarshallerService.class, XMLUnmarshallerService.class},
-  webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@EnableConfigurationProperties
+
 @ExtendWith(MockitoExtension.class)
 class TreasuryUnmarshallerServiceTest {
 
-  @Autowired
   private TreasuryUnmarshallerService treasuryUnmarshallerService;
+  private XMLUnmarshallerService xmlUnmarshallerService;
+  private Resource resourcev14;
+  private Resource resourcev161;
+
+
+  @BeforeEach
+  void setUp() {
+    xmlUnmarshallerService = new XMLUnmarshallerService();
+    resourcev14 = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd");
+    resourcev161 = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd");
+    treasuryUnmarshallerService = new TreasuryUnmarshallerService(resourcev14,resourcev161, xmlUnmarshallerService);
+  }
 
   @Test
   void givenValidXmlWhenUnmarshalOpi14ThenOk() throws Exception {
@@ -46,9 +58,10 @@ class TreasuryUnmarshallerServiceTest {
   void givenValidXmlWhenUnmarshalOpi161ThenOk() throws Exception {
     // given
     Resource xmlFile = new ClassPathResource("treasury/OPI_GIORNALE_DI_CASSA_V_1_6_1.VALID.xml");
+    File file= xmlFile.getFile();
 
     //when
-    it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa result = treasuryUnmarshallerService.unmarshalOpi161(xmlFile.getFile());
+    it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa result = treasuryUnmarshallerService.unmarshalOpi161(file);
 
     // then
     Assertions.assertNotNull(result);
