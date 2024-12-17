@@ -60,7 +60,7 @@ val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
 val openApiToolsVersion = "0.2.6"
-
+val temporalVersion = "1.26.1"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -78,6 +78,9 @@ dependencies {
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
+
+    //temporal
+	implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion")
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
