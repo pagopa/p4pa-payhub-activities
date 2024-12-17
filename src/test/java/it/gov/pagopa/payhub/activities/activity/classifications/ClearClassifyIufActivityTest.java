@@ -16,8 +16,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ClearClassifyIufActivityTest {
-    private static final Long organizationId = 1L;
-    private static final String iuf = "IUF";
+    private static final Long ORGANIZATION = 1L;
+    private static final String IUF = "IUF";
 
     @Mock
     private ClassifyDao classifyDao;
@@ -31,13 +31,13 @@ class ClearClassifyIufActivityTest {
 
     @Test
     void deleteClassificationSuccess() {
-        assertDoesNotThrow(() -> clearClassifyIufActivity.deleteClassificationByIuf(organizationId,iuf));
+        assertDoesNotThrow(() -> clearClassifyIufActivity.deleteClassificationByIuf(ORGANIZATION,IUF));
     }
 
     @Test
     void deleteClassificationFailed() {
-        when(classifyDao.deleteClassificationByIuf(organizationId, iuf, Utilities.CLASSIFICATION.TES_NO_MATCH.getValue())).thenReturn(false);
-        assertFalse(clearClassifyIufActivity.deleteClassificationByIuf(organizationId,iuf));
+        when(classifyDao.deleteClassificationByIuf(ORGANIZATION, IUF, Utilities.CLASSIFICATION.TES_NO_MATCH.getValue())).thenReturn(false);
+        assertFalse(clearClassifyIufActivity.deleteClassificationByIuf(ORGANIZATION,IUF));
     }
 
 }
