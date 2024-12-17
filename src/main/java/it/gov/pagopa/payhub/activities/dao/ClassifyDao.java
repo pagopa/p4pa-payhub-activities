@@ -7,11 +7,14 @@ import it.gov.pagopa.payhub.activities.exception.ClearClassifyIufException;
  */
 public interface ClassifyDao {
 	/**
+	/**
 	 * delete classification
 	 *
-	 * @param paymentReportingId reporting flow unique identifier
+	 * @param organizationId organization id
+	 * @param iuf fow identifier
 	 * @param classification classification to delete
+	 * @throws ClearClassifyIufException possible exception in deletion
 	 */
-	void deleteClassificationByIuf(Long paymentReportingId, String classification) throws ClearClassifyIufException;
+	void deleteClassificationByIuf(Long organizationId, String iuf, String classification) throws Exception;
 }
 
