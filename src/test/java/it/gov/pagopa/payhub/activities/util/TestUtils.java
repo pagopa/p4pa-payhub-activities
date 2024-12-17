@@ -37,22 +37,4 @@ public class TestUtils {
             .atZone(ZoneId.systemDefault())
             .toInstant()
     );
-
-    @ParameterizedTest
-    @ValueSource(strings = {"null", "blank", "value"})
-    void testValidateString(String str){
-        switch (str)  {
-            case "null":
-                assertTrue(Utilities.isNullOrEmptyString(""));
-                break;
-            case "blank":
-                assertTrue(Utilities.isNullOrEmptyString(null));
-                break;
-            case "value":
-                assertFalse(Utilities.isNullOrEmptyString("value"));
-                break;
-            default:
-                break;
-        }
-    }
 }

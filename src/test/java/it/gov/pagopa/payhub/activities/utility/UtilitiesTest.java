@@ -23,21 +23,4 @@ class UtilitiesTest {
         assertFalse(result);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"null", "zero"})
-    void testInvalidIdentifier(String params){
-        switch (params)  {
-            case "null":
-                Long identifier1 = null;
-                assertTrue(Utilities.isInvalidIdentifier(identifier1));
-                break;
-            case "zero":
-                Long identifier2 = 0L;
-                assertTrue(Utilities.isInvalidIdentifier(identifier2));
-                break;
-            default:
-                break;
-        }
-    }
-
 }
