@@ -26,7 +26,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -102,8 +101,8 @@ public class TreasuryOpiIngestionActivityTest {
           Map.of(KEY_MAP, List.of(
                   Pair.of(
                           TreasuryDTO.builder()
-                                  .codIdUnivocoFlusso(VALID_INGESTION_FLOW_IUF.get(0))
-                                  .codIdUnivocoVersamento(VALID_IUV_LIST.get(0))
+                                  .flowIdentifierCode(VALID_INGESTION_FLOW_IUF.get(0))
+                                  .iuv(VALID_IUV_LIST.get(0))
                                   .build(),
                           FlussoTesoreriaPIIDTO.builder()
                                   .deCognome(PII_COGNOME)
@@ -111,8 +110,8 @@ public class TreasuryOpiIngestionActivityTest {
                                   .build()),
                   Pair.of(
                           TreasuryDTO.builder()
-                                  .codIdUnivocoFlusso(VALID_INGESTION_FLOW_IUF.get(1))
-                                  .codIdUnivocoVersamento(VALID_IUV_LIST.get(1))
+                                  .flowIdentifierCode(VALID_INGESTION_FLOW_IUF.get(1))
+                                  .iuv(VALID_IUV_LIST.get(1))
                                   .build(),
                           FlussoTesoreriaPIIDTO.builder()
                                   .deCognome(PII_COGNOME)

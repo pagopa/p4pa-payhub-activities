@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -156,7 +155,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             TreasuryDTO treasuryDTO = pair.getLeft();
             treasuryDTO.setPersonalDataId(idFlussoTesoreriaPiiId);
             treasuryDao.insert(treasuryDTO);
-            iufList.add(treasuryDTO.getCodIdUnivocoFlusso());
+            iufList.add(treasuryDTO.getFlowIdentifierCode());
         });
 
         return new TreasuryIufResult(iufList.stream().toList(), success);

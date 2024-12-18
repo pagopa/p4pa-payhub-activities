@@ -55,23 +55,23 @@ class TreasuryOpi161MapperServiceTest {
 		// Then
 		assertEquals(2, result.size());
 		assertEquals(1, pairs.size());
-		assertEquals(2L, firstDTO.getMygovManageFlussoId());
-		assertEquals("2024", firstDTO.getDeAnnoBolletta());
-		assertEquals("543", firstDTO.getCodBolletta());
-		assertEquals(new BigDecimal(756), firstDTO.getNumIpBolletta());
-		assertEquals("5", firstDTO.getCodDocumento());
-		assertEquals(1L, firstDTO.getMygovEnteId());
-		assertEquals("2022-09-28CIPBITMM-N01080020792913", firstDTO.getCodIdUnivocoFlusso());
-        assertNull(firstDTO.getCodIdUnivocoVersamento());
-		assertEquals("cod123", firstDTO.getCodiceGestionaleProvvisorio());
+		assertEquals(2L, firstDTO.getIngestionFlowFileId());
+		assertEquals("2024", firstDTO.getBillYear());
+		assertEquals("543", firstDTO.getBillCode());
+		assertEquals(new BigDecimal(756), firstDTO.getBillIpNumber());
+		assertEquals("5", firstDTO.getDocumentCode());
+		assertEquals(1L, firstDTO.getOrganizationId());
+		assertEquals("2022-09-28CIPBITMM-N01080020792913", firstDTO.getFlowIdentifierCode());
+        assertNull(firstDTO.getIuv());
+		assertEquals("cod123", firstDTO.getManagementProvisionalCode());
 		assertEquals("endToEnd1", firstDTO.getEndToEndId());
-		assertEquals(CLIENTE_HASH, firstDTO.getDeCognomeHash());
-		assertNotNull(firstDTO.getDtBolletta());
-		assertNotNull(firstDTO.getDtRicezione());
-		assertNotNull(firstDTO.getDtDataValutaRegione());
-		assertNotNull(firstDTO.getDtCreazione());
-		assertNotNull(firstDTO.getDtUltimaModifica());
-		assertNotNull(firstDTO.getDtEffettivaSospeso());
+		assertEquals(CLIENTE_HASH, firstDTO.getLastNameHash());
+		assertNotNull(firstDTO.getBillDate());
+		assertNotNull(firstDTO.getReceptionDate());
+		assertNotNull(firstDTO.getRegionValueDate());
+		assertNotNull(firstDTO.getCreationDate());
+		assertNotNull(firstDTO.getLastUpdateDate());
+		assertNotNull(firstDTO.getActualSuspensionDate());
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {
