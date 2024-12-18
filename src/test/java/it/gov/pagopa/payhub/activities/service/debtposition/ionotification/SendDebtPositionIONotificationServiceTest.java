@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 
 import it.gov.pagopa.pu.p4paionotification.controller.ApiClient;
-import it.gov.pagopa.pu.p4paionotification.controller.generated.IoNotificationApi;
 import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +23,6 @@ import static org.mockito.Mockito.times;
 class SendDebtPositionIONotificationServiceTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
-    @Mock
-    private IoNotificationApi ioNotificationApi;
     @Mock
     private RestTemplate restTemplateMock;
 
