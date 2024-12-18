@@ -47,29 +47,27 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
     @Override
     public TreasuryIufResult processFile(Long ingestionFlowFileId) {
-        List<String> iufList ;
-        List<Path> ingestionFlowFiles = null;
-        AtomicBoolean success = new AtomicBoolean(true);
+
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
-            ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
+            List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
+
+
+           List <String> iufList = ingestionFlowFiles.stream()
+                    .map(this::parseData)
+                    .flatMap(List::stream)
+                    .toList();
+
+
+            return new TreasuryIufResult(iufList,true);
 
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
             return new TreasuryIufResult(Collections.emptyList(), false);
         }
 
-        if (ingestionFlowFiles != null && !ingestionFlowFiles.isEmpty()) {
-            ingestionFlowFiles.forEach(path -> {
-                File ingestionFlowFile = path.toFile();
-                log.debug("file from zip archive with name {} loaded successfully ", ingestionFlowFile.getName());
 
-                success.set(parseData(ingestionFlowFile));
-
-            });
-        }
-        return new TreasuryIufResult(iufIuvList, success.get());
     }
 
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
@@ -87,8 +85,8 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                 .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
     }
 
-    private boolean parseData(File ingestionFlowFile) {
-
+    private List<String> parseData(Path ingestionFlowFilePath) {
+        File ingestionFlowFile=ingestionFlowFilePath.toFile();
 
         it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa flussoGiornaleDiCassa14 = null;
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa161 = null;
@@ -105,10 +103,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                 log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
             } catch (Exception e) {
                 log.error("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
-                return false;
             }
         }
-        return true;
+        return List.of();
     }
 
 }
