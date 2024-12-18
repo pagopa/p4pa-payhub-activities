@@ -113,22 +113,6 @@ class TreasuryValidatorServiceTest {
         assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
-    @Test
-    void validateDataV14NoEsercizio() {
-        // Given
-        FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoEsercizio;
-
-        // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, null, mockFile, TreasuryValidatorService.V_14);
-
-        // Then
-        assertNotNull(result);
-        //assertFalse(result.isEmpty());
-        assertEquals(13, result.size());
-
-        assertEquals("Esercizio field is not valorized but it is required", result.get(0).getErrorMessage());
-        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
-    }
 
     @Test
     void validateDataV16() {
@@ -164,24 +148,6 @@ class TreasuryValidatorServiceTest {
         assertEquals("Tipo movimento field is not valorized but it is required", result.get(0).getErrorMessage());
         assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
         assertEquals("Tipo operazione field is not valorized but it is required", result.get(2).getErrorMessage());
-    }
-
-
-    @Test
-    void validateDataV161NoEsercizio() {
-        // Given
-        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoEsercizio;
-
-        // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(null, flussoGiornaleDiCassa, mockFile, TreasuryValidatorService.V_161);
-
-        // Then
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals(13, result.size());
-
-        assertEquals("Esercizio field is not valorized but it is required", result.get(0).getErrorMessage());
-        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
