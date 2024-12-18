@@ -47,7 +47,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
     @Override
     public TreasuryIufResult processFile(Long ingestionFlowFileId) {
-        List<String> iufIuvList = new ArrayList<>();
+        List<String> iufList ;
         List<Path> ingestionFlowFiles = null;
         AtomicBoolean success = new AtomicBoolean(true);
         try {
