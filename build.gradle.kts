@@ -146,7 +146,7 @@ configure<SourceSetContainer> {
 }
 
 tasks.compileJava {
-	dependsOn("openApiGenerateP4PAAUTH")
+	dependsOn("openApiGenerateP4PAAUTH", "openApiGenerateIONOTIFICATION")
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -157,7 +157,7 @@ tasks.register<Jar>("sourcesJar") {
 	inputs.dir("$projectDir/build/generated/ionotification/src/main/java")
 	dependsOn("openApiGenerateIONOTIFICATION")
 	archiveClassifier.set("sources")
-	dependsOn("openApiGenerateAuth")
+	dependsOn("openApiGenerateP4PAAUTH")
 }
 
 tasks.register<Jar>("javadocJar") {
@@ -167,27 +167,6 @@ tasks.register<Jar>("javadocJar") {
 	dependsOn(tasks.javadoc)
 	from(tasks.javadoc.get().destinationDir)
 	archiveClassifier.set("javadoc")
-}
-
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateAuth") {
-	group = "openapi"
-	description = "description"
-
-	generatorName.set("java")
-	remoteInputSpec.set("https://github.com/pagopa/p4pa-auth/raw/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
-	outputDir.set("$projectDir/build/generated")
-	modelPackage.set("it.gov.pagopa.pu.p4paauth.dto.generated")
-	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
-	configOptions.set(mapOf(
-		"swaggerAnnotations" to "false",
-		"openApiNullable" to "false",
-		"dateLibrary" to "java17",
-		"useSpringBoot3" to "true",
-		"useJakartaEe" to "true",
-		"serializationLibrary" to "jackson",
-		"generateSupportingFiles" to "true"
-	))
-	library.set("resttemplate")
 }
 
 publishing {
