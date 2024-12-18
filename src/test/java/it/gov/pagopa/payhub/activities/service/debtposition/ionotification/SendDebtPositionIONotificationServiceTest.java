@@ -1,7 +1,6 @@
-package it.gov.pagopa.payhub.activities.activity.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 
 import it.gov.pagopa.pu.p4paionotification.controller.ApiClient;
-import it.gov.pagopa.pu.p4paionotification.controller.generated.IoNotificationApi;
 import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,15 +20,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-public class SendIONotificationActivityTest {
+class SendDebtPositionIONotificationServiceTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
     @Mock
-    private IoNotificationApi ioNotificationApi;
-    @Mock
     private RestTemplate restTemplateMock;
 
-    private SendIONotificationActivityImpl sendIONotificationActivity;
+    private SendDebtPositionIONotificationServiceImpl sendIONotificationActivity;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +35,7 @@ public class SendIONotificationActivityTest {
         ApiClient apiClient = new ApiClient(restTemplateMock);
         String baseUrl = "http://example.com";
         apiClient.setBasePath(baseUrl);
-        sendIONotificationActivity = new SendIONotificationActivityImpl(restTemplateBuilderMock, baseUrl);
+        sendIONotificationActivity = new SendDebtPositionIONotificationServiceImpl(restTemplateBuilderMock, baseUrl);
     }
 
     @Test
