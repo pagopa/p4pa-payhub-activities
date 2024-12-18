@@ -6,10 +6,11 @@ import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.SendMailService;
 import it.gov.pagopa.payhub.activities.service.UserAuthorizationService;
-import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
+import it.gov.pagopa.pu.p4paauth.model.generated.UserInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,6 +63,7 @@ class SendEmailIngestionFlowActivityTest {
     private UserInfo invalidUserInfoDTO;
     private OrganizationDTO validOrganizationInfoDTO;
     private OrganizationDTO invalidOrganizationInfoDTO;
+
     @BeforeEach
     void init() {
         createTestData();
@@ -285,44 +287,43 @@ class SendEmailIngestionFlowActivityTest {
                 .mappedExternalUserId("VALID_USER")
                 .filePath("PATH_NAME")
                 .fileName("FILE_NAME")
-                .discardedFileName(null)
-                .flowFileType("R")
+                .discardFileName(null)
+                .flowFileType(IngestionFlowFileType.PAYMENTS_REPORTING)
                 .numTotalRows(123L)
                 .build();
         invalidIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
                 .org(validOrganizationInfoDTO)
                 .mappedExternalUserId("VALID_USER")
-                .flowFileType("WRONG_FLOW")
+                .flowFileType(IngestionFlowFileType.OPI)
                 .filePath("PATH_NAME")
-                .discardedFileName("DISCARDED_FILE")
+                .discardFileName("DISCARDED_FILE")
                 .fileName("FILE_NAME")
                 .numTotalRows(123L)
                 .build();
         errorIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
                 .org(validOrganizationInfoDTO)
-                .flowFileType("R")
+                .flowFileType(IngestionFlowFileType.PAYMENTS_REPORTING)
                 .mappedExternalUserId("VALID_USER")
                 .filePath("PATH_NAME")
-                .discardedFileName("DISCARDED_FILE")
+                .discardFileName("DISCARDED_FILE")
                 .numTotalRows(123L)
                 .build();
         invalidPathIngestionFlowFileDTO = IngestionFlowFileDTO.builder()
                 .org(validOrganizationInfoDTO)
                 .mappedExternalUserId("VALID_USER")
-                .flowFileType("WRONG_FLOW")
-                .discardedFileName("DISCARDED_FILE")
+                .flowFileType(IngestionFlowFileType.PAYMENTS_REPORTING)
+                .discardFileName("DISCARDED_FILE")
                 .fileName("FILE_NAME")
                 .numTotalRows(123L)
                 .build();
         invalidDiscardedFileNameDTO = IngestionFlowFileDTO.builder()
                 .org(validOrganizationInfoDTO)
                 .mappedExternalUserId("VALID_USER")
-                .flowFileType("WRONG_FLOW")
+                .flowFileType(IngestionFlowFileType.PAYMENTS_REPORTING)
                 .filePath("PATH_NAME")
                 .fileName("FILE_NAME")
                 .numTotalRows(123L)
                 .build();
     }
-
 }
 

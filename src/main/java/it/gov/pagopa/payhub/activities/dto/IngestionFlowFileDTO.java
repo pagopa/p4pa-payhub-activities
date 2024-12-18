@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto;
 
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
