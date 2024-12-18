@@ -216,7 +216,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
-		"generateSupportingFiles" to "true"
+		"generateSupportingFiles" to "true",
+		"generateBuilders" to "true"
 	))
 	library.set("resttemplate")
 }
