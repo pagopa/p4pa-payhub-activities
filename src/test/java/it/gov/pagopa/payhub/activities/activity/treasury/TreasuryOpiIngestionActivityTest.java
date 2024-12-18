@@ -69,9 +69,7 @@ class TreasuryOpiIngestionActivityTest {
           new ObjectFactory().createFlussoGiornaleDiCassa(),
           new ObjectFactory().createFlussoGiornaleDiCassa());
 
-  private static final List<it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa> VALID_FLUSSO_OPI161_LIST = List.of(
-          new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.ObjectFactory().createFlussoGiornaleDiCassa(),
-          new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.ObjectFactory().createFlussoGiornaleDiCassa());
+
 
 
   @Test

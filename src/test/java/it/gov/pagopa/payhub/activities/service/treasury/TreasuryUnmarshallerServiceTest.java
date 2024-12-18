@@ -64,24 +64,28 @@ class TreasuryUnmarshallerServiceTest {
   }
 
   @Test
-  void givenInvalidXmlWhenUnmarshalOpi14ThenException() {
+  void givenInvalidXmlWhenUnmarshalOpi14ThenException() throws IOException {
     // given
     Resource xmlFile = new ClassPathResource("treasury/OPI_GIORNALE_DI_CASSA_V_1_4.INVALID.xml");
 
     // when then
+    File file = xmlFile.getFile();
     Assertions.assertThrows(ActivitiesException.class,
-            () -> treasuryUnmarshallerService.unmarshalOpi14(xmlFile.getFile()), "Error while parsing file"
+            () -> treasuryUnmarshallerService.unmarshalOpi14(file),
+            "Error while parsing file"
     );
   }
 
   @Test
-  void givenInvalidXmlWhenUnmarshalOpi161ThenException() {
+  void givenInvalidXmlWhenUnmarshalOpi161ThenException() throws IOException {
     // given
     Resource xmlFile = new ClassPathResource("treasury/OPI_GIORNALE_DI_CASSA_V_1_6_1.INVALID.xml");
 
     // when then
+    File file = xmlFile.getFile();
     Assertions.assertThrows(ActivitiesException.class,
-            () -> treasuryUnmarshallerService.unmarshalOpi161(xmlFile.getFile()), "Error while parsing file"
+            () -> treasuryUnmarshallerService.unmarshalOpi161(file),
+            "Error while parsing file"
     );
   }
 
