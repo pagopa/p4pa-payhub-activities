@@ -71,8 +71,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
            return ingestionFlowFiles.stream()
                     .map(path -> parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
-                    .flatMap(List::stream)
-                    .toList();
+                   .toList().get(0);
+//                    .flatMap(List::stream)
+//                    .toList();
 
 
 //            return new TreasuryIufResult(iufList,true);
@@ -131,12 +132,12 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             try {
                 flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
                 log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
-                versione = TreasuryValidatorService.v14;
+                versione = TreasuryValidatorService.V_14;
             } catch (Exception e) {
                 log.error("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
             }
         } else
-            versione = TreasuryValidatorService.v161;
+            versione = TreasuryValidatorService.V_161;
 
         assert versione != null;
 //        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
@@ -145,9 +146,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 //        }
 
         treasuryDtoMap = switch (versione) {
-            case TreasuryValidatorService.v14 ->
+            case TreasuryValidatorService.V_14 ->
                     treasuryOpi14MapperService.apply(flussoGiornaleDiCassa14, finalIngestionFlowFileDTO);
-            case TreasuryValidatorService.v161 ->
+            case TreasuryValidatorService.V_161 ->
                     treasuryOpi161MapperService.apply(flussoGiornaleDiCassa161, finalIngestionFlowFileDTO);
             default -> treasuryDtoMap;
         };

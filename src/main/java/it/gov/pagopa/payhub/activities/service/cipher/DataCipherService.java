@@ -4,9 +4,12 @@ package it.gov.pagopa.payhub.activities.service.cipher;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 
+@Lazy
+@Service
 public class DataCipherService {
 
   private final String encryptPsw;
@@ -40,14 +43,12 @@ public class DataCipherService {
       return objectMapper.readValue(decrypt(cipherData), clazz);
     } catch (JsonProcessingException e) {
       throw new IllegalStateException("Cannot deserialize object as JSON", e);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
 
   public byte[] hash(String value){
     if(value==null){
-      return null;
+      return new byte[]{};
     }
     return hashAlgorithm.apply(value.toUpperCase());
   }
