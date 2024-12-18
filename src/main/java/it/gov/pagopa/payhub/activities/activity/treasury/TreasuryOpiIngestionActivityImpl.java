@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 @Slf4j
@@ -40,7 +39,6 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private final TreasuryUnmarshallerService treasuryUnmarshallerService;
     private final TreasuryOpi14MapperService treasuryOpi14MapperService;
     private final TreasuryOpi161MapperService treasuryOpi161MapperService;
-    private final TreasuryValidatorService treasuryValidatorService;
 
 
     public TreasuryOpiIngestionActivityImpl(
@@ -56,7 +54,6 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
         this.treasuryUnmarshallerService = treasuryUnmarshallerService;
         this.treasuryOpi14MapperService = treasuryOpi14MapperService;
         this.treasuryOpi161MapperService = treasuryOpi161MapperService;
-        this.treasuryValidatorService = treasuryValidatorService;
     }
 
 
@@ -72,30 +69,11 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
            return ingestionFlowFiles.stream()
                     .map(path -> parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
                    .toList().get(0);
-//                    .flatMap(List::stream)
-//                    .toList();
-
-
-//            return new TreasuryIufResult(iufList,true);
 
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
             return new TreasuryIufResult(Collections.emptyList(), false);
         }
-
-//        if (ingestionFlowFiles != null && !ingestionFlowFiles.isEmpty()) {
-//
-//            IngestionFlowFileDTO finalIngestionFlowFileDTO = ingestionFlowFileDTO;
-//            List<Path> finalIngestionFlowFiles = ingestionFlowFiles;
-//            ingestionFlowFiles.forEach(path -> {
-//                File ingestionFlowFile = path.toFile();
-//                log.debug("file from zip archive with name {} loaded successfully ", ingestionFlowFile.getName());
-//
-//                success.set(parseData(ingestionFlowFile));
-//
-//            });
-//        }
-//        return new TreasuryIufResult(iufIuvList, success.get());
     }
 
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
@@ -153,7 +131,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             default -> treasuryDtoMap;
         };
 
-        List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> pairs = treasuryDtoMap.get(StringUtils.firstNonBlank(TreasuryOpi161MapperService.insert, TreasuryOpi14MapperService.insert));
+        List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> pairs = treasuryDtoMap.get(StringUtils.firstNonBlank(TreasuryOpi161MapperService.INSERT, TreasuryOpi14MapperService.INSERT));
         pairs.forEach(pair -> {
             long idFlussoTesoreriaPiiId = flussoTesoreriaPIIDao.insert(pair.getRight());
             TreasuryDTO treasuryDTO = pair.getLeft();

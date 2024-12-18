@@ -3,20 +3,18 @@ package it.gov.pagopa.payhub.activities.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class TreasuryUtils {
+  private TreasuryUtils() {}
 
   public static final String PRE_IUF_NEW = "LGPE-RIVERSAMENTO";
-  public static final String PRE_IUF_NEW_v2 = "LGPE- RIVERSAMENTO";
-  public static final String PRE_IUF_NEW_v3 = "LGPE -RIVERSAMENTO";
-  public static final String PRE_IUF_NEW_v4 = "LGPE - RIVERSAMENTO";
-  public static final String PRE_IUF_NEW_v5 = "L GPE-RIVERSAMENTO";
+  public static final String PRE_IUF_NEW_V2 = "LGPE- RIVERSAMENTO";
+  public static final String PRE_IUF_NEW_V3 = "LGPE -RIVERSAMENTO";
+  public static final String PRE_IUF_NEW_V4 = "LGPE - RIVERSAMENTO";
+  public static final String PRE_IUF_NEW_V5 = "L GPE-RIVERSAMENTO";
   public static final String PRE_IUV_RFS_NEW = "RFS";
   public static final String PRE_IUV_RFB_NEW = "RFB";
 
@@ -25,7 +23,9 @@ public class TreasuryUtils {
 
   public static final String DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
 
-  public static final String getIdentificativo(String value, final String type) {
+  public static String getIdentificativo(String value, final String type) {
+    if(StringUtils.isBlank(value))
+      return null;
     value = value.replaceAll("/TXT/([0-9])/", "/");
     if (StringUtils.isNotBlank(value)) {
       if (type.equals(IUF)) {
@@ -34,28 +34,28 @@ public class TreasuryUtils {
           acc = true;
         }
         int indexIUF = value.indexOf(PRE_IUF_NEW);
-        int indexIUF2 = value.indexOf(PRE_IUF_NEW_v2);
-        int indexIUF3 = value.indexOf(PRE_IUF_NEW_v3);
-        int indexIUF4 = value.indexOf(PRE_IUF_NEW_v4);
-        int indexIUF5 = value.indexOf(PRE_IUF_NEW_v5);
+        int indexIUF2 = value.indexOf(PRE_IUF_NEW_V2);
+        int indexIUF3 = value.indexOf(PRE_IUF_NEW_V3);
+        int indexIUF4 = value.indexOf(PRE_IUF_NEW_V4);
+        int indexIUF5 = value.indexOf(PRE_IUF_NEW_V5);
         if (indexIUF != -1) {
           return elaboraIUF(value, indexIUF, acc, PRE_IUF_NEW);
         }
 
         if (indexIUF2 != -1) {
-          return elaboraIUF(value, indexIUF2, acc, PRE_IUF_NEW_v2);
+          return elaboraIUF(value, indexIUF2, acc, PRE_IUF_NEW_V2);
         }
 
         if (indexIUF3 != -1) {
-          return elaboraIUF(value, indexIUF3, acc, PRE_IUF_NEW_v3);
+          return elaboraIUF(value, indexIUF3, acc, PRE_IUF_NEW_V3);
         }
 
         if (indexIUF4 != -1) {
-          return elaboraIUF(value, indexIUF4, acc, PRE_IUF_NEW_v4);
+          return elaboraIUF(value, indexIUF4, acc, PRE_IUF_NEW_V4);
         }
 
         if (indexIUF5 != -1) {
-          return elaboraIUF(value, indexIUF5, acc, PRE_IUF_NEW_v5);
+          return elaboraIUF(value, indexIUF5, acc, PRE_IUF_NEW_V5);
         }
       }
 
