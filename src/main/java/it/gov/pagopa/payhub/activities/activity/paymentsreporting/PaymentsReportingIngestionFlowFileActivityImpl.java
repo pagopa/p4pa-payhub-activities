@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
@@ -31,8 +32,8 @@ import java.util.List;
 @Lazy
 @Component
 public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsReportingIngestionFlowFileActivity {
-	private final String ingestionflowFileType;
-	private final String archiveDirectory;
+	private final IngestionFlowFileType ingestionflowFileType;
+    private final String archiveDirectory;
 	private final IngestionFlowFileDao ingestionFlowFileDao;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 	private final FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService;
@@ -41,8 +42,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	private final PaymentsReportingDao paymentsReportingDao;
 	private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
 
-	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${ingestion-flow-file-type:R}") String ingestionflowFileType,
-	                                                      @Value("${archive-relative-path:processed/}") String archiveRelativePathDirectory,
+	public PaymentsReportingIngestionFlowFileActivityImpl(@Value("${archive-relative-path:processed/}") String archiveRelativePathDirectory,
 	                                                      IngestionFlowFileDao ingestionFlowFileDao,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
@@ -50,7 +50,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
 	                                                      PaymentsReportingDao paymentsReportingDao,
 	                                                      IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
-		this.ingestionflowFileType = ingestionflowFileType;
+        this.ingestionflowFileType = IngestionFlowFileType.PAYMENTS_REPORTING;
 		this.archiveDirectory = archiveRelativePathDirectory;
 		this.ingestionFlowFileDao = ingestionFlowFileDao;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;

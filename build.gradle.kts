@@ -10,6 +10,7 @@ plugins {
 	jacoco
 	id("com.intershop.gradle.jaxb") version "7.0.0"
 	id("org.openapi.generator") version "7.9.0"
+	id("org.ajoberstar.grgit") version "5.3.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -58,9 +59,8 @@ val jacksonModuleVersion = "2.18.1"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
-val jsoupVersion = "1.18.1"
 val openApiToolsVersion = "0.2.6"
-
+val temporalVersion = "1.27.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -79,12 +79,9 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
-	// usage: mail
-	implementation("org.springframework.boot:spring-boot-starter-mail")
-	implementation("org.springframework.retry:spring-retry")
-	implementation("org.jsoup:jsoup:$jsoupVersion")
-
-	// Testing
+    //temporal
+	implementation("io.temporal:temporal-sdk:$temporalVersion")
+	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine")
@@ -103,9 +100,10 @@ dependencies {
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
 	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
 
-	//openapi
+	// openApi
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
 }
+
 
 val projectInfo = mapOf(
 		"artifactId" to project.name,
@@ -140,12 +138,8 @@ configurations {
 
 configure<SourceSetContainer> {
 	named("main") {
-		java.srcDir("$projectDir/build/generated/src/main/java")
+		java.srcDir("$projectDir/build/generated/ionotification/src/main/java")
 	}
-}
-
-tasks.compileJava {
-	dependsOn("openApiGenerateAuth")
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -153,8 +147,9 @@ tasks.register<Jar>("sourcesJar") {
 	description = "Assembles a JAR archive containing the main source code."
 
 	from(sourceSets["main"].allSource)
+	inputs.dir("$projectDir/build/generated/ionotification/src/main/java")
+	dependsOn("openApiGenerateIONOTIFICATION")
 	archiveClassifier.set("sources")
-	dependsOn("openApiGenerateAuth")
 }
 
 tasks.register<Jar>("javadocJar") {
@@ -164,27 +159,6 @@ tasks.register<Jar>("javadocJar") {
 	dependsOn(tasks.javadoc)
 	from(tasks.javadoc.get().destinationDir)
 	archiveClassifier.set("javadoc")
-}
-
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateAuth") {
-	group = "openapi"
-	description = "description"
-
-	generatorName.set("java")
-	remoteInputSpec.set("https://github.com/pagopa/p4pa-auth/raw/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
-	outputDir.set("$projectDir/build/generated")
-	modelPackage.set("it.gov.pagopa.pu.p4paauth.dto.generated")
-	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
-	configOptions.set(mapOf(
-		"swaggerAnnotations" to "false",
-		"openApiNullable" to "false",
-		"dateLibrary" to "java17",
-		"useSpringBoot3" to "true",
-		"useJakartaEe" to "true",
-		"serializationLibrary" to "jackson",
-		"generateSupportingFiles" to "true"
-	))
-	library.set("resttemplate")
 }
 
 publishing {
@@ -218,9 +192,34 @@ tasks.withType<BootJar> {
 }
 
 
-configurations {
-	compileClasspath {
-		resolutionStrategy.activateDependencyLocking()
-	}
+tasks.compileJava {
+	dependsOn("openApiGenerateIONOTIFICATION")
+}
+
+var targetEnv = when (grgit.branch.current().name) {
+	"uat" -> "uat"
+	"main" -> "main"
+	else -> "develop"
+}
+
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateIONOTIFICATION") {
+	group = "openapi"
+	description = "description"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/$targetEnv/openapi/p4pa-io-notification.openapi.yaml")
+	outputDir.set("$projectDir/build/generated/ionotification")
+	apiPackage.set("it.gov.pagopa.pu.p4paionotification.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paionotification.model.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java17",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true"
+	))
+	library.set("resttemplate")
 }
 

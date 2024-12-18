@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -15,7 +16,7 @@ import java.util.Date;
 public class IngestionFlowFileDTO implements Serializable {
 
     private Long ingestionFlowFileId;
-    private String flowFileType;
+    private IngestionFlowFileType flowFileType;
     private String mappedExternalUserId;
     private int version;
     private OrganizationDTO org;
@@ -33,5 +34,9 @@ public class IngestionFlowFileDTO implements Serializable {
     private Long pdfGenerated;
     private String codRequestToken;
     private String codError;
-    private String discardedFileName;
+    private String pspIdentifier;
+    private LocalDateTime flowDateTime;
+    private String fileSourceCode;
+    private String discardFileName;
+
 }
