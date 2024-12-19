@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,9 @@ public class TreasuryValidatorService {
     public static final String V_14 = "v14";
     public static final String V_161 = "v161";
     private static final String NOT_AVAILABLE = "Not available";
+    private static final String GET_CAUSALE = "getCausale";
+
+
 
     private final List<TreasuryErrorDTO> treasuryErrorDTOList;
 
@@ -26,9 +31,9 @@ public class TreasuryValidatorService {
         treasuryErrorDTOList = new ArrayList<>();
     }
 
-    public List<TreasuryErrorDTO> validateData(Object fGC, File file, String version) {
+    public List<TreasuryErrorDTO> validateData(Object fGC, File file) {
         maxLengthFields(fGC, file);
-        mandatoryFields(fGC, file, version);
+        mandatoryFields(fGC, file);
         return treasuryErrorDTOList;
     }
 
@@ -53,11 +58,11 @@ public class TreasuryValidatorService {
         }
     }
 
-    private void validateFieldLengths(Object movimentoContoEvidenza, List<?> esercizioList, File file) throws Exception {
-        String iuf = TreasuryUtils.getIdentificativo(
-                (String) movimentoContoEvidenza.getClass().getMethod("getCausale").invoke(movimentoContoEvidenza), TreasuryUtils.IUF);
-        String iuv = TreasuryUtils.getIdentificativo(
-                (String) movimentoContoEvidenza.getClass().getMethod("getCausale").invoke(movimentoContoEvidenza), TreasuryUtils.IUV);
+    private void validateFieldLengths(Object movimentoContoEvidenza, List<?> esercizioList, File file) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        String causale =  (String) movimentoContoEvidenza.getClass().getMethod(GET_CAUSALE).invoke(movimentoContoEvidenza);
+
+        String iuf = TreasuryUtils.getIdentificativo(causale,TreasuryUtils.IUF);
+        String iuv = TreasuryUtils.getIdentificativo(causale, TreasuryUtils.IUV);
         String codBolletta = NOT_AVAILABLE;
         String codEsercizio = esercizioList != null && !esercizioList.isEmpty() ? esercizioList.get(0).toString() : NOT_AVAILABLE;
 
@@ -75,7 +80,7 @@ public class TreasuryValidatorService {
         }
     }
 
-    private void mandatoryFields(Object fGC, File file, String version) {
+    private void mandatoryFields(Object fGC, File file) {
         try {
             Method getInformazioniContoEvidenza = fGC.getClass().getMethod("getInformazioniContoEvidenza");
             List<?> informazioniContoEvidenzaList = (List<?>) getInformazioniContoEvidenza.invoke(fGC);
@@ -93,9 +98,9 @@ public class TreasuryValidatorService {
         }
     }
 
-    private void validateMandatoryFields(Object movimentoContoEvidenza, File file) throws Exception {
+    private void validateMandatoryFields(Object movimentoContoEvidenza, File file) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String[] mandatoryFields = {
-                "getTipoMovimento", "getTipoDocumento", "getTipoOperazione", "getImporto", "getDataMovimento", "getCausale", "getEndToEndId"
+                "getTipoMovimento", "getTipoDocumento", "getTipoOperazione", "getImporto", "getDataMovimento", GET_CAUSALE, "getEndToEndId"
         };
 
         for (String methodName : mandatoryFields) {
@@ -106,7 +111,7 @@ public class TreasuryValidatorService {
             }
         }
 
-        Method getCausale = movimentoContoEvidenza.getClass().getMethod("getCausale");
+        Method getCausale = movimentoContoEvidenza.getClass().getMethod(GET_CAUSALE);
         String causale = (String) getCausale.invoke(movimentoContoEvidenza);
 
         if (TreasuryUtils.getIdentificativo(causale, TreasuryUtils.IUF) == null) {

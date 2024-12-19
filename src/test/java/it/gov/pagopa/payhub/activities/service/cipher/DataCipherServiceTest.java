@@ -15,15 +15,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
-public class DataCipherServiceTest {
+class DataCipherServiceTest {
 
     private DataCipherService dataCipherService;
     private ObjectMapper objectMapper;
-    private final static String ENCRYPT_PASSWORD = "Test123!";
-    private final static String HASH_PEPPER = Base64.getEncoder().encodeToString("TestPepper".getBytes(StandardCharsets.UTF_8));
-    private final static PersonalData PERSONAL_DATA = new PersonalData("John", 30);
-    private final static PersonalData INVALID_PERSONAL_DATA = new PersonalData("Invalid", 0);
-    private final static  String SERIALIZED_OBJ = "{\"name\":\"John\",\"age\":30}";
+    private static final String ENCRYPT_PASSWORD = "Test123!";
+    private static final String HASH_PEPPER = Base64.getEncoder().encodeToString("TestPepper".getBytes(StandardCharsets.UTF_8));
+    private static final PersonalData PERSONAL_DATA = new PersonalData("John", 30);
+    private static final PersonalData INVALID_PERSONAL_DATA = new PersonalData("Invalid", 0);
+    private static final String SERIALIZED_OBJ = "{\"name\":\"John\",\"age\":30}";
 
 
     @BeforeEach
@@ -33,7 +33,7 @@ public class DataCipherServiceTest {
     }
 
     @Test
-    public void encrypt_ShouldEncryptPlainText_GivenValidInput() {
+    void encrypt_ShouldEncryptPlainText_GivenValidInput() {
         // Given
         String plainText = "Plain text for test";
 
@@ -47,7 +47,7 @@ public class DataCipherServiceTest {
     }
 
     @Test
-    public void decrypt_ShouldReturnPlainText_GivenValidEncryptedData() {
+    void decrypt_ShouldReturnPlainText_GivenValidEncryptedData() {
         // Given
         String plainText = "Plain text for test";
         byte[] encryptedData = AESUtils.encrypt(ENCRYPT_PASSWORD, plainText);
@@ -60,7 +60,7 @@ public class DataCipherServiceTest {
     }
 
     @Test
-    public void encryptObj_ShouldReturnEncryptedData_GivenObject() throws JsonProcessingException {
+    void encryptObj_ShouldReturnEncryptedData_GivenObject() throws JsonProcessingException {
         // Given
         Mockito.when(objectMapper.writeValueAsString(PERSONAL_DATA)).thenReturn(SERIALIZED_OBJ);
 
@@ -74,7 +74,7 @@ public class DataCipherServiceTest {
     }
 
     @Test
-    public void decryptObj_ShouldReturnObject_GivenValidEncryptedData() throws IOException {
+    void decryptObj_ShouldReturnObject_GivenValidEncryptedData() throws IOException {
         // Given
         byte[] encryptedData = AESUtils.encrypt(ENCRYPT_PASSWORD, SERIALIZED_OBJ);
 
@@ -88,7 +88,7 @@ public class DataCipherServiceTest {
     }
 
     @Test
-    public void encryptObj_ShouldThrowException_GivenInvalidObject() throws JsonProcessingException {
+    void encryptObj_ShouldThrowException_GivenInvalidObject() throws JsonProcessingException {
         // Given
         Mockito.when(objectMapper.writeValueAsString(INVALID_PERSONAL_DATA)).thenThrow(new JsonProcessingException("Cannot serialize") {});
 
@@ -100,7 +100,7 @@ public class DataCipherServiceTest {
 
 
     @Test
-    public void hash_ShouldReturnHashedValue_GivenValidInput() {
+    void hash_ShouldReturnHashedValue_GivenValidInput() {
         // Given
         String input = "testString";
 
@@ -108,12 +108,11 @@ public class DataCipherServiceTest {
         byte[] hashedValue = dataCipherService.hash(input);
 
         // Then
-        assertThat(hashedValue).isNotNull();
-        assertThat(hashedValue.length).isGreaterThan(0);
+        assertThat(hashedValue).isNotNull().isNotEmpty();
     }
 
     @Test
-    public void hash_ShouldReturnEmptyArray_GivenNullInput() {
+    void hash_ShouldReturnEmptyArray_GivenNullInput() {
         // Given
         String input = null;
 

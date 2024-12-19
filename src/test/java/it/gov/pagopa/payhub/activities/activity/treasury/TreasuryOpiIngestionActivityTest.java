@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class TreasuryOpiIngestionActivityTest {
+class TreasuryOpiIngestionActivityTest {
 
   @Mock
   private IngestionFlowFileDao ingestionFlowFileDao;

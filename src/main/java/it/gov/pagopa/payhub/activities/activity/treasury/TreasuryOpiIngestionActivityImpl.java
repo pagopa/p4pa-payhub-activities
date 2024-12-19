@@ -61,7 +61,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
 
            return ingestionFlowFiles.stream()
-                    .map(path -> parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
+                    .map(path -> parseData(path, ingestionFlowFileDTO))
                    .toList().get(0);
 
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                 .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
     }
 
-    private TreasuryIufResult parseData(Path ingestionFlowFilePath, IngestionFlowFileDTO finalIngestionFlowFileDTO, int zipFileSize) {
+    private TreasuryIufResult parseData(Path ingestionFlowFilePath, IngestionFlowFileDTO finalIngestionFlowFileDTO) {
         File ingestionFlowFile=ingestionFlowFilePath.toFile();
         Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> treasuryDtoMap = null;
         String versione = null;

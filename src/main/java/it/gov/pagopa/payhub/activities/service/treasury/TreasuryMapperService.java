@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.FlussoTesoreriaPIIDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.cipher.DataCipherService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
@@ -49,7 +51,7 @@ public class TreasuryMapperService implements BiFunction<Object, IngestionFlowFi
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error during mapping", e);
+            throw new ActivitiesException("Error during mapping " + e.getMessage());
         }
 
         resultMap.put(INSERT, insertList);
@@ -57,7 +59,7 @@ public class TreasuryMapperService implements BiFunction<Object, IngestionFlowFi
         return resultMap;
     }
 
-    private void processMovimentoContoEvidenza(Object movimentoContoEvidenza, List<?> esercizioList, IngestionFlowFileDTO ingestionFlowFileDTO, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> insertList, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> deleteList) throws Exception {
+    private void processMovimentoContoEvidenza(Object movimentoContoEvidenza, List<?> esercizioList, IngestionFlowFileDTO ingestionFlowFileDTO, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> insertList, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>> deleteList) throws ActivitiesException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Method getCliente = movimentoContoEvidenza.getClass().getMethod("getCliente");
         Method getDataValutaEnte = movimentoContoEvidenza.getClass().getMethod("getDataValutaEnte");
         Method getDataMovimento = movimentoContoEvidenza.getClass().getMethod("getDataMovimento");
