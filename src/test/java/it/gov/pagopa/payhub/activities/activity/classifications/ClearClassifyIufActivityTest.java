@@ -1,14 +1,15 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import it.gov.pagopa.payhub.activities.dao.ClassifyDao;
-import it.gov.pagopa.payhub.activities.utility.Utilities;
+import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
+import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -17,13 +18,13 @@ class ClearClassifyIufActivityTest {
     private static final String IUF = "IUF";
 
     @Mock
-    private ClassifyDao classifyDao;
+    private ClassificationDao classificationDao;
 
     private ClearClassifyIufActivity clearClassifyIufActivity;
 
     @BeforeEach
     void init() {
-        clearClassifyIufActivity = new ClearClassifyIufActivityImpl(classifyDao);
+        clearClassifyIufActivity = new ClearClassifyIufActivityImpl(classificationDao);
     }
 
     @Test
@@ -33,7 +34,7 @@ class ClearClassifyIufActivityTest {
 
     @Test
     void deleteClassificationFailed() {
-        when(classifyDao.deleteClassificationByIuf(ORGANIZATION, IUF, Utilities.CLASSIFICATION.TES_NO_MATCH.getValue())).thenReturn(false);
+        when(classificationDao.deleteClassificationByIuf(ORGANIZATION, IUF, ClassificationsEnum.TES_NO_MATCH)).thenReturn(Boolean.FALSE);
         assertFalse(clearClassifyIufActivity.deleteClassificationByIuf(ORGANIZATION,IUF));
     }
 

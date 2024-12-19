@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.activities.utility;
 
-import lombok.Getter;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,15 +7,6 @@ public class Utilities {
     private Utilities(){}
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
     public static final int IBAN_LENGTH = 27;
-
-    @Getter
-    public enum CLASSIFICATION {
-        TES_NO_MATCH("TES_NO_MATCH");
-        final String value;
-        CLASSIFICATION(String value) {
-            this.value = value;
-        }
-    }
 
     public static boolean isValidEmail(final String email) {
         Matcher matcher = EMAIL_PATTERN.matcher(email);

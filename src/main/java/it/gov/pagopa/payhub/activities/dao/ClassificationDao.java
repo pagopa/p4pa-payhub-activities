@@ -1,9 +1,11 @@
 package it.gov.pagopa.payhub.activities.dao;
 
+import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
+
 /**
  * Data Access Object interface for saving payments classification
  */
-public interface ClassifyDao {
+public interface ClassificationDao {
 	/**
 	 *
 	 * @param organizationId organization id
@@ -11,6 +13,6 @@ public interface ClassifyDao {
 	 * @param classification classification to delete
 	 * @return true for success deletion
 	 */
-	boolean deleteClassificationByIuf(Long organizationId, String iuf, String classification);
+	boolean deleteClassificationByIuf(Long organizationId, String iuf, ClassificationsEnum classification);
 }
 
