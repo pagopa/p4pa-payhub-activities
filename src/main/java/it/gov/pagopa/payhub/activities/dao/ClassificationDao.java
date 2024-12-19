@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.dao;
 
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 
 /**
@@ -10,9 +10,9 @@ public interface ClassificationDao {
 	/**
 	 * save classification
 	 *
-     * @param classifyDTO dto classification  to save
+     * @param classificationDTO dto classification  to save
      */
-	void save(ClassifyDTO classifyDTO);
+	void save(ClassificationDTO classificationDTO);
 
     /**
      * delete classification
