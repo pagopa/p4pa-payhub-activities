@@ -14,9 +14,10 @@ public interface IufClassificationActivity {
      * Processes IUF classification based on the provided parameters.
      *
      * @param organizationId the unique identifier of the organization
+     * @param treasuryId     the unique identifier of treasury
      * @param iuf            the unique identifier of the payment reporting flow (IUF)
-     * @return IufClassificationActivityResult containing PaymentsReportingDTO list and success flag
+     * @return IufClassificationActivityResult containing a list of payments and success flag
      */
     @ActivityMethod
-    IufClassificationActivityResult classify(Long organizationId, String iuf);
+    IufClassificationActivityResult classify(Long organizationId, Long treasuryId, String iuf);
 }
