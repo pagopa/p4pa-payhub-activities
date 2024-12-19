@@ -81,6 +81,7 @@ dependencies {
 
     //temporal
 	implementation("io.temporal:temporal-sdk:$temporalVersion")
+
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")

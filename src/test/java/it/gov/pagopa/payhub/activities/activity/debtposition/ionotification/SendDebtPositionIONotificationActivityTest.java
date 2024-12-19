@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.utility.faker.NotificationQueueFaker.buildNotificationQueueDTO;
 
@@ -35,7 +37,7 @@ class SendDebtPositionIONotificationActivityTest {
         NotificationQueueDTO notificationQueueDTO = buildNotificationQueueDTO();
 
         Mockito.when(notificationQueueMapperMock.mapDebtPositionDTO2NotificationQueueDTO(debtPosition))
-                .thenReturn(notificationQueueDTO);
+                .thenReturn(List.of(notificationQueueDTO));
 
         Mockito.doNothing().when(sendDebtPositionIONotificationServiceMock).sendMessage(notificationQueueDTO);
 
