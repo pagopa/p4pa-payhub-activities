@@ -20,19 +20,19 @@ public class TreasuryValidatorService {
     public static final String V_161 = "v161";
     private static final String NOT_AVAILABLE = "Not available";
 
-    private List<TreasuryErrorDTO> treasuryErrorDTOList;
+    private final List<TreasuryErrorDTO> treasuryErrorDTOList;
 
     public TreasuryValidatorService() {
         treasuryErrorDTOList = new ArrayList<>();
     }
 
     public List<TreasuryErrorDTO> validateData(Object fGC, File file, String version) {
-        maxLengthFields(fGC, file, version);
+        maxLengthFields(fGC, file);
         mandatoryFields(fGC, file, version);
         return treasuryErrorDTOList;
     }
 
-    private void maxLengthFields(Object fGC, File file, String version) {
+    private void maxLengthFields(Object fGC, File file) {
         try {
             Method getInformazioniContoEvidenza = fGC.getClass().getMethod("getInformazioniContoEvidenza");
             Method getEsercizio = fGC.getClass().getMethod("getEsercizio");

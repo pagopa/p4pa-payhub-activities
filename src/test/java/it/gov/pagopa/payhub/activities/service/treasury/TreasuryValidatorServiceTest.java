@@ -30,7 +30,9 @@ class TreasuryValidatorServiceTest {
         InformazioniContoEvidenza informazioniContoEvidenza14 = new InformazioniContoEvidenza();
         InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza14 = new InformazioniContoEvidenza.MovimentoContoEvidenza();
         movimentoContoEvidenza14.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890123456789213456789234567892345t6y7890 RFB oh948jgvndfsjvhfugf089rweuvjnfeeoknjbv908354ug890uboinfk4j2-90rui354809g4truihbnr4gf-90o43uitg089435huighn53riog345r09ugf80453yg9r4thior4tg0ir4");
+        InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare sospesoDaRegolarizzare14= new InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare();
         movimentoContoEvidenza14.setNumeroBollettaQuietanza(new BigInteger("999"));
+        movimentoContoEvidenza14.setSospesoDaRegolarizzare(sospesoDaRegolarizzare14);
         informazioniContoEvidenza14.getMovimentoContoEvidenzas().add(movimentoContoEvidenza14);
         mockFlussoV14.getInformazioniContoEvidenza().add(informazioniContoEvidenza14);
 
@@ -40,6 +42,8 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza informazioniContoEvidenza161 = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza();
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza161 = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza();
         movimentoContoEvidenza161.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890123456789213456789234567892345t6y7890 RFB oh948jgvndfsjvhfugf089rweuvjnfeeoknjbv908354ug890uboinfk4j2-90rui354809g4truihbnr4gf-90o43uitg089435huighn53riog345r09ugf80453yg9r4thior4tg0ir4");
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare sospesoDaRegolarizzare161 = new it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare();
+        movimentoContoEvidenza161.setSospesoDaRegolarizzare(sospesoDaRegolarizzare161);
         movimentoContoEvidenza161.setNumeroBollettaQuietanza(new BigInteger("999"));
         informazioniContoEvidenza161.getMovimentoContoEvidenzas().add(movimentoContoEvidenza161);
         mockFlussoV161.getInformazioniContoEvidenza().add(informazioniContoEvidenza161);
@@ -89,7 +93,7 @@ class TreasuryValidatorServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(8, result.size());
+        assertEquals(10, result.size());
 
         assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
         assertEquals("Codice univoco Versamento exceed max length of 35 chars", result.get(1).getErrorMessage());
@@ -141,7 +145,7 @@ class TreasuryValidatorServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(8, result.size());
+        assertEquals(10, result.size());
 
         assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
         assertEquals("Codice univoco Versamento exceed max length of 35 chars", result.get(1).getErrorMessage());

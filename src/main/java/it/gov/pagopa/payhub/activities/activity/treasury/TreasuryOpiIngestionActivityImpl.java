@@ -10,10 +10,7 @@ import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundExcept
 
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi14MapperService;
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpi161MapperService;
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryValidatorService;
+import it.gov.pagopa.payhub.activities.service.treasury.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,23 +34,25 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private final FlussoTesoreriaPIIDao flussoTesoreriaPIIDao;
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
     private final TreasuryUnmarshallerService treasuryUnmarshallerService;
-    private final TreasuryOpi14MapperService treasuryOpi14MapperService;
-    private final TreasuryOpi161MapperService treasuryOpi161MapperService;
+//    private final TreasuryOpi14MapperService treasuryOpi14MapperService;
+//    private final TreasuryOpi161MapperService treasuryOpi161MapperService;
+    private final TreasuryMapperService treasuryMapperService;
 
 
     public TreasuryOpiIngestionActivityImpl(
             IngestionFlowFileDao ingestionFlowFileDao, TreasuryDao treasuryDao, FlussoTesoreriaPIIDao flussoTesoreriaPIIDao,
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
             TreasuryUnmarshallerService treasuryUnmarshallerService,
-            TreasuryOpi14MapperService treasuryOpi14MapperService, TreasuryOpi161MapperService treasuryOpi161MapperService, TreasuryValidatorService treasuryValidatorService) {
+            /*TreasuryOpi14MapperService treasuryOpi14MapperService, TreasuryOpi161MapperService treasuryOpi161MapperService,*/ TreasuryValidatorService treasuryValidatorService, TreasuryMapperService treasuryMapperService) {
         this.ingestionflowFileType = IngestionFlowFileType.OPI;
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.treasuryDao = treasuryDao;
         this.flussoTesoreriaPIIDao = flussoTesoreriaPIIDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryUnmarshallerService = treasuryUnmarshallerService;
-        this.treasuryOpi14MapperService = treasuryOpi14MapperService;
-        this.treasuryOpi161MapperService = treasuryOpi161MapperService;
+//        this.treasuryOpi14MapperService = treasuryOpi14MapperService;
+//        this.treasuryOpi161MapperService = treasuryOpi161MapperService;
+        this.treasuryMapperService = treasuryMapperService;
     }
 
 
@@ -125,9 +124,11 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
         treasuryDtoMap = switch (versione) {
             case TreasuryValidatorService.V_14 ->
-                    treasuryOpi14MapperService.apply(flussoGiornaleDiCassa14, finalIngestionFlowFileDTO);
+                    //treasuryOpi14MapperService.apply(flussoGiornaleDiCassa14, finalIngestionFlowFileDTO);
+                    treasuryMapperService.apply(flussoGiornaleDiCassa14,finalIngestionFlowFileDTO);
             case TreasuryValidatorService.V_161 ->
-                    treasuryOpi161MapperService.apply(flussoGiornaleDiCassa161, finalIngestionFlowFileDTO);
+                    //treasuryOpi161MapperService.apply(flussoGiornaleDiCassa161, finalIngestionFlowFileDTO);
+                    treasuryMapperService.apply(flussoGiornaleDiCassa161,finalIngestionFlowFileDTO);
             default -> treasuryDtoMap;
         };
 
