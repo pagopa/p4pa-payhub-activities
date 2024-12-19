@@ -2,13 +2,13 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,331 +20,128 @@ public class TreasuryValidatorService {
     public static final String V_161 = "v161";
     private static final String NOT_AVAILABLE = "Not available";
 
-    List<TreasuryErrorDTO> treasuryErrorDTOList;
+    private List<TreasuryErrorDTO> treasuryErrorDTOList;
 
     public TreasuryValidatorService() {
         treasuryErrorDTOList = new ArrayList<>();
     }
 
-    public List<TreasuryErrorDTO> validateData(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, File file, String version) {
-        maxLengthFields(fGC14, fGC161, file, version);
-        mandatoryFields(fGC14, fGC161, file, version);
-
+    public List<TreasuryErrorDTO> validateData(Object fGC, File file, String version) {
+        maxLengthFields(fGC, file, version);
+        mandatoryFields(fGC, file, version);
         return treasuryErrorDTOList;
     }
 
+    private void maxLengthFields(Object fGC, File file, String version) {
+        try {
+            Method getInformazioniContoEvidenza = fGC.getClass().getMethod("getInformazioniContoEvidenza");
+            Method getEsercizio = fGC.getClass().getMethod("getEsercizio");
 
-    private void maxLengthFields(FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, File file, String version) {
-        if (version.equals(V_14)) {
-            fGC14.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza -> {
-                informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
-                    String iuf = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF);
-                    String iuv = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUV);
-                    String codBolletta = NOT_AVAILABLE;
-                    String codEsercizio = NOT_AVAILABLE;
-                    codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
-                    codEsercizio = fGC14.getEsercizio().size()>0  ? fGC14.getEsercizio().get(0).toString() : codEsercizio;;
-                    if (StringUtils.isNotBlank(iuf) && iuf.length() > 34) {
-                        treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                .nomeFile(file.getName())
-                                .deAnnoBolletta(codEsercizio)
-                                .codBolletta(codBolletta)
-                                .errorCode("PAA_IUF_TOO_LONG")
-                                .errorMessage("Codice univoco Flusso exceed max length of 35 chars")
-                                .build());
-                    }
-                    if (StringUtils.isNotBlank(iuv) && iuv.length() > 34) {
-                        treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                .nomeFile(file.getName())
-                                .deAnnoBolletta(codEsercizio)
-                                .codBolletta(codBolletta)
-                                .errorCode("PAA_IUV_TOO_LONG")
-                                .errorMessage("Codice univoco Versamento exceed max length of 35 chars")
-                                .build());
-                    }
-                });
-            });
-        } else if (version.equals(V_161)) {
-            fGC161.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza -> {
-                informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
-                    String iuf = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF);
-                    String iuv = TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUV);
-                    String codBolletta = NOT_AVAILABLE;
-                    String codEsercizio = NOT_AVAILABLE;
-                    codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
-                    codEsercizio = fGC161.getEsercizio().size()>0  ? fGC161.getEsercizio().get(0).toString() : codEsercizio;
-                    if (StringUtils.isNotBlank(iuf) && iuf.length() > 34) {
-                        treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                .nomeFile(file.getName())
-                                .deAnnoBolletta(codEsercizio)
-                                .codBolletta(codBolletta)
-                                .errorCode("PAA_IUF_TOO_LONG")
-                                .errorMessage("Codice univoco Flusso exceed max length of 35 chars")
-                                .build());
-                    }
-                    if (StringUtils.isNotBlank(iuv) && iuv.length() > 34) {
-                        treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                .nomeFile(file.getName())
-                                .deAnnoBolletta(codEsercizio)
-                                .codBolletta(codBolletta)
-                                .errorCode("PAA_IUV_TOO_LONG")
-                                .errorMessage("Codice univoco Versamento exceed max length of 35 chars")
-                                .build());
-                    }
-                });
-            });
+            List<?> informazioniContoEvidenzaList = (List<?>) getInformazioniContoEvidenza.invoke(fGC);
+            List<?> esercizioList = (List<?>) getEsercizio.invoke(fGC);
+
+            for (Object informazioniContoEvidenza : informazioniContoEvidenzaList) {
+                Method getMovimentoContoEvidenzas = informazioniContoEvidenza.getClass().getMethod("getMovimentoContoEvidenzas");
+                List<?> movimentoContoEvidenzasList = (List<?>) getMovimentoContoEvidenzas.invoke(informazioniContoEvidenza);
+
+                for (Object movimentoContoEvidenza : movimentoContoEvidenzasList) {
+                    validateFieldLengths(movimentoContoEvidenza, esercizioList, file);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error during maxLengthFields validation", e);
         }
     }
 
-    private void mandatoryFields(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, File file, String version) {
-        switch (version) {
-            case V_14:
-                fGC14.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza ->
-                        informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
-                            String codBolletta = NOT_AVAILABLE;
-                            String codEsercizio = NOT_AVAILABLE;
-                            codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
-                            codEsercizio = fGC14.getEsercizio().size()>0  ? fGC14.getEsercizio().get(0).toString() : codEsercizio;
-                            if (fGC14.getEsercizio() == null || fGC14.getEsercizio().isEmpty())
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(null)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_ESERCIZIO_NOT_FOUND")
-                                        .errorMessage("Esercizio field is not valorized but it is required")
-                                        .build());
-                            if (fGC14.getPagineTotali() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_PAGINE_TOTALI_NOT_FOUND")
-                                        .errorMessage("Pagine totali field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getTipoMovimento() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_TIPO_MOVIMENTO_NOT_FOUND")
-                                        .errorMessage("Tipo movimento field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getTipoDocumento() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_TIPO_DOCUMENTO_NOT_FOUND")
-                                        .errorMessage("Tipo documento field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getTipoOperazione() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_TIPO_OPERAZIONE_NOT_FOUND")
-                                        .errorMessage("Tipo operazione field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getImporto() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_IMPORTO_NOT_FOUND")
-                                        .errorMessage("Importo field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getDataMovimento() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_DATA_MOVIMENTO_NOT_FOUND")
-                                        .errorMessage("Data movimento field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getCliente() == null || movimentoContoEvidenza.getCliente().getAnagraficaCliente() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_ANAGRAFICA_CLIENTE_NOT_FOUND")
-                                        .errorMessage("Anagrafica cliente field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getCausale() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_CAUSALE_NOT_FOUND")
-                                        .errorMessage("Causale field is not valorized but it is required")
-                                        .build());
-                            if (TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF) == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_IUF_NOT_FOUND")
-                                        .errorMessage("Iuf field is not valorized but it is required")
-                                        .build());
-                            if (TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUV) == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_IUV_NOT_FOUND")
-                                        .errorMessage("Iuv field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getSospesoDaRegolarizzare() == null || movimentoContoEvidenza.getSospesoDaRegolarizzare().getDataEffettivaSospeso() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_DATA_EFFETTIVA_SOSPESO_NOT_FOUND")
-                                        .errorMessage("Data effettiva sospeso field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getSospesoDaRegolarizzare() == null || movimentoContoEvidenza.getSospesoDaRegolarizzare().getCodiceGestionaleProvvisorio() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_CODICE_GESTIONALE_PROVVISORIO_NOT_FOUND")
-                                        .errorMessage("Codice gestionale provvisorio field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getEndToEndId() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_END_TO_END_ID_NOT_FOUND")
-                                        .errorMessage("End to end id field is not valorized but it is required")
-                                        .build());
-                        }));
-                break;
-            case V_161:
-                fGC161.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza ->
-                        informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
-                            String codBolletta = NOT_AVAILABLE;
-                            String codEsercizio = NOT_AVAILABLE;
-                            codBolletta = movimentoContoEvidenza.getNumeroBollettaQuietanza() != null ? movimentoContoEvidenza.getNumeroBollettaQuietanza().toString() : codBolletta;
-                            codEsercizio = fGC161.getEsercizio().size()>0  ? fGC161.getEsercizio().get(0).toString() : codEsercizio;
-                            if (fGC161.getEsercizio() == null || fGC161.getEsercizio().isEmpty())
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_ESERCIZIO_NOT_FOUND")
-                                        .errorMessage("Esercizio field is not valorized but it is required")
-                                        .build());
-                            if (fGC161.getPagineTotali() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_PAGINE_TOTALI_NOT_FOUND")
-                                        .errorMessage("Pagine totali field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getTipoMovimento() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_TIPO_MOVIMENTO_NOT_FOUND")
-                                        .errorMessage("Tipo movimento field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getTipoDocumento() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_TIPO_DOCUMENTO_NOT_FOUND")
-                                        .errorMessage("Tipo documento field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getTipoOperazione() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_TIPO_OPERAZIONE_NOT_FOUND")
-                                        .errorMessage("Tipo operazione field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getImporto() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_IMPORTO_NOT_FOUND")
-                                        .errorMessage("Importo field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getDataMovimento() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_DATA_MOVIMENTO_NOT_FOUND")
-                                        .errorMessage("Data movimento field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getCliente() == null || movimentoContoEvidenza.getCliente().getAnagraficaCliente() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_ANAGRAFICA_CLIENTE_NOT_FOUND")
-                                        .errorMessage("Anagrafica cliente field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getCausale() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_CAUSALE_NOT_FOUND")
-                                        .errorMessage("Causale field is not valorized but it is required")
-                                        .build());
-                            if (TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUF) == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_IUF_NOT_FOUND")
-                                        .errorMessage("Iuf field is not valorized but it is required")
-                                        .build());
-                            if (TreasuryUtils.getIdentificativo(movimentoContoEvidenza.getCausale(), TreasuryUtils.IUV) == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_IUV_NOT_FOUND")
-                                        .errorMessage("Iuv field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getSospesoDaRegolarizzare() == null || movimentoContoEvidenza.getSospesoDaRegolarizzare().getDataEffettivaSospeso() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_DATA_EFFETTIVA_SOSPESO_NOT_FOUND")
-                                        .errorMessage("Data effettiva sospeso field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getSospesoDaRegolarizzare() == null || movimentoContoEvidenza.getSospesoDaRegolarizzare().getCodiceGestionaleProvvisorio() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_CODICE_GESTIONALE_PROVVISORIO_NOT_FOUND")
-                                        .errorMessage("Codice gestionale provvisorio field is not valorized but it is required")
-                                        .build());
-                            if (movimentoContoEvidenza.getEndToEndId() == null)
-                                treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                                        .nomeFile(file.getName())
-                                        .deAnnoBolletta(codEsercizio)
-                                        .codBolletta(codBolletta)
-                                        .errorCode("PAA_END_TO_END_ID_NOT_FOUND")
-                                        .errorMessage("End to end id field is not valorized but it is required")
-                                        .build());
-                        }));
-                break;
-            default:
-                break;
+    private void validateFieldLengths(Object movimentoContoEvidenza, List<?> esercizioList, File file) throws Exception {
+        String iuf = TreasuryUtils.getIdentificativo(
+                (String) movimentoContoEvidenza.getClass().getMethod("getCausale").invoke(movimentoContoEvidenza), TreasuryUtils.IUF);
+        String iuv = TreasuryUtils.getIdentificativo(
+                (String) movimentoContoEvidenza.getClass().getMethod("getCausale").invoke(movimentoContoEvidenza), TreasuryUtils.IUV);
+        String codBolletta = NOT_AVAILABLE;
+        String codEsercizio = esercizioList != null && !esercizioList.isEmpty() ? esercizioList.get(0).toString() : NOT_AVAILABLE;
+
+        Method getNumeroBollettaQuietanza = movimentoContoEvidenza.getClass().getMethod("getNumeroBollettaQuietanza");
+        if (getNumeroBollettaQuietanza.invoke(movimentoContoEvidenza) != null) {
+            codBolletta = getNumeroBollettaQuietanza.invoke(movimentoContoEvidenza).toString();
+        }
+
+        if (StringUtils.isNotBlank(iuf) && iuf.length() > 34) {
+            treasuryErrorDTOList.add(buildErrorDTO(file, codEsercizio, codBolletta, "PAA_IUF_TOO_LONG", "Codice univoco Flusso exceed max length of 35 chars"));
+        }
+
+        if (StringUtils.isNotBlank(iuv) && iuv.length() > 34) {
+            treasuryErrorDTOList.add(buildErrorDTO(file, codEsercizio, codBolletta, "PAA_IUV_TOO_LONG", "Codice univoco Versamento exceed max length of 35 chars"));
         }
     }
 
+    private void mandatoryFields(Object fGC, File file, String version) {
+        try {
+            Method getInformazioniContoEvidenza = fGC.getClass().getMethod("getInformazioniContoEvidenza");
+            List<?> informazioniContoEvidenzaList = (List<?>) getInformazioniContoEvidenza.invoke(fGC);
+
+            for (Object informazioniContoEvidenza : informazioniContoEvidenzaList) {
+                Method getMovimentoContoEvidenzas = informazioniContoEvidenza.getClass().getMethod("getMovimentoContoEvidenzas");
+                List<?> movimentoContoEvidenzasList = (List<?>) getMovimentoContoEvidenzas.invoke(informazioniContoEvidenza);
+
+                for (Object movimentoContoEvidenza : movimentoContoEvidenzasList) {
+                    validateMandatoryFields(movimentoContoEvidenza, file);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error during mandatoryFields validation", e);
+        }
+    }
+
+    private void validateMandatoryFields(Object movimentoContoEvidenza, File file) throws Exception {
+        String[] mandatoryFields = {
+                "getTipoMovimento", "getTipoDocumento", "getTipoOperazione", "getImporto", "getDataMovimento", "getCausale", "getEndToEndId"
+        };
+
+        for (String methodName : mandatoryFields) {
+            Method method = movimentoContoEvidenza.getClass().getMethod(methodName);
+            Object value = method.invoke(movimentoContoEvidenza);
+            if (value == null || (value instanceof String && StringUtils.isBlank((String) value))) {
+                treasuryErrorDTOList.add(buildErrorDTO(file, NOT_AVAILABLE, NOT_AVAILABLE, "PAA_" + methodName.replace("get","").toUpperCase() + "_NOT_FOUND", methodName.replace("get","") + " field is not valorized but it is required"));
+            }
+        }
+
+        Method getCausale = movimentoContoEvidenza.getClass().getMethod("getCausale");
+        String causale = (String) getCausale.invoke(movimentoContoEvidenza);
+
+        if (TreasuryUtils.getIdentificativo(causale, TreasuryUtils.IUF) == null) {
+            treasuryErrorDTOList.add(buildErrorDTO(file, NOT_AVAILABLE, NOT_AVAILABLE, "PAA_IUF_NOT_FOUND", "Iuf field is not valorized but it is required"));
+        }
+
+        if (TreasuryUtils.getIdentificativo(causale, TreasuryUtils.IUV) == null) {
+            treasuryErrorDTOList.add(buildErrorDTO(file, NOT_AVAILABLE, NOT_AVAILABLE, "PAA_IUV_NOT_FOUND", "Iuv field is not valorized but it is required"));
+        }
+
+        Method getSospesoDaRegolarizzare = movimentoContoEvidenza.getClass().getMethod("getSospesoDaRegolarizzare");
+        Object sospesoDaRegolarizzare = getSospesoDaRegolarizzare.invoke(movimentoContoEvidenza);
+
+        if (sospesoDaRegolarizzare != null) {
+            Method getDataEffettivaSospeso = sospesoDaRegolarizzare.getClass().getMethod("getDataEffettivaSospeso");
+            if (getDataEffettivaSospeso.invoke(sospesoDaRegolarizzare) == null) {
+                treasuryErrorDTOList.add(buildErrorDTO(file, NOT_AVAILABLE, NOT_AVAILABLE, "PAA_DATA_EFFETTIVA_SOSPESO_NOT_FOUND", "Data effettiva sospeso field is not valorized but it is required"));
+            }
+
+            Method getCodiceGestionaleProvvisorio = sospesoDaRegolarizzare.getClass().getMethod("getCodiceGestionaleProvvisorio");
+            if (getCodiceGestionaleProvvisorio.invoke(sospesoDaRegolarizzare) == null) {
+                treasuryErrorDTOList.add(buildErrorDTO(file, NOT_AVAILABLE, NOT_AVAILABLE, "PAA_CODICE_GESTIONALE_PROVVISORIO_NOT_FOUND", "Codice gestionale provvisorio field is not valorized but it is required"));
+            }
+        }
+    }
+
+    private TreasuryErrorDTO buildErrorDTO(File file, String codEsercizio, String codBolletta, String errorCode, String errorMessage) {
+        return TreasuryErrorDTO.builder()
+                .nomeFile(file.getName())
+                .deAnnoBolletta(codEsercizio)
+                .codBolletta(codBolletta)
+                .errorCode(errorCode)
+                .errorMessage(errorMessage)
+                .build();
+    }
 
     public boolean validatePageSize(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa fGC14, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa fGC161, int sizeZipFile, String version) {
         boolean valid = false;
@@ -359,4 +156,5 @@ public class TreasuryValidatorService {
         }
         return valid;
     }
+
 }
