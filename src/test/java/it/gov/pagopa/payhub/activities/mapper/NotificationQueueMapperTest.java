@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.mapper;
 
+import it.gov.pagopa.payhub.activities.dto.PersonDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
 import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
-import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
 import static it.gov.pagopa.payhub.activities.utility.faker.NotificationQueueFaker.buildNotificationQueueDTO;
+import static it.gov.pagopa.payhub.activities.utility.faker.OrganizationFaker.buildOrganizationDTO;
 import static it.gov.pagopa.payhub.activities.utility.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,34 +25,37 @@ class NotificationQueueMapperTest {
     private NotificationQueueMapper mapper;
 
     @BeforeEach
-    void init(){
+    void init() {
         mapper = new NotificationQueueMapper();
     }
 
     @Test
-    void givenMapDebtPositionDTO2NotificationQueueDTOWhenIsMultiDebtorThenSuccess(){
+    void givenMapDebtPositionDTO2NotificationQueueDTOThenSuccess() {
 
-        PaymentOptionDTO paymentOptionDTO = buildPaymentOptionDTO();
-        paymentOptionDTO.setMultiDebtor(true);
-
-        DebtPositionDTO debtPosition = buildDebtPositionDTO();
-        debtPosition.setPaymentOptions(new ArrayList<>());
-        debtPosition.getPaymentOptions().add(paymentOptionDTO);
+        DebtPositionDTO debtPosition = buildDebtPosition();
 
         List<NotificationQueueDTO> result =
                 mapper.mapDebtPositionDTO2NotificationQueueDTO(debtPosition);
 
         checkNotNullFields(result.get(0), "operationType", "iuv", "paymentReason", "paymentDate", "amount");
         assertEquals(buildNotificationQueueDTO(), result.get(0));
+        assertEquals("fiscalCode", result.get(1).getFiscalCode());
     }
 
-    @Test
-    void givenMapDebtPositionDTO2NotificationQueueDTOWhenIsNotMultiDebtorThenSuccess(){
-
-        List<NotificationQueueDTO> result =
-                mapper.mapDebtPositionDTO2NotificationQueueDTO(buildDebtPositionDTO());
-
-        checkNotNullFields(result.get(0), "operationType", "iuv", "paymentReason", "paymentDate", "amount");
-        assertEquals(buildNotificationQueueDTO(), result.get(0));
+    private static DebtPositionDTO buildDebtPosition() {
+        return DebtPositionDTO.builder()
+                .org(buildOrganizationDTO())
+                .debtPositionTypeOrg(buildDebtPositionTypeOrgDTO())
+                .paymentOptions(List.of(
+                        buildPaymentOptionDTO(),
+                        PaymentOptionDTO.builder()
+                                .installments(List.of(
+                                        InstallmentDTO.builder()
+                                                .payer(PersonDTO.builder()
+                                                        .uniqueIdentifierCode("fiscalCode")
+                                                        .build())
+                                                .build()))
+                                .build()))
+                .build();
     }
 }

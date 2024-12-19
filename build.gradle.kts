@@ -77,11 +77,14 @@ dependencies {
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
+	implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
  	//temporal
-	implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion")
+	implementation("io.temporal:temporal-sdk:$temporalVersion"){
+		exclude(group = "com.google.protobuf", module = "protobuf-java")
+	}
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
