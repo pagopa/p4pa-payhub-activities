@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<flusso_giornale_di_cassa Id="anySimpleType" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
+  <!--You have a CHOICE of the next 2 items at this level-->
+  <xd:Signature Id="string1">
+    <xd:SignedInfo Id="string2">
+      <xd:CanonicalizationMethod Algorithm="http://www.test.com/austris/rapidi">
+        in
+        <!--You may enter ANY elements at this point-->
+        
+        venit
+      </xd:CanonicalizationMethod>
+      <xd:SignatureMethod Algorithm="http://www.corp.com/temperat/et">
+        laxas
+        <!--Optional:-->
+        <xd:HMACOutputLength>100</xd:HMACOutputLength>
+        faciat
+        <!--You may enter ANY elements at this point-->
+        
+        frenat
+      </xd:SignatureMethod>
+      <!--1 or more repetitions:-->
+      <xd:Reference Id="string3" URI="http://www.sample.org/circum/foedere" Type="http://www.sample.org/sed/coniunx">
+        <!--Optional:-->
+        <xd:Transforms>
+          <!--1 or more repetitions:-->
+          <xd:Transform Algorithm="http://www.corp.org/vinclis/carcere">
+            et
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--You may enter ANY elements at this point-->
+            
+            <xd:XPath>string</xd:XPath>
+            nubibus
+          </xd:Transform>
+        </xd:Transforms>
+        <xd:DigestMethod Algorithm="http://www.corp.edu/imposuit/habenas">
+          indignantes
+          <!--You may enter ANY elements at this point-->
+          
+          rapidi
+        </xd:DigestMethod>
+        <xd:DigestValue>aW1wb25ldA==</xd:DigestValue>
+      </xd:Reference>
+    </xd:SignedInfo>
+    <xd:SignatureValue Id="string4">c29ub3Jhcw==</xd:SignatureValue>
+    <!--Optional:-->
+    <xd:KeyInfo Id="string5">
+      hoc
+      <!--You have a CHOICE of the next 8 items at this level-->
+      <xd:KeyName>string</xd:KeyName>
+      <xd:KeyValue>
+        feta
+        <!--You have a CHOICE of the next 3 items at this level-->
+        <xd:DSAKeyValue>
+          <xd:P>bWV0dWVucw==</xd:P>
+          <xd:Q>ZGl2dW0=</xd:Q>
+          <!--Optional:-->
+          <xd:G>ZnJlbmF0</xd:G>
+          <xd:Y>bmltYm9ydW0=</xd:Y>
+          <!--Optional:-->
+          <xd:J>Y3Vt</xd:J>
+          <xd:Seed>Y2Vsc2E=</xd:Seed>
+          <xd:PgenCounter>dmluY2xpcw==</xd:PgenCounter>
+        </xd:DSAKeyValue>
+
+        <!--You may enter ANY elements at this point-->
+        
+        annos
+      </xd:KeyValue>
+      <xd:RetrievalMethod URI="http://www.your.com/certo/frenat" Type="http://www.my.com/murmure/rex">
+        <!--Optional:-->
+        <xd:Transforms>
+          <!--1 or more repetitions:-->
+          <xd:Transform Algorithm="http://www.my.gov/sed/sceptra">
+            caelumque
+            <!--You have a CHOICE of the next 2 items at this level-->
+            <!--You may enter ANY elements at this point-->
+            
+            <xd:XPath>string</xd:XPath>
+            mollitque
+          </xd:Transform>
+        </xd:Transforms>
+      </xd:RetrievalMethod>
+      <xd:X509Data>
+        <!--You have a CHOICE of the next 6 items at this level-->
+        <xd:X509IssuerSerial>
+          <xd:X509IssuerName>string</xd:X509IssuerName>
+          <xd:X509SerialNumber>100</xd:X509SerialNumber>
+        </xd:X509IssuerSerial>
+        <xd:X509SKI>bnVtZW4=</xd:X509SKI>
+        <xd:X509SubjectName>string</xd:X509SubjectName>
+        <xd:X509Certificate>aW5maXhpdA==</xd:X509Certificate>
+        <xd:X509CRL>ZWdv</xd:X509CRL>
+        <!--You may enter ANY elements at this point-->
+        
+      </xd:X509Data>
+      <xd:PGPData>
+        <!--You have a CHOICE of the next 2 items at this level-->
+        <xd:PGPKeyID>YmVsbGE=</xd:PGPKeyID>
+        <!--Optional:-->
+        <xd:PGPKeyPacket>c29yb3I=</xd:PGPKeyPacket>
+        <!--You may enter ANY elements at this point-->
+
+      </xd:PGPData>
+      <xd:SPKIData>
+        <xd:SPKISexp>bmltYm9ydW0=</xd:SPKISexp>
+        <!--You may enter ANY elements at this point-->
+        
+      </xd:SPKIData>
+      <xd:MgmtData>string</xd:MgmtData>
+      <!--You may enter ANY elements at this point-->
+      
+      gente
+    </xd:KeyInfo>
+    <!--Zero or more repetitions:-->
+    <xd:Object Id="string" MimeType="string" Encoding="http://www.test.org/coniunx/una">
+      celsa
+      <!--You may enter ANY elements at this point-->
+      
+      abdidit
+    </xd:Object>
+  </xd:Signature>
+  <testata_messaggio>
+    <codice_ABI_BT>12345</codice_ABI_BT>
+    <data_ora_creazione_flusso>2001-10-13T17:56:21+02:00</data_ora_creazione_flusso>
+    <codice_ente>string</codice_ente>
+    <descrizione_ente>string</descrizione_ente>
+    <codice_istat_ente>string</codice_istat_ente>
+    <codice_fiscale_ente>string</codice_fiscale_ente>
+    <codice_tramite_ente>string</codice_tramite_ente>
+    <codice_tramite_BT>string</codice_tramite_BT>
+    <codice_ente_BT>string</codice_ente_BT>
+  </testata_messaggio>
+  <identificativo_flusso_BT>string</identificativo_flusso_BT>
+  <!--Optional:-->
+  <pagina>200</pagina>
+  <!--Optional:-->
+  <pagine_totali>200</pagine_totali>
+  <!--Optional:-->
+  <riferimento_ente>string</riferimento_ente>
+  <esercizio>1999</esercizio>
+  <data_inizio_periodo_riferimento>2017-06-07+02:00</data_inizio_periodo_riferimento>
+  <data_fine_periodo_riferimento>2014-12-04</data_fine_periodo_riferimento>
+  <!--1 or more repetitions:-->
+  <informazioni_conto_evidenza>
+    <conto_evidenza>string</conto_evidenza>
+    <!--Optional:-->
+    <descrizione_conto_evidenza>string</descrizione_conto_evidenza>
+    <!--Zero or more repetitions:-->
+    <movimento_conto_evidenza>
+      <tipo_movimento>USCITA</tipo_movimento>
+      <tipo_documento>GIROCONTO</tipo_documento>
+      <tipo_operazione>ESEGUITO</tipo_operazione>
+      <numero_documento>200</numero_documento>
+      <!--Optional:-->
+      <sospeso_da_regolarizzare>
+        <data_effettiva_sospeso>2002-01-06+01:00</data_effettiva_sospeso>
+        <codice_gestionale_provvisorio>1234</codice_gestionale_provvisorio>
+      </sospeso_da_regolarizzare>
+      <!--Optional:-->
+      <tipologia_pagamento_funzionario_delegato>string</tipologia_pagamento_funzionario_delegato>
+      <!--Optional:-->
+      <numero_pagamento_funzionario_delegato>string</numero_pagamento_funzionario_delegato>
+      <progressivo_documento>200</progressivo_documento>
+      <importo>1000.00000000000</importo>
+      <!--Optional:-->
+      <importo_ritenute>1000.00000000000</importo_ritenute>
+      <!--Optional:-->
+      <numero_bolletta_quietanza>200</numero_bolletta_quietanza>
+      <!--Optional:-->
+      <numero_bolletta_quietanza_storno>200</numero_bolletta_quietanza_storno>
+      <data_movimento>2003-05-19+02:00</data_movimento>
+      <!--Optional:-->
+      <data_valuta_ente>2014-08-13+02:00</data_valuta_ente>
+      <tipo_esecuzione>REGOLARIZZAZIONE</tipo_esecuzione>
+      <!--Optional:-->
+      <coordinate>string</coordinate>
+      <!--Optional:-->
+      <codice_riferimento_operazione>string</codice_riferimento_operazione>
+      <!--Optional:-->
+      <end_to_end_id>string</end_to_end_id>
+      <!--Optional:-->
+      <codice_riferimento_interno>string</codice_riferimento_interno>
+      <!--Optional:-->
+      <tipo_contabilita>FRUTTIFERO</tipo_contabilita>
+      <!--Optional:-->
+      <destinazione>VINCOLATA</destinazione>
+      <assoggettamento_bollo>ASSOGGETTATO BOLLO A CARICO ENTE</assoggettamento_bollo>
+      <!--Optional:-->
+      <importo_bollo>1000.00000000000</importo_bollo>
+      <!--Optional:-->
+      <assoggettamento_spese>ASSOGGETTAMENTO SPESE A CARICO CLIENTE</assoggettamento_spese>
+      <!--Optional:-->
+      <importo_spese>1000.00000000000</importo_spese>
+      <!--Optional:-->
+      <assoggettamento_commissioni>ASSOGGETTAMENTO COMMISSIONI A CARICO ENTE</assoggettamento_commissioni>
+      <!--Optional:-->
+      <importo_commissioni>1000.00000000000</importo_commissioni>
+      <cliente>
+        <anagrafica_cliente>string</anagrafica_cliente>
+        <!--Optional:-->
+        <indirizzo_cliente>string</indirizzo_cliente>
+        <!--Optional:-->
+        <cap_cliente>string</cap_cliente>
+        <!--Optional:-->
+        <localita_cliente>string</localita_cliente>
+        <!--Optional:-->
+        <provincia_cliente>string</provincia_cliente>
+        <!--Optional:-->
+        <stato_cliente>st</stato_cliente>
+        <!--Optional:-->
+        <partita_iva_cliente>string</partita_iva_cliente>
+        <!--Optional:-->
+        <codice_fiscale_cliente>string</codice_fiscale_cliente>
+      </cliente>
+      <!--Optional:-->
+      <delegato>
+        <anagrafica_delegato>string</anagrafica_delegato>
+        <!--Optional:-->
+        <indirizzo_delegato>string</indirizzo_delegato>
+        <!--Optional:-->
+        <cap_delegato>string</cap_delegato>
+        <!--Optional:-->
+        <localita_delegato>string</localita_delegato>
+        <!--Optional:-->
+        <provincia_delegato>string</provincia_delegato>
+        <!--Optional:-->
+        <stato_delegato>st</stato_delegato>
+        <!--Optional:-->
+        <codice_fiscale_delegato>string</codice_fiscale_delegato>
+      </delegato>
+      <!--Optional:-->
+      <creditore_effettivo>
+        <anagrafica_creditore_effettivo>string</anagrafica_creditore_effettivo>
+        <!--Optional:-->
+        <indirizzo_creditore_effettivo>string</indirizzo_creditore_effettivo>
+        <!--Optional:-->
+        <cap_creditore_effettivo>string</cap_creditore_effettivo>
+        <!--Optional:-->
+        <localita_creditore_effettivo>string</localita_creditore_effettivo>
+        <!--Optional:-->
+        <provincia_creditore_effettivo>string</provincia_creditore_effettivo>
+        <!--Optional:-->
+        <stato_creditore_effettivo>st</stato_creditore_effettivo>
+        <!--Optional:-->
+        <partita_iva_creditore_effettivo>string</partita_iva_creditore_effettivo>
+        <!--Optional:-->
+        <codice_fiscale_creditore_effettivo>string</codice_fiscale_creditore_effettivo>
+      </creditore_effettivo>
+      <causale>string</causale>
+      <!--Optional:-->
+      <numero_sospeso>200</numero_sospeso>
+      <!--Optional:-->
+      <dati_a_disposizione_BT>
+        in
+        <!--You may enter ANY elements at this point-->
+        
+        dea
+      </dati_a_disposizione_BT>
+    </movimento_conto_evidenza>
+    <!--Optional:-->
+    <saldo_precedente_conto_evidenza>1000.00000000000</saldo_precedente_conto_evidenza>
+    <!--Optional:-->
+    <totale_entrate_conto_evidenza>1000.00000000000</totale_entrate_conto_evidenza>
+    <!--Optional:-->
+    <totale_uscite_conto_evidenza>1000.00000000000</totale_uscite_conto_evidenza>
+    <!--Optional:-->
+    <saldo_finale_conto_evidenza>1000.00000000000</saldo_finale_conto_evidenza>
+  </informazioni_conto_evidenza>
+  <!--Optional:-->
+  <saldo_complessivo_precedente>1000.00000000000</saldo_complessivo_precedente>
+  <!--Optional:-->
+  <totale_complessivo_entrate>1000.00000000000</totale_complessivo_entrate>
+  <!--Optional:-->
+  <totale_complessivo_uscite>1000.00000000000</totale_complessivo_uscite>
+  <!--Optional:-->
+  <saldo_complessivo_finale>1000.00000000000</saldo_complessivo_finale>
+  <!--Optional:-->
+  <totali_esercizio>
+    <fondo_di_cassa>1000.00000000000</fondo_di_cassa>
+    <totale_reversali_riscosse>1000.00000000000</totale_reversali_riscosse>
+    <totale_sospesi_entrata>1000.00000000000</totale_sospesi_entrata>
+    <totale_entrate>1000.00000000000</totale_entrate>
+    <deficit_di_cassa>1000.00000000000</deficit_di_cassa>
+    <totale_mandati_pagati>1000.00000000000</totale_mandati_pagati>
+    <totale_sospesi_uscita>1000.00000000000</totale_sospesi_uscita>
+    <totale_uscite>1000.00000000000</totale_uscite>
+    <saldo_esercizio>1000.00000000000</saldo_esercizio>
+  </totali_esercizio>
+  <!--Optional:-->
+  <totali_disponibilita_liquide>
+    <saldo_conti_correnti>1000.00000000000</saldo_conti_correnti>
+    <!--Optional:-->
+    <saldo_conti_BI>1000.00000000000</saldo_conti_BI>
+    <!--Optional:-->
+    <totale_conti>1000.00000000000</totale_conti>
+    <!--Optional:-->
+    <vincoli_conti_correnti>1000.00000000000</vincoli_conti_correnti>
+    <!--Optional:-->
+    <vincoli_conti_BI>1000.00000000000</vincoli_conti_BI>
+    <!--Optional:-->
+    <totale_vincoli>1000.00000000000</totale_vincoli>
+    <!--Optional:-->
+    <svincoli_conti_correnti>1000.00000000000</svincoli_conti_correnti>
+    <!--Optional:-->
+    <svincoli_conti_BI>1000.00000000000</svincoli_conti_BI>
+    <!--Optional:-->
+    <totale_svincoli>1000.00000000000</totale_svincoli>
+    <anticipazione_accordata>1000.00000000000</anticipazione_accordata>
+    <anticipazione_utilizzata>1000.00000000000</anticipazione_utilizzata>
+    <!--Optional:-->
+    <totale_somme_bloccate_riservate>1000.00000000000</totale_somme_bloccate_riservate>
+    <disponibilita>1000.00000000000</disponibilita>
+  </totali_disponibilita_liquide>
+</flusso_giornale_di_cassa>
