@@ -19,6 +19,11 @@ public class ClassifyDTO implements Serializable {
     private Long paymentNotifyId;
     private Long paymentReportingId;
     private Long treasuryId;
+    private String iuf;
+    private String iud;
+    private String iuv;
+    private String iur;
+    private int transferIndex;
     private ClassificationsEnum classificationsEnum;
     private LocalDate creationDate;
 }

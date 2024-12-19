@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class IufClassificationActivityResult {
-    private List<ClassifyResultDTO> classifyResultDTOS;
-    private boolean success;
+public class ClassifyResultDTO {
+	private Long organizationId;
+	private String creditorReferenceId;
+	private String regulationUniqueIdentifier;
+	private int transferIndex;
 }

@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.utility.faker;
 
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyResultDTO;
 
-public class PaymentsReportingFaker {
+public class ClassifyResultFaker {
 
-    public static PaymentsReportingDTO buildClassifyResultDTO(){
-        return PaymentsReportingDTO.builder()
+    public static ClassifyResultDTO buildClassifyResultDTO(){
+        return ClassifyResultDTO.builder()
                 .organizationId(1L)
                 .creditorReferenceId("IUV")
                 .regulationUniqueIdentifier("IUR")
