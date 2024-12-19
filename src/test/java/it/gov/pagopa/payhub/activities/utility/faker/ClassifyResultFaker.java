@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyResultDTO;
 
 public class ClassifyResultFaker {
 
-    public static ClassifyResultDTO buildClassifyResultDTO(){
+    public static ClassifyResultDTO buildClassifyResultDTO(Long organizationId){
         return ClassifyResultDTO.builder()
-                .organizationId(1L)
+                .organizationId(organizationId)
                 .creditorReferenceId("IUV")
                 .regulationUniqueIdentifier("IUR")
                 .transferIndex(1)
