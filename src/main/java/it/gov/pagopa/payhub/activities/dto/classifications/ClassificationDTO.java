@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassifyDTO implements Serializable {
+public class ClassificationDTO implements Serializable {
     private Long organizationId;
     private Long transferId;
     private Long paymentNotifyId;
