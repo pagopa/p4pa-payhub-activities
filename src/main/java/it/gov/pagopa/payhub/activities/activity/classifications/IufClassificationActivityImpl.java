@@ -41,7 +41,9 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
 
         for (TreasuryDTO treasuryDTO : treasuryDao.searchByIuf(iuf)) {
             log.debug("Saving classification if payments reporting exist");
-            setAndSave(classifyResultDTOS.size(), organizationId, treasuryDTO.getMygovFlussoTesoreriaId(), iuf);
+            if (!classifyResultDTOS.isEmpty()) {
+                saveClassification(organizationId, treasuryDTO.getMygovFlussoTesoreriaId(), iuf);
+            }
         }
         return IufClassificationActivityResult.builder()
                 .classifyResultDTOS(classifyResultDTOS)
@@ -50,21 +52,21 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     }
 
     /**
+     * save classification data
      *
-     * @param paymentsReportingSize size of the list of payments reporting found
-     * @param treasuryId primary key of Treasury
+     * @param organizationId organization id
+     * @param treasuryId  treasury id
+     * @param iuf  flow unique identifier
      */
-    private void setAndSave(int paymentsReportingSize, Long organizationId, Long treasuryId, String iuf) {
-        if (paymentsReportingSize==0 && treasuryId!=null) {
-             ClassifyDTO classifyDTO = ClassifyDTO.builder()
-                    .organizationId(organizationId)
-                    .treasuryId(treasuryId)
-                    .iuf(iuf)
-                    .classificationsEnum(ClassificationsEnum.TES_NO_MATCH)
-                    .build();
-            log.debug("Saving classification TES_NO_MATCH for treasuryId: {}",treasuryId);
-            classificationDao.save(classifyDTO);
-        }
+    private void saveClassification(Long organizationId, Long treasuryId, String iuf) {
+        log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} - iuf: {}", organizationId, treasuryId, iuf);
+
+        classificationDao.save(ClassifyDTO.builder()
+            .organizationId(organizationId)
+            .treasuryId(treasuryId)
+            .iuf(iuf)
+            .classificationsEnum(ClassificationsEnum.TES_NO_MATCH)
+            .build());
     }
 
     /**
