@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
@@ -114,9 +115,11 @@ class FlussoRiversamentoUnmarshallerServiceTest {
 
 	@Test
 	void testJAXBExceptionInConstructor() {
-		Mockito.mockStatic(JAXBContext.class).when(() -> JAXBContext.newInstance(CtFlussoRiversamento.class))
-			.thenThrow(new JAXBException("Simulated JAXBException"));
-		assertThrows(IllegalStateException.class, () -> new FlussoRiversamentoUnmarshallerService(resource, null));
+		try(MockedStatic<JAXBContext> mockedStaticJAXBContext = Mockito.mockStatic(JAXBContext.class)) {
+			mockedStaticJAXBContext.when(() -> JAXBContext.newInstance(CtFlussoRiversamento.class))
+					.thenThrow(new JAXBException("Simulated JAXBException"));
+			assertThrows(IllegalStateException.class, () -> new FlussoRiversamentoUnmarshallerService(resource, null));
+		}
 	}
 
 	@Test
