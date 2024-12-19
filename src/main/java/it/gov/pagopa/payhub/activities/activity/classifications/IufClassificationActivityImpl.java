@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,6 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     private final TreasuryDao treasuryDao;
     private final ClassificationDao classificationDao;
 
-    private static final String TES_NO_MATCH = "TES_NO_MATCH";
-
     public IufClassificationActivityImpl(PaymentsReportingDao paymentsReportingDao, TreasuryDao treasuryDao, ClassificationDao classificationDao) {
         this.paymentsReportingDao = paymentsReportingDao;
         this.treasuryDao = treasuryDao;
@@ -33,14 +32,15 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     public IufClassificationActivityResult classify(Long organizationId, String iuf) {
         log.debug("Starting Classification Activity for organization id {} and iuf {}", organizationId,iuf);
 
-        IufClassificationActivityResult iufClassificationActivityResult = new IufClassificationActivityResult();
         List<PaymentsReportingDTO> paymentsReportingDTOS = paymentsReportingDao.findByOrganizationIdFlowIdentifierCode(organizationId, iuf);
+
         log.debug("Number of payments reporting found for iuf {}: {}", iuf, paymentsReportingDTOS.size());
+
         for (TreasuryDTO treasuryDTO : treasuryDao.searchByIuf(iuf)) {
             log.debug("Saving classification if payments reporting exist");
             setAndSave(paymentsReportingDTOS.size(), treasuryDTO.getMygovFlussoTesoreriaId());
         }
-        return iufClassificationActivityResult.toBuilder()
+        return IufClassificationActivityResult.builder()
                 .paymentsReportingDTOS(paymentsReportingDTOS)
                 .success(true)
                 .build();
@@ -53,12 +53,12 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
      */
     private void setAndSave(int paymentsReportingSize, Long treasuryId) {
         if (paymentsReportingSize==0 && treasuryId!=null) {
-            log.debug("Saving classification TES_NO_MATCH and treasuryId: {}",treasuryId);
-            ClassifyDTO classificationDTO = ClassifyDTO.builder()
-                    .classificationCode(TES_NO_MATCH)
+             ClassifyDTO classifyDTO = ClassifyDTO.builder()
+                    .classificationsEnum(ClassificationsEnum.TES_NO_MATCH)
                     .treasuryId(treasuryId)
                     .build();
-            classificationDao.save(classificationDTO);
+            log.debug("Saving classification TES_NO_MATCH for treasuryId: {}",treasuryId);
+            classificationDao.save(classifyDTO);
         }
     }
 

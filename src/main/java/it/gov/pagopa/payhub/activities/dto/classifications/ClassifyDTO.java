@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.classifications;
 
+import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,6 @@ public class ClassifyDTO implements Serializable {
     private Long paymentNotifyId;
     private Long paymentReportingId;
     private Long treasuryId;
-    private String classificationCode;
+    private ClassificationsEnum classificationsEnum;
     private LocalDate creationDate;
 }

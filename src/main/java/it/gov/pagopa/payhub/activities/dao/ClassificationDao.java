@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dao;
 
+import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 
 /**
