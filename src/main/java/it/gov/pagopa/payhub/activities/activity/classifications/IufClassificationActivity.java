@@ -1,7 +1,13 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
+
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
+
 /**
  * Interface for defining an activity to process payment reporting classifications based on IUF.
  */
+@ActivityInterface
 public interface IufClassificationActivity {
 
     /**
@@ -9,7 +15,8 @@ public interface IufClassificationActivity {
      *
      * @param organizationId the unique identifier of the organization
      * @param iuf            the unique identifier of the payment reporting flow (IUF)
-     * @return true if the classification is successful, false otherwise
+     * @return IufClassificationActivityResult containing PaymentsReportingDTO list and success flag
      */
-    boolean classify(String organizationId, String iuf);
+    @ActivityMethod
+    IufClassificationActivityResult classify(Long organizationId, String iuf);
 }
