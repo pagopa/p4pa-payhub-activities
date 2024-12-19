@@ -63,6 +63,7 @@ val openApiToolsVersion = "0.2.6"
 val wiremockSpringBootVersion = "2.1.3"
 val temporalVersion = "1.27.0"
 
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -80,8 +81,9 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
-    //temporal
+ 	//temporal
 	implementation("io.temporal:temporal-sdk:$temporalVersion")
+
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
