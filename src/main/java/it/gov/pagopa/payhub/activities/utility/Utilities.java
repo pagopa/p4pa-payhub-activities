@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utilities {
-
     private Utilities(){}
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
     public static final int IBAN_LENGTH = 27;
@@ -41,4 +40,5 @@ public class Utilities {
         }
         return (10 - s % 10) % 10 == pi.charAt(10) - '0';
     }
+
 }
