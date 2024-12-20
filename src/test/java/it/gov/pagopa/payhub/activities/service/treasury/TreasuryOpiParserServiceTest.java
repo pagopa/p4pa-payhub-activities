@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +10,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 
-class TreasuryOpiParserServiceSimplifiedTest {
+class TreasuryOpiParserServiceTest {
 
     private TreasuryUnmarshallerService treasuryUnmarshallerService;
     private TreasuryOpiParserService treasuryOpiParserService;
