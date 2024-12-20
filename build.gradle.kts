@@ -1,3 +1,4 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
@@ -17,7 +18,7 @@ version = rootProject.file("version").readText().trim()
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -219,15 +220,18 @@ tasks.compileJava {
 }
 
 tasks.register("dependenciesBuild") {
+	group = "AutomaticallyGeneratedCode"
+	description = "grouping all together automatically generate code tasks"
+
 	dependsOn(
 		"jaxb",
 		"openApiGenerateP4PAAUTH",
 		"openApiGenerateIONOTIFICATION")
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateP4PAAUTH") {
-	group = "openapi"
-	description = "description"
+tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
 
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
@@ -246,13 +250,14 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 		"generateConstructorWithAllArgs" to "false",
 		"generatedConstructorWithRequiredArgs" to "true",
 		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
-	))
+	)
+	)
 	library.set("resttemplate")
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateIONOTIFICATION") {
-	group = "openapi"
-	description = "description"
+tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
 
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")

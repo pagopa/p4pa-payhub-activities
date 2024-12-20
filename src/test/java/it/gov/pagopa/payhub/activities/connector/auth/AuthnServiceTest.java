@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.connector.auth;
 
-import it.gov.pagopa.payhub.activities.connector.auth.client.AuthnClient;
 import it.gov.pagopa.payhub.activities.connector.auth.service.AuthAccessTokenRetriever;
 import it.gov.pagopa.pu.p4paauth.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
@@ -16,21 +15,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class AuthnServiceTest {
 
     @Mock
-    private AuthnClient authnClientMock;
-    @Mock
     private AuthAccessTokenRetriever accessTokenRetrieverMock;
 
     private AuthnService authnService;
 
     @BeforeEach
     void init(){
-        authnService = new AuthnServiceImpl(authnClientMock, accessTokenRetrieverMock);
+        authnService = new AuthnServiceImpl(accessTokenRetrieverMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                authnClientMock,
                 accessTokenRetrieverMock
         );
     }
@@ -38,12 +34,12 @@ class AuthnServiceTest {
     @Test
     void whenGetAccessTokenThenInvokeAccessTokenRetriever(){
         // Given
-        AccessToken expectedResult = new AccessToken();
+        String expectedResult = "TOKEN";
         Mockito.when(accessTokenRetrieverMock.getAccessToken())
-                .thenReturn(expectedResult);
+                .thenReturn(AccessToken.builder().accessToken(expectedResult).build());
 
         // When
-        AccessToken result = authnService.getAccessToken();
+        String result = authnService.getAccessToken();
 
         // Then
         Assertions.assertSame(expectedResult, result);

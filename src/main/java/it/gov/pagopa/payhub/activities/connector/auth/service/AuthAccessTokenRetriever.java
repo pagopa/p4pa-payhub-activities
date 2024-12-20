@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.auth.service;
 
 import it.gov.pagopa.payhub.activities.connector.auth.client.AuthnClient;
 import it.gov.pagopa.pu.p4paauth.dto.generated.AccessToken;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Slf4j
 @Lazy
 @Service
 public class AuthAccessTokenRetriever {
@@ -38,6 +40,7 @@ public class AuthAccessTokenRetriever {
 
     private Pair<LocalDateTime, AccessToken> checkAndReturn(Pair<LocalDateTime, AccessToken> tokenPair) {
         if (tokenPair == null || LocalDateTime.now().isAfter(tokenPair.getLeft())) {
+            log.info("M2M AccessToken expired, refreshing");
             LocalDateTime tokenRequestDateTime = LocalDateTime.now();
             AccessToken accessToken = authnClient.postToken(CLIENT_ID_PREFIX, GRANT_TYPE, SCOPE, null, null, null, clientSecret);
             LocalDateTime expiration = tokenRequestDateTime.plusSeconds(accessToken.getExpiresIn() - 5L); // setting some seconds to avoid too strict expiration
