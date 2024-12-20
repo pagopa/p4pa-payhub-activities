@@ -17,8 +17,10 @@ public interface ClassificationDao {
 
 	/**
 	 *
-	 * @param organizationId organization id
+	 * @param orgId organization id
 	 * @param iuv creditor reference identifier
+	 * @param iur the identifier of the receipt associated with the payment
+	 * @param transferIndex the index of the transfer to be classified
 	 * @return true for success deletion
 	 */
 	boolean deleteClassificationByTransferKeySet(Long orgId, String iuv, String iur, int transferIndex);
