@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
+import it.gov.pagopa.payhub.activities.exception.ClassificationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -16,14 +17,11 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
     }
 
     @Override
-    public boolean classify(Long orgId, String iuv, String iur, int transferIndex) {
-        cleanUpCurrentProcessingRequests(orgId, iuv, iur, transferIndex);
-
-        return false;
+    public void classify(Long orgId, String iuv, String iur, int transferIndex) {
+        log.info("Transfer classification for organization id: {} and iuv: {}", orgId, iuv);
+	    if (!classificationDao.deleteTransferClassification(orgId, iuv, iur, transferIndex)) {
+		    throw new ClassificationException("Error occured while clean up current processing Requests due to deletion failed");
+	    }
     }
 
-    private boolean cleanUpCurrentProcessingRequests(Long orgId, String iuv, String iur, int transferIndex) {
-        log.debug("Deleting classifications for organization id: {} and iuv: {}", orgId, iuv);
-        return classificationDao.deleteClassificationByTransferKeySet(orgId, iuv, iur, transferIndex);
-    }
 }

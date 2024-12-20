@@ -1,14 +1,14 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
+import it.gov.pagopa.payhub.activities.exception.ClassificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,13 +29,14 @@ class TransferClassificationActivityImplTest {
 	}
 
 	@Test
-	void deleteClassificationSuccess() {
+	void classificationSuccess() {
+		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 	}
 
 	@Test
-	void deleteClassificationFailed() {
-		when(classificationDaoMock.deleteClassificationByTransferKeySet(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.FALSE);
-		assertFalse(activity.classify(ORGANIZATION, IUV, IUR, INDEX));
+	void classificationFailed() {
+		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenThrow(new ClassificationException("deletion failed"));
+		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
 	}
 }

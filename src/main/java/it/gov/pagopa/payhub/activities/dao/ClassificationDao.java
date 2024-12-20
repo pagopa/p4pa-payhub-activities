@@ -23,5 +23,5 @@ public interface ClassificationDao {
 	 * @param transferIndex the index of the transfer to be classified
 	 * @return true for success deletion
 	 */
-	boolean deleteClassificationByTransferKeySet(Long orgId, String iuv, String iur, int transferIndex);
+	boolean deleteTransferClassification(Long orgId, String iuv, String iur, int transferIndex);
 }
