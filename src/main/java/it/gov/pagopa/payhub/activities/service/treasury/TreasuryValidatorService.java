@@ -62,7 +62,6 @@ public class TreasuryValidatorService {
         String causale =  (String) movimentoContoEvidenza.getClass().getMethod(GET_CAUSALE).invoke(movimentoContoEvidenza);
 
         String iuf = TreasuryUtils.getIdentificativo(causale,TreasuryUtils.IUF);
-        String iuv = TreasuryUtils.getIdentificativo(causale, TreasuryUtils.IUV);
         String codBolletta = NOT_AVAILABLE;
         String codEsercizio = esercizioList != null && !esercizioList.isEmpty() ? esercizioList.get(0).toString() : NOT_AVAILABLE;
 
@@ -75,9 +74,6 @@ public class TreasuryValidatorService {
             treasuryErrorDTOList.add(buildErrorDTO(file, codEsercizio, codBolletta, "PAA_IUF_TOO_LONG", "Codice univoco Flusso exceed max length of 35 chars"));
         }
 
-        if (StringUtils.isNotBlank(iuv) && iuv.length() > 34) {
-            treasuryErrorDTOList.add(buildErrorDTO(file, codEsercizio, codBolletta, "PAA_IUV_TOO_LONG", "Codice univoco Versamento exceed max length of 35 chars"));
-        }
     }
 
     private void mandatoryFields(Object fGC, File file) {
@@ -116,10 +112,6 @@ public class TreasuryValidatorService {
 
         if (TreasuryUtils.getIdentificativo(causale, TreasuryUtils.IUF) == null) {
             treasuryErrorDTOList.add(buildErrorDTO(file, NOT_AVAILABLE, NOT_AVAILABLE, "PAA_IUF_NOT_FOUND", "Iuf field is not valorized but it is required"));
-        }
-
-        if (TreasuryUtils.getIdentificativo(causale, TreasuryUtils.IUV) == null) {
-            treasuryErrorDTOList.add(buildErrorDTO(file, NOT_AVAILABLE, NOT_AVAILABLE, "PAA_IUV_NOT_FOUND", "Iuv field is not valorized but it is required"));
         }
 
         Method getSospesoDaRegolarizzare = movimentoContoEvidenza.getClass().getMethod("getSospesoDaRegolarizzare");

@@ -8,27 +8,26 @@ import java.util.regex.Pattern;
 
 
 public class TreasuryUtils {
-  private TreasuryUtils() {}
+    private TreasuryUtils() {}
 
   public static final String PRE_IUF_NEW = "LGPE-RIVERSAMENTO";
   public static final String PRE_IUF_NEW_V2 = "LGPE- RIVERSAMENTO";
   public static final String PRE_IUF_NEW_V3 = "LGPE -RIVERSAMENTO";
   public static final String PRE_IUF_NEW_V4 = "LGPE - RIVERSAMENTO";
   public static final String PRE_IUF_NEW_V5 = "L GPE-RIVERSAMENTO";
-  public static final String PRE_IUV_RFS_NEW = "RFS";
-  public static final String PRE_IUV_RFB_NEW = "RFB";
+
 
   public static final String IUF = "IUF";
-  public static final String IUV = "IUV";
 
   public static final String DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
+  public static final String REGEX_MATCHER = "([A-Za-z0-9-_](\\S+)\\s+(\\S+))";
+  public static final String ALPHANUM_PATTERN = "([A-Za-z0-9-_]+)";
 
   public static String getIdentificativo(String value, final String type) {
     if(StringUtils.isBlank(value))
       return null;
-    value = value.replaceAll("/TXT/([0-9])/", "/");
-    if (StringUtils.isNotBlank(value)) {
-      if (type.equals(IUF)) {
+    value = value.replaceAll("/TXT/(\\d)/", "/");
+    if (StringUtils.isNotBlank(value) && type.equals(IUF)) {
         boolean acc = false;
         if (value.startsWith("ACCREDITI VARI")) {
           acc = true;
@@ -57,93 +56,6 @@ public class TreasuryUtils {
         if (indexIUF5 != -1) {
           return elaboraIUF(value, indexIUF5, acc, PRE_IUF_NEW_V5);
         }
-      }
-
-      if (type.equals(IUV)) {
-        int indexIUVRFB = value.indexOf(PRE_IUV_RFB_NEW);
-        if (indexIUVRFB != -1) {
-          // ho trovato uno iuv
-          String result = null;
-          String valueIUV = value.substring(indexIUVRFB);
-
-          // IUV /RFB/RF...
-          String regexStringRFB = Pattern.quote(PRE_IUV_RFB_NEW) + Pattern.quote("/") + "(.*?)"
-                  + Pattern.quote("/");
-          Pattern patternRFB = Pattern.compile(regexStringRFB);
-          Matcher matcherRFB = patternRFB.matcher(valueIUV + "/");
-          while (matcherRFB.find()) {
-            result = matcherRFB.group(1);
-          }
-
-          if (StringUtils.isNotEmpty(result)) {
-            return result;
-          }
-
-          // IUV RFB RF...
-          regexStringRFB = Pattern.quote(PRE_IUV_RFB_NEW) + " (.*?)" + Pattern.quote(" ");
-          patternRFB = Pattern.compile(regexStringRFB);
-          matcherRFB = patternRFB.matcher(valueIUV + " ");
-          while (matcherRFB.find()) {
-            result = matcherRFB.group(1);
-          }
-
-          if (StringUtils.isNotEmpty(result)) {
-            return result;
-          }
-        }
-
-        int indexIUVRFS = value.indexOf(PRE_IUV_RFS_NEW);
-        if (indexIUVRFS != -1) {
-          // ho trovato uno iuv
-          String result = null;
-          String valueIUV = value.substring(indexIUVRFS);
-
-          // IUV /RFS/RF...
-          String regexStringRFS = Pattern.quote(PRE_IUV_RFS_NEW) + Pattern.quote("/") + "(.*?)"
-                  + Pattern.quote("/");
-          Pattern patternRFS = Pattern.compile(regexStringRFS);
-          Matcher matcherRFS = patternRFS.matcher(valueIUV + "/");
-          while (matcherRFS.find()) {
-            result = matcherRFS.group(1);
-          }
-
-          if (StringUtils.isNotEmpty(result)) {
-            if (result.length() > 25) {
-              char[] charArr = result.toCharArray();
-              int counter = 0;
-              String iuvCorretto = "";
-              for (char c : charArr) {
-                if (counter == 25)
-                  break;
-                if (c != ' ') {
-                  iuvCorretto += c;
-                  counter++;
-                }
-              }
-              result = iuvCorretto;
-            }
-            return result;
-          }
-
-          // IUV RFS RF...
-          String iuvDaElaborare = valueIUV.substring(valueIUV.lastIndexOf(PRE_IUV_RFS_NEW) + 3);
-          char[] charArr = iuvDaElaborare.toCharArray();
-          int counter = 0;
-          String iuvCorretto = "";
-          for (char c : charArr) {
-            if (counter == 25)
-              break;
-            if (c != ' ') {
-              iuvCorretto += c;
-              counter++;
-            }
-          }
-          result = iuvCorretto;
-          if (StringUtils.isNotBlank(result)) {
-            return result;
-          }
-        }
-      }
     }
     return null;
   }
@@ -153,15 +65,13 @@ public class TreasuryUtils {
     String regexString = DATE_PATTERN;
     Pattern pattern = Pattern.compile(regexString);
     Matcher matcher = pattern.matcher(value);
-    while (matcher.find()) {
-      return matcher.group(0);
-    }
-    return null;
+
+    return matcher.find() ? matcher.group(0) : null;
   }
 
   public static boolean checkIufOld(final String value) {
     if (StringUtils.isNotBlank(value)) {
-      String regexString = "([^a-zA-Z0-9\\d\\s:])";
+      String regexString = "([^a-zA-Z\\d\\s:])";
       Pattern pattern = Pattern.compile(regexString);
       Matcher matcher = pattern.matcher(value);
       while (matcher.find()) {
@@ -179,7 +89,7 @@ public class TreasuryUtils {
     String valueIUF = value.substring(indexIUF);
     String result = null;
     String regexString = Pattern.quote(patternString) + "/URI/" + "(\\d{4}-\\d{2}- \\d{2})"
-            + ((acc) ? "([A-Za-z0-9-_](\\S+)\\s+(\\S+))" : "([A-Za-z0-9-_]+)");
+            + ((acc) ? REGEX_MATCHER : ALPHANUM_PATTERN);
     Pattern pattern = Pattern.compile(regexString);
     Matcher matcher = pattern.matcher(valueIUF);
     while (matcher.find()) {
@@ -198,7 +108,7 @@ public class TreasuryUtils {
     valueIUF = value.substring(indexIUF);
     result = null;
     regexString = Pattern.quote(patternString) + " URI " + "(\\d{4}-\\d{2}- \\d{2})"
-            + ((acc) ? "([A-Za-z0-9-_](\\S+)\\s+(\\S+))" : "([A-Za-z0-9-_]+)");
+            + ((acc) ? REGEX_MATCHER : ALPHANUM_PATTERN);
     pattern = Pattern.compile(regexString);
     matcher = pattern.matcher(valueIUF);
     while (matcher.find()) {
@@ -217,7 +127,7 @@ public class TreasuryUtils {
     valueIUF = value.substring(indexIUF);
     result = null;
     regexString = Pattern.quote(patternString) + "/URI/" + "(\\d{4}-\\d{2}-\\d{1} \\d{1})"
-            + ((acc) ? "([A-Za-z0-9-_](\\S+)\\s+(\\S+))" : "([A-Za-z0-9-_]+)");
+            + ((acc) ? REGEX_MATCHER : ALPHANUM_PATTERN);
     pattern = Pattern.compile(regexString);
     matcher = pattern.matcher(valueIUF);
     while (matcher.find()) {
@@ -236,7 +146,7 @@ public class TreasuryUtils {
     valueIUF = value.substring(indexIUF);
     result = null;
     regexString = Pattern.quote(patternString) + " URI " + "(\\d{4}-\\d{2}-\\d{1} \\d{1})"
-            + ((acc) ? "([A-Za-z0-9-_](\\S+)\\s+(\\S+))" : "([A-Za-z0-9-_]+)");
+            + ((acc) ? REGEX_MATCHER : ALPHANUM_PATTERN);
     pattern = Pattern.compile(regexString);
     matcher = pattern.matcher(valueIUF);
     while (matcher.find()) {
@@ -256,7 +166,7 @@ public class TreasuryUtils {
     valueIUF = value.substring(indexIUF);
     result = null;
     regexString = Pattern.quote(patternString) + "/URI/"
-            + ((acc) ? "([A-Za-z0-9-_](\\S+)\\s+(\\S+))" : "([A-Za-z0-9-_]+)");
+            + ((acc) ? REGEX_MATCHER : ALPHANUM_PATTERN);
     pattern = Pattern.compile(regexString);
     matcher = pattern.matcher(valueIUF);
     while (matcher.find()) {
@@ -276,7 +186,7 @@ public class TreasuryUtils {
 
     // ho spazi al posto degli slash
     regexString = Pattern.quote(patternString) + " URI "
-            + ((acc) ? "([A-Za-z0-9-_](\\S+)\\s+(\\S+))" : "([A-Za-z0-9-_]+)");
+            + ((acc) ? REGEX_MATCHER : ALPHANUM_PATTERN);
     pattern = Pattern.compile(regexString);
     matcher = pattern.matcher(valueIUF);
     while (matcher.find()) {

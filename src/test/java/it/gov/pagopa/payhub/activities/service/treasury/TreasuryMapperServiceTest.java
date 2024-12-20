@@ -4,14 +4,11 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.FlussoTesoreriaPIIDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
-import it.gov.pagopa.payhub.activities.service.cipher.DataCipherService;
-import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -25,17 +22,18 @@ import static org.mockito.Mockito.*;
 
 class TreasuryMapperServiceTest {
 
+    public static final String LAST_NAME_CLIENTE = "Last name cliente";
+    public static final String ADDRESS_CLIENTE = "Address cliente";
+    public static final String POSTAL_CODE = "01234";
+    public static final String CITY = "City";
+    public static final String FISCAL_CODE = "AAABBB12A34A567Z";
+    public static final String VAT_NUMBER = "IT09876543123";
     private TreasuryMapperService treasuryMapperService;
-    private DataCipherService dataCipherService;
 
-    private static final String CLIENTE="cliente";
-
-    private static final byte[] CLIENTE_HASH = new byte[]{1,2,3,4};
 
     @BeforeEach
     void setUp() {
-        dataCipherService = mock(DataCipherService.class);
-        treasuryMapperService = new TreasuryMapperService(dataCipherService);
+        treasuryMapperService = new TreasuryMapperService();
     }
 
     @Test
@@ -58,10 +56,16 @@ class TreasuryMapperServiceTest {
         when(movimentoContoEvidenza.getDataMovimento()).thenReturn(toXMLGregorianCalendar(new GregorianCalendar(2023, Calendar.JANUARY, 1)));
         when(movimentoContoEvidenza.getCausale()).thenReturn("CAUSALE123");
         when(movimentoContoEvidenza.getCliente()).thenReturn(cliente);
-        when(cliente.getAnagraficaCliente()).thenReturn("CLIENTE123");
+        when(cliente.getAnagraficaCliente()).thenReturn(LAST_NAME_CLIENTE);
+        when(cliente.getIndirizzoCliente()).thenReturn(ADDRESS_CLIENTE);
+        when(cliente.getCapCliente()).thenReturn(POSTAL_CODE);
+        when(cliente.getLocalitaCliente()).thenReturn(CITY);
+        when(cliente.getCodiceFiscaleCliente()).thenReturn(FISCAL_CODE);
+        when(cliente.getPartitaIvaCliente()).thenReturn(VAT_NUMBER);
 
 
-        when(dataCipherService.encryptObj("CLIENTE123")).thenReturn(CLIENTE_HASH);
+
+
 
 
         IngestionFlowFileDTO ingestionFlowFileDTO = createIngestionFlowFileDTO();
@@ -79,7 +83,12 @@ class TreasuryMapperServiceTest {
         assertEquals("2023", treasuryDTO.getBillYear());
         assertEquals("1", treasuryDTO.getBillCode());
         assertEquals(BigDecimal.TEN, treasuryDTO.getBillIpNumber());
-        assertEquals(CLIENTE_HASH, treasuryDTO.getLastNameHash());
+        assertEquals(LAST_NAME_CLIENTE, treasuryDTO.getLastName());
+        assertEquals(ADDRESS_CLIENTE, treasuryDTO.getAddress());
+        assertEquals(POSTAL_CODE, treasuryDTO.getPostalCode());
+        assertEquals(CITY, treasuryDTO.getCity());
+        assertEquals(FISCAL_CODE, treasuryDTO.getFiscalCode());
+        assertEquals(VAT_NUMBER, treasuryDTO.getVatNumber());
 
         FlussoTesoreriaPIIDTO flussoTesoreriaPIIDTO = mappedPair.getRight();
         assertNotNull(flussoTesoreriaPIIDTO);

@@ -79,65 +79,14 @@ class TreasuryUtilsTest {
     @Test
     void testGetIdentificativo_withIUF_case5() {
         // Give
-        String value = "ACCREDITI VARI "+PRE_IUF_5+"/URI/2024-12-15 IUV_VALID";
+        String value = "ACCREDITI "+PRE_IUF_5+"/URI/2024-05-01 ABC ACCREDITI "+PRE_IUF_5+"/URI/2024-12-15 DEF";
 
         // When
         String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
 
         // Then
         assertNotNull(result);
-        assertEquals("2024-12-15IUV_VALID", result);
-    }
-
-    @Test
-    void testGetIdentificativo_withIUV() {
-        // Give
-        String value = "RFS/URI/2024-12-15 IUV_TEST";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUV);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("URI", result);
-    }
-    @Test
-    void testGetIdentificativo_withIUV_RFS() {
-        // Give
-        String value = "RFS/URI/2024-12-15 "+PRE_IUV_RFS+"/IUV_TEST_RFS";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUV);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("IUV_TEST_RFS", result);
-    }
-
-    @Test
-    void testGetIdentificativo_withIUV_RFS_Over25Char() {
-        // Give
-        String value = "RFS/URI/2024-12-15 "+PRE_IUV_RFS+"/IUV_TEST_RFS12345678901234567890";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUV);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("IUV_TEST_RFS1234567890123", result);
-    }
-
-    @Test
-    void testGetIdentificativo_withIUV_RFB() {
-        // Give
-        String value = "RFS/URI/2024-12-15 "+PRE_IUV_RFB+"/IUV_TEST_RFB";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUV);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("IUV_TEST_RFB", result);
+        assertEquals("2024-12-15", result);
     }
 
     @Test
@@ -159,18 +108,6 @@ class TreasuryUtilsTest {
 
         // When
         String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNull(result);
-    }
-
-    @Test
-    void testGetIdentificativo_withIUVAndNoMatch() {
-        // Given
-        String value = "IUV_NOT_MATCH";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUV);
 
         // Then
         assertNull(result);

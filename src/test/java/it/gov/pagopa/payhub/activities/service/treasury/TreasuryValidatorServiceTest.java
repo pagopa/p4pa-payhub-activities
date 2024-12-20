@@ -92,11 +92,10 @@ class TreasuryValidatorServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(10, result.size());
+        assertEquals(9, result.size());
 
         assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
-        assertEquals("Codice univoco Versamento exceed max length of 35 chars", result.get(1).getErrorMessage());
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(2).getErrorMessage());
+        assertEquals("TipoMovimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -110,7 +109,7 @@ class TreasuryValidatorServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(8, result.size());
+        assertEquals(7, result.size());
 
         assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
         assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());
@@ -126,7 +125,7 @@ class TreasuryValidatorServiceTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(9, result.size());
+        assertEquals(8, result.size());
 
         assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
         assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());
@@ -143,11 +142,10 @@ class TreasuryValidatorServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(10, result.size());
+        assertEquals(9, result.size());
 
         assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
-        assertEquals("Codice univoco Versamento exceed max length of 35 chars", result.get(1).getErrorMessage());
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(2).getErrorMessage());
+        assertEquals("TipoMovimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -161,7 +159,7 @@ class TreasuryValidatorServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(8, result.size());
+        assertEquals(7, result.size());
 
         assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
         assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());
@@ -180,7 +178,7 @@ class TreasuryValidatorServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(9, result.size());
+        assertEquals(8, result.size());
 
         assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
         assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());

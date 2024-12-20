@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.FlussoTesoreriaPIIDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
-import it.gov.pagopa.payhub.activities.service.cipher.DataCipherService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
@@ -21,13 +20,9 @@ import java.util.function.BiFunction;
 @Service
 public class TreasuryMapperService implements BiFunction<Object, IngestionFlowFileDTO, Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>>> {
 
-    private static DataCipherService dataCipherService;
     public static final String INSERT = "INSERT";
     public static final String DELETE = "DELETE";
 
-    public TreasuryMapperService(DataCipherService dataCipherService) {
-        TreasuryMapperService.dataCipherService = dataCipherService;
-    }
 
     @Override
     public Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> apply(Object flussoGiornaleDiCassa, IngestionFlowFileDTO ingestionFlowFileDTO) {
@@ -97,7 +92,7 @@ public class TreasuryMapperService implements BiFunction<Object, IngestionFlowFi
                 .regionValueDate(regionValueDate)
                 .organizationId(ingestionFlowFileDTO.getOrg().getOrgId())
                 .flowIdentifierCode(TreasuryUtils.getIdentificativo((String) getCausale.invoke(movimentoContoEvidenza), TreasuryUtils.IUF))
-                .iuv(TreasuryUtils.getIdentificativo((String) getCausale.invoke(movimentoContoEvidenza), TreasuryUtils.IUV))
+                .iuv(null)
                 .creationDate(new Date())
                 .lastUpdateDate(new Date())
                 .ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
@@ -108,7 +103,12 @@ public class TreasuryMapperService implements BiFunction<Object, IngestionFlowFi
                         ? getSospesoDaRegolarizzare.invoke(movimentoContoEvidenza).getClass().getMethod("getCodiceGestionaleProvvisorio").invoke(getSospesoDaRegolarizzare.invoke(movimentoContoEvidenza)).toString()
                         : null)
                 .endToEndId((String) getEndToEndId.invoke(movimentoContoEvidenza))
-                .lastNameHash(dataCipherService.encryptObj(cliente.getClass().getMethod("getAnagraficaCliente").invoke(cliente)))
+                .lastName((String) (cliente.getClass().getMethod("getAnagraficaCliente").invoke(cliente)))
+                .address((String) (cliente.getClass().getMethod("getIndirizzoCliente").invoke(cliente)))
+                .postalCode((String) (cliente.getClass().getMethod("getCapCliente").invoke(cliente)))
+                .city((String) (cliente.getClass().getMethod("getLocalitaCliente").invoke(cliente)))
+                .fiscalCode((String) (cliente.getClass().getMethod("getCodiceFiscaleCliente").invoke(cliente)))
+                .vatNumber((String) (cliente.getClass().getMethod("getPartitaIvaCliente").invoke(cliente)))
                 .build();
 
         if (getTipoMovimento.invoke(movimentoContoEvidenza).equals("ENTRATA") && getTipoDocumento.invoke(movimentoContoEvidenza).equals("SOSPESO ENTRATA")) {
