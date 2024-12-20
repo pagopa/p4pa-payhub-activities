@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.ObjectFactory;
@@ -19,8 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class TreasuryOpiIngestionActivityTest {
@@ -31,6 +35,8 @@ class TreasuryOpiIngestionActivityTest {
   private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
   @Mock
   private TreasuryUnmarshallerService treasuryUnmarshallerService;
+  @Mock
+  private TreasuryOpiParserService treasuryOpiParserService;
 
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
 
@@ -39,7 +45,8 @@ class TreasuryOpiIngestionActivityTest {
     treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(
             ingestionFlowFileDao,
             ingestionFlowFileRetrieverService,
-            treasuryUnmarshallerService);
+            treasuryOpiParserService
+            );
   }
 
   private static final Long VALID_INGESTION_FLOW_ID = 1L;
@@ -74,24 +81,29 @@ class TreasuryOpiIngestionActivityTest {
 
   @Test
   void givenValidIngestionFlowWhenProcessFileThenOk() throws IOException {
-    //given
-    Mockito.when(ingestionFlowFileDao.findById(VALID_INGESTION_FLOW_ID)).thenReturn(VALID_INGESTION_FLOW);
-    Mockito.when(ingestionFlowFileRetrieverService.retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE)).thenReturn(VALID_FILE_PATH_LIST);
-    for (int i = 0; i < VALID_FILE_PATH_LIST.size(); i++) {
-      Mockito.when(treasuryUnmarshallerService.unmarshalOpi14(VALID_FILE_PATH_LIST.get(i).toFile())).thenReturn(VALID_FLUSSO_OPI14_LIST.get(i));
+    // Given
+    Long ingestionFlowFileId = 1L;
+    IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+    ingestionFlowFileDTO.setFlowFileType(IngestionFlowFileType.OPI);
+    ingestionFlowFileDTO.setFilePath("/test/path");
+    ingestionFlowFileDTO.setFileName("testFile.zip");
 
-    }
-    //when
-    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(VALID_INGESTION_FLOW_ID);
+    Path mockPath = mock(Path.class);
+    List<Path> paths = Collections.singletonList(mockPath);
 
-    //verify
-    Assertions.assertNotNull(result.getIufs());
-    Assertions.assertEquals(result.getIufs(), new ArrayList<>());
-    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(VALID_INGESTION_FLOW_ID);
-    Mockito.verify(ingestionFlowFileRetrieverService, Mockito.times(1)).retrieveAndUnzipFile(VALID_INGESTION_FLOW_PATH, VALID_INGESTION_FLOW_FILE);
-    for (int i = 0; i < VALID_FILE_PATH_LIST.size(); i++) {
-      Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi14(VALID_FILE_PATH_LIST.get(i).toFile());
-    }
+    Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
+    Mockito.when(ingestionFlowFileRetrieverService.retrieveAndUnzipFile(Path.of("/test/path"), "testFile.zip"))
+            .thenReturn(paths);
+    Mockito.when(treasuryOpiParserService.parseData(mockPath))
+            .thenReturn(List.of());
+
+    // When
+    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(ingestionFlowFileId);
+
+    // Then
+    Assertions.assertNotNull(result);
+    Assertions.assertTrue(result.isSuccess());
+    Assertions.assertEquals(0, result.getIufs().size());
   }
 
   @Test

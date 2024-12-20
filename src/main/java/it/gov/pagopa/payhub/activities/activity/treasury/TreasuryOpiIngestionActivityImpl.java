@@ -2,14 +2,14 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.dto.treasury.*;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
+import it.gov.pagopa.payhub.activities.service.treasury.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -29,16 +29,18 @@ import java.util.*;
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
-    private final TreasuryUnmarshallerService treasuryUnmarshallerService;
+    private final TreasuryOpiParserService treasuryOpiParserService;
+
+
 
 
     public TreasuryOpiIngestionActivityImpl(
                                             IngestionFlowFileDao ingestionFlowFileDao,
                                             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-                                            TreasuryUnmarshallerService treasuryUnmarshallerService) {
+                                            TreasuryOpiParserService treasuryOpiParserService) {
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
-        this.treasuryUnmarshallerService = treasuryUnmarshallerService;
+        this.treasuryOpiParserService = treasuryOpiParserService;
     }
 
 
@@ -52,7 +54,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
 
            List <String> iufList = ingestionFlowFiles.stream()
-                    .map(this::parseData)
+                    .map(treasuryOpiParserService::parseData)
                     .flatMap(List::stream)
                     .toList();
 
@@ -81,28 +83,4 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
         return ingestionFlowFileRetrieverService
                 .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
     }
-
-    private List<String> parseData(Path ingestionFlowFilePath) {
-        File ingestionFlowFile=ingestionFlowFilePath.toFile();
-
-        it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa flussoGiornaleDiCassa14 = null;
-        it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa161 = null;
-
-        try {
-            flussoGiornaleDiCassa161 = treasuryUnmarshallerService.unmarshalOpi161(ingestionFlowFile);
-            log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa161.getId());
-        } catch (Exception e) {
-            log.info("file flussoGiornaleDiCassa parsing error with opi 1.6.1 format {} ", e.getMessage());
-            try {
-                flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
-                log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
-            } catch (Exception exception) {
-                log.info("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", exception.getMessage());
-                throw new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile);
-            }
-        }
-        //TODO in task 1658 it will be implemented the element to be returned
-        return List.of();
-    }
-
 }
