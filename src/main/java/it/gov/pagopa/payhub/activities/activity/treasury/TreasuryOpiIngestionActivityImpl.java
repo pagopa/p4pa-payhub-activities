@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.*;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
+import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
 import it.gov.pagopa.payhub.activities.service.treasury.*;
@@ -27,7 +28,6 @@ import java.util.*;
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
 
-    private final IngestionFlowFileType ingestionflowFileType;
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final TreasuryDao treasuryDao;
     private final FlussoTesoreriaPIIDao flussoTesoreriaPIIDao;
@@ -41,7 +41,6 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
             TreasuryUnmarshallerService treasuryUnmarshallerService,
             TreasuryMapperService treasuryMapperService) {
-        this.ingestionflowFileType = IngestionFlowFileType.OPI;
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.treasuryDao = treasuryDao;
         this.flussoTesoreriaPIIDao = flussoTesoreriaPIIDao;
@@ -73,7 +72,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
         IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
                 .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
-        if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
+        if (!ingestionFlowFileDTO.getFlowFileType().equals(IngestionFlowFileType.OPI)) {
             throw new IllegalArgumentException("invalid ingestionFlow file type " + ingestionFlowFileDTO.getFlowFileType());
         }
         return ingestionFlowFileDTO;
@@ -98,15 +97,13 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             flussoGiornaleDiCassa161 = treasuryUnmarshallerService.unmarshalOpi161(ingestionFlowFile);
             log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa161.getId());
         } catch (Exception e) {
-            log.error("file flussoGiornaleDiCassa parsing error with opi 1.6.1 format {} ", e.getMessage());
-        }
-        if (flussoGiornaleDiCassa161 == null) {
+            log.info("file flussoGiornaleDiCassa parsing error with opi 1.6.1 format {} ", e.getMessage());
             try {
                 flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
                 log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
-                versione = TreasuryValidatorService.V_14;
-            } catch (Exception e) {
-                log.error("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
+            } catch (Exception exception) {
+                log.info("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", exception.getMessage());
+                throw new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile);
             }
         } else
             versione = TreasuryValidatorService.V_161;
