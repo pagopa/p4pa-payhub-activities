@@ -12,28 +12,28 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ClearClassifyIuvActivityImplTest {
-	private static final Long ORGANIZATION = 1L;
+class IuvClassificationActivityImplTest {
+	private static final Long ORGANIZATION = 123L;
 	private static final String IUV = "01011112222333345";
 
 	@Mock
 	private ClassificationDao classificationDaoMock;
 
-	private ClearClassifyIuvActivity activity;
+	private IuvClassificationActivity activity;
 
 	@BeforeEach
 	void setUp() {
-		activity = new ClearClassifyIuvActivityImpl(classificationDaoMock);
+		activity = new IuvClassificationActivityImpl(classificationDaoMock);
 	}
 
 	@Test
 	void deleteClassificationSuccess() {
-		assertDoesNotThrow(() -> activity.deleteClassificationByIuv(ORGANIZATION, IUV));
+		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, "receiptId", 1));
 	}
 
 	@Test
 	void deleteClassificationFailed() {
 		when(classificationDaoMock.deleteClassificationByIuv(ORGANIZATION, IUV)).thenReturn(Boolean.FALSE);
-		assertFalse(activity.deleteClassificationByIuv(ORGANIZATION, IUV));
+		assertFalse(activity.classify(ORGANIZATION, IUV, "receiptId", 1));
 	}
 }

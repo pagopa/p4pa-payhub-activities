@@ -1,7 +1,12 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
+
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
+
 /**
  * Interface for defining an activity to process payment classifications based on IUV.
  */
+@ActivityInterface
 public interface IuvClassificationActivity {
 
     /**
@@ -13,5 +18,6 @@ public interface IuvClassificationActivity {
      * @param transferIndex  the index of the transfer to be classified
      * @return true if the classification is successful, false otherwise
      */
-    boolean classify(String organizationId, String iuv, String receiptId, int transferIndex);
+    @ActivityMethod
+    boolean classify(Long organizationId, String iuv, String receiptId, int transferIndex);
 }

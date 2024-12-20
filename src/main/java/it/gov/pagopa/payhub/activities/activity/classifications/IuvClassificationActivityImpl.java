@@ -8,14 +8,21 @@ import org.springframework.stereotype.Component;
 @Lazy
 @Slf4j
 @Component
-public class ClearClassifyIuvActivityImpl implements ClearClassifyIuvActivity {
+public class IuvClassificationActivityImpl implements IuvClassificationActivity {
     private final ClassificationDao classificationDao;
 
-    public ClearClassifyIuvActivityImpl(ClassificationDao classificationDao) {
+    public IuvClassificationActivityImpl(ClassificationDao classificationDao) {
         this.classificationDao = classificationDao;
     }
 
-    public boolean deleteClassificationByIuv(Long organizationId, String iuv) {
+
+    @Override
+    public boolean classify(Long organizationId, String iuv, String receiptId, int transferIndex) {
+
+        return cleanUpCurrentProcessingRequests(organizationId, iuv);
+    }
+
+    private boolean cleanUpCurrentProcessingRequests(Long organizationId, String iuv) {
         log.debug("Deleting classifications for organization id: {} and iuv: {}", organizationId, iuv);
         return classificationDao.deleteClassificationByIuv(organizationId, iuv);
     }
