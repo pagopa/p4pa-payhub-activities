@@ -87,7 +87,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private TreasuryIufResult parseData(Path ingestionFlowFilePath, IngestionFlowFileDTO finalIngestionFlowFileDTO) {
         File ingestionFlowFile=ingestionFlowFilePath.toFile();
         Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> treasuryDtoMap = null;
-        String versione = null;
+        String versione = TreasuryValidatorService.V_161;
         Set<String> iufList = new HashSet<>();
 
         it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa flussoGiornaleDiCassa14 = null;
@@ -101,12 +101,13 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             try {
                 flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
                 log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
+                versione = TreasuryValidatorService.V_14;
             } catch (Exception exception) {
                 log.info("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", exception.getMessage());
                 throw new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile);
             }
-        } else
-            versione = TreasuryValidatorService.V_161;
+        }
+
 
         assert versione != null;
 //        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
