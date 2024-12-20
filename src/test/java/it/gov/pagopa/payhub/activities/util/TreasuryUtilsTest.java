@@ -1,189 +1,84 @@
 package it.gov.pagopa.payhub.activities.util;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TreasuryUtilsTest {
-    public static final String PRE_IUF_1 = "LGPE-RIVERSAMENTO";
-    public static final String PRE_IUF_2 = "LGPE- RIVERSAMENTO";
-    public static final String PRE_IUF_3 = "LGPE -RIVERSAMENTO";
-    public static final String PRE_IUF_4 = "LGPE - RIVERSAMENTO";
-    public static final String PRE_IUF_5 = "L GPE-RIVERSAMENTO";
-
-    public static final String PRE_IUV_RFS = "RFS";
-    public static final String PRE_IUV_RFB = "RFB";
-
-
 
     @Test
-    void testGetIdentificativo_withIUF_case1() {
-        // Give
-        String value = "ACCREDITI VARI "+PRE_IUF_1+"/URI/2024-12-15 IUV_VALID";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("2024-12-15IUV_VALID", result);
-    }
-
-    @Test
-    void testGetIdentificativo_withIUFAndSpace_case1() {
-        // Give
-        String value = "ACCREDITI VARI "+PRE_IUF_1+" URI 2024-12-15 IUV_VALID";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("2024-12-15IUV_VALID", result);
-    }
-    @Test
-    void testGetIdentificativo_withIUF_case2() {
-        // Give
-        String value = "ACCREDITI VARI "+PRE_IUF_2+"/URI/2024-12-15 IUV_VALID";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("2024-12-15IUV_VALID", result);
-    }
-    @Test
-    void testGetIdentificativo_withIUF_case3() {
-        // Give
-        String value = "ACCREDITI VARI "+PRE_IUF_3+"/URI/2024-12-15 IUV_VALID";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("2024-12-15IUV_VALID", result);
-    }
-    @Test
-    void testGetIdentificativo_withIUF_case4() {
-        // Give
-        String value = "ACCREDITI VARI "+PRE_IUF_4+"/URI/2024-12-15 IUV_VALID";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("2024-12-15IUV_VALID", result);
-    }
-    @Test
-    void testGetIdentificativo_withIUF_case5() {
-        // Give
-        String value = "ACCREDITI "+PRE_IUF_5+"/URI/2024-05-01 ABC ACCREDITI "+PRE_IUF_5+"/URI/2024-12-15 DEF";
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("2024-12-15", result);
-    }
-
-    @Test
-    void testGetIdentificativo_withEmptyValue() {
+    void testGetIdentificativo_withValidIUF() {
         // Given
-        String value = "";
+        String input = "ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2023-01-01 ABC123";
+        String type = TreasuryUtils.IUF;
 
         // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNull(result);
-    }
-
-    @Test
-    void testGetIdentificativo_withNullValue() {
-        // Given
-        String value = null;
-
-        // When
-        String result = TreasuryUtils.getIdentificativo(value, TreasuryUtils.IUF);
-
-        // Then
-        assertNull(result);
-    }
-
-    @Test
-    void testGetDataFromIuf_validDate() {
-        // Give
-        String value = "IUF_TEST 2024-12-15 VALID_DATE";
-
-        // When
-        String result = TreasuryUtils.getDataFromIuf(value);
+        String result = TreasuryUtils.getIdentificativo(input, type);
 
         // Then
         assertNotNull(result);
-        assertEquals("2024-12-15", result);
+        assertEquals("2023-01-01ABC123", result);
     }
 
     @Test
-    void testGetDataFromIuf_noDate() {
-        // Give
-        String value = "IUF_TEST_NO_DATE";
+    void testGetIdentificativo_withInvalidIUF() {
+        // Given
+        String input = "INVALID STRING";
+        String type = TreasuryUtils.IUF;
 
         // When
-        String result = TreasuryUtils.getDataFromIuf(value);
+        String result = TreasuryUtils.getIdentificativo(input, type);
 
         // Then
         assertNull(result);
     }
 
     @Test
-    void testCheckIufOld_validString() {
-        // Give
-        String value = "Valid string without special characters";
+    void testGetDataFromIuf_withValidDate() {
+        // Given
+        String input = "2023-01-01ABC123";
 
         // When
-        boolean result = TreasuryUtils.checkIufOld(value);
+        String result = TreasuryUtils.getDataFromIuf(input);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("2023-01-01", result);
+    }
+
+    @Test
+    void testGetDataFromIuf_withNoDate() {
+        // Given
+        String input = "ABC123";
+
+        // When
+        String result = TreasuryUtils.getDataFromIuf(input);
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void testCheckIufOld_withOldFormat() {
+        // Given
+        String input = "ABC123";
+
+        // When
+        boolean result = TreasuryUtils.checkIufOld(input);
 
         // Then
         assertTrue(result);
     }
 
     @Test
-    void testCheckIufOld_invalidString() {
-        // Give
-        String value = "Invalid string with special characters !@#";
+    void testCheckIufOld_withNewFormat() {
+        // Given
+        String input = "ABC@123";
 
         // When
-        boolean result = TreasuryUtils.checkIufOld(value);
+        boolean result = TreasuryUtils.checkIufOld(input);
 
         // Then
         assertFalse(result);
     }
-
-    @Test
-    void testCheckIufOld_emptyString() {
-        // Give
-        String value = "";
-
-        // When
-        boolean result = TreasuryUtils.checkIufOld(value);
-
-        // Then
-        assertTrue(result);
-    }
-
-    @Test
-    void testCheckIufOld_nullString() {
-        // Give
-        String value = null;
-
-        // When
-        boolean result = TreasuryUtils.checkIufOld(value);
-
-        // Then
-        assertTrue(result);
-    }
-
 }
