@@ -25,6 +25,8 @@ public class SendDebtPositionIONotificationActivityImpl implements SendDebtPosit
 
     @Override
     public void sendMessage(DebtPositionDTO debtPosition) {
+
+        log.info("Mapping DebtPositionDTO to NotificationQueueDTO list for orgId {}", debtPosition.getOrg().getOrgId());
         List<NotificationQueueDTO> notificationQueueDTOList = notificationQueueMapper.mapDebtPositionDTO2NotificationQueueDTO(debtPosition);
 
         for (NotificationQueueDTO notificationQueueDTO : notificationQueueDTOList) {
