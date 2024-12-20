@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
+import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
@@ -17,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Interface for the TreasuryOpiIngestionActivity.
@@ -96,8 +96,8 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             try {
                 flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
                 log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
-            } catch (Exception e) {
-                log.info("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
+            } catch (Exception exception) {
+                log.info("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", exception.getMessage());
                 throw new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile);
             }
         }
