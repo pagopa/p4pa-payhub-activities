@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 
 import it.gov.pagopa.pu.p4paionotification.controller.ApiClient;
 import it.gov.pagopa.pu.p4paionotification.controller.generated.IoNotificationApi;
-import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;

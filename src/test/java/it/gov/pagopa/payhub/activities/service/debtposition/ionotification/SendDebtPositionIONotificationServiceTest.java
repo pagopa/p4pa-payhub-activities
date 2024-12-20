@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 
 import it.gov.pagopa.pu.p4paionotification.controller.ApiClient;
-import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

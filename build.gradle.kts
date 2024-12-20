@@ -218,6 +218,27 @@ tasks.compileJava {
 	dependsOn("openApiGenerateIONOTIFICATION")
 }
 
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateP4PAAUTH") {
+	group = "openapi"
+	description = "description"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
+	outputDir.set("$projectDir/build/generated")
+	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paauth.dto.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true"
+	))
+	library.set("resttemplate")
+}
+
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateIONOTIFICATION") {
 	group = "openapi"
 	description = "description"
@@ -226,11 +247,11 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")
 	outputDir.set("$projectDir/build/generated/ionotification")
 	apiPackage.set("it.gov.pagopa.pu.p4paionotification.controller.generated")
-	modelPackage.set("it.gov.pagopa.pu.p4paionotification.model.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paionotification.dto.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
-		"dateLibrary" to "java17",
+		"dateLibrary" to "java8",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
