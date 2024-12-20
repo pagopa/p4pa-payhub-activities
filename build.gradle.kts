@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.5"
+	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 	id("org.sonarqube") version "5.0.0.4638"
 	`java-library`
@@ -10,7 +10,6 @@ plugins {
 	jacoco
 	id("com.intershop.gradle.jaxb") version "7.0.0"
 	id("org.openapi.generator") version "7.9.0"
-	id("org.ajoberstar.grgit") version "5.3.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -61,6 +60,7 @@ val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
 val openApiToolsVersion = "0.2.6"
 val temporalVersion = "1.27.0"
+val protobufJavaVersion = "3.25.5"
 
 
 dependencies {
@@ -77,11 +77,14 @@ dependencies {
 
 	// Security fixes
 	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
+	implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 
  	//temporal
-	implementation("io.temporal:temporal-sdk:$temporalVersion")
+	implementation("io.temporal:temporal-sdk:$temporalVersion"){
+		exclude(group = "com.google.protobuf", module = "protobuf-java")
+	}
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -198,18 +201,12 @@ tasks.compileJava {
 	dependsOn("openApiGenerateIONOTIFICATION")
 }
 
-var targetEnv = when (grgit.branch.current().name) {
-	"uat" -> "uat"
-	"main" -> "main"
-	else -> "develop"
-}
-
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateIONOTIFICATION") {
 	group = "openapi"
 	description = "description"
 
 	generatorName.set("java")
-	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/$targetEnv/openapi/p4pa-io-notification.openapi.yaml")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")
 	outputDir.set("$projectDir/build/generated/ionotification")
 	apiPackage.set("it.gov.pagopa.pu.p4paionotification.controller.generated")
 	modelPackage.set("it.gov.pagopa.pu.p4paionotification.model.generated")
@@ -220,7 +217,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
-		"generateSupportingFiles" to "true"
+		"generateSupportingFiles" to "true",
+		"generateBuilders" to "true"
 	))
 	library.set("resttemplate")
 }
