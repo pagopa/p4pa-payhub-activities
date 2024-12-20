@@ -39,7 +39,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
                     .build())
             .toList();
 
-        if (! transfers2classify.isEmpty()) {
+        if (transfers2classify.isEmpty()) {
             log.debug("Saving payments reporting found for organization id {} and iuf: {}", organizationId, iuf);
             saveClassification(organizationId, treasuryId, iuf);
         }
