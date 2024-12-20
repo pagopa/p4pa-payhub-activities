@@ -5,14 +5,13 @@ import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyResultDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Lazy
@@ -31,7 +30,16 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         log.debug("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
         List<ClassifyResultDTO> classifyResultDTOS =
-               getClassifyFromPayments(paymentsReportingDao.findByOrganizationIdFlowIdentifierCode(organizationId, iuf));
+            paymentsReportingDao.findByOrganizationIdFlowIdentifierCode(organizationId, iuf)
+            .stream()
+            .map(paymentsReportingDTO ->
+                ClassifyResultDTO.builder()
+                    .organizationId(paymentsReportingDTO.getOrganizationId())
+                    .creditorReferenceId(paymentsReportingDTO.getCreditorReferenceId())
+                    .regulationUniqueIdentifier(paymentsReportingDTO.getRegulationUniqueIdentifier())
+                    .transferIndex(paymentsReportingDTO.getTransferIndex())
+                    .build())
+            .collect(Collectors.toList());
 
         log.debug("Saving payments reporting found for organization id {} and iuf: {}", organizationId, iuf);
         saveClassification(organizationId, treasuryId, iuf);
@@ -59,22 +67,4 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
             .classificationsEnum(ClassificationsEnum.TES_NO_MATCH)
             .build());
     }
-
-    /**
-     * @param paymentsReportingDTOS list of payments
-     * @return List<ClassifyResultDTO> subset of fields of the list of payments
-     */
-    private List<ClassifyResultDTO> getClassifyFromPayments(List<PaymentsReportingDTO> paymentsReportingDTOS) {
-        List<ClassifyResultDTO> classifyResultDTOS = new ArrayList<>();
-        for (PaymentsReportingDTO paymentsReportingDTO: paymentsReportingDTOS) {
-            classifyResultDTOS.add(ClassifyResultDTO.builder()
-                    .organizationId(paymentsReportingDTO.getOrganizationId())
-                    .creditorReferenceId(paymentsReportingDTO.getCreditorReferenceId())
-                    .regulationUniqueIdentifier(paymentsReportingDTO.getRegulationUniqueIdentifier())
-                    .transferIndex(paymentsReportingDTO.getTransferIndex())
-                    .build());
-        }
-        return classifyResultDTOS;
-    }
-
 }
