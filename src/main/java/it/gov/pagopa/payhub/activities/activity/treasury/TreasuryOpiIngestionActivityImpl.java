@@ -22,7 +22,6 @@ import java.util.*;
 @Lazy
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
-
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
     private final TreasuryOpiParserService treasuryOpiParserService;
@@ -73,5 +72,4 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
         return ingestionFlowFileRetrieverService
                 .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
     }
-
 }
