@@ -42,11 +42,4 @@ public class Utilities {
         return (10 - s % 10) % 10 == pi.charAt(10) - '0';
     }
 
-    public static boolean isNullOrEmptyString(String str){
-        return(str == null || str.isEmpty());
-    }
-
-    public static boolean isNotNullOrEmptyString(String str){
-        return ! isNullOrEmptyString(str);
-    }
 }

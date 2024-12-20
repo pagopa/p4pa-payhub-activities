@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.service;
 
 import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.dto.MailTo;
-import it.gov.pagopa.payhub.activities.utility.Utilities;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -94,21 +93,21 @@ public class SendMailService {
     }
 
     private void setMailSender() {
-        if (Utilities.isNotNullOrEmptyString(host))
+        if (StringUtils.isNotEmpty(host))
             mailSender.setHost(host);
-        if (Utilities.isNotNullOrEmptyString(port))
+        if (StringUtils.isNotEmpty(port))
             mailSender.setPort(Integer.parseInt(port));
-        if (Utilities.isNotNullOrEmptyString(username))
+        if (StringUtils.isNotEmpty(username))
             mailSender.setUsername(username);
-        if (Utilities.isNotNullOrEmptyString(password))
+        if (StringUtils.isNotEmpty(password))
             mailSender.setPassword(password);
 
         Properties props = mailSender.getJavaMailProperties();
-        if (Utilities.isNotNullOrEmptyString(smtpAuth))
+        if (StringUtils.isNotEmpty(smtpAuth))
             props.put("mail.smtp.auth", smtpAuth);
-        if (Utilities.isNotNullOrEmptyString(smtpStarttlsEnable))
+        if (StringUtils.isNotEmpty(smtpStarttlsEnable))
             props.put("mail.smtp.starttls.enable", smtpStarttlsEnable);
-        if (Utilities.isNotNullOrEmptyString(smtpStarttlsRequired))
+        if (StringUtils.isNotEmpty(smtpStarttlsRequired))
             props.put("mail.smtp.starttls.required", smtpStarttlsRequired);
     }
 }

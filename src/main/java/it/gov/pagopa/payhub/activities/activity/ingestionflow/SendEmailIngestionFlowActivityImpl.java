@@ -141,11 +141,11 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         else  {
             String errorLink = geErrorFileLink(ingestionFlowFileDTO.getIngestionFlowFileId());
             mailMap.put("fileName", ingestionFlowFileDTO.getDiscardFileName());
-            if (Utilities.isNotNullOrEmptyString(errorLink)) {
-                mailMap.put("errorFileLink", errorLink);
+            if (StringUtils.isEmpty(errorLink)) {
+                mailMap.put("errorFileLink", "");
             }
             else {
-                mailMap.put("errorFileLink", "");
+                mailMap.put("errorFileLink", errorLink);
             }
         }
         return mailMap;
