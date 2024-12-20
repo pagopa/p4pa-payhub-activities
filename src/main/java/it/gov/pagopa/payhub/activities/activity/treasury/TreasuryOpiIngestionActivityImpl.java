@@ -10,7 +10,6 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Lazy
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
-    private final IngestionFlowFileType ingestionflowFileType;
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
     private final TreasuryUnmarshallerService treasuryUnmarshallerService;
@@ -38,7 +36,6 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                                             IngestionFlowFileDao ingestionFlowFileDao,
                                             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
                                             TreasuryUnmarshallerService treasuryUnmarshallerService) {
-        this.ingestionflowFileType = IngestionFlowFileType.OPI;
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryUnmarshallerService = treasuryUnmarshallerService;
@@ -73,7 +70,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
         IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
                 .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
-        if (!ingestionFlowFileDTO.getFlowFileType().equals(ingestionflowFileType)) {
+        if (!ingestionFlowFileDTO.getFlowFileType().equals(IngestionFlowFileType.OPI)) {
             throw new IllegalArgumentException("invalid ingestionFlow file type " + ingestionFlowFileDTO.getFlowFileType());
         }
         return ingestionFlowFileDTO;
@@ -105,6 +102,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                 log.error("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
             }
         }
+        //TODO in task 1658 it will be implemented the element to be returned
         return List.of();
     }
 
