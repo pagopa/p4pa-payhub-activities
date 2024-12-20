@@ -39,7 +39,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
                     .regulationUniqueIdentifier(paymentsReportingDTO.getRegulationUniqueIdentifier())
                     .transferIndex(paymentsReportingDTO.getTransferIndex())
                     .build())
-            .collect(Collectors.toList());
+            .toList();
 
         log.debug("Saving payments reporting found for organization id {} and iuf: {}", organizationId, iuf);
         saveClassification(organizationId, treasuryId, iuf);
