@@ -17,8 +17,9 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 
     @Override
     public boolean classify(Long orgId, String iuv, String iur, int transferIndex) {
+        cleanUpCurrentProcessingRequests(orgId, iuv, iur, transferIndex);
 
-        return cleanUpCurrentProcessingRequests(orgId, iuv, iur, transferIndex);
+        return false;
     }
 
     private boolean cleanUpCurrentProcessingRequests(Long orgId, String iuv, String iur, int transferIndex) {
