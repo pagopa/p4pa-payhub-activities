@@ -160,7 +160,7 @@ configurations {
 
 configure<SourceSetContainer> {
 	named("main") {
-		java.srcDir("$projectDir/build/generated/ionotification/src/main/java")
+		java.srcDir("$projectDir/build/generated/src/main/java")
 	}
 }
 
@@ -169,8 +169,8 @@ tasks.register<Jar>("sourcesJar") {
 	description = "Assembles a JAR archive containing the main source code."
 
 	from(sourceSets["main"].allSource)
-	inputs.dir("$projectDir/build/generated/ionotification/src/main/java")
-	dependsOn("openApiGenerateIONOTIFICATION")
+	inputs.dir("$projectDir/build/generated/src/main/java")
+	dependsOn("dependenciesBuild")
 	archiveClassifier.set("sources")
 }
 
@@ -215,7 +215,14 @@ tasks.withType<BootJar> {
 
 
 tasks.compileJava {
-	dependsOn("openApiGenerateIONOTIFICATION")
+	dependsOn("dependenciesBuild")
+}
+
+tasks.register("dependenciesBuild") {
+	dependsOn(
+		"jaxb",
+		"openApiGenerateP4PAAUTH",
+		"openApiGenerateIONOTIFICATION")
 }
 
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateP4PAAUTH") {
@@ -235,7 +242,10 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
-		"generateSupportingFiles" to "true"
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "false",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
 	))
 	library.set("resttemplate")
 }
@@ -246,7 +256,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")
-	outputDir.set("$projectDir/build/generated/ionotification")
+	outputDir.set("$projectDir/build/generated")
 	invokerPackage.set("it.gov.pagopa.pu.p4paionotification.generated")
 	apiPackage.set("it.gov.pagopa.pu.p4paionotification.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.p4paionotification.dto.generated")
@@ -258,7 +268,9 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
-		"generateBuilders" to "true"
+		"generateConstructorWithAllArgs" to "false",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
 	))
 	library.set("resttemplate")
 }

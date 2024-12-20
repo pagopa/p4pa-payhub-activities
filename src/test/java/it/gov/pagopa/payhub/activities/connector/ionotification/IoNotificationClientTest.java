@@ -35,7 +35,7 @@ class IoNotificationClientTest {
         ApiClient apiClient = new ApiClient(restTemplateMock);
         String baseUrl = "http://example.com";
         apiClient.setBasePath(baseUrl);
-        ioNotificationClient = new IoNotificationClientImpl(restTemplateBuilderMock, baseUrl);
+        ioNotificationClient = new IoNotificationClientImpl(baseUrl, restTemplateBuilderMock);
     }
 
     @Test

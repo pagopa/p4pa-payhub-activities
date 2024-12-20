@@ -1,0 +1,8 @@
+rest:
+  auth:
+    base-url: "\${AUTH_BASE_URL:http://localhost:8080/auth}"
+    post-token:
+      client_secret: "\${AUTH_CLIENT_SECRET:clientsecret}"
+
+  io-notification:
+    base-url: "\${IO_NOTIFICATION_BASE_URL:http://localhost:8080/ionotification}"
