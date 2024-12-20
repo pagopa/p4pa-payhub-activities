@@ -225,6 +225,7 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.p4paauth.generated")
 	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
 	modelPackage.set("it.gov.pagopa.pu.p4paauth.dto.generated")
 	configOptions.set(mapOf(
@@ -246,7 +247,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")
 	outputDir.set("$projectDir/build/generated/ionotification")
-	apiPackage.set("it.gov.pagopa.pu.p4paionotification.controller.generated")
+	invokerPackage.set("it.gov.pagopa.pu.p4paionotification.generated")
+	apiPackage.set("it.gov.pagopa.pu.p4paionotification.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.p4paionotification.dto.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
