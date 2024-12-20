@@ -95,14 +95,13 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             flussoGiornaleDiCassa161 = treasuryUnmarshallerService.unmarshalOpi161(ingestionFlowFile);
             log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa161.getId());
         } catch (Exception e) {
-            log.error("file flussoGiornaleDiCassa parsing error with opi 1.6.1 format {} ", e.getMessage());
-        }
-        if (flussoGiornaleDiCassa161 == null) {
+            log.info("file flussoGiornaleDiCassa parsing error with opi 1.6.1 format {} ", e.getMessage());
             try {
                 flussoGiornaleDiCassa14 = treasuryUnmarshallerService.unmarshalOpi14(ingestionFlowFile);
                 log.debug("file flussoGiornaleDiCassa with Id {} parsed successfully ", flussoGiornaleDiCassa14.getId());
             } catch (Exception e) {
-                log.error("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
+                log.info("file flussoGiornaleDiCassa parsing error with opi 1.4 format {} ", e.getMessage());
+                throw new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile);
             }
         }
         return List.of();
