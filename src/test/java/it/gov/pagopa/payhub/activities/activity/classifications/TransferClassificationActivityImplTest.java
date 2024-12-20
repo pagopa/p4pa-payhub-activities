@@ -36,7 +36,7 @@ class TransferClassificationActivityImplTest {
 
 	@Test
 	void classificationFailed() {
-		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenThrow(new ClassificationException("deletion failed"));
+		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.FALSE);
 		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
 	}
 }
