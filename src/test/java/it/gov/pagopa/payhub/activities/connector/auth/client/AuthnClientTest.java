@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.auth.client;
 
-import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApiHolder;
+import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApisHolder;
 import it.gov.pagopa.pu.p4paauth.controller.generated.AuthnApi;
 import it.gov.pagopa.pu.p4paauth.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AuthnClientTest {
     @Mock
-    private AuthApiHolder<AuthnApi> authnApiAuthApiHolderMock;
+    private AuthApisHolder authApisHolderMock;
     @Mock
     private AuthnApi authnApiMock;
 
@@ -23,13 +23,13 @@ class AuthnClientTest {
 
     @BeforeEach
     void setUp() {
-        authnClient = new AuthnClient(authnApiAuthApiHolderMock);
+        authnClient = new AuthnClient(authApisHolderMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                authnApiAuthApiHolderMock
+                authApisHolderMock
         );
     }
 
@@ -46,7 +46,7 @@ class AuthnClientTest {
         String subjectTokenType = "subjectTokenType";
         String clientSecret = "clientSecret";
 
-        Mockito.when(authnApiAuthApiHolderMock.getAuthApi(null))
+        Mockito.when(authApisHolderMock.getAuthnApi(null))
                 .thenReturn(authnApiMock);
         Mockito.when(authnApiMock.postToken(clientId, grantType, scope, subjectToken, subjectIssuer, subjectTokenType, clientSecret))
                 .thenReturn(expectedResult);

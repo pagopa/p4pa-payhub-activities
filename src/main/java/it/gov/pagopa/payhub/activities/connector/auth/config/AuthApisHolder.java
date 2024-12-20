@@ -1,27 +1,26 @@
 package it.gov.pagopa.payhub.activities.connector.auth.config;
 
+import it.gov.pagopa.pu.p4paauth.controller.generated.AuthnApi;
+import it.gov.pagopa.pu.p4paauth.controller.generated.AuthzApi;
 import it.gov.pagopa.pu.p4paauth.generated.ApiClient;
 import it.gov.pagopa.pu.p4paauth.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.GenericTypeResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
-
 @Lazy
 @Service
-public abstract class AuthApiHolder<T extends BaseApi> {
+public class AuthApisHolder {
 
-    private final T authApi;
+    private final AuthnApi authnApi;
+    private final AuthzApi authzApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
-    @SuppressWarnings("unchecked")
-    protected AuthApiHolder(
+    public AuthApisHolder(
             @Value("${rest.auth.base-url}") String baseUrl,
 
             RestTemplateBuilder restTemplateBuilder) {
@@ -30,12 +29,8 @@ public abstract class AuthApiHolder<T extends BaseApi> {
         apiClient.setBasePath(baseUrl);
         apiClient.setBearerToken(bearerTokenHolder::get);
 
-        Class<T> authClass = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), AuthApiHolder.class);
-        try {
-            authApi = Objects.requireNonNull(authClass).getConstructor(ApiClient.class).newInstance(apiClient);
-        } catch (Exception e) {
-            throw new IllegalStateException("Cannot construct BaseApi instance using Class " + authClass, e);
-        }
+        this.authnApi = new AuthnApi(apiClient);
+        this.authzApi = new AuthzApi(apiClient);
     }
 
     @PreDestroy
@@ -43,9 +38,19 @@ public abstract class AuthApiHolder<T extends BaseApi> {
         bearerTokenHolder.remove();
     }
 
-    /** It will return a {@link T} instrumented with the provided accessToken. Use null if auth is not required */
-    public T getAuthApi(String accessToken){
+    /** It will return a {@link AuthnApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public AuthnApi getAuthnApi(String accessToken){
+        return getApi(accessToken, authnApi);
+    }
+
+    /** It will return a {@link AuthzApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public AuthzApi getAuthzApi(String accessToken){
         bearerTokenHolder.set(accessToken);
-        return authApi;
+        return getApi(accessToken, authzApi);
+    }
+
+    private <T extends BaseApi> T getApi(String accessToken, T api) {
+        bearerTokenHolder.set(accessToken);
+        return api;
     }
 }

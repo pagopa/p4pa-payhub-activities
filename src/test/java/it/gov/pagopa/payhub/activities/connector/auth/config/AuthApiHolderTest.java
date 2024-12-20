@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.auth.config;
 
-import it.gov.pagopa.pu.p4paauth.controller.generated.AuthzApi;
+import it.gov.pagopa.pu.p4paauth.dto.generated.AccessToken;
 import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
 import it.gov.pagopa.pu.p4paauth.generated.ApiClient;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +34,7 @@ class AuthApiHolderTest {
     @Mock
     private RestTemplate restTemplateMock;
 
-    private AuthApiHolder<AuthzApi> authApiHolder;
+    private AuthApisHolder authApisHolder;
 
     @BeforeEach
     void setUp() {
@@ -42,8 +43,7 @@ class AuthApiHolderTest {
         ApiClient apiClient = new ApiClient(restTemplateMock);
         String baseUrl = "http://example.com";
         apiClient.setBasePath(baseUrl);
-        authApiHolder = new AuthApiHolder<>(baseUrl, restTemplateBuilderMock) {
-        };
+        authApisHolder = new AuthApisHolder(baseUrl, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -55,22 +55,40 @@ class AuthApiHolderTest {
     }
 
     @Test
-    void whenGetAuthApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
-        // Configuring useCases in a single thread
-        List<Pair<String, UserInfo>> useCases = IntStream.rangeClosed(0, 100)
-                .mapToObj(i -> {
-                    String accessToken = "accessToken" + i;
-                    UserInfo expectedResult = new UserInfo();
+    void whenGetAuthzApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        authenticationShouldBeSetInThreadSafeMode(
+                accessToken -> authApisHolder.getAuthzApi(accessToken)
+                        .getUserInfoFromMappedExternaUserId("externalUserId"),
+                UserInfo.class);
+    }
 
-                    Mockito.doReturn(ResponseEntity.ok(expectedResult))
-                            .when(restTemplateMock)
-                            .exchange(
-                                    Mockito.argThat(req ->
-                                            req.getHeaders().getOrDefault(HttpHeaders.AUTHORIZATION, Collections.emptyList()).getFirst()
-                                                    .equals("Bearer " + accessToken)),
-                                    Mockito.eq(new ParameterizedTypeReference<UserInfo>() {
-                                    }));
-                    return Pair.of(accessToken, expectedResult);
+    @Test
+    void whenGetAuthnApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        authenticationShouldBeSetInThreadSafeMode(
+                accessToken -> authApisHolder.getAuthnApi(accessToken)
+                        .postToken("clientId", "grantType", "scope", "subjectToken", "subjectIssuer", "subjectTokenType", "clientSecret"),
+                AccessToken.class);
+    }
+
+    <T> void authenticationShouldBeSetInThreadSafeMode(Function<String, T> apiInvoke, Class<T> apiReturnedType) throws InterruptedException {
+        // Configuring useCases in a single thread
+        List<Pair<String, T>> useCases = IntStream.rangeClosed(0, 100)
+                .mapToObj(i -> {
+                    try {
+                        String accessToken = "accessToken" + i;
+                        T expectedResult = apiReturnedType.getConstructor().newInstance();
+
+                        Mockito.doReturn(ResponseEntity.ok(expectedResult))
+                                .when(restTemplateMock)
+                                .exchange(
+                                        Mockito.argThat(req ->
+                                                req.getHeaders().getOrDefault(HttpHeaders.AUTHORIZATION, Collections.emptyList()).getFirst()
+                                                        .equals("Bearer " + accessToken)),
+                                        Mockito.eq(apiReturnedType));
+                        return Pair.of(accessToken, expectedResult);
+                    } catch (Exception e) {
+                        throw new IllegalStateException(e);
+                    }
                 })
                 .toList();
 
@@ -79,10 +97,10 @@ class AuthApiHolderTest {
                     .map(p -> (Callable<?>) () -> {
                         // Given
                         String accessToken = p.getKey();
-                        UserInfo expectedResult = p.getValue();
+                        T expectedResult = p.getValue();
 
                         // When
-                        UserInfo result = authApiHolder.getAuthApi(accessToken).getUserInfoFromMappedExternaUserId("externalUserId");
+                        T result = apiInvoke.apply(accessToken);
 
                         // Then
                         Assertions.assertSame(expectedResult, result);
@@ -91,7 +109,7 @@ class AuthApiHolderTest {
                     .toList());
         }
 
-        authApiHolder.unload();
+        authApisHolder.unload();
 
         Mockito.verify(restTemplateMock, Mockito.times(useCases.size()))
                 .exchange(Mockito.any(), Mockito.<ParameterizedTypeReference<?>>any());

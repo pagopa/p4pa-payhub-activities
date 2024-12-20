@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.auth.client;
 
-import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApiHolder;
-import it.gov.pagopa.pu.p4paauth.controller.generated.AuthzApi;
+import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApisHolder;
 import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -10,14 +9,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthzClient {
 
-    private final AuthApiHolder<AuthzApi> authzApiHolder;
+    private final AuthApisHolder authApisHolder;
 
-    public AuthzClient(AuthApiHolder<AuthzApi> authzApiHolder) {
-        this.authzApiHolder = authzApiHolder;
+    public AuthzClient(AuthApisHolder authApisHolder) {
+        this.authApisHolder = authApisHolder;
     }
 
     public UserInfo getOperatorInfo(String mappedExternalUserId, String accessToken){
-        return authzApiHolder.getAuthApi(accessToken)
+        return authApisHolder.getAuthzApi(accessToken)
                 .getUserInfoFromMappedExternaUserId(mappedExternalUserId);
     }
 }

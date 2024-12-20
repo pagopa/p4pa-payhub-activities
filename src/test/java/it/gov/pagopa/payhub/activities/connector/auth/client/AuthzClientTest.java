@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.auth.client;
 
-import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApiHolder;
+import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApisHolder;
 import it.gov.pagopa.pu.p4paauth.controller.generated.AuthzApi;
 import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
@@ -14,8 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class AuthzClientTest {
+
     @Mock
-    private AuthApiHolder<AuthzApi> authzApiAuthApiHolderMock;
+    private AuthApisHolder authApisHolderMock;
     @Mock
     private AuthzApi authzApiMock;
 
@@ -23,13 +24,13 @@ class AuthzClientTest {
 
     @BeforeEach
     void setUp() {
-        authzClient = new AuthzClient(authzApiAuthApiHolderMock);
+        authzClient = new AuthzClient(authApisHolderMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                authzApiAuthApiHolderMock
+                authApisHolderMock
         );
     }
 
@@ -40,7 +41,7 @@ class AuthzClientTest {
         String accessToken = "accessToken";
         String externalUserId = "externalUserId";
 
-        Mockito.when(authzApiAuthApiHolderMock.getAuthApi(accessToken))
+        Mockito.when(authApisHolderMock.getAuthzApi(accessToken))
                 .thenReturn(authzApiMock);
         Mockito.when(authzApiMock.getUserInfoFromMappedExternaUserId(externalUserId))
                 .thenReturn(expectedResult);
