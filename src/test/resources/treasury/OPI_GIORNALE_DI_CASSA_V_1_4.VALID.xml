@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flusso_giornale_di_cassa>
+  <testata_messaggio>
+    <codice_ABI_BT>03069</codice_ABI_BT>
+    <data_ora_creazione_flusso>2022-09-30T02:31:45</data_ora_creazione_flusso>
+    <codice_ente>ABC1DE</codice_ente>
+    <descrizione_ente>COMUNE DI TEST</descrizione_ente>
+    <codice_istat_ente>012345678</codice_istat_ente>
+    <codice_fiscale_ente>06144260707</codice_fiscale_ente>
+    <codice_tramite_ente>A2A-76038161</codice_tramite_ente>
+    <codice_tramite_BT>A2A-45625581</codice_tramite_BT>
+    <codice_ente_BT>1316225</codice_ente_BT>
+  </testata_messaggio>
+  <identificativo_flusso_BT>GDC-202209302022202209291010285#001#001</identificativo_flusso_BT>
+  <pagina>1</pagina>
+  <pagine_totali>1</pagine_totali>
+  <esercizio>2022</esercizio>
+  <data_inizio_periodo_riferimento>2022-01-01</data_inizio_periodo_riferimento>
+  <data_fine_periodo_riferimento>2022-12-31</data_fine_periodo_riferimento>
+  <informazioni_conto_evidenza>
+    <conto_evidenza>0000004</conto_evidenza>
+    <descrizione_conto_evidenza>MUTUI DIVERSI</descrizione_conto_evidenza>
+    <movimento_conto_evidenza>
+<!--      <identificativo_flusso>202200000015342753</identificativo_flusso>-->
+<!--      <numero_movimento>0000634</numero_movimento>-->
+      <tipo_movimento>USCITA</tipo_movimento>
+      <tipo_documento>MANDATO</tipo_documento>
+      <tipo_operazione>ESEGUITO</tipo_operazione>
+      <numero_documento>0024002</numero_documento>
+      <numero_pagamento_funzionario_delegato>0000000</numero_pagamento_funzionario_delegato>
+      <progressivo_documento>0000001</progressivo_documento>
+      <importo>7853.35</importo>
+      <importo_ritenute>713.94</importo_ritenute>
+      <numero_bolletta_quietanza>0033089</numero_bolletta_quietanza>
+      <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
+      <data_movimento>2022-09-29</data_movimento>
+<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
+      <data_valuta_ente>2022-09-29</data_valuta_ente>
+      <tipo_esecuzione>SEPA CREDIT TRANSFER</tipo_esecuzione>
+      <coordinate>IT70A0103062500000001357652</coordinate>
+      <codice_riferimento_operazione>0306927122530803481211712117IT</codice_riferimento_operazione>
+      <end_to_end_id>2022-20220024002-1</end_to_end_id>
+      <codice_riferimento_interno>CARBATCH-0032101</codice_riferimento_interno>
+      <destinazione>VINCOLATA</destinazione>
+      <assoggettamento_bollo>ESENTE BOLLO</assoggettamento_bollo>
+      <assoggettamento_spese>ESENTE SPESE</assoggettamento_spese>
+      <cliente>
+        <anagrafica_cliente>ANAGRAFICA TEST</anagrafica_cliente>
+        <indirizzo_cliente>VIA ROMA 9</indirizzo_cliente>
+        <cap_cliente>31520</cap_cliente>
+        <localita_cliente>TEST</localita_cliente>
+        <partita_iva_cliente>05082040587</partita_iva_cliente>
+      </cliente>
+      <causale>CIG85516235D7 MUTUO IST. PER IL CREDITO SPORTIVO ID 106 SPORT MISSIONE COMUNE 2017 PRATICAN 4235370 - POS N 7.2017 - LLPP EDP 2017-097 - NUOVI SPOGLIATOI ARCOS</causale>
+      <dati_a_disposizione_BT>
+        <codice_causale>000</codice_causale>
+        <cro>0306927124537823546775341712117IT</cro>
+        <identificativo_end_to_end>2022-20220024002-1</identificativo_end_to_end>
+      </dati_a_disposizione_BT>
+    </movimento_conto_evidenza>
+    <movimento_conto_evidenza>
+<!--      <identificativo_flusso>202200000015342716</identificativo_flusso>-->
+<!--      <numero_movimento>0000672</numero_movimento>-->
+      <tipo_movimento>USCITA</tipo_movimento>
+      <tipo_documento>MANDATO</tipo_documento>
+      <tipo_operazione>ESEGUITO</tipo_operazione>
+      <numero_documento>0024041</numero_documento>
+      <numero_pagamento_funzionario_delegato>0000000</numero_pagamento_funzionario_delegato>
+      <progressivo_documento>0000001</progressivo_documento>
+      <importo>35466.00</importo>
+      <importo_ritenute>3224.18</importo_ritenute>
+      <numero_bolletta_quietanza>0033127</numero_bolletta_quietanza>
+      <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
+      <data_movimento>2022-09-29</data_movimento>
+<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
+      <data_valuta_ente>2022-09-29</data_valuta_ente>
+      <tipo_esecuzione>SEPA CREDIT TRANSFER</tipo_esecuzione>
+      <coordinate>IT30M0306905245100000004733</coordinate>
+      <codice_riferimento_operazione>0122092928724572</codice_riferimento_operazione>
+      <end_to_end_id>2022-20220024041-1</end_to_end_id>
+      <codice_riferimento_interno>CARBATCH-0032159</codice_riferimento_interno>
+      <destinazione>VINCOLATA</destinazione>
+      <assoggettamento_bollo>ESENTE BOLLO</assoggettamento_bollo>
+      <assoggettamento_spese>ESENTE SPESE</assoggettamento_spese>
+      <cliente>
+        <anagrafica_cliente>TEST 2</anagrafica_cliente>
+        <indirizzo_cliente>VIA MAZZINI 6</indirizzo_cliente>
+        <cap_cliente>00195</cap_cliente>
+        <localita_cliente>ROMA</localita_cliente>
+        <partita_iva_cliente>01942970536</partita_iva_cliente>
+      </cliente>
+      <causale>CIG8405628905 MUTUO CREDITO SPORTIVO PRATICA N. 4235070 - POS. INT. 07-2019 - LLPP EDP 2019.164 STADIO EUGANEO 2 STR PALAZZETTO POLIFUNZ E PARTE CURVA. Rev prez</causale>
+      <dati_a_disposizione_BT>
+        <codice_causale>000</codice_causale>
+        <cro>0122097248724572</cro>
+        <identificativo_end_to_end>2022-20220024041-1</identificativo_end_to_end>
+      </dati_a_disposizione_BT>
+    </movimento_conto_evidenza>
+    <saldo_precedente_conto_evidenza>2872704.32</saldo_precedente_conto_evidenza>
+    <totale_entrate_conto_evidenza>0.00</totale_entrate_conto_evidenza>
+    <totale_uscite_conto_evidenza>43319.35</totale_uscite_conto_evidenza>
+    <saldo_finale_conto_evidenza>2829384.97</saldo_finale_conto_evidenza>
+  </informazioni_conto_evidenza>
+  <informazioni_conto_evidenza>
+    <conto_evidenza>0000005</conto_evidenza>
+    <descrizione_conto_evidenza>MUTUI CASSA DD.PP.</descrizione_conto_evidenza>
+    <movimento_conto_evidenza>
+<!--      <identificativo_flusso>00320220930023144</identificativo_flusso>-->
+<!--      <numero_movimento>0000205</numero_movimento>-->
+      <tipo_movimento>ENTRATA</tipo_movimento>
+      <tipo_documento>SOSPESO ENTRATA</tipo_documento>
+      <tipo_operazione>ESEGUITO</tipo_operazione>
+      <numero_documento>0064422</numero_documento>
+      <sospeso_da_regolarizzare>
+        <data_effettiva_sospeso>2022-09-29</data_effettiva_sospeso>
+        <codice_gestionale_provvisorio>0000099999</codice_gestionale_provvisorio>
+      </sospeso_da_regolarizzare>
+      <numero_pagamento_funzionario_delegato>0000000</numero_pagamento_funzionario_delegato>
+      <progressivo_documento>0000000</progressivo_documento>
+      <importo>5015.87</importo>
+      <numero_bolletta_quietanza>0074056</numero_bolletta_quietanza>
+      <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
+      <data_movimento>2022-09-29</data_movimento>
+<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
+      <data_valuta_ente>2022-09-29</data_valuta_ente>
+      <tipo_esecuzione>CASSA</tipo_esecuzione>
+      <codice_riferimento_interno>HUPBP1  -0019916</codice_riferimento_interno>
+      <tipo_contabilita>FRUTTIFERO</tipo_contabilita>
+      <destinazione>VINCOLATA</destinazione>
+      <assoggettamento_bollo>ESENTE BOLLO</assoggettamento_bollo>
+      <assoggettamento_spese>ESENTE SPESE</assoggettamento_spese>
+      <cliente>
+        <anagrafica_cliente>TEST 3</anagrafica_cliente>
+        <indirizzo_cliente>VIA MILANO 4</indirizzo_cliente>
+        <cap_cliente>00000</cap_cliente>
+      </cliente>
+      <causale>MUTUO 620184257 CUP H94G19030460029 TRXID: 0122492727202545 VIA MILANO 4</causale>
+      <dati_a_disposizione_BT>
+        <codice_causale>500</codice_causale>
+        <cro>110SF20763927S779003842372000000032</cro>
+      </dati_a_disposizione_BT>
+    </movimento_conto_evidenza>
+    <movimento_conto_evidenza>
+<!--      <identificativo_flusso>00320220930023144</identificativo_flusso>-->
+<!--      <numero_movimento>0000209</numero_movimento>-->
+      <tipo_movimento>ENTRATA</tipo_movimento>
+      <tipo_documento>SOSPESO ENTRATA</tipo_documento>
+      <tipo_operazione>ESEGUITO</tipo_operazione>
+      <numero_documento>0064426</numero_documento>
+      <sospeso_da_regolarizzare>
+        <data_effettiva_sospeso>2022-09-29</data_effettiva_sospeso>
+        <codice_gestionale_provvisorio>0000099999</codice_gestionale_provvisorio>
+      </sospeso_da_regolarizzare>
+      <numero_pagamento_funzionario_delegato>0000000</numero_pagamento_funzionario_delegato>
+      <progressivo_documento>0000000</progressivo_documento>
+      <importo>4276.20</importo>
+      <numero_bolletta_quietanza>0074060</numero_bolletta_quietanza>
+      <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
+      <data_movimento>2022-09-29</data_movimento>
+<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
+      <data_valuta_ente>2022-09-29</data_valuta_ente>
+      <tipo_esecuzione>CASSA</tipo_esecuzione>
+      <codice_riferimento_interno>HUPBP1  -0019920</codice_riferimento_interno>
+      <tipo_contabilita>FRUTTIFERO</tipo_contabilita>
+      <destinazione>VINCOLATA</destinazione>
+      <assoggettamento_bollo>ESENTE BOLLO</assoggettamento_bollo>
+      <assoggettamento_spese>ESENTE SPESE</assoggettamento_spese>
+      <cliente>
+        <anagrafica_cliente>TEST 5</anagrafica_cliente>
+        <indirizzo_cliente>VIA MILANO 4</indirizzo_cliente>
+        <cap_cliente>00000</cap_cliente>
+      </cliente>
+      <causale>MUTUO 636278330 CUP H92H19401690074 TRXID: 0122092627273243 VIA MILANO 4</causale>
+      <dati_a_disposizione_BT>
+        <codice_causale>500</codice_causale>
+        <cro>110SF20270927S25800386237604004034</cro>
+      </dati_a_disposizione_BT>
+    </movimento_conto_evidenza>
+    <saldo_precedente_conto_evidenza>604926.47</saldo_precedente_conto_evidenza>
+    <totale_entrate_conto_evidenza>9292.07</totale_entrate_conto_evidenza>
+    <totale_uscite_conto_evidenza>0.00</totale_uscite_conto_evidenza>
+    <saldo_finale_conto_evidenza>614218.54</saldo_finale_conto_evidenza>
+  </informazioni_conto_evidenza>
+  <saldo_complessivo_precedente>183818485.41</saldo_complessivo_precedente>
+  <totale_complessivo_entrate>630056.81</totale_complessivo_entrate>
+  <totale_complessivo_uscite>1929557.80</totale_complessivo_uscite>
+  <saldo_complessivo_finale>182518984.42</saldo_complessivo_finale>
+  <totali_esercizio>
+    <fondo_di_cassa>232096622.81</fondo_di_cassa>
+    <totale_reversali_riscosse>270287040.26</totale_reversali_riscosse>
+    <totale_sospesi_entrata>12212535.50</totale_sospesi_entrata>
+    <totale_entrate>514596198.57</totale_entrate>
+    <deficit_di_cassa>0.00</deficit_di_cassa>
+    <totale_mandati_pagati>329104972.26</totale_mandati_pagati>
+    <totale_sospesi_uscita>2972241.89</totale_sospesi_uscita>
+    <totale_uscite>332077214.15</totale_uscite>
+    <saldo_esercizio>182518984.42</saldo_esercizio>
+  </totali_esercizio>
+  <totali_disponibilita_liquide>
+    <saldo_conti_correnti>0.00</saldo_conti_correnti>
+    <totale_conti>182518984.42</totale_conti>
+    <vincoli_conti_correnti>0.00</vincoli_conti_correnti>
+    <totale_vincoli>12618789.87</totale_vincoli>
+    <svincoli_conti_correnti>0.00</svincoli_conti_correnti>
+    <totale_svincoli>0.00</totale_svincoli>
+    <anticipazione_accordata>0.00</anticipazione_accordata>
+    <anticipazione_utilizzata>0.00</anticipazione_utilizzata>
+    <totale_somme_bloccate_riservate>6010654.24</totale_somme_bloccate_riservate>
+    <disponibilita>163889540.31</disponibilita>
+  </totali_disponibilita_liquide>
+  <ds:Signature
+          xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="ICQ_U085233_04_FMAT-1838c4aef2a0">
+    <ds:SignedInfo>
+      <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2006/12/xml-c14n11"/>
+      <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+      <ds:Reference Type="http://uri.etsi.org/01903#SignedProperties" URI="#SignedProperties-ICQ_U085233_04_FMAT-1838c4aef2a0-1838c4aef2b0">
+        <ds:Transforms>
+          <ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+        <ds:DigestValue>gU8tkOmWqTJpc05M2a6dI1Si6Y+HDkG5h3akLfYUOqk=</ds:DigestValue>
+      </ds:Reference>
+      <ds:Reference Id="Reference-ICQ_U085233_04_FMAT-1838c4aef2a0-1" URI="">
+        <ds:Transforms>
+          <ds:Transform Algorithm="http://www.w3.org/2002/06/xmldsig-filter2">
+            <dsig-xpath:XPath
+                    xmlns:dsig-xpath="http://www.w3.org/2002/06/xmldsig-filter2" Filter="subtract">/descendant::ds:Signature
+            </dsig-xpath:XPath>
+          </ds:Transform>
+          <ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+        <ds:DigestValue>WmM/BcE2XV3a1XqPfW+SFyXCk8iWuwjAVms6NoqpC80=</ds:DigestValue>
+      </ds:Reference>
+    </ds:SignedInfo>
+    <ds:SignatureValue Id="SignatureValue-ICQ_U085233_04_FMAT-1838c4aef2a0">GUQ3O6ap2ZHuktBwtPbsHvE0tTO4EWamxHHHmtdv4x+Wj5Fp2RKjFgFDSgFekC9nzDmUyJsg+/2mE+XQgTROe8ADD3oHGwONxRCns40Q+S99ht2mNv1a7yHLIAPWzkSsxuGHPZuFv+9YFbPP397TQjQKo8nxhMu7+MyRImd1JNYtwgY3gcbS5NoqqQdsT2xCNjwRb7Nklb3reieStImq4zzq5OOgH8FqQe90M2ayBaR3Mw+z9sxGA4Q+naj56FelAUz5ZOAfgGNisqgHI0vfiQJMm/RjANrW7ujqhRz6Rvl2W0ahl1NXwAK57sjNYkQPqos8rTWuyzXZjN9aPfDyUw==</ds:SignatureValue>
+    <ds:KeyInfo>
+      <ds:X509Data>
+        <ds:X509Certificate>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</ds:X509Certificate>
+      </ds:X509Data>
+    </ds:KeyInfo>
+    <ds:Object>
+      <xades:QualifyingProperties
+              xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Target="#ICQ_U085233_04_FMAT-1838c4aef2a0">
+        <xades:SignedProperties Id="SignedProperties-ICQ_U085233_04_FMAT-1838c4aef2a0-1838c4aef2b0">
+          <xades:SignedSignatureProperties>
+            <xades:SigningTime>2022-09-30T04:47:44+02:00</xades:SigningTime>
+            <xades:SigningCertificate>
+              <xades:Cert>
+                <xades:CertDigest>
+                  <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+                  <ds:DigestValue>RUUXf12qu5hcHXF9Y698X0AxJlQsapKfrcfY1yqKYnA=</ds:DigestValue>
+                </xades:CertDigest>
+                <xades:IssuerSerial>
+                  <ds:X509IssuerName>CN=Intesa Sanpaolo Qualified Electronic Signature CA 2,organizationIdentifier=VATIT-11991500015,OU=Qualified Trust Service Provider,O=Intesa Sanpaolo S.p.A.,C=IT</ds:X509IssuerName>
+                  <ds:X509SerialNumber>619168750965172046427606157613907270041485974766</ds:X509SerialNumber>
+                </xades:IssuerSerial>
+              </xades:Cert>
+            </xades:SigningCertificate>
+          </xades:SignedSignatureProperties>
+        </xades:SignedProperties>
+      </xades:QualifyingProperties>
+    </ds:Object>
+  </ds:Signature>
+</flusso_giornale_di_cassa>
