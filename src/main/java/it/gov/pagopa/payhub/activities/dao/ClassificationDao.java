@@ -21,5 +21,5 @@ public interface ClassificationDao {
 	 * @param iuv creditor reference identifier
 	 * @return true for success deletion
 	 */
-	boolean deleteClassificationByIuv(Long organizationId, String iuv);
+	boolean deleteClassificationByTransferKeySet(Long orgId, String iuv, String iur, int transferIndex);
 }
