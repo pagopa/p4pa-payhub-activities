@@ -18,4 +18,13 @@ public interface PaymentsReportingDao {
 	 *         fields (e.g., generated IDs or timestamps).
 	 */
 	List<PaymentsReportingDTO> saveAll(List<PaymentsReportingDTO> dtos);
+
+	/**
+	 *
+	 * @param organizationId organization id
+	 * @param iuf identifies a specific reporting code
+	 * @return List of PaymentsReportingDTO objects that may be an empty list
+	 */
+	List<PaymentsReportingDTO> findByOrganizationIdAndIuf(Long organizationId, String iuf);
+
 }
