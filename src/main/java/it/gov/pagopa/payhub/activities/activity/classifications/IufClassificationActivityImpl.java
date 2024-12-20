@@ -4,14 +4,13 @@ import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyResultDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Lazy
@@ -29,23 +28,25 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     public IufClassificationActivityResult classify(Long organizationId, Long treasuryId, String iuf) {
         log.debug("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
-        List<ClassifyResultDTO> classifyResultDTOS =
-            paymentsReportingDao.findByOrganizationIdFlowIdentifierCode(organizationId, iuf)
+        List<Transfer2ClassifyDTO> transfers2classify =
+            paymentsReportingDao.findByOrganizationIdAndIuf(organizationId, iuf)
             .stream()
             .map(paymentsReportingDTO ->
-                ClassifyResultDTO.builder()
-                    .organizationId(paymentsReportingDTO.getOrganizationId())
-                    .creditorReferenceId(paymentsReportingDTO.getCreditorReferenceId())
-                    .regulationUniqueIdentifier(paymentsReportingDTO.getRegulationUniqueIdentifier())
+                Transfer2ClassifyDTO.builder()
+                    .iuv(paymentsReportingDTO.getCreditorReferenceId())
+                    .iur(paymentsReportingDTO.getRegulationUniqueIdentifier())
                     .transferIndex(paymentsReportingDTO.getTransferIndex())
                     .build())
             .toList();
 
-        log.debug("Saving payments reporting found for organization id {} and iuf: {}", organizationId, iuf);
-        saveClassification(organizationId, treasuryId, iuf);
+        if (! transfers2classify.isEmpty()) {
+            log.debug("Saving payments reporting found for organization id {} and iuf: {}", organizationId, iuf);
+            saveClassification(organizationId, treasuryId, iuf);
+        }
 
         return IufClassificationActivityResult.builder()
-                .classifyResultDTOS(classifyResultDTOS)
+                .organizationId(organizationId)
+                .transfers2classify(transfers2classify)
                 .success(true)
                 .build();
     }

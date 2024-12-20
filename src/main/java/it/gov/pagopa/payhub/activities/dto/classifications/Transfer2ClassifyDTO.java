@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassifyResultDTO {
-	private Long organizationId;
-	private String creditorReferenceId;
-	private String regulationUniqueIdentifier;
+public class Transfer2ClassifyDTO {
+	private String iuv;
+	private String iur;
 	private int transferIndex;
 }

@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IufClassificationActivityResult {
-    private List<ClassifyResultDTO> classifyResultDTOS;
+    private Long organizationId;
+    private List<Transfer2ClassifyDTO> transfers2classify;
     private boolean success;
 }

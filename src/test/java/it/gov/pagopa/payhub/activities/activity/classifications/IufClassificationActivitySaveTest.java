@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassifyResultDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker;
@@ -15,12 +15,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.ClassifyResultFaker.buildClassifyResultDTO;
+import static it.gov.pagopa.payhub.activities.utility.faker.ClassifyResultFaker.buildTransfer2ClassifyDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class IufClassificationActivitySaveTest {
+class IufClassificationActivityTest {
     @Mock
     private PaymentsReportingDao paymentsReportingDao;
 
@@ -46,18 +46,19 @@ class IufClassificationActivitySaveTest {
         List<PaymentsReportingDTO> expectedPaymentsReportingDTOS = new ArrayList<>();
         expectedPaymentsReportingDTOS.add(expectedPaymentsReportingDTO);
 
-        ClassifyResultDTO expectedClassifyResultDTO = buildClassifyResultDTO(ORGANIZATIONID);
-        List<ClassifyResultDTO> expectedClassifyResultDTOS = new ArrayList<>();
-        expectedClassifyResultDTOS.add(expectedClassifyResultDTO);
+        Transfer2ClassifyDTO expectedTransfer2ClassifyDTO = buildTransfer2ClassifyDTO(ORGANIZATIONID);
+        List<Transfer2ClassifyDTO>  expectedTransfer2ClassifyDTOS = new ArrayList<>();
+        expectedTransfer2ClassifyDTOS.add(expectedTransfer2ClassifyDTO);
 
         IufClassificationActivityResult expectedIufClassificationActivityResult =
                 IufClassificationActivityResult
                         .builder()
-                        .classifyResultDTOS(expectedClassifyResultDTOS)
+                        .organizationId(1L)
+                        .transfers2classify(expectedTransfer2ClassifyDTOS)
                         .success(true)
                         .build();
 
-        when(paymentsReportingDao.findByOrganizationIdFlowIdentifierCode(ORGANIZATIONID, FLOWIDENTIFIERCODE))
+        when(paymentsReportingDao.findByOrganizationIdAndIuf(ORGANIZATIONID, FLOWIDENTIFIERCODE))
                 .thenReturn(expectedPaymentsReportingDTOS);
 
         IufClassificationActivityResult iufClassificationActivityResult =
@@ -67,12 +68,11 @@ class IufClassificationActivitySaveTest {
 
     @Test
     void saveClassificationNoPayments() {
-        List<ClassifyResultDTO> classifyResultDTOS  = new ArrayList<>();
-
         IufClassificationActivityResult expectedIufClassificationActivityResult =
                 IufClassificationActivityResult
                         .builder()
-                        .classifyResultDTOS(classifyResultDTOS)
+                        .organizationId(1L)
+                        .transfers2classify(new ArrayList<>())
                         .success(true)
                         .build();
 
