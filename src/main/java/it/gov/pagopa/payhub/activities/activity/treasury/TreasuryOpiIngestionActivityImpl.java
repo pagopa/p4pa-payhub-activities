@@ -50,7 +50,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
 
            return ingestionFlowFiles.stream()
-                    .map(path ->treasuryOpiParserService.parseData(path, ingestionFlowFileDTO))
+                    .map(path ->treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
                    .toList().get(0);
 
         } catch (Exception e) {

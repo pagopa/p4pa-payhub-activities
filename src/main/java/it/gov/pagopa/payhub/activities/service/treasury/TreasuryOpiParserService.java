@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.FlussoTesoreriaPIIDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,17 +28,20 @@ public class TreasuryOpiParserService {
     private final TreasuryUnmarshallerService treasuryUnmarshallerService;
     private final TreasuryMapperService treasuryMapperService;
     private final FlussoTesoreriaPIIDao flussoTesoreriaPIIDao;
+    private final TreasuryValidatorService treasuryValidatorService;
+
     private final TreasuryDao treasuryDao;
 
-    public TreasuryOpiParserService(TreasuryUnmarshallerService treasuryUnmarshallerService, TreasuryMapperService treasuryMapperService, FlussoTesoreriaPIIDao flussoTesoreriaPIIDao, TreasuryDao treasuryDao) {
+    public TreasuryOpiParserService(TreasuryUnmarshallerService treasuryUnmarshallerService, TreasuryMapperService treasuryMapperService, FlussoTesoreriaPIIDao flussoTesoreriaPIIDao, TreasuryValidatorService treasuryValidatorService, TreasuryDao treasuryDao) {
         this.treasuryUnmarshallerService = treasuryUnmarshallerService;
         this.treasuryMapperService = treasuryMapperService;
         this.flussoTesoreriaPIIDao = flussoTesoreriaPIIDao;
+        this.treasuryValidatorService = treasuryValidatorService;
         this.treasuryDao = treasuryDao;
     }
 
 
-    public TreasuryIufResult parseData(Path ingestionFlowFilePath, IngestionFlowFileDTO finalIngestionFlowFileDTO) {
+    public TreasuryIufResult parseData(Path ingestionFlowFilePath, IngestionFlowFileDTO finalIngestionFlowFileDTO, int zipFileSize) {
         File ingestionFlowFile=ingestionFlowFilePath.toFile();
         Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> treasuryDtoMap = null;
         String versione = TreasuryValidatorService.V_161;
@@ -63,10 +67,10 @@ public class TreasuryOpiParserService {
 
 
         assert versione != null;
-//        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
-//          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
-//          throw new RuntimeException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " versione " + versione);
-//        }
+        if (!treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa14, flussoGiornaleDiCassa161, zipFileSize, versione)) {
+          log.error("invalid total page number for ingestionFlowFile with name {}", ingestionFlowFile.getName());
+          throw new ActivitiesException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFile.getName() + " version " + versione);
+        }
 
         treasuryDtoMap = switch (versione) {
             case TreasuryValidatorService.V_14 ->
