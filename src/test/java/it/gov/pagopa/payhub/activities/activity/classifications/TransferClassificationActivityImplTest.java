@@ -1,12 +1,16 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
+import it.gov.pagopa.payhub.activities.dao.TransferDao;
+import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.exception.ClassificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -21,22 +25,33 @@ class TransferClassificationActivityImplTest {
 	@Mock
 	private ClassificationDao classificationDaoMock;
 
+	@Mock
+	private TransferDao transferDaoMock;
+
 	private TransferClassificationActivity activity;
 
 	@BeforeEach
 	void setUp() {
-		activity = new TransferClassificationActivityImpl(classificationDaoMock);
+		activity = new TransferClassificationActivityImpl(classificationDaoMock, transferDaoMock);
 	}
 
 	@Test
 	void classificationSuccess() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
+		when(transferDaoMock.retrieveTransferByLogicalKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(List.of(new TransferDTO()));
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 	}
 
 	@Test
-	void classificationFailed() {
+	void whenDeleteTransferClassificationThenClassificationFailed() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.FALSE);
+		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
+	}
+
+	@Test
+	void whenRetrieveTransferByLogicalKeyThenClassificationFailed() {
+		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
+		when(transferDaoMock.retrieveTransferByLogicalKey(ORGANIZATION, IUV, IUR, INDEX)).thenThrow(new ClassificationException("retrieving failed"));
 		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
 	}
 }
