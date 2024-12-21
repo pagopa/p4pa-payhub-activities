@@ -14,15 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-/**
- * Interface for the TreasuryOpiIngestionActivity.
- * Defines methods for processing files based on an IngestionFlow ID.
- */
+
 @Slf4j
 @Lazy
 @Component
@@ -35,9 +31,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
 
     public TreasuryOpiIngestionActivityImpl(
-                                            IngestionFlowFileDao ingestionFlowFileDao,
-                                            IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-                                            TreasuryOpiParserService treasuryOpiParserService) {
+            IngestionFlowFileDao ingestionFlowFileDao,
+            IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
+            TreasuryOpiParserService treasuryOpiParserService) {
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryOpiParserService = treasuryOpiParserService;
@@ -53,20 +49,14 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
 
 
-           List <String> iufList = ingestionFlowFiles.stream()
-                    .map(treasuryOpiParserService::parseData)
-                    .flatMap(List::stream)
-                    .toList();
-
-
-            return new TreasuryIufResult(iufList,true);
+           return ingestionFlowFiles.stream()
+                    .map(path ->treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
+                   .toList().get(0);
 
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
             return new TreasuryIufResult(Collections.emptyList(), false);
         }
-
-
     }
 
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
