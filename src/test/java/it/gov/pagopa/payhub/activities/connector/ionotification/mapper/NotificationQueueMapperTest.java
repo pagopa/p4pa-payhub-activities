@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.mapper;
+package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
 import it.gov.pagopa.payhub.activities.dto.PersonDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;

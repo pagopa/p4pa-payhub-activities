@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.connector.ionotification;
+package it.gov.pagopa.payhub.activities.connector.ionotification.client;
 
 import it.gov.pagopa.pu.p4paionotification.generated.ApiClient;
 import it.gov.pagopa.pu.p4paionotification.client.generated.IoNotificationApi;
