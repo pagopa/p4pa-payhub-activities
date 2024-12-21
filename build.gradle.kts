@@ -169,19 +169,23 @@ tasks.register<Jar>("sourcesJar") {
 	group = "build"
 	description = "Assembles a JAR archive containing the main source code."
 
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
 	from(sourceSets["main"].allSource)
 	inputs.dir("$projectDir/build/generated/src/main/java")
-	dependsOn("dependenciesBuild")
 	archiveClassifier.set("sources")
+
+	dependsOn("dependenciesBuild")
 }
 
 tasks.register<Jar>("javadocJar") {
 	group = "build"
 	description = "Assembles a JAR archive containing the Javadoc."
 
-	dependsOn(tasks.javadoc)
 	from(tasks.javadoc.get().destinationDir)
 	archiveClassifier.set("javadoc")
+
+	dependsOn(tasks.javadoc)
 }
 
 publishing {
