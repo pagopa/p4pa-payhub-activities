@@ -34,12 +34,11 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
 		}
 		transferDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
-	}
 
-	@Override
-	public List<PaymentsReportingDTO> retrievePaymentReportingBySemanticKey(Long orgId, String iuv, String iur, int transferIndex) {
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
-		return paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
+		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
+		if (paymentsReportingDTO==null) {
+			log.info("Payment reporting with specified parameters not found");
+		}
 	}
-
 }
