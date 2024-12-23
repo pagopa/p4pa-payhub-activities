@@ -35,8 +35,5 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
 		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
-		if (paymentsReportingDTO==null) {
-			log.info("Payment reporting with specified parameters not found");
-		}
 	}
 }

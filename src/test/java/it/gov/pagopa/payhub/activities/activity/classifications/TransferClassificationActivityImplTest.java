@@ -59,12 +59,4 @@ class TransferClassificationActivityImplTest {
 		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
 	}
 
-	@Test
-	void givenNotRetrievedPaymentReportingBySemanticKeySuccess() {
-		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
-		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
-		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
-	}
-
 }
