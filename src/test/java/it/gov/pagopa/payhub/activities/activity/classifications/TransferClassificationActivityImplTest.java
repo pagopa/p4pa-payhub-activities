@@ -12,9 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +42,7 @@ class TransferClassificationActivityImplTest {
 	void classificationSuccess() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
+		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new PaymentsReportingDTO());
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 	}
 
@@ -62,26 +60,20 @@ class TransferClassificationActivityImplTest {
 	}
 
 	@Test
-	void givenRetrievePaymentReportingBySemanticKeySuccess() {
-		List<PaymentsReportingDTO> paymentsReportingDTOS = new ArrayList<>();
-		paymentsReportingDTOS.add(new PaymentsReportingDTO());
+	void givenRetrievePaymentReportingBySemanticKeyFailed() {
+		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
+		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
 		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX))
-				.thenReturn(paymentsReportingDTOS);
-		assertDoesNotThrow(() -> activity.retrievePaymentReportingBySemanticKey(ORGANIZATION, IUV, IUR, INDEX));
+				.thenThrow(new ClassificationException("retrieving payment reporting failed"));
+		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "retrievePaymentReportingBySemanticKey failed");
 	}
 
 	@Test
 	void givenNotRetrievedPaymentReportingBySemanticKeySuccess() {
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX))
-				.thenReturn(new ArrayList<>());
-		assertDoesNotThrow(() -> activity.retrievePaymentReportingBySemanticKey(ORGANIZATION, IUV, IUR, INDEX));
-	}
-
-	@Test
-	void givenRetrievePaymentReportingBySemanticKeyFailed() {
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX))
-				.thenThrow(new ClassificationException("retrieving payment reporting failed"));
-		assertThrows(ClassificationException.class, () -> activity.retrievePaymentReportingBySemanticKey(ORGANIZATION, IUV, IUR, INDEX), "retrievePaymentReportingBySemanticKey failed");
+		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
+		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
+		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
+		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 	}
 
 }
