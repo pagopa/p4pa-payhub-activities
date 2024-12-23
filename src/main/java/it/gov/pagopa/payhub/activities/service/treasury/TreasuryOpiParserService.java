@@ -41,7 +41,7 @@ public class TreasuryOpiParserService {
     }
 
 
-    public TreasuryIufResult parseData(Path ingestionFlowFilePath, IngestionFlowFileDTO finalIngestionFlowFileDTO, int zipFileSize) {
+    public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile=ingestionFlowFilePath.toFile();
         Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> treasuryDtoMap = null;
         String versione = TreasuryValidatorService.V_161;
