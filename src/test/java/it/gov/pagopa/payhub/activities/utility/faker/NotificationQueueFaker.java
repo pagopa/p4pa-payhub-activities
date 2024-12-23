@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.utility.faker;
 
-import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
 
 public class NotificationQueueFaker {
 

@@ -23,5 +23,14 @@ public interface ClassificationDao {
      * @return true for success deletion
      */
 	boolean deleteClassificationByIuf(Long organizationId, String iuf, ClassificationsEnum classification);
-}
 
+	/**
+	 *
+	 * @param orgId organization id
+	 * @param iuv creditor reference identifier
+	 * @param iur the identifier of the receipt associated with the payment
+	 * @param transferIndex the index of the transfer to be classified
+	 * @return true for success deletion
+	 */
+	boolean deleteTransferClassification(Long orgId, String iuv, String iur, int transferIndex);
+}

@@ -1,10 +1,10 @@
-package it.gov.pagopa.payhub.activities.mapper;
+package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
 import it.gov.pagopa.payhub.activities.dto.PersonDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
-import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
