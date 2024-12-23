@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface TransferDao {
 
-	List<TransferDTO> retrieveTransferByLogicalKey(Long orgId, String iuv, String iur, int transferIndex);
+	TransferDTO findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
 }
