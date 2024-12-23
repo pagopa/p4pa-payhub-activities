@@ -2,9 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-
-import java.util.List;
 
 /**
  * Interface for defining an activity to process Transfer classifications.
