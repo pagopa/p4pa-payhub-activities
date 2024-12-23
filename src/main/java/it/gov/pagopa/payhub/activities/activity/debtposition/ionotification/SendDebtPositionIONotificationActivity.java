@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 
 
@@ -7,6 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
  * This interface defines the activity for sending debt position notification messages
  * to the IO Notification service.
  */
+@ActivityInterface
 public interface SendDebtPositionIONotificationActivity {
 
     /**
@@ -14,6 +17,7 @@ public interface SendDebtPositionIONotificationActivity {
      *
      * @param debtPosition the {@link DebtPositionDTO} containing the details of the debt position to be notified.
      */
+    @ActivityMethod
     void sendMessage(DebtPositionDTO debtPosition);
 }
 
