@@ -8,4 +8,6 @@ public interface OrganizationDao {
 
   Optional<OrganizationDTO> getOrganizationByFiscalCode(String orgFiscalCode);
 
+  Optional<OrganizationDTO> getOrganizationByIpaCode(String ipaCode);
+
 }

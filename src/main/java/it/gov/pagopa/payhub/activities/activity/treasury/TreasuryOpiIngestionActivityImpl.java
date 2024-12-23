@@ -2,22 +2,19 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.*;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
-
-import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
-
-import it.gov.pagopa.payhub.activities.service.treasury.*;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Interface for the TreasuryOpiIngestionActivity.
@@ -46,6 +43,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
     @Override
     public TreasuryIufResult processFile(Long ingestionFlowFileId) {
+        log.info("Processing OPI treasury IngestionFlowFile {}", ingestionFlowFileId);
 
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);

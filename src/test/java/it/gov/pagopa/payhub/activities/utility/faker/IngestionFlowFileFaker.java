@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.utility.faker;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 
 import java.time.ZoneId;
 import java.util.Date;
@@ -33,6 +34,7 @@ public class IngestionFlowFileFaker {
                 .flowDateTime(now.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .fileSourceCode("FileSourceCode")
                 .discardFileName("DiscardFileName")
+                .flowFileType(IngestionFlowFileType.PAYMENTS_REPORTING)
                 .build();
     }
 

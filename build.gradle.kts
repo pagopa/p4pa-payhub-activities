@@ -49,7 +49,6 @@ tasks.jacocoTestReport {
 apply(plugin = "maven-publish")
 
 val janinoVersion = "3.1.12"
-val wiremockVersion = "3.5.4"
 val snakeYamlVersion = "2.0"
 val hibernateValidatorVersion = "8.0.1.Final"
 val commonsCompressVersion = "1.27.1"
@@ -59,6 +58,7 @@ val jacksonModuleVersion = "2.18.1"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
+val jsoupVersion = "1.18.1"
 val openApiToolsVersion = "0.2.6"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
@@ -87,13 +87,17 @@ dependencies {
 		exclude(group = "com.google.protobuf", module = "protobuf-java")
 	}
 
+    //mail
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.retry:spring-retry")
+	implementation("org.jsoup:jsoup:$jsoupVersion")
+
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter-api")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation ("org.projectlombok:lombok")
-	testImplementation ("org.wiremock:wiremock-standalone:$wiremockVersion")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
@@ -112,7 +116,6 @@ dependencies {
     jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
     jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
 }
-
 
 val projectInfo = mapOf(
 		"artifactId" to project.name,
