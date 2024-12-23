@@ -38,7 +38,7 @@ class TransferClassificationActivityImplTest {
 	@Test
 	void classificationSuccess() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
-		when(transferDaoMock.retrieveTransferByLogicalKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(List.of(new TransferDTO()));
+		when(transferDaoMock.[retrieveTransferByLogicalKey](https://github.com/pagopa/p4pa-payhub-activities/pull/50)(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 	}
 
