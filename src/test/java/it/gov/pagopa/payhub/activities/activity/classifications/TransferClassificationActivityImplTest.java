@@ -71,6 +71,12 @@ class TransferClassificationActivityImplTest {
 		assertDoesNotThrow(() -> activity.retrievePaymentReportingBySemanticKey(ORGANIZATION, IUV, IUR, INDEX));
 	}
 
+	@Test
+	void givenNotRetrievedPaymentReportingBySemanticKeySuccess() {
+		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX))
+				.thenReturn(new ArrayList<>());
+		assertDoesNotThrow(() -> activity.retrievePaymentReportingBySemanticKey(ORGANIZATION, IUV, IUR, INDEX));
+	}
 
 	@Test
 	void givenRetrievePaymentReportingBySemanticKeyFailed() {
