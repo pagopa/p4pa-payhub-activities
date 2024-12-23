@@ -25,10 +25,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class IufClassificationActivityTest {
     @Mock
-    private PaymentsReportingDao paymentsReportingDao;
+    private PaymentsReportingDao paymentsReportingDaoMock;
 
     @Mock
-    private ClassificationDao classificationDao;
+    private ClassificationDao classificationDaoMock;
 
     private IufClassificationActivity iufClassificationActivity;
 
@@ -38,12 +38,12 @@ class IufClassificationActivityTest {
 
     @BeforeEach
     void init() {
-        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingDao, classificationDao);
+        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingDaoMock, classificationDaoMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(paymentsReportingDao);
+        Mockito.verifyNoMoreInteractions(paymentsReportingDaoMock,classificationDaoMock);
     }
 
     @Test
@@ -73,7 +73,7 @@ class IufClassificationActivityTest {
                         .success(true)
                         .build();
 
-        when(paymentsReportingDao.findByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
+        when(paymentsReportingDaoMock.findByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
                 .thenReturn(expectedPaymentsReportingDTOS);
 
         IufClassificationActivityResult iufClassificationActivityResult =
@@ -81,8 +81,8 @@ class IufClassificationActivityTest {
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
-        Mockito.verify(paymentsReportingDao, Mockito.times(1)).findByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
-        Mockito.verify(classificationDao, Mockito.times(0)).save(classificationDTO);
+        Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
+        Mockito.verify(classificationDaoMock, Mockito.times(0)).save(classificationDTO);
     }
 
     @Test
@@ -97,7 +97,7 @@ class IufClassificationActivityTest {
                         .success(true)
                         .build();
 
-        when(paymentsReportingDao.findByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
+        when(paymentsReportingDaoMock.findByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
                 .thenReturn(new ArrayList<>());
 
         IufClassificationActivityResult iufClassificationActivityResult =
@@ -105,8 +105,8 @@ class IufClassificationActivityTest {
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
-        Mockito.verify(paymentsReportingDao, Mockito.times(1)).findByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
-        Mockito.verify(classificationDao, Mockito.times(1)).save(classificationDTO);
+        Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
+        Mockito.verify(classificationDaoMock, Mockito.times(1)).save(classificationDTO);
     }
 }
 
