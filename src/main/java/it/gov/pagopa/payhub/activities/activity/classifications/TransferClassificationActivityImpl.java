@@ -26,6 +26,6 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		if (!classificationDao.deleteTransferClassification(orgId, iuv, iur, transferIndex)) {
 			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
 		}
-		transferDao.retrieveTransferByLogicalKey(orgId, iuv, iur, transferIndex);
+		transferDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
 	}
 }
