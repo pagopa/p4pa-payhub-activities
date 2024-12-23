@@ -26,7 +26,7 @@ public interface PaymentsReportingDao {
 	 * @param iuv    payment identifier
 	 * @param iur    reporting identifier
 	 * @param transferIndex transfer index
-	 * @return  List of objects PaymentsReportingDTO returned (may be 1 object)
+	 * @return PaymentsReportingDTO object returned
 	 */
-	List<PaymentsReportingDTO> findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
+	PaymentsReportingDTO findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
 }
