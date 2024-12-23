@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.5"
+	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 	id("org.sonarqube") version "5.0.0.4638"
 	`java-library`
@@ -49,7 +49,6 @@ tasks.jacocoTestReport {
 apply(plugin = "maven-publish")
 
 val janinoVersion = "3.1.12"
-val wiremockVersion = "3.5.4"
 val snakeYamlVersion = "2.0"
 val hibernateValidatorVersion = "8.0.1.Final"
 val commonsCompressVersion = "1.27.1"
@@ -99,7 +98,6 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation ("org.projectlombok:lombok")
-	testImplementation ("org.wiremock:wiremock-standalone:$wiremockVersion")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")

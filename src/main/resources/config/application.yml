@@ -11,6 +11,10 @@ spring:
           enable: "\${MAIL_SMTP_STARTTLS:true}"
           required: "\${MAIL_SMTP_STARTTLS_REQUIRED:true}"
 
+
+mail:
+  sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
+
 rest:
   auth:
     base-url: "\${AUTH_BASE_URL:http://localhost:8080/auth}"

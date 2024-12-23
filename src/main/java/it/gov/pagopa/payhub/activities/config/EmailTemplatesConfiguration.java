@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.config;
 
-import it.gov.pagopa.payhub.activities.dto.EmailTemplate;
+import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

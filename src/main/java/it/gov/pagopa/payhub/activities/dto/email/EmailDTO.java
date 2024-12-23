@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto;
+package it.gov.pagopa.payhub.activities.dto.email;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,11 +16,10 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Lazy
-public class MailTo {
+public class EmailDTO {
     private Map<String, String> params;
     private String[] to;
     private String[] cc;
     private String mailSubject;
     private String htmlText;
-    private String emailFromAddress;
 }

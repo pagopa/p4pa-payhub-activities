@@ -1,11 +1,10 @@
 package it.gov.pagopa.payhub.activities.utility.faker;
 
-import it.gov.pagopa.payhub.activities.dto.MailTo;
+import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 
-public class MailFaker {
-    public static MailTo buildMailTo(){
-        return MailTo.builder()
-            .emailFromAddress("test_sender@mailtest.com")
+public class EmailDTOFaker {
+    public static EmailDTO buildEmailDTO(){
+        return EmailDTO.builder()
             .mailSubject("Subject")
             .to(new String[]{"test_receiver@mailtest.com"})
             .cc(new String[]{"test_cc@mailtest.com"})
