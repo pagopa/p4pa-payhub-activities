@@ -1,13 +1,21 @@
-activity:
+spring:
   mail:
-    host: "\${MYPAY4_SPRING_MAIL_HOST:}"
-    port: "\${MYPAY4_SPRING_MAIL_PORT:587}"
-    username: "\${MYPAY4_SPRING_MAIL_USERNAME:}"
-    password: "\${MYPAY4_SPRING_MAIL_PASSWORD:}"
+    host: "\${MAIL_HOST:}"
+    port: "\${MAIL_PORT:587}"
+    username: "\${MAIL_USERNAME:}"
+    password: "\${MAIL_PASSWORD:}"
     properties:
-      mail:
-        smtp:
-          auth: "\${MYPAY4_SPRING_MAIL_SMTP_AUTH:true}"
-          starttls:
-            enable: "\${MYPAY4_SPRING_MAIL_SMTP_STARTTLS:true}"
-            required: "\${MYPAY4_SPRING_MAIL_SMTP_STARTTLS_REQUIRED:true}"
+      mail.smtp:
+        auth: "\${MAIL_SMTP_AUTH:true}"
+        starttls:
+          enable: "\${MAIL_SMTP_STARTTLS:true}"
+          required: "\${MAIL_SMTP_STARTTLS_REQUIRED:true}"
+
+rest:
+  auth:
+    base-url: "\${AUTH_BASE_URL:http://localhost:8080/auth}"
+    post-token:
+      client_secret: "\${AUTH_CLIENT_SECRET:clientsecret}"
+
+  io-notification:
+    base-url: "\${IO_NOTIFICATION_BASE_URL:http://localhost:8080/ionotification}"
