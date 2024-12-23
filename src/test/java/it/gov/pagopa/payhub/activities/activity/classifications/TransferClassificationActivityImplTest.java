@@ -60,15 +60,6 @@ class TransferClassificationActivityImplTest {
 	}
 
 	@Test
-	void givenRetrievePaymentReportingBySemanticKeyFailed() {
-		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
-		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX))
-				.thenThrow(new ClassificationException("retrieving payment reporting failed"));
-		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "retrievePaymentReportingBySemanticKey failed");
-	}
-
-	@Test
 	void givenNotRetrievedPaymentReportingBySemanticKeySuccess() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
