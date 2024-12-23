@@ -18,4 +18,15 @@ public interface PaymentsReportingDao {
 	 *         fields (e.g., generated IDs or timestamps).
 	 */
 	List<PaymentsReportingDTO> saveAll(List<PaymentsReportingDTO> dtos);
+
+	/**
+	 * find payment reporting by semantic key
+	 *
+	 * @param orgId  organization id
+	 * @param iuv    payment identifier
+	 * @param iur    reporting identifier
+	 * @param transferIndex transfer index
+	 * @return  List of objects PaymentsReportingDTO returned (may be 1 object)
+	 */
+	List<PaymentsReportingDTO> findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
 }
