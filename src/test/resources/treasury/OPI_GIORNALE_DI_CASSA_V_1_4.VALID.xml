@@ -13,7 +13,7 @@
   </testata_messaggio>
   <identificativo_flusso_BT>GDC-202209302022202209291010285#001#001</identificativo_flusso_BT>
   <pagina>1</pagina>
-  <pagine_totali>1</pagine_totali>
+  <pagine_totali>2</pagine_totali>
   <esercizio>2022</esercizio>
   <data_inizio_periodo_riferimento>2022-01-01</data_inizio_periodo_riferimento>
   <data_fine_periodo_riferimento>2022-12-31</data_fine_periodo_riferimento>
@@ -21,8 +21,6 @@
     <conto_evidenza>0000004</conto_evidenza>
     <descrizione_conto_evidenza>MUTUI DIVERSI</descrizione_conto_evidenza>
     <movimento_conto_evidenza>
-<!--      <identificativo_flusso>202200000015342753</identificativo_flusso>-->
-<!--      <numero_movimento>0000634</numero_movimento>-->
       <tipo_movimento>USCITA</tipo_movimento>
       <tipo_documento>MANDATO</tipo_documento>
       <tipo_operazione>ESEGUITO</tipo_operazione>
@@ -34,7 +32,6 @@
       <numero_bolletta_quietanza>0033089</numero_bolletta_quietanza>
       <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
       <data_movimento>2022-09-29</data_movimento>
-<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
       <data_valuta_ente>2022-09-29</data_valuta_ente>
       <tipo_esecuzione>SEPA CREDIT TRANSFER</tipo_esecuzione>
       <coordinate>IT70A0103062500000001357652</coordinate>
@@ -59,8 +56,6 @@
       </dati_a_disposizione_BT>
     </movimento_conto_evidenza>
     <movimento_conto_evidenza>
-<!--      <identificativo_flusso>202200000015342716</identificativo_flusso>-->
-<!--      <numero_movimento>0000672</numero_movimento>-->
       <tipo_movimento>USCITA</tipo_movimento>
       <tipo_documento>MANDATO</tipo_documento>
       <tipo_operazione>ESEGUITO</tipo_operazione>
@@ -72,7 +67,6 @@
       <numero_bolletta_quietanza>0033127</numero_bolletta_quietanza>
       <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
       <data_movimento>2022-09-29</data_movimento>
-<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
       <data_valuta_ente>2022-09-29</data_valuta_ente>
       <tipo_esecuzione>SEPA CREDIT TRANSFER</tipo_esecuzione>
       <coordinate>IT30M0306905245100000004733</coordinate>
@@ -105,8 +99,6 @@
     <conto_evidenza>0000005</conto_evidenza>
     <descrizione_conto_evidenza>MUTUI CASSA DD.PP.</descrizione_conto_evidenza>
     <movimento_conto_evidenza>
-<!--      <identificativo_flusso>00320220930023144</identificativo_flusso>-->
-<!--      <numero_movimento>0000205</numero_movimento>-->
       <tipo_movimento>ENTRATA</tipo_movimento>
       <tipo_documento>SOSPESO ENTRATA</tipo_documento>
       <tipo_operazione>ESEGUITO</tipo_operazione>
@@ -121,7 +113,6 @@
       <numero_bolletta_quietanza>0074056</numero_bolletta_quietanza>
       <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
       <data_movimento>2022-09-29</data_movimento>
-<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
       <data_valuta_ente>2022-09-29</data_valuta_ente>
       <tipo_esecuzione>CASSA</tipo_esecuzione>
       <codice_riferimento_interno>HUPBP1  -0019916</codice_riferimento_interno>
@@ -141,8 +132,6 @@
       </dati_a_disposizione_BT>
     </movimento_conto_evidenza>
     <movimento_conto_evidenza>
-<!--      <identificativo_flusso>00320220930023144</identificativo_flusso>-->
-<!--      <numero_movimento>0000209</numero_movimento>-->
       <tipo_movimento>ENTRATA</tipo_movimento>
       <tipo_documento>SOSPESO ENTRATA</tipo_documento>
       <tipo_operazione>ESEGUITO</tipo_operazione>
@@ -157,7 +146,6 @@
       <numero_bolletta_quietanza>0074060</numero_bolletta_quietanza>
       <numero_bolletta_quietanza_storno>0000000</numero_bolletta_quietanza_storno>
       <data_movimento>2022-09-29</data_movimento>
-<!--      <data_movimento_siope>2022-09-29</data_movimento_siope>-->
       <data_valuta_ente>2022-09-29</data_valuta_ente>
       <tipo_esecuzione>CASSA</tipo_esecuzione>
       <codice_riferimento_interno>HUPBP1  -0019920</codice_riferimento_interno>
