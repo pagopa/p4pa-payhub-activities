@@ -116,4 +116,18 @@ class TransferClassificationActivityImplTest {
 		Mockito.verify(treasuryDaoMock, Mockito.times(0)).getByOrganizationIdAndIur(ORGANIZATION, IUR);
 	}
 
+	@Test
+	void givenFailedFindTreasuryWhenClassifyThenClassificationFailed() {
+		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
+		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new TransferDTO());
+		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(new PaymentsReportingDTO());
+		when(treasuryDaoMock.getByOrganizationIdAndIur(ORGANIZATION, IUR)).thenThrow(new ClassificationException("treasury find failed"));
+		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
+
+		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(transferDaoMock, Mockito.times(1)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(treasuryDaoMock, Mockito.times(1)).getByOrganizationIdAndIur(ORGANIZATION, IUR);
+	}
+
 }
