@@ -1,9 +1,12 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dao.TransferDao;
+import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.exception.ClassificationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -16,13 +19,16 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	private final ClassificationDao classificationDao;
 	private final TransferDao transferDao;
 	private final PaymentsReportingDao paymentsReportingDao;
+	private final TreasuryDao treasuryDao;
 
 	public TransferClassificationActivityImpl(ClassificationDao classificationDao,
 											  TransferDao transferDao,
-											  PaymentsReportingDao paymentsReportingDao) {
+											  PaymentsReportingDao paymentsReportingDao,
+											  TreasuryDao treasuryDao) {
 		this.classificationDao = classificationDao;
 		this.transferDao = transferDao;
 		this.paymentsReportingDao = paymentsReportingDao;
+		this.treasuryDao = treasuryDao;
 	}
 
 	@Override
@@ -35,5 +41,9 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
 		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
+		if (paymentsReportingDTO!=null) {
+			log.info("Retrieve treasury for organization id: {} and iur {}", orgId, iur);
+			TreasuryDTO treasuryDTO = treasuryDao.getByOrganizationIdAndIur(orgId, iur);
+		}
 	}
 }
