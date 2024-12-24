@@ -2,11 +2,10 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.FlussoTesoreriaPIIDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class TreasuryMapperServiceTest {
+class TreasuryOpi14MapperServiceTest {
 
     public static final String LAST_NAME_CLIENTE = "Last name cliente";
     public static final String ADDRESS_CLIENTE = "Address cliente";
@@ -33,7 +32,7 @@ class TreasuryMapperServiceTest {
 
     @BeforeEach
     void setUp() {
-        treasuryMapperService = new TreasuryMapperService();
+        treasuryMapperService = new TreasuryOpi14MapperService();
     }
 
     @Test
@@ -43,6 +42,7 @@ class TreasuryMapperServiceTest {
         InformazioniContoEvidenza informazioniContoEvidenza = mock(InformazioniContoEvidenza.class);
         InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza = mock(InformazioniContoEvidenza.MovimentoContoEvidenza.class);
         InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = mock(InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente.class);
+        InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare sospesoDaRegolarizzare = mock(InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare.class);
 
         when(flussoGiornaleDiCassa.getInformazioniContoEvidenza()).thenReturn(List.of(informazioniContoEvidenza));
         when(flussoGiornaleDiCassa.getEsercizio()).thenReturn(List.of(2023));
@@ -54,6 +54,9 @@ class TreasuryMapperServiceTest {
         when(movimentoContoEvidenza.getNumeroBollettaQuietanza()).thenReturn(BigInteger.ONE);
         when(movimentoContoEvidenza.getImporto()).thenReturn(BigDecimal.TEN);
         when(movimentoContoEvidenza.getDataMovimento()).thenReturn(toXMLGregorianCalendar(new GregorianCalendar(2023, Calendar.JANUARY, 1)));
+        when(movimentoContoEvidenza.getDataValutaEnte()).thenReturn(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
+        when(movimentoContoEvidenza.getSospesoDaRegolarizzare()).thenReturn(sospesoDaRegolarizzare);
+        when(sospesoDaRegolarizzare.getDataEffettivaSospeso()).thenReturn(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
         when(movimentoContoEvidenza.getCausale()).thenReturn("CAUSALE123");
         when(movimentoContoEvidenza.getCliente()).thenReturn(cliente);
         when(cliente.getAnagraficaCliente()).thenReturn(LAST_NAME_CLIENTE);
@@ -69,17 +72,17 @@ class TreasuryMapperServiceTest {
 
 
         IngestionFlowFileDTO ingestionFlowFileDTO = createIngestionFlowFileDTO();
-        Map<String, List<Pair<TreasuryDTO, FlussoTesoreriaPIIDTO>>> result =
+        Map<String, List<TreasuryDTO>> result = (Map<String, List<TreasuryDTO>>)
                 treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
         assertNotNull(result);
-        assertTrue(result.containsKey(TreasuryMapperService.INSERT));
-        assertFalse(result.get(TreasuryMapperService.INSERT).isEmpty());
+        assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
+        assertFalse(result.get(TreasuryOperationEnum.INSERT).isEmpty());
 
-        Pair<TreasuryDTO, FlussoTesoreriaPIIDTO> mappedPair = result.get(TreasuryMapperService.INSERT).get(0);
-        assertNotNull(mappedPair);
+        List<TreasuryDTO> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
+        assertNotNull(treasuryDTOList);
 
-        TreasuryDTO treasuryDTO = mappedPair.getLeft();
+        TreasuryDTO treasuryDTO = treasuryDTOList.get(0);
         assertEquals("2023", treasuryDTO.getBillYear());
         assertEquals("1", treasuryDTO.getBillCode());
         assertEquals(BigDecimal.TEN, treasuryDTO.getBillIpNumber());
@@ -90,9 +93,6 @@ class TreasuryMapperServiceTest {
         assertEquals(FISCAL_CODE, treasuryDTO.getFiscalCode());
         assertEquals(VAT_NUMBER, treasuryDTO.getVatNumber());
 
-        FlussoTesoreriaPIIDTO flussoTesoreriaPIIDTO = mappedPair.getRight();
-        assertNotNull(flussoTesoreriaPIIDTO);
-        assertEquals("CAUSALE123", flussoTesoreriaPIIDTO.getDeCausale());
     }
 
     private IngestionFlowFileDTO createIngestionFlowFileDTO() {

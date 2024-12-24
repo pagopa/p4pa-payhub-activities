@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.dto.treasury.*;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
-import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
 import it.gov.pagopa.payhub.activities.service.treasury.*;

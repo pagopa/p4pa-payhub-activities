@@ -15,14 +15,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TreasuryValidatorServiceTest {
 
-    private TreasuryValidatorService treasuryValidatorService;
+    private TreasuryValidatorService treasuryValidatorService14;
+    private TreasuryValidatorService treasuryValidatorService161;
     private FlussoGiornaleDiCassa mockFlussoV14, mockFlussoV14NoIufNoIuv, mockFlussoV14NoEsercizio;
     private it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa mockFlussoV161, mockFlussoV161NoIufNoIuv, mockFlussoV161NoEsercizio;
     private File mockFile;
 
     @BeforeEach
     void setUp() {
-        treasuryValidatorService = new TreasuryValidatorService();
+        treasuryValidatorService14 = new TreasuryOpi14ValidatorService();
+        treasuryValidatorService161 = new TreasuryOpi161ValidatorService();
         mockFlussoV14 = new FlussoGiornaleDiCassa();
         mockFlussoV14.getEsercizio().add(2024);
         mockFlussoV14.getPagineTotali().add(2);
@@ -87,15 +89,15 @@ class TreasuryValidatorServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa,  mockFile);
+        List<TreasuryErrorDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa,  mockFile.getName());
 
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(9, result.size());
+        assertEquals(10, result.size());
 
         assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -104,15 +106,15 @@ class TreasuryValidatorServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, mockFile);
+        List<TreasuryErrorDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(7, result.size());
+        assertEquals(10, result.size());
 
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
-        assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -121,14 +123,14 @@ class TreasuryValidatorServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoEsercizio;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, mockFile);
+        List<TreasuryErrorDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
-        assertEquals(8, result.size());
+        assertEquals(12, result.size());
 
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
-        assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Esercizio field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -137,15 +139,15 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, mockFile);
+        List<TreasuryErrorDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(9, result.size());
+        assertEquals(10, result.size());
 
         assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -154,16 +156,16 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, mockFile);
+        List<TreasuryErrorDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(7, result.size());
+        assertEquals(10, result.size());
 
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
-        assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());
-        assertEquals("TipoOperazione field is not valorized but it is required", result.get(2).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Tipo operazione field is not valorized but it is required", result.get(2).getErrorMessage());
     }
 
 
@@ -173,15 +175,15 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoEsercizio;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService.validateData(flussoGiornaleDiCassa, mockFile);
+        List<TreasuryErrorDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(8, result.size());
+        assertEquals(12, result.size());
 
-        assertEquals("TipoMovimento field is not valorized but it is required", result.get(0).getErrorMessage());
-        assertEquals("TipoDocumento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Esercizio field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -190,7 +192,7 @@ class TreasuryValidatorServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa = mockFlussoV14;
 
         //When
-        boolean res=treasuryValidatorService.validatePageSize(flussoGiornaleDiCassa,null,2,TreasuryValidatorService.V_14);
+        boolean res= treasuryValidatorService14.validatePageSize(flussoGiornaleDiCassa,2);
 
         //Then
         assertTrue(res);
@@ -202,7 +204,7 @@ class TreasuryValidatorServiceTest {
         it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa flussoGiornaleDiCassa = mockFlussoV161;
 
         //When
-        boolean res=treasuryValidatorService.validatePageSize(null,flussoGiornaleDiCassa,6,TreasuryValidatorService.V_161);
+        boolean res= treasuryValidatorService161.validatePageSize(flussoGiornaleDiCassa,6);
 
         //Then
         assertFalse(res);
@@ -211,7 +213,7 @@ class TreasuryValidatorServiceTest {
     @Test
     void validatePageSize_KoWithNullFgc() {
         //When
-        boolean res=treasuryValidatorService.validatePageSize(null,null,6,TreasuryValidatorService.V_161);
+        boolean res= treasuryValidatorService14.validatePageSize(null,6);
 
         //Then
         assertFalse(res);

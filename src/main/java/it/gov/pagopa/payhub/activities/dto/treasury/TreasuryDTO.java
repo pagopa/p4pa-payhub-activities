@@ -56,10 +56,4 @@ public class TreasuryDTO {
   private Date actualSuspensionDate;
   private String managementProvisionalCode;
   private String endToEndId;
-
-  private byte[] taxCodeHash;
-  private byte[] vatNumberHash;
-  private byte[] lastNameHash;
-
-  private Long personalDataId;
 }
