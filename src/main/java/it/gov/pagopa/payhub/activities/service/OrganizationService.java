@@ -28,4 +28,10 @@ public class OrganizationService {
   public Optional<OrganizationDTO> getOrganizationByFiscalCode(String orgFiscalCode){
     return organizationDao.getOrganizationByFiscalCode(orgFiscalCode);
   }
+
+  public Optional<OrganizationDTO> getOrganizationByIpaCode(String ipaCode){
+    return organizationDao.getOrganizationByIpaCode(ipaCode);
+  }
+
+
 }

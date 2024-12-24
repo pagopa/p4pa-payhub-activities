@@ -17,7 +17,7 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
     }
 
     public boolean deleteClassificationByIuf(Long organizationId, String iuf) {
-        log.debug("Deleting classification TES_NO_MATCH for organization id: {} and iuf: {}", organizationId,iuf);
+        log.info("Deleting classification TES_NO_MATCH for organization id: {} and iuf: {}", organizationId,iuf);
         return classificationDao.deleteClassificationByIuf(organizationId, iuf, ClassificationsEnum.TES_NO_MATCH);
     }
 }

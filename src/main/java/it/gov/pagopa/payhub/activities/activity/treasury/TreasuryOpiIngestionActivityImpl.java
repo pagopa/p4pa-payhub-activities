@@ -41,6 +41,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
     @Override
     public TreasuryIufResult processFile(Long ingestionFlowFileId) {
+        log.info("Processing OPI treasury IngestionFlowFile {}", ingestionFlowFileId);
 
         try {
             IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
