@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dao.TransferDao;
