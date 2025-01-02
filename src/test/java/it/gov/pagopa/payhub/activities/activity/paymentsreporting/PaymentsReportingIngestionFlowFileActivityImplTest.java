@@ -95,7 +95,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePathName()).resolve(mockFlowDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
+		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().iuf("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			new PaymentsReportingIngestionFlowFileActivityResult(List.of(ctFlussoRiversamento.getIdentificativoFlusso()), true, null);
@@ -248,7 +248,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
+		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().iuf("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "saving fails");
@@ -283,7 +283,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().flowIdentifierCode("idFlow").build());
+		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().iuf("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "error occured");

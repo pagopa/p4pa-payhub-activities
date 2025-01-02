@@ -36,7 +36,7 @@ public class PaymentsReportingMapperService {
 			.organizationId(ingestionFlowFileDTO.getOrg().getOrgId())
 			.ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
 			.pspIdentifier(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
-			.flowIdentifierCode(ctFlussoRiversamento.getIdentificativoFlusso())
+			.iuf(ctFlussoRiversamento.getIdentificativoFlusso())
 			.flowDateTime(ctFlussoRiversamento.getDataOraFlusso().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
 			.regulationUniqueIdentifier(ctFlussoRiversamento.getIdentificativoUnivocoRegolamento())
 			.regulationDate(ctFlussoRiversamento.getDataRegolamento().toGregorianCalendar().toZonedDateTime().toLocalDate())
@@ -52,8 +52,8 @@ public class PaymentsReportingMapperService {
 
 		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
 			.map(item -> builder
-				.creditorReferenceId(item.getIdentificativoUnivocoVersamento())
-				.regulationId(item.getIdentificativoUnivocoRiscossione())
+				.iuv(item.getIdentificativoUnivocoVersamento())
+				.iur(item.getIdentificativoUnivocoRiscossione())
 				.transferIndex(item.getIndiceDatiSingoloPagamento())
 				.amountPaidCents(item.getSingoloImportoPagato().movePointRight(2).longValueExact())
 				.paymentOutcomeCode(item.getCodiceEsitoSingoloPagamento())
