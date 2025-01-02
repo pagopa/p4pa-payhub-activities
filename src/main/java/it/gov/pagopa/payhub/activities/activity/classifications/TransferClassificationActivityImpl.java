@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.exception.ClassificationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -40,8 +41,10 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
 		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
-
-		log.info("Retrieve treasury for organization id: {} and iur {}", orgId, iur);
-		TreasuryDTO treasuryDTO = treasuryDao.getByOrganizationIdAndIur(orgId, iur);
+		if (paymentsReportingDTO!=null && StringUtils.isNotEmpty(paymentsReportingDTO.getFlowIdentifierCode())) {
+			String iuf = paymentsReportingDTO.getFlowIdentifierCode();
+			log.info("Retrieve treasury for organization id: {} and iuf {}", orgId, iuf);
+			TreasuryDTO treasuryDTO = treasuryDao.getByOrganizationIdAndIuf(orgId, iuf);
+		}
 	}
 }
