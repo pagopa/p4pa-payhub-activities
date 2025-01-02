@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.exception.ClassificationException;
-import it.gov.pagopa.payhub.activities.utility.faker.PaymentOptionFaker;
 import it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

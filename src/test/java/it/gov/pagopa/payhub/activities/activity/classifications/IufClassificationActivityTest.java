@@ -59,7 +59,7 @@ class IufClassificationActivityTest {
                 .stream()
                 .map(paymentsReportingDTO ->
                     Transfer2ClassifyDTO.builder()
-                        .iuv(paymentsReportingDTO.getCreditorReferenceId())
+                        .iuv(paymentsReportingDTO.getIuv())
                         .iur(paymentsReportingDTO.getRegulationUniqueIdentifier())
                         .transferIndex(paymentsReportingDTO.getTransferIndex())
                         .build())

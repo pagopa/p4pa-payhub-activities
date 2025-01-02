@@ -7,8 +7,8 @@ public class PaymentsReportingFaker {
     public static PaymentsReportingDTO buildClassifyResultDTO(){
         return PaymentsReportingDTO.builder()
                 .organizationId(1L)
-                .flowIdentifierCode("IUF")
-                .creditorReferenceId("IUV")
+                .iuf("IUF")
+                .iuv("IUV")
                 .regulationUniqueIdentifier("IUR")
                 .transferIndex(1)
                 .build();
