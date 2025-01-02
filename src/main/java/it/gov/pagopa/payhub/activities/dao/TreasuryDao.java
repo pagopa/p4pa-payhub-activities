@@ -7,9 +7,9 @@ public interface TreasuryDao {
 
   Long insert(TreasuryDTO treasuryDto);
 
-  int deleteByIdEnteAndCodBollettaAndAnnoBolletta(Long id, String codBolletta, String annoBolletta);
+  int deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
 
-  TreasuryDTO getByIdEnteAndCodBollettaAndAnnoBolletta(Long idEnte, String codBolletta, String annoBolletta);
+  TreasuryDTO getByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
 
 
 
