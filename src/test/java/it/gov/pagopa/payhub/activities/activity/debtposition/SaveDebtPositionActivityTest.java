@@ -10,12 +10,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class SaveDebtPositionActivityTest {
+class SaveDebtPositionActivityTest {
 
     @Mock
     private DebtPositionDao debtPositionDao;
@@ -29,12 +29,13 @@ public class SaveDebtPositionActivityTest {
 
     @Test
     void givenSaveDebtPositionThenSuccess() {
-        Mockito.when(debtPositionDao.save(buildDebtPositionDTO())).thenReturn(buildDebtPositionDTO());
+        DebtPositionDTO debtPosition = buildDebtPositionDTO();
+        Mockito.when(debtPositionDao.save(debtPosition)).thenReturn(debtPosition);
 
-        DebtPositionDTO debtPosition =
-                saveDebtPositionActivity.saveDebtPosition(buildDebtPositionDTO());
+        DebtPositionDTO result =
+                saveDebtPositionActivity.saveDebtPosition(debtPosition);
 
-        verify(debtPositionDao, times(1)).save(buildDebtPositionDTO());
-        assertEquals(debtPosition, buildDebtPositionDTO());
+        verify(debtPositionDao, times(1)).save(debtPosition);
+        assertSame(result, debtPosition);
     }
 }
