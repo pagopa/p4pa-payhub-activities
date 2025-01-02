@@ -27,13 +27,6 @@ public interface IngestionFlowFileDao {
 	Optional<IngestionFlowFileDTO> findById(Long ingestionFlowFileId);
 
 	/**
-	 *
-	 * @param ingestionFlowFileId  ingestionFlowFileId the unique identifier of the ingestion flow to be retrieved.
-	 * @return String url of the error file
-	 */
-	String findErrorFileUrl(Long ingestionFlowFileId);
-
-	/**
 	 * update ingestion flow file status
 	 *
 	 * @param ingestionFlowFileId the unique identifier of the ingestion flow file id

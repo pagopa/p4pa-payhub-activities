@@ -3,14 +3,14 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.0"
-	id("io.spring.dependency-management") version "1.1.6"
-	id("org.sonarqube") version "5.0.0.4638"
+	id("org.springframework.boot") version "3.4.1"
+	id("io.spring.dependency-management") version "1.1.7"
+	id("org.sonarqube") version "6.0.1.5171"
 	`java-library`
 	`maven-publish`
 	jacoco
-	id("com.intershop.gradle.jaxb") version "7.0.0"
-	id("org.openapi.generator") version "7.9.0"
+	id("com.intershop.gradle.jaxb") version "7.0.1"
+	id("org.openapi.generator") version "7.10.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -49,16 +49,15 @@ tasks.jacocoTestReport {
 apply(plugin = "maven-publish")
 
 val janinoVersion = "3.1.12"
-val snakeYamlVersion = "2.0"
-val hibernateValidatorVersion = "8.0.1.Final"
+val hibernateValidatorVersion = "8.0.2.Final"
 val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
-val commonsTextVersion = "1.12.0"
-val jacksonModuleVersion = "2.18.1"
+val commonsTextVersion = "1.13.0"
+val jacksonModuleVersion = "2.18.2"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
-val jsoupVersion = "1.18.1"
+val jsoupVersion = "1.18.3"
 val openApiToolsVersion = "0.2.6"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
@@ -77,7 +76,6 @@ dependencies {
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
 
 	// Security fixes
-	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
 	implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
