@@ -40,7 +40,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
 		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
-		if (paymentsReportingDTO!=null && StringUtils.isNotEmpty(paymentsReportingDTO.getIuf())) {
+		if (paymentsReportingDTO!=null) {
 			String iuf = paymentsReportingDTO.getIuf();
 			log.info("Retrieve treasury for organization id: {} and iuf {}", orgId, iuf);
 			treasuryDao.getByOrganizationIdAndIuf(orgId, iuf);

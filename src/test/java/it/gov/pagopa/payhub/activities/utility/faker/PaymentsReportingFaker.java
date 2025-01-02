@@ -9,7 +9,7 @@ public class PaymentsReportingFaker {
                 .organizationId(1L)
                 .iuf("IUF")
                 .iuv("IUV")
-                .regulationUniqueIdentifier("IUR")
+                .iur("IUR")
                 .transferIndex(1)
                 .build();
     }
