@@ -31,7 +31,6 @@ public class AESUtils {
     private static final String ALGORITHM_TYPE = "AES";
     private static final int KEY_LENGTH = 256;
     private static final int ITERATION_COUNT = 65536;
-
     public static final String CIPHER_EXTENSION = ".cipher";
 
     /**
@@ -169,5 +168,4 @@ public class AESUtils {
             throw new IllegalStateException("Cannot initialize cipher data", e);
         }
     }
-
 }
