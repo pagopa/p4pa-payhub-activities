@@ -2,10 +2,7 @@ package it.gov.pagopa.payhub.activities.util;
 
 import org.junit.jupiter.api.Assertions;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,11 +21,5 @@ public class TestUtils {
                 },
                 f -> !excludedFieldsSet.contains(f.getName()));
     }
-
-    public static final Date DATE = Date.from(
-        LocalDateTime.of(2024, 5, 15, 10, 30, 0)
-            .atZone(ZoneId.systemDefault())
-            .toInstant()
-    );
 
 }
