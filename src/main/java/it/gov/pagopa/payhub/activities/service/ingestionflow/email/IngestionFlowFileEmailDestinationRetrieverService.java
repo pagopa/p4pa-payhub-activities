@@ -25,7 +25,7 @@ public class IngestionFlowFileEmailDestinationRetrieverService {
     }
 
     public void configure(IngestionFlowFileDTO ingestionFlowFileDTO, EmailDTO emailDTO) {
-        UserInfo userInfoDTO = authzService.getOperatorInfo(ingestionFlowFileDTO.getMappedExternalUserId());
+        UserInfo userInfoDTO = authzService.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId());
         Optional<OrganizationDTO> organizationDTO = organizationService.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode());
 
         emailDTO.setTo(new String[]{userInfoDTO.getEmail()});

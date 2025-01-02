@@ -11,6 +11,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -20,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class PaymentsReportingMapperServiceTest {
-	private PaymentsReportingMapperService mapper = new PaymentsReportingMapperService();
+	private final PaymentsReportingMapperService mapper = new PaymentsReportingMapperService();
 
 	@Test
 	void testMapper() throws DatatypeConfigurationException {
-		GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, 12, 25);
+		GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, GregorianCalendar.DECEMBER, 25);
 
 		// Given
 		CtFlussoRiversamento ctFlussoRiversamento = new CtFlussoRiversamento();
@@ -57,7 +58,7 @@ class PaymentsReportingMapperServiceTest {
 		IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
 		ingestionFlowFileDTO.setOrg(OrganizationDTO.builder().orgId(1L).build());
 		ingestionFlowFileDTO.setIngestionFlowFileId(1L);
-		ingestionFlowFileDTO.setCreationDate(TestUtils.DATE);
+		ingestionFlowFileDTO.setCreationDate(Instant.now());
 
 		CtDatiSingoliPagamenti singlePayment = new CtDatiSingoliPagamenti();
 		singlePayment.setIdentificativoUnivocoVersamento("vers123");
@@ -67,12 +68,12 @@ class PaymentsReportingMapperServiceTest {
 		singlePayment.setCodiceEsitoSingoloPagamento("OK");
 		singlePayment.setDataEsitoSingoloPagamento(toXMLGregorianCalendar(gregorianCalendar));
 
-		ctFlussoRiversamento.getDatiSingoliPagamenti().addAll(List.of(singlePayment));
+		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
 
 		// When
 		List<PaymentsReportingDTO> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		PaymentsReportingDTO firstDTO = result.get(0);
+		PaymentsReportingDTO firstDTO = result.getFirst();
 		// Then
 		assertEquals(1, result.size());
 		assertEquals("flow123", firstDTO.getFlowIdentifierCode());

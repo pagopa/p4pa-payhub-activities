@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,6 @@ class TreasuryOpiIngestionActivityTest {
   private IngestionFlowFileDao ingestionFlowFileDao;
   @Mock
   private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
-  @Mock
-  private TreasuryUnmarshallerService treasuryUnmarshallerService;
   @Mock
   private TreasuryOpiParserService treasuryOpiParserService;
 
@@ -60,7 +57,7 @@ class TreasuryOpiIngestionActivityTest {
     Long ingestionFlowFileId = 1L;
     IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
     ingestionFlowFileDTO.setFlowFileType(IngestionFlowFileType.OPI);
-    ingestionFlowFileDTO.setFilePath("/test/path");
+    ingestionFlowFileDTO.setFilePathName("/test/path");
     ingestionFlowFileDTO.setFileName("testFile.zip");
 
     Path mockPath = mock(Path.class);
