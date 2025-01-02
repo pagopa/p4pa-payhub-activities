@@ -66,7 +66,7 @@ class TreasuryOpiIngestionActivityTest {
     Long ingestionFlowFileId = 1L;
     IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
     ingestionFlowFileDTO.setFlowFileType(IngestionFlowFileType.OPI);
-    ingestionFlowFileDTO.setFilePath("/test/path");
+    ingestionFlowFileDTO.setFilePathName("/test/path");
     ingestionFlowFileDTO.setFileName("testFile.zip");
 
     Path mockPath = mock(Path.class);

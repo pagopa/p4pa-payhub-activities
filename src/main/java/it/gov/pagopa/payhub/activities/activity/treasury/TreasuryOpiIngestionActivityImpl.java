@@ -49,9 +49,18 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
 
 
-           return ingestionFlowFiles.stream()
+           List<TreasuryIufResult>  treasuryIufResultList =  ingestionFlowFiles.stream()
                     .map(path ->treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
-                   .toList().get(0);
+                   .toList();
+
+           return new TreasuryIufResult(
+                   treasuryIufResultList.stream()
+                           .flatMap(result -> result.getIufs().stream())
+                           .distinct()
+                           .toList(),
+                   treasuryIufResultList.stream()
+                           .allMatch(TreasuryIufResult::isSuccess)
+           );
 
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
