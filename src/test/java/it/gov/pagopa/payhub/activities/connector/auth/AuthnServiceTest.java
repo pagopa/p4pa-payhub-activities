@@ -36,7 +36,7 @@ class AuthnServiceTest {
         // Given
         String expectedResult = "TOKEN";
         Mockito.when(accessTokenRetrieverMock.getAccessToken())
-                .thenReturn(AccessToken.builder().accessToken(expectedResult).build());
+                .thenReturn(AccessToken.builder().accessToken(expectedResult).tokenType("TOKENTYPE").expiresIn(0).build());
 
         // When
         String result = authnService.getAccessToken();
