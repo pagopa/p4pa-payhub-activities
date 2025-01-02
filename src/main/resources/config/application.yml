@@ -16,6 +16,9 @@ mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
 
 rest:
+  default-timeout:
+    connect-millis: "\${DEFAULT_REST_CONNECT_TIMEOUT_MILLIS:60000}"
+    read-millis: "\${DEFAULT_REST_READ_TIMEOUT_MILLIS:60000}"
   auth:
     base-url: "\${AUTH_BASE_URL:http://localhost:8080/auth}"
     post-token:
