@@ -21,7 +21,6 @@ public class IngestionFlowFileDTO implements Serializable {
     private int version;
     private OrganizationDTO org;
     private String status;
-    private String iuf;
     private Long numTotalRows;
     private Long numCorrectlyImportedRows;
     private Instant creationDate;

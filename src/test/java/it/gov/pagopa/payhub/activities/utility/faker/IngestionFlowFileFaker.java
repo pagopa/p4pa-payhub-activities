@@ -16,7 +16,6 @@ public class IngestionFlowFileFaker {
                 .version(1)
                 .org(OrganizationDTO.builder().build())
                 .status("status")
-                .iuf("iuf")
                 .numTotalRows(3L)
                 .numCorrectlyImportedRows(2L)
                 .creationDate(Instant.now())
