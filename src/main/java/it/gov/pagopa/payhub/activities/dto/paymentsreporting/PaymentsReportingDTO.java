@@ -22,7 +22,7 @@ public class PaymentsReportingDTO {
 	private Long organizationId;
 	private Long ingestionFlowFileId;
 	private String pspIdentifier;
-	private String flowIdentifierCode;
+	private String iuf;
 	private LocalDateTime flowDateTime;
 	private String regulationUniqueIdentifier;
 	private LocalDate regulationDate;
@@ -34,8 +34,8 @@ public class PaymentsReportingDTO {
 	private String receiverOrganizationName;
 	private long totalPayments;
 	private Long totalAmountCents;
-	private String creditorReferenceId;
-	private String regulationId;
+	private String iuv;
+	private String iur;
 	private Long amountPaidCents;
 	private String paymentOutcomeCode;
 	private LocalDate payDate;
