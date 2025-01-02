@@ -2,21 +2,17 @@ package it.gov.pagopa.payhub.activities.dao;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 
-
+/**
+ * Data Access Object (DAO) interface for handling Treasury data.
+ */
 public interface TreasuryDao {
-
-  Long insert(TreasuryDTO treasuryDto);
-
-  int deleteByIdEnteAndCodBollettaAndAnnoBolletta(Long id, String codBolletta, String annoBolletta);
-
-  TreasuryDTO getByIdEnteAndCodBollettaAndAnnoBolletta(Long idEnte, String codBolletta, String annoBolletta);
-
-
-
-
-
-
-
+  /**
+   * find treasury data by IUV
+   *
+   * @param iuv    payment identifier
+   * @return TreasuryDTO object returned
+   */
+  TreasuryDTO findByIuv(String iuv);
 
 
 }
