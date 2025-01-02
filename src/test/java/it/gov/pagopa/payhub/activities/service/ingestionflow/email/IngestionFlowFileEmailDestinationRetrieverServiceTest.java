@@ -50,7 +50,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
 
-        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getMappedExternalUserId()))
+        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
                 .thenReturn(userInfo);
 
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode()))
@@ -74,7 +74,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         OrganizationDTO organizationDTO = OrganizationFaker.buildOrganizationDTO();
         organizationDTO.setAdminEmail(userInfo.getEmail());
 
-        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getMappedExternalUserId()))
+        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
                 .thenReturn(userInfo);
 
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode()))
@@ -97,7 +97,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         OrganizationDTO organizationDTO = OrganizationFaker.buildOrganizationDTO();
 
-        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getMappedExternalUserId()))
+        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
                 .thenReturn(userInfo);
 
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode()))

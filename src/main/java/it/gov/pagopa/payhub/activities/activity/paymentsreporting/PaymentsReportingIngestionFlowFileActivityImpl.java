@@ -111,7 +111,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 */
 	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
 		List<Path> paths = ingestionFlowFileRetrieverService
-			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
+			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 		return paths.getFirst().toFile();
 	}
 
@@ -142,8 +142,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * @throws IOException if an error occurs during file movement or directory creation.
 	 */
 	private void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-		Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePath(), ingestionFlowFileDTO.getFileName());
-		Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePath(), archiveDirectory);
+		Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+		Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePathName(), archiveDirectory);
 		ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
 	}
 
