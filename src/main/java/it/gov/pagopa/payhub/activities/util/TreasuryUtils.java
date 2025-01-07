@@ -10,10 +10,10 @@ public class TreasuryUtils {
   private TreasuryUtils() {}
 
   public static final String IUF = "IUF";
-  public static final String DATE_PATTERN = "\\d{4}-\\d{2}-\\d{2}";
   public static final String REGEX_MATCHER = "([A-Za-z0-9-_](\\S+)\\s+(\\S+))";
   public static final String ALPHANUM_PATTERN = "([A-Za-z0-9-_]+)";
-
+  public static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+  public static final Pattern STRING_PATTERN = Pattern.compile("([^a-zA-Z\\d\\s:])");
   private static final List<String> PRE_IUF_PATTERNS = List.of(
           "LGPE-RIVERSAMENTO",
           "LGPE- RIVERSAMENTO",
@@ -43,15 +43,13 @@ public class TreasuryUtils {
   }
 
   public static String getDataFromIuf(final String value) {
-    Pattern pattern = Pattern.compile(DATE_PATTERN);
-    Matcher matcher = pattern.matcher(value);
+    Matcher matcher = DATE_PATTERN.matcher(value);
     return matcher.find() ? matcher.group(0) : null;
   }
 
   public static boolean checkIufOld(final String value) {
     if (StringUtils.isNotBlank(value)) {
-      Pattern pattern = Pattern.compile("([^a-zA-Z\\d\\s:])");
-      Matcher matcher = pattern.matcher(value);
+      Matcher matcher = STRING_PATTERN.matcher(value);
       while (matcher.find()) {
         if (StringUtils.isNotBlank(matcher.group(0))) {
           return false;
