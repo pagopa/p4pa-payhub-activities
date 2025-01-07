@@ -39,11 +39,14 @@ public class TreasuryOpiParserService {
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
-        List<TreasuryDTO> stringListMap = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
-        stringListMap.forEach(treasuryDTO -> {
-            treasuryDao.insert(treasuryDTO);
-            iufList.add(treasuryDTO.getIuf());
-        });
+        List<TreasuryDTO> newTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
+        List<String> iufList = stringListMap.stream()
+            .map(treasuryDTO -> {
+                  treasuryDao.insert(treasuryDTO);
+                  return treasuryDTO.getIuf();
+              })
+              .distinct()
+              .toList();
 
         return new TreasuryIufResult(iufList.stream().toList(), true);
     }
