@@ -76,13 +76,13 @@ class PaymentsReportingMapperServiceTest {
 		PaymentsReportingDTO firstDTO = result.getFirst();
 		// Then
 		assertEquals(1, result.size());
-		assertEquals("flow123", firstDTO.getFlowIdentifierCode());
+		assertEquals("flow123", firstDTO.getIuf());
 		assertEquals("PSP Mittente", firstDTO.getSenderPspName());
 		assertEquals("Org Ricevente", firstDTO.getReceiverOrganizationName());
 		assertEquals(1L, firstDTO.getTotalPayments());
 		assertEquals(100_050L, firstDTO.getTotalAmountCents());
-		assertEquals("vers123", firstDTO.getCreditorReferenceId());
-		assertEquals("ris123", firstDTO.getRegulationId());
+		assertEquals("vers123", firstDTO.getIuv());
+		assertEquals("ris123", firstDTO.getIur());
 		assertEquals(1, firstDTO.getTransferIndex());
 		assertEquals(20_000L, firstDTO.getAmountPaidCents());
 		assertEquals("OK", firstDTO.getPaymentOutcomeCode());

@@ -33,8 +33,8 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
             .stream()
             .map(paymentsReportingDTO ->
                 Transfer2ClassifyDTO.builder()
-                    .iuv(paymentsReportingDTO.getCreditorReferenceId())
-                    .iur(paymentsReportingDTO.getRegulationUniqueIdentifier())
+                    .iuv(paymentsReportingDTO.getIuv())
+                    .iur(paymentsReportingDTO.getIur())
                     .transferIndex(paymentsReportingDTO.getTransferIndex())
                     .build())
             .toList();

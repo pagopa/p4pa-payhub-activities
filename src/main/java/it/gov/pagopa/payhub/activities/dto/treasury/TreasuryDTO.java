@@ -47,7 +47,7 @@ public class TreasuryDTO {
   private Long processPgNumber;
   private Date regionValueDate;
   private Long organizationId;
-  private String flowIdentifierCode;
+  private String iuf;
   private String iuv;
   private Date creationDate;
   private Date lastUpdateDate;
