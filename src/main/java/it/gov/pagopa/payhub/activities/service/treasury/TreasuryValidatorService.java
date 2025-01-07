@@ -7,5 +7,5 @@ import java.util.List;
 public interface TreasuryValidatorService<T> {
     List<TreasuryErrorDTO> validateData(T fGC, String fileName);
 
-    boolean validatePageSize(T fGC14, int sizeZipFile);
+    boolean validatePageSize(T fGC, int sizeZipFile);
 }

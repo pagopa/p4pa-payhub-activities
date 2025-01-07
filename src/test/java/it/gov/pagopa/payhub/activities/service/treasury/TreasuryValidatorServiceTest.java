@@ -23,8 +23,8 @@ class TreasuryValidatorServiceTest {
 
     @BeforeEach
     void setUp() {
-        treasuryValidatorService14 = new TreasuryOpi14ValidatorService();
-        treasuryValidatorService161 = new TreasuryOpi161ValidatorService();
+        treasuryValidatorService14 = new TreasuryValidatorOpi14Service();
+        treasuryValidatorService161 = new TreasuryValidatorOpi161Service();
         mockFlussoV14 = new FlussoGiornaleDiCassa();
         mockFlussoV14.getEsercizio().add(2024);
         mockFlussoV14.getPagineTotali().add(2);
@@ -96,8 +96,8 @@ class TreasuryValidatorServiceTest {
         assertFalse(result.isEmpty());
         assertEquals(10, result.size());
 
-        assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
-        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test
@@ -146,8 +146,8 @@ class TreasuryValidatorServiceTest {
         assertFalse(result.isEmpty());
         assertEquals(10, result.size());
 
-        assertEquals("Codice univoco Flusso exceed max length of 35 chars", result.get(0).getErrorMessage());
-        assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
+        assertEquals("Tipo movimento field is not valorized but it is required", result.get(0).getErrorMessage());
+        assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
     }
 
     @Test

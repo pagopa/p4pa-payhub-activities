@@ -5,9 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,59 +14,40 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class TreasuryOpiParserServiceTest {
 
-    private TreasuryUnmarshallerService treasuryUnmarshallerService;
-    private TreasuryBaseOpiHandlerService treasuryBaseOpiHandlerService;
-    private TreasuryDao treasuryDao;
     private TreasuryOpiParserService treasuryOpiParserService;
+    private List<TreasuryVersionHandlerService> versionHandlerServices;
+    private TreasuryDao treasuryDao;
 
     @BeforeEach
     void setUp() {
-        treasuryUnmarshallerService = mock(TreasuryUnmarshallerService.class);
-        treasuryBaseOpiHandlerService = mock(TreasuryBaseOpiHandlerService.class);
+        versionHandlerServices = new ArrayList<>();
         treasuryDao = mock(TreasuryDao.class);
-        treasuryOpiParserService = new TreasuryOpiParserService(
-                treasuryUnmarshallerService,
-                treasuryBaseOpiHandlerService,
-                treasuryDao
-        );
+        treasuryOpiParserService = new TreasuryOpiParserService(versionHandlerServices, treasuryDao);
     }
 
     @Test
-    void testParseData_whenValidOpi161File_thenProcessesSuccessfully() {
+    void testParseData_whenValidFile_thenProcessesSuccessfully() {
         // Given
         Path filePath = mock(Path.class);
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
+
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        TreasuryVersionHandlerService handler = mock(TreasuryVersionHandlerService.class);
+        versionHandlerServices.add(handler);
 
-        var flusso161 = mock(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class);
-        when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenReturn(flusso161);
-
-        TreasuryValidatorService<it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa> validator =
-                mock(TreasuryValidatorService.class);
-        when(treasuryBaseOpiHandlerService.getValidator(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
-                .thenReturn(validator);
-        when(validator.validatePageSize(flusso161, 1)).thenReturn(true);
-
-        @SuppressWarnings("unchecked")
-        TreasuryMapperService<it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa, Map<TreasuryOperationEnum, List<TreasuryDTO>>> mapper =
-                mock(TreasuryMapperService.class);
-        when(treasuryBaseOpiHandlerService.getMapper(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
-                .thenReturn((TreasuryMapperService)mapper);
-
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> treasuryDtoMap = Map.of(
-                TreasuryOperationEnum.INSERT, List.of(TreasuryDTO.builder()
-                        .flowIdentifierCode("Flow123")
-                        .build())
+        TreasuryDTO treasuryDTO = TreasuryDTO.builder()
+                .flowIdentifierCode("Flow123")
+                .build();
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
+                TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
         );
-        when(mapper.apply(flusso161, ingestionFlowFileDTO)).thenReturn(treasuryDtoMap);
 
-
+        when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
 
         // When
         TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
@@ -77,41 +56,54 @@ class TreasuryOpiParserServiceTest {
         assertNotNull(result);
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
-        assertEquals("Flow123", result.getIufs().get(0));
-        verify(treasuryDao, times(1)).insert(any(TreasuryDTO.class));
+        assertEquals("Flow123", result.getIufs().getFirst());
+        verify(treasuryDao, times(1)).insert(treasuryDTO);
     }
 
     @Test
-    void testParseData_whenInvalidOpi161File_thenFallsBackToOpi14() {
+    void testParseData_whenAllHandlersFail_thenThrowsException() {
         // Given
         Path filePath = mock(Path.class);
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
+
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
 
-        when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenThrow(new RuntimeException("Error parsing OPI 1.6.1"));
-        var flusso14 = mock(FlussoGiornaleDiCassa.class);
-        when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenReturn(flusso14);
+        TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
+        TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
+        versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        TreasuryValidatorService<FlussoGiornaleDiCassa> validator =
-                mock(TreasuryValidatorService.class);
-        when(treasuryBaseOpiHandlerService.getValidator(FlussoGiornaleDiCassa.class))
-                .thenReturn(validator);
-        when(validator.validatePageSize(flusso14, 1)).thenReturn(true);
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
 
-        TreasuryMapperService<FlussoGiornaleDiCassa, Map<TreasuryOperationEnum, List<TreasuryDTO>>> mapper =
-                mock(TreasuryMapperService.class);
-        when(treasuryBaseOpiHandlerService.getMapper(FlussoGiornaleDiCassa.class))
-                .thenReturn((TreasuryMapperService)mapper);
+        // When & Then
+        assertThrows(TreasuryOpiInvalidFileException.class, () ->
+                treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1));
+    }
 
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> treasuryDtoMap = Map.of(
-                TreasuryOperationEnum.INSERT, List.of(TreasuryDTO.builder()
-                        .flowIdentifierCode("Flow456")
-                        .build())
+    @Test
+    void testParseData_whenMultipleHandlers_thenUsesFirstValid() {
+        // Given
+        Path filePath = mock(Path.class);
+        File file = mock(File.class);
+        when(filePath.toFile()).thenReturn(file);
+
+        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+
+        TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
+        TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
+        versionHandlerServices.addAll(List.of(handler1, handler2));
+
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
+
+        TreasuryDTO treasuryDTO = TreasuryDTO.builder()
+                .flowIdentifierCode("Flow456")
+                .build();
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
+                TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
         );
-        when(mapper.apply(flusso14, ingestionFlowFileDTO)).thenReturn(treasuryDtoMap);
 
-
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
 
         // When
         TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
@@ -121,46 +113,6 @@ class TreasuryOpiParserServiceTest {
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
         assertEquals("Flow456", result.getIufs().get(0));
-        verify(treasuryDao, times(1)).insert(any(TreasuryDTO.class));
-    }
-
-    @Test
-    void testParseData_whenBothParsersFail_thenThrowsException() {
-        // Given
-        Path filePath = mock(Path.class);
-        File file = mock(File.class);
-        when(filePath.toFile()).thenReturn(file);
-
-        when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenThrow(new RuntimeException("Error parsing OPI 1.6.1"));
-        when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenThrow(new RuntimeException("Error parsing OPI 1.4"));
-
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
-
-        // When & Then
-        assertThrows(TreasuryOpiInvalidFileException.class, () ->
-                treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1));
-    }
-
-    @Test
-    void testParseData_whenPageSizeInvalid_thenThrowsActivitiesException() {
-        // Given
-        Path filePath = mock(Path.class);
-        File file = mock(File.class);
-        when(filePath.toFile()).thenReturn(file);
-
-        var flusso161 = mock(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class);
-        when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenReturn(flusso161);
-
-        TreasuryOpi161ValidatorService validator =
-                mock(TreasuryOpi161ValidatorService.class);
-        when(treasuryBaseOpiHandlerService.getValidator(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
-                .thenReturn(validator);
-        when(validator.validatePageSize(flusso161, 1)).thenReturn(false);
-
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
-
-        // When & Then
-        assertThrows(ActivitiesException.class, () ->
-                treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1));
+        verify(treasuryDao, times(1)).insert(treasuryDTO);
     }
 }

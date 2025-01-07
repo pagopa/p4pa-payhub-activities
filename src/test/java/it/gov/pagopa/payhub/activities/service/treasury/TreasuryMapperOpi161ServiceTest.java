@@ -4,8 +4,8 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,12 +14,16 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class TreasuryOpi14MapperServiceTest {
+class TreasuryMapperOpi161ServiceTest {
 
     public static final String LAST_NAME_CLIENTE = "Last name cliente";
     public static final String ADDRESS_CLIENTE = "Address cliente";
@@ -32,7 +36,7 @@ class TreasuryOpi14MapperServiceTest {
 
     @BeforeEach
     void setUp() {
-        treasuryMapperService = new TreasuryOpi14MapperService();
+        treasuryMapperService = new TreasuryMapperOpi161Service();
     }
 
     @Test
@@ -65,11 +69,6 @@ class TreasuryOpi14MapperServiceTest {
         when(cliente.getLocalitaCliente()).thenReturn(CITY);
         when(cliente.getCodiceFiscaleCliente()).thenReturn(FISCAL_CODE);
         when(cliente.getPartitaIvaCliente()).thenReturn(VAT_NUMBER);
-
-
-
-
-
 
         IngestionFlowFileDTO ingestionFlowFileDTO = createIngestionFlowFileDTO();
         Map<String, List<TreasuryDTO>> result = (Map<String, List<TreasuryDTO>>)
