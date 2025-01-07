@@ -28,27 +28,27 @@ import static org.mockito.Mockito.when;
 class TreasuryOpiIngestionActivityTest {
 
   @Mock
-  private IngestionFlowFileDao ingestionFlowFileDao;
+  private IngestionFlowFileDao ingestionFlowFileDaoMock;
   @Mock
-  private TreasuryDao treasuryDao;
+  private TreasuryDao treasuryDaoMock;
   @Mock
-  private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
+  private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverServiceMock;
   @Mock
-  private TreasuryUnmarshallerService treasuryUnmarshallerService;
+  private TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
   @Mock
-  private TreasuryMapperService treasuryMapperService;
+  private TreasuryMapperService treasuryMapperServiceMock;
   @Mock
-  private TreasuryOpiParserService treasuryOpiParserService;
+  private TreasuryOpiParserService treasuryOpiParserServiceMock;
   @Mock
-  private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
+  private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
 
 
   @BeforeEach
   void setUp() {
-    treasuryOpiIngestionActivity = new TreasuryOpiIngestionActivityImpl(
-            ingestionFlowFileDao,
-            ingestionFlowFileRetrieverService,
-            treasuryOpiParserService
+    treasuryOpiIngestionActivityMock = new TreasuryOpiIngestionActivityImpl(
+            ingestionFlowFileDaoMock,
+            ingestionFlowFileRetrieverServiceMock,
+            treasuryOpiParserServiceMock
     );
   }
 
@@ -72,14 +72,14 @@ class TreasuryOpiIngestionActivityTest {
     Path mockPath = mock(Path.class);
     List<Path> paths = List.of(mockPath);
 
-    Mockito.when(ingestionFlowFileDao.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
-    Mockito.when(ingestionFlowFileRetrieverService.retrieveAndUnzipFile(Path.of("/test/path"), "testFile.zip"))
+    Mockito.when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
+    Mockito.when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(Path.of("/test/path"), "testFile.zip"))
             .thenReturn(paths);
-    Mockito.when(treasuryOpiParserService.parseData(mockPath, ingestionFlowFileDTO,  paths.size()))
+    Mockito.when(treasuryOpiParserServiceMock.parseData(mockPath, ingestionFlowFileDTO,  paths.size()))
             .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), true));
 
     // When
-    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(ingestionFlowFileId);
+    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
 
     // Then
     Assertions.assertNotNull(result);
@@ -92,32 +92,32 @@ class TreasuryOpiIngestionActivityTest {
   @Test
   void givenIngestionFlowNotFoundWhenProcessFileThenNoSuccess() {
     //given
-    when(ingestionFlowFileDao.findById(NOT_FOUND_INGESTION_FLOW_ID)).thenReturn(Optional.empty());
+    when(ingestionFlowFileDaoMock.findById(NOT_FOUND_INGESTION_FLOW_ID)).thenReturn(Optional.empty());
 
     //when
-    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(NOT_FOUND_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(NOT_FOUND_INGESTION_FLOW_ID);
 
     //verify
     Assertions.assertFalse(result.isSuccess());
     Assertions.assertNotNull(result.getIufs());
     Assertions.assertEquals(0, result.getIufs().size());
-    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
-    Mockito.verifyNoInteractions(treasuryDao, ingestionFlowFileRetrieverService, treasuryUnmarshallerService, treasuryMapperService);
+    Mockito.verify(ingestionFlowFileDaoMock, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
+    Mockito.verifyNoInteractions(treasuryDaoMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
 
   @Test
   void givenIngestionFlowTypeInvalidWhenProcessFileThenNoSuccess() {
     //given
-    when(ingestionFlowFileDao.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(INVALID_INGESTION_FLOW);
+    when(ingestionFlowFileDaoMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(INVALID_INGESTION_FLOW);
 
     //when
-    TreasuryIufResult result = treasuryOpiIngestionActivity.processFile(INVALID_INGESTION_FLOW_ID);
+    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(INVALID_INGESTION_FLOW_ID);
 
     //verify
     Assertions.assertFalse(result.isSuccess());
     Assertions.assertNotNull(result.getIufs());
     Assertions.assertEquals(0, result.getIufs().size());
-    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
-    Mockito.verifyNoInteractions(treasuryDao, ingestionFlowFileRetrieverService, treasuryUnmarshallerService, treasuryMapperService);
+    Mockito.verify(ingestionFlowFileDaoMock, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
+    Mockito.verifyNoInteractions(treasuryDaoMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
 }
