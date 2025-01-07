@@ -7,13 +7,15 @@ import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Lazy
 @Component
 public class IufNoTesClassifier implements LabelClassifier {
+
 	@Override
-	public Optional<ClassificationsEnum> define(Optional<TransferDTO> transferDTO, Optional<PaymentsReportingDTO> paymentsReportingDTO, Optional<TreasuryDTO> treasuryDTO) {
-		return Optional.empty();
+	public ClassificationsEnum define(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO) {
+		if(paymentsReportingDTO != null && treasuryDTO == null) {
+			return ClassificationsEnum.IUF_NO_TES;
+		}
+		return null;
 	}
 }

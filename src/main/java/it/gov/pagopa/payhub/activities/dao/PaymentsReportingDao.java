@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.dao;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Data Access Object (DAO) interface for handling operations related to
@@ -35,7 +34,7 @@ public interface PaymentsReportingDao {
 	 * @param iuv    payment identifier
 	 * @param iur    reporting identifier
 	 * @param transferIndex transfer index
-	 * @return Optional of PaymentsReportingDTO object returned
+	 * @return PaymentsReportingDTO object returned
 	 */
-	Optional<PaymentsReportingDTO> findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
+	PaymentsReportingDTO findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
 }

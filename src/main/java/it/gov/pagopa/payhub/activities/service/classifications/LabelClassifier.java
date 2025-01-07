@@ -5,13 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 
-import java.util.Optional;
-
 public interface LabelClassifier {
 
-	Optional<ClassificationsEnum> define(
-		Optional<TransferDTO> transferDTO,
-		Optional<PaymentsReportingDTO> paymentsReportingDTO,
-		Optional<TreasuryDTO> treasuryDTO
-	);
+	ClassificationsEnum define(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO);
 }

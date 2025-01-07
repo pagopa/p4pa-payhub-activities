@@ -2,8 +2,6 @@ package it.gov.pagopa.payhub.activities.dao;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 
-import java.util.Optional;
-
 /**
  * Data Access Object (DAO) interface for handling operations related to
  * `Transfer` objects.
@@ -19,7 +17,7 @@ public interface TransferDao {
 	 * @param iuv    payment identifier
 	 * @param iur    reporting identifier
 	 * @param transferIndex transfer index
-	 * @return Optional of TransferDTO object returned
+	 * @return TransferDTO object returned
 	 */
-	Optional<TransferDTO> findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
+	TransferDTO findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
 }

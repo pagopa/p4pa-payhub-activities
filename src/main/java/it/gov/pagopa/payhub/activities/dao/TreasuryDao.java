@@ -2,8 +2,6 @@ package it.gov.pagopa.payhub.activities.dao;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 
-import java.util.Optional;
-
 public interface TreasuryDao {
 
   /**
@@ -11,8 +9,8 @@ public interface TreasuryDao {
    *
    * @param organizationId  organization id
    * @param iuf payment reporting identifier
-   * @return Optional of TreasuryDTO object containing treasury data
+   * @return TreasuryDTO object containing treasury data
    */
-  Optional<TreasuryDTO> getByOrganizationIdAndIuf(Long organizationId, String iuf);
+  TreasuryDTO getByOrganizationIdAndIuf(Long organizationId, String iuf);
 
 }

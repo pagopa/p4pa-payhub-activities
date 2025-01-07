@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Lazy
 @Slf4j
@@ -45,31 +44,32 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		if (!classificationDao.deleteTransferClassification(orgId, iuv, iur, transferIndex)) {
 			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
 		}
-		Optional<TransferDTO> transfer = transferDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
+		TransferDTO transferDTO = transferDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
-		Optional<PaymentsReportingDTO> paymentsReporting =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
-		Optional<TreasuryDTO> treasury = retrieveTreasury(orgId, paymentsReporting);
-		//defineLabels(transfer, paymentsReporting, treasury);
+		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
+		TreasuryDTO treasuryDTO = retrieveTreasury(orgId, paymentsReportingDTO);
+		List<ClassificationsEnum> classifications = defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
+		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
+			orgId, iuv, iur, transferIndex, String.join(", ", classifications.stream().map(String::valueOf).toList()));
 	}
 
-	private Optional<TreasuryDTO> retrieveTreasury(Long orgId, Optional<PaymentsReportingDTO> paymentsReporting) {
-		if (paymentsReporting.isPresent()) {
-			String iuf = paymentsReporting.get().getIuf();
+	private TreasuryDTO retrieveTreasury(Long orgId, PaymentsReportingDTO paymentsReportingDTO) {
+		if (paymentsReportingDTO != null) {
+			String iuf = paymentsReportingDTO.getIuf();
 			log.info("Retrieve treasury for organization id: {} and iuf {}", orgId, iuf);
 			return treasuryDao.getByOrganizationIdAndIuf(orgId, iuf);
 		}
-		return Optional.empty();
+		return null;
 	}
 
 	private List<ClassificationsEnum> defineLabels(
-		Optional<TransferDTO> transfer,
-	    Optional<PaymentsReportingDTO> paymentsReporting,
-	    Optional<TreasuryDTO> treasury) {
+		TransferDTO transferDTO,
+	    PaymentsReportingDTO paymentsReportingDTO,
+	    TreasuryDTO treasuryDTO) {
 
 		return classifiers.stream()
-			.map(classifier -> classifier.define(transfer, paymentsReporting, treasury))
-			.flatMap(Optional::stream)
+			.map(classifier -> classifier.define(transferDTO, paymentsReportingDTO, treasuryDTO))
 			.toList();
 	}
 }
