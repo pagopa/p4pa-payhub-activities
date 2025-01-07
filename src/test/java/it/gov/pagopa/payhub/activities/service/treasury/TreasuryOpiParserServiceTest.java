@@ -41,7 +41,7 @@ class TreasuryOpiParserServiceTest {
         versionHandlerServices.add(handler);
 
         TreasuryDTO treasuryDTO = TreasuryDTO.builder()
-                .flowIdentifierCode("Flow123")
+                .iuf("Flow123")
                 .build();
         Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
                 TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
@@ -97,7 +97,7 @@ class TreasuryOpiParserServiceTest {
         when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
 
         TreasuryDTO treasuryDTO = TreasuryDTO.builder()
-                .flowIdentifierCode("Flow456")
+                .iuf("Flow456")
                 .build();
         Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
                 TreasuryOperationEnum.INSERT, List.of(treasuryDTO)

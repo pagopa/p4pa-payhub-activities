@@ -42,7 +42,7 @@ public class TreasuryOpiParserService {
         List<TreasuryDTO> stringListMap = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
         stringListMap.forEach(treasuryDTO -> {
             treasuryDao.insert(treasuryDTO);
-            iufList.add(treasuryDTO.getFlowIdentifierCode());
+            iufList.add(treasuryDTO.getIuf());
         });
 
         return new TreasuryIufResult(iufList.stream().toList(), true);
