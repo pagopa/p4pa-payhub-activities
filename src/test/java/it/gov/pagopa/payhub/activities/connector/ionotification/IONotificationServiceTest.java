@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification;
 
+import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.client.IoNotificationClient;
 import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.NotificationQueueMapper;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
@@ -24,19 +25,25 @@ class IONotificationServiceTest {
     private IoNotificationClient ioNotificationClientMock;
     @Mock
     private NotificationQueueMapper notificationQueueMapperMock;
+    @Mock
+    private AuthnService authnServiceMock;
 
     private IONotificationServiceImpl sendIONotificationActivity;
 
     @BeforeEach
     void setUp() {
-        sendIONotificationActivity = new IONotificationServiceImpl(ioNotificationClientMock, notificationQueueMapperMock);
+        sendIONotificationActivity = new IONotificationServiceImpl(
+                ioNotificationClientMock,
+                notificationQueueMapperMock,
+                authnServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
                 ioNotificationClientMock,
-                notificationQueueMapperMock);
+                notificationQueueMapperMock,
+                authnServiceMock);
     }
 
     @Test
@@ -44,14 +51,17 @@ class IONotificationServiceTest {
         // Given
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
         NotificationQueueDTO notificationQueueDTO = buildNotificationQueueDTO();
+        String accessToken = "ACCESSTOKEN";
 
         Mockito.when(notificationQueueMapperMock.mapDebtPositionDTO2NotificationQueueDTO(debtPosition))
                 .thenReturn(List.of(notificationQueueDTO));
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
 
         // When
         sendIONotificationActivity.sendMessage(debtPosition);
 
         // Then
-        Mockito.verify(ioNotificationClientMock).sendMessage(notificationQueueDTO);
+        Mockito.verify(ioNotificationClientMock).sendMessage(notificationQueueDTO, accessToken);
     }
 }
