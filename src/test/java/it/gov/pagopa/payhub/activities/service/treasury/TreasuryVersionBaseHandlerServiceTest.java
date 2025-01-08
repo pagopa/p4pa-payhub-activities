@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,13 +18,15 @@ class TreasuryVersionBaseHandlerServiceTest {
     private TreasuryMapperService<Object> mapperService;
     private TreasuryValidatorService<Object> validatorService;
     private TreasuryVersionBaseHandlerService<Object> handlerService;
+    private IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+
 
     @BeforeEach
     void setUp() {
         mapperService = mock(TreasuryMapperService.class);
         validatorService = mock(TreasuryValidatorService.class);
-
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService) {
+        ingestionFlowFileArchiverService = mock(IngestionFlowFileArchiverService.class);
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService, ingestionFlowFileArchiverService) {
             @Override
             Object unmarshall(File file) {
                 return new Object();
@@ -47,7 +50,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         when(mapperService.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedResult);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);
@@ -66,7 +69,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         when(validatorService.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);
@@ -77,7 +80,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     @Test
     void testHandle_whenUnmarshallFails_thenReturnsEmptyMap() {
         // Given
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService) {
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService, ingestionFlowFileArchiverService) {
             @Override
             Object unmarshall(File file) {
                 throw new RuntimeException("Unmarshall failed");
@@ -88,7 +91,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);
@@ -110,7 +113,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         when(mapperService.apply(unmarshalledObject, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);

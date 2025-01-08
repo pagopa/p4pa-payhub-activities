@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,13 +22,15 @@ class TreasuryVersionOpi161HandlerServiceTest {
     private TreasuryValidatorOpi161Service validatorService;
     private TreasuryUnmarshallerService treasuryUnmarshallerService;
     private TreasuryVersionOpi161HandlerService handlerService;
+    private IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
 
     @BeforeEach
     void setUp() {
         mapperService = mock(TreasuryMapperOpi161Service.class);
         validatorService = mock(TreasuryValidatorOpi161Service.class);
         treasuryUnmarshallerService = mock(TreasuryUnmarshallerService.class);
-        handlerService = new TreasuryVersionOpi161HandlerService(mapperService, validatorService, treasuryUnmarshallerService);
+        ingestionFlowFileArchiverService = mock(IngestionFlowFileArchiverService.class);
+        handlerService = new TreasuryVersionOpi161HandlerService(mapperService, validatorService, treasuryUnmarshallerService, ingestionFlowFileArchiverService);
     }
 
     @Test
@@ -63,7 +66,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(mapperService.apply(flusso, ingestionFlowFileDTO)).thenReturn(expectedResult);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);
@@ -83,7 +86,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(validatorService.validatePageSize(flusso, 1)).thenReturn(true);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);
@@ -101,7 +104,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenThrow(new RuntimeException("Unmarshall failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);
@@ -124,7 +127,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(mapperService.apply(flusso, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
 
         // Then
         assertNotNull(result);

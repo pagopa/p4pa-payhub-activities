@@ -10,6 +10,6 @@ import java.util.Map;
 
 public interface TreasuryVersionHandlerService {
 
-    Map<TreasuryOperationEnum, List<TreasuryDTO>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size);
+    Map<TreasuryOperationEnum, List<TreasuryDTO>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size, String errorDirectory);
 
 }
