@@ -102,7 +102,8 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             );
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-            deletion(new File(ingestionFlowFileDTO.getFilePathName()));
+            if(ingestionFlowFileDTO != null)
+                deletion(new File(ingestionFlowFileDTO.getFilePathName()));
             return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
         }
     }
