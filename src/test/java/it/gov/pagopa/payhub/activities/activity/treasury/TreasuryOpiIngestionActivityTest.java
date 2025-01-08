@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
@@ -151,5 +152,37 @@ class TreasuryOpiIngestionActivityTest {
     // Then
     assertFalse(result.isSuccess());
   }
+
+  @Test
+  void givenIOExceptionWhenProcessFileThenFails() throws IOException {
+    // Given
+    Long ingestionFlowFileId = 1L;
+    IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
+            .ingestionFlowFileId(ingestionFlowFileId)
+            .flowFileType(IngestionFlowFileType.OPI)
+            .filePathName(workingDir.toString())
+            .fileName("testFile.zip")
+            .build();
+    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
+    List<Path> mockedListPath = List.of(filePath);
+
+    TreasuryIufResult expected =
+            new TreasuryIufResult(Collections.emptyList(), false, "error occured");
+
+    when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
+    doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
+            .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+
+    doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
+            .archive(mockedListPath, Path.of(ingestionFlowFileDTO.getFilePathName(), "/archiveDirectory/"));
+
+    // When
+    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
+
+    // Then
+    assertEquals(expected, result);
+  }
+
+
 
 }

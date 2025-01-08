@@ -98,12 +98,11 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                             .distinct()
                             .toList(),
                     treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess),
-                    null
+                    treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess)?null:"error occured"
             );
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-            if(ingestionFlowFileDTO != null)
-                deletion(new File(ingestionFlowFileDTO.getFilePathName()));
+            deletion(new File(ingestionFlowFileDTO.getFilePathName()));
             return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
         }
     }
