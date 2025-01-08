@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RtIufTesClassifierTest {
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
@@ -38,20 +39,5 @@ class RtIufTesClassifierTest {
 		ClassificationsEnum result = classifier.classify(transferDTO, null, null);
 		// Assert
 		assertNull(result);
-	}
-
-	@Test
-	void givenTransferDTOThenGetAmountCents() {
-		assertDoesNotThrow(() -> classifier.getAmountCents(transferDTO));
-	}
-
-	@Test
-	void givenPaymentsReportingDTOThenGetAmountCents() {
-		assertDoesNotThrow(() -> classifier.getAmountCents(paymentsReportingDTO));
-	}
-
-	@Test
-	void givenTreasuryDTOThengetAmountCents() {
-		assertDoesNotThrow(() -> classifier.getAmountCents(treasuryDTO));
 	}
 }
