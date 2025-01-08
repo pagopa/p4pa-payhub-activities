@@ -31,7 +31,6 @@ public class TreasuryOpiParserService {
 
     public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
-        Set<String> iufList = new HashSet<>();
 
         Map<TreasuryOperationEnum, List<TreasuryDTO>> op2TreasuriesMap = versionHandlerServices.stream()
                 .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles))
@@ -40,7 +39,7 @@ public class TreasuryOpiParserService {
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
         List<TreasuryDTO> newTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
-        List<String> iufList = stringListMap.stream()
+        List<String> iufList = newTreasuries.stream()
             .map(treasuryDTO -> {
                   treasuryDao.insert(treasuryDTO);
                   return treasuryDTO.getIuf();
