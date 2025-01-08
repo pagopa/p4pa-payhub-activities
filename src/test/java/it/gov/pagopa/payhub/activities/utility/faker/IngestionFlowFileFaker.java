@@ -2,13 +2,13 @@ package it.gov.pagopa.payhub.activities.utility.faker;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 
+import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Date;
 
 public class IngestionFlowFileFaker {
 
-    public static final Date now = new Date();
 
     public static IngestionFlowFileDTO buildIngestionFlowFileDTO(){
         return IngestionFlowFileDTO.builder()
@@ -16,23 +16,23 @@ public class IngestionFlowFileFaker {
                 .version(1)
                 .org(OrganizationDTO.builder().build())
                 .status("status")
-                .iuf("iuf")
                 .numTotalRows(3L)
                 .numCorrectlyImportedRows(2L)
-                .creationDate(now)
-                .lastUpdateDate(now)
+                .creationDate(Instant.now())
+                .lastUpdateDate(Instant.now())
                 .flagActive(true)
-                .operatorName("operatorName")
+                .operatorExternalUserId("operatorExternalId")
                 .flagSpontaneous(Boolean.TRUE)
-                .filePath("filePathName")
+                .filePathName("filePathName")
                 .fileName("fileName")
                 .pdfGenerated(2L)
                 .codRequestToken("codRequestToken")
                 .codError("codError")
                 .pspIdentifier("PspId")
-                .flowDateTime(now.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .flowDateTime(Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .fileSourceCode("FileSourceCode")
                 .discardFileName("DiscardFileName")
+                .flowFileType(IngestionFlowFileType.PAYMENTS_REPORTING)
                 .build();
     }
 

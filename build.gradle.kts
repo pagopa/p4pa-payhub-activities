@@ -1,16 +1,16 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.5"
-	id("io.spring.dependency-management") version "1.1.6"
-	id("org.sonarqube") version "5.0.0.4638"
+	id("org.springframework.boot") version "3.4.1"
+	id("io.spring.dependency-management") version "1.1.7"
+	id("org.sonarqube") version "6.0.1.5171"
 	`java-library`
 	`maven-publish`
 	jacoco
-	id("com.intershop.gradle.jaxb") version "7.0.0"
-	id("org.openapi.generator") version "7.9.0"
-	id("org.ajoberstar.grgit") version "5.3.0"
+	id("com.intershop.gradle.jaxb") version "7.0.1"
+	id("org.openapi.generator") version "7.10.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -18,7 +18,7 @@ version = rootProject.file("version").readText().trim()
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -49,17 +49,18 @@ tasks.jacocoTestReport {
 apply(plugin = "maven-publish")
 
 val janinoVersion = "3.1.12"
-val wiremockVersion = "3.5.4"
-val snakeYamlVersion = "2.0"
-val hibernateValidatorVersion = "8.0.1.Final"
+val hibernateValidatorVersion = "8.0.2.Final"
 val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
-val commonsTextVersion = "1.12.0"
-val jacksonModuleVersion = "2.18.1"
+val commonsTextVersion = "1.13.0"
+val jacksonModuleVersion = "2.18.2"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
+val jsoupVersion = "1.18.3"
 val openApiToolsVersion = "0.2.6"
+val temporalVersion = "1.27.0"
+val protobufJavaVersion = "3.25.5"
 val openCsvVersion = "5.9"
 
 
@@ -76,9 +77,19 @@ dependencies {
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
 
 	// Security fixes
-	implementation("org.yaml:snakeyaml:$snakeYamlVersion")
+	implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
+
+ 	//temporal
+	implementation("io.temporal:temporal-sdk:$temporalVersion"){
+		exclude(group = "com.google.protobuf", module = "protobuf-java")
+	}
+
+    //mail
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.springframework.retry:spring-retry")
+	implementation("org.jsoup:jsoup:$jsoupVersion")
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -86,7 +97,6 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation ("org.projectlombok:lombok")
-	testImplementation ("org.wiremock:wiremock-standalone:$wiremockVersion")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
@@ -107,13 +117,8 @@ dependencies {
 
     jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
     jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
-
-
-	jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
-	jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
-
-
 }
+
 
 
 val projectInfo = mapOf(
@@ -163,7 +168,7 @@ configurations {
 
 configure<SourceSetContainer> {
 	named("main") {
-		java.srcDir("$projectDir/build/generated/ionotification/src/main/java")
+		java.srcDir("$projectDir/build/generated/src/main/java")
 	}
 }
 
@@ -171,19 +176,23 @@ tasks.register<Jar>("sourcesJar") {
 	group = "build"
 	description = "Assembles a JAR archive containing the main source code."
 
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
 	from(sourceSets["main"].allSource)
-	inputs.dir("$projectDir/build/generated/ionotification/src/main/java")
-	dependsOn("openApiGenerateIONOTIFICATION")
+	inputs.dir("$projectDir/build/generated/src/main/java")
 	archiveClassifier.set("sources")
+
+	dependsOn("dependenciesBuild")
 }
 
 tasks.register<Jar>("javadocJar") {
 	group = "build"
 	description = "Assembles a JAR archive containing the Javadoc."
 
-	dependsOn(tasks.javadoc)
 	from(tasks.javadoc.get().destinationDir)
 	archiveClassifier.set("javadoc")
+
+	dependsOn(tasks.javadoc)
 }
 
 publishing {
@@ -218,32 +227,66 @@ tasks.withType<BootJar> {
 
 
 tasks.compileJava {
-	dependsOn("openApiGenerateIONOTIFICATION")
+	dependsOn("dependenciesBuild")
 }
 
-var targetEnv = when (grgit.branch.current().name) {
-	"uat" -> "uat"
-	"main" -> "main"
-	else -> "develop"
+tasks.register("dependenciesBuild") {
+	group = "AutomaticallyGeneratedCode"
+	description = "grouping all together automatically generate code tasks"
+
+	dependsOn(
+		"jaxb",
+		"openApiGenerateP4PAAUTH",
+		"openApiGenerateIONOTIFICATION")
 }
 
-tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateIONOTIFICATION") {
-	group = "openapi"
-	description = "description"
+tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
 
 	generatorName.set("java")
-	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/$targetEnv/openapi/p4pa-io-notification.openapi.yaml")
-	outputDir.set("$projectDir/build/generated/ionotification")
-	apiPackage.set("it.gov.pagopa.pu.p4paionotification.controller.generated")
-	modelPackage.set("it.gov.pagopa.pu.p4paionotification.model.generated")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
+	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.p4paauth.generated")
+	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paauth.dto.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
-		"dateLibrary" to "java17",
+		"dateLibrary" to "java8",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
-		"generateSupportingFiles" to "true"
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "false",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+	)
+	)
+	library.set("resttemplate")
+}
+
+tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")
+	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.p4paionotification.generated")
+	apiPackage.set("it.gov.pagopa.pu.p4paionotification.client.generated")
+	modelPackage.set("it.gov.pagopa.pu.p4paionotification.dto.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "false",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
 	))
 	library.set("resttemplate")
 }

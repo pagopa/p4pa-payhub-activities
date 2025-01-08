@@ -1,8 +1,7 @@
-package it.gov.pagopa.payhub.activities.activity.ionotification;
+package it.gov.pagopa.payhub.activities.connector.ionotification.client;
 
-import it.gov.pagopa.pu.p4paionotification.controller.ApiClient;
-import it.gov.pagopa.pu.p4paionotification.controller.generated.IoNotificationApi;
-import it.gov.pagopa.pu.p4paionotification.model.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.p4paionotification.generated.ApiClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,18 +17,17 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-public class SendIONotificationActivityTest {
+class IoNotificationClientTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
     @Mock
-    private IoNotificationApi ioNotificationApi;
-    @Mock
     private RestTemplate restTemplateMock;
 
-    private SendIONotificationActivityImpl sendIONotificationActivity;
+    private IoNotificationClient ioNotificationClient;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +36,7 @@ public class SendIONotificationActivityTest {
         ApiClient apiClient = new ApiClient(restTemplateMock);
         String baseUrl = "http://example.com";
         apiClient.setBasePath(baseUrl);
-        sendIONotificationActivity = new SendIONotificationActivityImpl(restTemplateBuilderMock, baseUrl);
+        ioNotificationClient = new IoNotificationClientImpl(baseUrl, restTemplateBuilderMock);
     }
 
     @Test
@@ -47,10 +45,10 @@ public class SendIONotificationActivityTest {
 
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.OK);
 
-        Mockito.when(restTemplateMock.exchange(any(RequestEntity.class), any(ParameterizedTypeReference.class)))
+        Mockito.when(restTemplateMock.exchange(any(RequestEntity.class), eq(new ParameterizedTypeReference<Void>(){})))
                 .thenReturn(responseEntity);
 
-        sendIONotificationActivity.sendMessage(notificationQueueDTO);
+        ioNotificationClient.sendMessage(notificationQueueDTO);
 
         Mockito.verify(restTemplateBuilderMock, times(1)).build();
         Mockito.verify(restTemplateMock, times(1)).getUriTemplateHandler();

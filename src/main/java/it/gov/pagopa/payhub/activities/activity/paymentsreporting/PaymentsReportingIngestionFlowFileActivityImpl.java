@@ -63,6 +63,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 	@Override
 	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
+		log.info("Processing paymentsReporting IngestionFlowFile {}", ingestionFlowFileId);
 		File retrievedFile = null;
 		try {
 			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
@@ -110,8 +111,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 */
 	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
 		List<Path> paths = ingestionFlowFileRetrieverService
-			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePath()), ingestionFlowFileDTO.getFileName());
-		return paths.get(0).toFile();
+			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+		return paths.getFirst().toFile();
 	}
 
 	/**
@@ -141,8 +142,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * @throws IOException if an error occurs during file movement or directory creation.
 	 */
 	private void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-		Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePath(), ingestionFlowFileDTO.getFileName());
-		Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePath(), archiveDirectory);
+		Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+		Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePathName(), archiveDirectory);
 		ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
 	}
 
@@ -150,7 +151,6 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	 * Delete the specified file if not null.
 	 *
 	 * @param file2Delete the file to delete.
-	 * @throws IOException if an error occurs during deletion.
 	 */
 	private void deletion(File file2Delete) {
 		if(file2Delete != null) {

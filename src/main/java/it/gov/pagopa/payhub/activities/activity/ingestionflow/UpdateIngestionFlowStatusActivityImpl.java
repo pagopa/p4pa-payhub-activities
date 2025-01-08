@@ -22,6 +22,7 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
 
     @Override
     public boolean updateStatus(Long id, String newStatus) {
+        log.info("Updating IngestionFlowFile {} to new status {}", id, newStatus);
         if(id==null){
             throw new IllegalArgumentException("A null IngestionFlowFile was provided when updating its status to " + newStatus);
         }

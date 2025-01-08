@@ -6,8 +6,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.InvalidAlgorithmParameterException;
@@ -33,8 +31,6 @@ public class AESUtils {
     private static final String ALGORITHM_TYPE = "AES";
     private static final int KEY_LENGTH = 256;
     private static final int ITERATION_COUNT = 65536;
-    private static final Charset UTF_8 = StandardCharsets.UTF_8;
-
     public static final String CIPHER_EXTENSION = ".cipher";
 
     /**
@@ -172,51 +168,4 @@ public class AESUtils {
             throw new IllegalStateException("Cannot initialize cipher data", e);
         }
     }
-
-
-    public static byte[] encrypt(String password, String plainMessage) {
-        byte[] salt = getRandomNonce(SALT_LENGTH_BYTE);
-        SecretKey secretKey = getSecretKey(password, salt);
-
-        // GCM recommends 12 bytes iv
-        byte[] iv = getRandomNonce(IV_LENGTH_BYTE);
-        Cipher cipher = initCipher(Cipher.ENCRYPT_MODE, secretKey, iv);
-
-        byte[] encryptedMessageByte = executeCipherOp(cipher, plainMessage.getBytes(UTF_8));
-
-        // prefix IV and Salt to cipher text
-        return ByteBuffer.allocate(iv.length + salt.length + encryptedMessageByte.length)
-                .put(iv)
-                .put(salt)
-                .put(encryptedMessageByte)
-                .array();
-    }
-
-    public static String decrypt(String password, byte[] cipherMessage) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(cipherMessage);
-
-        byte[] iv = new byte[IV_LENGTH_BYTE];
-        byteBuffer.get(iv);
-
-        byte[] salt = new byte[SALT_LENGTH_BYTE];
-        byteBuffer.get(salt);
-
-        byte[] encryptedByte = new byte[byteBuffer.remaining()];
-        byteBuffer.get(encryptedByte);
-
-        SecretKey secretKey = getSecretKey(password, salt);
-        Cipher cipher = initCipher(Cipher.DECRYPT_MODE, secretKey, iv);
-
-        byte[] decryptedMessageByte = executeCipherOp(cipher, encryptedByte);
-        return new String(decryptedMessageByte, UTF_8);
-    }
-
-    private static byte[] executeCipherOp(Cipher cipher, byte[] encryptedByte) {
-        try {
-            return cipher.doFinal(encryptedByte);
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            throw new IllegalStateException("Cannot execute cipher op", e);
-        }
-    }
-
 }
