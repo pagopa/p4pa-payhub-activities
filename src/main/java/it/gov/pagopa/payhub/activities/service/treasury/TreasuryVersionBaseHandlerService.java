@@ -49,14 +49,14 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         }
     }
 
-    private List<TreasuryErrorDTO> validate(IngestionFlowFileDTO ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
+    List<TreasuryErrorDTO> validate(IngestionFlowFileDTO ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
         if (validatorService.validatePageSize(fGCUnmarshalled, size)) {
             throw new TreasuryOpiInvalidFileException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFileDTO.getFileName());
         }
         return validatorService.validateData(fGCUnmarshalled, ingestionFlowFileDTO.getFileName());
     }
 
-   private void writeErrors(List<TreasuryErrorDTO> errorDTOList, String fileName, String errorDirectory) {
+   void writeErrors(List<TreasuryErrorDTO> errorDTOList, String fileName, String errorDirectory) {
 
        List<String[]> data = errorDTOList.stream()
                .map(errorDTO -> new String[]{
@@ -95,7 +95,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         *                  to the parent directory of the error file.
         * @throws IOException if an I/O error occurs while archiving the file, such as issues with reading, writing, or accessing file paths.
         */
-       private void archiveErrorFile(File errorFile, String targetDir) throws IOException {
+       void archiveErrorFile(File errorFile, String targetDir) throws IOException {
            Path originalFilePath = Paths.get(errorFile.getParent(), errorFile.getName());
            Path targetDirectory = Paths.get(errorFile.getParent(), targetDir);
            ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
