@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.auth.config;
 
-import it.gov.pagopa.pu.p4paauth.controller.generated.AuthnApi;
-import it.gov.pagopa.pu.p4paauth.controller.generated.AuthzApi;
-import it.gov.pagopa.pu.p4paauth.generated.ApiClient;
-import it.gov.pagopa.pu.p4paauth.generated.BaseApi;
+import it.gov.pagopa.pu.auth.controller.generated.AuthnApi;
+import it.gov.pagopa.pu.auth.controller.generated.AuthzApi;
+import it.gov.pagopa.pu.auth.generated.ApiClient;
+import it.gov.pagopa.pu.auth.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;

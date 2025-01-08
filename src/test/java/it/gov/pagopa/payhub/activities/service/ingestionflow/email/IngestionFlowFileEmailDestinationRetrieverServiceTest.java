@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.service.OrganizationService;
 import it.gov.pagopa.payhub.activities.utility.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.payhub.activities.utility.faker.OrganizationFaker;
 import it.gov.pagopa.payhub.activities.utility.faker.UserInfoFaker;
-import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
+import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

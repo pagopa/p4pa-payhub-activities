@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.auth;
 
 import it.gov.pagopa.payhub.activities.connector.auth.service.AuthAccessTokenRetriever;
-import it.gov.pagopa.pu.p4paauth.dto.generated.AccessToken;
+import it.gov.pagopa.pu.auth.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

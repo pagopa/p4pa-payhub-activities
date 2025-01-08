@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.utility.faker;
 
-import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
-import it.gov.pagopa.pu.p4paauth.dto.generated.UserOrganizationRoles;
+import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
+import it.gov.pagopa.pu.auth.dto.generated.UserOrganizationRoles;
 
 import java.util.List;
 

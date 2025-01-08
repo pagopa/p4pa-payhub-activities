@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.auth.client;
 
 import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApisHolder;
-import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
+import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 

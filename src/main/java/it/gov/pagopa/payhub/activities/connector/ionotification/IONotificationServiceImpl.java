@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.ionotification;
 import it.gov.pagopa.payhub.activities.connector.ionotification.client.IoNotificationClient;
 import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.NotificationQueueMapper;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
-import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationQueueDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

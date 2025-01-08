@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.client;
 
-import it.gov.pagopa.pu.p4paionotification.generated.ApiClient;
-import it.gov.pagopa.pu.p4paionotification.client.generated.IoNotificationApi;
-import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.ionotification.generated.ApiClient;
+import it.gov.pagopa.pu.ionotification.client.generated.IoNotificationApi;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationQueueDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;

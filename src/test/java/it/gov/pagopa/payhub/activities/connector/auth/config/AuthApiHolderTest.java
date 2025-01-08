@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.auth.config;
 
-import it.gov.pagopa.pu.p4paauth.dto.generated.AccessToken;
-import it.gov.pagopa.pu.p4paauth.dto.generated.UserInfo;
-import it.gov.pagopa.pu.p4paauth.generated.ApiClient;
+import it.gov.pagopa.pu.auth.dto.generated.AccessToken;
+import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
+import it.gov.pagopa.pu.auth.generated.ApiClient;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
