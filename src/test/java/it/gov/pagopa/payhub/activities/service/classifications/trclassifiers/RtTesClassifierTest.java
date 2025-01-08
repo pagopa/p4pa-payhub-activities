@@ -38,4 +38,19 @@ class RtTesClassifierTest {
 		// Assert
 		assertNull(result);
 	}
+
+	@Test
+	void givenTransferDTOThenGetAmountCents() {
+		assertDoesNotThrow(() -> classifier.getAmountCents(transferDTO));
+	}
+
+	@Test
+	void givenPaymentsReportingDTOThenGetAmountCents() {
+		assertDoesNotThrow(() -> classifier.getAmountCents(paymentsReportingDTO));
+	}
+
+	@Test
+	void givenTreasuryDTOThengetAmountCents() {
+		assertDoesNotThrow(() -> classifier.getAmountCents(treasuryDTO));
+	}
 }

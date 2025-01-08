@@ -24,5 +24,29 @@ public interface TransferClassifier {
 	 */
 	ClassificationsEnum classify(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO);
 
+	/**
+	 * Extracts the amount in cents from the transfer data.
+	 *
+	 * @param transferDTO the transfer data.
+	 * @return the amount in cents, or {@code null} if the amount is not available.
+	 */
+	Long getAmountCents(TransferDTO transferDTO);
+
+	/**
+	 * Extracts the amount in cents from the payment reporting data.
+	 *
+	 * @param paymentsReportingDTO the payment reporting data.
+	 * @return the amount in cents, or {@code null} if the amount is not available.
+	 */
+	Long getAmountCents(PaymentsReportingDTO paymentsReportingDTO);
+
+	/**
+	 * Extracts the amount in cents from the treasury data.
+	 *
+	 * @param treasuryDTO the treasury data.
+	 * @return the amount in cents, or {@code null} if the amount is not available.
+	 */
+	Long getAmountCents(TreasuryDTO treasuryDTO);
 }
+
 
