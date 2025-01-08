@@ -13,16 +13,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IufTesDivImpClassifierTest {
-	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
-	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
+	private PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
+	private TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
 	TransferClassifier classifier = new IufTesDivImpClassifier();
 
 	@Test
 	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Arrange
-		paymentsReportingDTO.setTotalAmountCents(100L);
-		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
+		paymentsReportingDTO.setAmountPaidCents(100L);
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert
@@ -40,7 +40,7 @@ class IufTesDivImpClassifierTest {
 	@Test
 	void givenUnmatchedAmountWhenDefineThenReturnNull() {
 		// Arrange
-		paymentsReportingDTO.setTotalAmountCents(100L);
+		paymentsReportingDTO.setAmountPaidCents(100L);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
