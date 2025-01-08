@@ -17,7 +17,7 @@ public class RtIufTesClassifier implements LabelClassifier {
 	public ClassificationsEnum define(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO) {
 		if(transferDTO != null && paymentsReportingDTO != null && treasuryDTO != null &&
 			Objects.equals(transferDTO.getAmount(), paymentsReportingDTO.getAmountPaidCents()) &&
-			Objects.equals(paymentsReportingDTO.getTotalAmountCents(), treasuryDTO.getBillIpNumber().movePointRight(2).longValueExact())) {
+			Objects.equals(paymentsReportingDTO.getAmountPaidCents(), treasuryDTO.getBillIpNumber().movePointRight(2).longValueExact())) {
 			return ClassificationsEnum.RT_IUF_TES;
 		}
 		return null;
