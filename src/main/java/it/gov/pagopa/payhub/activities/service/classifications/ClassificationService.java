@@ -29,7 +29,7 @@ public class ClassificationService {
 	/**
 	 * Determines a list of labels ({@link ClassificationsEnum}) based on the provided data.
 	 *
-	 * <p>For each classifier in the list, the {@code define} method is executed with the given parameters.
+	 * For each classifier in the list, the {@code define} method is executed with the given parameters.
 	 * Non-{@code null} labels are collected into a list. If no classifier produces a valid label,
 	 * a {@link ClassificationException} is thrown.
 	 *

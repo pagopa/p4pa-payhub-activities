@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 /**
  * Interface for defining classification logic for transfers based on provided data.
  *
- * <p>Implementations of this interface contain specific rules to evaluate
+ * Implementations of this interface contain specific rules to evaluate
  * and determine a classification label ({@link ClassificationsEnum}). Each implementation
  * should handle a particular condition or set of conditions to decide the appropriate label.
  */
