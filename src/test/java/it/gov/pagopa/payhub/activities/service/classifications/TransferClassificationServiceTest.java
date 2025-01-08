@@ -4,7 +4,8 @@ import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
-import it.gov.pagopa.payhub.activities.exception.ClassificationException;
+import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufClassifier;
+import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufTesClassifier;
 import it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.utility.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ClassificationServiceTest {
+class TransferClassificationServiceTest {
 
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
@@ -31,15 +32,15 @@ class ClassificationServiceTest {
 	@Mock
 	RtIufTesClassifier rtIufTesClassifierMock;
 
-	ClassificationService service;
+	TransferClassificationService service;
 
 	@Test
-	void testDefineLabels_ReturnsLabels() {
+	void whenDefineLabelsThenReturnsLabels() {
 		// Arrange
-		service = new ClassificationService(List.of(rtIufClassifierMock, rtIufTesClassifierMock));
+		service = new TransferClassificationService(List.of(rtIufClassifierMock, rtIufTesClassifierMock));
 
-		when(rtIufTesClassifierMock.define(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(ClassificationsEnum.RT_IUF_TES);
-		when(rtIufClassifierMock.define(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(ClassificationsEnum.RT_IUF);
+		when(rtIufTesClassifierMock.classify(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(ClassificationsEnum.RT_IUF_TES);
+		when(rtIufClassifierMock.classify(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(ClassificationsEnum.RT_IUF);
 
 		// Act
 		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
@@ -51,11 +52,14 @@ class ClassificationServiceTest {
 	}
 
 	@Test
-	void whenDefineLabelsThenThrowsClassificationException() {
+	void whenDefineLabelsThenReturnsDefaultLabel() {
 		// Arrange
-		service = new ClassificationService(List.of());
-		// Act & Assert
-		assertThrows(ClassificationException.class, () ->
-			service.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO), "Cannot define classification");
+		service = new TransferClassificationService(List.of());
+		// Act
+		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
+
+		// Assert
+		assertEquals(1, labels.size());
+		assertTrue(labels.contains(ClassificationsEnum.UNKNOWN));
 	}
 }

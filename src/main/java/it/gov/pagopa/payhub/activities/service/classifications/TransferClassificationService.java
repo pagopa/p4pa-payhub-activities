@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.exception.ClassificationException;
+import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.TransferClassifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -14,15 +15,15 @@ import java.util.Objects;
 
 /**
  * Service for classifying a transfer based on receipt, payment reporting, and treasury data.
- * It uses a list of {@link LabelClassifier} to determine the corresponding labels.
+ * It uses a list of {@link TransferClassifier} to determine the corresponding labels.
  */
 @Lazy
 @Slf4j
 @Service
-public class ClassificationService {
-	private final List<LabelClassifier> classifiers;
+public class TransferClassificationService {
+	private final List<TransferClassifier> classifiers;
 
-	public ClassificationService(List<LabelClassifier> classifiers) {
+	public TransferClassificationService(List<TransferClassifier> classifiers) {
 		this.classifiers = classifiers;
 	}
 
@@ -41,12 +42,12 @@ public class ClassificationService {
 	 */
 	public List<ClassificationsEnum> defineLabels(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO) {
 		List<ClassificationsEnum> labels = classifiers.stream()
-			.map(classifier -> classifier.define(transferDTO, paymentsReportingDTO, treasuryDTO))
+			.map(classifier -> classifier.classify(transferDTO, paymentsReportingDTO, treasuryDTO))
 			.filter(Objects::nonNull)
 			.toList();
 
 		if (labels.isEmpty()) {
-			throw new ClassificationException("Cannot define classification");
+			return List.of(ClassificationsEnum.UNKNOWN);
 		}
 		return labels;
 	}

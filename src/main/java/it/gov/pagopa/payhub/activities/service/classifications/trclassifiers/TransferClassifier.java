@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.classifications;
+package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
@@ -12,7 +12,7 @@ import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
  * and determine a classification label ({@link ClassificationsEnum}). Each implementation
  * should handle a particular condition or set of conditions to decide the appropriate label.
  */
-public interface LabelClassifier {
+public interface TransferClassifier {
 
 	/**
 	 * Defines a classification label ({@link ClassificationsEnum}) based on the given data.
@@ -22,6 +22,7 @@ public interface LabelClassifier {
 	 * @param treasuryDTO the treasury data.
 	 * @return the classification label if conditions are met, or {@code null} if no label is applicable.
 	 */
-	ClassificationsEnum define(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO);
+	ClassificationsEnum classify(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO);
+
 }
 

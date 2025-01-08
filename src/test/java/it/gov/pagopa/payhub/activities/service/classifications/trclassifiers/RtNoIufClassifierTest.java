@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.classifications;
+package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
@@ -18,12 +18,12 @@ class RtNoIufClassifierTest {
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
 	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
-	LabelClassifier classifier = new RtNoIufClassifier();
+	TransferClassifier classifier = new RtNoIufClassifier();
 
 	@Test
 	void givenOnlyTransferDTOWhenDefineThenSuccess() {
 		// Act
-		ClassificationsEnum result = classifier.define(transferDTO, null, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, null);
 		// Assert
 		assertEquals(ClassificationsEnum.RT_NO_IUF, result);
 	}
@@ -32,9 +32,9 @@ class RtNoIufClassifierTest {
 	void givenNullTreasuryDTOAndEqualsAmountWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmount(100L);
-		paymentsReportingDTO.setAmountPaidCents(100L);
+		paymentsReportingDTO.setAmountPaidCents(1000L);
 		// Act
-		ClassificationsEnum result = classifier.define(transferDTO, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
 		// Assert
 		assertEquals(ClassificationsEnum.RT_NO_IUF, result);
 	}
@@ -43,17 +43,17 @@ class RtNoIufClassifierTest {
 	void givenNullPaymentsReportingDTOAndEqualsAmountWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmount(100L);
-		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
 		// Act
-		ClassificationsEnum result = classifier.define(transferDTO, null, treasuryDTO);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
 		// Assert
 		assertEquals(ClassificationsEnum.RT_NO_IUF, result);
 	}
 
 	@Test
-	void whenDefineThenReturnNull() {
+	void givenUnmatchedConditionWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.define(transferDTO, paymentsReportingDTO, treasuryDTO);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}

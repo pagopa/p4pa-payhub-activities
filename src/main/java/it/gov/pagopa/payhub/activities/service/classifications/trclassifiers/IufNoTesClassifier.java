@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.classifications;
+package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Lazy
 @Component
-public class IufNoTesClassifier implements LabelClassifier {
+public class IufNoTesClassifier implements TransferClassifier {
 
 	@Override
-	public ClassificationsEnum define(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO) {
+	public ClassificationsEnum classify(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO) {
 		if(paymentsReportingDTO != null && treasuryDTO == null) {
 			return ClassificationsEnum.IUF_NO_TES;
 		}

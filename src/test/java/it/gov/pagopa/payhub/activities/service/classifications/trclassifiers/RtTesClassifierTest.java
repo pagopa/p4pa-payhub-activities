@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.classifications;
+package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
@@ -18,23 +18,23 @@ class RtTesClassifierTest {
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
 	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
-	LabelClassifier classifier = new RtTesClassifier();
+	TransferClassifier classifier = new RtTesClassifier();
 
 	@Test
-	void whenDefineThenSuccess() {
+	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmount(100L);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
 		// Act
-		ClassificationsEnum result = classifier.define(transferDTO, null, treasuryDTO);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
 		// Assert
 		assertEquals(ClassificationsEnum.RT_TES, result);
 	}
 
 	@Test
-	void whenDefineThenReturnNull() {
+	void givenUnmatchedConditionWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.define(transferDTO, paymentsReportingDTO, treasuryDTO);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}

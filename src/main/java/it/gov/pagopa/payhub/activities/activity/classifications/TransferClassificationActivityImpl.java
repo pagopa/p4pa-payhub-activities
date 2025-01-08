@@ -9,7 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDT
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.exception.ClassificationException;
-import it.gov.pagopa.payhub.activities.service.classifications.ClassificationService;
+import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -24,18 +24,18 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	private final TransferDao transferDao;
 	private final PaymentsReportingDao paymentsReportingDao;
 	private final TreasuryDao treasuryDao;
-	private final ClassificationService classificationService;
+	private final TransferClassificationService transferClassificationService;
 
 	public TransferClassificationActivityImpl(ClassificationDao classificationDao,
 	                                          TransferDao transferDao,
 	                                          PaymentsReportingDao paymentsReportingDao,
 	                                          TreasuryDao treasuryDao,
-	                                          ClassificationService classificationService) {
+	                                          TransferClassificationService transferClassificationService) {
 		this.classificationDao = classificationDao;
 		this.transferDao = transferDao;
 		this.paymentsReportingDao = paymentsReportingDao;
 		this.treasuryDao = treasuryDao;
-		this.classificationService = classificationService;
+		this.transferClassificationService = transferClassificationService;
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
 		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
 		TreasuryDTO treasuryDTO = retrieveTreasury(orgId, paymentsReportingDTO);
-		List<ClassificationsEnum> classifications = classificationService.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
+		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
 			orgId, iuv, iur, transferIndex, String.join(", ", classifications.stream().map(String::valueOf).toList()));
 	}

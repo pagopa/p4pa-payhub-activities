@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.classifications;
+package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
@@ -10,24 +10,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class IufTesDivImpClassifierTest {
+class IufNoTesClassifierTest {
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
 	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
-	LabelClassifier classifier = new IufTesDivImpClassifier();
+	TransferClassifier classifier = new IufNoTesClassifier();
 
 	@Test
-	void whenDefineThenSuccess() {
+	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Act
-		ClassificationsEnum result = classifier.define(null, paymentsReportingDTO, treasuryDTO);
+		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, null);
 		// Assert
-		assertEquals(ClassificationsEnum.IUF_TES_DIV_IMP, result);
+		assertEquals(ClassificationsEnum.IUF_NO_TES, result);
 	}
 
 	@Test
-	void whenDefineThenReturnNull() {
+	void givenUnmatchedConditionWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.define(null, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.classifications;
+package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
@@ -11,10 +11,10 @@ import java.util.Objects;
 
 @Lazy
 @Component
-public class RtTesClassifier implements LabelClassifier {
+public class RtTesClassifier implements TransferClassifier {
 
 	@Override
-	public ClassificationsEnum define(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO) {
+	public ClassificationsEnum classify(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO) {
 		if(transferDTO != null && treasuryDTO != null && paymentsReportingDTO == null &&
 			Objects.equals(transferDTO.getAmount(), treasuryDTO.getBillIpNumber().movePointRight(2).longValueExact())) {
 			return ClassificationsEnum.RT_TES;
