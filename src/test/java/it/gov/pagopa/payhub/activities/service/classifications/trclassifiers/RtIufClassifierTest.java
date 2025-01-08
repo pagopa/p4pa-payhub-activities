@@ -28,9 +28,20 @@ class RtIufClassifierTest {
 	}
 
 	@Test
-	void givenUnmatchedConditionWhenDefineThenReturnNull() {
+	void givenUnmatchedTransferDTOWhenDefineThenReturnNull() {
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, null);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenUnmatchedAmountWhenDefineThenReturnNull() {
+		//Arrange
+		transferDTO.setAmount(100L);
+		paymentsReportingDTO.setAmountPaidCents(1000L);
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
 		// Assert
 		assertNull(result);
 	}

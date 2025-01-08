@@ -30,7 +30,7 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenNullTreasuryDTOAndEqualsAmountWhenDefineThenSuccess() {
+	void givenNullTreasuryDTOAndUnmatchedAmountWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmount(100L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
@@ -41,7 +41,7 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenNullPaymentsReportingDTOAndEqualsAmountWhenDefineThenSuccess() {
+	void givenNullPaymentsReportingDTOAndUnmatchedAmountWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmount(100L);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
@@ -55,6 +55,28 @@ class RtNoIufClassifierTest {
 	void givenUnmatchedConditionWhenDefineThenReturnNull() {
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryDTO);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenNullTreasuryDTOAndEqualsAmountWhenDefineThenReturnNull() {
+		// Arrange
+		transferDTO.setAmount(1000L);
+		paymentsReportingDTO.setAmountPaidCents(1000L);
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenNullPaymentsReportingDTOAndEqualsAmountWhenDefineThenReturnNull() {
+		// Arrange
+		transferDTO.setAmount(100L);
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}

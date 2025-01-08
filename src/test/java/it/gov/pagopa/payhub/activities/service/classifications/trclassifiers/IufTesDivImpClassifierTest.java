@@ -22,7 +22,7 @@ class IufTesDivImpClassifierTest {
 	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Arrange
 		paymentsReportingDTO.setTotalAmountCents(100L);
-		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert
@@ -30,9 +30,20 @@ class IufTesDivImpClassifierTest {
 	}
 
 	@Test
-	void givenUnmatchedConditionWhenDefineThenReturnNull() {
+	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, null);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenUnmatchedAmountWhenDefineThenReturnNull() {
+		// Arrange
+		paymentsReportingDTO.setTotalAmountCents(100L);
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
+		// Act
+		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}

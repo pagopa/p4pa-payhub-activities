@@ -34,9 +34,21 @@ class RtIufTesClassifierTest {
 	}
 
 	@Test
-	void givenUnmatchedConditionWhenDefineThenReturnNull() {
+	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenUnmatchedAmountWhenDefineThenReturnNull() {
+		// Arrange
+		transferDTO.setAmount(100L);
+		paymentsReportingDTO.setAmountPaidCents(10000L);
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}
