@@ -4,8 +4,10 @@ import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.*;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
+import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 
 import it.gov.pagopa.payhub.activities.service.treasury.*;
@@ -13,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -25,6 +30,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
     private final TreasuryOpiParserService treasuryOpiParserService;
+    private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+    private final String archiveDirectory;
+    private final String errorDirectory;
 
 
 
@@ -32,25 +40,36 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     public TreasuryOpiIngestionActivityImpl(
             IngestionFlowFileDao ingestionFlowFileDao,
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-            TreasuryOpiParserService treasuryOpiParserService) {
+            TreasuryOpiParserService treasuryOpiParserService, IngestionFlowFileArchiverService ingestionFlowFileArchiverService, String archiveDirectory, String errorDirectory) {
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryOpiParserService = treasuryOpiParserService;
+        this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
+        this.archiveDirectory = archiveDirectory;
+        this.errorDirectory = errorDirectory;
     }
 
 
     @Override
     public TreasuryIufResult processFile(Long ingestionFlowFileId) {
         log.info("Processing OPI treasury IngestionFlowFile {}", ingestionFlowFileId);
-
+        IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
         try {
-            IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
             List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
 
 
            List<TreasuryIufResult>  treasuryIufResultList =  ingestionFlowFiles.stream()
-                    .map(path ->treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
+                    .map(path -> {
+                        try {
+                            TreasuryIufResult result = treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size(), errorDirectory);
+                            archive(ingestionFlowFileDTO);
+                            return result;
+                        } catch (Exception e) {
+                            log.error("Error processing file {}: {}", path, e.getMessage());
+                            return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
+                        }
+                    })
                    .toList();
 
            return new TreasuryIufResult(
@@ -59,12 +78,14 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                            .distinct()
                            .toList(),
                    treasuryIufResultList.stream()
-                           .allMatch(TreasuryIufResult::isSuccess)
+                           .allMatch(TreasuryIufResult::isSuccess),
+                   null
            );
 
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-            return new TreasuryIufResult(Collections.emptyList(), false);
+            deletion(new File(ingestionFlowFileDTO.getFilePathName()));
+            return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
         }
     }
 
@@ -90,27 +111,12 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
  * @throws IOException if an error occurs during file movement or directory creation.
  */
         private void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-            Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePath(), ingestionFlowFileDTO.getFileName());
-            Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePath(), archiveDirectory);
+            Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+            Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePathName(), archiveDirectory);
             ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
         }
 
-        /**
-         * Archives an error file to a specified target directory.
-         * This method takes an error file and moves it to a target directory for archiving. It constructs
-         * the original file path and the target directory path, then invokes the {@link IngestionFlowFileArchiverService}
-         * to perform the archiving operation.
-         *
-         * @param errorFile the error file to be archived. This file is moved from its original location to the target directory.
-         * @param targetDir the directory where the error file should be archived. The target directory path is constructed relative
-         *                  to the parent directory of the error file.
-         * @throws IOException if an I/O error occurs while archiving the file, such as issues with reading, writing, or accessing file paths.
-         */
-        private void archiveErrorFile(File errorFile, String targetDir) throws IOException {
-            Path originalFilePath = Paths.get(errorFile.getParent(), errorFile.getName());
-            Path targetDirectory = Paths.get(errorFile.getParent(), targetDir);
-            ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
-        }
+
 
         /**
          * Delete the specified file if not null.
