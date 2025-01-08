@@ -45,7 +45,7 @@ class IufNoTesClassifierTest {
 	}
 
 	@Test
-	void givenTreasuryDTOThengetAmountCents() {
+	void givenTreasuryDTOThenGetAmountCents() {
 		assertDoesNotThrow(() -> classifier.getAmountCents(treasuryDTO));
 	}
 }

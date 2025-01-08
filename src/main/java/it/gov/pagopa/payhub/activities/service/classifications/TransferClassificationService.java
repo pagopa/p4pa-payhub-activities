@@ -21,6 +21,7 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class TransferClassificationService {
+	private final List<ClassificationsEnum> defaultClassification = List.of(ClassificationsEnum.UNKNOWN);
 	private final List<TransferClassifier> classifiers;
 
 	public TransferClassificationService(List<TransferClassifier> classifiers) {
@@ -47,7 +48,7 @@ public class TransferClassificationService {
 			.toList();
 
 		if (labels.isEmpty()) {
-			return List.of(ClassificationsEnum.UNKNOWN);
+			return defaultClassification;
 		}
 		return labels;
 	}
