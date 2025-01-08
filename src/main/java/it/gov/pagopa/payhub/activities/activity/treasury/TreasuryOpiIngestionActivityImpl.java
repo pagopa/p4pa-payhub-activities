@@ -2,24 +2,22 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.dto.treasury.*;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
+
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
+
+import it.gov.pagopa.payhub.activities.service.treasury.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-/**
- * Interface for the TreasuryOpiIngestionActivity.
- * Defines methods for processing files based on an IngestionFlow ID.
- */
+
 @Slf4j
 @Lazy
 @Component
@@ -32,9 +30,9 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
 
 
     public TreasuryOpiIngestionActivityImpl(
-                                            IngestionFlowFileDao ingestionFlowFileDao,
-                                            IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-                                            TreasuryOpiParserService treasuryOpiParserService) {
+            IngestionFlowFileDao ingestionFlowFileDao,
+            IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
+            TreasuryOpiParserService treasuryOpiParserService) {
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryOpiParserService = treasuryOpiParserService;
@@ -51,20 +49,23 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
 
 
-           List <String> iufList = ingestionFlowFiles.stream()
-                    .map(treasuryOpiParserService::parseData)
-                    .flatMap(List::stream)
-                    .toList();
+           List<TreasuryIufResult>  treasuryIufResultList =  ingestionFlowFiles.stream()
+                    .map(path ->treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFiles.size()))
+                   .toList();
 
-
-            return new TreasuryIufResult(iufList,true);
+           return new TreasuryIufResult(
+                   treasuryIufResultList.stream()
+                           .flatMap(result -> result.getIufs().stream())
+                           .distinct()
+                           .toList(),
+                   treasuryIufResultList.stream()
+                           .allMatch(TreasuryIufResult::isSuccess)
+           );
 
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
             return new TreasuryIufResult(Collections.emptyList(), false);
         }
-
-
     }
 
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {

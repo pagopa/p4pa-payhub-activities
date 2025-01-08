@@ -1,85 +1,118 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
+import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
+import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class TreasuryOpiParserServiceTest {
 
-    private TreasuryUnmarshallerService treasuryUnmarshallerService;
     private TreasuryOpiParserService treasuryOpiParserService;
+    private List<TreasuryVersionHandlerService> versionHandlerServices;
+    private TreasuryDao treasuryDao;
 
     @BeforeEach
     void setUp() {
-        treasuryUnmarshallerService = Mockito.mock(TreasuryUnmarshallerService.class);
-        treasuryOpiParserService = new TreasuryOpiParserService(treasuryUnmarshallerService);
+        versionHandlerServices = new ArrayList<>();
+        treasuryDao = mock(TreasuryDao.class);
+        treasuryOpiParserService = new TreasuryOpiParserService(versionHandlerServices, treasuryDao);
     }
 
     @Test
-    void testParseData_whenValidOpi161File_thenProcessSuccessfully() {
+    void testParseData_whenValidFile_thenProcessesSuccessfully() {
         // Given
-        Path filePath = Mockito.mock(Path.class);
-        File file = Mockito.mock(File.class);
-        Mockito.when(filePath.toFile()).thenReturn(file);
+        Path filePath = mock(Path.class);
+        File file = mock(File.class);
+        when(filePath.toFile()).thenReturn(file);
 
-        var flussoGiornaleDiCassa161 = Mockito.mock(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class);
-        Mockito.when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenReturn(flussoGiornaleDiCassa161);
+        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        TreasuryVersionHandlerService handler = mock(TreasuryVersionHandlerService.class);
+        versionHandlerServices.add(handler);
 
+        TreasuryDTO treasuryDTO = TreasuryDTO.builder()
+                .iuf("Flow123")
+                .build();
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
+                TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
+        );
+
+        when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
 
         // When
-        var result = treasuryOpiParserService.parseData(filePath);
+        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
 
         // Then
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result.isEmpty()); // Since the method currently returns an empty list
-        Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi161(file);
-        Mockito.verify(treasuryUnmarshallerService, Mockito.never()).unmarshalOpi14(file);
+        assertNotNull(result);
+        assertTrue(result.isSuccess());
+        assertEquals(1, result.getIufs().size());
+        assertEquals("Flow123", result.getIufs().getFirst());
+        verify(treasuryDao, times(1)).insert(treasuryDTO);
     }
 
     @Test
-    void testParseData_whenValidOpi14File_thenProcessSuccessfully() {
+    void testParseData_whenAllHandlersFail_thenThrowsException() {
         // Given
-        Path filePath = Mockito.mock(Path.class);
-        File file = Mockito.mock(File.class);
-        Mockito.when(filePath.toFile()).thenReturn(file);
+        Path filePath = mock(Path.class);
+        File file = mock(File.class);
+        when(filePath.toFile()).thenReturn(file);
 
-        Mockito.when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenThrow(new RuntimeException("Error parsing OPI 1.6.1"));
+        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
 
-        var flussoGiornaleDiCassa14 = Mockito.mock(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class);
-        Mockito.when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenReturn(flussoGiornaleDiCassa14);
+        TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
+        TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
+        versionHandlerServices.addAll(List.of(handler1, handler2));
 
-
-        // When
-        var result = treasuryOpiParserService.parseData(filePath);
-
-        // Then
-        Assertions.assertNotNull(result);
-        Assertions.assertTrue(result.isEmpty()); // Since the method currently returns an empty list
-        Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi161(file);
-        Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi14(file);
-    }
-
-    @Test
-    void testParseData_whenInvalidFile_thenThrowException() {
-        // Given
-        Path filePath = Mockito.mock(Path.class);
-        File file = Mockito.mock(File.class);
-        Mockito.when(filePath.toFile()).thenReturn(file);
-
-        Mockito.when(treasuryUnmarshallerService.unmarshalOpi161(file)).thenThrow(new RuntimeException("Error parsing OPI 1.6.1"));
-        Mockito.when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenThrow(new RuntimeException("Error parsing OPI 1.4"));
-
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
 
         // When & Then
-        Assertions.assertThrows(TreasuryOpiInvalidFileException.class, () ->
-                treasuryOpiParserService.parseData(filePath));
-        Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi161(file);
-        Mockito.verify(treasuryUnmarshallerService, Mockito.times(1)).unmarshalOpi14(file);
+        assertThrows(TreasuryOpiInvalidFileException.class, () ->
+                treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1));
+    }
+
+    @Test
+    void testParseData_whenMultipleHandlers_thenUsesFirstValid() {
+        // Given
+        Path filePath = mock(Path.class);
+        File file = mock(File.class);
+        when(filePath.toFile()).thenReturn(file);
+
+        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+
+        TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
+        TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
+        versionHandlerServices.addAll(List.of(handler1, handler2));
+
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
+
+        TreasuryDTO treasuryDTO = TreasuryDTO.builder()
+                .iuf("Flow456")
+                .build();
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
+                TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
+        );
+
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
+
+        // When
+        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.isSuccess());
+        assertEquals(1, result.getIufs().size());
+        assertEquals("Flow456", result.getIufs().get(0));
+        verify(treasuryDao, times(1)).insert(treasuryDTO);
     }
 }
