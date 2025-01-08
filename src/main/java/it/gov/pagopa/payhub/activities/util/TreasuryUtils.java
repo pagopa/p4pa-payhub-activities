@@ -13,7 +13,7 @@ public class TreasuryUtils {
   public static final String REGEX_MATCHER = "([A-Za-z0-9-_](\\S+)\\s+(\\S+))";
   public static final String ALPHANUM_PATTERN = "([A-Za-z0-9-_]+)";
   public static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
-  public static final Pattern STRING_PATTERN = Pattern.compile("([^a-zA-Z\\d\\s:])");
+  public static final Pattern NOT_ALLOWED_CHARS_PATTERN = Pattern.compile("([^a-zA-Z\\d\\s:])");
   private static final List<String> PRE_IUF_PATTERNS = List.of(
           "LGPE-RIVERSAMENTO",
           "LGPE- RIVERSAMENTO",
@@ -49,7 +49,7 @@ public class TreasuryUtils {
 
   public static boolean checkIufOld(final String value) {
     if (StringUtils.isNotBlank(value)) {
-      Matcher matcher = STRING_PATTERN.matcher(value);
+      Matcher matcher = NOT_ALLOWED_CHARS_PATTERN.matcher(value);
       while (matcher.find()) {
         if (StringUtils.isNotBlank(matcher.group(0))) {
           return false;
