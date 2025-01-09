@@ -161,7 +161,7 @@ class TransferClassificationActivityImplTest {
 		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
 		doReturn(List.of(classificationDTO)).when(transferClassificationStoreServiceMock)
-			.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, List.of(ClassificationsEnum.RT_NO_IUF));
+			.saveClassifications(transferSemanticKeyDTO, transferDTO, null, null, List.of(ClassificationsEnum.RT_NO_IUF));
 
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 
@@ -207,8 +207,8 @@ class TransferClassificationActivityImplTest {
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
 		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
-		doThrow(new ClassificationException("Cannot define labels")).when(transferClassificationStoreServiceMock)
-			.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, List.of(ClassificationsEnum.RT_NO_IUF));
+		doThrow(new ClassificationException("Error given while saving")).when(transferClassificationStoreServiceMock)
+			.saveClassifications(transferSemanticKeyDTO, transferDTO, null, null, List.of(ClassificationsEnum.RT_NO_IUF));
 
 		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
 	}
