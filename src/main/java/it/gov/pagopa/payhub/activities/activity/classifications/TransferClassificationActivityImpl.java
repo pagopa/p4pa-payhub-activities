@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.dao.TransferDao;
 import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
-import it.gov.pagopa.payhub.activities.dto.classifications.SemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
@@ -47,7 +47,14 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		if (!classificationDao.deleteTransferClassification(orgId, iuv, iur, transferIndex)) {
 			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
 		}
-		TransferDTO transferDTO = transferDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
+		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
+			.orgId(orgId)
+			.iuv(iuv)
+			.iur(iur)
+			.transferIndex(transferIndex)
+			.build();
+
+		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKeyDTO);
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
 		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
@@ -57,14 +64,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
 			orgId, iuv, iur, transferIndex, String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
-		SemanticKeyDTO semanticKeyDTO = SemanticKeyDTO.builder()
-			.orgId(orgId)
-			.iuv(iuv)
-			.iur(iur)
-			.transferIndex(transferIndex)
-			.build();
-
-		saveClassifications(semanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, classifications);
+		saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, classifications);
 	}
 
 	/**
@@ -89,14 +89,14 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 * {@link ClassificationDTO} objects based on the input data and saves them using the
 	 * {@code classificationDao}.
 	 *
-	 * @param semanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
+	 * @param transferSemanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
 	 * @param transferDTO the DTO containing transfer details, may be {@code null}.
 	 * @param paymentsReportingDTO the DTO containing payment reporting details, may be {@code null}.
 	 * @param treasuryDTO the DTO containing treasury details, may be {@code null}.
 	 * @param classifications the list of classifications to be saved, represented as {@link ClassificationsEnum}.
 	 */
 	private void saveClassifications(
-		SemanticKeyDTO semanticKeyDTO,
+		TransferSemanticKeyDTO transferSemanticKeyDTO,
 		TransferDTO transferDTO,
 		PaymentsReportingDTO paymentsReportingDTO,
 		TreasuryDTO treasuryDTO,
@@ -104,19 +104,19 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 
 		log.info("Saving classifications {} for semantic key organization id: {} and iuv: {} and iur {} and transfer index: {}",
 			String.join(", ", classifications.stream().map(String::valueOf).toList()),
-			semanticKeyDTO.getOrgId(), semanticKeyDTO.getIuv(), semanticKeyDTO.getIur(), semanticKeyDTO.getTransferIndex());
+			transferSemanticKeyDTO.getOrgId(), transferSemanticKeyDTO.getIuv(), transferSemanticKeyDTO.getIur(), transferSemanticKeyDTO.getTransferIndex());
 
 		Optional<PaymentsReportingDTO> optionalPaymentsReportingDTO = Optional.ofNullable(paymentsReportingDTO);
 		List<ClassificationDTO> dtoList = classifications.stream()
 			.map(classification -> ClassificationDTO.builder()
-				.organizationId(semanticKeyDTO.getOrgId())
+				.organizationId(transferSemanticKeyDTO.getOrgId())
 				.transferId(Optional.ofNullable(transferDTO).map(TransferDTO::getTransferId).orElse(null))
 				.paymentReportingId(optionalPaymentsReportingDTO.map(PaymentsReportingDTO::getPaymentsReportingId).orElse(null))
 				.treasuryId(Optional.ofNullable(treasuryDTO).map(TreasuryDTO::getTreasuryId).orElse(null))
 				.iuf(optionalPaymentsReportingDTO.map(PaymentsReportingDTO::getIuf).orElse(null))
-				.iuv(semanticKeyDTO.getIuv())
-				.iur(semanticKeyDTO.getIur())
-				.transferIndex(semanticKeyDTO.getTransferIndex())
+				.iuv(transferSemanticKeyDTO.getIuv())
+				.iur(transferSemanticKeyDTO.getIur())
+				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
 				.classificationsEnum(classification)
 				.build())
 			.toList();

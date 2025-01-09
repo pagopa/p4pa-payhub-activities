@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SemanticKeyDTO {
+public class TransferSemanticKeyDTO {
 	private Long orgId;
 	private String iuv;
 	private String iur;
