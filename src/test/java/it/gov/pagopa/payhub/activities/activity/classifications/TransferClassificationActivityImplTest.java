@@ -74,7 +74,7 @@ class TransferClassificationActivityImplTest {
 		ClassificationDTO classificationDTO = ClassificationDTO.builder()
 			.organizationId(ORGANIZATION)
 			.transferId(1L)
-			.paymentReportingId("paymentReportingId")
+			.paymentReportingId("paymentsReportingId")
 			.treasuryId("treasuryId")
 			.iuf("IUF")
 			.iuv(IUV)
