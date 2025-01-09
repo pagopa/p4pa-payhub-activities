@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dao.TransferDao;
 import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,11 +71,24 @@ class TransferClassificationActivityImplTest {
 
 	@Test
 	void classificationSuccess() {
+		ClassificationDTO classificationDTO = ClassificationDTO.builder()
+			.organizationId(ORGANIZATION)
+			.transferId(1L)
+			.paymentReportingId(1L)
+			.treasuryId(1L)
+			.iuf("IUF")
+			.iuv(IUV)
+			.iur(IUR)
+			.transferIndex(INDEX)
+			.classificationsEnum(ClassificationsEnum.RT_IUF_TES)
+			.build();
+
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(transferDTO);
 		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(paymentsReportingDTO);
 		when(treasuryDaoMock.getByOrganizationIdAndIuf(ORGANIZATION, IUF)).thenReturn(treasuryDTO);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(List.of(ClassificationsEnum.RT_IUF_TES));
+		doNothing().when(classificationDaoMock).saveAll(List.of(classificationDTO));
 
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 
@@ -121,10 +136,19 @@ class TransferClassificationActivityImplTest {
 
 	@Test
 	void whenPaymentsReportingDTOIsEmptyShouldNotCallTreasury() {
+		ClassificationDTO classificationDTO = ClassificationDTO.builder()
+			.organizationId(ORGANIZATION)
+			.transferId(1L)
+			.iuv(IUV)
+			.iur(IUR)
+			.transferIndex(INDEX)
+			.classificationsEnum(ClassificationsEnum.RT_NO_IUF)
+			.build();
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(transferDTO);
 		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
+		doNothing().when(classificationDaoMock).saveAll(List.of(classificationDTO));
 
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 
