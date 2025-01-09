@@ -6,7 +6,7 @@ public class PaymentsReportingFaker {
 
     public static PaymentsReportingDTO buildClassifyResultDTO(){
         return PaymentsReportingDTO.builder()
-            .paymentsReportingId(1L)
+            .paymentsReportingId("paymentsReportingId")
             .organizationId(1L)
             .iuf("IUF")
             .iuv("IUV")

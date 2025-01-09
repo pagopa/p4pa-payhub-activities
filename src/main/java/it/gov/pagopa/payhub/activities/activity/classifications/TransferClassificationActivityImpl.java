@@ -38,6 +38,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		this.transferDao = transferDao;
 		this.paymentsReportingDao = paymentsReportingDao;
 		this.treasuryDao = treasuryDao;
+		this.transferClassificationService = transferClassificationService;
 	}
 
 	@Override
