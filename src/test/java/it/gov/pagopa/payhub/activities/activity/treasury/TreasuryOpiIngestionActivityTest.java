@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.*;
@@ -58,8 +57,7 @@ class TreasuryOpiIngestionActivityTest {
             ingestionFlowFileRetrieverServiceMock,
             treasuryOpiParserServiceMock,
             ingestionFlowFileArchiverServiceMock,
-            "archiveDirectory",
-            "errorDirectory"
+            "archiveDirectory"
     );
   }
 
@@ -89,7 +87,7 @@ class TreasuryOpiIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
             .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size(),"errorDirectory"))
+    Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size()))
             .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), true, null));
 
     // When
@@ -182,31 +180,4 @@ class TreasuryOpiIngestionActivityTest {
     // Then
     assertEquals(expected, result);
   }
-
-  @Test
-  void givenActivityExceptionWhenProcessFileThenFails() throws Exception {
-    // Given
-    Long ingestionFlowFileId = 1L;
-    IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
-            .ingestionFlowFileId(ingestionFlowFileId)
-            .flowFileType(IngestionFlowFileType.OPI)
-            .filePathName(workingDir.toString())
-            .fileName("testFile.zip")
-            .build();
-    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
-    List<Path> mockedListPath = List.of(filePath);
-
-
-    when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
-    doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-            .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-
-    // When & Then
-    assertThrows(ActivitiesException.class, () ->
-            treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId));
-  }
-
-
-
-
 }

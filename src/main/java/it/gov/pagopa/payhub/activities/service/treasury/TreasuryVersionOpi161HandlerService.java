@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,8 @@ public class TreasuryVersionOpi161HandlerService extends TreasuryVersionBaseHand
     public TreasuryVersionOpi161HandlerService(TreasuryMapperOpi161Service mapperService,
                                                TreasuryValidatorOpi161Service validatorService,
                                                TreasuryUnmarshallerService treasuryUnmarshallerService,
-                                               IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
-        super(mapperService, validatorService, ingestionFlowFileArchiverService);
+                                               TreasuryErrorsArchiverService treasuryErrorsArchiverService) {
+        super(mapperService, validatorService, treasuryErrorsArchiverService);
         this.treasuryUnmarshallerService = treasuryUnmarshallerService;
     }
 

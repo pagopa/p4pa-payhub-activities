@@ -29,11 +29,11 @@ public class TreasuryOpiParserService {
         this.treasuryDao = treasuryDao;
     }
 
-    public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles, String errorDirectory) {
+    public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
 
         Map<TreasuryOperationEnum, List<TreasuryDTO>> op2TreasuriesMap = versionHandlerServices.stream()
-                .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles, errorDirectory))
+                .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles))
                 .filter(map -> !map.isEmpty())
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));

@@ -47,10 +47,10 @@ class TreasuryOpiParserServiceTest {
                 TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
         );
 
-        when(handler.handle(file, ingestionFlowFileDTO, 1, "errorDir")).thenReturn(handlerResult);
+        when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
 
         // When
-        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1, "errorDir");
+        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
@@ -73,12 +73,12 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        when(handler1.handle(file, ingestionFlowFileDTO, 1, "errorDir")).thenReturn(Collections.emptyMap());
-        when(handler2.handle(file, ingestionFlowFileDTO, 1, "errorDir")).thenReturn(Collections.emptyMap());
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
 
         // When & Then
         assertThrows(TreasuryOpiInvalidFileException.class, () ->
-                treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1, "errorDir"));
+                treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1));
     }
 
     @Test
@@ -94,7 +94,7 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        when(handler1.handle(file, ingestionFlowFileDTO, 1, "errorDir")).thenReturn(Collections.emptyMap());
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
 
         TreasuryDTO treasuryDTO = TreasuryDTO.builder()
                 .iuf("Flow456")
@@ -103,16 +103,16 @@ class TreasuryOpiParserServiceTest {
                 TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
         );
 
-        when(handler2.handle(file, ingestionFlowFileDTO, 1, "errorDir")).thenReturn(handlerResult);
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
 
         // When
-        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1, "errorDir");
+        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
-        assertEquals("Flow456", result.getIufs().get(0));
+        assertEquals("Flow456", result.getIufs().getFirst());
         verify(treasuryDao, times(1)).insert(treasuryDTO);
     }
 }

@@ -5,13 +5,10 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
-import it.gov.pagopa.payhub.activities.util.CsvUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -26,7 +23,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     private TreasuryMapperService<Object> mapperService;
     private TreasuryValidatorService<Object> validatorService;
     private TreasuryVersionBaseHandlerService<Object> handlerService;
-    private IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+    private TreasuryErrorsArchiverService treasuryErrorsArchiverService;
     @TempDir
     Path workingDir;
 
@@ -35,8 +32,8 @@ class TreasuryVersionBaseHandlerServiceTest {
     void setUp() {
         mapperService = mock(TreasuryMapperService.class);
         validatorService = mock(TreasuryValidatorService.class);
-        ingestionFlowFileArchiverService = mock(IngestionFlowFileArchiverService.class);
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService, ingestionFlowFileArchiverService) {
+        treasuryErrorsArchiverService = mock(TreasuryErrorsArchiverService.class);
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService, treasuryErrorsArchiverService) {
             @Override
             Object unmarshall(File file) {
                 return new Object();
@@ -60,7 +57,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(mapperService.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedResult);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -79,7 +76,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(validatorService.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -90,7 +87,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     @Test //OK
     void testHandle_whenUnmarshallFails_thenReturnsEmptyMap() {
         // Given
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService, ingestionFlowFileArchiverService) {
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperService, validatorService, treasuryErrorsArchiverService) {
             @Override
             Object unmarshall(File file) {
                 throw new RuntimeException("Unmarshall failed");
@@ -101,7 +98,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -123,7 +120,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(mapperService.apply(unmarshalledObject, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, "errorDir");
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -172,48 +169,12 @@ class TreasuryVersionBaseHandlerServiceTest {
         String targetDir = "errorDir";
 
         // When
-        handlerService.archiveErrorFile(errorFile, targetDir);
+        treasuryErrorsArchiverService.archiveErrorFile(errorFile, targetDir);
 
         // Then
-        Mockito.verify(ingestionFlowFileArchiverService, times(1)).archive(
+        Mockito.verify(treasuryErrorsArchiverService, times(1)).archiveErrorFile(
                 any(),
                 any()
         );
     }
-
-
-    @Test
-    void testWriteErrors_whenErrorsExist_thenProcessesAndArchives() throws IOException {
-        // Given
-        List<TreasuryErrorDTO> errors = List.of(
-                new TreasuryErrorDTO("file1", "2025", "B123", "ERR01", "Invalid data"),
-                new TreasuryErrorDTO("file2", "2025", "B124", "ERR02", "Missing field")
-        );
-
-        String fileName = "testFile.xml";
-        String errorDirectory = "/errorDir/";
-        String expectedErrorFilePath = "ERROR-" + fileName;
-
-        try (MockedStatic<CsvUtils> csvUtilsMock = mockStatic(CsvUtils.class)) {
-            doNothing().when(ingestionFlowFileArchiverService).archive(
-                    List.of(Path.of(expectedErrorFilePath)),
-                    Path.of(errorDirectory)
-            );
-
-            // When
-            handlerService.writeErrors(errors, fileName, errorDirectory);
-
-            // Then
-            csvUtilsMock.verify(() -> CsvUtils.createCsv(eq(expectedErrorFilePath), any(), any()), times(1));
-            verify(ingestionFlowFileArchiverService, times(1)).archive(
-                    List.of(Path.of(expectedErrorFilePath)),
-                    Path.of(errorDirectory)
-            );
-        }
-    }
-
-
-
-
-
 }

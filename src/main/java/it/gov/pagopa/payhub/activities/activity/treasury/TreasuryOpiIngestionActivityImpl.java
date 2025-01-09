@@ -12,6 +12,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 
 import it.gov.pagopa.payhub.activities.service.treasury.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,6 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private final TreasuryOpiParserService treasuryOpiParserService;
     private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
     private final String archiveDirectory;
-    private final String errorDirectory;
 
     /**
      * Constructor to initialize dependencies for OPI treasury ingestion.
@@ -44,22 +44,21 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
      * @param ingestionFlowFileRetrieverService Service for retrieving and unzipping ingestion flow files.
      * @param treasuryOpiParserService Service for parsing treasury OPI files.
      * @param ingestionFlowFileArchiverService Service for archiving files.
-     * @param archiveDirectory Directory for archiving processed files.
-     * @param errorDirectory Directory for handling error files.
+     * @param archiveRelativePathDirectory Directory for archiving processed files.
      */
     public TreasuryOpiIngestionActivityImpl(
             IngestionFlowFileDao ingestionFlowFileDao,
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
             TreasuryOpiParserService treasuryOpiParserService,
             IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
-            String archiveDirectory,
-            String errorDirectory) {
+            @Value("${archive-relative-path:processed/}") String archiveRelativePathDirectory
+
+    ) {
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryOpiParserService = treasuryOpiParserService;
         this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
-        this.archiveDirectory = archiveDirectory;
-        this.errorDirectory = errorDirectory;
+        this.archiveDirectory = archiveRelativePathDirectory;
     }
 
     /**
@@ -72,19 +71,17 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     @Override
     public TreasuryIufResult processFile(Long ingestionFlowFileId) {
         log.info("Processing OPI treasury IngestionFlowFile {}", ingestionFlowFileId);
-        IngestionFlowFileDTO ingestionFlowFileDTO = null;
+        List<Path> ingestionFlowFilesRetrieved = null;
         try {
-            ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
+            IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
-            List<Path> ingestionFlowFiles = retrieveFiles(ingestionFlowFileDTO);
+            ingestionFlowFilesRetrieved = retrieveFiles(ingestionFlowFileDTO);
+            int ingestionFlowFilesRetrievedSize = ingestionFlowFilesRetrieved.size();
 
-            IngestionFlowFileDTO finalIngestionFlowFileDTO = ingestionFlowFileDTO;
-            List<TreasuryIufResult> treasuryIufResultList = ingestionFlowFiles.stream()
+            List<TreasuryIufResult> treasuryIufResultList = ingestionFlowFilesRetrieved.stream()
                     .map(path -> {
                         try {
-                            TreasuryIufResult result = treasuryOpiParserService.parseData(path, finalIngestionFlowFileDTO, ingestionFlowFiles.size(), errorDirectory);
-                            archive(finalIngestionFlowFileDTO);
-                            return result;
+                            return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
                         } catch (Exception e) {
                             log.error("Error processing file {}: {}", path, e.getMessage());
                             return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
@@ -92,18 +89,21 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                     })
                     .toList();
 
+            archive(ingestionFlowFileDTO);
+            boolean isSuccess= treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess);
+
             return new TreasuryIufResult(
                     treasuryIufResultList.stream()
                             .flatMap(result -> result.getIufs().stream())
                             .distinct()
                             .toList(),
-                    treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess),
-                    treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess)?null:"error occured"
+                    isSuccess,
+                    isSuccess?null:"error occured"
             );
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-            if(ingestionFlowFileDTO != null)
-                deletion(new File(ingestionFlowFileDTO.getFilePathName()));
+            if(ingestionFlowFilesRetrieved != null)
+                deletion(ingestionFlowFilesRetrieved);
             return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
         }
     }
@@ -150,17 +150,20 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     }
 
     /**
-     * Deletes the specified file if it is not null.
+     * Deletes the specified List of path if it is not null.
      *
-     * @param file2Delete The file to delete.
+     * @param pathsToDelete The list of path to delete.
      */
-    private void deletion(File file2Delete) {
-        if (file2Delete != null) {
-            try {
-                Files.delete(file2Delete.toPath());
-            } catch (IOException e) {
-                throw new ActivitiesException("Error occured while delete file: " + file2Delete);
+    private void deletion(List<Path> pathsToDelete) {
+        if (pathsToDelete != null && !pathsToDelete.isEmpty()) {
+            for (Path pathToDelete : pathsToDelete) {
+                try {
+                    Files.delete(pathToDelete);
+                } catch (IOException e) {
+                    throw new ActivitiesException("Error occurred while deleting file: " + pathToDelete + " " +e.getMessage());
+                }
             }
         }
     }
+
 }
