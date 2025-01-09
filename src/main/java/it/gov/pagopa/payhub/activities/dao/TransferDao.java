@@ -20,4 +20,11 @@ public interface TransferDao {
 	 * @return TransferDTO object returned
 	 */
 	TransferDTO findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
+
+	/**
+	 * persist `TransferDTO` object into the database.
+	 *
+	 * @param transferDTO the `TransferDTO` objects to be saved.
+	 */
+	TransferDTO save(TransferDTO transferDTO);
 }
