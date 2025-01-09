@@ -20,8 +20,10 @@ public interface ClassificationDao {
 	 * saveAll classification
 	 *
 	 * @param classificationDTOList dto List classification to save
+	 * @return a list of the saved `ClassificationDTO` objects, potentially with updated
+	 *         fields (e.g., generated IDs or timestamps).
 	 */
-	void saveAll(List<ClassificationDTO> classificationDTOList);
+	List<ClassificationDTO> saveAll(List<ClassificationDTO> classificationDTOList);
 
     /**
      * delete classification
