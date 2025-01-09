@@ -21,13 +21,15 @@ class TreasuryVersionOpi161HandlerServiceTest {
     private TreasuryValidatorOpi161Service validatorService;
     private TreasuryUnmarshallerService treasuryUnmarshallerService;
     private TreasuryVersionOpi161HandlerService handlerService;
+    private TreasuryErrorsArchiverService treasuryErrorsArchiverService;
 
     @BeforeEach
     void setUp() {
         mapperService = mock(TreasuryMapperOpi161Service.class);
         validatorService = mock(TreasuryValidatorOpi161Service.class);
         treasuryUnmarshallerService = mock(TreasuryUnmarshallerService.class);
-        handlerService = new TreasuryVersionOpi161HandlerService(mapperService, validatorService, treasuryUnmarshallerService);
+        treasuryErrorsArchiverService = mock(TreasuryErrorsArchiverService.class);
+        handlerService = new TreasuryVersionOpi161HandlerService(mapperService, validatorService, treasuryUnmarshallerService, treasuryErrorsArchiverService);
     }
 
     @Test

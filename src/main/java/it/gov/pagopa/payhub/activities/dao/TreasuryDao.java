@@ -6,17 +6,22 @@ public interface TreasuryDao {
 
   Long insert(TreasuryDTO treasuryDto);
 
-  int deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
+    int deleteByIdEnteAndCodBollettaAndAnnoBolletta(Long id, String codBolletta, String annoBolletta);
 
-  TreasuryDTO getByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
+    TreasuryDTO getByIdEnteAndCodBollettaAndAnnoBolletta(Long idEnte, String codBolletta, String annoBolletta);
 
-  /**
-   * search for treasury of a specific organization associated to a payment reporting identifier
-   *
-   * @param organizationId  organization id
-   * @param iuf payment reporting identifier
-   * @return TreasuryDTO object containing treasury data
-   */
-  TreasuryDTO getByOrganizationIdAndIuf(Long organizationId, String iuf);
+    int deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
+
+    TreasuryDTO getByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
+
+    /**
+     * search for treasury of a specific organization associated to a payment reporting identifier
+     *
+     * @param organizationId  organization id
+     * @param iuf payment reporting identifier
+     * @return TreasuryDTO object containing treasury data
+     */
+    TreasuryDTO getByOrganizationIdAndIuf(Long organizationId, String iuf);
+
 
 }
