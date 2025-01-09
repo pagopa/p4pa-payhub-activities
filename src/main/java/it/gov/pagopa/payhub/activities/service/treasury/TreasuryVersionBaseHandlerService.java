@@ -96,8 +96,8 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         * @throws IOException if an I/O error occurs while archiving the file, such as issues with reading, writing, or accessing file paths.
         */
        void archiveErrorFile(File errorFile, String targetDir) throws IOException {
-           Path originalFilePath = Paths.get(errorFile.getParent(), errorFile.getName());
-           Path targetDirectory = Paths.get(errorFile.getParent(), targetDir);
+           Path originalFilePath = Paths.get(errorFile.getParent() != null ? errorFile.getParent() : "",errorFile.getName());
+           Path targetDirectory = Paths.get(errorFile.getParent() != null ? errorFile.getParent() : "", targetDir);
            ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
        }
 

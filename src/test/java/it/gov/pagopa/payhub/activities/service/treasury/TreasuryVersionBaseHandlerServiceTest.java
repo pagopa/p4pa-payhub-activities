@@ -6,9 +6,12 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.util.CsvUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -24,6 +27,8 @@ class TreasuryVersionBaseHandlerServiceTest {
     private TreasuryValidatorService<Object> validatorService;
     private TreasuryVersionBaseHandlerService<Object> handlerService;
     private IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+    @TempDir
+    Path workingDir;
 
 
     @BeforeEach
@@ -104,7 +109,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.verify(mapperService, never()).apply(any(), any());
     }
 
-    @Test
+    @Test //OK
     void testHandle_whenMapperFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);
@@ -161,7 +166,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     void testArchiveErrorFile_whenCalled_thenArchivesFile() throws IOException {
         // Given
         File errorFile = mock(File.class);
-        Mockito.when(errorFile.getParent()).thenReturn("parentDir");
+        Mockito.when(errorFile.getParent()).thenReturn(workingDir.toString());
         Mockito.when(errorFile.getName()).thenReturn("errorFile.csv");
 
         String targetDir = "errorDir";
@@ -175,6 +180,40 @@ class TreasuryVersionBaseHandlerServiceTest {
                 Path.of("parentDir", targetDir)
         );
     }
+
+
+    @Test
+    void testWriteErrors_whenErrorsExist_thenProcessesAndArchives() throws IOException {
+        // Given
+        List<TreasuryErrorDTO> errors = List.of(
+                new TreasuryErrorDTO("file1", "2025", "B123", "ERR01", "Invalid data"),
+                new TreasuryErrorDTO("file2", "2025", "B124", "ERR02", "Missing field")
+        );
+
+        String fileName = "testFile.xml";
+        String errorDirectory = "/errorDir/";
+        String expectedErrorFilePath = "ERROR-" + fileName;
+
+        try (MockedStatic<CsvUtils> csvUtilsMock = mockStatic(CsvUtils.class)) {
+            doNothing().when(ingestionFlowFileArchiverService).archive(
+                    List.of(Path.of(expectedErrorFilePath)),
+                    Path.of(errorDirectory)
+            );
+
+            // When
+            handlerService.writeErrors(errors, fileName, errorDirectory);
+
+            // Then
+            csvUtilsMock.verify(() -> CsvUtils.createCsv(eq(expectedErrorFilePath), any(), any()), times(1));
+            verify(ingestionFlowFileArchiverService, times(1)).archive(
+                    List.of(Path.of(expectedErrorFilePath)),
+                    Path.of(errorDirectory)
+            );
+        }
+    }
+
+
+
 
 
 }
