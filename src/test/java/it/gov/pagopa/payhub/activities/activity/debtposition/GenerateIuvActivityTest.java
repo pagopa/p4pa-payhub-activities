@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.IuvService;
-import it.gov.pagopa.payhub.activities.service.OrganizationService;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +28,8 @@ class GenerateIuvActivityTest {
 
   private static final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
   private static final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
-  private static final OrganizationDTO VALID_ORG = OrganizationDTO.builder()
-    .orgId(1L)
+  private static final Organization VALID_ORG = Organization.builder()
+    .organizationId(1L)
     .orgFiscalCode(VALID_ORG_FISCAL_CODE)
     .ipaCode(VALID_ORG_IPA_CODE)
     .build();

@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ class TreasuryMapperOpi161ServiceTest {
     public static final String CITY = "City";
     public static final String FISCAL_CODE = "AAABBB12A34A567Z";
     public static final String VAT_NUMBER = "IT09876543123";
-    private TreasuryMapperService treasuryMapperService;
+    private TreasuryMapperOpi161Service treasuryMapperService;
 
 
     @BeforeEach
@@ -71,8 +71,7 @@ class TreasuryMapperOpi161ServiceTest {
         when(cliente.getPartitaIvaCliente()).thenReturn(VAT_NUMBER);
 
         IngestionFlowFileDTO ingestionFlowFileDTO = createIngestionFlowFileDTO();
-        Map<String, List<TreasuryDTO>> result = (Map<String, List<TreasuryDTO>>)
-                treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
+        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
         assertNotNull(result);
         assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
@@ -81,7 +80,7 @@ class TreasuryMapperOpi161ServiceTest {
         List<TreasuryDTO> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
         assertNotNull(treasuryDTOList);
 
-        TreasuryDTO treasuryDTO = treasuryDTOList.get(0);
+        TreasuryDTO treasuryDTO = treasuryDTOList.getFirst();
         assertEquals("2023", treasuryDTO.getBillYear());
         assertEquals("1", treasuryDTO.getBillCode());
         assertEquals(BigDecimal.TEN, treasuryDTO.getBillIpNumber());
@@ -96,8 +95,8 @@ class TreasuryMapperOpi161ServiceTest {
 
     private IngestionFlowFileDTO createIngestionFlowFileDTO() {
         IngestionFlowFileDTO dto = new IngestionFlowFileDTO();
-        OrganizationDTO orgDTO = new OrganizationDTO();
-        orgDTO.setOrgId(1L);
+        Organization orgDTO = new Organization();
+        orgDTO.setOrganizationId(1L);
         dto.setOrg(orgDTO);
         dto.setIngestionFlowFileId(2L);
         return dto;

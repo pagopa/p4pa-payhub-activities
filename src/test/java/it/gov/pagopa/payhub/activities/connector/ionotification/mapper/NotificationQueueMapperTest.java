@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.PersonDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
-import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationQueueDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
-import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.NotificationQueueFaker.buildNotificationQueueDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.OrganizationFaker.buildOrganizationDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.PaymentOptionFaker.buildPaymentOptionDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.NotificationQueueFaker.buildNotificationQueueDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)

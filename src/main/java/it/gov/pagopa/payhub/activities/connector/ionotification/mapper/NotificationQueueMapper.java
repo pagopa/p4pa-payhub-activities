@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
-import it.gov.pagopa.pu.p4paionotification.dto.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationQueueDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class NotificationQueueMapper {
                 .distinct()
                 .map(cf -> NotificationQueueDTO.builder()
                         .fiscalCode(cf)
-                        .enteId(debtPosition.getOrg().getOrgId())
+                        .enteId(debtPosition.getOrg().getOrganizationId())
                         .tipoDovutoId(debtPosition.getDebtPositionTypeOrg().getDebtPositionTypeOrgId())
                         .build())
                 .toList();

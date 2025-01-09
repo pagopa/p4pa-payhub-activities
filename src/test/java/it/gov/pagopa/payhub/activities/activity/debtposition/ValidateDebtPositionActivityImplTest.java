@@ -13,8 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.TransferFaker.buildTransferDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +69,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenInstallmentListEmptyThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getPaymentOptions().get(0).setInstallments(List.of());
+        debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of());
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("At least one installment of the debt position is mandatory", invalidValueException.getMessage());
@@ -78,7 +78,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenInstallmentWithoutRemittanceInfoThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setRemittanceInformation(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setRemittanceInformation(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Remittance information is mandatory", invalidValueException.getMessage());
@@ -87,7 +87,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenInstallmentWithDueDateRetroactiveThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setDueDate(LocalDate.of(2024, 11, 30));
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setDueDate(LocalDate.of(2024, 11, 30));
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("The due date cannot be retroactive", invalidValueException.getMessage());
@@ -97,7 +97,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenInstallmentWithDueDateNullButMandatoryThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setFlagMandatoryDueDate(true);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setDueDate(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setDueDate(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("The due date is mandatory", invalidValueException.getMessage());
@@ -107,8 +107,8 @@ class ValidateDebtPositionActivityImplTest {
     void givenInstallmentWithAmountNullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setFlagMandatoryDueDate(false);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setDueDate(null);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setAmount(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setDueDate(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setAmount(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Amount is mandatory", invalidValueException.getMessage());
@@ -118,7 +118,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenInstallmentWithAmountInvalidThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setFlagMandatoryDueDate(false);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setAmount(-200L);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setAmount(-200L);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Amount is not valid", invalidValueException.getMessage());
@@ -128,7 +128,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenInstallmentWithAmountInvalidForDebtPositionTypeThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setAmount(200L);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setAmount(100L);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setAmount(100L);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Amount is not valid for this debt position type org", invalidValueException.getMessage());
@@ -138,8 +138,8 @@ class ValidateDebtPositionActivityImplTest {
     void givenPersonNullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setAmount(100L);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setAmount(100L);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setPayer(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setAmount(100L);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setPayer(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("The debtor is mandatory for installment", invalidValueException.getMessage());
@@ -150,7 +150,7 @@ class ValidateDebtPositionActivityImplTest {
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setAmount(null);
         debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(false);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setUniqueIdentifierCode("ANONIMO");
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getPayer().setUniqueIdentifierCode("ANONIMO");
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("This organization installment type or installment does not allow an anonymous unique identification code", invalidValueException.getMessage());
@@ -160,7 +160,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenPersonWithNullCFButNotAnonymousFlagForDebtTypeThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(true);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setUniqueIdentifierCode(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getPayer().setUniqueIdentifierCode(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Unique identification code is mandatory", invalidValueException.getMessage());
@@ -170,7 +170,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenPersonWithNullFullNameThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getDebtPositionTypeOrg().setFlagAnonymousFiscalCode(true);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setFullName(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getPayer().setFullName(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Beneficiary name is mandatory", invalidValueException.getMessage());
@@ -179,7 +179,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenPersonWithNullEmailThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setEmail(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getPayer().setEmail(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Email is not valid", invalidValueException.getMessage());
@@ -188,7 +188,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenPersonWithInvalidEmailThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getPayer().setEmail("test&it");
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getPayer().setEmail("test&it");
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Email is not valid", invalidValueException.getMessage());
@@ -197,7 +197,7 @@ class ValidateDebtPositionActivityImplTest {
     @Test
     void givenNoTransfersThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).setTransfers(null);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setTransfers(null);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("At least one transfer is mandatory for installment", invalidValueException.getMessage());
@@ -207,7 +207,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenTransfersMismatchThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Mismatch with transfers list", invalidValueException.getMessage());
@@ -219,7 +219,7 @@ class ValidateDebtPositionActivityImplTest {
         TransferDTO secondTransfer = buildTransferDTO();
         secondTransfer.setTransferIndex(2);
         secondTransfer.setOrgFiscalCode(null);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Fiscal code of secondary beneficiary is not valid", invalidValueException.getMessage());
@@ -231,7 +231,7 @@ class ValidateDebtPositionActivityImplTest {
         TransferDTO secondTransfer = buildTransferDTO();
         secondTransfer.setTransferIndex(2);
         secondTransfer.setOrgFiscalCode("00000000001");
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Fiscal code of secondary beneficiary is not valid", invalidValueException.getMessage());
@@ -244,7 +244,7 @@ class ValidateDebtPositionActivityImplTest {
         secondTransfer.setTransferIndex(2);
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban(null);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Iban of secondary beneficiary is not valid", invalidValueException.getMessage());
@@ -258,7 +258,7 @@ class ValidateDebtPositionActivityImplTest {
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory(null);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         InvalidValueException invalidValueException = assertThrows(InvalidValueException.class, () -> activity.validate(debtPositionDTO));
         assertEquals("Category of secondary beneficiary is mandatory", invalidValueException.getMessage());
@@ -272,7 +272,7 @@ class ValidateDebtPositionActivityImplTest {
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         when(taxonomyDaoMock.verifyCategory("category/")).thenReturn(null);
 
@@ -289,7 +289,7 @@ class ValidateDebtPositionActivityImplTest {
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");
         secondTransfer.setAmount(null);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         when(taxonomyDaoMock.verifyCategory("category/")).thenReturn(Boolean.TRUE);
 
@@ -306,7 +306,7 @@ class ValidateDebtPositionActivityImplTest {
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");
         secondTransfer.setAmount(-12L);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         when(taxonomyDaoMock.verifyCategory("category/")).thenReturn(Boolean.TRUE);
 
@@ -323,7 +323,7 @@ class ValidateDebtPositionActivityImplTest {
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");
         secondTransfer.setAmount(12L);
-        debtPositionDTO.getPaymentOptions().get(0).getInstallments().get(0).getTransfers().add(secondTransfer);
+        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
         when(taxonomyDaoMock.verifyCategory("category/")).thenReturn(Boolean.TRUE);
 

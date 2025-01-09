@@ -4,9 +4,9 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 	void givenValidDataWhenValidateThenSuccess() {
 		//given
 		IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
-			.org(OrganizationDTO.builder()
+			.org(Organization.builder()
 				.orgFiscalCode("80010020011")
 				.build())
 			.build();
@@ -45,7 +45,7 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 	void givenInvalidOrganizationWhenValidateThenThrowInvalidIngestionFlowFileDataException() {
 		//given
 		IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
-			.org(OrganizationDTO.builder()
+			.org(Organization.builder()
 				.orgFiscalCode("80010020010")
 				.build())
 			.build();

@@ -237,7 +237,9 @@ tasks.register("dependenciesBuild") {
 	dependsOn(
 		"jaxb",
 		"openApiGenerateP4PAAUTH",
-		"openApiGenerateIONOTIFICATION")
+		"openApiGenerateIONOTIFICATION",
+		"openApiGenerateORGANIZATION",
+		"openApiGenerateDEBTPOSITIONS")
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
@@ -247,13 +249,14 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
-	invokerPackage.set("it.gov.pagopa.pu.p4paauth.generated")
-	apiPackage.set("it.gov.pagopa.pu.p4paauth.controller.generated")
-	modelPackage.set("it.gov.pagopa.pu.p4paauth.dto.generated")
+	invokerPackage.set("it.gov.pagopa.pu.auth.generated")
+	apiPackage.set("it.gov.pagopa.pu.auth.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.auth.dto.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
 		"dateLibrary" to "java8",
+		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
@@ -273,13 +276,14 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
-	invokerPackage.set("it.gov.pagopa.pu.p4paionotification.generated")
-	apiPackage.set("it.gov.pagopa.pu.p4paionotification.client.generated")
-	modelPackage.set("it.gov.pagopa.pu.p4paionotification.dto.generated")
+	invokerPackage.set("it.gov.pagopa.pu.ionotification.generated")
+	apiPackage.set("it.gov.pagopa.pu.ionotification.client.generated")
+	modelPackage.set("it.gov.pagopa.pu.ionotification.dto.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
 		"dateLibrary" to "java8",
+		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
@@ -291,3 +295,54 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
 	library.set("resttemplate")
 }
 
+tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-organization/refs/heads/develop/openapi/generated.openapi.json")
+	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.organization.generated")
+	apiPackage.set("it.gov.pagopa.pu.organization.client.generated")
+	modelPackage.set("it.gov.pagopa.pu.organization.dto.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"serializableModel" to "true",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "false",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+	))
+	library.set("resttemplate")
+}
+
+tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/develop/openapi/generated.openapi.json")
+	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
+	apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
+	modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"serializableModel" to "true",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "false",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+	))
+	library.set("resttemplate")
+}

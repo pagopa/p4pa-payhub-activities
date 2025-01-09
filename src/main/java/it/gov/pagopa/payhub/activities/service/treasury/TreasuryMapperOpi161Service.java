@@ -1,22 +1,25 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TreasuryMapperOpi161Service implements TreasuryMapperService<FlussoGiornaleDiCassa>{
     @Override
     public Map<TreasuryOperationEnum, List<TreasuryDTO>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFileDTO ingestionFlowFileDTO) {
-        OrganizationDTO organizationDTO = ingestionFlowFileDTO.getOrg();
+        Organization organizationDTO = ingestionFlowFileDTO.getOrg();
 
         return fGC.getInformazioniContoEvidenza().stream()
                 .flatMap(infoContoEvidenza -> infoContoEvidenza.getMovimentoContoEvidenzas().stream())
@@ -39,7 +42,7 @@ public class TreasuryMapperOpi161Service implements TreasuryMapperService<Flusso
                             .receptionDate(new Date())
                             .documentCode(String.valueOf(movContoEvidenza.getNumeroDocumento()))
                             .regionValueDate(regionValueDate)
-                            .organizationId(organizationDTO.getOrgId())
+                            .organizationId(organizationDTO.getOrganizationId())
                             .iuf(TreasuryUtils.getIdentificativo(movContoEvidenza.getCausale(), TreasuryUtils.IUF))
                             .iuv(null)
                             .creationDate(new Date())

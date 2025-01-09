@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.email;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.EmailSenderService;
-import it.gov.pagopa.payhub.activities.utility.faker.EmailDTOFaker;
+import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
