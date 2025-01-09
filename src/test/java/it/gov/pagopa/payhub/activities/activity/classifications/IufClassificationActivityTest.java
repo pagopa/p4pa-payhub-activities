@@ -33,7 +33,7 @@ class IufClassificationActivityTest {
     private IufClassificationActivity iufClassificationActivity;
 
     private static final Long ORGANIZATIONID = 1L;
-    private static final Long TREASURYID = 1L;
+    private static final String TREASURYID = "treasuryId";
     private static final String IUF = "IUF";
 
     @BeforeEach

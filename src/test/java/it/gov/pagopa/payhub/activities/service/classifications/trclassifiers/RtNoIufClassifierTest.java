@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RtNoIufClassifierTest {
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
@@ -29,7 +30,7 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenNullTreasuryDTOAndEqualsAmountWhenDefineThenSuccess() {
+	void givenNullTreasuryDTOAndUnmatchedAmountWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmount(100L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
@@ -40,7 +41,7 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenNullPaymentsReportingDTOAndEqualsAmountWhenDefineThenSuccess() {
+	void givenNullPaymentsReportingDTOAndUnmatchedAmountWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmount(100L);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
@@ -59,17 +60,32 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenTransferDTOThenGetAmountCents() {
-		assertDoesNotThrow(() -> classifier.getAmountCents(transferDTO));
+	void givenNullTreasuryDTOAndEqualsAmountWhenDefineThenReturnNull() {
+		// Arrange
+		transferDTO.setAmount(1000L);
+		paymentsReportingDTO.setAmountPaidCents(1000L);
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
+		// Assert
+		assertNull(result);
 	}
 
 	@Test
-	void givenPaymentsReportingDTOThenGetAmountCents() {
-		assertDoesNotThrow(() -> classifier.getAmountCents(paymentsReportingDTO));
+	void givenNullPaymentsReportingDTOAndEqualsAmountWhenDefineThenReturnNull() {
+		// Arrange
+		transferDTO.setAmount(100L);
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
+		// Assert
+		assertNull(result);
 	}
 
 	@Test
-	void givenTreasuryDTOThengetAmountCents() {
-		assertDoesNotThrow(() -> classifier.getAmountCents(treasuryDTO));
+	void givenUnmatchedTransferDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(null, null, null);
+		// Assert
+		assertNull(result);
 	}
 }

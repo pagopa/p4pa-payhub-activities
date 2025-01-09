@@ -25,7 +25,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     }
 
     @Override
-    public IufClassificationActivityResult classify(Long organizationId, Long treasuryId, String iuf) {
+    public IufClassificationActivityResult classify(Long organizationId, String treasuryId, String iuf) {
         log.debug("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
         List<Transfer2ClassifyDTO> transfers2classify =
@@ -58,7 +58,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
      * @param treasuryId  treasury id
      * @param iuf  flow unique identifier
      */
-    private void saveClassification(Long organizationId, Long treasuryId, String iuf) {
+    private void saveClassification(Long organizationId, String treasuryId, String iuf) {
         log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} - iuf: {}", organizationId, treasuryId, iuf);
 
         classificationDao.save(ClassificationDTO.builder()
