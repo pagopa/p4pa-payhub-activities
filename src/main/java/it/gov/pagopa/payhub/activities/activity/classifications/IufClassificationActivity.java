@@ -19,5 +19,5 @@ public interface IufClassificationActivity {
      * @return IufClassificationActivityResult containing a list of payments and success flag
      */
     @ActivityMethod
-    IufClassificationActivityResult classify(Long organizationId, Long treasuryId, String iuf);
+    IufClassificationActivityResult classify(Long organizationId, String treasuryId, String iuf);
 }

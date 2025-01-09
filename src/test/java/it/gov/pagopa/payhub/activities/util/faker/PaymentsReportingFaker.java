@@ -11,6 +11,7 @@ public class PaymentsReportingFaker {
                 .iuv("IUV")
                 .iur("IUR")
                 .transferIndex(1)
+                .totalAmountCents(100L)
                 .build();
     }
 }

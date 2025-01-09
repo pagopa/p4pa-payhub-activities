@@ -14,5 +14,6 @@ public enum ClassificationsEnum {
     RT_IUF_TES,
     IUF_TES_DIV_IMP,
     IUD_NO_RT,
-    TES_NO_MATCH
+    TES_NO_MATCH,
+    UNKNOWN /** DEFAULT **/
 }
