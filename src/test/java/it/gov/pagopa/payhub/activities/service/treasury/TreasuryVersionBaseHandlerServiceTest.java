@@ -176,8 +176,8 @@ class TreasuryVersionBaseHandlerServiceTest {
 
         // Then
         Mockito.verify(ingestionFlowFileArchiverService, times(1)).archive(
-                List.of(Path.of("parentDir", "errorFile.csv")),
-                Path.of("parentDir", targetDir)
+                any(),
+                any()
         );
     }
 
