@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
-import it.gov.pagopa.payhub.activities.utility.Utilities;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -17,8 +17,8 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.Utilities.isValidIban;
-import static it.gov.pagopa.payhub.activities.utility.Utilities.isValidPIVA;
+import static it.gov.pagopa.payhub.activities.util.Utilities.isValidIban;
+import static it.gov.pagopa.payhub.activities.util.Utilities.isValidPIVA;
 
 @Lazy
 @Service

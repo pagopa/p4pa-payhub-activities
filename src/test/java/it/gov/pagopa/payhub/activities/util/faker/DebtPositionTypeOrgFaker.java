@@ -1,9 +1,9 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionTypeFaker.buildDebtPositionType;
-import static it.gov.pagopa.payhub.activities.utility.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionTypeFaker.buildDebtPositionType;
+import static it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker.buildOrganizationDTO;
 
 public class DebtPositionTypeOrgFaker {
 

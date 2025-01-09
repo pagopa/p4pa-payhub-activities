@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
 import it.gov.pagopa.pu.auth.dto.generated.UserOrganizationRoles;

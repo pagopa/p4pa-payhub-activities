@@ -17,7 +17,7 @@ public class DebtPositionSearchClient {
 
     public DebtPosition findById(Long debtPositionId, String accessToken) {
         return debtPositionApisHolder.getDebtPositionSearchControllerApi(accessToken)
-                .executeSearchDebtpositionGet(debtPositionId);
+                .crudDebtPositionsFindOneWithAllDataByDebtPositionId(debtPositionId);
     }
 
 }

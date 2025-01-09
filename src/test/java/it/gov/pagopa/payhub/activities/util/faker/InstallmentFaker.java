@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.TestUtils.DATE;
-import static it.gov.pagopa.payhub.activities.utility.faker.PersonFaker.buildPersonDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.TransferFaker.buildTransferDTO;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.DATE;
+import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
 
 public class InstallmentFaker {
 

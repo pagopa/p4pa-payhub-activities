@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.exception.OperatorNotAuthorizedException;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,8 +36,8 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         Long debtPositionTypeOrgId = 1L;
 
         DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
-        OrganizationDTO organizationDTO = new OrganizationDTO();
-        organizationDTO.setOrgId(orgId);
+        Organization organizationDTO = new Organization();
+        organizationDTO.setOrganizationId(orgId);
         debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
         debtPositionTypeOrgDTO.setOrg(organizationDTO);
 

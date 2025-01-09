@@ -34,7 +34,7 @@ class DebtPositionSearchClientTest {
     }
 
     @Test
-    void whenGetOperatorInfoThenInvokeWithAccessToken(){
+    void whenFindByIdThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
         Long debtPositionId = 0L;
@@ -42,7 +42,7 @@ class DebtPositionSearchClientTest {
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionSearchControllerApi(accessToken))
                 .thenReturn(debtPositionSearchControllerApiMock);
-        Mockito.when(debtPositionSearchControllerApiMock.executeSearchDebtpositionGet(debtPositionId))
+        Mockito.when(debtPositionSearchControllerApiMock.crudDebtPositionsFindOneWithAllDataByDebtPositionId(debtPositionId))
                 .thenReturn(expectedResult);
 
         // When

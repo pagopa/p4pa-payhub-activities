@@ -6,7 +6,6 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
@@ -17,6 +16,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -212,7 +212,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			.fileName("valid-file.zip")
 			.filePathName(workingDir.toString())
 			.flowFileType(FLOW_FILE_TYPE)
-			.org(OrganizationDTO.builder().orgFiscalCode("0").build())
+			.org(Organization.builder().orgFiscalCode("0").build())
 			.build();
 		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePathName()).resolve(mockFlowDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);

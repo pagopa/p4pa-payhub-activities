@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;

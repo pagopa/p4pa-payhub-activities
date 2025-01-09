@@ -18,7 +18,7 @@ public class NotificationQueueMapper {
                 .distinct()
                 .map(cf -> NotificationQueueDTO.builder()
                         .fiscalCode(cf)
-                        .enteId(debtPosition.getOrg().getOrgId())
+                        .enteId(debtPosition.getOrg().getOrganizationId())
                         .tipoDovutoId(debtPosition.getDebtPositionTypeOrg().getDebtPositionTypeOrgId())
                         .build())
                 .toList();

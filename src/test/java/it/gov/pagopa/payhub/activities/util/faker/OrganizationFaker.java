@@ -1,25 +1,25 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 
 import java.time.LocalDate;
 
-import static it.gov.pagopa.payhub.activities.utility.TestUtils.DATE;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 
 public class OrganizationFaker {
 
-    public static OrganizationDTO buildOrganizationDTO() {
-        return OrganizationDTO.builder()
-                .orgId(1L)
+    public static Organization buildOrganizationDTO() {
+        return Organization.builder()
+                .organizationId(1L)
                 .ipaCode("ipaCode")
                 .orgFiscalCode("orgFiscalCode")
                 .orgName("orgName")
                 .adminEmail("adminEmail")
-                .creationDate(DATE.toInstant())
-                .lastUpdateDate(DATE.toInstant())
+                .creationDate(OFFSETDATETIME)
+                .lastUpdateDate(OFFSETDATETIME)
                 .fee(500L)
                 .iban("iban")
-                .urlOrgSendSILPaymentResult("urlOrgSendSILPaymentResult")
+                .urlOrgSendSilPaymentResult("urlOrgSendSILPaymentResult")
                 .password("password")
                 .creditBicSeller(true)
                 .beneficiaryOrgName("beneficiaryOrgName")
@@ -33,7 +33,7 @@ public class OrganizationFaker {
                 .beneficiaryOrgWebSite("beneficiaryOrgWebSite")
                 .beneficiaryOrgEmail("beneficiaryOrgEmail")
                 .applicationCode("applicationCode")
-                .cbillInterbankCode("cbillInterbankCode")
+                .cbillInterBankCode("cbillInterbankCode")
                 .orgInformation("orgInformation")
                 .orgLogoDesc("orgLogoDesc")
                 .authorizationDesc("authorizationDesc")

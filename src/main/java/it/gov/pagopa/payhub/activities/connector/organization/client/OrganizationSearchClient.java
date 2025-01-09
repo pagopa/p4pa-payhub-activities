@@ -17,7 +17,12 @@ public class OrganizationSearchClient {
 
     public Organization findByIpaCode(String ipaCode, String accessToken) {
         return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
-                .executeSearchOrganizationGet(ipaCode);
+                .crudOrganizationsFindByIpaCode(ipaCode);
+    }
+
+    public Organization findByOrgFiscalCode(String orgFiscalCode, String accessToken) {
+        return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
+                .crudOrganizationsFindByOrgFiscalCode(orgFiscalCode);
     }
 
 }

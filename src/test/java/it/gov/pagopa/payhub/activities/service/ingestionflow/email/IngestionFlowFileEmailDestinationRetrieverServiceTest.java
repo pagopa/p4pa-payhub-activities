@@ -1,14 +1,14 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthzService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
-import it.gov.pagopa.payhub.activities.service.OrganizationService;
-import it.gov.pagopa.payhub.activities.utility.faker.IngestionFlowFileFaker;
-import it.gov.pagopa.payhub.activities.utility.faker.OrganizationFaker;
-import it.gov.pagopa.payhub.activities.utility.faker.UserInfoFaker;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
+import it.gov.pagopa.payhub.activities.util.faker.UserInfoFaker;
 import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +71,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         EmailDTO emailDTO = new EmailDTO();
         IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
-        OrganizationDTO organizationDTO = OrganizationFaker.buildOrganizationDTO();
+        Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
         organizationDTO.setAdminEmail(userInfo.getEmail());
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
@@ -95,7 +95,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         EmailDTO emailDTO = new EmailDTO();
         IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
-        OrganizationDTO organizationDTO = OrganizationFaker.buildOrganizationDTO();
+        Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
                 .thenReturn(userInfo);

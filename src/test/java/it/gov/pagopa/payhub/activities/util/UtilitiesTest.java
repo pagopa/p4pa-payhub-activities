@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.utility;
+package it.gov.pagopa.payhub.activities.util;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

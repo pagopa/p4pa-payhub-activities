@@ -1,13 +1,13 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
 
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.IngestionFlowFileFaker.buildIngestionFlowFileDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.OrganizationFaker.buildOrganizationDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.PaymentOptionFaker.buildPaymentOptionDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFileDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 
 public class DebtPositionFaker {
 

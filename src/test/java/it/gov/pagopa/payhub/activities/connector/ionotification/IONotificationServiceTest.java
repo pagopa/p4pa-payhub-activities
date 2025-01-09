@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.NotificationQueueFaker.buildNotificationQueueDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.NotificationQueueFaker.buildNotificationQueueDTO;
 
 @ExtendWith(MockitoExtension.class)
 class IONotificationServiceTest {

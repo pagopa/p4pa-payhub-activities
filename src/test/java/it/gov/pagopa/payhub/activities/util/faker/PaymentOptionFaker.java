@@ -1,12 +1,12 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.utility.faker.InstallmentFaker.buildInstallmentDTO;
-import static it.gov.pagopa.payhub.activities.utility.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker.buildOrganizationDTO;
 
 public class PaymentOptionFaker {
 

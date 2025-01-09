@@ -34,7 +34,7 @@ class OrganizationSearchClientTest {
     }
 
     @Test
-    void whenGetOperatorInfoThenInvokeWithAccessToken(){
+    void whenFindByIpaCodeThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
         String orgIpaCode = "ORGIPACODE";
@@ -42,11 +42,30 @@ class OrganizationSearchClientTest {
 
         Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
-        Mockito.when(organizationSearchControllerApiMock.executeSearchOrganizationGet(orgIpaCode))
+        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
                 .thenReturn(expectedResult);
 
         // When
         Organization result = organizationSearchClient.findByIpaCode(orgIpaCode, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenGetOrgFiscalCodeThenInvokeWithAccessToken(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String orgFiscalCode = "ORGFISCALCODE";
+        Organization expectedResult = new Organization();
+
+        Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
+                .thenReturn(organizationSearchControllerApiMock);
+        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByOrgFiscalCode(orgFiscalCode))
+                .thenReturn(expectedResult);
+
+        // When
+        Organization result = organizationSearchClient.findByOrgFiscalCode(orgFiscalCode, accessToken);
 
         // Then
         Assertions.assertSame(expectedResult, result);

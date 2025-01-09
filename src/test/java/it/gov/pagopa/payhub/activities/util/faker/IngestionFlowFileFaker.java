@@ -1,8 +1,8 @@
-package it.gov.pagopa.payhub.activities.utility.faker;
+package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -14,7 +14,7 @@ public class IngestionFlowFileFaker {
         return IngestionFlowFileDTO.builder()
                 .ingestionFlowFileId(1L)
                 .version(1)
-                .org(OrganizationDTO.builder().build())
+                .org(Organization.builder().build())
                 .status("status")
                 .numTotalRows(3L)
                 .numCorrectlyImportedRows(2L)

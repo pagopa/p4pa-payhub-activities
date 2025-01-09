@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.utility;
+package it.gov.pagopa.payhub.activities.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

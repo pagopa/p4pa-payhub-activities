@@ -33,7 +33,7 @@ class IoNotificationClientTest {
     }
 
     @Test
-    void whenGetOperatorInfoThenInvokeWithAccessToken(){
+    void whenSendMessageThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
         NotificationQueueDTO request = new NotificationQueueDTO();
