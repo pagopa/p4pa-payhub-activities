@@ -17,8 +17,8 @@ public class ClassificationDTO implements Serializable {
     private Long organizationId;
     private Long transferId;
     private Long paymentNotifyId;
-    private Long paymentReportingId;
-    private Long treasuryId;
+    private String paymentReportingId;
+    private String treasuryId;
     private String iuf;
     private String iud;
     private String iuv;

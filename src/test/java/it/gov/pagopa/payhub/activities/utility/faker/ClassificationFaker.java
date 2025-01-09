@@ -8,7 +8,7 @@ public class ClassificationFaker {
     public static ClassificationDTO buildClassificationDTO(){
         return ClassificationDTO.builder()
                 .organizationId(1L)
-                .treasuryId(1L)
+                .treasuryId("treasuryId")
                 .iuf("IUF")
                 .classificationsEnum(ClassificationsEnum.TES_NO_MATCH)
                 .build();
