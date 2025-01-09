@@ -9,7 +9,7 @@ public class TreasuryFaker {
 
 	public static TreasuryDTO buildTreasuryDTO() {
 		return TreasuryDTO.builder()
-			.treasuryId(1L)
+			.treasuryId("treasuryId")
 			.billYear("2025")
 			.billCode("BILL123")
 			.accountCode("ACC456")

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PaymentsReportingDTO {
 
-	private Long paymentsReportingId;
+	private String paymentsReportingId;
 	private int version;
 	private Instant creationDate;
 	private Instant lastUpdateDate;
