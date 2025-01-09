@@ -25,7 +25,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class IngestionFlowFileRetrieverServiceTest {
 	private static final String TEST_CIPHER_PSW = "testPassword";
-	private static final String TEMPORARY_PATH = "/tmp/";
+	private static final String SHARED_PATH = "/tmp";
+	private static final String TEMPORARY_PATH = "/tmp";
 
 	@Mock
 	private FileValidatorService fileValidatorService;
@@ -42,7 +43,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 	@BeforeEach
 	void setup() throws IOException {
-		service = new IngestionFlowFileRetrieverService(TEMPORARY_PATH, TEST_CIPHER_PSW, fileValidatorService, zipFileService);
+		service = new IngestionFlowFileRetrieverService(SHARED_PATH, TEMPORARY_PATH, TEST_CIPHER_PSW, fileValidatorService, zipFileService);
 		zipFile = tempDir.resolve("encryptedFile.zip.cipher");
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 			addZipEntry(zos, "file1.txt", "This is the content of file1.");

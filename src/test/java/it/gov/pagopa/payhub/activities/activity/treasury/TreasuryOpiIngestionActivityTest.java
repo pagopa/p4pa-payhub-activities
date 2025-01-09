@@ -39,7 +39,7 @@ class TreasuryOpiIngestionActivityTest {
   @Mock
   private TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
   @Mock
-  private TreasuryMapperService treasuryMapperServiceMock;
+  private TreasuryMapperService<?> treasuryMapperServiceMock;
   @Mock
   private TreasuryOpiParserService treasuryOpiParserServiceMock;
   @Mock
@@ -56,18 +56,17 @@ class TreasuryOpiIngestionActivityTest {
             ingestionFlowFileDaoMock,
             ingestionFlowFileRetrieverServiceMock,
             treasuryOpiParserServiceMock,
-            ingestionFlowFileArchiverServiceMock,
-            "archiveDirectory"
+            ingestionFlowFileArchiverServiceMock
     );
   }
 
   private static final Long NOT_FOUND_INGESTION_FLOW_ID = 8L;
   private static final Long INVALID_INGESTION_FLOW_ID = 9L;
   private static final IngestionFlowFileType INVALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
-  private static final Optional<IngestionFlowFileDTO> INVALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
+  private static final IngestionFlowFileDTO INVALID_INGESTION_FLOW = IngestionFlowFileDTO.builder()
           .ingestionFlowFileId(INVALID_INGESTION_FLOW_ID)
           .flowFileType(INVALID_INGESTION_FLOW_TYPE)
-          .build());
+          .build();
 
   @Test
   void givenValidIngestionFlowWhenProcessFileThenOk() throws IOException {
@@ -120,7 +119,7 @@ class TreasuryOpiIngestionActivityTest {
   @Test
   void givenIngestionFlowTypeInvalidWhenProcessFileThenNoSuccess() {
     //given
-    when(ingestionFlowFileDaoMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(INVALID_INGESTION_FLOW);
+    when(ingestionFlowFileDaoMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(Optional.of(INVALID_INGESTION_FLOW));
 
     //when
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(INVALID_INGESTION_FLOW_ID);

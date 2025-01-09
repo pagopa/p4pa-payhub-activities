@@ -38,7 +38,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PaymentsReportingIngestionFlowFileActivityImplTest {
 	private static final IngestionFlowFileType FLOW_FILE_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
-    private static final String TARGET_DIR = "/target/";
 	@Mock
 	private IngestionFlowFileDao ingestionFlowFileDaoMock;
 	@Mock
@@ -64,7 +63,6 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	@BeforeEach
 	void setUp() {
 		ingestionActivity = new PaymentsReportingIngestionFlowFileActivityImpl(
-			TARGET_DIR,
 			ingestionFlowFileDaoMock,
 			ingestionFlowFileRetrieverServiceMock,
 			flussoRiversamentoUnmarshallerServiceMock,
@@ -109,7 +107,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, mockFlowDTO)).thenReturn(dtoList);
 		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
 		doNothing().when(ingestionFlowFileArchiverServiceMock)
-			.archive(mockedListPath, Path.of(mockFlowDTO.getFilePathName(), TARGET_DIR));
+			.archive(mockedListPath, Path.of(mockFlowDTO.getFilePathName()));
 
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);
@@ -298,7 +296,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
 
 		doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
-			.archive(mockedListPath, Path.of(mockFlowDTO.getFilePathName(), TARGET_DIR));
+			.archive(mockedListPath, Path.of(mockFlowDTO.getFilePathName()));
 
 		// When
 		PaymentsReportingIngestionFlowFileActivityResult result = ingestionActivity.processFile(ingestionFlowFileId);

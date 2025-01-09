@@ -24,7 +24,7 @@ public class IngestionFlowFileFaker {
                 .operatorExternalUserId("operatorExternalId")
                 .flagSpontaneous(Boolean.TRUE)
                 .filePathName("filePathName")
-                .fileName("fileName")
+                .fileName("fileName.csv")
                 .pdfGenerated(2L)
                 .codRequestToken("codRequestToken")
                 .codError("codError")

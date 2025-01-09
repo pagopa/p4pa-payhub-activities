@@ -2,26 +2,22 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.*;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
-
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
-
-import it.gov.pagopa.payhub.activities.service.treasury.*;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Implementation of {@link TreasuryOpiIngestionActivity} for processing OPI treasury ingestion files.
@@ -31,11 +27,11 @@ import java.util.*;
 @Lazy
 @Component
 public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionActivity {
+
     private final IngestionFlowFileDao ingestionFlowFileDao;
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
     private final TreasuryOpiParserService treasuryOpiParserService;
     private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
-    private final String archiveDirectory;
 
     /**
      * Constructor to initialize dependencies for OPI treasury ingestion.
@@ -44,21 +40,18 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
      * @param ingestionFlowFileRetrieverService Service for retrieving and unzipping ingestion flow files.
      * @param treasuryOpiParserService Service for parsing treasury OPI files.
      * @param ingestionFlowFileArchiverService Service for archiving files.
-     * @param archiveRelativePathDirectory Directory for archiving processed files.
      */
     public TreasuryOpiIngestionActivityImpl(
             IngestionFlowFileDao ingestionFlowFileDao,
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
             TreasuryOpiParserService treasuryOpiParserService,
-            IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
-            @Value("${archive-relative-path:processed/}") String archiveRelativePathDirectory
+            IngestionFlowFileArchiverService ingestionFlowFileArchiverService
 
     ) {
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryOpiParserService = treasuryOpiParserService;
         this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
-        this.archiveDirectory = archiveRelativePathDirectory;
     }
 
     /**
@@ -89,7 +82,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                     })
                     .toList();
 
-            archive(ingestionFlowFileDTO);
+            ingestionFlowFileArchiverService.archive(ingestionFlowFileDTO);
             boolean isSuccess= treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess);
 
             return new TreasuryIufResult(
@@ -98,13 +91,13 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                             .distinct()
                             .toList(),
                     isSuccess,
-                    isSuccess?null:"error occured"
+                    isSuccess?null:"error occurred"
             );
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-            if(ingestionFlowFilesRetrieved != null)
-                deletion(ingestionFlowFilesRetrieved);
             return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
+        } finally {
+            deletion(ingestionFlowFilesRetrieved);
         }
     }
 
@@ -118,9 +111,11 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
         IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
                 .orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: " + ingestionFlowFileId));
-        if (!ingestionFlowFileDTO.getFlowFileType().equals(IngestionFlowFileType.OPI)) {
+
+        if (!IngestionFlowFileType.OPI.equals(ingestionFlowFileDTO.getFlowFileType())) {
             throw new IllegalArgumentException("Invalid ingestionFlow file type " + ingestionFlowFileDTO.getFlowFileType());
         }
+
         return ingestionFlowFileDTO;
     }
 
@@ -134,19 +129,6 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private List<Path> retrieveFiles(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
         return ingestionFlowFileRetrieverService
                 .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-    }
-
-    /**
-     * Archives the file specified in the given {@link IngestionFlowFileDTO}.
-     * The file is moved to the archive directory located within the same file path.
-     *
-     * @param ingestionFlowFileDTO DTO containing details of the file to be archived.
-     * @throws IOException if an error occurs during file movement or directory creation.
-     */
-    private void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-        Path originalFilePath = Paths.get(ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
-        Path targetDirectory = Paths.get(ingestionFlowFileDTO.getFilePathName(), archiveDirectory);
-        ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
     }
 
     /**
