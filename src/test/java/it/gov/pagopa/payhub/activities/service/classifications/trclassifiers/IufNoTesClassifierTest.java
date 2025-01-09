@@ -25,9 +25,17 @@ class IufNoTesClassifierTest {
 	}
 
 	@Test
-	void givenUnmatchedConditionWhenDefineThenReturnNull() {
+	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenUnmatchedPaymentsReportingDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(null, null, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}

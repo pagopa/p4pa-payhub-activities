@@ -8,6 +8,8 @@ import it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.utility.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
 
@@ -41,14 +43,35 @@ class RtIufTesClassifierTest {
 		assertNull(result);
 	}
 
-	@Test
-	void givenUnmatchedAmountWhenDefineThenReturnNull() {
+	@ParameterizedTest
+	@CsvSource({
+		"10000, 100.00",
+		"100, 100.00",
+		"1000, 1.00"
+	})
+	void givenUnmatchedAmountsWhenDefineThenReturnNull(Long paymentsReportingAmount, Double treasuryAmount) {
 		// Arrange
 		transferDTO.setAmount(100L);
-		paymentsReportingDTO.setAmountPaidCents(10000L);
-		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
+		paymentsReportingDTO.setAmountPaidCents(paymentsReportingAmount);
+		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(treasuryAmount));
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryDTO);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenUnmatchedPaymentsReportingDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenUnmatchedTransferDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert
 		assertNull(result);
 	}

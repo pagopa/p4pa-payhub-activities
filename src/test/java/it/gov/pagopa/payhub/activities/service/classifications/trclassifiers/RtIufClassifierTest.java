@@ -45,4 +45,12 @@ class RtIufClassifierTest {
 		// Assert
 		assertNull(result);
 	}
+
+	@Test
+	void givenUnmatchedPaymentsReportingDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, null, null);
+		// Assert
+		assertNull(result);
+	}
 }

@@ -47,4 +47,12 @@ class IufTesDivImpClassifierTest {
 		// Assert
 		assertNull(result);
 	}
+
+	@Test
+	void givenUnmatchedPaymentsReportingDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(null, null, treasuryDTO);
+		// Assert
+		assertNull(result);
+	}
 }

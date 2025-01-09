@@ -80,4 +80,20 @@ class RtNoIufClassifierTest {
 		// Assert
 		assertNull(result);
 	}
+
+	@Test
+	void givenUnmatchedPaymentsReportingDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
+		// Act
+		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
+		// Assert
+		assertNull(result);
+	}
 }
