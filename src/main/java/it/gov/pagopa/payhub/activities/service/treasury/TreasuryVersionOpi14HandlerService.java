@@ -15,8 +15,9 @@ public class TreasuryVersionOpi14HandlerService extends TreasuryVersionBaseHandl
 
     public TreasuryVersionOpi14HandlerService(TreasuryMapperOpi14Service mapperService,
                                               TreasuryValidatorOpi14Service validatorService,
-                                              TreasuryUnmarshallerService treasuryUnmarshallerService) {
-        super(mapperService, validatorService);
+                                              TreasuryUnmarshallerService treasuryUnmarshallerService,
+                                              TreasuryErrorsArchiverService treasuryErrorsArchiverService) {
+        super(mapperService, validatorService, treasuryErrorsArchiverService);
         this.treasuryUnmarshallerService = treasuryUnmarshallerService;
     }
 

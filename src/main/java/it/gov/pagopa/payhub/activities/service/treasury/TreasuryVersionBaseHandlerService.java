@@ -2,15 +2,20 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
+import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.util.CsvUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -18,11 +23,13 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     
     private final TreasuryMapperService<T> mapperService;
     private final TreasuryValidatorService<T> validatorService;
-    
+    private final TreasuryErrorsArchiverService treasuryErrorsArchiverService;
 
-    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService) {
+
+    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService) {
         this.mapperService = mapperService;
         this.validatorService = validatorService;
+        this.treasuryErrorsArchiverService = treasuryErrorsArchiverService;
     }
 
     abstract T unmarshall(File file);
@@ -31,9 +38,10 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     public Map<TreasuryOperationEnum, List<TreasuryDTO>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
         try {
             T unmarshalled = unmarshall(input);
-            validate(ingestionFlowFileDTO, size, unmarshalled);
+            List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
             Map<TreasuryOperationEnum, List<TreasuryDTO>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
+            treasuryErrorsArchiverService.writeErrors(errorDTOList, input.getName());
             return result;
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using mapper{} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
@@ -41,10 +49,13 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         }
     }
 
-    private void validate(IngestionFlowFileDTO ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
+    List<TreasuryErrorDTO> validate(IngestionFlowFileDTO ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
         if (validatorService.validatePageSize(fGCUnmarshalled, size)) {
             throw new TreasuryOpiInvalidFileException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFileDTO.getFileName());
         }
-        validatorService.validateData(fGCUnmarshalled, ingestionFlowFileDTO.getFileName());
+        return validatorService.validateData(fGCUnmarshalled, ingestionFlowFileDTO.getFileName());
     }
+
+
+
 }

@@ -112,7 +112,7 @@ class TreasuryOpiParserServiceTest {
         assertNotNull(result);
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
-        assertEquals("Flow456", result.getIufs().get(0));
+        assertEquals("Flow456", result.getIufs().getFirst());
         verify(treasuryDao, times(1)).insert(treasuryDTO);
     }
 }

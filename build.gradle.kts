@@ -61,6 +61,7 @@ val jsoupVersion = "1.18.3"
 val openApiToolsVersion = "0.2.6"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
+val openCsvVersion = "5.9"
 
 
 dependencies {
@@ -100,6 +101,9 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 
+	//openCsv
+	implementation("com.opencsv:opencsv:$openCsvVersion")
+
 	//jaxb
 	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
@@ -114,6 +118,8 @@ dependencies {
     jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
     jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
 }
+
+
 
 val projectInfo = mapOf(
 		"artifactId" to project.name,

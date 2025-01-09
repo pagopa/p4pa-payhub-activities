@@ -47,7 +47,7 @@ public class TreasuryOpiParserService {
               .distinct()
               .toList();
 
-        return new TreasuryIufResult(iufList, true);
+        return new TreasuryIufResult(iufList, true, null);
     }
 
 }
