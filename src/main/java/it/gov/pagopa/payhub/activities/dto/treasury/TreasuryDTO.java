@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TreasuryDTO {
-  private Long treasuryId;
+  private String treasuryId;
   private String billYear;
   private String billCode;
   private String accountCode;
