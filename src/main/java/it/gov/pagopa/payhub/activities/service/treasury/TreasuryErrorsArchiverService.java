@@ -1,39 +1,48 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
+import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
-import it.gov.pagopa.payhub.activities.util.CsvUtils;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 public class TreasuryErrorsArchiverService {
 
+    public static final String ERRORFILE_PREFIX = "ERROR-";
+    private final Path sharedDirectoryPath;
+    private final String errorFolder;
+
     private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+    private final CsvService csvService;
 
-    private final String tempDirectory;
-    private final String errorDirectory;
 
-    public TreasuryErrorsArchiverService(IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
-                                         @Value("${tmp-dir:/tmp/}") String tempDirectory,
-                                         @Value("${archive-relative-error-path:error/}") String archiveRelativeErrorPathDirectory) {
+    public TreasuryErrorsArchiverService(
+            @Value("${folders.shared}") String sharedFolder,
+            @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
+
+            IngestionFlowFileArchiverService ingestionFlowFileArchiverService, CsvService csvService
+    ) {
+        this.sharedDirectoryPath = Path.of(sharedFolder);
+        this.errorFolder = errorFolder;
         this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
-        this.tempDirectory = tempDirectory;
-        this.errorDirectory = archiveRelativeErrorPathDirectory;
+        this.csvService = csvService;
     }
 
 
-    void writeErrors(List<TreasuryErrorDTO> errorDTOList, String fileName) {
+    public void writeErrors(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO, List<TreasuryErrorDTO> errorDTOList) {
 
         List<String[]> data = errorDTOList.stream()
                 .map(errorDTO -> new String[]{
@@ -51,31 +60,54 @@ public class TreasuryErrorsArchiverService {
             List<String[]> header = new ArrayList<>(List.of());
             header.add(headerArray);
 
-            String errorPathName = tempDirectory +"ERROR-" + fileName;
-            CsvUtils.createCsv(errorPathName, header, data);
+            String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".csv");
+            Path errorCsvFilePath = workingDirectory
+                    .resolve(errorFileName);
 
-            archiveErrorFile(new File(errorPathName), errorDirectory);
-
+            csvService.createCsv(errorCsvFilePath, header, data);
         } catch (IOException e) {
             throw new ActivitiesException(e.getMessage());
         }
 
     }
+
     /**
      * Archives an error file to a specified target directory.
      * This method takes an error file and moves it to a target directory for archiving. It constructs
      * the original file path and the target directory path, then invokes the {@link IngestionFlowFileArchiverService}
      * to perform the archiving operation.
      *
-     * @param errorFile the error file to be archived. This file is moved from its original location to the target directory.
-     * @param targetDir the directory where the error file should be archived. The target directory path is constructed relative
-     *                  to the parent directory of the error file.
-     * @throws IOException if an I/O error occurs while archiving the file, such as issues with reading, writing, or accessing file paths.
+     * @param workingDirectory     the working directory where to search for error files to be archived. This file is moved from its original location to the target directory.
+     * @param ingestionFlowFileDTO the ingestion flow file
      */
-    void archiveErrorFile(File errorFile, String targetDir) throws IOException {
-        Path originalFilePath = Paths.get(errorFile.getParent() != null ? errorFile.getParent() : "",errorFile.getName());
-        Path targetDirectory = Paths.get(errorFile.getParent() != null ? errorFile.getParent() : "", targetDir);
-        ingestionFlowFileArchiverService.archive(List.of(originalFilePath), targetDirectory);
+    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO) {
+        try {
+            List<Path> errorFiles;
+            try (Stream<Path> fileListStream = Files.list(workingDirectory)) {
+                errorFiles = fileListStream
+                        .filter(f -> f.getFileName().toString().startsWith(ERRORFILE_PREFIX))
+                        .toList();
+            }
+
+            if (!errorFiles.isEmpty()) {
+
+                Path targetDirectory = sharedDirectoryPath
+                        .resolve(ingestionFlowFileDTO.getFilePathName())
+                        .resolve(errorFolder);
+
+                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
+                Path zipFile = Path.of(zipFileName);
+
+                ingestionFlowFileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
+
+                return zipFileName;
+            } else {
+                return null;
+            }
+        } catch (IOException e){
+            log.error("Something gone wrong while trying to archive error file!", e);
+            return null;
+        }
     }
 
 }

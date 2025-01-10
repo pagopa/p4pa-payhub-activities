@@ -39,13 +39,15 @@ class TreasuryOpiIngestionActivityTest {
   @Mock
   private TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
   @Mock
-  private TreasuryMapperService treasuryMapperServiceMock;
+  private TreasuryMapperService<?> treasuryMapperServiceMock;
   @Mock
   private TreasuryOpiParserService treasuryOpiParserServiceMock;
   @Mock
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
   @Mock
   private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+  @Mock
+  private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
 
   @TempDir
   Path workingDir;
@@ -57,17 +59,17 @@ class TreasuryOpiIngestionActivityTest {
             ingestionFlowFileRetrieverServiceMock,
             treasuryOpiParserServiceMock,
             ingestionFlowFileArchiverServiceMock,
-            "archiveDirectory"
+            treasuryErrorsArchiverServiceMock
     );
   }
 
   private static final Long NOT_FOUND_INGESTION_FLOW_ID = 8L;
   private static final Long INVALID_INGESTION_FLOW_ID = 9L;
   private static final IngestionFlowFileType INVALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
-  private static final Optional<IngestionFlowFileDTO> INVALID_INGESTION_FLOW = Optional.of(IngestionFlowFileDTO.builder()
+  private static final IngestionFlowFileDTO INVALID_INGESTION_FLOW = IngestionFlowFileDTO.builder()
           .ingestionFlowFileId(INVALID_INGESTION_FLOW_ID)
           .flowFileType(INVALID_INGESTION_FLOW_TYPE)
-          .build());
+          .build();
 
   @Test
   void givenValidIngestionFlowWhenProcessFileThenOk() throws IOException {
@@ -88,7 +90,10 @@ class TreasuryOpiIngestionActivityTest {
             .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size()))
-            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), true, null));
+            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), true, null, null));
+
+    Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
+            .thenReturn("DISCARDFILENAME");
 
     // When
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
@@ -98,8 +103,10 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertTrue(result.isSuccess());
     Assertions.assertEquals(1, result.getIufs().size());
     Assertions.assertEquals("IUF123", result.getIufs().getFirst());
+    Assertions.assertEquals("DISCARDFILENAME", result.getDiscardedFileName());
+
     Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1))
-            .archive(mockedListPath, Path.of(ingestionFlowFileDTO.getFilePathName(),"/archiveDirectory/"));
+            .archive(ingestionFlowFileDTO);
   }
   @Test
   void givenIngestionFlowNotFoundWhenProcessFileThenNoSuccess() {
@@ -120,7 +127,7 @@ class TreasuryOpiIngestionActivityTest {
   @Test
   void givenIngestionFlowTypeInvalidWhenProcessFileThenNoSuccess() {
     //given
-    when(ingestionFlowFileDaoMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(INVALID_INGESTION_FLOW);
+    when(ingestionFlowFileDaoMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(Optional.of(INVALID_INGESTION_FLOW));
 
     //when
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(INVALID_INGESTION_FLOW_ID);
@@ -165,14 +172,14 @@ class TreasuryOpiIngestionActivityTest {
     List<Path> mockedListPath = List.of(filePath);
 
     TreasuryIufResult expected =
-            new TreasuryIufResult(Collections.emptyList(), false, "error occured");
+            new TreasuryIufResult(Collections.emptyList(), false, "error occured", null);
 
     when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
             .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
-            .archive(mockedListPath, Path.of(ingestionFlowFileDTO.getFilePathName(), "/archiveDirectory/"));
+    doThrow(new RuntimeException("error occured")).when(treasuryErrorsArchiverServiceMock)
+            .archiveErrorFiles(workingDir, ingestionFlowFileDTO);
 
     // When
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);

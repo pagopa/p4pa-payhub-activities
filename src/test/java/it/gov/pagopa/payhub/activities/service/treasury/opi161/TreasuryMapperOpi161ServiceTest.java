@@ -1,10 +1,10 @@
-package it.gov.pagopa.payhub.activities.service.treasury;
+package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +14,16 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class TreasuryMapperOpi14ServiceTest {
+class TreasuryMapperOpi161ServiceTest {
 
     public static final String LAST_NAME_CLIENTE = "Last name cliente";
     public static final String ADDRESS_CLIENTE = "Address cliente";
@@ -27,12 +31,12 @@ class TreasuryMapperOpi14ServiceTest {
     public static final String CITY = "City";
     public static final String FISCAL_CODE = "AAABBB12A34A567Z";
     public static final String VAT_NUMBER = "IT09876543123";
-    private TreasuryMapperOpi14Service treasuryMapperService;
+    private TreasuryMapperOpi161Service treasuryMapperService;
 
 
     @BeforeEach
     void setUp() {
-        treasuryMapperService = new TreasuryMapperOpi14Service();
+        treasuryMapperService = new TreasuryMapperOpi161Service();
     }
 
     @Test

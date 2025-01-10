@@ -19,4 +19,6 @@ public class TreasuryIufResult {
     private boolean success;
     /** the error description */
     private String errorDescription;
+
+    private String discardedFileName;
 }

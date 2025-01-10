@@ -11,9 +11,19 @@ spring:
           enable: "\${MAIL_SMTP_STARTTLS:true}"
           required: "\${MAIL_SMTP_STARTTLS_REQUIRED:true}"
 
-
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
+
+folders:
+  shared: "\${SHARED_FOLDER_ROOT:/shared}"
+  tmp: "\${TMP_FOLDER:/tmp}"
+  process-target-sub-folders:
+    archive: "\${PROCESS_TARGET_SUB_FOLDER_ARCHIVE:archive}"
+    errors: "\${PROCESS_TARGET_SUB_FOLDER_ERRORS:errors}"
+
+csv:
+  separator: "\${CSV_SEPARATOR_CHAR:;}"
+  quote-char: "\${CSV_QUOTE_CHAR:\\\"}"
 
 rest:
   default-timeout:

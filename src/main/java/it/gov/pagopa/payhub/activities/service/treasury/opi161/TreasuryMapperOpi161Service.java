@@ -1,8 +1,9 @@
-package it.gov.pagopa.payhub.activities.service.treasury;
+package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class TreasuryMapperOpi161Service implements TreasuryMapperService<FlussoGiornaleDiCassa>{
+public class TreasuryMapperOpi161Service implements TreasuryMapperService<FlussoGiornaleDiCassa> {
     @Override
     public Map<TreasuryOperationEnum, List<TreasuryDTO>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFileDTO ingestionFlowFileDTO) {
         Organization organizationDTO = ingestionFlowFileDTO.getOrg();

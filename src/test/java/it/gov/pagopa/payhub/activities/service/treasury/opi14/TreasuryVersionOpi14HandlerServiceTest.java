@@ -1,13 +1,21 @@
-package it.gov.pagopa.payhub.activities.service.treasury;
+package it.gov.pagopa.payhub.activities.service.treasury.opi14;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,21 +23,23 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class TreasuryVersionOpi14HandlerServiceTest {
 
-    private TreasuryMapperOpi14Service mapperService;
-    private TreasuryValidatorOpi14Service validatorService;
-    private TreasuryUnmarshallerService treasuryUnmarshallerService;
+    @Mock
+    private TreasuryMapperOpi14Service mapperServiceMock;
+    @Mock
+    private TreasuryValidatorOpi14Service validatorServiceMock;
+    @Mock
+    private TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
+    @Mock
+    private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
+
     private TreasuryVersionOpi14HandlerService handlerService;
-    private TreasuryErrorsArchiverService treasuryErrorsArchiverService;
 
     @BeforeEach
     void setUp() {
-        mapperService = mock(TreasuryMapperOpi14Service.class);
-        validatorService = mock(TreasuryValidatorOpi14Service.class);
-        treasuryUnmarshallerService = mock(TreasuryUnmarshallerService.class);
-        treasuryErrorsArchiverService = mock(TreasuryErrorsArchiverService.class);
-        handlerService = new TreasuryVersionOpi14HandlerService(mapperService, validatorService, treasuryUnmarshallerService, treasuryErrorsArchiverService);
+        handlerService = new TreasuryVersionOpi14HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock);
     }
 
     @Test
@@ -37,7 +47,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
         // Given
         File file = mock(File.class);
         FlussoGiornaleDiCassa expectedFlusso = new FlussoGiornaleDiCassa();
-        when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenReturn(expectedFlusso);
+        when(treasuryUnmarshallerServiceMock.unmarshalOpi14(file)).thenReturn(expectedFlusso);
 
         // When
         FlussoGiornaleDiCassa result = handlerService.unmarshall(file);
@@ -45,24 +55,25 @@ class TreasuryVersionOpi14HandlerServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(expectedFlusso, result);
-        verify(treasuryUnmarshallerService, times(1)).unmarshalOpi14(file);
+        verify(treasuryUnmarshallerServiceMock, times(1)).unmarshalOpi14(file);
     }
 
     @Test
     void testHandle_whenValidFile_thenProcessesSuccessfully() {
         // Given
-        File file = mock(File.class);
+        File file = new File("build","testFile.csv");
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
         ingestionFlowFileDTO.setFileName("testFile");
 
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();
-        when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenReturn(flusso);
+        when(treasuryUnmarshallerServiceMock.unmarshalOpi14(file)).thenReturn(flusso);
 
         Map<TreasuryOperationEnum, List<TreasuryDTO>> expectedResult = Map.of();
 
-        when(validatorService.validatePageSize(flusso, 1)).thenReturn(true);
-        when(validatorService.validateData(flusso, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        when(mapperService.apply(flusso, ingestionFlowFileDTO)).thenReturn(expectedResult);
+        ArrayList<TreasuryErrorDTO> errorListDto = new ArrayList<>();
+        when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(true);
+        when(validatorServiceMock.validateData(flusso, ingestionFlowFileDTO.getFileName())).thenReturn(errorListDto);
+        when(mapperServiceMock.apply(flusso, ingestionFlowFileDTO)).thenReturn(expectedResult);
 
         // When
         Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
@@ -70,6 +81,9 @@ class TreasuryVersionOpi14HandlerServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(expectedResult, result);
+
+        Mockito.verify(treasuryErrorsArchiverServiceMock)
+                .writeErrors(eq(Path.of("build")), same(ingestionFlowFileDTO), same(errorListDto));
     }
 
     @Test
@@ -80,9 +94,9 @@ class TreasuryVersionOpi14HandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();
-        when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenReturn(flusso);
+        when(treasuryUnmarshallerServiceMock.unmarshalOpi14(file)).thenReturn(flusso);
 
-        when(validatorService.validatePageSize(flusso, 1)).thenReturn(true);
+        when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(false);
 
         // When
         Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
@@ -90,7 +104,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
         // Then
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(mapperService, never()).apply(any(), any());
+        verify(mapperServiceMock, never()).apply(any(), any());
     }
 
     @Test
@@ -100,7 +114,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
         ingestionFlowFileDTO.setFileName("testFile");
 
-        when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenThrow(new RuntimeException("Unmarshall failed"));
+        when(treasuryUnmarshallerServiceMock.unmarshalOpi14(file)).thenThrow(new RuntimeException("Unmarshall failed"));
 
         // When
         Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
@@ -108,7 +122,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
         // Then
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(mapperService, never()).apply(any(), any());
+        verify(mapperServiceMock, never()).apply(any(), any());
     }
 
     @Test
@@ -119,11 +133,9 @@ class TreasuryVersionOpi14HandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();
-        when(treasuryUnmarshallerService.unmarshalOpi14(file)).thenReturn(flusso);
+        when(treasuryUnmarshallerServiceMock.unmarshalOpi14(file)).thenReturn(flusso);
 
-        when(validatorService.validatePageSize(flusso, 1)).thenReturn(true);
-        when(validatorService.validateData(flusso, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        when(mapperService.apply(flusso, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
+        when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(true);
 
         // When
         Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
