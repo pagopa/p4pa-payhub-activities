@@ -42,7 +42,7 @@ public class TreasuryErrorsArchiverService {
     }
 
 
-    void writeErrors(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO, List<TreasuryErrorDTO> errorDTOList) {
+    public void writeErrors(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO, List<TreasuryErrorDTO> errorDTOList) {
 
         List<String[]> data = errorDTOList.stream()
                 .map(errorDTO -> new String[]{

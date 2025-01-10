@@ -1,6 +1,7 @@
-package it.gov.pagopa.payhub.activities.service.treasury;
+package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryValidatorService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import org.apache.commons.lang3.StringUtils;

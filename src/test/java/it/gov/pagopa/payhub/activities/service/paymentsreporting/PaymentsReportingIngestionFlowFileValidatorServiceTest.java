@@ -1,11 +1,10 @@
-package it.gov.pagopa.payhub.activities.service;
+package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
-import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 				.build())
 			.build();
 		// when then
-		assertDoesNotThrow(() -> service.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO));
+		assertDoesNotThrow(() -> service.validateData(ctFlussoRiversamento, ingestionFlowFileDTO));
 	}
 
 	@Test
@@ -51,6 +50,6 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 			.build();
 		// when then
 		assertThrows(InvalidIngestionFlowFileDataException.class,
-			() -> service.validateOrganization(ctFlussoRiversamento, ingestionFlowFileDTO), "Invalid Organization");
+			() -> service.validateData(ctFlussoRiversamento, ingestionFlowFileDTO), "Invalid Organization");
 	}
 }

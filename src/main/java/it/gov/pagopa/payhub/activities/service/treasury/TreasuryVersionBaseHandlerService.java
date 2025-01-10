@@ -26,7 +26,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         this.treasuryErrorsArchiverService = treasuryErrorsArchiverService;
     }
 
-    abstract T unmarshall(File file);
+    protected abstract T unmarshall(File file);
 
     @Override
     public Map<TreasuryOperationEnum, List<TreasuryDTO>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
@@ -44,7 +44,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     }
 
     List<TreasuryErrorDTO> validate(IngestionFlowFileDTO ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
-        if (validatorService.validatePageSize(fGCUnmarshalled, size)) {
+        if (!validatorService.validatePageSize(fGCUnmarshalled, size)) {
             throw new TreasuryOpiInvalidFileException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFileDTO.getFileName());
         }
         return validatorService.validateData(fGCUnmarshalled, ingestionFlowFileDTO.getFileName());

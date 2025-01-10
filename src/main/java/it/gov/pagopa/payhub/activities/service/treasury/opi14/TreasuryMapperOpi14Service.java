@@ -1,8 +1,9 @@
-package it.gov.pagopa.payhub.activities.service.treasury;
+package it.gov.pagopa.payhub.activities.service.treasury.opi14;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;

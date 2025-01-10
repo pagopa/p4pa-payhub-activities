@@ -35,7 +35,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     void setUp() {
         handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock) {
             @Override
-            Object unmarshall(File file) {
+            protected Object unmarshall(File file) {
                 return new Object();
             }
         };
@@ -89,7 +89,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         // Given
         handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock) {
             @Override
-            Object unmarshall(File file) {
+            protected Object unmarshall(File file) {
                 throw new RuntimeException("Unmarshall failed");
             }
         };
@@ -134,7 +134,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
         Object unmarshalledObject = new Object();
 
-        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(false);
 
         // When & Then
         Assertions.assertThrows(TreasuryOpiInvalidFileException.class, () ->
@@ -148,7 +148,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
         Object unmarshalledObject = new Object();
 
-        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(false);
+        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         List<TreasuryErrorDTO> expectedErrors = List.of(new TreasuryErrorDTO("file", "2023", "B123", "ERR01", "Invalid data"));
         Mockito.when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(expectedErrors);
 
