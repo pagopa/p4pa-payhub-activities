@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
+import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -32,6 +33,7 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
     private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
     private final TreasuryOpiParserService treasuryOpiParserService;
     private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+    private final TreasuryErrorsArchiverService errorsArchiverService;
 
     /**
      * Constructor to initialize dependencies for OPI treasury ingestion.
@@ -45,13 +47,14 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
             IngestionFlowFileDao ingestionFlowFileDao,
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
             TreasuryOpiParserService treasuryOpiParserService,
-            IngestionFlowFileArchiverService ingestionFlowFileArchiverService
+            IngestionFlowFileArchiverService ingestionFlowFileArchiverService, TreasuryErrorsArchiverService errorsArchiverService
 
     ) {
         this.ingestionFlowFileDao = ingestionFlowFileDao;
         this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
         this.treasuryOpiParserService = treasuryOpiParserService;
         this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
+        this.errorsArchiverService = errorsArchiverService;
     }
 
     /**
@@ -77,10 +80,12 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                             return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
                         } catch (Exception e) {
                             log.error("Error processing file {}: {}", path, e.getMessage());
-                            return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
+                            return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage(), null);
                         }
                     })
                     .toList();
+
+            String discardsFileName = errorsArchiverService.archiveErrorFiles(ingestionFlowFilesRetrieved.getFirst().getParent(), ingestionFlowFileDTO);
 
             ingestionFlowFileArchiverService.archive(ingestionFlowFileDTO);
             boolean isSuccess= treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess);
@@ -91,11 +96,12 @@ public class TreasuryOpiIngestionActivityImpl implements TreasuryOpiIngestionAct
                             .distinct()
                             .toList(),
                     isSuccess,
-                    isSuccess?null:"error occurred"
+                    isSuccess?null:"error occurred",
+                    discardsFileName
             );
         } catch (Exception e) {
             log.error("Error during TreasuryOpiIngestionActivity ingestionFlowFileId {}", ingestionFlowFileId, e);
-            return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage());
+            return new TreasuryIufResult(Collections.emptyList(), false, e.getMessage(), null);
         } finally {
             deletion(ingestionFlowFilesRetrieved);
         }

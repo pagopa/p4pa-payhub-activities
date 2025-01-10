@@ -36,7 +36,6 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
             Map<TreasuryOperationEnum, List<TreasuryDTO>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
             treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
-            //TODO errors should compressed as single file and the set output name to discarded file?
             return result;
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using mapper{} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());

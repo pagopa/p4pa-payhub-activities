@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TreasuryValidatorServiceTest {
 
-    private TreasuryValidatorService treasuryValidatorService14;
-    private TreasuryValidatorService treasuryValidatorService161;
+    private TreasuryValidatorOpi14Service treasuryValidatorService14;
+    private TreasuryValidatorOpi161Service treasuryValidatorService161;
     private FlussoGiornaleDiCassa mockFlussoV14, mockFlussoV14NoIufNoIuv, mockFlussoV14NoEsercizio;
     private it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa mockFlussoV161, mockFlussoV161NoIufNoIuv, mockFlussoV161NoEsercizio;
     private File mockFile;

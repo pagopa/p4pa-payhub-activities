@@ -41,4 +41,8 @@ public class Utilities {
         return (10 - s % 10) % 10 == pi.charAt(10) - '0';
     }
 
+    /** It will remove and replace file extension */
+    public static String replaceFileExtension(String fileName, String newExtension){
+        return fileName.substring(0, fileName.lastIndexOf(".")) + newExtension;
+    }
 }

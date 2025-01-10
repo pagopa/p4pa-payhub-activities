@@ -46,6 +46,8 @@ class TreasuryOpiIngestionActivityTest {
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
   @Mock
   private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+  @Mock
+  private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
 
   @TempDir
   Path workingDir;
@@ -56,7 +58,8 @@ class TreasuryOpiIngestionActivityTest {
             ingestionFlowFileDaoMock,
             ingestionFlowFileRetrieverServiceMock,
             treasuryOpiParserServiceMock,
-            ingestionFlowFileArchiverServiceMock
+            ingestionFlowFileArchiverServiceMock,
+            treasuryErrorsArchiverServiceMock
     );
   }
 
@@ -87,7 +90,10 @@ class TreasuryOpiIngestionActivityTest {
             .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size()))
-            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), true, null));
+            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), true, null, null));
+
+    Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
+            .thenReturn("DISCARDFILENAME");
 
     // When
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
@@ -97,6 +103,8 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertTrue(result.isSuccess());
     Assertions.assertEquals(1, result.getIufs().size());
     Assertions.assertEquals("IUF123", result.getIufs().getFirst());
+    Assertions.assertEquals("DISCARDFILENAME", result.getDiscardedFileName());
+
     Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1))
             .archive(ingestionFlowFileDTO);
   }
@@ -164,7 +172,7 @@ class TreasuryOpiIngestionActivityTest {
     List<Path> mockedListPath = List.of(filePath);
 
     TreasuryIufResult expected =
-            new TreasuryIufResult(Collections.emptyList(), false, "error occured");
+            new TreasuryIufResult(Collections.emptyList(), false, "error occured", null);
 
     when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)

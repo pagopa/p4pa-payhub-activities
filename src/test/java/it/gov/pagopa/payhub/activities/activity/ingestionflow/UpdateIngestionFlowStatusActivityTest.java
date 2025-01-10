@@ -21,27 +21,28 @@ class UpdateIngestionFlowStatusActivityTest {
   private static final Long VALID_ID=1L;
   private static final Long INVALID_ID=9L;
   private static final String VALID_STATUS="VALID";
+  private static final String DISCARD_FILE_NAME="DISCARDFILENAME";
 
   @Test
   void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
     //given
-    Mockito.when(ingestionFlowFileDao.updateStatus(VALID_ID, VALID_STATUS)).thenReturn(true);
+    Mockito.when(ingestionFlowFileDao.updateStatus(VALID_ID, VALID_STATUS, DISCARD_FILE_NAME)).thenReturn(true);
     //when
-    boolean result = updateIngestionFlowStatusActivity.updateStatus(VALID_ID, VALID_STATUS);
+    boolean result = updateIngestionFlowStatusActivity.updateStatus(VALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
     //verify
     Assertions.assertTrue(result);
-    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).updateStatus(VALID_ID, VALID_STATUS);
+    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).updateStatus(VALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
   }
 
   @Test
   void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
     //given
-    Mockito.when(ingestionFlowFileDao.updateStatus(INVALID_ID, VALID_STATUS)).thenReturn(false);
+    Mockito.when(ingestionFlowFileDao.updateStatus(INVALID_ID, VALID_STATUS, DISCARD_FILE_NAME)).thenReturn(false);
     //when
-    boolean result = updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, VALID_STATUS);
+    boolean result = updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
     //verify
     Assertions.assertFalse(result);
-    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).updateStatus(INVALID_ID, VALID_STATUS);
+    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).updateStatus(INVALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
   }
 
   @Test
@@ -49,7 +50,7 @@ class UpdateIngestionFlowStatusActivityTest {
     String expectedError = "A null IngestionFlowFile was provided when updating its status to " + VALID_STATUS;
     //verify
     IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
-      () -> updateIngestionFlowStatusActivity.updateStatus(null, VALID_STATUS));
+      () -> updateIngestionFlowStatusActivity.updateStatus(null, VALID_STATUS, DISCARD_FILE_NAME));
     Assertions.assertEquals(expectedError, exception.getMessage());
   }
 
@@ -58,7 +59,7 @@ class UpdateIngestionFlowStatusActivityTest {
     String expectedError = "A null IngestionFlowFile status was provided when updating the id " + VALID_ID;
     //verify
     IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
-      () -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, null));
+      () -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, null, DISCARD_FILE_NAME));
     Assertions.assertEquals(expectedError, exception.getMessage());
   }
 
