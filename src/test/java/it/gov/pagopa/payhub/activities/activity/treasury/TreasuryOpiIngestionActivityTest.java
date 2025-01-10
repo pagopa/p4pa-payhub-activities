@@ -98,7 +98,7 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertEquals(1, result.getIufs().size());
     Assertions.assertEquals("IUF123", result.getIufs().getFirst());
     Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1))
-            .archive(mockedListPath, Path.of(ingestionFlowFileDTO.getFilePathName(),"/archiveDirectory/"));
+            .archive(ingestionFlowFileDTO);
   }
   @Test
   void givenIngestionFlowNotFoundWhenProcessFileThenNoSuccess() {
@@ -171,7 +171,7 @@ class TreasuryOpiIngestionActivityTest {
             .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
-            .archive(mockedListPath, Path.of(ingestionFlowFileDTO.getFilePathName(), "/archiveDirectory/"));
+            .archive(ingestionFlowFileDTO);
 
     // When
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
