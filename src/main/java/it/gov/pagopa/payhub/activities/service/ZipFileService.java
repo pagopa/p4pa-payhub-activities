@@ -36,7 +36,7 @@ public class ZipFileService {
 	private final double maxCompressionRatio;
 
 	public ZipFileService(@Value("${zip-file.max-entries:1000}") int maxEntries,
-						  @Value("${zip-file.max-uncompressed-size:#{50 * 1024 * 1024}}") long maxUncompressedSize,
+						  @Value("${zip-file.max-uncompressed-size:10485760L}") long maxUncompressedSize,
 						  @Value("${zip-file.max-compression-ratio:0.1}") double maxCompressionRatio) {
 		this.maxEntries = maxEntries;
 		this.maxUncompressedSize = maxUncompressedSize;
@@ -128,7 +128,7 @@ public class ZipFileService {
 	 *         </ul>
 	 */
 	public List<Path> unzip(Path path) {
-		return unzip(path, path);
+		return unzip(path, path.getParent());
 	}
 
 	/**

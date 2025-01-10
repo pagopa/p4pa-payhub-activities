@@ -61,7 +61,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 		doNothing().when(fileValidatorService).validateFile(zipFile);
 		doReturn(true).when(fileValidatorService).isArchive(zipFilePath);
-		when(zipFileService.unzip(workingPath)).thenReturn(unzippedPaths);
+		when(zipFileService.unzip(zipFilePath)).thenReturn(unzippedPaths);
 
 		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
 			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFilePath.toFile(), workingPath.toFile()))
