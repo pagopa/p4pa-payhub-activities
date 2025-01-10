@@ -93,8 +93,8 @@ public class IngestionFlowFileRetrieverService {
         log.debug("Validating ZIP file: {}", zipFilePath);
         fileValidatorService.isArchive(zipFilePath);
 
-        log.debug("Unzipping files in : {}", workingPath);
-        List<Path> unzippedPaths = zipFileService.unzip(workingPath);
+        log.debug("Unzipping files in : {}", zipFilePath);
+        List<Path> unzippedPaths = zipFileService.unzip(zipFilePath);
 
         log.debug("File process completed successfully for: {}", filenameNoCipher);
         return unzippedPaths;
