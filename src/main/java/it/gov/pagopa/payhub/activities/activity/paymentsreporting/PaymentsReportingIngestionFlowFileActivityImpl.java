@@ -1,14 +1,13 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
-import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
@@ -20,8 +19,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -29,15 +26,12 @@ import java.util.List;
 @Slf4j
 @Lazy
 @Component
-public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsReportingIngestionFlowFileActivity {
+public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestionFlowFileActivity<PaymentsReportingIngestionFlowFileActivityResult> implements PaymentsReportingIngestionFlowFileActivity {
 
-	private final IngestionFlowFileDao ingestionFlowFileDao;
-	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 	private final FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService;
 	private final PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService;
 	private final PaymentsReportingMapperService paymentsReportingMapperService;
 	private final PaymentsReportingDao paymentsReportingDao;
-	private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
 
 	public PaymentsReportingIngestionFlowFileActivityImpl(
 	                                                      IngestionFlowFileDao ingestionFlowFileDao,
@@ -47,72 +41,28 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
 	                                                      PaymentsReportingDao paymentsReportingDao,
 	                                                      IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
-		this.ingestionFlowFileDao = ingestionFlowFileDao;
-		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
+		super(ingestionFlowFileDao, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
 		this.paymentsReportingIngestionFlowFileValidatorService = paymentsReportingIngestionFlowFileValidatorService;
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
 		this.paymentsReportingDao = paymentsReportingDao;
-		this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
 	}
 
 	@Override
-	public PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
-		log.info("Processing paymentsReporting IngestionFlowFile {}", ingestionFlowFileId);
-		File retrievedFile = null;
-		try {
-			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
-
-			retrievedFile = retrieveFile(ingestionFlowFileDTO);
-
-			Pair<String, List<PaymentsReportingDTO>> pair = parseData(retrievedFile, ingestionFlowFileDTO);
-
-			paymentsReportingDao.saveAll(pair.getRight());
-			ingestionFlowFileArchiverService.archive(ingestionFlowFileDTO);
-
-			return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true, null);
-		} catch (Exception e) {
-			log.error("Error during PaymentsReportingIngestionFlowFileActivity ingestionFlowFileId {} due to: {}", ingestionFlowFileId, e.getMessage());
-			return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, e.getMessage());
-		} finally {
-			deletion(retrievedFile);
-		}
+	protected IngestionFlowFileType getHandledIngestionFlowFileType() {
+		return IngestionFlowFileType.PAYMENTS_REPORTING;
 	}
 
-	/**
-	 * Retrieves the {@link IngestionFlowFileDTO} record for the given ID. If no record is found, throws
-	 * an {@link IngestionFlowFileNotFoundException}. Validates the flow file type before returning.
-	 *
-	 * @param ingestionFlowFileId the ID of the ingestion flow file to retrieve
-	 * @return the {@link IngestionFlowFileDTO} corresponding to the given ID
-	 * @throws IngestionFlowFileNotFoundException if the record is not found
-	 * @throws IllegalArgumentException if the flow file type is invalid
-	 */
-	private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
-		IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
-			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
-
-		if (!IngestionFlowFileType.PAYMENTS_REPORTING.equals(ingestionFlowFileDTO.getFlowFileType())) {
-			throw new IllegalArgumentException("invalid ingestionFlow file type");
-		}
-
-		return ingestionFlowFileDTO;
+	@Override
+	protected PaymentsReportingIngestionFlowFileActivityResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFileDTO ingestionFlowFileDTO) {
+		Pair<String, List<PaymentsReportingDTO>> pair = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
+		paymentsReportingDao.saveAll(pair.getRight());
+		return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true, null);
 	}
 
-	/**
-	 * Retrieves the file associated with the provided {@link IngestionFlowFileDTO} by unzipping and
-	 * extracting it from the specified file path.
-	 *
-	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing file details
-	 * @return the extracted {@link List} from the ingestion flow
-	 * @throws IOException if there is an error during file retrieval or extraction
-	 */
-	private File retrieveFile(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-		List<Path> paths = ingestionFlowFileRetrieverService
-			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-
-		// paymentsReporting file will contain just one file
-		return paths.getFirst().toFile();
+	@Override
+	protected PaymentsReportingIngestionFlowFileActivityResult onErrorResult(Exception e) {
+		return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, e.getMessage());
 	}
 
 	/**
@@ -132,20 +82,5 @@ public class PaymentsReportingIngestionFlowFileActivityImpl implements PaymentsR
 
 		List<PaymentsReportingDTO> dtoList = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 		return Pair.of(ctFlussoRiversamento.getIdentificativoFlusso(), dtoList);
-	}
-
-	/**
-	 * Delete the specified file if not null.
-	 *
-	 * @param file2Delete the file to delete.
-	 */
-	private void deletion(File file2Delete) {
-		if(file2Delete != null) {
-			try {
-				Files.delete(file2Delete.toPath());
-			} catch (IOException e) {
-				throw new ActivitiesException("Error occured while delete file: " + file2Delete);
-			}
-		}
 	}
 }

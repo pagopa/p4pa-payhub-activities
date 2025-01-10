@@ -178,8 +178,8 @@ class TreasuryOpiIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
             .retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
-            .archive(ingestionFlowFileDTO);
+    doThrow(new RuntimeException("error occured")).when(treasuryErrorsArchiverServiceMock)
+            .archiveErrorFiles(workingDir, ingestionFlowFileDTO);
 
     // When
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);

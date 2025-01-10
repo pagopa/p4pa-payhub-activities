@@ -79,29 +79,33 @@ public class TreasuryErrorsArchiverService {
      *
      * @param workingDirectory     the working directory where to search for error files to be archived. This file is moved from its original location to the target directory.
      * @param ingestionFlowFileDTO the ingestion flow file
-     * @throws IOException if an I/O error occurs while archiving the file, such as issues with reading, writing, or accessing file paths.
      */
-    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
-        List<Path> errorFiles;
-        try (Stream<Path> fileListStream = Files.list(workingDirectory)) {
-            errorFiles = fileListStream
-                    .filter(f -> f.getFileName().toString().startsWith(ERRORFILE_PREFIX))
-                    .toList();
-        }
+    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO) {
+        try {
+            List<Path> errorFiles;
+            try (Stream<Path> fileListStream = Files.list(workingDirectory)) {
+                errorFiles = fileListStream
+                        .filter(f -> f.getFileName().toString().startsWith(ERRORFILE_PREFIX))
+                        .toList();
+            }
 
-        if (!errorFiles.isEmpty()) {
+            if (!errorFiles.isEmpty()) {
 
-            Path targetDirectory = sharedDirectoryPath
-                    .resolve(ingestionFlowFileDTO.getFilePathName())
-                    .resolve(errorFolder);
+                Path targetDirectory = sharedDirectoryPath
+                        .resolve(ingestionFlowFileDTO.getFilePathName())
+                        .resolve(errorFolder);
 
-            String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
-            Path zipFile = Path.of(zipFileName);
+                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
+                Path zipFile = Path.of(zipFileName);
 
-            ingestionFlowFileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
+                ingestionFlowFileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
 
-            return zipFileName;
-        } else {
+                return zipFileName;
+            } else {
+                return null;
+            }
+        } catch (IOException e){
+            log.error("Something gone wrong while trying to archive error file!", e);
             return null;
         }
     }
