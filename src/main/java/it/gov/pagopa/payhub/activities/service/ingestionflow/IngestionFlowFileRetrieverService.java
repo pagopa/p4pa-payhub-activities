@@ -76,7 +76,7 @@ public class IngestionFlowFileRetrieverService {
 		fileValidatorService.isArchive(zipFilePath);
 
 		log.debug("Unzipping files in : {}", workingPath);
-		List<Path> unzippedPaths = zipFileService.unzip(workingPath);
+		List<Path> unzippedPaths = zipFileService.unzip(zipFilePath);
 
 		log.debug("File process completed successfully for: {}", filenameNoCipher);
 		return unzippedPaths;
