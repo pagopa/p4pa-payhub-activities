@@ -225,7 +225,6 @@ tasks.withType<BootJar> {
 	enabled = false
 }
 
-
 tasks.compileJava {
 	dependsOn("dependenciesBuild")
 }
@@ -239,7 +238,8 @@ tasks.register("dependenciesBuild") {
 		"openApiGenerateP4PAAUTH",
 		"openApiGenerateIONOTIFICATION",
 		"openApiGenerateORGANIZATION",
-		"openApiGenerateDEBTPOSITIONS")
+		"openApiGenerateDEBTPOSITIONS"
+	)
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
