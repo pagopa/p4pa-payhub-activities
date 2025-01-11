@@ -1,13 +1,13 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
-import it.gov.pagopa.payhub.activities.dto.PersonDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 
 public class PersonFaker {
 
     public static PersonDTO buildPersonDTO(){
         return PersonDTO.builder()
-                .uniqueIdentifierType("uniqueIdentifierType")
-                .uniqueIdentifierCode("uniqueIdentifierCode")
+                .entityType("uniqueIdentifierType")
+                .fiscalCode("uniqueIdentifierCode")
                 .fullName("fullName")
                 .address("address")
                 .civic("civic")

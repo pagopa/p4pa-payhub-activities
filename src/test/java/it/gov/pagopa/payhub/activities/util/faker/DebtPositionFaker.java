@@ -1,12 +1,9 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFileDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker.buildOrganizationDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 
 public class DebtPositionFaker {
@@ -17,11 +14,11 @@ public class DebtPositionFaker {
                 .iupdOrg("codeIud")
                 .iupdPagopa("gpdIupd")
                 .status("statusCode")
-                .ingestionFlowFile(buildIngestionFlowFileDTO())
+                .ingestionFlowFileId(0L)
                 .ingestionFlowFileLineNumber(1L)
-                .gpdStatus('G')
-                .org(buildOrganizationDTO())
-                .debtPositionTypeOrg(buildDebtPositionTypeOrgDTO())
+                .status("UNPAID")
+                .organizationId(2L)
+                .debtPositionTypeOrgId(3L)
                 .paymentOptions(List.of(buildPaymentOptionDTO()))
                 .build();
     }

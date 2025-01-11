@@ -1,13 +1,12 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.DATE;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
 
@@ -22,22 +21,18 @@ public class InstallmentFaker {
                 .iud("iud")
                 .iuv("iuv")
                 .iur("iur")
-                .creationDate(DATE.toInstant())
-                .updateDate(DATE.toInstant())
-                .dueDate(LocalDate.of(2099, 5, 15))
+                .creationDate(OFFSETDATETIME)
+                .updateDate(OFFSETDATETIME)
+                .dueDate(OFFSETDATETIME)
                 .paymentTypeCode("paymentTypeCode")
-                .amount(100L)
-                .fee(100L)
+                .amountCents(100L)
+                .notificationFeeCents(100L)
                 .remittanceInformation("remittanceInformation")
                 .legacyPaymentMetadata("legacyPaymentMetadata")
-                .iuvCreationDate(DATE.toInstant())
                 .humanFriendlyRemittanceInformation("humanFriendlyRemittanceInformation")
                 .balance("balance")
-                .flagGenerateIuv(true)
-                .sessionId("sessionId")
-                .flagIuvVolatile(true)
                 .transfers(transfers)
-                .payer(buildPersonDTO())
+                .debtor(buildPersonDTO())
                 .build();
     }
 }

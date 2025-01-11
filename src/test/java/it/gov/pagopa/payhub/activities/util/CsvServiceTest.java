@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.util;
+
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CsvServiceTest {
 

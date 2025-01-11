@@ -1,9 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.dao.DebtPositionTypeOrgDao;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.payhub.activities.exception.OperatorNotAuthorizedException;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,16 +34,14 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         Long orgId = 1L;
         Long debtPositionTypeOrgId = 1L;
 
-        DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
-        Organization organizationDTO = new Organization();
-        organizationDTO.setOrganizationId(orgId);
+        DebtPositionTypeOrg debtPositionTypeOrgDTO = new DebtPositionTypeOrg();
         debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
-        debtPositionTypeOrgDTO.setOrg(organizationDTO);
+        debtPositionTypeOrgDTO.setOrganizationId(orgId);
 
         when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))
                 .thenReturn(Optional.of(debtPositionTypeOrgDTO));
 
-        DebtPositionTypeOrgDTO result = authorizeOperatorOnDebtPositionTypeActivity.authorize(orgId, debtPositionTypeOrgId, username);
+        DebtPositionTypeOrg result = authorizeOperatorOnDebtPositionTypeActivity.authorize(orgId, debtPositionTypeOrgId, username);
 
         assertEquals(debtPositionTypeOrgDTO, result);
     }
@@ -55,7 +52,7 @@ class AuthorizeOperatorOnDebtPositionTypeActivityTest {
         Long orgId = 1L;
         Long debtPositionTypeOrgId = 1L;
 
-        DebtPositionTypeOrgDTO debtPositionTypeOrgDTO = new DebtPositionTypeOrgDTO();
+        DebtPositionTypeOrg debtPositionTypeOrgDTO = new DebtPositionTypeOrg();
         debtPositionTypeOrgDTO.setDebtPositionTypeOrgId(1L);
 
         when(debtPositionTypeOrgDao.getAuthorizedDebtPositionTypeOrg(orgId, debtPositionTypeOrgId, username))

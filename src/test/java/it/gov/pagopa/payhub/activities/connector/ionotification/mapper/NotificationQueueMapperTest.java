@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
-import it.gov.pagopa.payhub.activities.dto.PersonDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
+import it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationQueueDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
-import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.NotificationQueueFaker.buildNotificationQueueDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker.buildOrganizationDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,30 +27,13 @@ class NotificationQueueMapperTest {
     @Test
     void givenMapDebtPositionDTO2NotificationQueueDTOThenSuccess() {
 
-        DebtPositionDTO debtPosition = buildDebtPosition();
+        DebtPositionDTO debtPosition = DebtPositionFaker.buildDebtPositionDTO();
 
         List<NotificationQueueDTO> result =
                 mapper.mapDebtPositionDTO2NotificationQueueDTO(debtPosition);
 
-        checkNotNullFields(result.get(0), "operationType", "iuv", "paymentReason", "paymentDate", "amount");
-        assertEquals(buildNotificationQueueDTO(), result.get(0));
-        assertEquals("fiscalCode", result.get(1).getFiscalCode());
-    }
-
-    private static DebtPositionDTO buildDebtPosition() {
-        return DebtPositionDTO.builder()
-                .org(buildOrganizationDTO())
-                .debtPositionTypeOrg(buildDebtPositionTypeOrgDTO())
-                .paymentOptions(List.of(
-                        buildPaymentOptionDTO(),
-                        PaymentOptionDTO.builder()
-                                .installments(List.of(
-                                        InstallmentDTO.builder()
-                                                .payer(PersonDTO.builder()
-                                                        .uniqueIdentifierCode("fiscalCode")
-                                                        .build())
-                                                .build()))
-                                .build()))
-                .build();
+        checkNotNullFields(result.getFirst(), "operationType", "iuv", "paymentReason", "paymentDate", "amount");
+        assertEquals(buildNotificationQueueDTO(), result.getFirst());
+        assertEquals("uniqueIdentifierCode", result.getFirst().getFiscalCode());
     }
 }

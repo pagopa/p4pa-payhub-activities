@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
 
 /**

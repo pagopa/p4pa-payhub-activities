@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 
 import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationService;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class SendDebtPositionIONotificationActivityImpl implements SendDebtPosit
 
     @Override
     public void sendMessage(DebtPositionDTO debtPosition) {
-        log.info("Sending message to IONotification for debt position type org {}", debtPosition.getDebtPositionTypeOrg());
+        log.info("Sending message to IONotification for debt position type org id {}", debtPosition.getDebtPositionTypeOrgId());
         ioNotificationService.sendMessage(debtPosition);
     }
 }

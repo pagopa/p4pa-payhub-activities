@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
-
-import static it.gov.pagopa.payhub.activities.util.TestUtils.DATE;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
 public class TransferFaker {
 
@@ -10,16 +8,12 @@ public class TransferFaker {
         return TransferDTO.builder()
                 .transferId(1L)
                 .orgFiscalCode("orgFiscalCode")
-                .beneficiaryName("beneficiaryName")
+                .orgName("beneficiaryName")
                 .iban("iban")
-                .amount(100L)
-                .creationDate(DATE.toInstant())
-                .lastUpdateDate(DATE.toInstant())
+                .amountCents(100L)
                 .remittanceInformation("remittanceInformation")
                 .stampType("stampType")
                 .category("category")
-                .documentHash("documentHash")
-                .provincialResidence("provincialResidence")
                 .transferIndex(1)
                 .build();
     }

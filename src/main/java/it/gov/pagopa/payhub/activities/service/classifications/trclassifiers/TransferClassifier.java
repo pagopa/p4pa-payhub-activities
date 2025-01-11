@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
 import java.util.Optional;
 
@@ -33,7 +33,7 @@ public interface TransferClassifier {
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
 	default Long getAmountCents(TransferDTO transferDTO) {
-		return Optional.ofNullable(transferDTO).map(TransferDTO::getAmount).orElse(0L);
+		return Optional.ofNullable(transferDTO).map(TransferDTO::getAmountCents).orElse(0L);
 	}
 
 	/**

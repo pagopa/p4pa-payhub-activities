@@ -7,8 +7,8 @@ public class NotificationQueueFaker {
     public static NotificationQueueDTO buildNotificationQueueDTO(){
         return NotificationQueueDTO.builder()
                 .fiscalCode("uniqueIdentifierCode")
-                .enteId(1L)
-                .tipoDovutoId(1L)
+                .enteId(2L)
+                .tipoDovutoId(3L)
                 .build();
     }
 }
