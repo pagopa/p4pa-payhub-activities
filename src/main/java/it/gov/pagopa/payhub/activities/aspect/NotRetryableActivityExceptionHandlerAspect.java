@@ -21,7 +21,7 @@ public class NotRetryableActivityExceptionHandlerAspect {
 
     @AfterThrowing(pointcut = "activityBean()", throwing = "error")
     public void afterThrowingAdvice(JoinPoint jp, NotRetryableActivityException error){
-        log.debug("Activity thrown NotRetryableException {}", error.getClass().getName());
+        log.debug("Activity thrown NotRetryableException {} in method {}", error.getClass().getName(), jp.getSignature());
         throw ApplicationFailure.newNonRetryableFailureWithCause(error.getMessage(), error.getClass().getName(), error);
     }
 
