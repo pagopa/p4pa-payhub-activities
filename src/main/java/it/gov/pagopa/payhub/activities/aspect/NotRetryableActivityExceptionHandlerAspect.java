@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.aspect;
 
+import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -21,7 +22,7 @@ public class NotRetryableActivityExceptionHandlerAspect {
     @AfterThrowing(pointcut = "activityBean()", throwing = "error")
     public void afterThrowingAdvice(JoinPoint jp, NotRetryableActivityException error){
         log.debug("Activity thrown NotRetryableException {}", error.getClass().getName());
-        throw new NotRetryableActivityException(error.getMessage(), error);
+        throw ApplicationFailure.newNonRetryableFailureWithCause(error.getMessage(), error.getClass().getName(), error);
     }
 
 }
