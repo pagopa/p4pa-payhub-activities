@@ -33,7 +33,7 @@ public class PaymentsReportingMapperService {
 			.creationDate(Instant.now())
 			.lastUpdateDate(Instant.now())
 			.acquiringDate(ingestionFlowFileDTO.getCreationDate().atZone(ZoneId.systemDefault()).toLocalDate())
-			.organizationId(ingestionFlowFileDTO.getOrg().getOrgId())
+			.organizationId(ingestionFlowFileDTO.getOrg().getOrganizationId())
 			.ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
 			.pspIdentifier(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
 			.iuf(ctFlussoRiversamento.getIdentificativoFlusso())

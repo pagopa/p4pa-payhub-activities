@@ -2,9 +2,9 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.*;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -56,7 +56,7 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.setIstitutoRicevente(istitutoRicevente);
 
 		IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
-		ingestionFlowFileDTO.setOrg(OrganizationDTO.builder().orgId(1L).build());
+		ingestionFlowFileDTO.setOrg(Organization.builder().organizationId(1L).build());
 		ingestionFlowFileDTO.setIngestionFlowFileId(1L);
 		ingestionFlowFileDTO.setCreationDate(Instant.now());
 

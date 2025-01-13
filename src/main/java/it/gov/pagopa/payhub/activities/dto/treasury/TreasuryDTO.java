@@ -1,6 +1,9 @@
 package it.gov.pagopa.payhub.activities.dto.treasury;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TreasuryDTO {
-  private Long treasuryId;
+  private String treasuryId;
   private String billYear;
   private String billCode;
   private String accountCode;

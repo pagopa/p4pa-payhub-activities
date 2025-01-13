@@ -7,7 +7,7 @@ import jakarta.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -20,7 +20,7 @@ import java.io.IOException;
  * Handles the deserialization of files conforming to the "FlussoRiversamento" schema.
  */
 @Lazy
-@Component
+@Service
 public class FlussoRiversamentoUnmarshallerService {
 	private final JAXBContext jaxbContext;
 	private final Schema schema;

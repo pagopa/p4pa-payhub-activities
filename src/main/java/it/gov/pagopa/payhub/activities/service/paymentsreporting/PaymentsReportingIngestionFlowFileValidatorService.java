@@ -23,7 +23,7 @@ public class PaymentsReportingIngestionFlowFileValidatorService {
 	 * @throws InvalidIngestionFlowFileDataException if the organization details in `ctFlussoRiversamento` do not match
 	 *                                  the expected organization in `ingestionFlowFileDTO`.
 	 */
-	public void validateOrganization(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	public void validateData(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
 		String fileOrgFiscalcode = ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getCodiceIdentificativoUnivoco();
 		String ingestionFlowFileOrgFiscalcode = ingestionFlowFileDTO.getOrg().getOrgFiscalCode();
 		if (!fileOrgFiscalcode.equals(ingestionFlowFileOrgFiscalcode)) {

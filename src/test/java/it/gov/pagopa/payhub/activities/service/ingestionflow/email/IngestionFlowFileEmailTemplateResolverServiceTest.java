@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedException;
-import it.gov.pagopa.payhub.activities.utility.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

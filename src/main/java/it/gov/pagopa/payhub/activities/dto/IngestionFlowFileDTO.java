@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto;
 
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class IngestionFlowFileDTO implements Serializable {
     private Long ingestionFlowFileId;
     private IngestionFlowFileType flowFileType;
     private int version;
-    private OrganizationDTO org;
+    private Organization org;
     private String status;
     private Long numTotalRows;
     private Long numCorrectlyImportedRows;

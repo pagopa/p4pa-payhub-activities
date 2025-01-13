@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.dao.IuvSequenceNumberDao;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,8 +33,8 @@ class IuvServiceTest {
   private static final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
   private static final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
   private static final String VALID_APPLICATION_CODE = "01";
-  private static final OrganizationDTO VALID_ORG = OrganizationDTO.builder()
-    .orgId(1L)
+  private static final Organization VALID_ORG = Organization.builder()
+    .organizationId(1L)
     .orgFiscalCode(VALID_ORG_FISCAL_CODE)
     .ipaCode(VALID_ORG_IPA_CODE)
     .applicationCode(VALID_APPLICATION_CODE)
@@ -47,8 +47,8 @@ class IuvServiceTest {
   private static final String INVALID_ORG_FISCAL_CODE = "INVALID_FISCAL_CODE";
   private static final String INVALID_ORG_IPA_CODE = "INVALID_IPA_CODE";
   private static final long INVALID_PAYMENT_INDEX = 0L;
-  private static final OrganizationDTO INVALID_ORG = OrganizationDTO.builder()
-    .orgId(99L)
+  private static final Organization INVALID_ORG = Organization.builder()
+    .organizationId(99L)
     .orgFiscalCode(INVALID_ORG_FISCAL_CODE)
     .ipaCode(INVALID_ORG_IPA_CODE)
     .build();

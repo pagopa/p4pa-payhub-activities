@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.IuvService;
-import it.gov.pagopa.payhub.activities.service.OrganizationService;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -29,7 +29,7 @@ public class GenerateIuvActivityImpl implements GenerateIuvActivity{
     if(StringUtils.isBlank(orgFiscalCode)){
       throw new InvalidValueException("invalid orgFiscalCode");
     }
-    OrganizationDTO org = organizationService.getOrganizationByFiscalCode(orgFiscalCode)
+    Organization org = organizationService.getOrganizationByFiscalCode(orgFiscalCode)
       .orElseThrow(() -> new InvalidValueException("invalid organization"));
 
     String iuv = iuvService.generateIuv(org);

@@ -11,7 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -112,7 +115,7 @@ class TreasuryOpiParserServiceTest {
         assertNotNull(result);
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
-        assertEquals("Flow456", result.getIufs().get(0));
+        assertEquals("Flow456", result.getIufs().getFirst());
         verify(treasuryDao, times(1)).insert(treasuryDTO);
     }
 }

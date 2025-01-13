@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
-import it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker;
-import it.gov.pagopa.payhub.activities.utility.faker.TransferFaker;
-import it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker;
+import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
+import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
+import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -32,7 +32,7 @@ class RtNoIufClassifierTest {
 	@Test
 	void givenNullTreasuryDTOAndUnmatchedAmountWhenDefineThenSuccess() {
 		// Arrange
-		transferDTO.setAmount(100L);
+		transferDTO.setAmountCents(100L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
@@ -43,7 +43,7 @@ class RtNoIufClassifierTest {
 	@Test
 	void givenNullPaymentsReportingDTOAndUnmatchedAmountWhenDefineThenSuccess() {
 		// Arrange
-		transferDTO.setAmount(100L);
+		transferDTO.setAmountCents(100L);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
@@ -62,7 +62,7 @@ class RtNoIufClassifierTest {
 	@Test
 	void givenNullTreasuryDTOAndEqualsAmountWhenDefineThenReturnNull() {
 		// Arrange
-		transferDTO.setAmount(1000L);
+		transferDTO.setAmountCents(1000L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
@@ -73,7 +73,7 @@ class RtNoIufClassifierTest {
 	@Test
 	void givenNullPaymentsReportingDTOAndEqualsAmountWhenDefineThenReturnNull() {
 		// Arrange
-		transferDTO.setAmount(100L);
+		transferDTO.setAmountCents(100L);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);

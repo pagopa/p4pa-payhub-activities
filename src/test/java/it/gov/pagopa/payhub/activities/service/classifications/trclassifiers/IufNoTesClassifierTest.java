@@ -3,8 +3,8 @@ package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
-import it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker;
-import it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker;
+import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
+import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

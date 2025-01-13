@@ -33,7 +33,7 @@ public interface IngestionFlowFileDao {
 	 * @param status new status
 	 * @return boolean true if the status has been updated
 	 */
-	boolean updateStatus(Long ingestionFlowFileId, String status);
+	boolean updateStatus(Long ingestionFlowFileId, String status, String discardFileName);
 
 }
 

@@ -11,14 +11,25 @@ spring:
           enable: "\${MAIL_SMTP_STARTTLS:true}"
           required: "\${MAIL_SMTP_STARTTLS_REQUIRED:true}"
 
-
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
+
+folders:
+  shared: "\${SHARED_FOLDER_ROOT:/shared}"
+  tmp: "\${TMP_FOLDER:/tmp}"
+  process-target-sub-folders:
+    archive: "\${PROCESS_TARGET_SUB_FOLDER_ARCHIVE:archive}"
+    errors: "\${PROCESS_TARGET_SUB_FOLDER_ERRORS:errors}"
+
+csv:
+  separator: "\${CSV_SEPARATOR_CHAR:;}"
+  quote-char: "\${CSV_QUOTE_CHAR:\\\"}"
 
 rest:
   default-timeout:
     connect-millis: "\${DEFAULT_REST_CONNECT_TIMEOUT_MILLIS:60000}"
     read-millis: "\${DEFAULT_REST_READ_TIMEOUT_MILLIS:60000}"
+
   auth:
     base-url: "\${AUTH_BASE_URL:http://localhost:8080/auth}"
     post-token:
@@ -26,3 +37,9 @@ rest:
 
   io-notification:
     base-url: "\${IO_NOTIFICATION_BASE_URL:http://localhost:8080/ionotification}"
+
+  organization:
+    base-url: "\${ORGANIZATION_BASE_URL:http://localhost:8080/organization}"
+
+  debt-position:
+    base-url: "\${DEBT_POSITION_BASE_URL:http://localhost:8080/debtposition}"

@@ -34,7 +34,7 @@ class IngestionFlowFileArchiverServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		service = new IngestionFlowFileArchiverService(TEST_PASSWORD, zipFileServiceMock);
+		service = new IngestionFlowFileArchiverService("/tmp", "archive", TEST_PASSWORD, zipFileServiceMock);
 	}
 
 	@Test

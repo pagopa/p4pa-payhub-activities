@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
-import it.gov.pagopa.payhub.activities.utility.faker.EmailDTOFaker;
+import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;

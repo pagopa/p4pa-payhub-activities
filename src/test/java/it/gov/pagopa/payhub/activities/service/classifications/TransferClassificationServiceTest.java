@@ -1,14 +1,14 @@
 package it.gov.pagopa.payhub.activities.service.classifications;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufClassifier;
 import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufTesClassifier;
-import it.gov.pagopa.payhub.activities.utility.faker.PaymentsReportingFaker;
-import it.gov.pagopa.payhub.activities.utility.faker.TransferFaker;
-import it.gov.pagopa.payhub.activities.utility.faker.TreasuryFaker;
+import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
+import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
+import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -16,7 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)

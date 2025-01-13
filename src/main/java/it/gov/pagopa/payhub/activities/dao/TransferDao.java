@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.dao;
 
 import it.gov.pagopa.payhub.activities.dto.TransferDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
 /**
  * Data Access Object (DAO) interface for handling operations related to
@@ -13,13 +15,10 @@ public interface TransferDao {
 	/**
 	 * find transfer by semantic key
 	 *
-	 * @param orgId  organization id
-	 * @param iuv    payment identifier
-	 * @param iur    reporting identifier
-	 * @param transferIndex transfer index
+	 * @param transferSemanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
 	 * @return TransferDTO object returned
 	 */
-	TransferDTO findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
+	TransferDTO findBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
 
 	/**
 	 * persist `TransferDTO` object into the database.

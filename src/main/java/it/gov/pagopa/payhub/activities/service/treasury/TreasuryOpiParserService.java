@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Lazy
 @Service
@@ -47,7 +48,7 @@ public class TreasuryOpiParserService {
               .distinct()
               .toList();
 
-        return new TreasuryIufResult(iufList, true);
+        return new TreasuryIufResult(iufList, true, null, null);
     }
 
 }

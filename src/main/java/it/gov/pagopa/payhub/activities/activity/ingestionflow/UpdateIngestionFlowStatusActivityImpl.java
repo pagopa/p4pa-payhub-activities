@@ -21,7 +21,7 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
     }
 
     @Override
-    public boolean updateStatus(Long id, String newStatus) {
+    public boolean updateStatus(Long id, String newStatus, String discardFileName) {
         log.info("Updating IngestionFlowFile {} to new status {}", id, newStatus);
         if(id==null){
             throw new IllegalArgumentException("A null IngestionFlowFile was provided when updating its status to " + newStatus);
@@ -29,6 +29,6 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
         if(StringUtils.isBlank(newStatus)){
             throw new IllegalArgumentException("A null IngestionFlowFile status was provided when updating the id " + id);
         }
-        return ingestionFlowFileDao.updateStatus(id, newStatus);
+        return ingestionFlowFileDao.updateStatus(id, newStatus, discardFileName);
     }
 }

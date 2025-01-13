@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.pagopa.payhub.activities.dao.IuvSequenceNumberDao;
-import it.gov.pagopa.payhub.activities.dto.OrganizationDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +36,7 @@ public class IuvService {
    * @param org the organization for which to generate the IUV
    * @return the generated IUV
    */
-  public String generateIuv(OrganizationDTO org){
+  public String generateIuv(Organization org){
     StringBuilder iuvBuilder = new StringBuilder();
     //header
     iuvBuilder.append(org.getApplicationCode());
@@ -53,7 +53,7 @@ public class IuvService {
     return iuvBuilder.toString();
   }
 
-  private String generatePaymentIndex(OrganizationDTO org){
+  private String generatePaymentIndex(Organization org){
     long paymentIndex = iuvSequenceNumberDao.getNextIuvSequenceNumber(org.getIpaCode());
     if(paymentIndex<1){
       log.error("invalid payment index returned for org[{}/{}]: {}", org.getIpaCode(), org.getOrgFiscalCode(), paymentIndex);
