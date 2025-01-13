@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.dao;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
 /**
  * Data Access Object (DAO) interface for handling operations related to

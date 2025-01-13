@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -26,7 +26,7 @@ class RtIufTesClassifierTest {
 	@Test
 	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Arrange
-		transferDTO.setAmount(10000L);
+		transferDTO.setAmountCents(10000L);
 		paymentsReportingDTO.setAmountPaidCents(10000L);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
 		// Act
@@ -51,7 +51,7 @@ class RtIufTesClassifierTest {
 	})
 	void givenUnmatchedAmountsWhenDefineThenReturnNull(Long paymentsReportingAmount, Double treasuryAmount) {
 		// Arrange
-		transferDTO.setAmount(100L);
+		transferDTO.setAmountCents(100L);
 		paymentsReportingDTO.setAmountPaidCents(paymentsReportingAmount);
 		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(treasuryAmount));
 		// Act

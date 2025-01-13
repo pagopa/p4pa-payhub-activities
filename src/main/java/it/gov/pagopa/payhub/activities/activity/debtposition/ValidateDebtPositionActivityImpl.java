@@ -1,20 +1,15 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.dao.TaxonomyDao;
-import it.gov.pagopa.payhub.activities.dto.PersonDTO;
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.Utilities.isValidIban;
@@ -31,9 +26,10 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
     }
 
     public void validate(DebtPositionDTO debtPositionDTO) {
-        if (debtPositionDTO.getDebtPositionTypeOrg() == null ||
-                debtPositionDTO.getDebtPositionTypeOrg().getDebtPositionType() == null ||
-                StringUtils.isBlank(debtPositionDTO.getDebtPositionTypeOrg().getDebtPositionType().getCode())) {
+        DebtPositionTypeOrg debtPositionTypeOrg=null; // TODO fetch once moved into p4pa-debt-position
+        if (debtPositionTypeOrg == null ||
+                debtPositionTypeOrg.getCode() == null ||
+                StringUtils.isBlank(debtPositionTypeOrg.getCode())) {
             throw new InvalidValueException("Debt position type organization is mandatory");
         }
 
@@ -46,42 +42,42 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
                 throw new InvalidValueException("At least one installment of the debt position is mandatory");
             }
             for (InstallmentDTO installmentDTO : paymentOptionDTO.getInstallments()) {
-                validateInstallment(installmentDTO, debtPositionDTO.getDebtPositionTypeOrg());
-                validatePersonData(installmentDTO.getPayer(), debtPositionDTO.getDebtPositionTypeOrg());
+                validateInstallment(installmentDTO, debtPositionTypeOrg);
+                validatePersonData(installmentDTO.getDebtor(), debtPositionTypeOrg);
                 validateTransfers(installmentDTO.getTransfers());
             }
         }
     }
 
-    private void validateInstallment(InstallmentDTO installmentDTO, DebtPositionTypeOrgDTO debtPositionTypeOrgDTO) {
+    private void validateInstallment(InstallmentDTO installmentDTO, DebtPositionTypeOrg debtPositionTypeOrgDTO) {
         if (StringUtils.isBlank(installmentDTO.getRemittanceInformation())) {
             throw new InvalidValueException("Remittance information is mandatory");
         }
-        if (installmentDTO.getDueDate() != null && installmentDTO.getDueDate().isBefore(LocalDate.now())) {
+        if (installmentDTO.getDueDate() != null && installmentDTO.getDueDate().isBefore(OffsetDateTime.now())) {
             throw new InvalidValueException("The due date cannot be retroactive");
         }
-        if (debtPositionTypeOrgDTO.isFlagMandatoryDueDate() && installmentDTO.getDueDate() == null) {
+        if (debtPositionTypeOrgDTO.getFlagMandatoryDueDate() && installmentDTO.getDueDate() == null) {
             throw new InvalidValueException("The due date is mandatory");
         }
-        if (installmentDTO.getAmount() == null) {
+        if (installmentDTO.getAmountCents() == null) {
             throw new InvalidValueException("Amount is mandatory");
         }
-        if (installmentDTO.getAmount() < 0) {
+        if (installmentDTO.getAmountCents() < 0) {
             throw new InvalidValueException("Amount is not valid");
         }
-        if (debtPositionTypeOrgDTO.getAmount() != null && !installmentDTO.getAmount().equals(debtPositionTypeOrgDTO.getAmount())) {
+        if (debtPositionTypeOrgDTO.getAmountCents() != null && !installmentDTO.getAmountCents().equals(debtPositionTypeOrgDTO.getAmountCents())) {
             throw new InvalidValueException("Amount is not valid for this debt position type org");
         }
     }
 
-    private void validatePersonData(PersonDTO personDTO, DebtPositionTypeOrgDTO debtPositionTypeOrgDTO) {
+    private void validatePersonData(PersonDTO personDTO, DebtPositionTypeOrg debtPositionTypeOrgDTO) {
         if (personDTO == null) {
             throw new InvalidValueException("The debtor is mandatory for installment");
         }
-        if (StringUtils.isBlank(personDTO.getUniqueIdentifierCode())) {
-            throw new InvalidValueException("Unique identification code is mandatory");
+        if (StringUtils.isBlank(personDTO.getFiscalCode())) {
+            throw new InvalidValueException("Fiscal code is mandatory");
         }
-        if (!debtPositionTypeOrgDTO.isFlagAnonymousFiscalCode() && personDTO.getUniqueIdentifierCode().equals("ANONIMO")) {
+        if (Boolean.FALSE.equals(debtPositionTypeOrgDTO.getFlagAnonymousFiscalCode()) && personDTO.getFiscalCode().equals("ANONIMO")) {
             throw new InvalidValueException("This organization installment type or installment does not allow an anonymous unique identification code");
         }
         if (StringUtils.isBlank(personDTO.getFullName())) {
@@ -112,7 +108,7 @@ public class ValidateDebtPositionActivityImpl implements ValidateDebtPositionAct
             }
             checkTaxonomyCategory(transferSecondaryBeneficiary.getCategory());
 
-            if (transferSecondaryBeneficiary.getAmount() == null || transferSecondaryBeneficiary.getAmount() < 0) {
+            if (transferSecondaryBeneficiary.getAmountCents() == null || transferSecondaryBeneficiary.getAmountCents() < 0) {
                 throw new InvalidValueException("The amount of secondary beneficiary is not valid");
             }
         }

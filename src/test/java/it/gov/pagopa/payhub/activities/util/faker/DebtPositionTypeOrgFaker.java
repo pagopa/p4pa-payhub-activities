@@ -1,17 +1,14 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
-
-import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionTypeFaker.buildDebtPositionType;
-import static it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker.buildOrganizationDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 
 public class DebtPositionTypeOrgFaker {
 
-    public static DebtPositionTypeOrgDTO buildDebtPositionTypeOrgDTO() {
-        return DebtPositionTypeOrgDTO.builder()
+    public static DebtPositionTypeOrg buildDebtPositionTypeOrgDTO() {
+        return DebtPositionTypeOrg.builder()
                 .debtPositionTypeOrgId(1L)
-                .org(buildOrganizationDTO())
-                .debtPositionType(buildDebtPositionType())
+                .organizationId(0L)
+                .debtPositionTypeId(2L)
                 .balance("balance")
                 .code("code")
                 .description("description")
@@ -19,24 +16,17 @@ public class DebtPositionTypeOrgFaker {
                 .iban("iban")
                 .postalAccountCode("1234567890")
                 .xsdDefinitionRef("xsdDefinitionRef")
-                .amount(100L)
+                .amountCents(100L)
                 .externalPaymentUrl("externalPaymentUrl")
-                .balanceDefaultDesc("balanceDefaultDesc")
+                .balance("balanceDefaultDesc")
                 .flagAnonymousFiscalCode(false)
                 .flagMandatoryDueDate(false)
-                .holderPostalCC("holderPostalCC")
+                .holderPostalCc("holderPostalCC")
                 .orgSector("orgSector")
-                .flagNotifyIO(true)
+                .flagNotifyIo(true)
                 .flagNotifyOutcomePush(false)
-                .maxAttemptForwardingOutcome(3)
-                .orgSilId(2L)
                 .flagActive(true)
-                .taxonomyCode("taxonomyCode")
-                .amountActualizationUrl("amountActualizationUrl")
-                .amountActualizationUser("amountActualizationUser")
-                .amountActualizationPwd("amountActualizationPwd")
-                .urlNotifyActualizationPnd("urlNotifyActualizationPnd")
-                .flagDisablePrintNotice(true)
+                .code("taxonomyCode")
                 .build();
     }
 }

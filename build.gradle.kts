@@ -67,6 +67,7 @@ val openCsvVersion = "5.9"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
@@ -225,7 +226,6 @@ tasks.withType<BootJar> {
 	enabled = false
 }
 
-
 tasks.compileJava {
 	dependsOn("dependenciesBuild")
 }
@@ -239,7 +239,8 @@ tasks.register("dependenciesBuild") {
 		"openApiGenerateP4PAAUTH",
 		"openApiGenerateIONOTIFICATION",
 		"openApiGenerateORGANIZATION",
-		"openApiGenerateDEBTPOSITIONS")
+		"openApiGenerateDEBTPOSITIONS"
+	)
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
