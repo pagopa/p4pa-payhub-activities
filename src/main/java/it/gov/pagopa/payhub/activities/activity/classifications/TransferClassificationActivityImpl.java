@@ -67,6 +67,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			orgId, iuv, iur, transferIndex, String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
 		transferClassificationStoreService.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, classifications);
+		notifyReportedTransferId(transferDTO, paymentsReportingDTO);
 	}
 
 	/**
@@ -82,5 +83,17 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			return treasuryDao.getByOrganizationIdAndIuf(orgId, iuf);
 		}
 		return null;
+	}
+
+	/**
+	 * Notify the status of the given transfer as Reported.
+	 *
+	 * @param transferDTO the transfer data transfer object containing transfer details
+	 * @param paymentsReportingDTO the payments reporting data transfer object containing payment reporting details
+	 */
+	private void notifyReportedTransferId(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO) {
+		if(transferDTO != null && paymentsReportingDTO != null) {
+			transferDao.notifyReportedTransferId(transferDTO.getTransferId());
+		}
 	}
 }

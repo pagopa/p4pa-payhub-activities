@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.dao;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
@@ -21,9 +20,10 @@ public interface TransferDao {
 	TransferDTO findBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
 
 	/**
-	 * persist `TransferDTO` object into the database.
+	 * update transfer status as Reported by transfer id
 	 *
-	 * @param transferDTO the `TransferDTO` objects to be saved.
+	 * @param transferId the unique identifier of the transfer
+	 * @return boolean true if the status has been updated
 	 */
-	TransferDTO save(TransferDTO transferDTO);
+	boolean notifyReportedTransferId(Long transferId);
 }
