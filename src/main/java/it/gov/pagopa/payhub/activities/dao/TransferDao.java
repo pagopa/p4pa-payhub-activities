@@ -18,4 +18,12 @@ public interface TransferDao {
 	 * @return TransferDTO object returned
 	 */
 	TransferDTO findBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
+
+	/**
+	 * update transfer status as Reported by transfer id
+	 *
+	 * @param transferId the unique identifier of the transfer
+	 * @return boolean true if the status has been updated
+	 */
+	boolean notifyReportedTransferId(Long transferId);
 }

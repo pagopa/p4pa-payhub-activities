@@ -101,6 +101,7 @@ class TransferClassificationActivityImplTest {
 		when(transferClassificationServiceMock.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(List.of(ClassificationsEnum.RT_IUF_TES));
 		doReturn(List.of(classificationDTO)).when(transferClassificationStoreServiceMock)
 			.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, List.of(ClassificationsEnum.RT_IUF_TES));
+		when(transferDaoMock.notifyReportedTransferId(transferDTO.getTransferId())).thenReturn(true);
 
 		assertDoesNotThrow(() -> activity.classify(ORGANIZATION, IUV, IUR, INDEX));
 
