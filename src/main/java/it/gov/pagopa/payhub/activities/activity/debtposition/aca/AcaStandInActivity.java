@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.acastandin;
+package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 

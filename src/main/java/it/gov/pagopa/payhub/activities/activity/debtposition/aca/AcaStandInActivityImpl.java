@@ -1,7 +1,7 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.acastandin;
+package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 
-import it.gov.pagopa.payhub.activities.mapper.DebtPositionDTOMapper;
-import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
+import it.gov.pagopa.payhub.activities.connector.aca.AcaService;
+import it.gov.pagopa.payhub.activities.connector.aca.mapper.DebtPositionDTOMapper;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -11,17 +11,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class AcaStandInActivityImpl implements AcaStandInActivity {
 
-    private final AcaApi acaApi;
+    private final AcaService acaService;
     private final DebtPositionDTOMapper debtPositionDTOMapper;
 
-    public AcaStandInActivityImpl(AcaApi acaApi, DebtPositionDTOMapper debtPositionDTOMapper) {
-        this.acaApi = acaApi;
+    public AcaStandInActivityImpl(AcaService acaService, DebtPositionDTOMapper debtPositionDTOMapper) {
+        this.acaService = acaService;
         this.debtPositionDTOMapper = debtPositionDTOMapper;
     }
 
     @Override
     public void createAcaDebtPosition(it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO debtPosition) {
         DebtPositionDTO debtPositionDTO = debtPositionDTOMapper.map(debtPosition);
-        acaApi.createAca(debtPositionDTO);
+        acaService.createAcaDebtPosition(debtPositionDTO);
     }
 }

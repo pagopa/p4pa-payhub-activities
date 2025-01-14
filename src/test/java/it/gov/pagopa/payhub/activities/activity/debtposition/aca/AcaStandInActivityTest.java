@@ -1,7 +1,7 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.acastandin;
+package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 
-import it.gov.pagopa.payhub.activities.mapper.DebtPositionDTOMapper;
-import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
+import it.gov.pagopa.payhub.activities.connector.aca.AcaService;
+import it.gov.pagopa.payhub.activities.connector.aca.mapper.DebtPositionDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 class AcaStandInActivityTest {
 
     @Mock
-    private AcaApi acaApiMock;
+    private AcaService acaServiceMock;
 
     @Mock
     private DebtPositionDTOMapper debtPositionDTOMapperMock;
@@ -26,7 +26,7 @@ class AcaStandInActivityTest {
 
     @BeforeEach
     void init() {
-        activity = new AcaStandInActivityImpl(acaApiMock, debtPositionDTOMapperMock);
+        activity = new AcaStandInActivityImpl(acaServiceMock, debtPositionDTOMapperMock);
     }
 
 
@@ -36,7 +36,7 @@ class AcaStandInActivityTest {
 
         activity.createAcaDebtPosition(buildDebtPositionDTO());
 
-        Mockito.verify(acaApiMock, Mockito.times(1))
-                .createAca(buildPaymentsDebtPositionDTO());
+        Mockito.verify(acaServiceMock, Mockito.times(1))
+                .createAcaDebtPosition(buildPaymentsDebtPositionDTO());
     }
 }

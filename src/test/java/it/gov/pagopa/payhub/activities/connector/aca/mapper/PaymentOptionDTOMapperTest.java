@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.mapper;
+package it.gov.pagopa.payhub.activities.connector.aca.mapper;
 
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO;
 import org.junit.jupiter.api.Test;
