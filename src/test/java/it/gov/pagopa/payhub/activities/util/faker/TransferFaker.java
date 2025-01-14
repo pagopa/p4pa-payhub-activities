@@ -10,9 +10,29 @@ public class TransferFaker {
                 .orgFiscalCode("orgFiscalCode")
                 .orgName("beneficiaryName")
                 .iban("iban")
+                .postalIban("postalIban")
                 .amountCents(100L)
                 .remittanceInformation("remittanceInformation")
                 .stampType("stampType")
+                .stampHashDocument("stampHashDocument")
+                .stampProvincialResidence("stampProvincialResidence")
+                .category("category")
+                .transferIndex(1)
+                .build();
+    }
+
+    public static it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO buildPaymentsTransferDTO(){
+        return it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO.builder()
+                .transferId(1L)
+                .orgFiscalCode("orgFiscalCode")
+                .orgName("beneficiaryName")
+                .iban("iban")
+                .postalIban("postalIban")
+                .amountCents(100L)
+                .remittanceInformation("remittanceInformation")
+                .stampType("stampType")
+                .stampHashDocument("stampHashDocument")
+                .stampProvincialResidence("stampProvincialResidence")
                 .category("category")
                 .transferIndex(1)
                 .build();
