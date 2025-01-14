@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class InstallmentDTOMapperTest {
 
     @Mock
-    private TransferDTOMapper transferDTOMapper;
+    private TransferDTOMapper transferDTOMapperMock;
 
     @Mock
-    private PersonDTOMapper personDTOMapper;
+    private PersonDTOMapper personDTOMapperMock;
 
     @InjectMocks
     private final InstallmentDTOMapper mapper = Mappers.getMapper(InstallmentDTOMapper.class);
@@ -34,8 +34,8 @@ class InstallmentDTOMapperTest {
     void testMapInstallmentDTO(){
         InstallmentDTO installmentDTOexpected = buildPaymentsInstallmentDTO();
 
-        Mockito.when(transferDTOMapper.map(buildTransferDTO())).thenReturn(buildPaymentsTransferDTO());
-        Mockito.when(personDTOMapper.map(buildPersonDTO())).thenReturn(buildPaymentsPersonDTO());
+        Mockito.when(transferDTOMapperMock.map(buildTransferDTO())).thenReturn(buildPaymentsTransferDTO());
+        Mockito.when(personDTOMapperMock.map(buildPersonDTO())).thenReturn(buildPaymentsPersonDTO());
 
         InstallmentDTO result = mapper.map(buildInstallmentDTO());
 

@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DebtPositionDTOMapperTest {
 
     @Mock
-    private PaymentOptionDTOMapper paymentOptionDTOMapper;
+    private PaymentOptionDTOMapper paymentOptionDTOMapperMock;
 
     @InjectMocks
     private final DebtPositionDTOMapper mapper = Mappers.getMapper(DebtPositionDTOMapper.class);
@@ -29,7 +29,7 @@ class DebtPositionDTOMapperTest {
     void testMapDebtPositionDTO(){
         DebtPositionDTO debtPositionDTOexpected = buildPaymentsDebtPositionDTO();
 
-        Mockito.when(paymentOptionDTOMapper.map(buildPaymentOptionDTO())).thenReturn(buildPaymentsPaymentOptionDTO());
+        Mockito.when(paymentOptionDTOMapperMock.map(buildPaymentOptionDTO())).thenReturn(buildPaymentsPaymentOptionDTO());
 
         DebtPositionDTO result = mapper.map(buildDebtPositionDTO());
 
