@@ -9,6 +9,7 @@ public class UserInfoFaker {
 
     public static UserInfo buildUserInfo() {
         return UserInfo.builder()
+
                 .userId("USERID")
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
@@ -20,7 +21,7 @@ public class UserInfoFaker {
                 .brokerFiscalCode("BRFISCALCODE")
                 .canManageUsers(true)
                 .organizations(List.of(UserOrganizationRoles.builder()
-                                .organizationId(5L)
+                        .organizationId(1L)
                         .operatorId("OPERATORID")
                         .organizationIpaCode("ORGIPACODE")
                         .roles(List.of("ROLE_ADMIN"))
