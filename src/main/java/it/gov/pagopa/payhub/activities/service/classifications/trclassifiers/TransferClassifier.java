@@ -53,11 +53,8 @@ public interface TransferClassifier {
 	 * @param amount the amount to be converted.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountCents(BigDecimal amount) {
-		if(amount == null) {
-			return 0L;
-		}
-		return amount.movePointRight(2).longValueExact();
+	default Long getAmountCents(Treasury treasury) {
+		return Optional.ofNullable(treasury).map(Treasury::getBillAmountCents).orElse(0L);
 	}
 }
 
