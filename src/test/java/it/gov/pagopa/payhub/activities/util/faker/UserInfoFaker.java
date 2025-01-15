@@ -20,6 +20,7 @@ public class UserInfoFaker {
                 .brokerFiscalCode("BRFISCALCODE")
                 .canManageUsers(true)
                 .organizations(List.of(UserOrganizationRoles.builder()
+                                .organizationId(5L)
                         .operatorId("OPERATORID")
                         .organizationIpaCode("ORGIPACODE")
                         .roles(List.of("ROLE_ADMIN"))

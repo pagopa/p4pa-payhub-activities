@@ -217,7 +217,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferPIVANullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode(null);
         debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
@@ -229,7 +229,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferPIVANotValidThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode("00000000001");
         debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
 
@@ -241,7 +241,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferIbanNullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban(null);
         debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().getTransfers().add(secondTransfer);
@@ -254,7 +254,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferCategoryNullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory(null);
@@ -268,7 +268,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferCategoryNotFoundThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");
@@ -284,7 +284,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferAmountNullThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");
@@ -301,7 +301,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferAmountNegativeThenThrowValidationException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");
@@ -318,7 +318,7 @@ class ValidateDebtPositionActivityImplTest {
     void givenSecondTransferThenSuccess(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         TransferDTO secondTransfer = buildTransferDTO();
-        secondTransfer.setTransferIndex(2);
+        secondTransfer.setTransferIndex(2L);
         secondTransfer.setOrgFiscalCode("31798530361");
         secondTransfer.setIban("IT00A0000001234567891234567");
         secondTransfer.setCategory("category");

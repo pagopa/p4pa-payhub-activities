@@ -1,10 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
@@ -24,7 +25,7 @@ public interface TransferClassifier {
 	 * @param treasuryDTO the treasury data.
 	 * @return the classification label if conditions are met, or {@code null} if no label is applicable.
 	 */
-	ClassificationsEnum classify(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, TreasuryDTO treasuryDTO);
+	ClassificationsEnum classify(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO, Treasury treasuryDTO);
 
 	/**
 	 * Extracts the amount in cents from the transfer data.
@@ -49,13 +50,14 @@ public interface TransferClassifier {
 	/**
 	 * Extracts the amount in cents from the treasury data.
 	 *
-	 * @param treasuryDTO the treasury data.
+	 * @param amount the amount to be converted.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountCents(TreasuryDTO treasuryDTO) {
-		return Optional.ofNullable(treasuryDTO)
-			.map(item -> item.getBillIpNumber().movePointRight(2).longValueExact())
-			.orElse(0L);
+	default Long getAmountCents(BigDecimal amount) {
+		if(amount == null) {
+			return 0L;
+		}
+		return amount.movePointRight(2).longValueExact();
 	}
 }
 

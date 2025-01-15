@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi14;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
@@ -10,7 +11,8 @@ import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvide
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 public class TreasuryMapperOpi14Service implements TreasuryMapperService<FlussoGiornaleDiCassa> {
 
     @Override
-    public Map<TreasuryOperationEnum, List<TreasuryDTO>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFileDTO ingestionFlowFileDTO) {
+    public Map<TreasuryOperationEnum, List<Treasury>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFileDTO ingestionFlowFileDTO) {
         Organization organizationDTO = ingestionFlowFileDTO.getOrg();
 
         return fGC.getInformazioniContoEvidenza().stream()
@@ -32,37 +34,36 @@ public class TreasuryMapperOpi14Service implements TreasuryMapperService<FlussoG
                 .map(movContoEvidenza -> {
                     InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = movContoEvidenza.getCliente();
 
-                    Date regionValueDate = Optional.ofNullable(movContoEvidenza.getDataValutaEnte())
-                            .map(d -> d.toGregorianCalendar().getTime())
-                            .orElseGet(() -> movContoEvidenza.getDataMovimento().toGregorianCalendar().getTime());
+                    XMLGregorianCalendar regionValueDate = Optional.ofNullable(movContoEvidenza.getDataValutaEnte())
+                            .orElseGet(movContoEvidenza::getDataMovimento);
 
-                    TreasuryDTO treasuryDTO = TreasuryDTO.builder()
+                    Treasury treasuryDTO = Treasury.builder()
                             .billYear(fGC.getEsercizio().getFirst().toString())
                             .billCode(movContoEvidenza.getNumeroBollettaQuietanza().toString())
-                            .billIpNumber(movContoEvidenza.getImporto())
-                            .billDate(movContoEvidenza.getDataMovimento().toGregorianCalendar().getTime())
-                            .receptionDate(new Date())
+                            .billAmountCents(movContoEvidenza.getImporto().movePointRight(2).longValueExact())
+                            .billDate(Utilities.convertToLocalDate(movContoEvidenza.getDataMovimento()))
+                            .receptionDate(OffsetDateTime.now())
                             .documentCode(String.valueOf(movContoEvidenza.getNumeroDocumento()))
-                            .regionValueDate(regionValueDate)
+                            .regionValueDate(Utilities.convertToLocalDate(regionValueDate))
                             .organizationId(organizationDTO.getOrganizationId())
                             .iuf(TreasuryUtils.getIdentificativo(movContoEvidenza.getCausale(), TreasuryUtils.IUF))
                             .iuv(null)
-                            .creationDate(new Date())
-                            .lastUpdateDate(new Date())
+                            .creationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                             .ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
                             .actualSuspensionDate(Optional.ofNullable(movContoEvidenza.getSospesoDaRegolarizzare())
-                                    .map(s -> s.getDataEffettivaSospeso().toGregorianCalendar().getTime())
+                                    .map(s -> Utilities.convertToLocalDate(s.getDataEffettivaSospeso()))
                                     .orElse(null))
                             .managementProvisionalCode(Optional.ofNullable(movContoEvidenza.getSospesoDaRegolarizzare())
                                     .map(InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare::getCodiceGestionaleProvvisorio)
                                     .orElse(null))
                             .endToEndId(movContoEvidenza.getEndToEndId())
-                            .lastName(cliente.getAnagraficaCliente())
-                            .address(cliente.getIndirizzoCliente())
-                            .postalCode(cliente.getCapCliente())
-                            .city(cliente.getLocalitaCliente())
-                            .fiscalCode(cliente.getCodiceFiscaleCliente())
-                            .vatNumber(cliente.getPartitaIvaCliente())
+                            .pspLastName(cliente.getAnagraficaCliente())
+                            .pspAddress(cliente.getIndirizzoCliente())
+                            .pspPostalCode(cliente.getCapCliente())
+                            .pspCity(cliente.getLocalitaCliente())
+                            .pspFiscalCode(cliente.getCodiceFiscaleCliente())
+                            .pspVatNumber(cliente.getPartitaIvaCliente())
                             .build();
 
                     TreasuryOperationEnum operation = "ESEGUITO".equals(movContoEvidenza.getTipoOperazione())

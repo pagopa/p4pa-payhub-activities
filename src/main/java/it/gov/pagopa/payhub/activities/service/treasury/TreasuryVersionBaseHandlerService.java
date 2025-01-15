@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
@@ -31,11 +31,11 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     protected abstract T unmarshall(File file);
 
     @Override
-    public Map<TreasuryOperationEnum, List<TreasuryDTO>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
+    public Map<TreasuryOperationEnum, List<Treasury>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
         try {
             T unmarshalled = unmarshall(input);
             List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
-            Map<TreasuryOperationEnum, List<TreasuryDTO>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
+            Map<TreasuryOperationEnum, List<Treasury>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
             treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
             return result;

@@ -32,12 +32,12 @@ class IuvServiceTest {
 
   private static final String VALID_ORG_FISCAL_CODE = "VALID_FISCAL_CODE";
   private static final String VALID_ORG_IPA_CODE = "VALID_IPA_CODE";
-  private static final String VALID_APPLICATION_CODE = "01";
+  private static final String VALID_SEGREGATION_CODE = "01";
   private static final Organization VALID_ORG = Organization.builder()
     .organizationId(1L)
     .orgFiscalCode(VALID_ORG_FISCAL_CODE)
     .ipaCode(VALID_ORG_IPA_CODE)
-    .applicationCode(VALID_APPLICATION_CODE)
+    .segregationCode(VALID_SEGREGATION_CODE)
     .build();
   private static final long VALID_PAYMENT_INDEX = 42L;
   private static final String VALID_IUV = "01000000000004285";

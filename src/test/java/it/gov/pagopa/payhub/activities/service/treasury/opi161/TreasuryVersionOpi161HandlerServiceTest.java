@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
@@ -68,7 +68,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();
         when(treasuryUnmarshallerServiceMock.unmarshalOpi161(file)).thenReturn(flusso);
 
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> expectedResult = Map.of();
+        Map<TreasuryOperationEnum, List<Treasury>> expectedResult = Map.of();
 
         ArrayList<TreasuryErrorDTO> errorDtoList = new ArrayList<>();
         when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(true);
@@ -76,7 +76,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(mapperServiceMock.apply(flusso, ingestionFlowFileDTO)).thenReturn(expectedResult);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
@@ -99,7 +99,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(false);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
@@ -117,7 +117,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(treasuryUnmarshallerServiceMock.unmarshalOpi161(file)).thenThrow(new RuntimeException("Unmarshall failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
@@ -140,7 +140,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
         when(mapperServiceMock.apply(flusso, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);

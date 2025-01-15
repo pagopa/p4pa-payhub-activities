@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
@@ -49,7 +49,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         Object unmarshalledObject = new Object();
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> expectedResult = Map.of();
+        Map<TreasuryOperationEnum, List<Treasury>> expectedResult = Map.of();
 
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
@@ -57,7 +57,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedResult);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -76,7 +76,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -98,7 +98,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -120,7 +120,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);

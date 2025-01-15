@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
@@ -22,31 +22,47 @@ public class TreasuryOpiParserService {
 
 
     private final List<TreasuryVersionHandlerService> versionHandlerServices;
-    private final TreasuryDao treasuryDao;
+
+    private final TreasuryService treasuryService;
 
     public TreasuryOpiParserService(List<TreasuryVersionHandlerService> versionHandlerServices,
-                                    TreasuryDao treasuryDao) {
+                                    TreasuryService treasuryService) {
         this.versionHandlerServices = versionHandlerServices;
-        this.treasuryDao = treasuryDao;
+        this.treasuryService = treasuryService;
     }
 
     public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
 
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> op2TreasuriesMap = versionHandlerServices.stream()
+        Map<TreasuryOperationEnum, List<Treasury>> op2TreasuriesMap = versionHandlerServices.stream()
                 .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles))
                 .filter(map -> !map.isEmpty())
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
-        List<TreasuryDTO> newTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
+        List<Treasury> newTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
         List<String> iufList = newTreasuries.stream()
             .map(treasuryDTO -> {
-                  treasuryDao.insert(treasuryDTO);
-                  return treasuryDTO.getIuf();
+                treasuryService.insert(treasuryDTO);
+                return treasuryDTO.getIuf();
               })
               .distinct()
               .toList();
+
+        List<Treasury> deleteTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.DELETE);
+        for (Treasury treasuryDTO : deleteTreasuries) {
+            Treasury finded = treasuryService.getByOrganizationIdAndBillCodeAndBillYear(
+                            treasuryDTO.getOrganizationId(),
+                            treasuryDTO.getBillCode(),
+                            treasuryDTO.getBillYear())
+                    .orElse(null);
+            if (finded != null) {
+                treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(
+                        finded.getOrganizationId(),
+                        finded.getBillCode(),
+                        finded.getBillYear());
+            }
+        }
 
         return new TreasuryIufResult(iufList, true, null, null);
     }

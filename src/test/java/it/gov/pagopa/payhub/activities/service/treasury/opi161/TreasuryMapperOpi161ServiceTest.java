@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
@@ -71,25 +71,25 @@ class TreasuryMapperOpi161ServiceTest {
         when(cliente.getPartitaIvaCliente()).thenReturn(VAT_NUMBER);
 
         IngestionFlowFileDTO ingestionFlowFileDTO = createIngestionFlowFileDTO();
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
+        Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
         assertNotNull(result);
         assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
         assertFalse(result.get(TreasuryOperationEnum.INSERT).isEmpty());
 
-        List<TreasuryDTO> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
+        List<Treasury> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
         assertNotNull(treasuryDTOList);
 
-        TreasuryDTO treasuryDTO = treasuryDTOList.getFirst();
+        Treasury treasuryDTO = treasuryDTOList.getFirst();
         assertEquals("2023", treasuryDTO.getBillYear());
         assertEquals("1", treasuryDTO.getBillCode());
-        assertEquals(BigDecimal.TEN, treasuryDTO.getBillIpNumber());
-        assertEquals(LAST_NAME_CLIENTE, treasuryDTO.getLastName());
-        assertEquals(ADDRESS_CLIENTE, treasuryDTO.getAddress());
-        assertEquals(POSTAL_CODE, treasuryDTO.getPostalCode());
-        assertEquals(CITY, treasuryDTO.getCity());
-        assertEquals(FISCAL_CODE, treasuryDTO.getFiscalCode());
-        assertEquals(VAT_NUMBER, treasuryDTO.getVatNumber());
+        assertEquals(1000L, treasuryDTO.getBillAmountCents());
+        assertEquals(LAST_NAME_CLIENTE, treasuryDTO.getPspLastName());
+        assertEquals(ADDRESS_CLIENTE, treasuryDTO.getPspAddress());
+        assertEquals(POSTAL_CODE, treasuryDTO.getPspPostalCode());
+        assertEquals(CITY, treasuryDTO.getPspCity());
+        assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
+        assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
 
     }
 

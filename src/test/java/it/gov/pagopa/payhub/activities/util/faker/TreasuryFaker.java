@@ -1,14 +1,14 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 public class TreasuryFaker {
 
-	public static TreasuryDTO buildTreasuryDTO() {
-		return TreasuryDTO.builder()
+	public static Treasury buildTreasuryDTO() {
+		return Treasury.builder()
 			.treasuryId("treasuryId")
 			.billYear("2025")
 			.billCode("BILL123")
@@ -17,39 +17,38 @@ public class TreasuryFaker {
 			.transactionTypeCode("TYPE01")
 			.remittanceCode("REM001")
 			.remittanceInformation("Payment details")
-			.billIpNumber(BigDecimal.valueOf(1.00D))
-			.billDate(new Date())
-			.receptionDate(new Date())
+			.billAmountCents(100L)
+			.billDate(LocalDate.now())
+			.receptionDate(OffsetDateTime.now())
 			.documentYear("2025")
 			.documentCode("DOC789")
 			.sealCode("SEAL456")
-			.lastName("Doe")
-			.firstName("John")
-			.address("123 Fake Street")
-			.postalCode("12345")
-			.city("Faketown")
-			.fiscalCode("FISCALCODE1234")
-			.vatNumber("VAT123456")
+			.pspLastName("Doe")
+			.pspFirstName("John")
+			.pspAddress("123 Fake Street")
+			.pspPostalCode("12345")
+			.pspCity("Faketown")
+			.pspFiscalCode("FISCALCODE1234")
+			.pspVatNumber("VAT123456")
 			.abiCode("ABI123")
 			.cabCode("CAB456")
 			.accountRegistryCode("REG789")
 			.provisionalAe("PROV-AE")
 			.provisionalCode("PROV-CODE")
 			.ibanCode("IT60X0542811101000000123456")
-			.accountTypeCode('C')
+			.accountTypeCode("C")
 			.processCode("PROC123")
 			.executionPgCode("EXEC-PG456")
 			.transferPgCode("TRANS-PG789")
 			.processPgNumber(12345L)
-			.regionValueDate(new Date())
+			.regionValueDate(LocalDate.now())
 			.organizationId(98765L)
 			.iuf("IUF123456")
 			.iuv("IUV789123")
-			.creationDate(new Date())
-			.lastUpdateDate(new Date())
-			.isRegularized(true)
+			.creationDate(OffsetDateTime.now())
+			.updateDate(OffsetDateTime.now())
 			.ingestionFlowFileId(56789L)
-			.actualSuspensionDate(new Date())
+			.actualSuspensionDate(LocalDate.now())
 			.managementProvisionalCode("MAN-PROV123")
 			.endToEndId("E2E123456")
 			.build();
