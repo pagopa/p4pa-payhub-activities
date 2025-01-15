@@ -43,3 +43,6 @@ rest:
 
   debt-position:
     base-url: "\${DEBT_POSITION_BASE_URL:http://localhost:8080/debtposition}"
+
+  pagopa-payments:
+    base-url: "\${PAGOPA_PAYMENTS_BASE_URL:http://localhost:8080}"

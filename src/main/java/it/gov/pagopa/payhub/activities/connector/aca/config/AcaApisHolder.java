@@ -19,7 +19,7 @@ public class AcaApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public AcaApisHolder(
-            @Value("${rest.io-notification.base-url}") String baseUrl,
+            @Value("${rest.pagopa-payments.base-url}") String baseUrl,
             RestTemplateBuilder restTemplateBuilder) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
