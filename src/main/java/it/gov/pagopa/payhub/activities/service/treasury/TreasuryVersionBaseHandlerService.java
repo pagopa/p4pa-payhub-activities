@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
@@ -20,12 +21,14 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     private final TreasuryMapperService<T> mapperService;
     private final TreasuryValidatorService<T> validatorService;
     private final TreasuryErrorsArchiverService treasuryErrorsArchiverService;
+    private final TreasuryService treasuryService;
 
 
-    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService) {
+    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService, TreasuryService treasuryService) {
         this.mapperService = mapperService;
         this.validatorService = validatorService;
         this.treasuryErrorsArchiverService = treasuryErrorsArchiverService;
+        this.treasuryService = treasuryService;
     }
 
     protected abstract T unmarshall(File file);
@@ -37,6 +40,24 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
             List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
             Map<TreasuryOperationEnum, List<Treasury>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
+            List<Treasury> deleteTreasuries = result.get(TreasuryOperationEnum.DELETE);
+            for (Treasury treasuryDTO : deleteTreasuries) {
+                Treasury finded = treasuryService.getByOrganizationIdAndBillCodeAndBillYear(
+                                treasuryDTO.getOrganizationId(),
+                                treasuryDTO.getBillCode(),
+                                treasuryDTO.getBillYear())
+                        .orElse(null);
+                if (finded == null) {
+                    errorDTOList.add(TreasuryErrorDTO.builder()
+                            .errorMessage("The bill is not present in database so it is impossible to delete it")
+                            .errorCode(treasuryDTO.getOrganizationId()+"-"+treasuryDTO.getBillCode()+"-"+treasuryDTO.getBillYear())
+                            .billCode(treasuryDTO.getBillCode())
+                            .billYear(treasuryDTO.getBillYear())
+                            .fileName(ingestionFlowFileDTO.getFileName())
+                            .build());
+                }
+            }
+
             treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
             return result;
         } catch (Exception e) {

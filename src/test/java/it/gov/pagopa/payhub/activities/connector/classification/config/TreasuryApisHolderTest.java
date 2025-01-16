@@ -1,53 +1,80 @@
 package it.gov.pagopa.payhub.activities.connector.classification.config;
 
-import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityControllerApi;
-import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityExtendedControllerApi;
-import it.gov.pagopa.pu.classification.client.generated.TreasurySearchControllerApi;
+import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryRequestBody;
+import it.gov.pagopa.pu.ionotification.generated.ApiClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TreasuryApisHolderTest {
+class TreasuryApisHolderTest extends BaseApiHolderTest {
 
     @Mock
-    private RestTemplateBuilder restTemplateBuilder;
+    private RestTemplateBuilder restTemplateBuilderMock;
 
     private TreasuryApisHolder treasuryApisHolder;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        when(restTemplateBuilder.build()).thenReturn(mock(org.springframework.web.client.RestTemplate.class));
-        treasuryApisHolder = new TreasuryApisHolder("http://localhost", restTemplateBuilder);
+        Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+        Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+        ApiClient apiClient = new ApiClient(restTemplateMock);
+        String baseUrl = "http://example.com";
+        apiClient.setBasePath(baseUrl);
+        treasuryApisHolder = new TreasuryApisHolder(baseUrl, restTemplateBuilderMock);
+    }
+
+    @AfterEach
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
+                restTemplateBuilderMock,
+                restTemplateMock
+        );
     }
 
     @Test
-    void testGetTreasurySearchApi() {
-        String accessToken = "accessToken";
-        TreasurySearchControllerApi api = treasuryApisHolder.getTreasurySearchApi(accessToken);
-        assertNotNull(api);
+    void whenGetTreasurySearchApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    treasuryApisHolder.getTreasurySearchApi(accessToken)
+                            .crudTreasuryGetByOrganizationIdAndIuf(1L, "iuf");
+                    return null;
+                },
+                String.class,
+                treasuryApisHolder::unload);
+    }
+    @Test
+    void whenGetTreasuryEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    treasuryApisHolder.getTreasuryEntityControllerApi(accessToken)
+                            .crudCreateTreasury(new TreasuryRequestBody());
+                    return null;
+                },
+                String.class,
+                treasuryApisHolder::unload);
+    }
+    @Test
+    void whenGetTreasuryEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    treasuryApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
+                            .deleteByOrganizationIdAndBillCodeAndBillYear(1L, "billCode", "2021");
+                    return null;
+                },
+                String.class,
+                treasuryApisHolder::unload);
     }
 
-    @Test
-    void testGetTreasuryEntityControllerApi() {
-        String accessToken = "accessToken";
-        TreasuryEntityControllerApi api = treasuryApisHolder.getTreasuryEntityControllerApi(accessToken);
-        assertNotNull(api);
-    }
 
-    @Test
-    void testGetTreasuryEntityExtendedControllerApi() {
-        String accessToken = "accessToken";
-        TreasuryEntityExtendedControllerApi api = treasuryApisHolder.getTreasuryEntityExtendedControllerApi(accessToken);
-        assertNotNull(api);
-    }
+
 
 }

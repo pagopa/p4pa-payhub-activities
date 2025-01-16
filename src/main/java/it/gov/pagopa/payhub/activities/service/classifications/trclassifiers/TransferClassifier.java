@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
@@ -50,7 +49,7 @@ public interface TransferClassifier {
 	/**
 	 * Extracts the amount in cents from the treasury data.
 	 *
-	 * @param amount the amount to be converted.
+	 * @param treasury the treasury data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
 	default Long getAmountCents(Treasury treasury) {

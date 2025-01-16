@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.mapper;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.classification.dto.generated.TreasuryRequestBody;
@@ -66,6 +67,16 @@ class TreasuryRequestMapperTest {
         assertEquals(treasury.getManagementProvisionalCode(), result.getManagementProvisionalCode());
         assertEquals(treasury.getEndToEndId(), result.getEndToEndId());
         assertEquals(treasury.getRegularized(), result.getRegularized());
+        TestUtils.checkNotNullFields(result, "creationDate", "updateDate",
+                "updateOperatorExternalId", "treasuryId", "billYear", "billCode", "ingestionFlowFileId",
+                "organizationId", "iuf", "iuv", "accountCode", "domainIdCode", "transactionTypeCode",
+                "remittanceCode", "remittanceInformation", "billAmountCents", "billDate", "receptionDate",
+                "documentYear", "documentCode", "sealCode", "pspLastName", "pspFirstName",
+                "pspAddress", "pspPostalCode", "pspCity", "pspFiscalCode", "pspVatNumber",
+                "abiCode", "cabCode", "ibanCode", "accountRegistryCode", "provisionalAe",
+                "provisionalCode", "accountTypeCode", "processCode", "executionPgCode",
+                "transferPgCode", "processPgNumber", "regionValueDate", "actualSuspensionDate",
+                "managementProvisionalCode", "endToEndId", "regularized");
     }
 
     @Test

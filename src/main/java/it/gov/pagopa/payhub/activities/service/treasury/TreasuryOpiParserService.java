@@ -51,19 +51,11 @@ public class TreasuryOpiParserService {
 
         List<Treasury> deleteTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.DELETE);
         for (Treasury treasuryDTO : deleteTreasuries) {
-            Treasury finded = treasuryService.getByOrganizationIdAndBillCodeAndBillYear(
-                            treasuryDTO.getOrganizationId(),
-                            treasuryDTO.getBillCode(),
-                            treasuryDTO.getBillYear())
-                    .orElse(null);
-            if (finded != null) {
                 treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(
-                        finded.getOrganizationId(),
-                        finded.getBillCode(),
-                        finded.getBillYear());
-            }
+                        treasuryDTO.getOrganizationId(),
+                        treasuryDTO.getBillCode(),
+                        treasuryDTO.getBillYear());
         }
-
         return new TreasuryIufResult(iufList, true, null, null);
     }
 

@@ -41,7 +41,7 @@ public class TreasuryApisHolder {
         bearerTokenHolder.remove();
     }
 
-    /** It will return a {@link TreasurySearchControllerApi} instrumented with the provided accessToken. Use null if auth is not required */
+    /** It will return a {@link TreasurySearchControllerApi} instrumented with the provided accessToken.*/
     public TreasurySearchControllerApi getTreasurySearchApi(String accessToken){
         return getApi(accessToken, treasurySearchControllerApi);
     }

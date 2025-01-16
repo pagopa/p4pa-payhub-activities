@@ -46,9 +46,9 @@ public class TreasuryErrorsArchiverService {
 
         List<String[]> data = errorDTOList.stream()
                 .map(errorDTO -> new String[]{
-                        errorDTO.getNomeFile(),
-                        errorDTO.getDeAnnoBolletta(),
-                        errorDTO.getCodBolletta(),
+                        errorDTO.getFileName(),
+                        errorDTO.getBillYear(),
+                        errorDTO.getBillCode(),
                         errorDTO.getErrorCode(),
                         errorDTO.getErrorMessage()
                 })

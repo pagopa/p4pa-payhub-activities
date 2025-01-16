@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
@@ -29,11 +30,14 @@ class TreasuryVersionBaseHandlerServiceTest {
     private TreasuryValidatorService<Object> validatorServiceMock;
     @Mock
     private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
+    @Mock
+    private TreasuryService treasuryServiceMock;
+
     private TreasuryVersionBaseHandlerService<Object> handlerService;
 
     @BeforeEach
     void setUp() {
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock) {
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock) {
             @Override
             protected Object unmarshall(File file) {
                 return new Object();
@@ -41,7 +45,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         };
     }
 
-    @Test //OK
+    @Test
     void testHandle_whenValidFile_thenReturnsResult() {
         // Given
         File file = mock(File.class);
@@ -84,10 +88,10 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.verify(mapperServiceMock, never()).apply(new Object(), new IngestionFlowFileDTO());
     }
 
-    @Test //OK
+    @Test
     void testHandle_whenUnmarshallFails_thenReturnsEmptyMap() {
         // Given
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock) {
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock) {
             @Override
             protected Object unmarshall(File file) {
                 throw new RuntimeException("Unmarshall failed");
@@ -106,7 +110,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.verify(mapperServiceMock, never()).apply(any(), any());
     }
 
-    @Test //OK
+    @Test
     void testHandle_whenMapperFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);

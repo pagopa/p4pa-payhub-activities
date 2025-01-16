@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.util;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,10 +56,10 @@ public class Utilities {
 
         GregorianCalendar gregorianCalendar = xmlGregorianCalendar.toGregorianCalendar();
 
-        return OffsetDateTime.ofInstant(
+        return LocalDate.ofInstant(
                 gregorianCalendar.toInstant(),
                 gregorianCalendar.getTimeZone().toZoneId()
-        ).toLocalDate();
+        );
     }
 
 }

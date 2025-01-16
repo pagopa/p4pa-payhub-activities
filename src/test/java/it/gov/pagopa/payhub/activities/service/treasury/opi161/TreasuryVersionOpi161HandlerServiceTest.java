@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
@@ -11,11 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +33,14 @@ class TreasuryVersionOpi161HandlerServiceTest {
     private TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
     @Mock
     private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
+    @Mock
+    private TreasuryService treasuryServiceMock;
 
     private TreasuryVersionOpi161HandlerService handlerService;
 
     @BeforeEach
     void setUp() {
-        handlerService = new TreasuryVersionOpi161HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock);
+        handlerService = new TreasuryVersionOpi161HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock);
     }
 
     @Test
@@ -81,9 +82,6 @@ class TreasuryVersionOpi161HandlerServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(expectedResult, result);
-
-        Mockito.verify(treasuryErrorsArchiverServiceMock)
-                .writeErrors(eq(Path.of("build")), same(ingestionFlowFileDTO), same(errorDtoList));
     }
 
     @Test
