@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi14;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
@@ -56,8 +57,10 @@ class TreasuryMapperOpi14ServiceTest {
         movimentoContoEvidenza.setDataMovimento(toXMLGregorianCalendar(new GregorianCalendar(2023, Calendar.JANUARY, 1)));
         movimentoContoEvidenza.setDataValutaEnte(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
         sospesoDaRegolarizzare.setDataEffettivaSospeso(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
+        sospesoDaRegolarizzare.setCodiceGestionaleProvvisorio("ABC");
         movimentoContoEvidenza.setSospesoDaRegolarizzare(sospesoDaRegolarizzare);
-        movimentoContoEvidenza.setCausale("CAUSALE123");
+        movimentoContoEvidenza.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890");
+        movimentoContoEvidenza.setEndToEndId("e2eId");
         movimentoContoEvidenza.setCliente(cliente);
         cliente.setAnagraficaCliente(LAST_NAME_CLIENTE);
         cliente.setIndirizzoCliente(ADDRESS_CLIENTE);
@@ -89,6 +92,14 @@ class TreasuryMapperOpi14ServiceTest {
         assertEquals(CITY, treasuryDTO.getPspCity());
         assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
         assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
+        TestUtils.checkNotNullFields(treasuryDTO,
+                "treasuryId","updateOperatorExternalId", "iuv","accountCode","domainIdCode",
+                "transactionTypeCode","remittanceCode","documentYear","sealCode",
+                "pspFirstName","abiCode","cabCode","ibanCode","accountRegistryCode",
+                "provisionalAe","provisionalCode","accountTypeCode","processCode",
+                "executionPgCode","transferPgCode","processPgNumber","regularized",
+                "links"
+        );
 
     }
 

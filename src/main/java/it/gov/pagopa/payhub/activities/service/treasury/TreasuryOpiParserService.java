@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 @Lazy
 @Service
@@ -34,13 +32,12 @@ public class TreasuryOpiParserService {
     public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
 
-        Map<TreasuryOperationEnum, List<Treasury>> op2TreasuriesMap = versionHandlerServices.stream()
+        List<Treasury> newTreasuries = versionHandlerServices.stream()
                 .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles))
                 .filter(map -> !map.isEmpty())
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
-        List<Treasury> newTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
         List<String> iufList = newTreasuries.stream()
             .map(treasuryDTO -> {
                 treasuryService.insert(treasuryDTO);
@@ -49,13 +46,6 @@ public class TreasuryOpiParserService {
               .distinct()
               .toList();
 
-        List<Treasury> deleteTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.DELETE);
-        for (Treasury treasuryDTO : deleteTreasuries) {
-                treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(
-                        treasuryDTO.getOrganizationId(),
-                        treasuryDTO.getBillCode(),
-                        treasuryDTO.getBillYear());
-        }
         return new TreasuryIufResult(iufList, true, null, null);
     }
 

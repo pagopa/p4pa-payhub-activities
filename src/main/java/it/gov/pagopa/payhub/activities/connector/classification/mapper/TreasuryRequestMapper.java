@@ -57,6 +57,7 @@ public class TreasuryRequestMapper {
                 .managementProvisionalCode(treasury.getManagementProvisionalCode())
                 .endToEndId(treasury.getEndToEndId())
                 .regularized(treasury.getRegularized())
+                .updateOperatorExternalId(treasury.getUpdateOperatorExternalId())
                 .build();
     }
 

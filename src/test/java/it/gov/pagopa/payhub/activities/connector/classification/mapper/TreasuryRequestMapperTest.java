@@ -24,7 +24,7 @@ class TreasuryRequestMapperTest {
         TreasuryRequestBody result = TreasuryRequestMapper.map(treasury);
 
         // Then
-        assertEquals(treasury.getTreasuryId(), result.getTreasuryId());
+            assertEquals(treasury.getTreasuryId(), result.getTreasuryId());
         assertEquals(treasury.getBillYear(), result.getBillYear());
         assertEquals(treasury.getBillCode(), result.getBillCode());
         assertEquals(treasury.getAccountCode(), result.getAccountCode());
@@ -67,16 +67,7 @@ class TreasuryRequestMapperTest {
         assertEquals(treasury.getManagementProvisionalCode(), result.getManagementProvisionalCode());
         assertEquals(treasury.getEndToEndId(), result.getEndToEndId());
         assertEquals(treasury.getRegularized(), result.getRegularized());
-        TestUtils.checkNotNullFields(result, "creationDate", "updateDate",
-                "updateOperatorExternalId", "treasuryId", "billYear", "billCode", "ingestionFlowFileId",
-                "organizationId", "iuf", "iuv", "accountCode", "domainIdCode", "transactionTypeCode",
-                "remittanceCode", "remittanceInformation", "billAmountCents", "billDate", "receptionDate",
-                "documentYear", "documentCode", "sealCode", "pspLastName", "pspFirstName",
-                "pspAddress", "pspPostalCode", "pspCity", "pspFiscalCode", "pspVatNumber",
-                "abiCode", "cabCode", "ibanCode", "accountRegistryCode", "provisionalAe",
-                "provisionalCode", "accountTypeCode", "processCode", "executionPgCode",
-                "transferPgCode", "processPgNumber", "regionValueDate", "actualSuspensionDate",
-                "managementProvisionalCode", "endToEndId", "regularized");
+        TestUtils.checkNotNullFields(result);
     }
 
     @Test

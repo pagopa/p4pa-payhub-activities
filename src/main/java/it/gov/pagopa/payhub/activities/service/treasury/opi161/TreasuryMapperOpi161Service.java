@@ -43,6 +43,7 @@ public class TreasuryMapperOpi161Service implements TreasuryMapperService<Flusso
                             .billDate(Utilities.convertToLocalDate(movContoEvidenza.getDataMovimento()))
                             .receptionDate(OffsetDateTime.now())
                             .documentCode(String.valueOf(movContoEvidenza.getNumeroDocumento()))
+                            .remittanceInformation(movContoEvidenza.getCausale())
                             .regionValueDate(Utilities.convertToLocalDate(regionValueDate))
                             .organizationId(organizationDTO.getOrganizationId())
                             .iuf(TreasuryUtils.getIdentificativo(movContoEvidenza.getCausale(), TreasuryUtils.IUF))

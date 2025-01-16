@@ -34,7 +34,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     protected abstract T unmarshall(File file);
 
     @Override
-    public Map<TreasuryOperationEnum, List<Treasury>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
+    public List<Treasury> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
         try {
             T unmarshalled = unmarshall(input);
             List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
@@ -42,12 +42,11 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
             List<Treasury> deleteTreasuries = result.get(TreasuryOperationEnum.DELETE);
             for (Treasury treasuryDTO : deleteTreasuries) {
-                Treasury finded = treasuryService.getByOrganizationIdAndBillCodeAndBillYear(
+                Long rowDeleted = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(
                                 treasuryDTO.getOrganizationId(),
                                 treasuryDTO.getBillCode(),
-                                treasuryDTO.getBillYear())
-                        .orElse(null);
-                if (finded == null) {
+                                treasuryDTO.getBillYear());
+                if (rowDeleted == 0L) {
                     errorDTOList.add(TreasuryErrorDTO.builder()
                             .errorMessage("The bill is not present in database so it is impossible to delete it")
                             .errorCode(treasuryDTO.getOrganizationId()+"-"+treasuryDTO.getBillCode()+"-"+treasuryDTO.getBillYear())
@@ -59,10 +58,10 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
             }
 
             treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
-            return result;
+            return result.get(TreasuryOperationEnum.INSERT);
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using mapper{} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
     }
 

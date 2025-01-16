@@ -53,15 +53,16 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         Object unmarshalledObject = new Object();
-        Map<TreasuryOperationEnum, List<Treasury>> expectedResult = Map.of();
+        Map<TreasuryOperationEnum, List<Treasury>> expectedMap = Map.of();
+        List<Treasury> expectedResult = List.of();
 
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         Mockito.when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedResult);
+        Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedMap);
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -80,7 +81,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -102,7 +103,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);
@@ -124,7 +125,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         Assertions.assertNotNull(result);

@@ -51,6 +51,8 @@ public class TreasuryFaker {
 			.actualSuspensionDate(LocalDate.now())
 			.managementProvisionalCode("MAN-PROV123")
 			.endToEndId("E2E123456")
+			.regularized(true)
+			.updateOperatorExternalId("operatorId")
 			.build();
 	}
 }

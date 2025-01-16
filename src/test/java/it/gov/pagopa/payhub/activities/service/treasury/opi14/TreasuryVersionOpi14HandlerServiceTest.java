@@ -69,15 +69,16 @@ class TreasuryVersionOpi14HandlerServiceTest {
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();
         when(treasuryUnmarshallerServiceMock.unmarshalOpi14(file)).thenReturn(flusso);
 
-        Map<TreasuryOperationEnum, List<Treasury>> expectedResult = Map.of();
+        Map<TreasuryOperationEnum, List<Treasury>> expectedMap = Map.of();
+        List<Treasury> expectedResult = List.of();
 
         ArrayList<TreasuryErrorDTO> errorListDto = new ArrayList<>();
         when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(true);
         when(validatorServiceMock.validateData(flusso, ingestionFlowFileDTO.getFileName())).thenReturn(errorListDto);
-        when(mapperServiceMock.apply(flusso, ingestionFlowFileDTO)).thenReturn(expectedResult);
+        when(mapperServiceMock.apply(flusso, ingestionFlowFileDTO)).thenReturn(expectedMap);
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
@@ -98,7 +99,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
         when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(false);
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
@@ -116,7 +117,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
         when(treasuryUnmarshallerServiceMock.unmarshalOpi14(file)).thenThrow(new RuntimeException("Unmarshall failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
@@ -137,7 +138,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
         when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(true);
 
         // When
-        Map<TreasuryOperationEnum, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);

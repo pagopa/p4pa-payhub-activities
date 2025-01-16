@@ -46,6 +46,7 @@ public class TreasuryMapperOpi14Service implements TreasuryMapperService<FlussoG
                             .documentCode(String.valueOf(movContoEvidenza.getNumeroDocumento()))
                             .regionValueDate(Utilities.convertToLocalDate(regionValueDate))
                             .organizationId(organizationDTO.getOrganizationId())
+                            .remittanceInformation(movContoEvidenza.getCausale())
                             .iuf(TreasuryUtils.getIdentificativo(movContoEvidenza.getCausale(), TreasuryUtils.IUF))
                             .iuv(null)
                             .creationDate(OffsetDateTime.now())
