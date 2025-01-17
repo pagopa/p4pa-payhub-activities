@@ -43,7 +43,7 @@ public class IngestionFlowFileRetrieverService {
     public IngestionFlowFileRetrieverService(
             @Value("${folders.shared}") String sharedFolder,
             @Value("${folders.tmp}") String tempFolder,
-            @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
+            @Value("${cipher.file-encrypt-psw}") String dataCipherPsw,
             FileValidatorService fileValidatorService, ZipFileService zipFileService) {
         this.sharedDirectoryPath = Path.of(sharedFolder);
         this.tempDirectoryPath = Path.of(tempFolder);
@@ -72,14 +72,18 @@ public class IngestionFlowFileRetrieverService {
      * @return the path to the extracted file.
      * @throws IOException if any file operation fails during the setup process.
      */
-    public List<Path> retrieveAndUnzipFile(Path sourcePath, String filename) throws IOException {
+    public List<Path> retrieveAndUnzipFile(Long organizationId, Path sourcePath, String filename) throws IOException {
+        String organizationFolder = String.valueOf(organizationId);
         Path encryptedFilePath = sharedDirectoryPath
+                .resolve(organizationFolder)
                 .resolve(sourcePath)
                 .resolve(filename);
 
         fileValidatorService.validateFile(encryptedFilePath);
 
-        Path workingPath = tempDirectoryPath.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
+        Path workingPath = tempDirectoryPath
+                .resolve(organizationFolder)
+                .resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
         Files.createDirectories(workingPath);
 
         String filenameNoCipher = filename.replace(AESUtils.CIPHER_EXTENSION, "");

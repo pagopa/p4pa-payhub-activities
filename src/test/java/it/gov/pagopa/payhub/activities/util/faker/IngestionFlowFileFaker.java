@@ -14,7 +14,7 @@ public class IngestionFlowFileFaker {
         return IngestionFlowFileDTO.builder()
                 .ingestionFlowFileId(1L)
                 .version(1)
-                .org(Organization.builder().build())
+                .org(Organization.builder().organizationId(0L).build())
                 .status("status")
                 .numTotalRows(3L)
                 .numCorrectlyImportedRows(2L)
