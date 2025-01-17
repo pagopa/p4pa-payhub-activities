@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.classifications;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
@@ -41,7 +41,7 @@ public class TransferClassificationStoreService {
 	public List<ClassificationDTO> saveClassifications(
 		TransferSemanticKeyDTO transferSemanticKeyDTO,
 		TransferDTO transferDTO,
-		PaymentsReportingDTO paymentsReportingDTO,
+		PaymentsReporting paymentsReportingDTO,
 		Treasury treasuryDTO,
 		List<ClassificationsEnum> classifications) {
 
@@ -49,14 +49,14 @@ public class TransferClassificationStoreService {
 			String.join(", ", classifications.stream().map(String::valueOf).toList()),
 			transferSemanticKeyDTO.getOrgId(), transferSemanticKeyDTO.getIuv(), transferSemanticKeyDTO.getIur(), transferSemanticKeyDTO.getTransferIndex());
 
-		Optional<PaymentsReportingDTO> optionalPaymentsReportingDTO = Optional.ofNullable(paymentsReportingDTO);
+		Optional<PaymentsReporting> optionalPaymentsReporting = Optional.ofNullable(paymentsReportingDTO);
 		List<ClassificationDTO> dtoList = classifications.stream()
 			.map(classification -> ClassificationDTO.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
 				.transferId(Optional.ofNullable(transferDTO).map(TransferDTO::getTransferId).orElse(null))
-				.paymentReportingId(optionalPaymentsReportingDTO.map(PaymentsReportingDTO::getPaymentsReportingId).orElse(null))
+				.paymentReportingId(optionalPaymentsReporting.map(PaymentsReporting::getPaymentsReportingId).orElse(null))
 				.treasuryId(Optional.ofNullable(treasuryDTO).map(Treasury::getTreasuryId).orElse(null))
-				.iuf(optionalPaymentsReportingDTO.map(PaymentsReportingDTO::getIuf).orElse(null))
+				.iuf(optionalPaymentsReporting.map(PaymentsReporting::getIuf).orElse(null))
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())
 				.transferIndex(transferSemanticKeyDTO.getTransferIndex())

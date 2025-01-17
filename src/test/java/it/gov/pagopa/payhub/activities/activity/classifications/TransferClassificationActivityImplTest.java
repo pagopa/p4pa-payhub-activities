@@ -1,12 +1,13 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
-import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dao.TransferDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.exception.ClassificationException;
@@ -38,7 +39,8 @@ class TransferClassificationActivityImplTest {
 	private static final String IUR = "IUR";
 	private static final String IUF = "IUF";
 	private static final int INDEX = 1;
-	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
+	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
+	private final CollectionModelPaymentsReporting paymentsReportingCollection = PaymentsReportingFaker.buildCollectionModelPaymentsReporting();
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
 	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
@@ -49,7 +51,7 @@ class TransferClassificationActivityImplTest {
 	private TransferDao transferDaoMock;
 
 	@Mock
-	private PaymentsReportingDao paymentsReportingDaoMock;
+	private PaymentsReportingService paymentsReportingServiceMock;
 
 	@Mock
 	private TreasuryService treasuryServiceMock;
@@ -66,7 +68,7 @@ class TransferClassificationActivityImplTest {
 	@BeforeEach
 	void setUp() {
 		activity = new TransferClassificationActivityImpl(
-				classificationDaoMock, transferDaoMock, paymentsReportingDaoMock, transferClassificationServiceMock, transferClassificationStoreServiceMock, treasuryServiceMock);
+				classificationDaoMock, transferDaoMock, paymentsReportingServiceMock, transferClassificationServiceMock, transferClassificationStoreServiceMock, treasuryServiceMock);
 		transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
 			.orgId(ORGANIZATION)
 			.iuv(IUV)
@@ -78,7 +80,7 @@ class TransferClassificationActivityImplTest {
 	@AfterEach
 	void verifyNoMoreInteractions(){
 		Mockito.verifyNoMoreInteractions(
-				classificationDaoMock, transferDaoMock, paymentsReportingDaoMock, treasuryServiceMock, transferClassificationServiceMock, transferClassificationStoreServiceMock);
+				classificationDaoMock, transferDaoMock, paymentsReportingServiceMock, treasuryServiceMock, transferClassificationServiceMock, transferClassificationStoreServiceMock);
 	}
 
 	@Test
@@ -95,9 +97,11 @@ class TransferClassificationActivityImplTest {
 			.classificationsEnum(ClassificationsEnum.RT_IUF_TES)
 			.build();
 
+		
+		
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(paymentsReportingDTO);
+		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenReturn(paymentsReportingCollection);
 		when(treasuryServiceMock.getByOrganizationIdAndIuf(ORGANIZATION, IUF)).thenReturn(Optional.of(treasuryDTO));
 		when(transferClassificationServiceMock.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(List.of(ClassificationsEnum.RT_IUF_TES));
 		doReturn(List.of(classificationDTO)).when(transferClassificationStoreServiceMock)
@@ -108,7 +112,7 @@ class TransferClassificationActivityImplTest {
 
 		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
 		Mockito.verify(transferDaoMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
 
@@ -119,7 +123,7 @@ class TransferClassificationActivityImplTest {
 
 		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
 		Mockito.verify(transferDaoMock, Mockito.times(0)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingDaoMock, Mockito.times(0)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(0)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(0)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
 
@@ -131,7 +135,7 @@ class TransferClassificationActivityImplTest {
 
 		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
 		Mockito.verify(transferDaoMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingDaoMock, Mockito.times(0)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(0)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(0)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
 
@@ -139,17 +143,17 @@ class TransferClassificationActivityImplTest {
 	void givenFailedFindPaymentsReportingWhenClassifyThenClassificationFailed() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenThrow(new ClassificationException("payments reporting find failed"));
+		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenThrow(new ClassificationException("payments reporting find failed"));
 		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
 
 		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
 		Mockito.verify(transferDaoMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(0)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
 
 	@Test
-	void whenPaymentsReportingDTOIsEmptyShouldNotCallTreasury() {
+	void whenPaymentsReportingIsEmptyShouldNotCallTreasury() {
 		ClassificationDTO classificationDTO = ClassificationDTO.builder()
 			.organizationId(ORGANIZATION)
 			.transferId(1L)
@@ -160,7 +164,7 @@ class TransferClassificationActivityImplTest {
 			.build();
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
+		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
 		doReturn(List.of(classificationDTO)).when(transferClassificationStoreServiceMock)
 			.saveClassifications(transferSemanticKeyDTO, transferDTO, null, null, List.of(ClassificationsEnum.RT_NO_IUF));
@@ -169,7 +173,7 @@ class TransferClassificationActivityImplTest {
 
 		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
 		Mockito.verify(transferDaoMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(0)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
 
@@ -177,13 +181,13 @@ class TransferClassificationActivityImplTest {
 	void givenFailedFindTreasuryWhenClassifyThenClassificationFailed() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(paymentsReportingDTO);
+		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenReturn(paymentsReportingCollection);
 		when(treasuryServiceMock.getByOrganizationIdAndIuf(ORGANIZATION, IUF)).thenThrow(new ClassificationException("treasury find failed"));
 		assertThrows(ClassificationException.class, () -> activity.classify(ORGANIZATION, IUV, IUR, INDEX), "classification failed");
 
 		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
 		Mockito.verify(transferDaoMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
 
@@ -191,7 +195,7 @@ class TransferClassificationActivityImplTest {
 	void givenErrorWhenDefineLabelsThenClassificationException() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
+		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, null, null))
 			.thenThrow(new ClassificationException("Cannot define labels"));
 
@@ -199,7 +203,7 @@ class TransferClassificationActivityImplTest {
 
 		Mockito.verify(classificationDaoMock, Mockito.times(1)).deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX);
 		Mockito.verify(transferDaoMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(0)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
 
@@ -207,7 +211,7 @@ class TransferClassificationActivityImplTest {
 	void givenErrorWhenSaveClassificationsThenClassificationException() {
 		when(classificationDaoMock.deleteTransferClassification(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(Boolean.TRUE);
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
-		when(paymentsReportingDaoMock.findBySemanticKey(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(null);
+		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
 		doThrow(new ClassificationException("Error given while saving")).when(transferClassificationStoreServiceMock)
 			.saveClassifications(transferSemanticKeyDTO, transferDTO, null, null, List.of(ClassificationsEnum.RT_NO_IUF));

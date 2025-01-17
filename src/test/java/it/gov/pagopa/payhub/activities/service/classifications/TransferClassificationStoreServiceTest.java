@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.classifications;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TransferClassificationStoreServiceTest {
-	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
+	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
 	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
