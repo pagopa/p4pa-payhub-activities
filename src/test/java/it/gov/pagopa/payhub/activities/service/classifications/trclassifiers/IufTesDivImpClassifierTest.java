@@ -1,20 +1,18 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IufTesDivImpClassifierTest {
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
-	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
+	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
 	TransferClassifier classifier = new IufTesDivImpClassifier();
 
@@ -22,7 +20,7 @@ class IufTesDivImpClassifierTest {
 	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Arrange
 		paymentsReportingDTO.setAmountPaidCents(100L);
-		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(100.00D));
+		treasuryDTO.setBillAmountCents(10000L);
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert
@@ -41,7 +39,7 @@ class IufTesDivImpClassifierTest {
 	void givenUnmatchedAmountWhenDefineThenReturnNull() {
 		// Arrange
 		paymentsReportingDTO.setAmountPaidCents(100L);
-		treasuryDTO.setBillIpNumber(BigDecimal.valueOf(1.00D));
+		treasuryDTO.setBillAmountCents(100L);
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert

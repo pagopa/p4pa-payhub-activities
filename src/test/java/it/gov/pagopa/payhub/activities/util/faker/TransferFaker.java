@@ -14,7 +14,7 @@ public class TransferFaker {
                 .remittanceInformation("remittanceInformation")
                 .stampType("stampType")
                 .category("category")
-                .transferIndex(1)
+                .transferIndex(1L)
                 .build();
     }
 }

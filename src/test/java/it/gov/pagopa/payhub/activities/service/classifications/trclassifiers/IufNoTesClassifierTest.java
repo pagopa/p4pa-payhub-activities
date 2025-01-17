@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IufNoTesClassifierTest {
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
-	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
+	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
 	TransferClassifier classifier = new IufNoTesClassifier();
 

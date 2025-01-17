@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.treasury;
 
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
@@ -37,7 +37,7 @@ class TreasuryOpiIngestionActivityTest {
   @Mock
   private IngestionFlowFileDao ingestionFlowFileDaoMock;
   @Mock
-  private TreasuryDao treasuryDaoMock;
+  private TreasuryService treasuryServiceMock;
   @Mock
   private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverServiceMock;
   @Mock
@@ -125,7 +125,7 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertNotNull(result.getIufs());
     Assertions.assertEquals(0, result.getIufs().size());
     Mockito.verify(ingestionFlowFileDaoMock, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
-    Mockito.verifyNoInteractions(treasuryDaoMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
+    Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
 
   @Test
@@ -141,7 +141,7 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertNotNull(result.getIufs());
     Assertions.assertEquals(0, result.getIufs().size());
     Mockito.verify(ingestionFlowFileDaoMock, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
-    Mockito.verifyNoInteractions(treasuryDaoMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
+    Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
 
 

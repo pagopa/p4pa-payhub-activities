@@ -10,9 +10,9 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 public class TreasuryErrorDTO implements Serializable {
-  private String nomeFile;
-  private String deAnnoBolletta;
-  private String codBolletta;
+  private String fileName;
+  private String billYear;
+  private String billCode;
   private String errorCode;
   private String errorMessage;
 }

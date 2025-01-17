@@ -43,3 +43,6 @@ rest:
 
   debt-position:
     base-url: "\${DEBT_POSITION_BASE_URL:http://localhost:8080/debtposition}"
+
+  classification:
+    base-url: "\${CLASSIFICATION_BASE_URL:http://localhost:8080/classification}"

@@ -12,7 +12,6 @@ public class DebtPositionFaker {
         return DebtPositionDTO.builder()
                 .debtPositionId(1L)
                 .iupdOrg("codeIud")
-                .iupdPagopa("gpdIupd")
                 .status("statusCode")
                 .ingestionFlowFileId(0L)
                 .ingestionFlowFileLineNumber(1L)

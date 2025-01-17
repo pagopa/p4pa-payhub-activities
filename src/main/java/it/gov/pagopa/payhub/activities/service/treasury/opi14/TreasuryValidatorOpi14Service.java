@@ -64,9 +64,9 @@ public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<F
 
     private void addError(List<TreasuryErrorDTO> treasuryErrorDTOList, String fileName, String codEsercizio, String codBolletta, String errorCode, String errorMessage) {
         treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
-                .nomeFile(fileName)
-                .deAnnoBolletta(codEsercizio)
-                .codBolletta(codBolletta)
+                .fileName(fileName)
+                .billYear(codEsercizio)
+                .billCode(codBolletta)
                 .errorCode(errorCode)
                 .errorMessage(errorMessage)
                 .build());

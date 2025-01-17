@@ -1,10 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 @Lazy
 @Service
@@ -22,28 +20,28 @@ public class TreasuryOpiParserService {
 
 
     private final List<TreasuryVersionHandlerService> versionHandlerServices;
-    private final TreasuryDao treasuryDao;
+
+    private final TreasuryService treasuryService;
 
     public TreasuryOpiParserService(List<TreasuryVersionHandlerService> versionHandlerServices,
-                                    TreasuryDao treasuryDao) {
+                                    TreasuryService treasuryService) {
         this.versionHandlerServices = versionHandlerServices;
-        this.treasuryDao = treasuryDao;
+        this.treasuryService = treasuryService;
     }
 
     public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
 
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> op2TreasuriesMap = versionHandlerServices.stream()
+        List<Treasury> newTreasuries = versionHandlerServices.stream()
                 .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles))
                 .filter(map -> !map.isEmpty())
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
-        List<TreasuryDTO> newTreasuries = op2TreasuriesMap.get(TreasuryOperationEnum.INSERT);
         List<String> iufList = newTreasuries.stream()
             .map(treasuryDTO -> {
-                  treasuryDao.insert(treasuryDTO);
-                  return treasuryDTO.getIuf();
+                treasuryService.insert(treasuryDTO);
+                return treasuryDTO.getIuf();
               })
               .distinct()
               .toList();
