@@ -6,6 +6,7 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
@@ -93,10 +94,12 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().iuf("idFlow").build());
+		PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingDTO.builder().iuf("idFlow").organizationId(1L).iuv("iuv").iur("iur").transferIndex(1).build();
+		List<PaymentsReportingDTO> dtoList = List.of(paymentsReportingDTO);
+		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder().orgId(1L).iuv("iuv").iur("iur").transferIndex(1).build();
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(List.of(ctFlussoRiversamento.getIdentificativoFlusso()), true, null);
+			new PaymentsReportingIngestionFlowFileActivityResult(List.of(transferSemanticKeyDTO), true, null);
 
 		when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
@@ -106,6 +109,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO)).thenReturn(dtoList);
 		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
+		when(paymentsReportingMapperServiceMock.mapToTransferSemanticKeyDto(paymentsReportingDTO)).thenReturn(transferSemanticKeyDTO);
 		doNothing().when(ingestionFlowFileArchiverServiceMock)
 			.archive(ingestionFlowFileDTO);
 
@@ -281,7 +285,9 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento = new CtFlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-		List<PaymentsReportingDTO> dtoList = List.of(PaymentsReportingDTO.builder().iuf("idFlow").build());
+		PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingDTO.builder().iuf("idFlow").organizationId(1L).iuv("iuv").iur("iur").transferIndex(1).build();
+		List<PaymentsReportingDTO> dtoList = List.of(paymentsReportingDTO);
+		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder().orgId(1L).iuv("iuv").iur("iur").transferIndex(1).build();
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "error occured");
@@ -294,7 +300,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 		when(paymentsReportingMapperServiceMock.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO)).thenReturn(dtoList);
 		doReturn(dtoList).when(paymentsReportingDaoMock).saveAll(dtoList);
-
+		when(paymentsReportingMapperServiceMock.mapToTransferSemanticKeyDto(paymentsReportingDTO)).thenReturn(transferSemanticKeyDTO);
 		doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
 			.archive(ingestionFlowFileDTO);
 

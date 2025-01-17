@@ -45,29 +45,25 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
     }
 
 	@Override
-	public void classify(Long orgId, String iuv, String iur, int transferIndex) {
-		log.info("Transfer classification for organization id: {} and iuv: {}", orgId, iuv);
-		if (!classificationDao.deleteTransferClassification(orgId, iuv, iur, transferIndex)) {
+	public void classify(TransferSemanticKeyDTO transferSemanticKey) {
+		log.info("Transfer classification for organization id: {} and iuv: {}",
+			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
+		if (!classificationDao.deleteTransferClassification(transferSemanticKey)) {
 			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
 		}
-		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
-			.orgId(orgId)
-			.iuv(iuv)
-			.iur(iur)
-			.transferIndex(transferIndex)
-			.build();
+		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKey);
 
-		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKeyDTO);
-
-		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
-		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(orgId, iuv, iur, transferIndex);
-		Treasury treasuryDTO = retrieveTreasury(orgId, paymentsReportingDTO);
+		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
+			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex());
+		PaymentsReportingDTO paymentsReportingDTO =  paymentsReportingDao.findBySemanticKey(transferSemanticKey);
+		Treasury treasuryDTO = retrieveTreasury(transferSemanticKey.getOrgId(), paymentsReportingDTO);
 
 		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
-			orgId, iuv, iur, transferIndex, String.join(", ", classifications.stream().map(String::valueOf).toList()));
+			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex(),
+			String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
-		transferClassificationStoreService.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, classifications);
+		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, paymentsReportingDTO, treasuryDTO, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReportingDTO);
 	}
 
@@ -95,6 +91,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 */
 	private void notifyReportedTransferId(TransferDTO transferDTO, PaymentsReportingDTO paymentsReportingDTO) {
 		if(transferDTO != null && paymentsReportingDTO != null) {
+			log.info("Notify transfer status as Reported for transfer id: {}", transferDTO.getTransferId());
 			transferDao.notifyReportedTransferId(transferDTO.getTransferId());
 		}
 	}

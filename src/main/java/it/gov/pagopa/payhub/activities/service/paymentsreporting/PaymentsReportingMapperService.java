@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -60,5 +61,14 @@ public class PaymentsReportingMapperService {
 				.payDate(item.getDataEsitoSingoloPagamento().toGregorianCalendar().toZonedDateTime().toLocalDate())
 				.build())
 			.toList();
+	}
+
+	public TransferSemanticKeyDTO mapToTransferSemanticKeyDto(PaymentsReportingDTO paymentsReportingDTO) {
+		return TransferSemanticKeyDTO.builder()
+			.orgId(paymentsReportingDTO.getOrganizationId())
+			.iuv(paymentsReportingDTO.getIuv())
+			.iur(paymentsReportingDTO.getIur())
+			.transferIndex(paymentsReportingDTO.getTransferIndex())
+			.build();
 	}
 }

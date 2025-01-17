@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowF
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
@@ -55,9 +56,14 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 
 	@Override
 	protected PaymentsReportingIngestionFlowFileActivityResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFileDTO ingestionFlowFileDTO) {
-		Pair<String, List<PaymentsReportingDTO>> pair = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
-		paymentsReportingDao.saveAll(pair.getRight());
-		return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true, null);
+		List<PaymentsReportingDTO> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
+
+		paymentsReportingDao.saveAll(paymentsReportings);
+
+		List<TransferSemanticKeyDTO> transferSemanticKeys = paymentsReportings.stream()
+			.map(paymentsReportingMapperService::mapToTransferSemanticKeyDto)
+			.toList();
+		return new PaymentsReportingIngestionFlowFileActivityResult(transferSemanticKeys, true, null);
 	}
 
 	@Override
@@ -71,16 +77,15 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	 *
 	 * @param ingestionFlowFile the file to be parsed
 	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing additional context
-	 * @return a {@link Pair} containing the flow file identifier and the list of {@link PaymentsReportingDTO}
+	 * @return a list of {@link PaymentsReportingDTO} objects
 	 * @throws IllegalArgumentException if the file content does not conform to the expected structure
 	 */
-	private Pair<String, List<PaymentsReportingDTO>> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	private List<PaymentsReportingDTO> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
 		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
 		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
 
 		paymentsReportingIngestionFlowFileValidatorService.validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		List<PaymentsReportingDTO> dtoList = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
-		return Pair.of(ctFlussoRiversamento.getIdentificativoFlusso(), dtoList);
+		return paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 	}
 }

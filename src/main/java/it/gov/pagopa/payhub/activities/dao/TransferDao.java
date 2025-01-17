@@ -14,10 +14,10 @@ public interface TransferDao {
 	/**
 	 * find transfer by semantic key
 	 *
-	 * @param transferSemanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
+	 * @param transferSemanticKey the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
 	 * @return TransferDTO object returned
 	 */
-	TransferDTO findBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
+	TransferDTO findBySemanticKey(TransferSemanticKeyDTO transferSemanticKey);
 
 	/**
 	 * update transfer status as Reported by transfer id

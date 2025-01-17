@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dao;
 
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 
 import java.util.List;
@@ -30,11 +31,8 @@ public interface PaymentsReportingDao {
 	/**
 	 * find payment reporting by semantic key
 	 *
-	 * @param orgId  organization id
-	 * @param iuv    payment identifier
-	 * @param iur    reporting identifier
-	 * @param transferIndex transfer index
+	 * @param transferSemanticKey the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
 	 * @return PaymentsReportingDTO object returned
 	 */
-	PaymentsReportingDTO findBySemanticKey(Long orgId, String iuv, String iur, int transferIndex);
+	PaymentsReportingDTO findBySemanticKey(TransferSemanticKeyDTO transferSemanticKey);
 }
