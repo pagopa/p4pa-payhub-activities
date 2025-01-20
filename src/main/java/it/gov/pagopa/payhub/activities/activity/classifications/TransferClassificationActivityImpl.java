@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 
 @Lazy
 @Slf4j
@@ -46,29 +45,25 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
     }
 
 	@Override
-	public void classify(Long orgId, String iuv, String iur, int transferIndex) {
-		log.info("Transfer classification for organization id: {} and iuv: {}", orgId, iuv);
-		if (!classificationDao.deleteTransferClassification(orgId, iuv, iur, transferIndex)) {
+	public void classify(TransferSemanticKeyDTO transferSemanticKey) {
+		log.info("Transfer classification for organization id: {} and iuv: {}",
+			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
+		if (!classificationDao.deleteTransferClassification(transferSemanticKey)) {
 			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
 		}
-		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
-			.orgId(orgId)
-			.iuv(iuv)
-			.iur(iur)
-			.transferIndex(transferIndex)
-			.build();
+		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKey);
 
-		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKeyDTO);
-
-		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
-		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(transferSemanticKeyDTO);
-		Treasury treasuryDTO = retrieveTreasury(orgId, paymentsReporting);
+		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
+			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex());
+		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(transferSemanticKey);
+		Treasury treasuryDTO = retrieveTreasury(transferSemanticKey.getOrgId(), paymentsReporting);
 
 		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReporting, treasuryDTO);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
-			orgId, iuv, iur, transferIndex, String.join(", ", classifications.stream().map(String::valueOf).toList()));
+			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex(),
+			String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
-		transferClassificationStoreService.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReporting, treasuryDTO, classifications);
+		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, paymentsReporting, treasuryDTO, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
 	}
 
@@ -76,6 +71,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 * Retrieves the {@link Treasury} record for the given ID.
 	 *
 	 * @param orgId the ID of the organization
+	 * @param paymentsReportingDTO the payments reporting data transfer object containing payment reporting details
 	 * @return the {@link Treasury} corresponding to the given ID
 	 */
 	private Treasury retrieveTreasury(Long orgId, PaymentsReporting paymentsReportingDTO) {

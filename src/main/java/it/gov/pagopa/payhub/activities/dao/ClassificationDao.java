@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dao;
 
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 
 import java.util.List;
@@ -36,12 +37,10 @@ public interface ClassificationDao {
 	boolean deleteClassificationByIuf(Long organizationId, String iuf, ClassificationsEnum classification);
 
 	/**
+	 * delete classification
 	 *
-	 * @param orgId organization id
-	 * @param iuv creditor reference identifier
-	 * @param iur the identifier of the receipt associated with the payment
-	 * @param transferIndex the index of the transfer to be classified
+	 * @param transferSemanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
 	 * @return true for success deletion
 	 */
-	boolean deleteTransferClassification(Long orgId, String iuv, String iur, int transferIndex);
+	boolean deleteTransferClassification(TransferSemanticKeyDTO transferSemanticKeyDTO);
 }

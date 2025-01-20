@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * Service class responsible for mapping flow data (`CtFlussoRiversamento`) and ingestion metadata
- * (`IngestionFlowFileDTO`) into a list of `PaymentsReporting` objects.
+ * Service class responsible for data mapping related to `PaymentsReporting` objects.
  */
 @Lazy
 @Service
@@ -27,7 +27,7 @@ public class PaymentsReportingMapperService {
 	 * @param ingestionFlowFileDTO the ingestion metadata containing information about the processing flow.
 	 * @return a list of `PaymentsReporting` objects, one for each individual payment in the flow.
 	 */
-	public List<PaymentsReporting> mapToDtoList(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	public List<PaymentsReporting> map2PaymentsReportings(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
 
 		PaymentsReporting.PaymentsReportingBuilder builder = PaymentsReporting.builder()
 			.creationDate(OffsetDateTime.now())
@@ -60,5 +60,20 @@ public class PaymentsReportingMapperService {
 				.payDate(item.getDataEsitoSingoloPagamento().toGregorianCalendar().toZonedDateTime().toLocalDate())
 				.build())
 			.toList();
+	}
+
+	/**
+	 * Maps a `PaymentsReporting` object into `TransferSemanticKeyDTO`.
+	 *
+	 * @param paymentsReporting the `PaymentsReportingDTO` object containing the data to be mapped.
+	 * @return a `TransferSemanticKeyDTO` object containing the mapped data.
+	 */
+	public TransferSemanticKeyDTO map2TransferSemanticKeyDto(PaymentsReporting paymentsReporting) {
+		return TransferSemanticKeyDTO.builder()
+			.orgId(paymentsReporting.getOrganizationId())
+			.iuv(paymentsReporting.getIuv())
+			.iur(paymentsReporting.getIur())
+			.transferIndex(paymentsReporting.getTransferIndex())
+			.build();
 	}
 }
