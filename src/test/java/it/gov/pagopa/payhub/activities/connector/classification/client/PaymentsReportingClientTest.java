@@ -84,19 +84,19 @@ class PaymentsReportingClientTest {
         String iur = "IUR123";
         int transferIndex = 0;
         String accessToken = "accessToken";
-        CollectionModelPaymentsReporting expectedResponse = new CollectionModelPaymentsReporting();
+        PaymentsReporting expectedResponse = new PaymentsReporting();
 
         when(paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken))
                 .thenReturn(paymentsReportingSearchControllerApi);
-        when(paymentsReportingSearchControllerApi.crudPaymentsReportingFindByOrganizationIdAndIuvAndIurAndTransferIndex(orgId, iuv, iur, transferIndex))
+        when(paymentsReportingSearchControllerApi.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
                 .thenReturn(expectedResponse);
 
         // When
-        CollectionModelPaymentsReporting result = paymentsReportingClient.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken);
+        PaymentsReporting result = paymentsReportingClient.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
         verify(paymentsReportingSearchControllerApi, times(1))
-                .crudPaymentsReportingFindByOrganizationIdAndIuvAndIurAndTransferIndex(orgId, iuv, iur, transferIndex);
+                .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
     }
 }

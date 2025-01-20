@@ -86,7 +86,7 @@ class PaymentsReportingServiceTest {
         String iur = "IUR123";
         int transferIndex = 0;
         String accessToken = "accessToken";
-        CollectionModelPaymentsReporting expectedResponse = new CollectionModelPaymentsReporting();
+        PaymentsReporting expectedResponse = new PaymentsReporting();
         TransferSemanticKeyDTO tSKDTO = new TransferSemanticKeyDTO(orgId, iuv, iur, transferIndex);
 
         when(paymentsReportingClientMock.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken)).thenReturn(expectedResponse);
@@ -94,7 +94,7 @@ class PaymentsReportingServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        CollectionModelPaymentsReporting result = paymentsReportingService.getBySemanticKey(tSKDTO);
+        PaymentsReporting result = paymentsReportingService.getBySemanticKey(tSKDTO);
 
         // Then
         assertEquals(expectedResponse, result);

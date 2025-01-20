@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.mapper;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReportingRequestBody;
@@ -27,6 +28,7 @@ class PaymentsReportingRequestMapperTest {
         assertEquals(100L, result.getTotalAmountCents());
         assertEquals(1, result.getTransferIndex());
 
+        TestUtils.checkNotNullFields(result,"creationDate","updateDate","updateOperatorExternalId","pspIdentifier");
     }
 
     @Test

@@ -36,7 +36,7 @@ public class PaymentsReportingServiceImpl implements PaymentsReportingService {
     }
 
     @Override
-    public CollectionModelPaymentsReporting getBySemanticKey(TransferSemanticKeyDTO tSKDTO) {
+    public PaymentsReporting getBySemanticKey(TransferSemanticKeyDTO tSKDTO) {
         return paymentsReportingClient.getBySemanticKey(tSKDTO.getOrgId(), tSKDTO.getIuv(), tSKDTO.getIur(), tSKDTO.getTransferIndex(), authnService.getAccessToken());
     }
 

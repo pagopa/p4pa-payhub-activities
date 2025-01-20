@@ -28,9 +28,9 @@ public class PaymentsReportingClient {
     }
 
 
-    public CollectionModelPaymentsReporting getBySemanticKey(Long orgId, String iuv, String iur, int transferIndex, String accessToken) {
+    public PaymentsReporting getBySemanticKey(Long orgId, String iuv, String iur, int transferIndex, String accessToken) {
         return paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken)
-                .crudPaymentsReportingFindByOrganizationIdAndIuvAndIurAndTransferIndex(orgId, iuv, iur, transferIndex);
+                .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
     }
 
 }

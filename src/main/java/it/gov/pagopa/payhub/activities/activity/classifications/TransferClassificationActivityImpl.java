@@ -1,14 +1,11 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
-import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingServiceImpl;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.connector.classification.client.PaymentsReportingClient;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dao.TransferDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
@@ -64,11 +61,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKeyDTO);
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}", orgId, iuv, iur, transferIndex);
-		CollectionModelPaymentsReporting getSemanticResutl = paymentsReportingService.getBySemanticKey(transferSemanticKeyDTO);
-		PaymentsReporting paymentsReporting =  null;
-		if(getSemanticResutl != null) {
-			paymentsReporting = Objects.requireNonNull(Objects.requireNonNull(getSemanticResutl.getEmbedded()).getPaymentsReportings()).getFirst();
-		}
+		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(transferSemanticKeyDTO);
 		Treasury treasuryDTO = retrieveTreasury(orgId, paymentsReporting);
 
 		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReporting, treasuryDTO);
