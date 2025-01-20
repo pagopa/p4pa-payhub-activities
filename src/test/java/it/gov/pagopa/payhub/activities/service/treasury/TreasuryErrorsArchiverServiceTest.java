@@ -82,7 +82,7 @@ class TreasuryErrorsArchiverServiceTest {
     }
 
     @Test
-    void givenNoErrorsWhenArchiveErrorFilesThenReturnNull() throws IOException {
+    void givenNoErrorsWhenArchiveErrorFilesThenReturnNull() {
         // Given
         Path workingDirectory = Path.of("build");
 
@@ -110,7 +110,7 @@ class TreasuryErrorsArchiverServiceTest {
             Assertions.assertEquals(expectedZipErrorFileName, result);
 
             Mockito.verify(ingestionFlowFileArchiverServiceMock)
-                    .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getFilePathName(), errorFolder));
+                    .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrg().getOrganizationId()+"",ingestionFlowFileDTO.getFilePathName(), errorFolder));
         } finally {
             Files.delete(errorFile);
         }

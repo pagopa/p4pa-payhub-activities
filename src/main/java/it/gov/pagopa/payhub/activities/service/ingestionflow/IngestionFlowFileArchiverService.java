@@ -84,6 +84,7 @@ public class IngestionFlowFileArchiverService {
      */
     public void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
         Path originalFileFolder = sharedDirectoryPath
+                .resolve(String.valueOf(ingestionFlowFileDTO.getOrg().getOrganizationId()))
                 .resolve(ingestionFlowFileDTO.getFilePathName());
 
         Path originalFilePath = originalFileFolder

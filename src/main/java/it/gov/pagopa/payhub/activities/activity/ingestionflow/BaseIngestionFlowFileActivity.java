@@ -80,7 +80,7 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 	 */
 	private List<Path> retrieveFiles(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
 		return ingestionFlowFileRetrieverService
-			.retrieveAndUnzipFile(Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+			.retrieveAndUnzipFile(ingestionFlowFileDTO.getOrg().getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 	}
 
 	/**
