@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RtIufClassifierTest {
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
-	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
+	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 
 	TransferClassifier classifier = new RtIufClassifier();
 
@@ -47,7 +47,7 @@ class RtIufClassifierTest {
 	}
 
 	@Test
-	void givenUnmatchedPaymentsReportingDTOWhenDefineThenReturnNull() {
+	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, null, null);
 		// Assert

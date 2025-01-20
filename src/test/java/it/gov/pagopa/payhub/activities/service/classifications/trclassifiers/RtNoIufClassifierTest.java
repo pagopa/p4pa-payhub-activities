@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RtNoIufClassifierTest {
-	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
+	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
 	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
@@ -39,7 +39,7 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenNullPaymentsReportingDTOAndUnmatchedAmountWhenDefineThenSuccess() {
+	void givenNullPaymentsReportingAndUnmatchedAmountWhenDefineThenSuccess() {
 		// Arrange
 		transferDTO.setAmountCents(100L);
 		treasuryDTO.setBillAmountCents(10000L);
@@ -69,7 +69,7 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenNullPaymentsReportingDTOAndEqualsAmountWhenDefineThenReturnNull() {
+	void givenNullPaymentsReportingAndEqualsAmountWhenDefineThenReturnNull() {
 		// Arrange
 		transferDTO.setAmountCents(100L);
 		treasuryDTO.setBillAmountCents(100L);

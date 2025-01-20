@@ -64,17 +64,17 @@ class TreasuryServiceTest {
         String billYear = "2023";
         String accessToken = "accessToken";
         Treasury expectedTreasury = new Treasury();
-        when(treasuryClientMock.getByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken))
+        when(treasuryClientMock.getBySemanticKey(organizationId, billCode, billYear, accessToken))
                 .thenReturn(expectedTreasury);
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
-        Treasury result = treasuryService.getByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear).orElse(null);
+        Treasury result = treasuryService.getBySemanticKey(organizationId, billCode, billYear).orElse(null);
 
         // Then
         assertEquals(expectedTreasury, result);
-        verify(treasuryClientMock, times(1)).getByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken);
+        verify(treasuryClientMock, times(1)).getBySemanticKey(organizationId, billCode, billYear, accessToken);
     }
 
     @Test
