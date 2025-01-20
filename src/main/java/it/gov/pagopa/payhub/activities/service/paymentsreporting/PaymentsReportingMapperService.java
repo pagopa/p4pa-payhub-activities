@@ -63,6 +63,12 @@ public class PaymentsReportingMapperService {
 			.toList();
 	}
 
+	/**
+	 * Maps a `PaymentsReportingDTO` object into `TransferSemanticKeyDTO`.
+	 *
+	 * @param paymentsReportingDTO the `PaymentsReportingDTO` object containing the data to be mapped.
+	 * @return a `TransferSemanticKeyDTO` object containing the mapped data.
+	 */
 	public TransferSemanticKeyDTO mapToTransferSemanticKeyDto(PaymentsReportingDTO paymentsReportingDTO) {
 		return TransferSemanticKeyDTO.builder()
 			.orgId(paymentsReportingDTO.getOrganizationId())
