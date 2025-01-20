@@ -7,6 +7,7 @@ import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildPaymentsInstallmentDTO;
+import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO.StatusEnum.PAID;
 
 public class PaymentOptionFaker {
 
@@ -14,7 +15,7 @@ public class PaymentOptionFaker {
         return PaymentOptionDTO.builder()
                 .paymentOptionId(1L)
                 .totalAmountCents(100L)
-                .status(PaymentOptionDTO.StatusEnum.REPORTED)
+                .status(PaymentOptionDTO.StatusEnum.PAID)
                 .dueDate(TestUtils.OFFSETDATETIME)
                 .installments(List.of(buildInstallmentDTO()))
                 .multiDebtor(false)
@@ -27,7 +28,7 @@ public class PaymentOptionFaker {
         return it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.builder()
                 .paymentOptionId(1L)
                 .totalAmountCents(100L)
-                .status("status")
+                .status(String.valueOf(PAID))
                 .dueDate(TestUtils.OFFSETDATETIME)
                 .installments(List.of(buildPaymentsInstallmentDTO()))
                 .multiDebtor(false)
