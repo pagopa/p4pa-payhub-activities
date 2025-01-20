@@ -25,4 +25,10 @@ public class AcaServiceImpl implements AcaService {
         String accessToken = authnService.getAccessToken();
         acaClient.createAcaDebtPosition(debtPositionDTO, accessToken);
     }
+
+    @Override
+    public void deleteAcaDebtPosition(DebtPositionDTO debtPositionDTO) {
+        String accessToken = authnService.getAccessToken();
+        acaClient.deleteAcaDebtPosition(debtPositionDTO, accessToken);
+    }
 }

@@ -49,4 +49,21 @@ class AcaClientTest {
         Mockito.verify(acaApiMock)
                 .createAca(debtPositionDTO);
     }
+
+    @Test
+    void whenDeleteAcaDebtPositionThenInvokeWithAccessToken(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        DebtPositionDTO debtPositionDTO = buildPaymentsDebtPositionDTO();
+
+        Mockito.when(acaApisHolderMock.getAcaApi(accessToken))
+                .thenReturn(acaApiMock);
+
+        // When
+        acaClient.deleteAcaDebtPosition(debtPositionDTO, accessToken);
+
+        // Then
+        Mockito.verify(acaApiMock)
+                .deleteAca(debtPositionDTO);
+    }
 }

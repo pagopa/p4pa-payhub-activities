@@ -3,9 +3,9 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
 /**
- * Service class responsible for invoking the ACA service to create, update or delete a debt position
+ * Service class responsible for invoking the ACA service to create a debt position
  */
-public interface AcaStandInActivity {
+public interface AcaStandInCreateDebtPositionActivity {
 
     /**
      * Creates a new debt position in ACA Service.
