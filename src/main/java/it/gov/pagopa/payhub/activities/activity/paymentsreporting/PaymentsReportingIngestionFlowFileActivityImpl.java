@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowF
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
@@ -14,7 +15,6 @@ import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReporti
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -55,9 +55,13 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 
 	@Override
 	protected PaymentsReportingIngestionFlowFileActivityResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFileDTO ingestionFlowFileDTO) {
-		Pair<String, List<PaymentsReporting>> pair = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
-		paymentsReportingService.saveAll(pair.getRight());
-		return new PaymentsReportingIngestionFlowFileActivityResult(List.of(pair.getLeft()), true, null);
+		List<PaymentsReporting> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
+		paymentsReportingService.saveAll(paymentsReportings);
+
+		List<TransferSemanticKeyDTO> transferSemanticKeys = paymentsReportings.stream()
+			.map(paymentsReportingMapperService::map2TransferSemanticKeyDto)
+			.toList();
+		return new PaymentsReportingIngestionFlowFileActivityResult(transferSemanticKeys, true, null);
 	}
 
 	@Override
@@ -71,16 +75,15 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	 *
 	 * @param ingestionFlowFile the file to be parsed
 	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing additional context
-	 * @return a {@link Pair} containing the flow file identifier and the list of {@link PaymentsReporting}
+	 * @return a list of {@link PaymentsReporting} objects
 	 * @throws IllegalArgumentException if the file content does not conform to the expected structure
 	 */
-	private Pair<String, List<PaymentsReporting>> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	private List<PaymentsReporting> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
 		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
 		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
 
 		paymentsReportingIngestionFlowFileValidatorService.validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		List<PaymentsReporting> dtoList = paymentsReportingMapperService.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
-		return Pair.of(ctFlussoRiversamento.getIdentificativoFlusso(), dtoList);
+		return paymentsReportingMapperService.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO);
 	}
 }
