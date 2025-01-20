@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public interface TreasuryService {
     Optional<Treasury> getByOrganizationIdAndIuf(Long organizationId, String iuf);
-    Optional<Treasury> getByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
+    Optional<Treasury> getBySemanticKey(Long organizationId, String billCode, String billYear);
     Optional<Treasury> insert(Treasury treasury);
     Long deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
 

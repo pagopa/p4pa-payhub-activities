@@ -16,7 +16,7 @@ public class TreasuryFaker {
 			.domainIdCode("DOMAIN789")
 			.transactionTypeCode("TYPE01")
 			.remittanceCode("REM001")
-			.remittanceInformation("Payment details")
+			.remittanceDescription("Payment details")
 			.billAmountCents(100L)
 			.billDate(LocalDate.now())
 			.receptionDate(OffsetDateTime.now())
