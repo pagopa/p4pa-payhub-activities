@@ -42,8 +42,9 @@ class TreasuryOpiParserServiceTest {
         versionHandlerServices.add(handler);
 
         Treasury treasuryDTO = Treasury.builder()
-                .iuf("Flow123")
-                .build();
+            .iuf("Flow123")
+            .organizationId(123L)
+            .build();
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
@@ -96,8 +97,9 @@ class TreasuryOpiParserServiceTest {
         when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
 
         Treasury treasuryDTO = Treasury.builder()
-                .iuf("Flow456")
-                .build();
+            .iuf("Flow123")
+            .organizationId(123L)
+            .build();
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
@@ -109,7 +111,7 @@ class TreasuryOpiParserServiceTest {
         assertNotNull(result);
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
-        assertEquals("Flow456", result.getIufs().getFirst());
+        assertEquals("Flow123", result.getIufs().getFirst());
         verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 }
