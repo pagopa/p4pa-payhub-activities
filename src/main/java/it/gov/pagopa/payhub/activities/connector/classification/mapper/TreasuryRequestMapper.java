@@ -21,7 +21,7 @@ public class TreasuryRequestMapper {
                 .domainIdCode(treasury.getDomainIdCode())
                 .transactionTypeCode(treasury.getTransactionTypeCode())
                 .remittanceCode(treasury.getRemittanceCode())
-                .remittanceInformation(treasury.getRemittanceInformation())
+                .remittanceDescription(treasury.getRemittanceDescription())
                 .billAmountCents(treasury.getBillAmountCents())
                 .billDate(treasury.getBillDate())
                 .receptionDate(treasury.getReceptionDate())

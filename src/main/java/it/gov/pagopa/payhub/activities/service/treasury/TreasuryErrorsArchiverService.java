@@ -92,6 +92,7 @@ public class TreasuryErrorsArchiverService {
             if (!errorFiles.isEmpty()) {
 
                 Path targetDirectory = sharedDirectoryPath
+                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrg().getOrganizationId()))
                         .resolve(ingestionFlowFileDTO.getFilePathName())
                         .resolve(errorFolder);
 

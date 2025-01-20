@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.*;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.Test;
 
@@ -71,9 +71,9 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
 
 		// When
-		List<PaymentsReportingDTO> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
+		List<PaymentsReporting> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		PaymentsReportingDTO firstDTO = result.getFirst();
+		PaymentsReporting firstDTO = result.getFirst();
 		// Then
 		assertEquals(1, result.size());
 		assertEquals("flow123", firstDTO.getIuf());
@@ -88,7 +88,7 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("OK", firstDTO.getPaymentOutcomeCode());
 		assertNotNull(firstDTO.getPayDate());
 
-		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId");
+		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId","updateOperatorExternalId", "links");
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {

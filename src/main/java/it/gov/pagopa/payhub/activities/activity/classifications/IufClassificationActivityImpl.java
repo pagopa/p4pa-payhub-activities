@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
-import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
@@ -11,16 +11,17 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Lazy
 @Component
 public class IufClassificationActivityImpl implements IufClassificationActivity {
-    private final PaymentsReportingDao paymentsReportingDao;
+    private final PaymentsReportingService paymentsReportingService;
     private final ClassificationDao classificationDao;
 
-    public IufClassificationActivityImpl(PaymentsReportingDao paymentsReportingDao, ClassificationDao classificationDao) {
-        this.paymentsReportingDao = paymentsReportingDao;
+    public IufClassificationActivityImpl(PaymentsReportingService paymentsReportingService, ClassificationDao classificationDao) {
+        this.paymentsReportingService = paymentsReportingService;
         this.classificationDao  = classificationDao;
     }
 
@@ -29,7 +30,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         log.debug("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
         List<Transfer2ClassifyDTO> transfers2classify =
-            paymentsReportingDao.findByOrganizationIdAndIuf(organizationId, iuf)
+            Objects.requireNonNull(paymentsReportingService.getByOrganizationIdAndIuf(organizationId, iuf).getEmbedded()).getPaymentsReportings()
             .stream()
             .map(paymentsReportingDTO ->
                 Transfer2ClassifyDTO.builder()

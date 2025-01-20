@@ -21,6 +21,9 @@ folders:
     archive: "\${PROCESS_TARGET_SUB_FOLDER_ARCHIVE:archive}"
     errors: "\${PROCESS_TARGET_SUB_FOLDER_ERRORS:errors}"
 
+cipher:
+  file-encrypt-psw: "\${FILE_ENCRYPT_PSW:psw}"
+
 csv:
   separator: "\${CSV_SEPARATOR_CHAR:;}"
   quote-char: "\${CSV_QUOTE_CHAR:\\\"}"
@@ -46,3 +49,6 @@ rest:
 
   classification:
     base-url: "\${CLASSIFICATION_BASE_URL:http://localhost:8080/classification}"
+
+  pagopa-payments:
+    base-url: "\${PAGOPA_PAYMENTS_BASE_URL:http://localhost:8080}"
