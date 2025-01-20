@@ -13,4 +13,11 @@ public interface AcaService {
      * @param debtPositionDTO the debt position data to be created.
      */
     void createAcaDebtPosition(DebtPositionDTO debtPositionDTO);
+
+    /**
+     * Delete a debt position on ACA
+     *
+     * @param debtPositionDTO the debt position data to be deleted.
+     */
+    void deleteAcaDebtPosition(DebtPositionDTO debtPositionDTO);
 }

@@ -14,7 +14,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.build
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AcaStandInActivityTest {
+class AcaStandInDeleteDebtPositionActivityTest {
 
     @Mock
     private AcaService acaServiceMock;
@@ -22,21 +22,21 @@ class AcaStandInActivityTest {
     @Mock
     private DebtPositionDTOMapper debtPositionDTOMapperMock;
 
-    private AcaStandInActivity activity;
+    private AcaStandInDeleteDebtPositionActivity activity;
 
     @BeforeEach
     void init() {
-        activity = new AcaStandInActivityImpl(acaServiceMock, debtPositionDTOMapperMock);
+        activity = new AcaStandInDeleteDebtPositionActivityImpl(acaServiceMock, debtPositionDTOMapperMock);
     }
 
 
     @Test
-    void testCreateAcaDebtPosition(){
+    void testDeleteAcaDebtPosition(){
         when(debtPositionDTOMapperMock.map(buildDebtPositionDTO())).thenReturn(buildPaymentsDebtPositionDTO());
 
-        activity.createAcaDebtPosition(buildDebtPositionDTO());
+        activity.deleteAcaDebtPosition(buildDebtPositionDTO());
 
         Mockito.verify(acaServiceMock, Mockito.times(1))
-                .createAcaDebtPosition(buildPaymentsDebtPositionDTO());
+                .deleteAcaDebtPosition(buildPaymentsDebtPositionDTO());
     }
 }
