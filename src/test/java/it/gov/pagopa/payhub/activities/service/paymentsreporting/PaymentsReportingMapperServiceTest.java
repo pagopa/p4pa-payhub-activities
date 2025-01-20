@@ -109,6 +109,8 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("iuv123", result.getIuv());
 		assertEquals("iur123", result.getIur());
 		assertEquals(1, result.getTransferIndex());
+
+		TestUtils.checkNotNullFields(result);
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {
