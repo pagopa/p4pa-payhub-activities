@@ -34,7 +34,7 @@ public class TransferFaker {
                 .stampHashDocument("stampHashDocument")
                 .stampProvincialResidence("stampProvincialResidence")
                 .category("category")
-                .transferIndex(1L)
+                .transferIndex(1)
                 .build();
     }
 }
