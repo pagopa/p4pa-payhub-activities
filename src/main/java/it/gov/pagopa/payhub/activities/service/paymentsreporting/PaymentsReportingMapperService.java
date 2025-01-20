@@ -12,8 +12,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * Service class responsible for mapping flow data (`CtFlussoRiversamento`) and ingestion metadata
- * (`IngestionFlowFileDTO`) into a list of `PaymentsReportingDTO` objects.
+ * Service class responsible for data mapping related to `PaymentsReportingDTO` objects.
  */
 @Lazy
 @Service
