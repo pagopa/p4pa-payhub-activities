@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
@@ -20,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class TreasuryMapperOpi161ServiceTest {
 
@@ -42,54 +41,65 @@ class TreasuryMapperOpi161ServiceTest {
     @Test
     void testApply_givenValidInput_whenMapping_thenCorrectResult() throws Exception {
 
-        FlussoGiornaleDiCassa flussoGiornaleDiCassa = mock(FlussoGiornaleDiCassa.class);
-        InformazioniContoEvidenza informazioniContoEvidenza = mock(InformazioniContoEvidenza.class);
-        InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza = mock(InformazioniContoEvidenza.MovimentoContoEvidenza.class);
-        InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = mock(InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente.class);
-        InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare sospesoDaRegolarizzare = mock(InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare.class);
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa = new FlussoGiornaleDiCassa();
+        InformazioniContoEvidenza informazioniContoEvidenza = new InformazioniContoEvidenza();
+        InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza = new InformazioniContoEvidenza.MovimentoContoEvidenza();
+        InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = new InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente();
+        InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare sospesoDaRegolarizzare = new InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare();
 
-        when(flussoGiornaleDiCassa.getInformazioniContoEvidenza()).thenReturn(List.of(informazioniContoEvidenza));
-        when(flussoGiornaleDiCassa.getEsercizio()).thenReturn(List.of(2023));
-        when(informazioniContoEvidenza.getMovimentoContoEvidenzas()).thenReturn(List.of(movimentoContoEvidenza));
+        flussoGiornaleDiCassa.getEsercizio().add(2023);
 
-        when(movimentoContoEvidenza.getTipoMovimento()).thenReturn("ENTRATA");
-        when(movimentoContoEvidenza.getTipoDocumento()).thenReturn("SOSPESO ENTRATA");
-        when(movimentoContoEvidenza.getTipoOperazione()).thenReturn("ESEGUITO");
-        when(movimentoContoEvidenza.getNumeroBollettaQuietanza()).thenReturn(BigInteger.ONE);
-        when(movimentoContoEvidenza.getImporto()).thenReturn(BigDecimal.TEN);
-        when(movimentoContoEvidenza.getDataMovimento()).thenReturn(toXMLGregorianCalendar(new GregorianCalendar(2023, Calendar.JANUARY, 1)));
-        when(movimentoContoEvidenza.getDataValutaEnte()).thenReturn(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
-        when(movimentoContoEvidenza.getSospesoDaRegolarizzare()).thenReturn(sospesoDaRegolarizzare);
-        when(sospesoDaRegolarizzare.getDataEffettivaSospeso()).thenReturn(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
-        when(movimentoContoEvidenza.getCausale()).thenReturn("CAUSALE123");
-        when(movimentoContoEvidenza.getCliente()).thenReturn(cliente);
-        when(cliente.getAnagraficaCliente()).thenReturn(LAST_NAME_CLIENTE);
-        when(cliente.getIndirizzoCliente()).thenReturn(ADDRESS_CLIENTE);
-        when(cliente.getCapCliente()).thenReturn(POSTAL_CODE);
-        when(cliente.getLocalitaCliente()).thenReturn(CITY);
-        when(cliente.getCodiceFiscaleCliente()).thenReturn(FISCAL_CODE);
-        when(cliente.getPartitaIvaCliente()).thenReturn(VAT_NUMBER);
+        movimentoContoEvidenza.setTipoMovimento("ENTRATA");
+        movimentoContoEvidenza.setTipoDocumento("SOSPESO ENTRATA");
+        movimentoContoEvidenza.setTipoOperazione("ESEGUITO");
+        movimentoContoEvidenza.setNumeroBollettaQuietanza(BigInteger.ONE);
+        movimentoContoEvidenza.setImporto(BigDecimal.TEN);
+        movimentoContoEvidenza.setDataMovimento(toXMLGregorianCalendar(new GregorianCalendar(2023, Calendar.JANUARY, 1)));
+        movimentoContoEvidenza.setDataValutaEnte(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
+        sospesoDaRegolarizzare.setDataEffettivaSospeso(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
+        sospesoDaRegolarizzare.setCodiceGestionaleProvvisorio("ABC");
+        movimentoContoEvidenza.setSospesoDaRegolarizzare(sospesoDaRegolarizzare);
+        movimentoContoEvidenza.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890");
+        movimentoContoEvidenza.setEndToEndId("e2eId");
+        movimentoContoEvidenza.setCliente(cliente);
+        cliente.setAnagraficaCliente(LAST_NAME_CLIENTE);
+        cliente.setIndirizzoCliente(ADDRESS_CLIENTE);
+        cliente.setCapCliente(POSTAL_CODE);
+        cliente.setLocalitaCliente(CITY);
+        cliente.setCodiceFiscaleCliente(FISCAL_CODE);
+        cliente.setPartitaIvaCliente(VAT_NUMBER);
+
+        informazioniContoEvidenza.getMovimentoContoEvidenzas().add(movimentoContoEvidenza);
+        flussoGiornaleDiCassa.getInformazioniContoEvidenza().add(informazioniContoEvidenza);
 
         IngestionFlowFileDTO ingestionFlowFileDTO = createIngestionFlowFileDTO();
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
+        Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
         assertNotNull(result);
         assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
         assertFalse(result.get(TreasuryOperationEnum.INSERT).isEmpty());
 
-        List<TreasuryDTO> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
+        List<Treasury> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
         assertNotNull(treasuryDTOList);
 
-        TreasuryDTO treasuryDTO = treasuryDTOList.getFirst();
+        Treasury treasuryDTO = treasuryDTOList.getFirst();
         assertEquals("2023", treasuryDTO.getBillYear());
         assertEquals("1", treasuryDTO.getBillCode());
-        assertEquals(BigDecimal.TEN, treasuryDTO.getBillIpNumber());
-        assertEquals(LAST_NAME_CLIENTE, treasuryDTO.getLastName());
-        assertEquals(ADDRESS_CLIENTE, treasuryDTO.getAddress());
-        assertEquals(POSTAL_CODE, treasuryDTO.getPostalCode());
-        assertEquals(CITY, treasuryDTO.getCity());
-        assertEquals(FISCAL_CODE, treasuryDTO.getFiscalCode());
-        assertEquals(VAT_NUMBER, treasuryDTO.getVatNumber());
+        assertEquals(1000L, treasuryDTO.getBillAmountCents());
+        assertEquals(LAST_NAME_CLIENTE, treasuryDTO.getPspLastName());
+        assertEquals(ADDRESS_CLIENTE, treasuryDTO.getPspAddress());
+        assertEquals(POSTAL_CODE, treasuryDTO.getPspPostalCode());
+        assertEquals(CITY, treasuryDTO.getPspCity());
+        assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
+        assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
+        TestUtils.checkNotNullFields(treasuryDTO,
+                "treasuryId","updateOperatorExternalId", "iuv","accountCode","domainIdCode",
+                "transactionTypeCode","remittanceCode","documentYear","sealCode",
+                "pspFirstName","abiCode","cabCode","ibanCode","accountRegistryCode",
+                "provisionalAe","provisionalCode","accountTypeCode","processCode",
+                "executionPgCode","transferPgCode","processPgNumber","regularized",
+                "links"
+        );
 
     }
 

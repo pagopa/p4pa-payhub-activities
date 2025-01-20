@@ -46,9 +46,9 @@ public class TreasuryErrorsArchiverService {
 
         List<String[]> data = errorDTOList.stream()
                 .map(errorDTO -> new String[]{
-                        errorDTO.getNomeFile(),
-                        errorDTO.getDeAnnoBolletta(),
-                        errorDTO.getCodBolletta(),
+                        errorDTO.getFileName(),
+                        errorDTO.getBillYear(),
+                        errorDTO.getBillCode(),
                         errorDTO.getErrorCode(),
                         errorDTO.getErrorMessage()
                 })
@@ -92,6 +92,7 @@ public class TreasuryErrorsArchiverService {
             if (!errorFiles.isEmpty()) {
 
                 Path targetDirectory = sharedDirectoryPath
+                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrg().getOrganizationId()))
                         .resolve(ingestionFlowFileDTO.getFilePathName())
                         .resolve(errorFolder);
 

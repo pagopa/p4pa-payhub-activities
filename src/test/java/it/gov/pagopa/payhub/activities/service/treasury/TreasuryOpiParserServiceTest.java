@@ -1,10 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.dao.TreasuryDao;
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,13 +21,13 @@ class TreasuryOpiParserServiceTest {
 
     private TreasuryOpiParserService treasuryOpiParserService;
     private List<TreasuryVersionHandlerService> versionHandlerServices;
-    private TreasuryDao treasuryDao;
+    private TreasuryService treasuryService;
 
     @BeforeEach
     void setUp() {
         versionHandlerServices = new ArrayList<>();
-        treasuryDao = mock(TreasuryDao.class);
-        treasuryOpiParserService = new TreasuryOpiParserService(versionHandlerServices, treasuryDao);
+        treasuryService = mock(TreasuryService.class);
+        treasuryOpiParserService = new TreasuryOpiParserService(versionHandlerServices, treasuryService);
     }
 
     @Test
@@ -43,12 +41,10 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.add(handler);
 
-        TreasuryDTO treasuryDTO = TreasuryDTO.builder()
+        Treasury treasuryDTO = Treasury.builder()
                 .iuf("Flow123")
                 .build();
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
-                TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
-        );
+        List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
 
@@ -60,7 +56,7 @@ class TreasuryOpiParserServiceTest {
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
         assertEquals("Flow123", result.getIufs().getFirst());
-        verify(treasuryDao, times(1)).insert(treasuryDTO);
+        verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 
     @Test
@@ -76,8 +72,8 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
-        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
 
         // When & Then
         assertThrows(TreasuryOpiInvalidFileException.class, () ->
@@ -97,14 +93,12 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyMap());
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
 
-        TreasuryDTO treasuryDTO = TreasuryDTO.builder()
+        Treasury treasuryDTO = Treasury.builder()
                 .iuf("Flow456")
                 .build();
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> handlerResult = Map.of(
-                TreasuryOperationEnum.INSERT, List.of(treasuryDTO)
-        );
+        List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
 
@@ -116,6 +110,6 @@ class TreasuryOpiParserServiceTest {
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
         assertEquals("Flow456", result.getIufs().getFirst());
-        verify(treasuryDao, times(1)).insert(treasuryDTO);
+        verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 }

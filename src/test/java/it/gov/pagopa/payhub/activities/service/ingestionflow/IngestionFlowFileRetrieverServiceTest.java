@@ -54,9 +54,12 @@ class IngestionFlowFileRetrieverServiceTest {
 	@Test
 	void testRetrieveFile_successfulFlow() throws IOException {
 		//Given
+		Long organizationId = 0L;
 		Path sourcePath = zipFile.getParent();
 		String filename = zipFile.getFileName().toString();
-		Path workingPath = Path.of(TEMPORARY_PATH).resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
+		Path workingPath = Path.of(TEMPORARY_PATH)
+				.resolve(String.valueOf(organizationId))
+				.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
 		Path zipFilePath = workingPath.resolve(filename.replace(AESUtils.CIPHER_EXTENSION, ""));
 		List<Path> unzippedPaths = List.of(workingPath.resolve("file1.txt"), workingPath.resolve("file2.txt"));
 
@@ -69,7 +72,7 @@ class IngestionFlowFileRetrieverServiceTest {
 				.then(invocation -> null);
 
 			// when
-			List<Path> result = service.retrieveAndUnzipFile(sourcePath, filename);
+			List<Path> result = service.retrieveAndUnzipFile(organizationId, sourcePath, filename);
 
 			// Then
 			assertNotNull(result);
@@ -83,6 +86,7 @@ class IngestionFlowFileRetrieverServiceTest {
 	@Test
 	void testRetrieveFile_validationFails() {
 		//Given
+		Long organizationId = 0L;
 		Path sourcePath = zipFile.getParent();
 		String filename = zipFile.getFileName().toString();
 
@@ -90,15 +94,18 @@ class IngestionFlowFileRetrieverServiceTest {
 
 		//When & Then
 		assertThrows(InvalidIngestionFileException.class,
-			() -> service.retrieveAndUnzipFile(sourcePath, filename), "File validation failed");
+			() -> service.retrieveAndUnzipFile(organizationId, sourcePath, filename), "File validation failed");
 	}
 
 	@Test
 	void testRetrieveFile_zipValidationFails() {
 		//Given
+		Long organizationId = 0L;
 		Path sourcePath = zipFile.getParent();
 		String filename = zipFile.getFileName().toString();
-		Path workingPath = Path.of(TEMPORARY_PATH).resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
+		Path workingPath = Path.of(TEMPORARY_PATH)
+				.resolve(String.valueOf(organizationId))
+				.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
 		Path zipFilePath = workingPath.resolve(filename.replace(AESUtils.CIPHER_EXTENSION, ""));
 
 		doNothing().when(fileValidatorService).validateFile(zipFile);
@@ -110,7 +117,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 			//When & Then
 			assertThrows(InvalidIngestionFileException.class,
-				() -> service.retrieveAndUnzipFile(sourcePath, filename), "ZIP validation failed");
+				() -> service.retrieveAndUnzipFile(organizationId, sourcePath, filename), "ZIP validation failed");
 		}
 	}
 

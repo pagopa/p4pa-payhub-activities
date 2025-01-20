@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 class TransferClassificationStoreServiceTest {
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
-	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
+	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
 	@Mock
 	private ClassificationDao classificationDaoMock;

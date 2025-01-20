@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
@@ -20,28 +21,47 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     private final TreasuryMapperService<T> mapperService;
     private final TreasuryValidatorService<T> validatorService;
     private final TreasuryErrorsArchiverService treasuryErrorsArchiverService;
+    private final TreasuryService treasuryService;
 
 
-    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService) {
+    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService, TreasuryService treasuryService) {
         this.mapperService = mapperService;
         this.validatorService = validatorService;
         this.treasuryErrorsArchiverService = treasuryErrorsArchiverService;
+        this.treasuryService = treasuryService;
     }
 
     protected abstract T unmarshall(File file);
 
     @Override
-    public Map<TreasuryOperationEnum, List<TreasuryDTO>> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
+    public List<Treasury> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
         try {
             T unmarshalled = unmarshall(input);
             List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
-            Map<TreasuryOperationEnum, List<TreasuryDTO>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
+            Map<TreasuryOperationEnum, List<Treasury>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
+            List<Treasury> deleteTreasuries = result.get(TreasuryOperationEnum.DELETE);
+            for (Treasury treasuryDTO : deleteTreasuries) {
+                Long rowDeleted = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(
+                                treasuryDTO.getOrganizationId(),
+                                treasuryDTO.getBillCode(),
+                                treasuryDTO.getBillYear());
+                if (rowDeleted == 0L) {
+                    errorDTOList.add(TreasuryErrorDTO.builder()
+                            .errorMessage("The bill is not present in database so it is impossible to delete it")
+                            .errorCode(treasuryDTO.getOrganizationId()+"-"+treasuryDTO.getBillCode()+"-"+treasuryDTO.getBillYear())
+                            .billCode(treasuryDTO.getBillCode())
+                            .billYear(treasuryDTO.getBillYear())
+                            .fileName(ingestionFlowFileDTO.getFileName())
+                            .build());
+                }
+            }
+
             treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
-            return result;
+            return result.get(TreasuryOperationEnum.INSERT);
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using mapper{} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
     }
 

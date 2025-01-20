@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class TransferClassificationStoreService {
 		TransferSemanticKeyDTO transferSemanticKeyDTO,
 		TransferDTO transferDTO,
 		PaymentsReportingDTO paymentsReportingDTO,
-		TreasuryDTO treasuryDTO,
+		Treasury treasuryDTO,
 		List<ClassificationsEnum> classifications) {
 
 		log.info("Saving classifications {} for semantic key organization id: {} and iuv: {} and iur {} and transfer index: {}",
@@ -55,7 +55,7 @@ public class TransferClassificationStoreService {
 				.organizationId(transferSemanticKeyDTO.getOrgId())
 				.transferId(Optional.ofNullable(transferDTO).map(TransferDTO::getTransferId).orElse(null))
 				.paymentReportingId(optionalPaymentsReportingDTO.map(PaymentsReportingDTO::getPaymentsReportingId).orElse(null))
-				.treasuryId(Optional.ofNullable(treasuryDTO).map(TreasuryDTO::getTreasuryId).orElse(null))
+				.treasuryId(Optional.ofNullable(treasuryDTO).map(Treasury::getTreasuryId).orElse(null))
 				.iuf(optionalPaymentsReportingDTO.map(PaymentsReportingDTO::getIuf).orElse(null))
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())

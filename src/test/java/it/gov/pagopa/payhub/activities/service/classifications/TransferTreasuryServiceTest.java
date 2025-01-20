@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.classifications;
 
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufClassifier;
 import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufTesClassifier;
@@ -21,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TransferClassificationServiceTest {
+class TransferTreasuryServiceTest {
 
 	private final PaymentsReportingDTO paymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
 	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
-	private final TreasuryDTO treasuryDTO = TreasuryFaker.buildTreasuryDTO();
+	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
 	@Mock
 	RtIufClassifier rtIufClassifierMock;

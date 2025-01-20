@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryDTO;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,38 +32,45 @@ class TreasuryVersionBaseHandlerServiceTest {
     private TreasuryValidatorService<Object> validatorServiceMock;
     @Mock
     private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
+    @Mock
+    private TreasuryService treasuryServiceMock;
+
+    private FlussoGiornaleDiCassa unmarshalledObject;
+
     private TreasuryVersionBaseHandlerService<Object> handlerService;
 
     @BeforeEach
     void setUp() {
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock) {
+        unmarshalledObject = mock(FlussoGiornaleDiCassa.class);
+
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock) {
             @Override
             protected Object unmarshall(File file) {
-                return new Object();
+                return unmarshalledObject;
             }
         };
     }
 
-    @Test //OK
+    @Test
     void testHandle_whenValidFile_thenReturnsResult() {
         // Given
         File file = mock(File.class);
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
         ingestionFlowFileDTO.setFileName("testFile");
 
-        Object unmarshalledObject = new Object();
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> expectedResult = Map.of();
+        Map<TreasuryOperationEnum, List<Treasury>> expectedMap = Map.of();
+        List<Treasury> expectedResult = List.of();
 
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         Mockito.when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedResult);
+        Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedMap);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         Assertions.assertEquals(expectedResult, result);
     }
 
@@ -71,23 +81,21 @@ class TreasuryVersionBaseHandlerServiceTest {
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
         ingestionFlowFileDTO.setFileName("testFile");
 
-        Object unmarshalledObject = new Object();
-
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         Assertions.assertTrue(result.isEmpty());
         Mockito.verify(mapperServiceMock, never()).apply(new Object(), new IngestionFlowFileDTO());
     }
 
-    @Test //OK
+    @Test
     void testHandle_whenUnmarshallFails_thenReturnsEmptyMap() {
         // Given
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock) {
+        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock) {
             @Override
             protected Object unmarshall(File file) {
                 throw new RuntimeException("Unmarshall failed");
@@ -98,32 +106,29 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         Assertions.assertTrue(result.isEmpty());
         Mockito.verify(mapperServiceMock, never()).apply(any(), any());
     }
 
-    @Test //OK
+    @Test
     void testHandle_whenMapperFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
         ingestionFlowFileDTO.setFileName("testFile");
 
-        Object unmarshalledObject = new Object();
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(false);
-        Mockito.when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenThrow(new RuntimeException("Mapper failed"));
 
         // When
-        Map<TreasuryOperationEnum, List<TreasuryDTO>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         Assertions.assertTrue(result.isEmpty());
     }
 
@@ -132,7 +137,6 @@ class TreasuryVersionBaseHandlerServiceTest {
         // Given
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
         ingestionFlowFileDTO.setFileName("testFile");
-        Object unmarshalledObject = new Object();
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(false);
 
@@ -146,7 +150,6 @@ class TreasuryVersionBaseHandlerServiceTest {
         // Given
         IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
         ingestionFlowFileDTO.setFileName("testFile");
-        Object unmarshalledObject = new Object();
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         List<TreasuryErrorDTO> expectedErrors = List.of(new TreasuryErrorDTO("file", "2023", "B123", "ERR01", "Invalid data"));
@@ -157,5 +160,64 @@ class TreasuryVersionBaseHandlerServiceTest {
 
         // Then
         Assertions.assertEquals(expectedErrors, result);
+    }
+
+
+    @Test
+    void testHandle_whenDeleteTreasury_thenCallsDeleteByOrganizationIdAndBillCodeAndBillYear() {
+        // Given
+        File file = mock(File.class);
+        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        ingestionFlowFileDTO.setFileName("testFile");
+
+        Treasury treasuryDTO = new Treasury();
+        treasuryDTO.setOrganizationId(98765L);
+        treasuryDTO.setBillCode("BILL123");
+        treasuryDTO.setBillYear("2025");
+
+        Map<TreasuryOperationEnum, List<Treasury>> resultMap = Map.of(
+                TreasuryOperationEnum.DELETE, List.of(treasuryDTO)
+        );
+
+        when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
+        when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
+        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear())).thenReturn(1L);
+
+        // When
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+
+        // Then
+        assertNotNull(result);
+        verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear());
+    }
+
+    @Test
+    void testHandle_whenDeleteTreasury_thenCallsDeleteByOrganizationIdAndBillCodeAndBillYearAndWriteError() {
+        // Given
+        File file = mock(File.class);
+        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        ingestionFlowFileDTO.setFileName("testFile");
+
+        Treasury treasuryDTO = new Treasury();
+        treasuryDTO.setOrganizationId(98765L);
+        treasuryDTO.setBillCode("BILL123");
+        treasuryDTO.setBillYear("2025");
+
+        Map<TreasuryOperationEnum, List<Treasury>> resultMap = Map.of(
+                TreasuryOperationEnum.DELETE, List.of(treasuryDTO)
+        );
+
+        when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
+        when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
+        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear())).thenReturn(0L);
+
+        // When
+        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+
+        // Then
+        assertNotNull(result);
+        verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear());
     }
 }

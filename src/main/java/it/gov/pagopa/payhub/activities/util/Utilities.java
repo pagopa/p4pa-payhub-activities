@@ -1,5 +1,8 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDate;
+import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,4 +48,18 @@ public class Utilities {
     public static String replaceFileExtension(String fileName, String newExtension){
         return fileName.substring(0, fileName.lastIndexOf(".")) + newExtension;
     }
+
+    public static LocalDate convertToLocalDate(XMLGregorianCalendar xmlGregorianCalendar) {
+        if (xmlGregorianCalendar == null) {
+            return null;
+        }
+
+        GregorianCalendar gregorianCalendar = xmlGregorianCalendar.toGregorianCalendar();
+
+        return LocalDate.ofInstant(
+                gregorianCalendar.toInstant(),
+                gregorianCalendar.getTimeZone().toZoneId()
+        );
+    }
+
 }

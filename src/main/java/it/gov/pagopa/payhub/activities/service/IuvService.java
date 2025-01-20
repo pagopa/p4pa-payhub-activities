@@ -39,7 +39,7 @@ public class IuvService {
   public String generateIuv(Organization org){
     StringBuilder iuvBuilder = new StringBuilder();
     //header
-    iuvBuilder.append(org.getApplicationCode());
+    iuvBuilder.append(org.getSegregationCode());
     iuvBuilder.append(informationSystemId);
 
     //payment index
