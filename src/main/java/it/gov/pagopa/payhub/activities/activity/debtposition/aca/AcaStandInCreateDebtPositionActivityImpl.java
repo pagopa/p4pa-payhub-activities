@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Lazy
 @Service
-public class AcaStandInActivityImpl implements AcaStandInActivity {
+public class AcaStandInCreateDebtPositionActivityImpl implements AcaStandInCreateDebtPositionActivity {
 
     private final AcaService acaService;
     private final DebtPositionDTOMapper debtPositionDTOMapper;
 
-    public AcaStandInActivityImpl(AcaService acaService, DebtPositionDTOMapper debtPositionDTOMapper) {
+    public AcaStandInCreateDebtPositionActivityImpl(AcaService acaService, DebtPositionDTOMapper debtPositionDTOMapper) {
         this.acaService = acaService;
         this.debtPositionDTOMapper = debtPositionDTOMapper;
     }
