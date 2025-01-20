@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
@@ -37,13 +38,12 @@ class TreasuryOpiParserServiceTest {
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
         TreasuryVersionHandlerService handler = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.add(handler);
 
         Treasury treasuryDTO = Treasury.builder()
             .iuf("Flow123")
-            .organizationId(123L)
             .build();
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
@@ -88,7 +88,7 @@ class TreasuryOpiParserServiceTest {
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
 
         TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
@@ -98,7 +98,6 @@ class TreasuryOpiParserServiceTest {
 
         Treasury treasuryDTO = Treasury.builder()
             .iuf("Flow123")
-            .organizationId(123L)
             .build();
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
