@@ -62,6 +62,7 @@ val openApiToolsVersion = "0.2.6"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
 val openCsvVersion = "5.9"
+val mapStructVersion = "1.6.3"
 
 
 dependencies {
@@ -101,6 +102,15 @@ dependencies {
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+
+	/**
+	 * Mapstruct
+	 * https://mapstruct.org/
+	 * mapstruct dependencies must always be placed after the lombok dependency
+	 * or the generated mappers will return an empty object
+	 **/
+	implementation("org.mapstruct:mapstruct:$mapStructVersion")
+	annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
 	//openCsv
 	implementation("com.opencsv:opencsv:$openCsvVersion")
@@ -144,14 +154,14 @@ jaxb {
 			schema = file("src/main/resources/xsd/FlussoRiversamento.xsd")
 			bindings = layout.files("src/main/resources/xsd/FlussoRiversamento.xjb")
 		}
-		register("Opi14TresauryFlow") {
+		register("Opi14TreasuryFlow") {
 			extension = true
 			args = listOf("-xmlschema","-Xsimplify")
 			outputDir = file("$projectDir/build/generated/jaxb/java")
 			schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd")
 			bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xjb")
 		}
-		register("Opi161TresauryFlow") {
+		register("Opi161TreasuryFlow") {
 			extension = true
 			args = listOf("-xmlschema","-Xsimplify")
 			outputDir = file("$projectDir/build/generated/jaxb/java")
@@ -240,8 +250,8 @@ tasks.register("dependenciesBuild") {
 		"openApiGenerateIONOTIFICATION",
 		"openApiGenerateORGANIZATION",
 		"openApiGenerateDEBTPOSITIONS",
-		"openApiGenerateCLASSIFICATION"
-
+		"openApiGenerateCLASSIFICATION",
+		"openApiGeneratePAGOPAPAYMENTS"
 	)
 }
 
@@ -360,6 +370,32 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
 	invokerPackage.set("it.gov.pagopa.pu.classification.generated")
 	apiPackage.set("it.gov.pagopa.pu.classification.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.classification.dto.generated")
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"serializableModel" to "true",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "false",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+	))
+	library.set("resttemplate")
+}
+
+tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-pagopa-payments/refs/heads/develop/openapi/p4pa-pagopa-payments.openapi.yaml")
+	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.pagopapayments.generated")
+	apiPackage.set("it.gov.pagopa.pu.pagopapayments.client.generated")
+	modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
