@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class PaymentsReportingMapperService {
 	 * @param ingestionFlowFileDTO the ingestion metadata containing information about the processing flow.
 	 * @return a list of `PaymentsReporting` objects, one for each individual payment in the flow.
 	 */
-	public List<PaymentsReporting> mapToModelList(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	public List<PaymentsReporting> map2PaymentsReportings(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
 
 		PaymentsReporting.PaymentsReportingBuilder builder = PaymentsReporting.builder()
 			.creationDate(OffsetDateTime.now())
@@ -64,17 +63,17 @@ public class PaymentsReportingMapperService {
 	}
 
 	/**
-	 * Maps a `PaymentsReportingDTO` object into `TransferSemanticKeyDTO`.
+	 * Maps a `PaymentsReporting` object into `TransferSemanticKeyDTO`.
 	 *
-	 * @param paymentsReportingDTO the `PaymentsReportingDTO` object containing the data to be mapped.
+	 * @param paymentsReporting the `PaymentsReportingDTO` object containing the data to be mapped.
 	 * @return a `TransferSemanticKeyDTO` object containing the mapped data.
 	 */
-	public TransferSemanticKeyDTO mapToTransferSemanticKeyDto(PaymentsReportingDTO paymentsReportingDTO) {
+	public TransferSemanticKeyDTO map2TransferSemanticKeyDto(PaymentsReporting paymentsReporting) {
 		return TransferSemanticKeyDTO.builder()
-			.orgId(paymentsReportingDTO.getOrganizationId())
-			.iuv(paymentsReportingDTO.getIuv())
-			.iur(paymentsReportingDTO.getIur())
-			.transferIndex(paymentsReportingDTO.getTransferIndex())
+			.orgId(paymentsReporting.getOrganizationId())
+			.iuv(paymentsReporting.getIuv())
+			.iur(paymentsReporting.getIur())
+			.transferIndex(paymentsReporting.getTransferIndex())
 			.build();
 	}
 }

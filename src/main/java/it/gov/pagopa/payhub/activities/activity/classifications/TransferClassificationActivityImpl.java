@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 
 @Lazy
 @Slf4j
@@ -59,7 +58,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(transferSemanticKey);
 		Treasury treasuryDTO = retrieveTreasury(transferSemanticKey.getOrgId(), paymentsReporting);
 
-		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
+		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReporting, treasuryDTO);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex(),
 			String.join(", ", classifications.stream().map(String::valueOf).toList()));
@@ -72,6 +71,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 * Retrieves the {@link Treasury} record for the given ID.
 	 *
 	 * @param orgId the ID of the organization
+	 * @param paymentsReportingDTO the payments reporting data transfer object containing payment reporting details
 	 * @return the {@link Treasury} corresponding to the given ID
 	 */
 	private Treasury retrieveTreasury(Long orgId, PaymentsReporting paymentsReportingDTO) {
