@@ -1,13 +1,15 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
-import it.gov.pagopa.payhub.activities.dao.PaymentsReportingDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelPaymentsReportingEmbedded;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class IufClassificationActivityTest {
     @Mock
-    private PaymentsReportingDao paymentsReportingDaoMock;
+    private PaymentsReportingService paymentsReportingServiceMock;
 
     @Mock
     private ClassificationDao classificationDaoMock;
@@ -38,24 +40,24 @@ class IufClassificationActivityTest {
 
     @BeforeEach
     void init() {
-        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingDaoMock, classificationDaoMock);
+        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingServiceMock, classificationDaoMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(paymentsReportingDaoMock,classificationDaoMock);
+        Mockito.verifyNoMoreInteractions(paymentsReportingServiceMock,classificationDaoMock);
     }
 
     @Test
     void givenReportedTransferWhenClassifyThenOk() {
         ClassificationDTO classificationDTO = ClassificationFaker.buildClassificationDTO();
 
-        PaymentsReportingDTO expectedPaymentsReportingDTO = PaymentsReportingFaker.buildClassifyResultDTO();
-        List<PaymentsReportingDTO> expectedPaymentsReportingDTOS = new ArrayList<>();
-        expectedPaymentsReportingDTOS.add(expectedPaymentsReportingDTO);
+        CollectionModelPaymentsReporting expectedCollectionModelPaymentsReporting = PaymentsReportingFaker.buildCollectionModelPaymentsReporting();
+
+        List<PaymentsReporting> expectedPaymentsReportingS =expectedCollectionModelPaymentsReporting.getEmbedded().getPaymentsReportings();
 
         List<Transfer2ClassifyDTO> expectedTransfer2ClassifyDTOS =
-                expectedPaymentsReportingDTOS
+                expectedPaymentsReportingS
                 .stream()
                 .map(paymentsReportingDTO ->
                     Transfer2ClassifyDTO.builder()
@@ -73,15 +75,15 @@ class IufClassificationActivityTest {
                         .success(true)
                         .build();
 
-        when(paymentsReportingDaoMock.findByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
-                .thenReturn(expectedPaymentsReportingDTOS);
+        when(paymentsReportingServiceMock.getByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
+                .thenReturn(expectedCollectionModelPaymentsReporting);
 
         IufClassificationActivityResult iufClassificationActivityResult =
                 iufClassificationActivity.classify(ORGANIZATIONID, TREASURYID, IUF);
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
-        Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
+        Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
         Mockito.verify(classificationDaoMock, Mockito.times(0)).save(classificationDTO);
     }
 
@@ -97,15 +99,20 @@ class IufClassificationActivityTest {
                         .success(true)
                         .build();
 
-        when(paymentsReportingDaoMock.findByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
-                .thenReturn(new ArrayList<>());
+        when(paymentsReportingServiceMock.getByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
+                .thenReturn(CollectionModelPaymentsReporting.builder()
+                        .embedded(PagedModelPaymentsReportingEmbedded.builder()
+                                .paymentsReportings(List.of())
+                                .build())
+                        .build());
 
         IufClassificationActivityResult iufClassificationActivityResult =
                 iufClassificationActivity.classify(ORGANIZATIONID, TREASURYID, IUF);
 
+
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
-        Mockito.verify(paymentsReportingDaoMock, Mockito.times(1)).findByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
+        Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
         Mockito.verify(classificationDaoMock, Mockito.times(1)).save(classificationDTO);
     }
 }

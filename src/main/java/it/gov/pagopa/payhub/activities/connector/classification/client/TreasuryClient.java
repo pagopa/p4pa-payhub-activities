@@ -20,9 +20,9 @@ public class TreasuryClient {
         return treasuryApisHolder.getTreasurySearchApi(accessToken)
                 .crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf);
     }
-    public Treasury getByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear, String accessToken) {
+    public Treasury getBySemanticKey(Long organizationId, String billCode, String billYear, String accessToken) {
         return treasuryApisHolder.getTreasurySearchApi(accessToken)
-                .crudTreasuryGetByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
+                .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear);
     }
 
     public Treasury insert(Treasury treasury, String accessToken) {

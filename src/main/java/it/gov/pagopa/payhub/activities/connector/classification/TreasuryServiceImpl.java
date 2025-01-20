@@ -32,9 +32,9 @@ public class TreasuryServiceImpl implements TreasuryService {
     }
 
     @Override
-    public Optional<Treasury> getByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear) {
+    public Optional<Treasury> getBySemanticKey(Long organizationId, String billCode, String billYear) {
         return Optional.ofNullable(
-                treasuryClient.getByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, authnService.getAccessToken())
+                treasuryClient.getBySemanticKey(organizationId, billCode, billYear, authnService.getAccessToken())
         );
     }
 

@@ -4,40 +4,41 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
 /**
- * Service class responsible for data mapping related to `PaymentsReportingDTO` objects.
+ * Service class responsible for data mapping related to `PaymentsReporting` objects.
  */
 @Lazy
 @Service
 public class PaymentsReportingMapperService {
 
 	/**
-	 * Maps a `CtFlussoRiversamento` object and an `IngestionFlowFileDTO` into a list of `PaymentsReportingDTO` objects.
-	 * Each `PaymentsReportingDTO` in the list corresponds to an individual payment within the flow.
+	 * Maps a `CtFlussoRiversamento` object and an `IngestionFlowFileDTO` into a list of `PaymentsReporting` objects.
+	 * Each `PaymentsReporting` in the list corresponds to an individual payment within the flow.
 	 *
 	 * @param ctFlussoRiversamento the flow data object containing detailed information about the transaction flow,
 	 *                             including details for multiple individual payments.
 	 * @param ingestionFlowFileDTO the ingestion metadata containing information about the processing flow.
-	 * @return a list of `PaymentsReportingDTO` objects, one for each individual payment in the flow.
+	 * @return a list of `PaymentsReporting` objects, one for each individual payment in the flow.
 	 */
-	public List<PaymentsReportingDTO> mapToDtoList(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	public List<PaymentsReporting> mapToModelList(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFileDTO ingestionFlowFileDTO) {
 
-		PaymentsReportingDTO.PaymentsReportingDTOBuilder builder = PaymentsReportingDTO.builder()
-			.creationDate(Instant.now())
-			.lastUpdateDate(Instant.now())
+		PaymentsReporting.PaymentsReportingBuilder builder = PaymentsReporting.builder()
+			.creationDate(OffsetDateTime.now())
+			.updateDate(OffsetDateTime.now())
 			.acquiringDate(ingestionFlowFileDTO.getCreationDate().atZone(ZoneId.systemDefault()).toLocalDate())
 			.organizationId(ingestionFlowFileDTO.getOrg().getOrganizationId())
 			.ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
 			.pspIdentifier(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
 			.iuf(ctFlussoRiversamento.getIdentificativoFlusso())
-			.flowDateTime(ctFlussoRiversamento.getDataOraFlusso().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
+			.flowDateTime(ctFlussoRiversamento.getDataOraFlusso().toGregorianCalendar().toZonedDateTime().toOffsetDateTime())
 			.regulationUniqueIdentifier(ctFlussoRiversamento.getIdentificativoUnivocoRegolamento())
 			.regulationDate(ctFlussoRiversamento.getDataRegolamento().toGregorianCalendar().toZonedDateTime().toLocalDate())
 			.senderPspName(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())

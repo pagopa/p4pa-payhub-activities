@@ -64,15 +64,15 @@ class TreasuryClientTest {
         Treasury expectedTreasury = new Treasury();
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(treasuryApisHolder.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudTreasuryGetByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear)).thenReturn(expectedTreasury);
+        when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear)).thenReturn(expectedTreasury);
 
         // When
-        Treasury result = treasuryClient.getByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken);
+        Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, accessToken);
 
         // Then
         assertEquals(expectedTreasury, result);
         verify(treasuryApisHolder.getTreasurySearchApi(accessToken), times(1))
-                .crudTreasuryGetByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
+                .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear);
     }
 
     @Test

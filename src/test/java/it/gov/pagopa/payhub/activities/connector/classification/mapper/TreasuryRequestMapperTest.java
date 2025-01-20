@@ -31,7 +31,7 @@ class TreasuryRequestMapperTest {
         assertEquals(treasury.getDomainIdCode(), result.getDomainIdCode());
         assertEquals(treasury.getTransactionTypeCode(), result.getTransactionTypeCode());
         assertEquals(treasury.getRemittanceCode(), result.getRemittanceCode());
-        assertEquals(treasury.getRemittanceInformation(), result.getRemittanceInformation());
+        assertEquals(treasury.getRemittanceDescription(), result.getRemittanceDescription());
         assertEquals(treasury.getBillAmountCents(), result.getBillAmountCents());
         assertEquals(treasury.getBillDate(), result.getBillDate());
         assertEquals(treasury.getReceptionDate(), result.getReceptionDate());

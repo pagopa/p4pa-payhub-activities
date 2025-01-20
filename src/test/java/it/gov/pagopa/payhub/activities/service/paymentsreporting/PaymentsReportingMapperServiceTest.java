@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ class PaymentsReportingMapperServiceTest {
 	private final PaymentsReportingMapperService mapper = new PaymentsReportingMapperService();
 
 	@Test
-	void testMapToDtoList() throws DatatypeConfigurationException {
+	void testMapToModelList() throws DatatypeConfigurationException {
 		GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, GregorianCalendar.DECEMBER, 25);
 
 		// Given
@@ -72,9 +73,9 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
 
 		// When
-		List<PaymentsReportingDTO> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
+		List<PaymentsReporting> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		PaymentsReportingDTO firstDTO = result.getFirst();
+		PaymentsReporting firstDTO = result.getFirst();
 		// Then
 		assertEquals(1, result.size());
 		assertEquals("flow123", firstDTO.getIuf());
@@ -89,7 +90,7 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("OK", firstDTO.getPaymentOutcomeCode());
 		assertNotNull(firstDTO.getPayDate());
 
-		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId");
+		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId", "updateOperatorExternalId", "links");
 	}
 
 	@Test
