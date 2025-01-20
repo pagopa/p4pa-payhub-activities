@@ -11,6 +11,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPaymen
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildPaymentsTransferDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
+import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO.StatusEnum.PAID;
 
 public class InstallmentFaker {
 
@@ -20,7 +21,7 @@ public class InstallmentFaker {
         return InstallmentDTO.builder()
                 .installmentId(1L)
                 .paymentOptionId(1L)
-                .status(InstallmentDTO.StatusEnum.valueOf("status"))
+                .status(InstallmentDTO.StatusEnum.PAID)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")
@@ -48,7 +49,7 @@ public class InstallmentFaker {
         return it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentDTO.builder()
                 .installmentId(1L)
                 .paymentOptionId(1L)
-                .status("status")
+                .status(String.valueOf(PAID))
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")
