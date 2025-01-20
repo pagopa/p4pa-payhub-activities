@@ -20,7 +20,7 @@ public class InstallmentFaker {
         return InstallmentDTO.builder()
                 .installmentId(1L)
                 .paymentOptionId(1L)
-                .status("status")
+                .status(InstallmentDTO.StatusEnum.TO_SYNC)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")

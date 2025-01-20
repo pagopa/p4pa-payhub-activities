@@ -14,7 +14,7 @@ public class PaymentOptionFaker {
         return PaymentOptionDTO.builder()
                 .paymentOptionId(1L)
                 .totalAmountCents(100L)
-                .status("status")
+                .status(PaymentOptionDTO.StatusEnum.REPORTED)
                 .dueDate(TestUtils.OFFSETDATETIME)
                 .installments(List.of(buildInstallmentDTO()))
                 .multiDebtor(false)

@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
-import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
+import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PagedModelPaymentsReportingEmbedded;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
@@ -30,7 +30,7 @@ class IufClassificationActivityTest {
     private PaymentsReportingService paymentsReportingServiceMock;
 
     @Mock
-    private ClassificationDao classificationDaoMock;
+    private ClassificationService classificationServiceMock;
 
     private IufClassificationActivity iufClassificationActivity;
 
@@ -40,17 +40,17 @@ class IufClassificationActivityTest {
 
     @BeforeEach
     void init() {
-        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingServiceMock, classificationDaoMock);
+        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingServiceMock, classificationServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(paymentsReportingServiceMock,classificationDaoMock);
+        Mockito.verifyNoMoreInteractions(paymentsReportingServiceMock, classificationServiceMock);
     }
 
     @Test
     void givenReportedTransferWhenClassifyThenOk() {
-        ClassificationDTO classificationDTO = ClassificationFaker.buildClassificationDTO();
+        Classification classificationDTO = ClassificationFaker.buildClassificationDTO();
 
         CollectionModelPaymentsReporting expectedCollectionModelPaymentsReporting = PaymentsReportingFaker.buildCollectionModelPaymentsReporting();
 
@@ -84,12 +84,12 @@ class IufClassificationActivityTest {
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
         Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
-        Mockito.verify(classificationDaoMock, Mockito.times(0)).save(classificationDTO);
+        Mockito.verify(classificationServiceMock, Mockito.times(0)).save(classificationDTO);
     }
 
     @Test
     void givenNoReportedTransferWhenClassifyThenAnomalyClassificationSave() {
-        ClassificationDTO classificationDTO = ClassificationFaker.buildClassificationDTO();
+        Classification classificationDTO = ClassificationFaker.buildClassificationDTO();
 
         IufClassificationActivityResult expectedIufClassificationActivityResult =
                 IufClassificationActivityResult
@@ -113,7 +113,7 @@ class IufClassificationActivityTest {
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
         Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
-        Mockito.verify(classificationDaoMock, Mockito.times(1)).save(classificationDTO);
+        Mockito.verify(classificationServiceMock, Mockito.times(1)).save(classificationDTO);
     }
 }
 

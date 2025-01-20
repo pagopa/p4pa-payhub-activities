@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.classifications;
 
-import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
@@ -28,13 +28,13 @@ class TransferClassificationStoreServiceTest {
 	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
 	@Mock
-	private ClassificationDao classificationDaoMock;
+	private ClassificationService classificationServiceMock;
 
 	private TransferClassificationStoreService service;
 
 	@BeforeEach
 	void setUp() {
-		service = new TransferClassificationStoreService(classificationDaoMock);
+		service = new TransferClassificationStoreService(classificationServiceMock);
 	}
 
 	@Test
@@ -47,20 +47,20 @@ class TransferClassificationStoreServiceTest {
 			.iur("IUR")
 			.transferIndex(1)
 			.build();
-		List<ClassificationDTO> dtoList = classifications.stream()
-			.map(classification -> ClassificationDTO.builder()
+		List<Classification> dtoList = classifications.stream()
+			.map(classification -> Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
 				.transferId(transferDTO.getTransferId())
-				.paymentReportingId(paymentsReportingDTO.getPaymentsReportingId())
+				.paymentsReportingId(paymentsReportingDTO.getPaymentsReportingId())
 				.treasuryId(treasuryDTO.getTreasuryId())
 				.iuf(paymentsReportingDTO.getIuf())
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())
 				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
-				.classificationsEnum(classification)
+				.label(String.valueOf(classification))
 				.build())
 			.toList();
-		when(classificationDaoMock.saveAll(dtoList)).thenReturn(dtoList);
+		when(classificationServiceMock.saveAll(dtoList)).thenReturn(dtoList.size());
 
 		// Act & Assert
 		assertDoesNotThrow(() ->

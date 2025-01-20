@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
-import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -18,11 +18,11 @@ import java.util.Objects;
 @Component
 public class IufClassificationActivityImpl implements IufClassificationActivity {
     private final PaymentsReportingService paymentsReportingService;
-    private final ClassificationDao classificationDao;
+    private final ClassificationService classificationService;
 
-    public IufClassificationActivityImpl(PaymentsReportingService paymentsReportingService, ClassificationDao classificationDao) {
+    public IufClassificationActivityImpl(PaymentsReportingService paymentsReportingService, ClassificationService classificationService) {
         this.paymentsReportingService = paymentsReportingService;
-        this.classificationDao  = classificationDao;
+        this.classificationService = classificationService;
     }
 
     @Override
@@ -62,11 +62,11 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     private void saveClassification(Long organizationId, String treasuryId, String iuf) {
         log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} - iuf: {}", organizationId, treasuryId, iuf);
 
-        classificationDao.save(ClassificationDTO.builder()
+        classificationService.save(Classification.builder()
             .organizationId(organizationId)
             .treasuryId(treasuryId)
             .iuf(iuf)
-            .classificationsEnum(ClassificationsEnum.TES_NO_MATCH)
+            .label(String.valueOf(ClassificationsEnum.TES_NO_MATCH))
             .build());
     }
 }
