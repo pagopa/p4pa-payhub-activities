@@ -16,7 +16,10 @@ public class AcaClient {
     }
 
     public void createAcaDebtPosition(DebtPositionDTO debtPositionDTO, String accessToken) {
-        acaApisHolder.getAcaApi(accessToken)
-                .createAca(debtPositionDTO);
+        acaApisHolder.getAcaApi(accessToken).createAca(debtPositionDTO);
+    }
+
+    public void deleteAcaDebtPosition(DebtPositionDTO debtPositionDTO, String accessToken) {
+        acaApisHolder.getAcaApi(accessToken).deleteAca(debtPositionDTO);
     }
 }
