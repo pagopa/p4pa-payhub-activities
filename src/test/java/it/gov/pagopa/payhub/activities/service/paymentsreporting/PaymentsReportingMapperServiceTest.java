@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.*;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -24,7 +25,7 @@ class PaymentsReportingMapperServiceTest {
 	private final PaymentsReportingMapperService mapper = new PaymentsReportingMapperService();
 
 	@Test
-	void testMapper() throws DatatypeConfigurationException {
+	void testMapToDtoList() throws DatatypeConfigurationException {
 		GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, GregorianCalendar.DECEMBER, 25);
 
 		// Given
@@ -89,6 +90,25 @@ class PaymentsReportingMapperServiceTest {
 		assertNotNull(firstDTO.getPayDate());
 
 		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId");
+	}
+
+	@Test
+	void testMapToTransferSemanticKeyDto() {
+		// Given
+		PaymentsReportingDTO paymentsReportingDTO = new PaymentsReportingDTO();
+		paymentsReportingDTO.setOrganizationId(1L);
+		paymentsReportingDTO.setIuv("iuv123");
+		paymentsReportingDTO.setIur("iur123");
+		paymentsReportingDTO.setTransferIndex(1);
+
+		// When
+		TransferSemanticKeyDTO result = mapper.mapToTransferSemanticKeyDto(paymentsReportingDTO);
+
+		// Then
+		assertEquals(1L, result.getOrgId());
+		assertEquals("iuv123", result.getIuv());
+		assertEquals("iur123", result.getIur());
+		assertEquals(1, result.getTransferIndex());
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {
