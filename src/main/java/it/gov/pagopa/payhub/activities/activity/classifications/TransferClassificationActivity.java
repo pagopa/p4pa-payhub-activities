@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 
 /**
  * Interface for defining an activity to process Transfer classifications.
@@ -12,11 +13,8 @@ public interface TransferClassificationActivity {
 	/**
 	 * Processes Transfer classification based on the provided parameters.
 	 *
-	 * @param orgId the unique identifier of the organization
-	 * @param iuv   the unique identifier of the payment (IUV)
-	 * @param iur   the identifier of the receipt associated with the payment
-	 * @param transferIndex  the index of the transfer to be classified
+	 * @param transferSemanticKey the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
 	 */
 	@ActivityMethod
-	void classify(Long orgId, String iuv, String iur, int transferIndex);
+	void classify(TransferSemanticKeyDTO transferSemanticKey);
 }

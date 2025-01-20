@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.*;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -24,7 +25,7 @@ class PaymentsReportingMapperServiceTest {
 	private final PaymentsReportingMapperService mapper = new PaymentsReportingMapperService();
 
 	@Test
-	void testMapper() throws DatatypeConfigurationException {
+	void testMap2PaymentsReportings() throws DatatypeConfigurationException {
 		GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, GregorianCalendar.DECEMBER, 25);
 
 		// Given
@@ -71,7 +72,7 @@ class PaymentsReportingMapperServiceTest {
 		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
 
 		// When
-		List<PaymentsReporting> result = mapper.mapToDtoList(ctFlussoRiversamento, ingestionFlowFileDTO);
+		List<PaymentsReporting> result = mapper.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO);
 
 		PaymentsReporting firstDTO = result.getFirst();
 		// Then
@@ -88,7 +89,29 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("OK", firstDTO.getPaymentOutcomeCode());
 		assertNotNull(firstDTO.getPayDate());
 
-		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId","updateOperatorExternalId", "links");
+		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId", "updateOperatorExternalId", "links");
+	}
+
+	@Test
+	void testMap2TransferSemanticKeyDto() {
+		// Given
+		PaymentsReporting paymentsReporting = PaymentsReporting.builder()
+			.organizationId(1L)
+			.iuv("iuv123")
+			.iur("iur123")
+			.transferIndex(1)
+			.build();
+
+		// When
+		TransferSemanticKeyDTO result = mapper.map2TransferSemanticKeyDto(paymentsReporting);
+
+		// Then
+		assertEquals(1L, result.getOrgId());
+		assertEquals("iuv123", result.getIuv());
+		assertEquals("iur123", result.getIur());
+		assertEquals(1, result.getTransferIndex());
+
+		TestUtils.checkNotNullFields(result);
 	}
 
 	private static XMLGregorianCalendar toXMLGregorianCalendar(GregorianCalendar gCalendar) throws DatatypeConfigurationException {
