@@ -96,7 +96,7 @@ class TreasuryOpiIngestionActivityTest {
             .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrg().getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size()))
-            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), true, null, null));
+            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), Collections.singletonList("IUF123"), ingestionFlowFileDTO.getOrg().getOrganizationId(), true, null, null));
 
     Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
             .thenReturn("DISCARDFILENAME");
@@ -179,7 +179,7 @@ class TreasuryOpiIngestionActivityTest {
     List<Path> mockedListPath = List.of(filePath);
 
     TreasuryIufResult expected =
-            new TreasuryIufResult(Collections.emptyList(), false, "error occured", null);
+            new TreasuryIufResult(Collections.emptyList(), Collections.emptyList(), null, false, "error occured", null);
 
     when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
