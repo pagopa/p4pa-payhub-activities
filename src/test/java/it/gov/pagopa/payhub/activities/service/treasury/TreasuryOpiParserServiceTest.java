@@ -2,10 +2,10 @@ package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -38,16 +39,19 @@ class TreasuryOpiParserServiceTest {
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
+            .org(Organization.builder().organizationId(1L).build())
+            .build();
         TreasuryVersionHandlerService handler = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.add(handler);
 
         Treasury treasuryDTO = Treasury.builder()
-            .iuf("Flow123")
-            .build();
+                .iuf("Flow123")
+                .build();
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
+        when(treasuryService.insert(treasuryDTO)).thenReturn(Optional.of(treasuryDTO));
 
         // When
         TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
@@ -88,7 +92,9 @@ class TreasuryOpiParserServiceTest {
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
+            .org(Organization.builder().organizationId(1L).build())
+            .build();
 
         TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
@@ -97,11 +103,12 @@ class TreasuryOpiParserServiceTest {
         when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
 
         Treasury treasuryDTO = Treasury.builder()
-            .iuf("Flow123")
-            .build();
+                .iuf("Flow456")
+                .build();
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
+        when(treasuryService.insert(treasuryDTO)).thenReturn(Optional.of(treasuryDTO));
 
         // When
         TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
@@ -110,7 +117,7 @@ class TreasuryOpiParserServiceTest {
         assertNotNull(result);
         assertTrue(result.isSuccess());
         assertEquals(1, result.getIufs().size());
-        assertEquals("Flow123", result.getIufs().getFirst());
+        assertEquals("Flow456", result.getIufs().getFirst());
         verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 }
