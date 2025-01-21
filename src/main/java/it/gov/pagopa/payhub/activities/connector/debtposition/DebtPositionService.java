@@ -10,5 +10,12 @@ import java.util.Map;
  */
 public interface DebtPositionService {
 
+    /**
+     * Finalizes the update of the debt position status from the installments
+     *
+     * @param debtPositionId the identifier of the debt position to be updated
+     * @param syncStatusUpdateDTO the map of IUD and {@link IupdSyncStatusUpdateDTO} containing new status and IUPD PagoPa of installment
+     */
     DebtPositionDTO finalizeSyncStatus(Long debtPositionId, Map<String, IupdSyncStatusUpdateDTO> syncStatusUpdateDTO);
+
 }
