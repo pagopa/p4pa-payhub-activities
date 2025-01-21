@@ -37,7 +37,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Optional<Organization> getOrganizationById(Long organizationId) {
         return Optional.ofNullable(
-                organizationSearchClient.findById(organizationId.toString(), authnService.getAccessToken())
+                organizationSearchClient.findById(organizationId, authnService.getAccessToken())
         );
     }
 }

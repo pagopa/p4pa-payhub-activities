@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
-import it.gov.pagopa.payhub.activities.connector.processexecutions.config.IngestionFlowFileApisHolder;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -9,20 +9,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class IngestionFlowFileClient {
 
-    private final IngestionFlowFileApisHolder ingestionFlowFileApisHolder;
+    private final ProcessExecutionsApisHolder processExecutionsApisHolder;
 
-    public IngestionFlowFileClient(IngestionFlowFileApisHolder ingestionFlowFileApisHolders) {
-        this.ingestionFlowFileApisHolder = ingestionFlowFileApisHolders;
+    public IngestionFlowFileClient(ProcessExecutionsApisHolder ingestionFlowFileApisHolders) {
+        this.processExecutionsApisHolder = ingestionFlowFileApisHolders;
     }
 
     public IngestionFlowFile findById(Long ingestionFlowFileId, String accessToken) {
-        return ingestionFlowFileApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
+        return processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
                 .crudGetIngestionflowfile(String.valueOf(ingestionFlowFileId));
     }
 
 
     public Integer updateStatus(Long ingestionFlowFileId, String status, String codError, String discardFileName, String accessToken) {
-        return ingestionFlowFileApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
+        return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
                 .updateStatus(ingestionFlowFileId, status,codError, discardFileName);
     }
 

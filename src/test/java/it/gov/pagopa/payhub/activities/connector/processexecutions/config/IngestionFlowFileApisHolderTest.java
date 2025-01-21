@@ -20,7 +20,7 @@ class IngestionFlowFileApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private IngestionFlowFileApisHolder ingestionFlowFileApisHolder;
+    private ProcessExecutionsApisHolder ingestionFlowFileApisHolder;
 
     @BeforeEach
     void setUp() {
@@ -29,7 +29,7 @@ class IngestionFlowFileApisHolderTest extends BaseApiHolderTest {
         ApiClient apiClient = new ApiClient(restTemplateMock);
         String baseUrl = "http://example.com";
         apiClient.setBasePath(baseUrl);
-        ingestionFlowFileApisHolder = new IngestionFlowFileApisHolder(baseUrl, restTemplateBuilderMock);
+        ingestionFlowFileApisHolder = new ProcessExecutionsApisHolder(baseUrl, restTemplateBuilderMock);
     }
 
     @AfterEach

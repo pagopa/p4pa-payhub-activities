@@ -20,7 +20,7 @@ public class ProcessExecutionsApisHolder {
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
-    public IngestionFlowFileApisHolder(
+    public ProcessExecutionsApisHolder(
             @Value("${rest.process-executions.base-url}") String baseUrl,
             RestTemplateBuilder restTemplateBuilder) {
         RestTemplate restTemplate = restTemplateBuilder.build();

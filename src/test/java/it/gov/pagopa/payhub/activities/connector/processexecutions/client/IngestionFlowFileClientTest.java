@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
-import it.gov.pagopa.payhub.activities.connector.processexecutions.config.IngestionFlowFileApisHolder;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -19,17 +19,17 @@ import static org.mockito.Mockito.*;
 class IngestionFlowFileClientTest {
 
     @Mock
-    private IngestionFlowFileApisHolder ingestionFlowFileApisHolderMock;
+    private ProcessExecutionsApisHolder processExecutionsApisHolder;
 
     private IngestionFlowFileClient ingestionFlowFileClient;
 
     @BeforeEach
     void setUp() {
-        ingestionFlowFileClient = new IngestionFlowFileClient(ingestionFlowFileApisHolderMock);
+        ingestionFlowFileClient = new IngestionFlowFileClient(processExecutionsApisHolder);
     }
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(ingestionFlowFileApisHolderMock);
+        Mockito.verifyNoMoreInteractions(processExecutionsApisHolder);
     }
 
 
@@ -42,7 +42,7 @@ class IngestionFlowFileClientTest {
         String accessToken = "accessToken";
         IngestionFlowFile expectedResponse = new IngestionFlowFile();
         IngestionFlowFileEntityControllerApi mockApi = mock(IngestionFlowFileEntityControllerApi.class);
-        when(ingestionFlowFileApisHolderMock.getIngestionFlowFileEntityControllerApi(accessToken)).thenReturn(mockApi);
+        when(processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudGetIngestionflowfile(ingestionFlowFileIdString)).thenReturn(expectedResponse);
 
         // When
@@ -50,7 +50,7 @@ class IngestionFlowFileClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileApisHolderMock.getIngestionFlowFileEntityControllerApi(accessToken), times(1))
+        verify(processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken), times(1))
                 .crudGetIngestionflowfile(ingestionFlowFileIdString);
     }
 
@@ -64,7 +64,7 @@ class IngestionFlowFileClientTest {
         String accessToken = "accessToken";
         Integer expectedResponse = 1;
         IngestionFlowFileEntityExtendedControllerApi mockApi = mock(IngestionFlowFileEntityExtendedControllerApi.class);
-        when(ingestionFlowFileApisHolderMock.getIngestionFlowFileEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.updateStatus(ingestionFlowFileId, status, codError, discardFileName)).thenReturn(expectedResponse);
 
         // When
@@ -72,7 +72,7 @@ class IngestionFlowFileClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileApisHolderMock.getIngestionFlowFileEntityExtendedControllerApi(accessToken), times(1))
+        verify(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken), times(1))
                 .updateStatus(ingestionFlowFileId, status, codError, discardFileName);
     }
 }

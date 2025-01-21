@@ -114,8 +114,7 @@ class OrganizationServiceTest {
     void givenNotExistentFiscalCodeWhenGetOrganizationByOrganizationIdThenEmpty(){
         // Given
         Long orgIpaCode = 123L;
-        String orgIpaCodeString = String.valueOf(orgIpaCode);
-        Mockito.when(organizationSearchClientMock.findById(orgIpaCodeString, accessToken))
+        Mockito.when(organizationSearchClientMock.findById(orgIpaCode, accessToken))
                 .thenReturn(null);
 
         // When
@@ -129,9 +128,8 @@ class OrganizationServiceTest {
     void givenExistentFiscalCodeWhenGetOrganizationByOrganizationIdThenEmpty(){
         // Given
         Long orgIpaCode = 123L;
-        String orgIpaCodeString = String.valueOf(orgIpaCode);
         Organization expectedResult = new Organization();
-        Mockito.when(organizationSearchClientMock.findById(orgIpaCodeString, accessToken))
+        Mockito.when(organizationSearchClientMock.findById(orgIpaCode, accessToken))
                 .thenReturn(expectedResult);
 
         // When
