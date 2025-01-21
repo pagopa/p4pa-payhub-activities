@@ -18,7 +18,7 @@ public class IngestionFlowFileEmailTemplateResolverService {
     }
 
     public EmailTemplate resolve(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
-        if (!(ingestionFlowFileDTO.getFlowFileType().name()).equals(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING.name())) {
+        if (!(ingestionFlowFileDTO.getFlowFileType()).equals(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING)) {
             throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type PAYMENTS_REPORTING");
         }
 
