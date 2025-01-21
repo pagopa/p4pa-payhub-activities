@@ -14,7 +14,7 @@ public interface FinalizeDebtPositionSyncStatusActivity {
      * Finalizes the update of the debt position status from the installments
      *
      * @param debtPositionId the identifier of the debt position to be updated
-     * @param syncStatusDTO the map of IUD and {@link IupdSyncStatusUpdateDTO} about new status and IUPD PagoPa of installment
+     * @param syncStatusDTO the map of IUD and {@link IupdSyncStatusUpdateDTO} containing new status and IUPD PagoPa of installment
      */
     DebtPositionDTO finalizeDebtPositionSyncStatus(Long debtPositionId, Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO);
 
