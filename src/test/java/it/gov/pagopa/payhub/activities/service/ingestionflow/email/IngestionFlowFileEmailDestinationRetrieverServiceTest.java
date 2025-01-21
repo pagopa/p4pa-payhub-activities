@@ -72,7 +72,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
-        organizationDTO.setAdminEmail(userInfo.getEmail());
+        organizationDTO.setOrgEmail(userInfo.getEmail());
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
                 .thenReturn(userInfo);
@@ -110,6 +110,6 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         Assertions.assertEquals(1, emailDTO.getTo().length);
         Assertions.assertEquals(userInfo.getEmail(), emailDTO.getTo()[0]);
         Assertions.assertEquals(1, emailDTO.getCc().length);
-        Assertions.assertEquals(organizationDTO.getAdminEmail(), emailDTO.getCc()[0]);
+        Assertions.assertEquals(organizationDTO.getOrgEmail(), emailDTO.getCc()[0]);
     }
 }
