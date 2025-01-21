@@ -21,7 +21,7 @@ public class IngestionFlowFileApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public IngestionFlowFileApisHolder(
-            @Value("${rest.classification.base-url}") String baseUrl,
+            @Value("${rest.process-executions.base-url}") String baseUrl,
             RestTemplateBuilder restTemplateBuilder) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
