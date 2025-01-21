@@ -60,7 +60,7 @@ public class TransferClassificationStoreService {
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())
 				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
-				.label(String.valueOf(classification))
+				.label(classification.name())
 				.build())
 			.toList();
 
