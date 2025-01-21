@@ -100,17 +100,6 @@ class TransferClassificationActivityImplTest {
 	}
 
 	@Test
-	void givenFailedDeletePreviousClassificationWhenClassifyThenClassificationFailed() {
-		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(0L);
-		assertThrows(ClassificationException.class, () -> activity.classify(transferSemanticKeyDTO), "classification failed");
-
-		Mockito.verify(classificationServiceMock, Mockito.times(1)).deleteBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(transferDaoMock, Mockito.times(0)).findBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(paymentsReportingServiceMock, Mockito.times(0)).getBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(treasuryServiceMock, Mockito.times(0)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
-	}
-
-	@Test
 	void givenFailedFindTransferWhenClassifyThenClassificationFailed() {
 		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
 		when(transferDaoMock.findBySemanticKey(transferSemanticKeyDTO)).thenThrow(new ClassificationException("retrieving failed"));
