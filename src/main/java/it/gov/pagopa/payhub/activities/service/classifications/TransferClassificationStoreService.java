@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.classifications;
 
-import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
-import it.gov.pagopa.payhub.activities.dto.classifications.ClassificationDTO;
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
@@ -18,17 +18,17 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class TransferClassificationStoreService {
-	private final ClassificationDao classificationDao;
+	private final ClassificationService classificationService;
 
-	public TransferClassificationStoreService(ClassificationDao classificationDao) {
-		this.classificationDao = classificationDao;
+	public TransferClassificationStoreService(ClassificationService classificationService) {
+		this.classificationService = classificationService;
 	}
 
 	/**
 	 * Saves the provided classifications to the database.
 	 * <p>
 	 * It builds a list of
-	 * {@link ClassificationDTO} objects based on the input data and saves them using the
+	 * {@link Classification} objects based on the input data and saves them using the
 	 * {@code classificationDao}.
 	 *
 	 * @param transferSemanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
@@ -38,7 +38,7 @@ public class TransferClassificationStoreService {
 	 * @param classifications        the list of classifications to be saved, represented as {@link ClassificationsEnum}.
 	 * @return the list of classification saved in the database.
 	 */
-	public List<ClassificationDTO> saveClassifications(
+	public Integer saveClassifications(
 		TransferSemanticKeyDTO transferSemanticKeyDTO,
 		TransferDTO transferDTO,
 		PaymentsReporting paymentsReportingDTO,
@@ -50,20 +50,20 @@ public class TransferClassificationStoreService {
 			transferSemanticKeyDTO.getOrgId(), transferSemanticKeyDTO.getIuv(), transferSemanticKeyDTO.getIur(), transferSemanticKeyDTO.getTransferIndex());
 
 		Optional<PaymentsReporting> optionalPaymentsReporting = Optional.ofNullable(paymentsReportingDTO);
-		List<ClassificationDTO> dtoList = classifications.stream()
-			.map(classification -> ClassificationDTO.builder()
+		List<Classification> dtoList = classifications.stream()
+			.map(classification -> Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
 				.transferId(Optional.ofNullable(transferDTO).map(TransferDTO::getTransferId).orElse(null))
-				.paymentReportingId(optionalPaymentsReporting.map(PaymentsReporting::getPaymentsReportingId).orElse(null))
+				.paymentsReportingId(optionalPaymentsReporting.map(PaymentsReporting::getPaymentsReportingId).orElse(null))
 				.treasuryId(Optional.ofNullable(treasuryDTO).map(Treasury::getTreasuryId).orElse(null))
 				.iuf(optionalPaymentsReporting.map(PaymentsReporting::getIuf).orElse(null))
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())
 				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
-				.classificationsEnum(classification)
+				.label(classification.name())
 				.build())
 			.toList();
 
-		return classificationDao.saveAll(dtoList);
+		return classificationService.saveAll(dtoList);
 	}
 }

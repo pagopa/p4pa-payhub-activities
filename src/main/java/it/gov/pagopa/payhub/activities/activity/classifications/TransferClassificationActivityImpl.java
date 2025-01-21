@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
 import it.gov.pagopa.payhub.activities.dao.TransferDao;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
@@ -23,20 +23,20 @@ import java.util.List;
 @Slf4j
 @Component
 public class TransferClassificationActivityImpl implements TransferClassificationActivity {
-	private final ClassificationDao classificationDao;
+	private final ClassificationService classificationService;
 	private final TransferDao transferDao;
 	private final PaymentsReportingService paymentsReportingService;
 	private final TransferClassificationService transferClassificationService;
 	private final TransferClassificationStoreService transferClassificationStoreService;
 	private final TreasuryService treasuryService;
 
-	public TransferClassificationActivityImpl(ClassificationDao classificationDao,
+	public TransferClassificationActivityImpl(ClassificationService classificationService,
                                               TransferDao transferDao,
                                               PaymentsReportingService paymentsReportingService,
                                               TransferClassificationService transferClassificationService,
                                               TransferClassificationStoreService transferClassificationStoreService,
 											  TreasuryService treasuryService) {
-		this.classificationDao = classificationDao;
+		this.classificationService = classificationService;
 		this.transferDao = transferDao;
 		this.paymentsReportingService = paymentsReportingService;
 		this.transferClassificationService = transferClassificationService;
@@ -48,9 +48,9 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	public void classify(TransferSemanticKeyDTO transferSemanticKey) {
 		log.info("Transfer classification for organization id: {} and iuv: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
-		if (!classificationDao.deleteTransferClassification(transferSemanticKey)) {
-			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
-		}
+		Long deletedRowsNumber = classificationService.deleteBySemanticKey(transferSemanticKey);
+		log.debug("Deleted {} classifications for organization id: {} and iuv: {}",
+			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKey);
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
