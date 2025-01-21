@@ -29,9 +29,9 @@ public class IngestionFlowFileEmailDestinationRetrieverService {
         Optional<Organization> organizationDTO = organizationService.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode());
 
         emailDTO.setTo(new String[]{userInfoDTO.getEmail()});
-        if (organizationDTO.isPresent() && StringUtils.isNotBlank(organizationDTO.get().getAdminEmail()) &&
-                !organizationDTO.get().getAdminEmail().equalsIgnoreCase(userInfoDTO.getEmail())) {
-            emailDTO.setCc(new String[]{organizationDTO.get().getAdminEmail()});
+        if (organizationDTO.isPresent() && StringUtils.isNotBlank(organizationDTO.get().getOrgEmail()) &&
+                !organizationDTO.get().getOrgEmail().equalsIgnoreCase(userInfoDTO.getEmail())) {
+            emailDTO.setCc(new String[]{organizationDTO.get().getOrgEmail()});
         }
     }
 }
