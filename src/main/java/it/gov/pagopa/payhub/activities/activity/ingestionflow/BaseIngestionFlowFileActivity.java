@@ -62,7 +62,7 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 		IngestionFlowFile ingestionFlowFileDTO = ingestionFlowFileService.findById(ingestionFlowFileId)
 			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
 
-		if (!(getHandledIngestionFlowFileType().name()).equals(ingestionFlowFileDTO.getFlowFileType().name())) {
+		if (!(getHandledIngestionFlowFileType()).equals(ingestionFlowFileDTO.getFlowFileType())) {
 			throw new IllegalArgumentException("invalid ingestionFlow file type");
 		}
 
