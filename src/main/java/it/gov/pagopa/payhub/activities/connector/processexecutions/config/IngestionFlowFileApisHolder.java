@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Lazy
 @Service
-public class IngestionFlowFileApisHolder {
+public class ProcessExecutionsApisHolder {
 
     private final IngestionFlowFileEntityControllerApi ingestionFlowFileEntityControllerApi;
     private final IngestionFlowFileEntityExtendedControllerApi ingestionFlowFileEntityExtendedControllerApi;
