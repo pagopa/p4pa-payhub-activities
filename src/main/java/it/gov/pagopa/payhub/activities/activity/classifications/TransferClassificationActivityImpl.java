@@ -48,9 +48,9 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	public void classify(TransferSemanticKeyDTO transferSemanticKey) {
 		log.info("Transfer classification for organization id: {} and iuv: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
-		if (classificationService.deleteBySemanticKey(transferSemanticKey) == 0L) {
-			throw new ClassificationException("Error occurred while clean up current processing Requests due to failed deletion");
-		}
+		Long deletedRowsNumber = classificationService.deleteBySemanticKey(transferSemanticKey);
+		log.debug("Deleted {} classifications for organization id: {} and iuv: {}",
+			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKey);
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
