@@ -73,6 +73,7 @@ public class IngestionFlowFileRetrieverService {
      * @throws IOException if any file operation fails during the setup process.
      */
     public List<Path> retrieveAndUnzipFile(Long organizationId, Path sourcePath, String filename) throws IOException {
+        log.debug("Retrieving file: {}", filename);
         String organizationFolder = String.valueOf(organizationId);
         Path encryptedFilePath = sharedDirectoryPath
                 .resolve(organizationFolder)

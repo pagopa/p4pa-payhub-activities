@@ -1,12 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi14;
 
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -72,7 +71,7 @@ class TreasuryMapperOpi14ServiceTest {
         informazioniContoEvidenza.getMovimentoContoEvidenzas().add(movimentoContoEvidenza);
         flussoGiornaleDiCassa.getInformazioniContoEvidenza().add(informazioniContoEvidenza);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = createIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = createIngestionFlowFile();
         Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
 
         assertNotNull(result);
@@ -103,11 +102,9 @@ class TreasuryMapperOpi14ServiceTest {
 
     }
 
-    private IngestionFlowFileDTO createIngestionFlowFileDTO() {
-        IngestionFlowFileDTO dto = new IngestionFlowFileDTO();
-        Organization orgDTO = new Organization();
-        orgDTO.setOrganizationId(1L);
-        dto.setOrg(orgDTO);
+    private IngestionFlowFile createIngestionFlowFile() {
+        IngestionFlowFile dto = new IngestionFlowFile();
+        dto.setOrganizationId(1L);
         dto.setIngestionFlowFileId(2L);
         return dto;
     }

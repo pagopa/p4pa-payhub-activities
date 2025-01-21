@@ -1,18 +1,17 @@
 package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.*;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -56,10 +55,10 @@ class PaymentsReportingMapperServiceTest {
 		istitutoRicevente.setIdentificativoUnivocoRicevente(identificativoRicevente);
 		ctFlussoRiversamento.setIstitutoRicevente(istitutoRicevente);
 
-		IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
-		ingestionFlowFileDTO.setOrg(Organization.builder().organizationId(1L).build());
+		IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
+		ingestionFlowFileDTO.setOrganizationId(1L);
 		ingestionFlowFileDTO.setIngestionFlowFileId(1L);
-		ingestionFlowFileDTO.setCreationDate(Instant.now());
+		ingestionFlowFileDTO.setCreationDate(OffsetDateTime.now());
 
 		CtDatiSingoliPagamenti singlePayment = new CtDatiSingoliPagamenti();
 		singlePayment.setIdentificativoUnivocoVersamento("vers123");

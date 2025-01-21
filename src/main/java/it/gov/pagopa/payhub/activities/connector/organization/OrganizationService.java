@@ -10,4 +10,6 @@ public interface OrganizationService {
 
   Optional<Organization> getOrganizationByIpaCode(String ipaCode);
 
+  Optional<Organization> getOrganizationById(Long organizationId);
+
 }

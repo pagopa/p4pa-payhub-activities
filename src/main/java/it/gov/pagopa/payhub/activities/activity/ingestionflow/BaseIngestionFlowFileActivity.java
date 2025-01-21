@@ -1,11 +1,10 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -16,15 +15,15 @@ import java.util.List;
 @Slf4j
 public abstract class BaseIngestionFlowFileActivity<T> {
 
-	private final IngestionFlowFileDao ingestionFlowFileDao;
+	private final IngestionFlowFileService ingestionFlowFileService;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
 	private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
 
 	protected BaseIngestionFlowFileActivity(
-	                                                      IngestionFlowFileDao ingestionFlowFileDao,
+	                                                      IngestionFlowFileService ingestionFlowFileService,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
 	                                                      IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
-		this.ingestionFlowFileDao = ingestionFlowFileDao;
+		this.ingestionFlowFileService = ingestionFlowFileService;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
 		this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
 	}
@@ -33,7 +32,7 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 		log.info("Processing IngestionFlowFile {} using class {}", ingestionFlowFileId, getClass());
 		List<Path> retrievedFiles = null;
 		try {
-			IngestionFlowFileDTO ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
+			IngestionFlowFile ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
 
 			retrievedFiles = retrieveFiles(ingestionFlowFileDTO);
 
@@ -51,19 +50,19 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 	}
 
 	/**
-	 * Retrieves the {@link IngestionFlowFileDTO} record for the given ID. If no record is found, throws
+	 * Retrieves the {@link IngestionFlowFile} record for the given ID. If no record is found, throws
 	 * an {@link IngestionFlowFileNotFoundException}. Validates the flow file type before returning.
 	 *
 	 * @param ingestionFlowFileId the ID of the ingestion flow file to retrieve
-	 * @return the {@link IngestionFlowFileDTO} corresponding to the given ID
+	 * @return the {@link IngestionFlowFile} corresponding to the given ID
 	 * @throws IngestionFlowFileNotFoundException if the record is not found
 	 * @throws IllegalArgumentException if the flow file type is invalid
 	 */
-	private IngestionFlowFileDTO findIngestionFlowFileRecord(Long ingestionFlowFileId) {
-		IngestionFlowFileDTO ingestionFlowFileDTO = ingestionFlowFileDao.findById(ingestionFlowFileId)
+	private IngestionFlowFile findIngestionFlowFileRecord(Long ingestionFlowFileId) {
+		IngestionFlowFile ingestionFlowFileDTO = ingestionFlowFileService.findById(ingestionFlowFileId)
 			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
 
-		if (!getHandledIngestionFlowFileType().equals(ingestionFlowFileDTO.getFlowFileType())) {
+		if (!(getHandledIngestionFlowFileType().name()).equals(ingestionFlowFileDTO.getFlowFileType().name())) {
 			throw new IllegalArgumentException("invalid ingestionFlow file type");
 		}
 
@@ -71,16 +70,16 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 	}
 
 	/**
-	 * Retrieves the file associated with the provided {@link IngestionFlowFileDTO} by unzipping and
+	 * Retrieves the file associated with the provided {@link IngestionFlowFile} by unzipping and
 	 * extracting it from the specified file path.
 	 *
 	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing file details
 	 * @return the extracted {@link List} from the ingestion flow
 	 * @throws IOException if there is an error during file retrieval or extraction
 	 */
-	private List<Path> retrieveFiles(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
+	private List<Path> retrieveFiles(IngestionFlowFile ingestionFlowFileDTO) throws IOException {
 		return ingestionFlowFileRetrieverService
-			.retrieveAndUnzipFile(ingestionFlowFileDTO.getOrg().getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+			.retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 	}
 
 	/**
@@ -100,11 +99,11 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 		}
 	}
 
-	/** The {@link IngestionFlowFileType} supported */
-	protected abstract IngestionFlowFileType getHandledIngestionFlowFileType();
+	/** The {@link IngestionFlowFile.FlowFileTypeEnum} supported */
+	protected abstract IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType();
 
 	/** It will process retrieve files */
-	protected abstract T handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFileDTO ingestionFlowFileDTO);
+	protected abstract T handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO);
 
 	/** It will build the result in case of error */
 	protected abstract T onErrorResult(Exception e);

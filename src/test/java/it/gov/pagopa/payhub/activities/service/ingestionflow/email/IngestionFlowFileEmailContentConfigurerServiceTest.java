@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ class IngestionFlowFileEmailContentConfigurerServiceTest {
     @Test
     void givenPaymentsReportingTypeAndSuccessWhenConfigureThenOk() {
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         boolean success = true;
 
         Mockito.when(emailTemplatesConfigurationMock.getMailTextLoadOk())
@@ -68,7 +68,7 @@ class IngestionFlowFileEmailContentConfigurerServiceTest {
     @Test
     void givenPaymentsReportingTypeAndNotSuccessWhenConfigureThenOk() {
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         boolean success = false;
 
         Mockito.when(emailTemplatesConfigurationMock.getMailTextLoadKo())

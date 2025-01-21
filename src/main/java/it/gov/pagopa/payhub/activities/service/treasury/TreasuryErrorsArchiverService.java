@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public class TreasuryErrorsArchiverService {
     }
 
 
-    public void writeErrors(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO, List<TreasuryErrorDTO> errorDTOList) {
+    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<TreasuryErrorDTO> errorDTOList) {
 
         List<String[]> data = errorDTOList.stream()
                 .map(errorDTO -> new String[]{
@@ -80,7 +80,7 @@ public class TreasuryErrorsArchiverService {
      * @param workingDirectory     the working directory where to search for error files to be archived. This file is moved from its original location to the target directory.
      * @param ingestionFlowFileDTO the ingestion flow file
      */
-    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFileDTO ingestionFlowFileDTO) {
+    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO) {
         try {
             List<Path> errorFiles;
             try (Stream<Path> fileListStream = Files.list(workingDirectory)) {
@@ -92,7 +92,7 @@ public class TreasuryErrorsArchiverService {
             if (!errorFiles.isEmpty()) {
 
                 Path targetDirectory = sharedDirectoryPath
-                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrg().getOrganizationId()))
+                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
                         .resolve(ingestionFlowFileDTO.getFilePathName())
                         .resolve(errorFolder);
 

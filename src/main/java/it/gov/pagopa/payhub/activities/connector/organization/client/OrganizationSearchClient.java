@@ -24,5 +24,9 @@ public class OrganizationSearchClient {
         return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
                 .crudOrganizationsFindByOrgFiscalCode(orgFiscalCode);
     }
+    public Organization findById(String organizationId, String accessToken) {
+        return organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
+                .crudGetOrganization(organizationId);
+    }
 
 }

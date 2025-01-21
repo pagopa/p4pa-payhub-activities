@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class TreasuryOpiParserService {
         this.treasuryService = treasuryService;
     }
 
-    public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFileDTO ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
+    public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFile ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
 
         List<Treasury> newTreasuries = versionHandlerServices.stream()
@@ -49,6 +49,6 @@ public class TreasuryOpiParserService {
             }, () -> new TreasuryOpiInvalidFileException("Cannot insert treasury " + treasury));
         }
 
-        return new TreasuryIufResult(iufs, treasuryIds, ingestionFlowFileDTO.getOrg().getOrganizationId(), true, null, null);
+        return new TreasuryIufResult(iufs, treasuryIds, ingestionFlowFileDTO.getOrganizationId(), true, null, null);
     }
 }
