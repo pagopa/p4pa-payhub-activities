@@ -66,7 +66,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
             .organizationId(organizationId)
             .treasuryId(treasuryId)
             .iuf(iuf)
-            .label(String.valueOf(ClassificationsEnum.TES_NO_MATCH))
+            .label(ClassificationsEnum.TES_NO_MATCH.name())
             .build());
     }
 }
