@@ -61,15 +61,16 @@ class IngestionFlowFileServiceTest {
         String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
         String status = "status";
+        String codError = "codError";
         String discardFileName = "discardFileName";
         Integer expectedResponse = 1;
-        when(ingestionFlowFileClientMock.updateStatus(ingestionFlowFileId, status, discardFileName,accessToken)).thenReturn(expectedResponse);
+        when(ingestionFlowFileClientMock.updateStatus(ingestionFlowFileId, status, codError, discardFileName, accessToken)).thenReturn(expectedResponse);
 
         // When
-        Integer result = ingestionFlowFileClientMock.updateStatus(ingestionFlowFileId, status, discardFileName,accessToken);
+        Integer result = ingestionFlowFileClientMock.updateStatus(ingestionFlowFileId, status, codError, discardFileName,accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileClientMock, times(1)).updateStatus(ingestionFlowFileId, status, discardFileName,accessToken);
+        verify(ingestionFlowFileClientMock, times(1)).updateStatus(ingestionFlowFileId, status, codError, discardFileName,accessToken);
     }
 }
