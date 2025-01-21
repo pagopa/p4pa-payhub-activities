@@ -16,5 +16,5 @@ public interface ClearClassifyIufActivity {
      * @return boolean true if success deletion or exception
      */
     @ActivityMethod
-    boolean deleteClassificationByIuf(Long organizationId, String iuf);
+    Long deleteClassificationByIuf(Long organizationId, String iuf);
 }

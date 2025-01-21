@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import it.gov.pagopa.payhub.activities.dao.ClassificationDao;
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 @Lazy
 @Component
 public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
-    private final ClassificationDao classificationDao;
+    private final ClassificationService classificationService;
 
-    public ClearClassifyIufActivityImpl(ClassificationDao classificationDao) {
-        this.classificationDao = classificationDao;
+    public ClearClassifyIufActivityImpl(ClassificationService classificationService) {
+        this.classificationService = classificationService;
     }
 
-    public boolean deleteClassificationByIuf(Long organizationId, String iuf) {
+    public Long deleteClassificationByIuf(Long organizationId, String iuf) {
         log.info("Deleting classification TES_NO_MATCH for organization id: {} and iuf: {}", organizationId,iuf);
-        return classificationDao.deleteClassificationByIuf(organizationId, iuf, ClassificationsEnum.TES_NO_MATCH);
+        return classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, ClassificationsEnum.TES_NO_MATCH.name());
     }
 }
