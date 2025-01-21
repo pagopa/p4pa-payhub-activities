@@ -18,6 +18,6 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
 
     public Long deleteClassificationByIuf(Long organizationId, String iuf) {
         log.info("Deleting classification TES_NO_MATCH for organization id: {} and iuf: {}", organizationId,iuf);
-        return classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, String.valueOf(ClassificationsEnum.TES_NO_MATCH));
+        return classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, ClassificationsEnum.TES_NO_MATCH.name());
     }
 }
