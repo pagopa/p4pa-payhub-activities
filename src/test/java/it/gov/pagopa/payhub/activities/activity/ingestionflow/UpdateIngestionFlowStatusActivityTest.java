@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UpdateIngestionFlowStatusActivityTest {
 
   @Mock
-  private IngestionFlowFileDao ingestionFlowFileDao;
+  private IngestionFlowFileService ingestionFlowFileServiceMock;
 
   @InjectMocks
   private UpdateIngestionFlowStatusActivityImpl updateIngestionFlowStatusActivity;
@@ -21,28 +21,29 @@ class UpdateIngestionFlowStatusActivityTest {
   private static final Long VALID_ID=1L;
   private static final Long INVALID_ID=9L;
   private static final String VALID_STATUS="VALID";
+  private static final String COD_ERROR="CODE_ERROR";
   private static final String DISCARD_FILE_NAME="DISCARDFILENAME";
 
   @Test
   void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
     //given
-    Mockito.when(ingestionFlowFileDao.updateStatus(VALID_ID, VALID_STATUS, DISCARD_FILE_NAME)).thenReturn(true);
+    Mockito.when(ingestionFlowFileServiceMock.updateStatus(VALID_ID, VALID_STATUS, COD_ERROR,DISCARD_FILE_NAME)).thenReturn(1);
     //when
-    boolean result = updateIngestionFlowStatusActivity.updateStatus(VALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
+    boolean result = updateIngestionFlowStatusActivity.updateStatus(VALID_ID, VALID_STATUS, COD_ERROR,DISCARD_FILE_NAME);
     //verify
     Assertions.assertTrue(result);
-    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).updateStatus(VALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
+    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateStatus(VALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME);
   }
 
   @Test
   void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
     //given
-    Mockito.when(ingestionFlowFileDao.updateStatus(INVALID_ID, VALID_STATUS, DISCARD_FILE_NAME)).thenReturn(false);
+    Mockito.when(ingestionFlowFileServiceMock.updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME)).thenReturn(0);
     //when
-    boolean result = updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
+    boolean result = updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME);
     //verify
     Assertions.assertFalse(result);
-    Mockito.verify(ingestionFlowFileDao, Mockito.times(1)).updateStatus(INVALID_ID, VALID_STATUS, DISCARD_FILE_NAME);
+    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME);
   }
 
   @Test
@@ -50,7 +51,7 @@ class UpdateIngestionFlowStatusActivityTest {
     String expectedError = "A null IngestionFlowFile was provided when updating its status to " + VALID_STATUS;
     //verify
     IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
-      () -> updateIngestionFlowStatusActivity.updateStatus(null, VALID_STATUS, DISCARD_FILE_NAME));
+      () -> updateIngestionFlowStatusActivity.updateStatus(null, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME));
     Assertions.assertEquals(expectedError, exception.getMessage());
   }
 
@@ -59,7 +60,7 @@ class UpdateIngestionFlowStatusActivityTest {
     String expectedError = "A null IngestionFlowFile status was provided when updating the id " + VALID_ID;
     //verify
     IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
-      () -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, null, DISCARD_FILE_NAME));
+      () -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, null, COD_ERROR, DISCARD_FILE_NAME));
     Assertions.assertEquals(expectedError, exception.getMessage());
   }
 

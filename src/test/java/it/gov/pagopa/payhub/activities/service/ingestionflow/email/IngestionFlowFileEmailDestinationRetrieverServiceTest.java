@@ -2,13 +2,13 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthzService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.UserInfoFaker;
 import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,13 +47,13 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
     void givenNoOrganizationWhenConfigureThenOk() {
         // Given
         EmailDTO emailDTO = new EmailDTO();
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
 
-        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
+        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
 
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode()))
+        Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFileDTO.getOrganizationId()))
                 .thenReturn(Optional.empty());
 
         // When
@@ -69,15 +69,15 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
     void givenOrganizationWithSameEmailWhenConfigureThenOk() {
         // Given
         EmailDTO emailDTO = new EmailDTO();
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
         organizationDTO.setOrgEmail(userInfo.getEmail());
 
-        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
+        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
 
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode()))
+        Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFileDTO.getOrganizationId()))
                 .thenReturn(Optional.of(organizationDTO));
 
         // When
@@ -93,14 +93,14 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
     void givenOrganizationWithDifferentEmailWhenConfigureThenOk() {
         // Given
         EmailDTO emailDTO = new EmailDTO();
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
 
-        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId()))
+        Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
 
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode()))
+        Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFileDTO.getOrganizationId()))
                 .thenReturn(Optional.of(organizationDTO));
 
         // When

@@ -1,13 +1,13 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi161;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +63,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
     void testHandle_whenValidFile_thenProcessesSuccessfully() {
         // Given
         File file = new File("build", "testFile.csv");
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();
@@ -89,7 +89,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
     void testHandle_whenValidationFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();
@@ -110,7 +110,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
     void testHandle_whenUnmarshallFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         when(treasuryUnmarshallerServiceMock.unmarshalOpi161(file)).thenThrow(new RuntimeException("Unmarshall failed"));
@@ -128,7 +128,7 @@ class TreasuryVersionOpi161HandlerServiceTest {
     void testHandle_whenMapperFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         FlussoGiornaleDiCassa flusso = new FlussoGiornaleDiCassa();

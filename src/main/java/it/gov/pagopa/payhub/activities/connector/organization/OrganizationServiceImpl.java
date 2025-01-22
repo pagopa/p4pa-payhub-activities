@@ -33,4 +33,11 @@ public class OrganizationServiceImpl implements OrganizationService {
                 organizationSearchClient.findByIpaCode(ipaCode, authnService.getAccessToken())
         );
     }
+
+    @Override
+    public Optional<Organization> getOrganizationById(Long organizationId) {
+        return Optional.ofNullable(
+                organizationSearchClient.findById(organizationId, authnService.getAccessToken())
+        );
+    }
 }

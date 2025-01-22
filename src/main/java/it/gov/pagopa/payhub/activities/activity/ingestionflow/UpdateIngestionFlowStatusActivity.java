@@ -16,5 +16,5 @@ public interface UpdateIngestionFlowStatusActivity {
      * @return true if the update was successful, false otherwise.
      */
     @ActivityMethod
-    boolean updateStatus(Long id, String newStatus, String discardFileName);
+    boolean updateStatus(Long id, String newStatus, String codError, String discardFileName);
 }

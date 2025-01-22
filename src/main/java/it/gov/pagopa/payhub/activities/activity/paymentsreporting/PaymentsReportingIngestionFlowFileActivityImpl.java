@@ -3,17 +3,16 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
-import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -34,14 +33,14 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	private final PaymentsReportingService paymentsReportingService;
 
 	public PaymentsReportingIngestionFlowFileActivityImpl(
-	                                                      IngestionFlowFileDao ingestionFlowFileDao,
+	                                                      IngestionFlowFileService ingestionFlowFileService,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
 	                                                      FlussoRiversamentoUnmarshallerService flussoRiversamentoUnmarshallerService,
 	                                                      PaymentsReportingIngestionFlowFileValidatorService paymentsReportingIngestionFlowFileValidatorService,
 	                                                      PaymentsReportingMapperService paymentsReportingMapperService,
 	                                                      PaymentsReportingService paymentsReportingService,
 	                                                      IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
-		super(ingestionFlowFileDao, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
+		super(ingestionFlowFileService, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
 		this.flussoRiversamentoUnmarshallerService = flussoRiversamentoUnmarshallerService;
 		this.paymentsReportingIngestionFlowFileValidatorService = paymentsReportingIngestionFlowFileValidatorService;
 		this.paymentsReportingMapperService = paymentsReportingMapperService;
@@ -49,12 +48,12 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	}
 
 	@Override
-	protected IngestionFlowFileType getHandledIngestionFlowFileType() {
-		return IngestionFlowFileType.PAYMENTS_REPORTING;
+	protected IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType() {
+		return IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING;
 	}
 
 	@Override
-	protected PaymentsReportingIngestionFlowFileActivityResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	protected PaymentsReportingIngestionFlowFileActivityResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
 		List<PaymentsReporting> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
 		paymentsReportingService.saveAll(paymentsReportings);
 
@@ -78,7 +77,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	 * @return a list of {@link PaymentsReporting} objects
 	 * @throws IllegalArgumentException if the file content does not conform to the expected structure
 	 */
-	private List<PaymentsReporting> parseData(File ingestionFlowFile, IngestionFlowFileDTO ingestionFlowFileDTO) {
+	private List<PaymentsReporting> parseData(File ingestionFlowFile, IngestionFlowFile ingestionFlowFileDTO) {
 		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
 		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
 

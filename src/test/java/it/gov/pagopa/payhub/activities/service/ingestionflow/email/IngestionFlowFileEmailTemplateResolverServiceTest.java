@@ -1,11 +1,10 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +35,8 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
     @Test
     void givenUnexpectedIngestionFlowFileTypeWhenResolveThenIngestionFlowTypeNotSupportedException() {
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
-        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFileType.OPI);
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
+        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
 
         // When, Then
         Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> emailTemplateResolverService.resolve(ingestionFlowFileDTO, true));
@@ -46,7 +45,7 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
     @Test
     void givenSuccessfulPaymentsReportingTypeWhenResolveThenOk(){
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         EmailTemplate expectedResult = new EmailTemplate();
 
         Mockito.when(emailTemplatesConfigurationMock.getPaymentsReportingFlowOk())
@@ -62,7 +61,7 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
     @Test
     void givenNotSuccessfulPaymentsReportingTypeWhenResolveThenOk(){
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         EmailTemplate expectedResult = EmailTemplate.builder()
                 .build();
 
