@@ -2,10 +2,10 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthzService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -24,9 +24,9 @@ public class IngestionFlowFileEmailDestinationRetrieverService {
         this.organizationService = organizationService;
     }
 
-    public void configure(IngestionFlowFileDTO ingestionFlowFileDTO, EmailDTO emailDTO) {
-        UserInfo userInfoDTO = authzService.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalUserId());
-        Optional<Organization> organizationDTO = organizationService.getOrganizationByIpaCode(ingestionFlowFileDTO.getOrg().getIpaCode());
+    public void configure(IngestionFlowFile ingestionFlowFileDTO, EmailDTO emailDTO) {
+        UserInfo userInfoDTO = authzService.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId());
+        Optional<Organization> organizationDTO = organizationService.getOrganizationById(ingestionFlowFileDTO.getOrganizationId());
 
         emailDTO.setTo(new String[]{userInfoDTO.getEmail()});
         if (organizationDTO.isPresent() && StringUtils.isNotBlank(organizationDTO.get().getOrgEmail()) &&

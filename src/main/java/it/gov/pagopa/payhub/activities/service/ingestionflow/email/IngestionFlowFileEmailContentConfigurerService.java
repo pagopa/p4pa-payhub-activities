@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.text.StringSubstitutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,7 +29,7 @@ public class IngestionFlowFileEmailContentConfigurerService {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
     }
 
-    public EmailDTO configure(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) {
+    public EmailDTO configure(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
         EmailTemplate template = emailTemplateResolverService.resolve(ingestionFlowFileDTO, success);
 
         Map<String, String> mailParams = getMailParameters(ingestionFlowFileDTO, success);
@@ -43,7 +43,7 @@ public class IngestionFlowFileEmailContentConfigurerService {
         return emailDTO;
     }
 
-    private Map<String, String> getMailParameters(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) {
+    private Map<String, String> getMailParameters(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
         String mailText;
         if (success) {
             mailText = emailTemplatesConfiguration.getMailTextLoadOk();

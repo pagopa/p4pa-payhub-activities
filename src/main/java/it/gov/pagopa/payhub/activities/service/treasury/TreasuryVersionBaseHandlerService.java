@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     protected abstract T unmarshall(File file);
 
     @Override
-    public List<Treasury> handle(File input, IngestionFlowFileDTO ingestionFlowFileDTO, int size) {
+    public List<Treasury> handle(File input, IngestionFlowFile ingestionFlowFileDTO, int size) {
         try {
             T unmarshalled = unmarshall(input);
             List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
@@ -65,7 +65,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         }
     }
 
-    List<TreasuryErrorDTO> validate(IngestionFlowFileDTO ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
+    List<TreasuryErrorDTO> validate(IngestionFlowFile ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
         if (!validatorService.validatePageSize(fGCUnmarshalled, size)) {
             throw new TreasuryOpiInvalidFileException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFileDTO.getFileName());
         }

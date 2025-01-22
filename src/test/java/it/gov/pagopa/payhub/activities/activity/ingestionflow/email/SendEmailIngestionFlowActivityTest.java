@@ -1,14 +1,14 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.IngestionFlowFileEmailContentConfigurerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.IngestionFlowFileEmailDestinationRetrieverService;
 import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ import java.util.Optional;
 class SendEmailIngestionFlowActivityTest {
 
     @Mock
-    private IngestionFlowFileDao ingestionFlowFileDaoMock;
+    private IngestionFlowFileService ingestionFlowFileServiceMock;
     @Mock
     private IngestionFlowFileEmailDestinationRetrieverService destinationRetrieverServiceMock;
     @Mock
@@ -37,7 +37,7 @@ class SendEmailIngestionFlowActivityTest {
     @BeforeEach
     void init() {
         activity = new SendEmailIngestionFlowActivityImpl(
-                ingestionFlowFileDaoMock,
+                ingestionFlowFileServiceMock,
                 destinationRetrieverServiceMock,
                 contentConfigurerServiceMock,
                 sendEmailActivityMock);
@@ -46,7 +46,7 @@ class SendEmailIngestionFlowActivityTest {
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
-                ingestionFlowFileDaoMock,
+                ingestionFlowFileServiceMock,
                 destinationRetrieverServiceMock,
                 contentConfigurerServiceMock,
                 sendEmailActivityMock);
@@ -56,7 +56,7 @@ class SendEmailIngestionFlowActivityTest {
     void givenNotIngestionFlowFileRecordWhenSendEmailThenIngestionFlowFileNotFoundException() {
         // Given
         long ingestionFlowFileId = 1L;
-        Mockito.when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId))
+        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.empty());
 
         // When, Then
@@ -66,11 +66,11 @@ class SendEmailIngestionFlowActivityTest {
     @Test
     void givenCompleteConfigurationWhenSendEmailThenOk() {
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         boolean success = true;
 
-        Mockito.when(ingestionFlowFileDaoMock.findById(ingestionFlowFileDTO.getIngestionFlowFileId()))
+        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileDTO.getIngestionFlowFileId()))
                 .thenReturn(Optional.of(ingestionFlowFileDTO));
         Mockito.when(contentConfigurerServiceMock.configure(ingestionFlowFileDTO, success))
                 .thenReturn(emailDTO);

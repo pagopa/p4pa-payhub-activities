@@ -1,11 +1,10 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,8 +38,8 @@ class TreasuryOpiParserServiceTest {
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
-            .org(Organization.builder().organizationId(1L).build())
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
+            .organizationId(1L)
             .build();
         TreasuryVersionHandlerService handler = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.add(handler);
@@ -71,7 +70,7 @@ class TreasuryOpiParserServiceTest {
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
 
         TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
@@ -92,8 +91,8 @@ class TreasuryOpiParserServiceTest {
         File file = mock(File.class);
         when(filePath.toFile()).thenReturn(file);
 
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
-            .org(Organization.builder().organizationId(1L).build())
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
+            .organizationId(1L)
             .build();
 
         TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);

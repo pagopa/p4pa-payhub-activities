@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     void testHandle_whenValidFile_thenReturnsResult() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         Map<TreasuryOperationEnum, List<Treasury>> expectedMap = Map.of();
@@ -78,7 +78,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     void testHandle_whenValidationFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
@@ -89,7 +89,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         // Then
         assertNotNull(result);
         Assertions.assertTrue(result.isEmpty());
-        Mockito.verify(mapperServiceMock, never()).apply(new Object(), new IngestionFlowFileDTO());
+        Mockito.verify(mapperServiceMock, never()).apply(new Object(), new IngestionFlowFile());
     }
 
     @Test
@@ -102,7 +102,7 @@ class TreasuryVersionBaseHandlerServiceTest {
             }
         };
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         // When
@@ -118,7 +118,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     void testHandle_whenMapperFails_thenReturnsEmptyMap() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
 
@@ -135,7 +135,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     @Test
     void testValidate_whenPageSizeInvalid_thenThrowsException() {
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(false);
@@ -148,7 +148,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     @Test
     void testValidate_whenValidationSucceeds_thenReturnsErrors() {
         // Given
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
@@ -167,7 +167,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     void testHandle_whenDeleteTreasury_thenCallsDeleteByOrganizationIdAndBillCodeAndBillYear() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         Treasury treasuryDTO = new Treasury();
@@ -196,7 +196,7 @@ class TreasuryVersionBaseHandlerServiceTest {
     void testHandle_whenDeleteTreasury_thenCallsDeleteByOrganizationIdAndBillCodeAndBillYearAndWriteError() {
         // Given
         File file = mock(File.class);
-        IngestionFlowFileDTO ingestionFlowFileDTO = new IngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
         Treasury treasuryDTO = new Treasury();

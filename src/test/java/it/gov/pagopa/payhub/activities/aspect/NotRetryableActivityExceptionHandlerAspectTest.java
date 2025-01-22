@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.aspect;
 
 import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,17 +21,17 @@ class NotRetryableActivityExceptionHandlerAspectTest {
     @MockitoSpyBean
     private UpdateIngestionFlowStatusActivity statusActivitySpy;
     @MockitoBean
-    private IngestionFlowFileDao ingestionFlowFileDaoMock;
+    private IngestionFlowFileService ingestionFlowFileServiceMock;
 
     @Test
     void givenNotRetryableActivityExceptionExtensionWhenInvokeActivityThenExceptionWrapped(){
         // Given
         NotRetryableActivityException expectedNestedException = new NotRetryableActivityException("DUMMY"){};
-        Mockito.when(ingestionFlowFileDaoMock.updateStatus(1L, "STATUS", null))
+        Mockito.when(ingestionFlowFileServiceMock.updateStatus(1L, "STATUS","COD_ERROR", null))
                 .thenThrow(expectedNestedException);
 
         // When
-        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateStatus(1L, "STATUS", null));
+        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateStatus(1L, "STATUS", "COD_ERROR", null));
 
         // Then
         Assertions.assertTrue(result.isNonRetryable());

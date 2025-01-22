@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.organization.config;
 
+import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
 import it.gov.pagopa.pu.organization.generated.ApiClient;
 import it.gov.pagopa.pu.organization.generated.BaseApi;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 public class OrganizationApisHolder {
 
     private final OrganizationSearchControllerApi organizationSearchControllerApi;
+    private final OrganizationEntityControllerApi organizationEntityControllerApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -28,6 +30,7 @@ public class OrganizationApisHolder {
         apiClient.setBearerToken(bearerTokenHolder::get);
 
         this.organizationSearchControllerApi = new OrganizationSearchControllerApi(apiClient);
+        this.organizationEntityControllerApi = new OrganizationEntityControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -38,6 +41,10 @@ public class OrganizationApisHolder {
     /** It will return a {@link OrganizationSearchControllerApi} instrumented with the provided accessToken. Use null if auth is not required */
     public OrganizationSearchControllerApi getOrganizationSearchControllerApi(String accessToken){
         return getApi(accessToken, organizationSearchControllerApi);
+    }
+    /** It will return a {@link OrganizationEntityControllerApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public OrganizationEntityControllerApi getOrganizationEntityControllerApi(String accessToken){
+        return getApi(accessToken, organizationEntityControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {

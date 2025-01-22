@@ -108,4 +108,36 @@ class OrganizationServiceTest {
         Assertions.assertSame(expectedResult, result.get());
     }
 //endregion
+
+//region getOrganizationByOrganizationId tests
+    @Test
+    void givenNotExistentFiscalCodeWhenGetOrganizationByOrganizationIdThenEmpty(){
+        // Given
+        Long orgIpaCode = 123L;
+        Mockito.when(organizationSearchClientMock.findById(orgIpaCode, accessToken))
+                .thenReturn(null);
+
+        // When
+        Optional<Organization> result = organizationService.getOrganizationById(orgIpaCode);
+
+        // Then
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenExistentFiscalCodeWhenGetOrganizationByOrganizationIdThenEmpty(){
+        // Given
+        Long orgIpaCode = 123L;
+        Organization expectedResult = new Organization();
+        Mockito.when(organizationSearchClientMock.findById(orgIpaCode, accessToken))
+                .thenReturn(expectedResult);
+
+        // When
+        Optional<Organization> result = organizationService.getOrganizationById(orgIpaCode);
+
+        // Then
+        Assertions.assertTrue(result.isPresent());
+        Assertions.assertSame(expectedResult, result.get());
+    }
+//endregion
 }
