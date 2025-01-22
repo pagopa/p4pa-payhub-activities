@@ -58,14 +58,14 @@ class IngestionFlowFileClientTest {
     void testUpdateStatus() {
         // Given
         Long ingestionFlowFileId = 1L;
-        String status = "status";
+        IngestionFlowFile.StatusEnum status = IngestionFlowFile.StatusEnum.COMPLETED;
         String discardFileName = "discardFileName";
         String codError = "codError";
         String accessToken = "accessToken";
         Integer expectedResponse = 1;
         IngestionFlowFileEntityExtendedControllerApi mockApi = mock(IngestionFlowFileEntityExtendedControllerApi.class);
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.updateStatus(ingestionFlowFileId, status, codError, discardFileName)).thenReturn(expectedResponse);
+        when(mockApi.updateStatus(ingestionFlowFileId, status.name(), codError, discardFileName)).thenReturn(expectedResponse);
 
         // When
         Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, status, codError, discardFileName, accessToken);
@@ -73,6 +73,6 @@ class IngestionFlowFileClientTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken), times(1))
-                .updateStatus(ingestionFlowFileId, status, codError, discardFileName);
+                .updateStatus(ingestionFlowFileId, status.name(), codError, discardFileName);
     }
 }

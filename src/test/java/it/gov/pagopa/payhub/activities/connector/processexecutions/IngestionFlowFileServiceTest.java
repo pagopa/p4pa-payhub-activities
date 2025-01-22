@@ -60,7 +60,7 @@ class IngestionFlowFileServiceTest {
         // Given
         String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
-        String status = "status";
+        IngestionFlowFile.StatusEnum status = IngestionFlowFile.StatusEnum.PROCESSING;
         String codError = "codError";
         String discardFileName = "discardFileName";
         Integer expectedResponse = 1;
