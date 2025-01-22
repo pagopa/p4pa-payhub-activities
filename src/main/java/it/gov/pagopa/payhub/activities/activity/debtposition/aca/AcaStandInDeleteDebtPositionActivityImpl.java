@@ -2,9 +2,12 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 
 import it.gov.pagopa.payhub.activities.connector.aca.AcaService;
 import it.gov.pagopa.payhub.activities.connector.aca.mapper.DebtPositionDTOMapper;
+import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Lazy
 @Service
@@ -19,8 +22,9 @@ public class AcaStandInDeleteDebtPositionActivityImpl implements AcaStandInDelet
     }
 
     @Override
-    public void deleteAcaDebtPosition(it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO debtPosition) {
+    public Map<String, IupdSyncStatusUpdateDTO> deleteAcaDebtPosition(it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO debtPosition) {
         DebtPositionDTO debtPositionDTO = debtPositionDTOMapper.map(debtPosition);
         acaService.deleteAcaDebtPosition(debtPositionDTO);
+        return Map.of(); //TODO
     }
 }

@@ -3,6 +3,9 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+
+import java.util.Map;
 
 /**
  * Service class responsible for invoking the ACA service to create a debt position
@@ -17,6 +20,6 @@ public interface AcaStandInCreateDebtPositionActivity {
      * @param debtPositionDTO the {@link DebtPositionDTO} containing the details of the debt position to be created
      */
     @ActivityMethod
-    void createAcaDebtPosition(DebtPositionDTO debtPositionDTO);
+    Map<String, IupdSyncStatusUpdateDTO> createAcaDebtPosition(DebtPositionDTO debtPositionDTO);
 
 }
