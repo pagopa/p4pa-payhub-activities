@@ -1,14 +1,13 @@
 package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -32,30 +31,30 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
     /**
      * Constructor to initialize dependencies for OPI treasury ingestion.
      *
-     * @param ingestionFlowFileDao              DAO for accessing ingestion flow file records.
+     * @param ingestionFlowFileService              DAO for accessing ingestion flow file records.
      * @param ingestionFlowFileRetrieverService Service for retrieving and unzipping ingestion flow files.
      * @param treasuryOpiParserService          Service for parsing treasury OPI files.
      * @param ingestionFlowFileArchiverService  Service for archiving files.
      */
     public TreasuryOpiIngestionActivityImpl(
-            IngestionFlowFileDao ingestionFlowFileDao,
+            IngestionFlowFileService ingestionFlowFileService,
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
             TreasuryOpiParserService treasuryOpiParserService,
             IngestionFlowFileArchiverService ingestionFlowFileArchiverService, TreasuryErrorsArchiverService errorsArchiverService
 
     ) {
-        super(ingestionFlowFileDao, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
+        super(ingestionFlowFileService, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
         this.treasuryOpiParserService = treasuryOpiParserService;
         this.errorsArchiverService = errorsArchiverService;
     }
 
     @Override
-    protected IngestionFlowFileType getHandledIngestionFlowFileType() {
-        return IngestionFlowFileType.OPI;
+    protected IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType() {
+        return IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI;
     }
 
     @Override
-    protected TreasuryIufResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFileDTO ingestionFlowFileDTO) {
+    protected TreasuryIufResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
         int ingestionFlowFilesRetrievedSize = retrievedFiles.size();
 
         List<TreasuryIufResult> treasuryIufResultList = retrievedFiles.stream()
@@ -64,7 +63,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                     return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
                 } catch (Exception e) {
                     log.error("Error processing file {}: {}", path, e.getMessage());
-                    return new TreasuryIufResult(Collections.emptyList(), Collections.emptyList(), ingestionFlowFileDTO.getOrg().getOrganizationId(), false, e.getMessage(), null);
+                    return new TreasuryIufResult(Collections.emptyList(), Collections.emptyList(), ingestionFlowFileDTO.getOrganizationId(), false, e.getMessage(), null);
                 }
             })
             .toList();
@@ -82,7 +81,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                 .flatMap(result -> result.getTreasuryIds().stream())
                 .distinct()
                 .toList(),
-            ingestionFlowFileDTO.getOrg().getOrganizationId(),
+            ingestionFlowFileDTO.getOrganizationId(),
             isSuccess,
             isSuccess ? null : "error occurred",
             discardsFileName

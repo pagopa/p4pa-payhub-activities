@@ -251,7 +251,8 @@ tasks.register("dependenciesBuild") {
 		"openApiGenerateORGANIZATION",
 		"openApiGenerateDEBTPOSITIONS",
 		"openApiGenerateCLASSIFICATION",
-		"openApiGeneratePAGOPAPAYMENTS"
+		"openApiGeneratePAGOPAPAYMENTS",
+		"openApiGeneratePROCESSEXECUTIONS"
 	)
 }
 
@@ -408,6 +409,32 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 		"generateConstructorWithAllArgs" to "false",
 		"generatedConstructorWithRequiredArgs" to "true",
 		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+	))
+	library.set("resttemplate")
+}
+
+tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-process-executions/refs/heads/develop/openapi/generated.openapi.json")
+	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.processexecutions.generated")
+	apiPackage.set("it.gov.pagopa.pu.processexecutions.client.generated")
+	modelPackage.set("it.gov.pagopa.pu.processexecutions.dto.generated")
+	configOptions.set(mapOf(
+			"swaggerAnnotations" to "false",
+			"openApiNullable" to "false",
+			"dateLibrary" to "java8",
+			"serializableModel" to "true",
+			"useSpringBoot3" to "true",
+			"useJakartaEe" to "true",
+			"serializationLibrary" to "jackson",
+			"generateSupportingFiles" to "true",
+			"generateConstructorWithAllArgs" to "false",
+			"generatedConstructorWithRequiredArgs" to "true",
+			"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
 	))
 	library.set("resttemplate")
 }

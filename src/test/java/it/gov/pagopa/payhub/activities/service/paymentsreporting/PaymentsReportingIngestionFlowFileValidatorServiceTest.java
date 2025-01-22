@@ -3,16 +3,25 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class PaymentsReportingIngestionFlowFileValidatorServiceTest {
+
+	@Mock
+	private OrganizationService organizationService;
 
 	private CtFlussoRiversamento ctFlussoRiversamento;
 
@@ -20,7 +29,7 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 
 	@BeforeEach
 	void setup() {
-		service = new PaymentsReportingIngestionFlowFileValidatorService();
+		service = new PaymentsReportingIngestionFlowFileValidatorService(organizationService);
 		CtIdentificativoUnivocoPersonaG ctIdentificativoUnivocoPersonaG = new CtIdentificativoUnivocoPersonaG();
 		ctIdentificativoUnivocoPersonaG.setCodiceIdentificativoUnivoco("80010020011");
 		CtIstitutoRicevente istitutoRicevente = new CtIstitutoRicevente();
@@ -32,24 +41,33 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 	@Test
 	void givenValidDataWhenValidateThenSuccess() {
 		//given
-		IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
-			.org(Organization.builder()
-				.orgFiscalCode("80010020011")
-				.build())
+		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
+			.organizationId(1L)
 			.build();
+
+		Organization organization = Organization.builder()
+			.organizationId(1L)
+			.orgFiscalCode("80010020011")
+			.build();
+
 		// when then
+		when(organizationService.getOrganizationById(1L)).thenReturn(java.util.Optional.of(organization));
 		assertDoesNotThrow(() -> service.validateData(ctFlussoRiversamento, ingestionFlowFileDTO));
 	}
 
 	@Test
 	void givenInvalidOrganizationWhenValidateThenThrowInvalidIngestionFlowFileDataException() {
 		//given
-		IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
-			.org(Organization.builder()
-				.orgFiscalCode("80010020010")
-				.build())
-			.build();
+		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
+				.organizationId(1L)
+				.build();
+
+		Organization organization = Organization.builder()
+				.organizationId(1L)
+				.orgFiscalCode("80010023")
+				.build();
 		// when then
+		when(organizationService.getOrganizationById(1L)).thenReturn(java.util.Optional.of(organization));
 		assertThrows(InvalidIngestionFlowFileDataException.class,
 			() -> service.validateData(ctFlussoRiversamento, ingestionFlowFileDTO), "Invalid Organization");
 	}

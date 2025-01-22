@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class TreasuryErrorsArchiverServiceTest {
                 new TreasuryErrorDTO("file2", "2023", "B124", "ERR02", "Missing field")
         );
         Path workingDirectory = Path.of("build", "test");
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
         // When
@@ -68,7 +68,7 @@ class TreasuryErrorsArchiverServiceTest {
                 new TreasuryErrorDTO("file1", "2023", "B123", "ERR01", "Invalid data")
         );
         Path workingDirectory = Path.of("build", "test");
-        IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
             Mockito.doThrow(new IOException("Error creating CSV"))
@@ -87,7 +87,7 @@ class TreasuryErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build");
 
         // When
-        String result = treasuryErrorsArchiverService.archiveErrorFiles(workingDirectory, new IngestionFlowFileDTO());
+        String result = treasuryErrorsArchiverService.archiveErrorFiles(workingDirectory, new IngestionFlowFile());
 
         // Then
         Assertions.assertNull(result);
@@ -100,7 +100,7 @@ class TreasuryErrorsArchiverServiceTest {
         Files.createDirectories(workingDirectory);
         Path errorFile = Files.createTempFile(workingDirectory, "ERROR-", ".csv");
         try {
-            IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFileDTO();
+            IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
             String expectedZipErrorFileName = "ERROR-fileName.zip";
 
             // When
@@ -110,7 +110,7 @@ class TreasuryErrorsArchiverServiceTest {
             Assertions.assertEquals(expectedZipErrorFileName, result);
 
             Mockito.verify(ingestionFlowFileArchiverServiceMock)
-                    .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrg().getOrganizationId()+"",ingestionFlowFileDTO.getFilePathName(), errorFolder));
+                    .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId()+"",ingestionFlowFileDTO.getFilePathName(), errorFolder));
         } finally {
             Files.delete(errorFile);
         }

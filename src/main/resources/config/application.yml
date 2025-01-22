@@ -52,3 +52,6 @@ rest:
 
   pagopa-payments:
     base-url: "\${PAGOPA_PAYMENTS_BASE_URL:http://localhost:8080}"
+
+  process-executions:
+    base-url: "\${PROCESS_EXECUTIONS_BASE_URL:http://localhost:8080}"

@@ -1,17 +1,15 @@
 package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +34,7 @@ import static org.mockito.Mockito.*;
 class TreasuryOpiIngestionActivityTest {
 
   @Mock
-  private IngestionFlowFileDao ingestionFlowFileDaoMock;
+  private IngestionFlowFileService ingestionFlowFileServiceMock;
   @Mock
   private TreasuryService treasuryServiceMock;
   @Mock
@@ -60,7 +58,7 @@ class TreasuryOpiIngestionActivityTest {
   @BeforeEach
   void setUp() {
     treasuryOpiIngestionActivityMock = new TreasuryOpiIngestionActivityImpl(
-            ingestionFlowFileDaoMock,
+            ingestionFlowFileServiceMock,
             ingestionFlowFileRetrieverServiceMock,
             treasuryOpiParserServiceMock,
             ingestionFlowFileArchiverServiceMock,
@@ -70,8 +68,9 @@ class TreasuryOpiIngestionActivityTest {
 
   private static final Long NOT_FOUND_INGESTION_FLOW_ID = 8L;
   private static final Long INVALID_INGESTION_FLOW_ID = 9L;
-  private static final IngestionFlowFileType INVALID_INGESTION_FLOW_TYPE = IngestionFlowFileType.PAYMENTS_REPORTING;
-  private static final IngestionFlowFileDTO INVALID_INGESTION_FLOW = IngestionFlowFileDTO.builder()
+  private static final IngestionFlowFile.FlowFileTypeEnum INVALID_INGESTION_FLOW_TYPE = IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING;
+  private static final IngestionFlowFile.FlowFileTypeEnum VALID_INGESTION_FLOW_TYPE = IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI;
+  private static final IngestionFlowFile INVALID_INGESTION_FLOW = IngestionFlowFile.builder()
           .ingestionFlowFileId(INVALID_INGESTION_FLOW_ID)
           .flowFileType(INVALID_INGESTION_FLOW_TYPE)
           .build();
@@ -80,23 +79,23 @@ class TreasuryOpiIngestionActivityTest {
   void givenValidIngestionFlowWhenProcessFileThenOk() throws IOException {
     // Given
     Long ingestionFlowFileId = 1L;
-    IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
+    IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
             .ingestionFlowFileId(ingestionFlowFileId)
-            .flowFileType(IngestionFlowFileType.OPI)
+            .flowFileType(VALID_INGESTION_FLOW_TYPE)
             .filePathName(workingDir.toString())
             .fileName("testFile.zip")
-            .org(Organization.builder().organizationId(0L).build())
+            .organizationId(0L)
             .build();
 
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
 
-    Mockito.when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
+    Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-            .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrg().getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+            .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size()))
-            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), Collections.singletonList("IUF123"), ingestionFlowFileDTO.getOrg().getOrganizationId(), true, null, null));
+            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), Collections.singletonList("IUF123"), ingestionFlowFileDTO.getOrganizationId(), true, null, null));
 
     Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
             .thenReturn("DISCARDFILENAME");
@@ -117,7 +116,7 @@ class TreasuryOpiIngestionActivityTest {
   @Test
   void givenIngestionFlowNotFoundWhenProcessFileThenNoSuccess() {
     //given
-    when(ingestionFlowFileDaoMock.findById(NOT_FOUND_INGESTION_FLOW_ID)).thenReturn(Optional.empty());
+    when(ingestionFlowFileServiceMock.findById(NOT_FOUND_INGESTION_FLOW_ID)).thenReturn(Optional.empty());
 
     //when
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(NOT_FOUND_INGESTION_FLOW_ID);
@@ -126,14 +125,14 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertFalse(result.isSuccess());
     Assertions.assertNotNull(result.getIufs());
     Assertions.assertEquals(0, result.getIufs().size());
-    Mockito.verify(ingestionFlowFileDaoMock, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
+    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
 
   @Test
   void givenIngestionFlowTypeInvalidWhenProcessFileThenNoSuccess() {
     //given
-    when(ingestionFlowFileDaoMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(Optional.of(INVALID_INGESTION_FLOW));
+    when(ingestionFlowFileServiceMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(Optional.of(INVALID_INGESTION_FLOW));
 
     //when
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(INVALID_INGESTION_FLOW_ID);
@@ -142,7 +141,7 @@ class TreasuryOpiIngestionActivityTest {
     Assertions.assertFalse(result.isSuccess());
     Assertions.assertNotNull(result.getIufs());
     Assertions.assertEquals(0, result.getIufs().size());
-    Mockito.verify(ingestionFlowFileDaoMock, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
+    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
 
@@ -151,12 +150,12 @@ class TreasuryOpiIngestionActivityTest {
   void givenWrongTypeIngestionFlowFileWhenProcessFileThenFails() {
     // Given
     long ingestionFlowFileId = 123L;
-    IngestionFlowFileDTO mockFlowDTO = IngestionFlowFileDTO.builder()
+    IngestionFlowFile mockFlowDTO = IngestionFlowFile.builder()
             .ingestionFlowFileId(ingestionFlowFileId)
             .flowFileType(INVALID_INGESTION_FLOW_TYPE)
             .build();
 
-    when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
+    when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
     // When
     TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
 
@@ -168,12 +167,12 @@ class TreasuryOpiIngestionActivityTest {
   void givenIOExceptionWhenProcessFileThenFails() throws IOException {
     // Given
     Long ingestionFlowFileId = 1L;
-    IngestionFlowFileDTO ingestionFlowFileDTO = IngestionFlowFileDTO.builder()
+    IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
             .ingestionFlowFileId(ingestionFlowFileId)
-            .flowFileType(IngestionFlowFileType.OPI)
+            .flowFileType(VALID_INGESTION_FLOW_TYPE)
             .filePathName(workingDir.toString())
             .fileName("testFile.zip")
-            .org(Organization.builder().organizationId(0L).build())
+            .organizationId(0L)
             .build();
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
@@ -181,9 +180,9 @@ class TreasuryOpiIngestionActivityTest {
     TreasuryIufResult expected =
             new TreasuryIufResult(Collections.emptyList(), Collections.emptyList(), null, false, "error occured", null);
 
-    when(ingestionFlowFileDaoMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
+    when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
-            .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrg().getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+            .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     doThrow(new RuntimeException("error occured")).when(treasuryErrorsArchiverServiceMock)
             .archiveErrorFiles(workingDir, ingestionFlowFileDTO);

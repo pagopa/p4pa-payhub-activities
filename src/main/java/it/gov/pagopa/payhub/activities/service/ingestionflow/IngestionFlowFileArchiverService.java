@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -76,15 +76,15 @@ public class IngestionFlowFileArchiverService {
     }
 
     /**
-     * Archives the file specified in the given {@link IngestionFlowFileDTO}. The file is moved to
+     * Archives the file specified in the given {@link IngestionFlowFile}. The file is moved to
      * the archive directory located within the same file path.
      *
      * @param ingestionFlowFileDTO the DTO containing details of the file to be archived.
      * @throws IOException if an error occurs during file movement or directory creation.
      */
-    public void archive(IngestionFlowFileDTO ingestionFlowFileDTO) throws IOException {
+    public void archive(IngestionFlowFile ingestionFlowFileDTO) throws IOException {
         Path originalFileFolder = sharedDirectoryPath
-                .resolve(String.valueOf(ingestionFlowFileDTO.getOrg().getOrganizationId()))
+                .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
                 .resolve(ingestionFlowFileDTO.getFilePathName());
 
         Path originalFilePath = originalFileFolder

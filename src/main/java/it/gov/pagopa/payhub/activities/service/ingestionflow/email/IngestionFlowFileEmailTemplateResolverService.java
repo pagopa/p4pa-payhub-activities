@@ -1,10 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.payhub.activities.enums.IngestionFlowFileType;
 import it.gov.pagopa.payhub.activities.exception.IngestionFlowTypeNotSupportedException;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +17,8 @@ public class IngestionFlowFileEmailTemplateResolverService {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
     }
 
-    public EmailTemplate resolve(IngestionFlowFileDTO ingestionFlowFileDTO, boolean success) {
-        if (!ingestionFlowFileDTO.getFlowFileType().equals(IngestionFlowFileType.PAYMENTS_REPORTING)) {
+    public EmailTemplate resolve(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
+        if (!(ingestionFlowFileDTO.getFlowFileType()).equals(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING)) {
             throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type PAYMENTS_REPORTING");
         }
 

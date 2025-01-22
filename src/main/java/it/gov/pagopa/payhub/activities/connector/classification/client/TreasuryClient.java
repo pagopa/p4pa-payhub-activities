@@ -12,8 +12,8 @@ public class TreasuryClient {
 
     private final TreasuryApisHolder treasuryApisHolder;
 
-    public TreasuryClient(TreasuryApisHolder classificationApisHolder) {
-        this.treasuryApisHolder = classificationApisHolder;
+    public TreasuryClient(TreasuryApisHolder treasuryApisHolder) {
+        this.treasuryApisHolder = treasuryApisHolder;
     }
 
     public Treasury findByOrganizationIdAndIuf(Long organizationId, String iuf, String accessToken) {

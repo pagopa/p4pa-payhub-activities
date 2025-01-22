@@ -1,14 +1,13 @@
 package it.gov.pagopa.payhub.activities.service.treasury.opi14;
 
-import it.gov.pagopa.payhub.activities.dto.IngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.stereotype.Service;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -22,8 +21,7 @@ import java.util.stream.Collectors;
 public class TreasuryMapperOpi14Service implements TreasuryMapperService<FlussoGiornaleDiCassa> {
 
     @Override
-    public Map<TreasuryOperationEnum, List<Treasury>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFileDTO ingestionFlowFileDTO) {
-        Organization organizationDTO = ingestionFlowFileDTO.getOrg();
+    public Map<TreasuryOperationEnum, List<Treasury>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFile ingestionFlowFileDTO) {
 
         return fGC.getInformazioniContoEvidenza().stream()
                 .flatMap(infoContoEvidenza -> infoContoEvidenza.getMovimentoContoEvidenzas().stream())
@@ -45,7 +43,7 @@ public class TreasuryMapperOpi14Service implements TreasuryMapperService<FlussoG
                             .receptionDate(OffsetDateTime.now())
                             .documentCode(String.valueOf(movContoEvidenza.getNumeroDocumento()))
                             .regionValueDate(Utilities.convertToLocalDate(regionValueDate))
-                            .organizationId(organizationDTO.getOrganizationId())
+                            .organizationId(ingestionFlowFileDTO.getOrganizationId())
                             .remittanceDescription(movContoEvidenza.getCausale())
                             .iuf(TreasuryUtils.getIdentificativo(movContoEvidenza.getCausale(), TreasuryUtils.IUF))
                             .iuv(null)
