@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +21,12 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
     }
 
     @Override
-    public boolean updateStatus(Long id, String newStatus, String codError, String discardFileName) {
+    public boolean updateStatus(Long id, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName) {
         log.info("Updating IngestionFlowFile {} to new status {}", id, newStatus);
         if(id==null){
             throw new IllegalArgumentException("A null IngestionFlowFile was provided when updating its status to " + newStatus);
         }
-        if(StringUtils.isBlank(newStatus)){
+        if(newStatus == null){
             throw new IllegalArgumentException("A null IngestionFlowFile status was provided when updating the id " + id);
         }
         return ingestionFlowFileService.updateStatus(id, newStatus, codError, discardFileName) == 1;

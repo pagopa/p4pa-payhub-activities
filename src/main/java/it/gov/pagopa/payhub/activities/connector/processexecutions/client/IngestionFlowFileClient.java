@@ -21,9 +21,9 @@ public class IngestionFlowFileClient {
     }
 
 
-    public Integer updateStatus(Long ingestionFlowFileId, String status, String codError, String discardFileName, String accessToken) {
+    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum  status, String codError, String discardFileName, String accessToken) {
         return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                .updateStatus(ingestionFlowFileId, status,codError, discardFileName);
+                .updateStatus(ingestionFlowFileId, status.name() ,codError, discardFileName);
     }
 
 
