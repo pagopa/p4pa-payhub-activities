@@ -1,10 +1,16 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+
+import java.util.Map;
 
 /**
  * Service class responsible for invoking the ACA service to delete a debt position
  */
+@ActivityInterface
 public interface AcaStandInDeleteDebtPositionActivity {
 
     /**
@@ -13,6 +19,7 @@ public interface AcaStandInDeleteDebtPositionActivity {
      *
      * @param debtPositionDTO the {@link DebtPositionDTO} containing the details of the debt position to be deleted
      */
-    void deleteAcaDebtPosition(DebtPositionDTO debtPositionDTO);
+    @ActivityMethod
+    Map<String, IupdSyncStatusUpdateDTO> deleteAcaDebtPosition(DebtPositionDTO debtPositionDTO);
 
 }
