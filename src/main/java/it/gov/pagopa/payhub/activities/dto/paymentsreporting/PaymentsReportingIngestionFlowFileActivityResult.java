@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * DTO for the PaymentsReportingIngestionFlowFileActivityResult, representing the result of file processing.
@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentsReportingIngestionFlowFileActivityResult {
-    /** List of extracted transferSemanticKeys */
-    private List<TransferSemanticKeyDTO> transferSemanticKeys;
+    /** Map of IUFs and their corresponding TransferSemanticKeyDTO */
+    private Map<String, TransferSemanticKeyDTO> transferSemanticKeys;
     /** Success flag for the operation */
     private boolean success;
     /** the error description */

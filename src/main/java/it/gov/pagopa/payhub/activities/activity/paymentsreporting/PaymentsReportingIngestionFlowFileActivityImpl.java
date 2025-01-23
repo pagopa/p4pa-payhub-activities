@@ -21,6 +21,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Lazy
@@ -57,15 +59,15 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		List<PaymentsReporting> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
 		paymentsReportingService.saveAll(paymentsReportings);
 
-		List<TransferSemanticKeyDTO> transferSemanticKeys = paymentsReportings.stream()
-			.map(paymentsReportingMapperService::map2TransferSemanticKeyDto)
-			.toList();
+		Map<String, TransferSemanticKeyDTO> transferSemanticKeys = paymentsReportings.stream()
+			.collect(Collectors.toMap(PaymentsReporting::getIuf, paymentsReportingMapperService::map2TransferSemanticKeyDto));
+
 		return new PaymentsReportingIngestionFlowFileActivityResult(transferSemanticKeys, true, null);
 	}
 
 	@Override
 	protected PaymentsReportingIngestionFlowFileActivityResult onErrorResult(Exception e) {
-		return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, e.getMessage());
+		return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyMap(), false, e.getMessage());
 	}
 
 	/**

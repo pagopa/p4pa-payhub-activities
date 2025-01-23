@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -98,7 +99,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder().orgId(1L).iuv("iuv").iur("iur").transferIndex(1).build();
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(List.of(transferSemanticKeyDTO), true, null);
+			new PaymentsReportingIngestionFlowFileActivityResult(Map.of("idFlow", transferSemanticKeyDTO), true, null);
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
@@ -173,7 +174,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		Path filePath = Files.createFile(Path.of(mockFlowDTO.getFilePathName()).resolve(mockFlowDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "error occured");
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyMap(), false, "error occured");
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
@@ -218,7 +219,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "invalid");
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyMap(), false, "invalid");
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
@@ -252,7 +253,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		List<PaymentsReporting> dtoList = List.of(PaymentsReporting.builder().iuf("idFlow").build());
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "saving fails");
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyMap(), false, "saving fails");
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
@@ -290,7 +291,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder().orgId(1L).iuv("iuv").iur("iur").transferIndex(1).build();
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, "error occured");
+			new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyMap(), false, "error occured");
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
