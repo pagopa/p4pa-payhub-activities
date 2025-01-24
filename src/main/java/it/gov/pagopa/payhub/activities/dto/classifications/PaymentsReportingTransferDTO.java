@@ -9,6 +9,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransferSemanticKeyWithOutComeCodeDTO extends TransferSemanticKeyDTO {
-	private String outcomeCode;
+public class PaymentsReportingTransferDTO extends TransferSemanticKeyDTO {
+	private String paymentOutcomeCode;
 }

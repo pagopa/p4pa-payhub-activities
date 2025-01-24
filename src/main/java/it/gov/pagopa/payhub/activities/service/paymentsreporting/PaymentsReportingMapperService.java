@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyWithOutComeCodeDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.context.annotation.Lazy;
@@ -62,18 +62,18 @@ public class PaymentsReportingMapperService {
 	}
 
 	/**
-	 * Maps a `PaymentsReporting` object into `TransferSemanticKeyWithOutComeCodeDTO`.
+	 * Maps a `PaymentsReporting` object into `PaymentsReportingTransferDTO`.
 	 *
 	 * @param paymentsReporting the `PaymentsReportingDTO` object containing the data to be mapped.
-	 * @return a `TransferSemanticKeyWithOutComeCodeDTO` object containing the mapped data.
+	 * @return a `PaymentsReportingTransferDTO` object containing the mapped data.
 	 */
-	public TransferSemanticKeyWithOutComeCodeDTO map2TransferSemanticKeyWithOutComeCodeDTO(PaymentsReporting paymentsReporting) {
-		return TransferSemanticKeyWithOutComeCodeDTO.builder()
+	public PaymentsReportingTransferDTO map2TransferSemanticKeyWithOutComeCodeDTO(PaymentsReporting paymentsReporting) {
+		return PaymentsReportingTransferDTO.builder()
 			.orgId(paymentsReporting.getOrganizationId())
 			.iuv(paymentsReporting.getIuv())
 			.iur(paymentsReporting.getIur())
 			.transferIndex(paymentsReporting.getTransferIndex())
-			.outcomeCode(paymentsReporting.getPaymentOutcomeCode())
+			.paymentOutcomeCode(paymentsReporting.getPaymentOutcomeCode())
 			.build();
 	}
 }

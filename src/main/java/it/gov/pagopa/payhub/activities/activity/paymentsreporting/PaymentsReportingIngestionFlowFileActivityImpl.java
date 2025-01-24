@@ -4,7 +4,7 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyWithOutComeCodeDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
@@ -57,10 +57,11 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		List<PaymentsReporting> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
 		paymentsReportingService.saveAll(paymentsReportings);
 
-		List<TransferSemanticKeyWithOutComeCodeDTO> transferSemanticKeys = paymentsReportings.stream()
+		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
 			.map(paymentsReportingMapperService::map2TransferSemanticKeyWithOutComeCodeDTO).toList();
 
-		return new PaymentsReportingIngestionFlowFileActivityResult(paymentsReportings.getFirst().getIuf(), transferSemanticKeys, true, null);
+		String iuf = paymentsReportings.getFirst().getIuf(); // The iuf is the same for entire file
+		return new PaymentsReportingIngestionFlowFileActivityResult(iuf, transferSemanticKeys, true, null);
 	}
 
 	@Override
