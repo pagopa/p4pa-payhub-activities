@@ -95,7 +95,7 @@ class TreasuryOpiIngestionActivityTest {
             .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size()))
-            .thenReturn(new TreasuryIufResult(Collections.singletonList("IUF123"), Collections.singletonList("IUF123"), ingestionFlowFileDTO.getOrganizationId(), true, null, null));
+            .thenReturn(new TreasuryIufResult(Collections.singletonMap("IUF123", "treasury123"), ingestionFlowFileDTO.getOrganizationId(), true, null, null));
 
     Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
             .thenReturn("DISCARDFILENAME");
@@ -106,8 +106,8 @@ class TreasuryOpiIngestionActivityTest {
     // Then
     Assertions.assertNotNull(result);
     Assertions.assertTrue(result.isSuccess());
-    Assertions.assertEquals(1, result.getIufs().size());
-    Assertions.assertEquals("IUF123", result.getIufs().getFirst());
+    Assertions.assertEquals(1, result.getIufTreasuryIdMap().size());
+    Assertions.assertEquals("treasury123", result.getIufTreasuryIdMap().get("IUF123"));
     Assertions.assertEquals("DISCARDFILENAME", result.getDiscardedFileName());
 
     Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1))
@@ -123,8 +123,8 @@ class TreasuryOpiIngestionActivityTest {
 
     //verify
     Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufs());
-    Assertions.assertEquals(0, result.getIufs().size());
+    Assertions.assertNotNull(result.getIufTreasuryIdMap());
+    Assertions.assertEquals(0, result.getIufTreasuryIdMap().size());
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
@@ -139,8 +139,8 @@ class TreasuryOpiIngestionActivityTest {
 
     //verify
     Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufs());
-    Assertions.assertEquals(0, result.getIufs().size());
+    Assertions.assertNotNull(result.getIufTreasuryIdMap());
+    Assertions.assertEquals(0, result.getIufTreasuryIdMap().size());
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
@@ -178,7 +178,7 @@ class TreasuryOpiIngestionActivityTest {
     List<Path> mockedListPath = List.of(filePath);
 
     TreasuryIufResult expected =
-            new TreasuryIufResult(Collections.emptyList(), Collections.emptyList(), null, false, "error occured", null);
+            new TreasuryIufResult(Collections.emptyMap(), null, false, "error occured", null);
 
     when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)

@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Implementation of {@link TreasuryOpiIngestionActivity} for processing OPI treasury ingestion files.
@@ -63,7 +66,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                     return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
                 } catch (Exception e) {
                     log.error("Error processing file {}: {}", path, e.getMessage());
-                    return new TreasuryIufResult(Collections.emptyList(), Collections.emptyList(), ingestionFlowFileDTO.getOrganizationId(), false, e.getMessage(), null);
+                    return new TreasuryIufResult(Collections.emptyMap(), ingestionFlowFileDTO.getOrganizationId(), false, e.getMessage(), null);
                 }
             })
             .toList();
@@ -72,25 +75,20 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
 
         boolean isSuccess = treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess);
 
-        return new TreasuryIufResult(
-            treasuryIufResultList.stream()
-                .flatMap(result -> result.getIufs().stream())
-                .distinct()
-                .toList(),
-            treasuryIufResultList.stream()
-                .flatMap(result -> result.getTreasuryIds().stream())
-                .distinct()
-                .toList(),
-            ingestionFlowFileDTO.getOrganizationId(),
-            isSuccess,
-            isSuccess ? null : "error occurred",
-            discardsFileName
-        );
+return new TreasuryIufResult(
+    treasuryIufResultList.stream()
+        .flatMap(result -> result.getIufTreasuryIdMap().entrySet().stream())
+        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1)),
+    ingestionFlowFileDTO.getOrganizationId(),
+    isSuccess,
+    isSuccess ? null : "error occurred",
+    discardsFileName
+);
     }
 
     @Override
     protected TreasuryIufResult onErrorResult(Exception e) {
-        return new TreasuryIufResult(Collections.emptyList(), Collections.emptyList(), null, false, e.getMessage(), null);
+        return new TreasuryIufResult(Collections.emptyMap(), null, false, e.getMessage(), null);
     }
 
 }
