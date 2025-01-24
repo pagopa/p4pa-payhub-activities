@@ -93,7 +93,7 @@ class PaymentsReportingMapperServiceTest {
 	}
 
 	@Test
-	void testMap2TransferSemanticKeyWithOutComeCodeDTO() {
+	void testMap() {
 		// Given
 		PaymentsReporting paymentsReporting = PaymentsReporting.builder()
 			.organizationId(1L)
@@ -104,7 +104,7 @@ class PaymentsReportingMapperServiceTest {
 			.build();
 
 		// When
-		PaymentsReportingTransferDTO result = mapper.map2TransferSemanticKeyWithOutComeCodeDTO(paymentsReporting);
+		PaymentsReportingTransferDTO result = mapper.map(paymentsReporting);
 
 		// Then
 		assertEquals(1L, result.getOrgId());
@@ -128,7 +128,7 @@ class PaymentsReportingMapperServiceTest {
 			.build();
 
 		// When
-		TransferSemanticKeyDTO result = mapper.map2TransferSemanticKeyWithOutComeCodeDTO(paymentsReporting);
+		TransferSemanticKeyDTO result = mapper.map(paymentsReporting);
 
 		// Then
 		assertEquals(1L, result.getOrgId());

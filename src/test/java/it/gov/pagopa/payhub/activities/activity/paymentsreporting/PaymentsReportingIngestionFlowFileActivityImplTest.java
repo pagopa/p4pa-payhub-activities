@@ -109,7 +109,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 		when(paymentsReportingMapperServiceMock.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO)).thenReturn(dtoList);
 		doReturn(1).when(paymentsReportingServiceMock).saveAll(dtoList);
-		when(paymentsReportingMapperServiceMock.map2TransferSemanticKeyWithOutComeCodeDTO(paymentsReportingDTO)).thenReturn(paymentsReportingTransferDTO);
+		when(paymentsReportingMapperServiceMock.map(paymentsReportingDTO)).thenReturn(paymentsReportingTransferDTO);
 		doNothing().when(ingestionFlowFileArchiverServiceMock)
 			.archive(ingestionFlowFileDTO);
 
@@ -302,7 +302,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		doNothing().when(paymentsReportingIngestionFlowFileValidatorServiceMock).validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 		when(paymentsReportingMapperServiceMock.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO)).thenReturn(dtoList);
 		doReturn(1).when(paymentsReportingServiceMock).saveAll(dtoList);
-		when(paymentsReportingMapperServiceMock.map2TransferSemanticKeyWithOutComeCodeDTO(paymentsReportingDTO)).thenReturn(paymentsReportingTransferDTO);
+		when(paymentsReportingMapperServiceMock.map(paymentsReportingDTO)).thenReturn(paymentsReportingTransferDTO);
 		doThrow(new IOException("error occured")).when(ingestionFlowFileArchiverServiceMock)
 			.archive(ingestionFlowFileDTO);
 
