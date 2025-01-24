@@ -67,7 +67,7 @@ public class PaymentsReportingMapperService {
 	 * @param paymentsReporting the `PaymentsReportingDTO` object containing the data to be mapped.
 	 * @return a `PaymentsReportingTransferDTO` object containing the mapped data.
 	 */
-	public PaymentsReportingTransferDTO map2TransferSemanticKeyWithOutComeCodeDTO(PaymentsReporting paymentsReporting) {
+	public PaymentsReportingTransferDTO map(PaymentsReporting paymentsReporting) {
 		return PaymentsReportingTransferDTO.builder()
 			.orgId(paymentsReporting.getOrganizationId())
 			.iuv(paymentsReporting.getIuv())
