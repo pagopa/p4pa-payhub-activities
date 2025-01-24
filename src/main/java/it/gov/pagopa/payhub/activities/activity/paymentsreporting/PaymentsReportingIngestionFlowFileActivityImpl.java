@@ -4,7 +4,7 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyWithOutComeCodeDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
@@ -21,8 +21,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Lazy
@@ -59,15 +57,15 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		List<PaymentsReporting> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
 		paymentsReportingService.saveAll(paymentsReportings);
 
-		Map<String, TransferSemanticKeyDTO> transferSemanticKeys = paymentsReportings.stream()
-			.collect(Collectors.toMap(PaymentsReporting::getIuf, paymentsReportingMapperService::map2TransferSemanticKeyDto));
+		List<TransferSemanticKeyWithOutComeCodeDTO> transferSemanticKeys = paymentsReportings.stream()
+			.map(paymentsReportingMapperService::map2TransferSemanticKeyWithOutComeCodeDTO).toList();
 
-		return new PaymentsReportingIngestionFlowFileActivityResult(transferSemanticKeys, true, null);
+		return new PaymentsReportingIngestionFlowFileActivityResult(paymentsReportings.getFirst().getIuf(), transferSemanticKeys, true, null);
 	}
 
 	@Override
 	protected PaymentsReportingIngestionFlowFileActivityResult onErrorResult(Exception e) {
-		return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyMap(), false, e.getMessage());
+		return new PaymentsReportingIngestionFlowFileActivityResult(null, Collections.emptyList(), false, e.getMessage());
 	}
 
 	/**

@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.dto.paymentsreporting;
 
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyWithOutComeCodeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * DTO for the PaymentsReportingIngestionFlowFileActivityResult, representing the result of file processing.
@@ -14,8 +14,9 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentsReportingIngestionFlowFileActivityResult {
-    /** Map of IUFs and their corresponding TransferSemanticKeyDTO */
-    private Map<String, TransferSemanticKeyDTO> transferSemanticKeys;
+    private String iuf;
+    /** List of extracted transferSemanticKeys */
+    private List<TransferSemanticKeyWithOutComeCodeDTO> transferSemanticKeys;
     /** Success flag for the operation */
     private boolean success;
     /** the error description */

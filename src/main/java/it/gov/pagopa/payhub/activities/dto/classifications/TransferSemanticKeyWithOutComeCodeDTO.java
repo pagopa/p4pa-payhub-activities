@@ -9,9 +9,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransferSemanticKeyDTO {
-	private Long orgId;
-	private String iuv;
-	private String iur;
-	private int transferIndex;
+public class TransferSemanticKeyWithOutComeCodeDTO extends TransferSemanticKeyDTO {
+	private String outcomeCode;
 }
