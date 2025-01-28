@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Lazy
 @Service
@@ -39,16 +40,14 @@ public class TreasuryOpiParserService {
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
-        List<String> iufs = new ArrayList<>();
-        List<String> treasuryIds = new ArrayList<>();
+        Map<String, String> iufTreasuryIdMap = newTreasuries.stream()
+            .collect(Collectors.toMap(
+                Treasury::getIuf,
+                treasury -> treasuryService.insert(treasury)
+                    .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot insert treasury " + treasury))
+                    .getTreasuryId()
+            ));
 
-        for (Treasury treasury : newTreasuries) {
-            treasuryService.insert(treasury).ifPresentOrElse(t -> {
-                iufs.add(t.getIuf());
-                treasuryIds.add(t.getTreasuryId());
-            }, () -> new TreasuryOpiInvalidFileException("Cannot insert treasury " + treasury));
-        }
-
-        return new TreasuryIufResult(iufs, treasuryIds, ingestionFlowFileDTO.getOrganizationId(), true, null, null);
+        return new TreasuryIufResult(iufTreasuryIdMap, ingestionFlowFileDTO.getOrganizationId(), true, null, null);
     }
 }

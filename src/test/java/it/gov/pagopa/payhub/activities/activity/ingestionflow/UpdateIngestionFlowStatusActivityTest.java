@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ class UpdateIngestionFlowStatusActivityTest {
 
   private static final Long VALID_ID=1L;
   private static final Long INVALID_ID=9L;
-  private static final String VALID_STATUS="VALID";
+  private static final IngestionFlowFile.StatusEnum VALID_STATUS = IngestionFlowFile.StatusEnum.PROCESSING;
   private static final String COD_ERROR="CODE_ERROR";
   private static final String DISCARD_FILE_NAME="DISCARDFILENAME";
 

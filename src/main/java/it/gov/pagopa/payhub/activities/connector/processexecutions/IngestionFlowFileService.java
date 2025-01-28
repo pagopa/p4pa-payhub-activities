@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface IngestionFlowFileService {
 
     Optional<IngestionFlowFile> findById(Long ingestionFlowFileId);
-    Integer updateStatus(Long ingestionFlowFileId, String status,String codError, String discardFileName);
+    Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum status, String codError, String discardFileName);
 
 
 }

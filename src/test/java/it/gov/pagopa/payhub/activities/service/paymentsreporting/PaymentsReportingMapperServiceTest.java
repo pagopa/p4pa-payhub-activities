@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.*;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -92,17 +93,42 @@ class PaymentsReportingMapperServiceTest {
 	}
 
 	@Test
-	void testMap2TransferSemanticKeyDto() {
+	void testMap() {
 		// Given
 		PaymentsReporting paymentsReporting = PaymentsReporting.builder()
 			.organizationId(1L)
+			.paymentOutcomeCode("OK")
 			.iuv("iuv123")
 			.iur("iur123")
 			.transferIndex(1)
 			.build();
 
 		// When
-		TransferSemanticKeyDTO result = mapper.map2TransferSemanticKeyDto(paymentsReporting);
+		PaymentsReportingTransferDTO result = mapper.map(paymentsReporting);
+
+		// Then
+		assertEquals(1L, result.getOrgId());
+		assertEquals("iuv123", result.getIuv());
+		assertEquals("iur123", result.getIur());
+		assertEquals(1, result.getTransferIndex());
+		assertEquals("OK", result.getPaymentOutcomeCode());
+
+		TestUtils.checkNotNullFields(result);
+	}
+
+	@Test
+	void testMap2TransferSemanticKey() {
+		// Given
+		PaymentsReporting paymentsReporting = PaymentsReporting.builder()
+			.organizationId(1L)
+			.paymentOutcomeCode("OK")
+			.iuv("iuv123")
+			.iur("iur123")
+			.transferIndex(1)
+			.build();
+
+		// When
+		TransferSemanticKeyDTO result = mapper.map(paymentsReporting);
 
 		// Then
 		assertEquals(1L, result.getOrgId());

@@ -4,7 +4,7 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
@@ -57,15 +57,16 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		List<PaymentsReporting> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
 		paymentsReportingService.saveAll(paymentsReportings);
 
-		List<TransferSemanticKeyDTO> transferSemanticKeys = paymentsReportings.stream()
-			.map(paymentsReportingMapperService::map2TransferSemanticKeyDto)
-			.toList();
-		return new PaymentsReportingIngestionFlowFileActivityResult(transferSemanticKeys, true, null);
+		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
+			.map(paymentsReportingMapperService::map).toList();
+
+		String iuf = paymentsReportings.getFirst().getIuf(); // The iuf is the same for entire file
+		return new PaymentsReportingIngestionFlowFileActivityResult(iuf, transferSemanticKeys, true, null);
 	}
 
 	@Override
 	protected PaymentsReportingIngestionFlowFileActivityResult onErrorResult(Exception e) {
-		return new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), false, e.getMessage());
+		return new PaymentsReportingIngestionFlowFileActivityResult(null, Collections.emptyList(), false, e.getMessage());
 	}
 
 	/**

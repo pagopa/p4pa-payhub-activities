@@ -2,12 +2,12 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionStatus;
 
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildPaymentsInstallmentDTO;
-import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO.StatusEnum.PAID;
 
 public class PaymentOptionFaker {
 
@@ -28,7 +28,7 @@ public class PaymentOptionFaker {
         return it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.builder()
                 .paymentOptionId(1L)
                 .totalAmountCents(100L)
-                .status(String.valueOf(PAID))
+                .status(PaymentOptionStatus.PAID)
                 .dueDate(TestUtils.OFFSETDATETIME)
                 .installments(List.of(buildPaymentsInstallmentDTO()))
                 .multiDebtor(false)
