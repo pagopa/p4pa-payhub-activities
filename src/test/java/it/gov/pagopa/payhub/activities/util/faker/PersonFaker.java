@@ -6,7 +6,7 @@ public class PersonFaker {
 
     public static PersonDTO buildPersonDTO(){
         return PersonDTO.builder()
-                .entityType("uniqueIdentifierType")
+                .entityType(PersonDTO.EntityTypeEnum.F)
                 .fiscalCode("uniqueIdentifierCode")
                 .fullName("fullName")
                 .address("address")
@@ -21,7 +21,7 @@ public class PersonFaker {
 
     public static it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO buildPaymentsPersonDTO(){
         return it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO.builder()
-                .entityType("uniqueIdentifierType")
+                .entityType(it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO.EntityTypeEnum.F)
                 .fiscalCode("uniqueIdentifierCode")
                 .fullName("fullName")
                 .address("address")
