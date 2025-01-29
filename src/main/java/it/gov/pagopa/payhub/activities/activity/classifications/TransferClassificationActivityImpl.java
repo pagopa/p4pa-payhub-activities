@@ -3,16 +3,15 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dao.TransferDao;
+import it.gov.pagopa.payhub.activities.connector.transfer.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
-import it.gov.pagopa.payhub.activities.exception.ClassificationException;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationService;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -24,20 +23,20 @@ import java.util.List;
 @Component
 public class TransferClassificationActivityImpl implements TransferClassificationActivity {
 	private final ClassificationService classificationService;
-	private final TransferDao transferDao;
+	private final TransferService transferService;
 	private final PaymentsReportingService paymentsReportingService;
 	private final TransferClassificationService transferClassificationService;
 	private final TransferClassificationStoreService transferClassificationStoreService;
 	private final TreasuryService treasuryService;
 
 	public TransferClassificationActivityImpl(ClassificationService classificationService,
-                                              TransferDao transferDao,
+	                                          TransferService transferService,
                                               PaymentsReportingService paymentsReportingService,
                                               TransferClassificationService transferClassificationService,
                                               TransferClassificationStoreService transferClassificationStoreService,
 											  TreasuryService treasuryService) {
 		this.classificationService = classificationService;
-		this.transferDao = transferDao;
+		this.transferService = transferService;
 		this.paymentsReportingService = paymentsReportingService;
 		this.transferClassificationService = transferClassificationService;
 		this.transferClassificationStoreService = transferClassificationStoreService;
@@ -51,7 +50,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		Long deletedRowsNumber = classificationService.deleteBySemanticKey(transferSemanticKey);
 		log.debug("Deleted {} classifications for organization id: {} and iuv: {}",
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
-		TransferDTO transferDTO = transferDao.findBySemanticKey(transferSemanticKey);
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey).orElse(null);
 
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex());
@@ -90,9 +89,9 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 * @param transferDTO the transfer data transfer object containing transfer details
 	 * @param paymentsReportingDTO the payments reporting data transfer object containing payment reporting details
 	 */
-	private void notifyReportedTransferId(TransferDTO transferDTO, PaymentsReporting paymentsReportingDTO) {
+	private void notifyReportedTransferId(Transfer transferDTO, PaymentsReporting paymentsReportingDTO) {
 		if(transferDTO != null && paymentsReportingDTO != null) {
-			transferDao.notifyReportedTransferId(transferDTO.getTransferId());
+			transferService.notifyReportedTransferId(transferDTO.getTransferId());
 		}
 	}
 }

@@ -14,11 +14,8 @@ import org.springframework.web.client.RestTemplate;
 @Lazy
 @Service
 public class TransferApisHolder {
-
     private final TransferSearchControllerApi transferSearchControllerApi;
-
     private final TransferApi transferApi;
-
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public TransferApisHolder(

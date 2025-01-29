@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.transfer;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.transfer.client.TransferClient;
 import it.gov.pagopa.payhub.activities.connector.transfer.client.TransferSearchClient;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.springframework.context.annotation.Lazy;
@@ -24,8 +25,15 @@ public class TransferServiceImpl implements TransferService {
 	}
 
 	@Override
-	public Optional<Transfer> findBySemanticKey(Long orgId, String iuv, String iur, Integer transferIndex) {
-		return Optional.ofNullable(transferSearchClient.findBySemanticKey(orgId, iuv, iur, transferIndex, authnService.getAccessToken()));
+	public Optional<Transfer> findBySemanticKey(TransferSemanticKeyDTO transferSemanticKey) {
+		return Optional.ofNullable(transferSearchClient.findBySemanticKey(
+				transferSemanticKey.getOrgId(),
+				transferSemanticKey.getIuv(),
+				transferSemanticKey.getIur(),
+				transferSemanticKey.getTransferIndex(),
+				authnService.getAccessToken()
+			)
+		);
 	}
 
 	@Override

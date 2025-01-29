@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 
 import java.util.Optional;
 
@@ -24,7 +24,7 @@ public interface TransferClassifier {
 	 * @param treasuryDTO the treasury data.
 	 * @return the classification label if conditions are met, or {@code null} if no label is applicable.
 	 */
-	ClassificationsEnum classify(TransferDTO transferDTO, PaymentsReporting paymentsReportingDTO, Treasury treasuryDTO);
+	ClassificationsEnum classify(Transfer transferDTO, PaymentsReporting paymentsReportingDTO, Treasury treasuryDTO);
 
 	/**
 	 * Extracts the amount in cents from the transfer data.
@@ -32,8 +32,8 @@ public interface TransferClassifier {
 	 * @param transferDTO the transfer data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountCents(TransferDTO transferDTO) {
-		return Optional.ofNullable(transferDTO).map(TransferDTO::getAmountCents).orElse(0L);
+	default Long getAmountCents(Transfer transferDTO) {
+		return Optional.ofNullable(transferDTO).map(Transfer::getAmountCents).orElse(0L);
 	}
 
 	/**
