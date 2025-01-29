@@ -1,6 +1,6 @@
-package it.gov.pagopa.payhub.activities.connector.transfer.client;
+package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
-import it.gov.pagopa.payhub.activities.connector.transfer.config.TransferApisHolder;
+import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.pu.debtposition.client.generated.TransferSearchControllerApi;
@@ -18,17 +18,17 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TransferSearchClientTest {
 	@Mock
-	private TransferApisHolder transferApisHolderMock;
+	DebtPositionApisHolder debtPositionApisHolderMock;
 	@Mock
 	private TransferSearchControllerApi transferSearchControllerApiMock;
 
 	private TransferSearchClient transferSearchClient;
 
 	@BeforeEach
-	void setUp() { transferSearchClient = new TransferSearchClient(transferApisHolderMock);	}
+	void setUp() { transferSearchClient = new TransferSearchClient(debtPositionApisHolderMock);	}
 
 	@AfterEach
-	void tearDown() { verifyNoMoreInteractions(transferApisHolderMock); }
+	void tearDown() { verifyNoMoreInteractions(debtPositionApisHolderMock); }
 
 	@Test
 	void whenFindBySemanticKeyThenInvokeWithAccessToken() {
@@ -37,7 +37,7 @@ class TransferSearchClientTest {
 		TransferSemanticKeyDTO transferSemanticKeyMock = mock(TransferSemanticKeyDTO.class);
 		Transfer expectedResult = TransferFaker.buildTransfer();
 
-		when(transferApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
+		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
 		when(transferSearchControllerApiMock.crudTransfersFindBySemanticKey(
 				transferSemanticKeyMock.getOrgId(),
 				transferSemanticKeyMock.getIuv(),
@@ -57,7 +57,7 @@ class TransferSearchClientTest {
 		// Then
 		assertSame(expectedResult, result);
 
-		verify(transferApisHolderMock).getTransferSearchControllerApi(accessToken);
+		verify(debtPositionApisHolderMock).getTransferSearchControllerApi(accessToken);
 		verify(transferSearchControllerApiMock).crudTransfersFindBySemanticKey(
 			transferSemanticKeyMock.getOrgId(),
 			transferSemanticKeyMock.getIuv(),

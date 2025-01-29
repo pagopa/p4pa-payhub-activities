@@ -1,8 +1,8 @@
-package it.gov.pagopa.payhub.activities.connector.transfer;
+package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.transfer.client.TransferClient;
-import it.gov.pagopa.payhub.activities.connector.transfer.client.TransferSearchClient;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferClient;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferSearchClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;

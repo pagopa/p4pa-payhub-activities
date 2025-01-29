@@ -1,6 +1,6 @@
-package it.gov.pagopa.payhub.activities.connector.transfer.client;
+package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
-import it.gov.pagopa.payhub.activities.connector.transfer.config.TransferApisHolder;
+import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.TransferApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TransferClientTest {
 	@Mock
-	private TransferApisHolder transferApisHolderMock;
+	private DebtPositionApisHolder debtPositionApisHolderMock;
 	@Mock
 	private TransferApi transferApiMock;
 
@@ -24,12 +24,12 @@ class TransferClientTest {
 
 	@BeforeEach
 	void setUp() {
-		transferClient = new TransferClient(transferApisHolderMock);
+		transferClient = new TransferClient(debtPositionApisHolderMock);
 	}
 
 	@AfterEach
 	void tearDown() {
-		verifyNoMoreInteractions(transferApisHolderMock);
+		verifyNoMoreInteractions(debtPositionApisHolderMock);
 	}
 
 	@Test
@@ -39,7 +39,7 @@ class TransferClientTest {
 		Long transferId = 0L;
 		DebtPositionDTO expectedResult = mock(DebtPositionDTO.class);
 
-		when(transferApisHolderMock.getTransferApi(accessToken)).thenReturn(transferApiMock);
+		when(debtPositionApisHolderMock.getTransferApi(accessToken)).thenReturn(transferApiMock);
 		when(transferApiMock.notifyReportedTransferId(transferId)).thenReturn(expectedResult);
 
 		// When
@@ -47,7 +47,7 @@ class TransferClientTest {
 		// Then
 		Assertions.assertSame(expectedResult, result);
 
-		verify(transferApisHolderMock).getTransferApi(accessToken);
+		verify(debtPositionApisHolderMock).getTransferApi(accessToken);
 		verify(transferApiMock).notifyReportedTransferId(transferId);
 	}
 }
