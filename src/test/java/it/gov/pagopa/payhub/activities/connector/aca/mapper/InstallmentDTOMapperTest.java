@@ -14,8 +14,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildI
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildPaymentsInstallmentDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPaymentsPersonDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildPaymentsTransferDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)

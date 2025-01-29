@@ -64,4 +64,21 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                 debtPositionApisHolder::unload);
     }
 
+    @Test
+    void whenGetTransferSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
+                .crudTransfersFindBySemanticKey(0L, "iuv", "iud", 1),
+            Object.class,
+            debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetTransferApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> debtPositionApisHolder.getTransferApi(accessToken)
+                .notifyReportedTransferId(0L),
+            Object.class,
+            debtPositionApisHolder::unload);
+    }
 }

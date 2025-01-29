@@ -8,8 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
-import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildPaymentsTransferDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)

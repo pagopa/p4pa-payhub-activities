@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class TransferClassificationStoreService {
 	 */
 	public Integer saveClassifications(
 		TransferSemanticKeyDTO transferSemanticKeyDTO,
-		TransferDTO transferDTO,
+		Transfer transferDTO,
 		PaymentsReporting paymentsReportingDTO,
 		Treasury treasuryDTO,
 		List<ClassificationsEnum> classifications) {
@@ -53,7 +53,7 @@ public class TransferClassificationStoreService {
 		List<Classification> dtoList = classifications.stream()
 			.map(classification -> Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
-				.transferId(Optional.ofNullable(transferDTO).map(TransferDTO::getTransferId).orElse(null))
+				.transferId(Optional.ofNullable(transferDTO).map(Transfer::getTransferId).orElse(null))
 				.paymentsReportingId(optionalPaymentsReporting.map(PaymentsReporting::getPaymentsReportingId).orElse(null))
 				.treasuryId(Optional.ofNullable(treasuryDTO).map(Treasury::getTreasuryId).orElse(null))
 				.iuf(optionalPaymentsReporting.map(PaymentsReporting::getIuf).orElse(null))
