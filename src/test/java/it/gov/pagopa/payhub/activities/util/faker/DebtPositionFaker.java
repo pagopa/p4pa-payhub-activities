@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionStatus;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class DebtPositionFaker {
                 .iupdOrg("codeIud")
                 .description("description")
                 .status(DebtPositionDTO.StatusEnum.valueOf("UNPAID"))
+                .debtPositionOrigin(DebtPositionDTO.DebtPositionOriginEnum.ORDINARY)
                 .ingestionFlowFileId(0L)
                 .ingestionFlowFileLineNumber(1L)
                 .organizationId(2L)
@@ -36,6 +38,7 @@ public class DebtPositionFaker {
                 .iupdOrg("codeIud")
                 .description("description")
                 .status(DebtPositionStatus.UNPAID)
+                .debtPositionOrigin(DebtPositionOrigin.ORDINARY)
                 .ingestionFlowFileId(0L)
                 .ingestionFlowFileLineNumber(1L)
                 .organizationId(2L)
