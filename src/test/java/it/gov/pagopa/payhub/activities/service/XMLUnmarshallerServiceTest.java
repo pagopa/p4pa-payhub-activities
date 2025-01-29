@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,7 +114,7 @@ class XMLUnmarshallerServiceTest {
 		Files.writeString(xmlFile.toPath(), invalidXmlContent);
 
 		// when then
-		assertThrows(ActivitiesException.class, () ->
+		assertThrows(InvalidValueException.class, () ->
 				service.unmarshal(xmlFile, CtFlussoRiversamento.class, jaxbContext, schema),
 				"Error while parsing file"
 		);

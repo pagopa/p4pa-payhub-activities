@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -43,7 +43,7 @@ public class XMLUnmarshallerService {
 			JAXBElement<T> element = unmarshaller.unmarshal(new StreamSource(is), clazz);
 			return element.getValue();
 		} catch (IOException | JAXBException e) {
-			throw new ActivitiesException("Error while parsing file: "+ file.getName());
+			throw new InvalidValueException("Error while parsing file: "+ file.getName());
 		}
 	}
 }

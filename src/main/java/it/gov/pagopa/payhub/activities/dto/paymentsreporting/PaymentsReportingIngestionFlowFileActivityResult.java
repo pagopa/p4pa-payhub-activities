@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PaymentsReportingIngestionFlowFileActivityResult {
     private String iuf;
+    //TODO add organizationId here
     /** List of extracted transferSemanticKeys */
     private List<PaymentsReportingTransferDTO> transfers;
     /** Success flag for the operation */

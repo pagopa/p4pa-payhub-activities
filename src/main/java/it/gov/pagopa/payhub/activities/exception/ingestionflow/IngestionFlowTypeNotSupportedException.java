@@ -1,11 +1,13 @@
-package it.gov.pagopa.payhub.activities.exception;
+package it.gov.pagopa.payhub.activities.exception.ingestionflow;
+
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 
 /**
  * A custom exception that indicates the absence of an expected ingestion flow
  * in the application's processing logic.
  *
  */
-public class IngestionFlowTypeNotSupportedException extends ActivitiesException {
+public class IngestionFlowTypeNotSupportedException extends NotRetryableActivityException {
 
 	/**
 	 * Constructs a new {@code IngestionFlowNotFoundException} with the specified detail message.
