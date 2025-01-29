@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RtTesClassifierTest {
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
-	private final TransferDTO transferDTO = TransferFaker.buildTransferDTO();
+	private final Transfer transferDTO = TransferFaker.buildTransfer();
 	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
 
 	TransferClassifier classifier = new RtTesClassifier();
@@ -58,7 +58,7 @@ class RtTesClassifierTest {
 	}
 
 	@Test
-	void givenUnmatchedTransferDTOWhenDefineThenReturnNull() {
+	void givenUnmatchedTransferWhenDefineThenReturnNull() {
 		// Act
 		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryDTO);
 		// Assert
