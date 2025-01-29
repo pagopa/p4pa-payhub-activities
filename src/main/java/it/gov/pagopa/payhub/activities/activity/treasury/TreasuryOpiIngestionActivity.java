@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
 
 /**
  * Interface for the TreasuryOpiIngestionActivity.
@@ -15,8 +15,8 @@ public interface TreasuryOpiIngestionActivity {
      * Processes a file based on the provided IngestionFlow ID.
      *
      * @param ingestionFlowId the unique identifier related to the file to process.
-     * @return {@link TreasuryIufResult} containing the list of IUFs and status.
+     * @return {@link TreasuryIufIngestionFlowFileResult} containing the list of IUFs and status.
      */
     @ActivityMethod
-    TreasuryIufResult processFile(Long ingestionFlowId);
+    TreasuryIufIngestionFlowFileResult processFile(Long ingestionFlowId);
 }

@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -13,7 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,16 +50,15 @@ class TreasuryOpiParserServiceTest {
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
-        when(treasuryService.insert(treasuryDTO)).thenReturn(Optional.of(treasuryDTO));
+        when(treasuryService.insert(treasuryDTO)).thenReturn(treasuryDTO);
 
         // When
-        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
+        Map<String, String> result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
-        assertTrue(result.isSuccess());
-        assertEquals(1, result.getIufTreasuryIdMap().size());
-        assertEquals("treasury123", result.getIufTreasuryIdMap().get("Flow123"));
+        assertEquals(1, result.size());
+        assertEquals("treasury123", result.get("Flow123"));
         verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 
@@ -109,16 +107,15 @@ class TreasuryOpiParserServiceTest {
         List<Treasury> handlerResult = List.of(treasuryDTO);
 
         when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
-        when(treasuryService.insert(treasuryDTO)).thenReturn(Optional.of(treasuryDTO));
+        when(treasuryService.insert(treasuryDTO)).thenReturn(treasuryDTO);
 
         // When
-        TreasuryIufResult result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
+        Map<String, String> result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
-        assertTrue(result.isSuccess());
-        assertEquals(1, result.getIufTreasuryIdMap().size());
-        assertEquals("treasury123", result.getIufTreasuryIdMap().get("Flow456"));
+        assertEquals(1, result.size());
+        assertEquals("treasury123", result.get("Flow456"));
         verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 }

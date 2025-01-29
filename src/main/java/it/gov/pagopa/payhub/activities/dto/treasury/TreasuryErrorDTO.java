@@ -11,6 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class TreasuryErrorDTO implements Serializable {
   private String fileName;
+  private Long rowNumber;
   private String billYear;
   private String billCode;
   private String errorCode;

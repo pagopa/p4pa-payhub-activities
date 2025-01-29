@@ -12,13 +12,11 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TreasuryIufResult {
+public class TreasuryIufIngestionFlowFileResult {
     /** Map of IUFs and their corresponding Treasury IDs */
-    private Map<String, String> iufTreasuryIdMap;
+    private Map<String, String> iuf2TreasuryIdMap;
     /** Organization ID */
     private Long organizationId;
-    /** Success flag for the operation */
-    private boolean success;
     /** Error description */
     private String errorDescription;
     /** Discarded file name */

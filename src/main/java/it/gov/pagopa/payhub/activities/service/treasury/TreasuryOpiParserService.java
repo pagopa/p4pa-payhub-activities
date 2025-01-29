@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -13,6 +12,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Lazy
@@ -31,7 +31,7 @@ public class TreasuryOpiParserService {
         this.treasuryService = treasuryService;
     }
 
-    public TreasuryIufResult parseData(Path treasuryOpiFilePath, IngestionFlowFile ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
+    public Map<String, String> parseData(Path treasuryOpiFilePath, IngestionFlowFile ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
 
         List<Treasury> newTreasuries = versionHandlerServices.stream()
@@ -40,14 +40,10 @@ public class TreasuryOpiParserService {
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
-        Map<String, String> iufTreasuryIdMap = newTreasuries.stream()
+        return newTreasuries.stream()
             .collect(Collectors.toMap(
                 Treasury::getIuf,
-                treasury -> treasuryService.insert(treasury)
-                    .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot insert treasury " + treasury))
-                    .getTreasuryId()
+                treasury -> Objects.requireNonNull(treasuryService.insert(treasury).getTreasuryId())
             ));
-
-        return new TreasuryIufResult(iufTreasuryIdMap, ingestionFlowFileDTO.getOrganizationId(), true, null, null);
     }
 }

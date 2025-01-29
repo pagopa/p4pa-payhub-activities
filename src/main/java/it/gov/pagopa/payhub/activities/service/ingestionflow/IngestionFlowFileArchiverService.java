@@ -80,9 +80,8 @@ public class IngestionFlowFileArchiverService {
      * the archive directory located within the same file path.
      *
      * @param ingestionFlowFileDTO the DTO containing details of the file to be archived.
-     * @throws IOException if an error occurs during file movement or directory creation.
      */
-    public void archive(IngestionFlowFile ingestionFlowFileDTO) throws IOException {
+    public void archive(IngestionFlowFile ingestionFlowFileDTO) {
         Path originalFileFolder = sharedDirectoryPath
                 .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
                 .resolve(ingestionFlowFileDTO.getFilePathName());
@@ -101,13 +100,16 @@ public class IngestionFlowFileArchiverService {
      *
      * @param files2Archive the list of files to move to the target directory.
      * @param targetPath    the directory where the files will be moved.
-     * @throws IOException if an error occurs during directory creation, file movement, or cleanup.
      */
-    public void archive(List<Path> files2Archive, Path targetPath) throws IOException {
-        Files.createDirectories(targetPath);
-        for (Path file : files2Archive) {
-            Files.copy(file, targetPath.resolve(file.getFileName()), REPLACE_EXISTING);
-            Files.deleteIfExists(file);
+    public void archive(List<Path> files2Archive, Path targetPath) {
+        try {
+            Files.createDirectories(targetPath);
+            for (Path file : files2Archive) {
+                Files.copy(file, targetPath.resolve(file.getFileName()), REPLACE_EXISTING);
+                Files.deleteIfExists(file);
+            }
+        } catch (IOException e){
+            throw new IllegalStateException("Cannot archive files: " + files2Archive + " into destination: " + targetPath, e);
         }
     }
 }

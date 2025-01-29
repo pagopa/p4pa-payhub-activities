@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,19 +94,18 @@ class TreasuryOpiIngestionActivityTest {
             .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO,  mockedListPath.size()))
-            .thenReturn(new TreasuryIufResult(Collections.singletonMap("IUF123", "treasury123"), ingestionFlowFileDTO.getOrganizationId(), true, null, null));
+            .thenReturn(Collections.singletonMap("IUF123", "treasury123"));
 
     Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
             .thenReturn("DISCARDFILENAME");
 
     // When
-    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
+    TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
 
     // Then
     Assertions.assertNotNull(result);
-    Assertions.assertTrue(result.isSuccess());
-    Assertions.assertEquals(1, result.getIufTreasuryIdMap().size());
-    Assertions.assertEquals("treasury123", result.getIufTreasuryIdMap().get("IUF123"));
+    Assertions.assertEquals(1, result.getIuf2TreasuryIdMap().size());
+    Assertions.assertEquals("treasury123", result.getIuf2TreasuryIdMap().get("IUF123"));
     Assertions.assertEquals("DISCARDFILENAME", result.getDiscardedFileName());
 
     Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1))
@@ -119,12 +117,11 @@ class TreasuryOpiIngestionActivityTest {
     when(ingestionFlowFileServiceMock.findById(NOT_FOUND_INGESTION_FLOW_ID)).thenReturn(Optional.empty());
 
     //when
-    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(NOT_FOUND_INGESTION_FLOW_ID);
+    TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(NOT_FOUND_INGESTION_FLOW_ID);
 
     //verify
-    Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufTreasuryIdMap());
-    Assertions.assertEquals(0, result.getIufTreasuryIdMap().size());
+    Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+    Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(NOT_FOUND_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
@@ -135,12 +132,11 @@ class TreasuryOpiIngestionActivityTest {
     when(ingestionFlowFileServiceMock.findById(INVALID_INGESTION_FLOW_ID)).thenReturn(Optional.of(INVALID_INGESTION_FLOW));
 
     //when
-    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(INVALID_INGESTION_FLOW_ID);
+    TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(INVALID_INGESTION_FLOW_ID);
 
     //verify
-    Assertions.assertFalse(result.isSuccess());
-    Assertions.assertNotNull(result.getIufTreasuryIdMap());
-    Assertions.assertEquals(0, result.getIufTreasuryIdMap().size());
+    Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+    Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(INVALID_INGESTION_FLOW_ID);
     Mockito.verifyNoInteractions(treasuryServiceMock, ingestionFlowFileRetrieverServiceMock, treasuryUnmarshallerServiceMock, treasuryMapperServiceMock);
   }
@@ -157,10 +153,9 @@ class TreasuryOpiIngestionActivityTest {
 
     when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(mockFlowDTO));
     // When
-    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
+    TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
 
     // Then
-    assertFalse(result.isSuccess());
   }
 
   @Test
@@ -177,8 +172,8 @@ class TreasuryOpiIngestionActivityTest {
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
 
-    TreasuryIufResult expected =
-            new TreasuryIufResult(Collections.emptyMap(), null, false, "error occured", null);
+    TreasuryIufIngestionFlowFileResult expected =
+            new TreasuryIufIngestionFlowFileResult(Collections.emptyMap(), null, "error occured", null);
 
     when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
@@ -188,7 +183,7 @@ class TreasuryOpiIngestionActivityTest {
             .archiveErrorFiles(workingDir, ingestionFlowFileDTO);
 
     // When
-    TreasuryIufResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
+    TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
 
     // Then
     assertEquals(expected, result);

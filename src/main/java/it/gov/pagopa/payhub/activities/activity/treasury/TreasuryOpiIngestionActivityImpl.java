@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.treasury;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
@@ -13,11 +13,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link TreasuryOpiIngestionActivity} for processing OPI treasury ingestion files.
@@ -26,7 +25,7 @@ import static java.util.stream.Collectors.toMap;
 @Slf4j
 @Lazy
 @Component
-public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActivity<TreasuryIufResult> implements TreasuryOpiIngestionActivity {
+public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActivity<TreasuryIufIngestionFlowFileResult> implements TreasuryOpiIngestionActivity {
 
     private final TreasuryOpiParserService treasuryOpiParserService;
     private final TreasuryErrorsArchiverService errorsArchiverService;
@@ -34,7 +33,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
     /**
      * Constructor to initialize dependencies for OPI treasury ingestion.
      *
-     * @param ingestionFlowFileService              DAO for accessing ingestion flow file records.
+     * @param ingestionFlowFileService          DAO for accessing ingestion flow file records.
      * @param ingestionFlowFileRetrieverService Service for retrieving and unzipping ingestion flow files.
      * @param treasuryOpiParserService          Service for parsing treasury OPI files.
      * @param ingestionFlowFileArchiverService  Service for archiving files.
@@ -57,38 +56,30 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
     }
 
     @Override
-    protected TreasuryIufResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
+    protected TreasuryIufIngestionFlowFileResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
         int ingestionFlowFilesRetrievedSize = retrievedFiles.size();
 
-        List<TreasuryIufResult> treasuryIufResultList = retrievedFiles.stream()
-            .map(path -> {
-                try {
-                    return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
-                } catch (Exception e) {
-                    log.error("Error processing file {}: {}", path, e.getMessage());
-                    return new TreasuryIufResult(Collections.emptyMap(), ingestionFlowFileDTO.getOrganizationId(), false, e.getMessage(), null);
-                }
-            })
-            .toList();
+        Map<String, String> iuf2TreasuryIdMap = retrievedFiles.stream()
+                .map(path -> {
+                    try {
+                        return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
+                    } catch (Exception e) {
+                        log.error("Error processing file {}: {}", path, e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .flatMap(m->m.entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         String discardsFileName = errorsArchiverService.archiveErrorFiles(retrievedFiles.getFirst().getParent(), ingestionFlowFileDTO);
 
-        boolean isSuccess = treasuryIufResultList.stream().allMatch(TreasuryIufResult::isSuccess);
-
-return new TreasuryIufResult(
-    treasuryIufResultList.stream()
-        .flatMap(result -> result.getIufTreasuryIdMap().entrySet().stream())
-        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1)),
-    ingestionFlowFileDTO.getOrganizationId(),
-    isSuccess,
-    isSuccess ? null : "error occurred",
-    discardsFileName
-);
-    }
-
-    @Override
-    protected TreasuryIufResult onErrorResult(Exception e) {
-        return new TreasuryIufResult(Collections.emptyMap(), null, false, e.getMessage(), null);
+        return new TreasuryIufIngestionFlowFileResult(
+                iuf2TreasuryIdMap,
+                ingestionFlowFileDTO.getOrganizationId(),
+                discardsFileName!=null? "There were some errors during TreasuryOPI file ingestion. Please check error file": null,
+                discardsFileName
+        );
     }
 
 }
