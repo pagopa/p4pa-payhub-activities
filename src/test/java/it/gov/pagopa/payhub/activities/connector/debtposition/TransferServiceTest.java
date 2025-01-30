@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
@@ -50,10 +48,10 @@ class TransferServiceTest {
 		when(transferSearchClientMock.findBySemanticKey(1L, "IUV", "IUR", 1, accessToken)).thenReturn(expected);
 
 		// When
-		Optional<Transfer> result = transferService.findBySemanticKey(transferSemanticKey);
+		Transfer result = transferService.findBySemanticKey(transferSemanticKey);
 
 		// Then
-		assertSame(expected, result.get());
+		assertSame(expected, result);
 	}
 
 	@Test

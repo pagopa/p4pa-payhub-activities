@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -58,6 +59,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
     @Override
     protected TreasuryIufIngestionFlowFileResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
         int ingestionFlowFilesRetrievedSize = retrievedFiles.size();
+        final List<String> unsuccessfulParsedFiles = new ArrayList<>();
 
         Map<String, String> iuf2TreasuryIdMap = retrievedFiles.stream()
                 .map(path -> {
@@ -65,21 +67,37 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                         return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
                     } catch (Exception e) {
                         log.error("Error processing file {}: {}", path, e.getMessage());
+                        unsuccessfulParsedFiles.add(path.getFileName() + ":" + e.getMessage());
                         return null;
                     }
                 })
                 .filter(Objects::nonNull)
-                .flatMap(m->m.entrySet().stream())
+                .flatMap(m -> m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         String discardsFileName = errorsArchiverService.archiveErrorFiles(retrievedFiles.getFirst().getParent(), ingestionFlowFileDTO);
+        String errorDescription = buildErrorDescription(unsuccessfulParsedFiles, discardsFileName);
 
         return new TreasuryIufIngestionFlowFileResult(
                 iuf2TreasuryIdMap,
                 ingestionFlowFileDTO.getOrganizationId(),
-                discardsFileName!=null? "There were some errors during TreasuryOPI file ingestion. Please check error file": null,
+                errorDescription,
                 discardsFileName
         );
+    }
+
+    private static String buildErrorDescription(List<String> unsuccessfulParsedFiles, String discardsFileName) {
+        String errorDescription = null;
+        if (!unsuccessfulParsedFiles.isEmpty() || discardsFileName !=null) {
+            errorDescription = "There were some errors during TreasuryOPI file ingestion.";
+            if(discardsFileName !=null){
+                errorDescription += " Please check error file.";
+            }
+            if(!unsuccessfulParsedFiles.isEmpty()){
+                errorDescription += "\n" + String.join("\n", unsuccessfulParsedFiles);
+            }
+        }
+        return errorDescription;
     }
 
 }
