@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 
-import it.gov.pagopa.payhub.activities.connector.aca.AcaService;
-import it.gov.pagopa.payhub.activities.connector.aca.mapper.DebtPositionDTOMapper;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.AcaService;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.DebtPositionDTOMapper;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

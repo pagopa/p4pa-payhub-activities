@@ -1,6 +1,6 @@
-package it.gov.pagopa.payhub.activities.connector.aca;
+package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
-import it.gov.pagopa.payhub.activities.connector.aca.client.AcaClient;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.AcaClient;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
 import lombok.extern.slf4j.Slf4j;
