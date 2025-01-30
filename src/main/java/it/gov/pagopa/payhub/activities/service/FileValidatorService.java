@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

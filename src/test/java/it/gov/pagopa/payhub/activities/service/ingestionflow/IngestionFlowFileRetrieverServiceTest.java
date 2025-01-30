@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.FileValidatorService;
 import it.gov.pagopa.payhub.activities.service.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
@@ -52,7 +52,7 @@ class IngestionFlowFileRetrieverServiceTest {
 	}
 
 	@Test
-	void testRetrieveFile_successfulFlow() throws IOException {
+	void testRetrieveFile_successfulFlow() {
 		//Given
 		Long organizationId = 0L;
 		Path sourcePath = zipFile.getParent();

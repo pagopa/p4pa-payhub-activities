@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.exception.IngestionFlowFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -41,9 +42,6 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 			ingestionFlowFileArchiverService.archive(ingestionFlowFileDTO);
 
 			return result;
-		} catch (Exception e) {
-			log.error("Error during processing of ingestionFlowFileId {} in class {} due to: {}", ingestionFlowFileId, getClass(), e.getMessage());
-			return onErrorResult(e);
 		} finally {
 			deletion(retrievedFiles);
 		}
@@ -63,7 +61,7 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
 
 		if (!(getHandledIngestionFlowFileType()).equals(ingestionFlowFileDTO.getFlowFileType())) {
-			throw new IllegalArgumentException("invalid ingestionFlow file type");
+			throw new IngestionFlowTypeNotSupportedException("invalid ingestionFlow file type: " + ingestionFlowFileDTO.getFlowFileType() + " expected " + getHandledIngestionFlowFileType());
 		}
 
 		return ingestionFlowFileDTO;
@@ -75,9 +73,8 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 	 *
 	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing file details
 	 * @return the extracted {@link List} from the ingestion flow
-	 * @throws IOException if there is an error during file retrieval or extraction
-	 */
-	private List<Path> retrieveFiles(IngestionFlowFile ingestionFlowFileDTO) throws IOException {
+     */
+	private List<Path> retrieveFiles(IngestionFlowFile ingestionFlowFileDTO) {
 		return ingestionFlowFileRetrieverService
 			.retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 	}
@@ -104,7 +101,4 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 
 	/** It will process retrieve files */
 	protected abstract T handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO);
-
-	/** It will build the result in case of error */
-	protected abstract T onErrorResult(Exception e);
 }

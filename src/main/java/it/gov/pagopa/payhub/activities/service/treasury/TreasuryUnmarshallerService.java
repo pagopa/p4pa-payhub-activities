@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -47,7 +46,7 @@ public class TreasuryUnmarshallerService {
       this.xmlUnmarshallerService = xmlUnmarshallerService;
     } catch (JAXBException | SAXException | IOException e) {
       log.error("Error while creating a new instance for TreasuryUnmarshallerService", e);
-      throw new ActivitiesException("Error while creating a new instance for TreasuryUnmarshallerService");
+      throw new IllegalStateException("Error while creating a new instance for TreasuryUnmarshallerService");
     }
   }
 

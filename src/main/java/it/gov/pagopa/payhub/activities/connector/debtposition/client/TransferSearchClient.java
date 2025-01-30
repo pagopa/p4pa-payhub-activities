@@ -16,6 +16,6 @@ public class TransferSearchClient {
 
 	public Transfer findBySemanticKey(Long orgId, String iuv, String iur, Integer transferIndex, String accessToken) {
         return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
-                .crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex);
+                .crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex, null);
     }
 }

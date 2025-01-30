@@ -1,11 +1,13 @@
-package it.gov.pagopa.payhub.activities.exception;
+package it.gov.pagopa.payhub.activities.exception.ingestionflow;
+
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 
 /**
  * A custom exception that indicates an invalid ingestion file encountered
  * during the application's processing operations.
  *
  */
-public class InvalidIngestionFileException extends ActivitiesException {
+public class InvalidIngestionFileException extends NotRetryableActivityException {
 
 	/**
 	 * Constructs a new {@code InvalidIngestionFileException} with the specified detail message.

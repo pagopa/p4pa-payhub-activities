@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
@@ -66,7 +66,7 @@ public class TreasuryErrorsArchiverService {
 
             csvService.createCsv(errorCsvFilePath, header, data);
         } catch (IOException e) {
-            throw new ActivitiesException(e.getMessage());
+            throw new NotRetryableActivityException(e.getMessage());
         }
 
     }

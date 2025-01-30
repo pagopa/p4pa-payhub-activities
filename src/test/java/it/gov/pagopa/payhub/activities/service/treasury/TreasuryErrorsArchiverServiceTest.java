@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
@@ -76,7 +76,7 @@ class TreasuryErrorsArchiverServiceTest {
                     .createCsv(eq(expectedErrorFilePath), any(), any());
 
             // When & Then
-            ActivitiesException exception = assertThrows(ActivitiesException.class, () ->
+            NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
                     treasuryErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
             assertEquals("Error creating CSV", exception.getMessage());
     }

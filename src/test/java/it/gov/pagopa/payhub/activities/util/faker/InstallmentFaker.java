@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentStatus;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class InstallmentFaker {
                 .installmentId(1L)
                 .paymentOptionId(1L)
                 .status(InstallmentStatus.PAID)
+                .debtPositionOrigin(DebtPositionOrigin.ORDINARY)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")

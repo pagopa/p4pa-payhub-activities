@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -60,13 +59,10 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
 			.map(paymentsReportingMapperService::map).toList();
 
-		String iuf = paymentsReportings.getFirst().getIuf(); // The iuf is the same for entire file
-		return new PaymentsReportingIngestionFlowFileActivityResult(iuf, transferSemanticKeys, true, null);
-	}
-
-	@Override
-	protected PaymentsReportingIngestionFlowFileActivityResult onErrorResult(Exception e) {
-		return new PaymentsReportingIngestionFlowFileActivityResult(null, Collections.emptyList(), false, e.getMessage());
+		PaymentsReporting first = paymentsReportings.getFirst();
+		String iuf = first.getIuf(); // The iuf is the same for entire file
+		Long organizationId = first.getOrganizationId(); // The organizationId is the same for entire file
+		return new PaymentsReportingIngestionFlowFileActivityResult(iuf, organizationId, transferSemanticKeys);
 	}
 
 	/**

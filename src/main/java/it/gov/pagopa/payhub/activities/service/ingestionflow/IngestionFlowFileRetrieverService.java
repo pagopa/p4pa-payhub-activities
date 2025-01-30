@@ -70,9 +70,8 @@ public class IngestionFlowFileRetrieverService {
      * @param sourcePath the relative path to the directory containing the file.
      * @param filename   the name of the file to process.
      * @return the path to the extracted file.
-     * @throws IOException if any file operation fails during the setup process.
      */
-    public List<Path> retrieveAndUnzipFile(Long organizationId, Path sourcePath, String filename) throws IOException {
+    public List<Path> retrieveAndUnzipFile(Long organizationId, Path sourcePath, String filename) {
         log.debug("Retrieving file: {}", filename);
         String organizationFolder = String.valueOf(organizationId);
         Path encryptedFilePath = sharedDirectoryPath
@@ -85,7 +84,11 @@ public class IngestionFlowFileRetrieverService {
         Path workingPath = tempDirectoryPath
                 .resolve(organizationFolder)
                 .resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
-        Files.createDirectories(workingPath);
+        try {
+            Files.createDirectories(workingPath);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot create working directory: " + workingPath, e);
+        }
 
         String filenameNoCipher = filename.replace(AESUtils.CIPHER_EXTENSION, "");
         Path zipFilePath = workingPath.resolve(filenameNoCipher);

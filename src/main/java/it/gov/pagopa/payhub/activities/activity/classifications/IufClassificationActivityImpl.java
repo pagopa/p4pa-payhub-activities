@@ -48,7 +48,6 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         return IufClassificationActivityResult.builder()
                 .organizationId(organizationId)
                 .transfers2classify(transfers2classify)
-                .success(true)
                 .build();
     }
 

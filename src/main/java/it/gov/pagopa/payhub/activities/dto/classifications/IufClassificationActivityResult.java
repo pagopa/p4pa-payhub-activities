@@ -14,5 +14,4 @@ import java.util.List;
 public class IufClassificationActivityResult {
     private Long organizationId;
     private List<Transfer2ClassifyDTO> transfers2classify;
-    private boolean success;
 }

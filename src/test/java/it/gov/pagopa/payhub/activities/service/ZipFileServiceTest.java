@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.exception.InvalidIngestionFileException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
