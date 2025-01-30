@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Lazy
 @Service
 @Slf4j
@@ -23,14 +21,9 @@ public class AcaServiceImpl implements AcaService {
     }
 
     @Override
-    public List<String> createAcaDebtPosition(DebtPositionDTO debtPositionDTO) {
+    public void syncInstallmentAca(String iud, DebtPositionDTO debtPositionDTO) {
         String accessToken = authnService.getAccessToken();
-        return acaClient.createAcaDebtPosition(debtPositionDTO, accessToken);
+        acaClient.syncAca(iud, debtPositionDTO, accessToken);
     }
 
-    @Override
-    public List<String> deleteAcaDebtPosition(DebtPositionDTO debtPositionDTO) {
-        String accessToken = authnService.getAccessToken();
-        return acaClient.deleteAcaDebtPosition(debtPositionDTO, accessToken);
-    }
 }

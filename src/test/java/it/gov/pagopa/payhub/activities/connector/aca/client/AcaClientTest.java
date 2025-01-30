@@ -34,36 +34,21 @@ class AcaClientTest {
     }
 
     @Test
-    void whenCreateAcaDebtPositionThenInvokeWithAccessToken(){
+    void whenSyncAcaThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
+        String iud = "IUD";
         DebtPositionDTO debtPositionDTO = buildPaymentsDebtPositionDTO();
 
         Mockito.when(acaApisHolderMock.getAcaApi(accessToken))
                 .thenReturn(acaApiMock);
 
         // When
-        acaClient.createAcaDebtPosition(debtPositionDTO, accessToken);
+        acaClient.syncAca(iud, debtPositionDTO, accessToken);
 
         // Then
         Mockito.verify(acaApiMock)
-                .createAca(debtPositionDTO);
+                .syncAca(iud, debtPositionDTO);
     }
 
-    @Test
-    void whenDeleteAcaDebtPositionThenInvokeWithAccessToken(){
-        // Given
-        String accessToken = "ACCESSTOKEN";
-        DebtPositionDTO debtPositionDTO = buildPaymentsDebtPositionDTO();
-
-        Mockito.when(acaApisHolderMock.getAcaApi(accessToken))
-                .thenReturn(acaApiMock);
-
-        // When
-        acaClient.deleteAcaDebtPosition(debtPositionDTO, accessToken);
-
-        // Then
-        Mockito.verify(acaApiMock)
-                .deleteAca(debtPositionDTO);
-    }
 }
