@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.treasury;
 
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -70,7 +70,7 @@ class TreasuryUnmarshallerServiceTest {
 
     // when then
     File file = xmlFile.getFile();
-    Assertions.assertThrows(ActivitiesException.class,
+    Assertions.assertThrows(InvalidValueException.class,
             () -> treasuryUnmarshallerService.unmarshalOpi14(file),
             "Error while parsing file"
     );
@@ -83,7 +83,7 @@ class TreasuryUnmarshallerServiceTest {
 
     // when then
     File file = xmlFile.getFile();
-    Assertions.assertThrows(ActivitiesException.class,
+    Assertions.assertThrows(InvalidValueException.class,
             () -> treasuryUnmarshallerService.unmarshalOpi161(file),
             "Error while parsing file"
     );
@@ -95,7 +95,7 @@ class TreasuryUnmarshallerServiceTest {
     try(MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
       mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class))
               .thenThrow(new JAXBException("Simulated JAXBException"));
-      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(null, null, null));
+      Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null));
     }
   }
 
@@ -104,7 +104,7 @@ class TreasuryUnmarshallerServiceTest {
     try(MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
       mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
               .thenThrow(new JAXBException("Simulated JAXBException"));
-      Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(null, null, null));
+      Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null));
     }
   }
 
@@ -115,6 +115,6 @@ class TreasuryUnmarshallerServiceTest {
     Mockito.when(mockResource.getURL()).thenThrow(new IOException("Simulated IOException"));
 
     // when then
-    Assertions.assertThrows(ActivitiesException.class, () -> new TreasuryUnmarshallerService(mockResource, null, null));
+    Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(mockResource, null, null));
   }
 }

@@ -5,12 +5,11 @@ import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
-import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationService;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -47,21 +46,30 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	public void classify(TransferSemanticKeyDTO transferSemanticKey) {
 		log.info("Transfer classification for organization id: {} and iuv: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
+
+		// Clear previous classification
 		Long deletedRowsNumber = classificationService.deleteBySemanticKey(transferSemanticKey);
 		log.debug("Deleted {} classifications for organization id: {} and iuv: {}",
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
-		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey).orElse(null);
 
+		// Retrieve Transfer 2 classify
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey);
+
+		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex());
 		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(transferSemanticKey);
+
+		// Retrieve related Treasury
 		Treasury treasuryDTO = retrieveTreasury(transferSemanticKey.getOrgId(), paymentsReporting);
 
+		// Classify
 		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReporting, treasuryDTO);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex(),
 			String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
+		// Store results
 		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, paymentsReporting, treasuryDTO, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
 	}
@@ -77,8 +85,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		if (paymentsReportingDTO != null) {
 			String iuf = paymentsReportingDTO.getIuf();
 			log.info("Retrieve treasury for organization id: {} and iuf {}", orgId, iuf);
-			return treasuryService.getByOrganizationIdAndIuf(orgId, iuf)
-					.orElseThrow(() -> new InvalidValueException("invalid Treasury"));
+			return treasuryService.getByOrganizationIdAndIuf(orgId, iuf);
 		}
 		return null;
 	}

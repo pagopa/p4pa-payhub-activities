@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentSyncStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +23,6 @@ public class InstallmentFaker {
                 .installmentId(1L)
                 .paymentOptionId(1L)
                 .status(InstallmentDTO.StatusEnum.PAID)
-                .syncStatus(it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus.builder()
-                        .syncStatusFrom(it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus.SyncStatusFromEnum.DRAFT)
-                        .syncStatusTo(it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus.SyncStatusToEnum.UNPAID).build())
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")
@@ -54,9 +51,7 @@ public class InstallmentFaker {
                 .installmentId(1L)
                 .paymentOptionId(1L)
                 .status(InstallmentStatus.PAID)
-                .syncStatus(InstallmentSyncStatus.builder()
-                        .syncStatusFrom(InstallmentStatus.DRAFT)
-                        .syncStatusTo(InstallmentStatus.UNPAID).build())
+                .debtPositionOrigin(DebtPositionOrigin.ORDINARY)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")

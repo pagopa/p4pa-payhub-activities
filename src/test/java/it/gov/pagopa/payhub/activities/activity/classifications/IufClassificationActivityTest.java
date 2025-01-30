@@ -72,7 +72,6 @@ class IufClassificationActivityTest {
                         .builder()
                         .organizationId(1L)
                         .transfers2classify(expectedTransfer2ClassifyDTOS)
-                        .success(true)
                         .build();
 
         when(paymentsReportingServiceMock.getByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
@@ -96,7 +95,6 @@ class IufClassificationActivityTest {
                         .builder()
                         .organizationId(1L)
                         .transfers2classify(new ArrayList<>())
-                        .success(true)
                         .build();
 
         when(paymentsReportingServiceMock.getByOrganizationIdAndIuf(ORGANIZATIONID, IUF))

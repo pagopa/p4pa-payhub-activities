@@ -49,32 +49,11 @@ class TreasuryServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        Treasury result = treasuryService.getByOrganizationIdAndIuf(organizationId, iuf).orElse(null);
+        Treasury result = treasuryService.getByOrganizationIdAndIuf(organizationId, iuf);
 
         // Then
         assertEquals(expectedTreasury, result);
         verify(treasuryClientMock, times(1)).findByOrganizationIdAndIuf(organizationId, iuf, accessToken);
-    }
-
-    @Test
-    void testGetByOrganizationIdAndBillCodeAndBillYear() {
-        // Given
-        Long organizationId = 1L;
-        String billCode = "BILL123";
-        String billYear = "2023";
-        String accessToken = "accessToken";
-        Treasury expectedTreasury = new Treasury();
-        when(treasuryClientMock.getBySemanticKey(organizationId, billCode, billYear, accessToken))
-                .thenReturn(expectedTreasury);
-        Mockito.when(authnServiceMock.getAccessToken())
-                .thenReturn(accessToken);
-
-        // When
-        Treasury result = treasuryService.getBySemanticKey(organizationId, billCode, billYear).orElse(null);
-
-        // Then
-        assertEquals(expectedTreasury, result);
-        verify(treasuryClientMock, times(1)).getBySemanticKey(organizationId, billCode, billYear, accessToken);
     }
 
     @Test
@@ -88,7 +67,7 @@ class TreasuryServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        Treasury result = treasuryService.insert(treasury).orElse(null);
+        Treasury result = treasuryService.insert(treasury);
 
         // Then
         assertEquals(expectedTreasury, result);

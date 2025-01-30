@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
-import it.gov.pagopa.payhub.activities.exception.ActivitiesException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -108,7 +108,7 @@ class FlussoRiversamentoUnmarshallerServiceTest {
 		}
 
 		// when then
-		assertThrows(ActivitiesException.class,
+		assertThrows(InvalidValueException.class,
 			() -> handler.unmarshal(xmlFile), "Error while parsing file"
 		);
 	}

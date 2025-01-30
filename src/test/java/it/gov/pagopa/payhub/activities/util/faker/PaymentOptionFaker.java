@@ -13,6 +13,7 @@ public class PaymentOptionFaker {
 
     public static PaymentOptionDTO buildPaymentOptionDTO(){
         return PaymentOptionDTO.builder()
+                .debtPositionId(1L)
                 .paymentOptionId(1L)
                 .debtPositionId(1L)
                 .totalAmountCents(100L)
@@ -27,6 +28,7 @@ public class PaymentOptionFaker {
 
     public static it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO buildPaymentsPaymentOptionDTO(){
         return it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.builder()
+                .debtPositionId(1L)
                 .paymentOptionId(1L)
                 .debtPositionId(1L)
                 .totalAmountCents(100L)

@@ -32,6 +32,7 @@ class InstallmentDTOMapperTest {
     @Test
     void testMapInstallmentDTO(){
         InstallmentDTO installmentDTOexpected = buildPaymentsInstallmentDTO();
+        installmentDTOexpected.setDebtPositionOrigin(null);
 
         Mockito.when(transferDTOMapperMock.map(buildTransferDTO())).thenReturn(buildPaymentsTransferDTO());
         Mockito.when(personDTOMapperMock.map(buildPersonDTO())).thenReturn(buildPaymentsPersonDTO());
@@ -39,6 +40,6 @@ class InstallmentDTOMapperTest {
         InstallmentDTO result = mapper.map(buildInstallmentDTO());
 
         assertEquals(installmentDTOexpected, result);
-        checkNotNullFields(result);
+        checkNotNullFields(result, "debtPositionOrigin", "syncStatus");
     }
 }

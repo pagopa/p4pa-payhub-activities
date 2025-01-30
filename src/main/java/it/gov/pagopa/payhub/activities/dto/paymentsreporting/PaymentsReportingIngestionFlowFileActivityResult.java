@@ -7,18 +7,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-/**
- * DTO for the PaymentsReportingIngestionFlowFileActivityResult, representing the result of file processing.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentsReportingIngestionFlowFileActivityResult {
     private String iuf;
-    /** List of extracted transferSemanticKeys */
+    private Long organizationId;
     private List<PaymentsReportingTransferDTO> transfers;
-    /** Success flag for the operation */
-    private boolean success;
-    /** the error description */
-    private String errorDescription;
 }
