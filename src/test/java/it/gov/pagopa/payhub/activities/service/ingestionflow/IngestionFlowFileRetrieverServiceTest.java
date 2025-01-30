@@ -52,7 +52,7 @@ class IngestionFlowFileRetrieverServiceTest {
 	}
 
 	@Test
-	void testRetrieveFile_successfulFlow() throws IOException {
+	void testRetrieveFile_successfulFlow() {
 		//Given
 		Long organizationId = 0L;
 		Path sourcePath = zipFile.getParent();
