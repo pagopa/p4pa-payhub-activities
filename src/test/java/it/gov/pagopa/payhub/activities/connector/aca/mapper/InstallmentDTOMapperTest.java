@@ -1,5 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.aca.mapper;
 
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.InstallmentDTOMapper;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.PersonDTOMapper;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.TransferDTOMapper;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

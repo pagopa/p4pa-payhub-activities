@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.aca.client;
 
-import it.gov.pagopa.payhub.activities.connector.aca.config.AcaApisHolder;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.AcaClient;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.config.PagoPaPaymentsApisHolder;
 import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -17,19 +18,19 @@ import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.build
 class AcaClientTest {
 
     @Mock
-    private AcaApisHolder acaApisHolderMock;
+    private PagoPaPaymentsApisHolder pagoPaPaymentsApisHolderMock;
     @Mock
     private AcaApi acaApiMock;
 
     private AcaClient acaClient;
 
     @BeforeEach
-    void setUp() { acaClient = new AcaClient(acaApisHolderMock); }
+    void setUp() { acaClient = new AcaClient(pagoPaPaymentsApisHolderMock); }
 
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                acaApisHolderMock
+                pagoPaPaymentsApisHolderMock
         );
     }
 
@@ -40,7 +41,7 @@ class AcaClientTest {
         String iud = "IUD";
         DebtPositionDTO debtPositionDTO = buildPaymentsDebtPositionDTO();
 
-        Mockito.when(acaApisHolderMock.getAcaApi(accessToken))
+        Mockito.when(pagoPaPaymentsApisHolderMock.getAcaApi(accessToken))
                 .thenReturn(acaApiMock);
 
         // When

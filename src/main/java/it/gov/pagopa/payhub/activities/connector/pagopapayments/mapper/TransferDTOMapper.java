@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.connector.aca.mapper;
+package it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper;
 
 import it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO;
 import org.mapstruct.Mapper;

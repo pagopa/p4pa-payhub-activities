@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.aca.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.config.PagoPaPaymentsApisHolder;
 import it.gov.pagopa.pu.ionotification.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ class AcaApisHoldetTest  extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private AcaApisHolder acaApisHolder;
+    private PagoPaPaymentsApisHolder pagoPaPaymentsApisHolder;
 
     @BeforeEach
     void setUp() {
@@ -29,7 +30,7 @@ class AcaApisHoldetTest  extends BaseApiHolderTest {
         ApiClient apiClient = new ApiClient(restTemplateMock);
         String baseUrl = "http://example.com";
         apiClient.setBasePath(baseUrl);
-        acaApisHolder = new AcaApisHolder(baseUrl, restTemplateBuilderMock);
+        pagoPaPaymentsApisHolder = new PagoPaPaymentsApisHolder(baseUrl, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -44,11 +45,11 @@ class AcaApisHoldetTest  extends BaseApiHolderTest {
     void whenCreateAcaApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> {
-                    acaApisHolder.getAcaApi(accessToken)
-                            .createAca(buildPaymentsDebtPositionDTO());
+                    pagoPaPaymentsApisHolder.getAcaApi(accessToken)
+                            .syncAca("IUD", buildPaymentsDebtPositionDTO());
                     return null;
                 },
                 String.class,
-                acaApisHolder::unload);
+                pagoPaPaymentsApisHolder::unload);
     }
 }

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.connector.aca.config;
+package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
 import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
 import it.gov.pagopa.pu.pagopapayments.generated.ApiClient;
@@ -12,13 +12,13 @@ import org.springframework.web.client.RestTemplate;
 
 @Lazy
 @Service
-public class AcaApisHolder {
+public class PagoPaPaymentsApisHolder {
 
     private final AcaApi acaApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
-    public AcaApisHolder(
+    public PagoPaPaymentsApisHolder(
             @Value("${rest.pagopa-payments.base-url}") String baseUrl,
             RestTemplateBuilder restTemplateBuilder) {
         RestTemplate restTemplate = restTemplateBuilder.build();
