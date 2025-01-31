@@ -45,7 +45,7 @@ public class IngestionFlowFileArchiverService {
         this.zipFileService = zipFileService;
 
         if (!Files.exists(sharedDirectoryPath)) {
-            throw new IllegalStateException("Shared folder doesn't exist!");
+            throw new IllegalStateException("Shared folder doesn't exist: " + sharedDirectoryPath);
         }
     }
 

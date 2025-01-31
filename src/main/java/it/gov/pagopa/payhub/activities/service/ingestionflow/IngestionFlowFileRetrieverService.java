@@ -52,10 +52,10 @@ public class IngestionFlowFileRetrieverService {
         this.zipFileService = zipFileService;
 
         if (!Files.exists(sharedDirectoryPath)) {
-            throw new IllegalStateException("Shared folder doesn't exist!");
+            throw new IllegalStateException("Shared folder doesn't exist: " + sharedDirectoryPath);
         }
         if (!Files.exists(tempDirectoryPath)) {
-            throw new IllegalStateException("Temp folder doesn't exist!");
+            throw new IllegalStateException("Temp folder doesn't exist: " + tempDirectoryPath);
         }
     }
 
