@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,9 @@ public class IngestionFlowFileClient {
                 .updateStatus(ingestionFlowFileId, status.name() ,codError, discardFileName);
     }
 
-    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, String flowFileType, OffsetDateTime creationDate, String accessToken) {
+    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, OffsetDateTime creationDateTo, String accessToken) {
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, null, null, null, null);
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDateFrom, creationDateTo,null, null, null, null, null);
     }
 
 }

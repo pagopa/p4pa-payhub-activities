@@ -82,7 +82,8 @@ class IngestionFlowFileServiceTest {
     @Test
     void testFindByOrganizationIdFlowTypeCreateDate() {
         // Given
-        OffsetDateTime creationDate = OffsetDateTime.now();
+        OffsetDateTime creationDate = OffsetDateTime.now().minusDays(1);
+        OffsetDateTime now = OffsetDateTime.now();
         String accessToken = "accessToken";
         Long organizationId = 1L;
         FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
@@ -90,13 +91,13 @@ class IngestionFlowFileServiceTest {
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = new PagedModelIngestionFlowFile(embedded, null, null);
         List<IngestionFlowFile> expectedResponse = pagedModelIngestionFlowFile.getEmbedded().getIngestionFlowFiles();
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        when(ingestionFlowFileClientMock.findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType.getValue(), creationDate, accessToken)).thenReturn(pagedModelIngestionFlowFile);
+        when(ingestionFlowFileClientMock.findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, now, accessToken)).thenReturn(pagedModelIngestionFlowFile);
 
         // When
-        List<IngestionFlowFile> result = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, flowFileType, creationDate);
+        List<IngestionFlowFile> result = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, flowFileType, creationDate, now);
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileClientMock, times(1)).findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType.getValue(), creationDate, accessToken);
+        verify(ingestionFlowFileClientMock, times(1)).findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, now, accessToken);
     }
 }

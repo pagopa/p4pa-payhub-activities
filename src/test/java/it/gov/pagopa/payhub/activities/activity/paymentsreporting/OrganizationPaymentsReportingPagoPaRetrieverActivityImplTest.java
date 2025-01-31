@@ -45,18 +45,25 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityImplTest {
 	void retrieve() {
 		// Given
 		Long organizationId = 1L;
-		String idFlow = "flow-123";
+		String idFlow1 = "flow-123";
+		String idFlow2 = "flow-456";
 		OffsetDateTime now = OffsetDateTime.now();
 		IngestionFlowFile.FlowFileTypeEnum flowFileType = IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA;
-		PaymentsReportingIdDTO paymentsReportingIdDTO = PaymentsReportingIdDTO.builder()
-			.pagopaPaymentsReportingId(idFlow)
+		PaymentsReportingIdDTO paymentsReportingIdDTO1 = PaymentsReportingIdDTO.builder()
+			.pagopaPaymentsReportingId(idFlow1)
 			.flowDateTime(now)
-			.paymentsReportingFileName(idFlow + now +".xml")
+			.paymentsReportingFileName(idFlow1 + now +".xml")
 			.build();
-		IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+		PaymentsReportingIdDTO paymentsReportingIdDTO2 = PaymentsReportingIdDTO.builder()
+			.pagopaPaymentsReportingId(idFlow2)
+			.flowDateTime(now)
+			.paymentsReportingFileName(idFlow2 + now.plusDays(1) +".xml")
+			.build();
+		IngestionFlowFile ingestionFlowFile = IngestionFlowFile.builder().fileName(idFlow1 + now +".xml").build();
+
 		when(paymentsReportingPagoPaServiceMock.getPaymentsReportingList(organizationId))
-			.thenReturn(List.of(paymentsReportingIdDTO));
-		when(ingestionFlowFileServiceMock.findByOrganizationIdFlowTypeCreateDate(organizationId, flowFileType, paymentsReportingIdDTO.getFlowDateTime()))
+			.thenReturn(List.of(paymentsReportingIdDTO1, paymentsReportingIdDTO2));
+		when(ingestionFlowFileServiceMock.findByOrganizationIdFlowTypeCreateDate(organizationId, flowFileType, paymentsReportingIdDTO1.getFlowDateTime(), OffsetDateTime.now()))
 			.thenReturn(List.of(ingestionFlowFile));
 
 		// When  Then

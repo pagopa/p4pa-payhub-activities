@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,7 +73,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> {
                 ingestionFlowFileApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                    .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(1L, "status", OffsetDateTime.now(), null, null, null, null);
+                    .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(1L), FlowFileTypeEnum.PAYMENTS_REPORTING.getValue(), OffsetDateTime.now().minusDays(1L), OffsetDateTime.now(), null, null, null, null, null);
                 return null;
             },
             String.class,

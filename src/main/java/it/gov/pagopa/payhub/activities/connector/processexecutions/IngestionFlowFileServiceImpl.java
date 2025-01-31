@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.IngestionFlowFileClient;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -40,9 +41,9 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
     }
 
     @Override
-    public List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, IngestionFlowFile.FlowFileTypeEnum flowFileType, OffsetDateTime creationDate) {
+    public List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, OffsetDateTime creationDateTo) {
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = ingestionFlowFileClient
-            .findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType.getValue(), creationDate, authnService.getAccessToken());
+            .findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDateFrom, creationDateTo, authnService.getAccessToken());
         return Objects.requireNonNull(pagedModelIngestionFlowFile.getEmbedded()).getIngestionFlowFiles();
     }
 }

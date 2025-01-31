@@ -31,7 +31,7 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 		List<PaymentsReportingIdDTO> paymentsReportingIds = paymentsReportingPagoPaService.getPaymentsReportingList(organizationId);
 		OffsetDateTime oldestDate = findOldestDate(paymentsReportingIds);
 
-		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FLOW_FILE_TYPE, oldestDate);
+		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FLOW_FILE_TYPE, oldestDate, OffsetDateTime.now());
 
 		getNotImportedFilterredByFileName(ingestionFlowFiles, paymentsReportingIds);
 
