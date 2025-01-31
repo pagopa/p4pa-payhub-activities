@@ -15,8 +15,7 @@ public interface UpdateIngestionFlowStatusActivity {
      *
      * @param id        the unique identifier of the record to update.
      * @param newStatus the new status to set.
-     * @return true if the update was successful, false otherwise.
      */
     @ActivityMethod
-    boolean updateStatus(Long id, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName);
+    void updateStatus(Long id, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName);
 }

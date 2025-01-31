@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,9 +31,8 @@ class UpdateIngestionFlowStatusActivityTest {
     //given
     Mockito.when(ingestionFlowFileServiceMock.updateStatus(VALID_ID, VALID_STATUS, COD_ERROR,DISCARD_FILE_NAME)).thenReturn(1);
     //when
-    boolean result = updateIngestionFlowStatusActivity.updateStatus(VALID_ID, VALID_STATUS, COD_ERROR,DISCARD_FILE_NAME);
+    updateIngestionFlowStatusActivity.updateStatus(VALID_ID, VALID_STATUS, COD_ERROR,DISCARD_FILE_NAME);
     //verify
-    Assertions.assertTrue(result);
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateStatus(VALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME);
   }
 
@@ -41,28 +41,7 @@ class UpdateIngestionFlowStatusActivityTest {
     //given
     Mockito.when(ingestionFlowFileServiceMock.updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME)).thenReturn(0);
     //when
-    boolean result = updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME);
-    //verify
-    Assertions.assertFalse(result);
-    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME);
-  }
-
-  @Test
-  void givenNullIdAndNewStatusWhenUpdateStatusThenException(){
-    String expectedError = "A null IngestionFlowFile was provided when updating its status to " + VALID_STATUS;
-    //verify
-    IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
-      () -> updateIngestionFlowStatusActivity.updateStatus(null, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME));
-    Assertions.assertEquals(expectedError, exception.getMessage());
-  }
-
-  @Test
-  void givenIdAndNullNewStatusWhenUpdateStatusThenException(){
-    String expectedError = "A null IngestionFlowFile status was provided when updating the id " + VALID_ID;
-    //verify
-    IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
-      () -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, null, COD_ERROR, DISCARD_FILE_NAME));
-    Assertions.assertEquals(expectedError, exception.getMessage());
+    Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME));
   }
 
 }
