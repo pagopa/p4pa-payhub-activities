@@ -3,7 +3,9 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityExtendedControllerApi;
+import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSearchControllerApi;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
+
+import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -31,8 +36,6 @@ class IngestionFlowFileClientTest {
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(processExecutionsApisHolder);
     }
-
-
 
     @Test
     void testFindById() {
@@ -58,7 +61,7 @@ class IngestionFlowFileClientTest {
     void testUpdateStatus() {
         // Given
         Long ingestionFlowFileId = 1L;
-        IngestionFlowFile.StatusEnum status = IngestionFlowFile.StatusEnum.COMPLETED;
+        StatusEnum status = StatusEnum.COMPLETED;
         String discardFileName = "discardFileName";
         String codError = "codError";
         String accessToken = "accessToken";
@@ -74,5 +77,26 @@ class IngestionFlowFileClientTest {
         assertEquals(expectedResponse, result);
         verify(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken), times(1))
                 .updateStatus(ingestionFlowFileId, status.name(), codError, discardFileName);
+    }
+
+    @Test
+    void testFindByOrganizationIDFlowTypeCreateDate() {
+        // Given
+        Long organizationId = 1L;
+        String flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA.getValue();
+        OffsetDateTime creationDate = OffsetDateTime.now();
+        String accessToken = "accessToken";
+        IngestionFlowFileSearchControllerApi mockApi = mock(IngestionFlowFileSearchControllerApi.class);
+        PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
+        when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, null, null, null, null)).thenReturn(expectedResponse);
+
+        // When
+        PagedModelIngestionFlowFile result = ingestionFlowFileClient.findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, null, null, null, null);
     }
 }
