@@ -33,13 +33,13 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 
 		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FLOW_FILE_TYPE, oldestDate);
 
-		getFilterNotImportedByFileName(ingestionFlowFiles, paymentsReportingIds);
+		getNotImportedFilterredByFileName(ingestionFlowFiles, paymentsReportingIds);
 
 		// TODO in P4ADEV-2005: implement loop to retrieve ingestion flow file from PagoPA
 		return List.of();
 	}
 
-	private List<PaymentsReportingIdDTO> getFilterNotImportedByFileName(List<IngestionFlowFile> ingestionFlowFiles, List<PaymentsReportingIdDTO> paymentsReportingIds) {
+	private List<PaymentsReportingIdDTO> getNotImportedFilterredByFileName(List<IngestionFlowFile> ingestionFlowFiles, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		List<String> importedFileNames = ingestionFlowFiles.stream()
 			.map(IngestionFlowFile::getFileName)
 			.toList();
