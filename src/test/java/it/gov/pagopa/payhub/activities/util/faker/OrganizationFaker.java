@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 
 import java.time.LocalDate;
@@ -9,7 +10,7 @@ import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 public class OrganizationFaker {
 
     public static Organization buildOrganizationDTO() {
-        return Organization.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(Organization.class)
                 .organizationId(1L)
                 .ipaCode("ipaCode")
                 .orgFiscalCode("orgFiscalCode")
@@ -27,7 +28,6 @@ public class OrganizationFaker {
                 .additionalLanguage("additionalLanguage")
                 .orgTypeCode("orgTypeCode")
                 .startDate(LocalDate.of(2024, 1, 1))
-                .brokerId(2L)
-                .build();
+                .brokerId(2L);
     }
 }

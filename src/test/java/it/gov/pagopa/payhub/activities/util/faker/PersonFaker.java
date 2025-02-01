@@ -1,11 +1,12 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 
 public class PersonFaker {
 
     public static PersonDTO buildPersonDTO(){
-        return PersonDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(PersonDTO.class)
                 .entityType(PersonDTO.EntityTypeEnum.F)
                 .fiscalCode("uniqueIdentifierCode")
                 .fullName("fullName")
@@ -15,12 +16,11 @@ public class PersonFaker {
                 .location("location")
                 .province("province")
                 .nation("nation")
-                .email("email@test.it")
-                .build();
+                .email("email@test.it");
     }
 
     public static it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO buildPaymentsPersonDTO(){
-        return it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO.class)
                 .entityType(it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO.EntityTypeEnum.F)
                 .fiscalCode("uniqueIdentifierCode")
                 .fullName("fullName")
@@ -30,7 +30,6 @@ public class PersonFaker {
                 .location("location")
                 .province("province")
                 .nation("nation")
-                .email("email@test.it")
-                .build();
+                .email("email@test.it");
     }
 }
