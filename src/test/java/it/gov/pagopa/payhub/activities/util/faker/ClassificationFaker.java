@@ -1,17 +1,17 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 
 public class ClassificationFaker {
 
     public static Classification buildClassificationDTO(){
-        return Classification.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(Classification.class)
                 .organizationId(1L)
                 .treasuryId("treasuryId")
                 .iuf("IUF")
-                .label(String.valueOf(ClassificationsEnum.TES_NO_MATCH))
-                .build();
+                .label(String.valueOf(ClassificationsEnum.TES_NO_MATCH));
     }
 
     public static Classification buildFullClassificationDTO(){

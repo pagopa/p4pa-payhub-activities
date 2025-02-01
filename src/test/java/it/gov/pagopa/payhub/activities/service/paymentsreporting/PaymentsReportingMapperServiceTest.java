@@ -4,6 +4,7 @@ import it.gov.digitpa.schemas._2011.pagamenti.*;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Test;
@@ -95,13 +96,12 @@ class PaymentsReportingMapperServiceTest {
 	@Test
 	void testMap() {
 		// Given
-		PaymentsReporting paymentsReporting = PaymentsReporting.builder()
+		PaymentsReporting paymentsReporting = PaymentsReportingFaker.buildPaymentsReporting()
 			.organizationId(1L)
 			.paymentOutcomeCode("OK")
 			.iuv("iuv123")
 			.iur("iur123")
-			.transferIndex(1)
-			.build();
+			.transferIndex(1);
 
 		// When
 		PaymentsReportingTransferDTO result = mapper.map(paymentsReporting);
@@ -119,13 +119,12 @@ class PaymentsReportingMapperServiceTest {
 	@Test
 	void testMap2TransferSemanticKey() {
 		// Given
-		PaymentsReporting paymentsReporting = PaymentsReporting.builder()
+		PaymentsReporting paymentsReporting = PaymentsReportingFaker.buildPaymentsReporting()
 			.organizationId(1L)
 			.paymentOutcomeCode("OK")
 			.iuv("iuv123")
 			.iur("iur123")
-			.transferIndex(1)
-			.build();
+			.transferIndex(1);
 
 		// When
 		TransferSemanticKeyDTO result = mapper.map(paymentsReporting);

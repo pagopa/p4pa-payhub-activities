@@ -48,7 +48,7 @@ class TransferClassificationStoreServiceTest {
 			.transferIndex(1)
 			.build();
 		List<Classification> dtoList = classifications.stream()
-			.map(classification -> Classification.builder()
+			.map(classification -> (Classification)Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
 				.transferId(transferDTO.getTransferId())
 				.paymentsReportingId(paymentsReportingDTO.getPaymentsReportingId())

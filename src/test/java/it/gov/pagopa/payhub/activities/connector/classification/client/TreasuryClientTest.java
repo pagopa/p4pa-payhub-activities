@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.TreasuryApisHolder;
+import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.TreasurySearchControllerApi;
@@ -78,9 +79,9 @@ class TreasuryClientTest {
     @Test
     void testInsert() {
         // Given
-        Treasury treasury = new Treasury();
+        Treasury treasury = TreasuryFaker.buildTreasuryDTO();
         String accessToken = "accessToken";
-        Treasury expectedTreasury = new Treasury();
+        Treasury expectedTreasury = TreasuryFaker.buildTreasuryDTO();
         TreasuryEntityControllerApi mockApi = mock(TreasuryEntityControllerApi.class);
         when(treasuryApisHolder.getTreasuryEntityControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudCreateTreasury(any())).thenReturn(expectedTreasury);

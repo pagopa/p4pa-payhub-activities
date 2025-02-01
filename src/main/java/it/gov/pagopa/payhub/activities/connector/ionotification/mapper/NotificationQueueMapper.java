@@ -16,7 +16,7 @@ public class NotificationQueueMapper {
                 .flatMap(p -> p.getInstallments().stream())
                 .map(i -> i.getDebtor().getFiscalCode())
                 .distinct()
-                .map(cf -> NotificationQueueDTO.builder()
+                .map(cf -> (NotificationQueueDTO)NotificationQueueDTO.builder()
                         .fiscalCode(cf)
                         .enteId(debtPosition.getOrganizationId())
                         .tipoDovutoId(debtPosition.getDebtPositionTypeOrgId())

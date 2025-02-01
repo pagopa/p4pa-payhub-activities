@@ -36,7 +36,7 @@ public class TransferClassificationStoreService {
 	 * @param paymentsReportingDTO   the DTO containing payment reporting details, may be {@code null}.
 	 * @param treasuryDTO            the DTO containing treasury details, may be {@code null}.
 	 * @param classifications        the list of classifications to be saved, represented as {@link ClassificationsEnum}.
-	 * @return the list of classification saved in the database.
+	 * @return the number of classification saved
 	 */
 	public Integer saveClassifications(
 		TransferSemanticKeyDTO transferSemanticKeyDTO,
@@ -51,7 +51,7 @@ public class TransferClassificationStoreService {
 
 		Optional<PaymentsReporting> optionalPaymentsReporting = Optional.ofNullable(paymentsReportingDTO);
 		List<Classification> dtoList = classifications.stream()
-			.map(classification -> Classification.builder()
+			.map(classification -> (Classification)Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
 				.transferId(Optional.ofNullable(transferDTO).map(Transfer::getTransferId).orElse(null))
 				.paymentsReportingId(optionalPaymentsReporting.map(PaymentsReporting::getPaymentsReportingId).orElse(null))

@@ -63,7 +63,7 @@ val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
 val openCsvVersion = "5.9"
 val mapStructVersion = "1.6.3"
-
+val podamVersion = "8.0.2.RELEASE"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -99,6 +99,7 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation ("org.projectlombok:lombok")
+	testImplementation("uk.co.jemos.podam:podam:$podamVersion")
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
@@ -275,9 +276,9 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
-		"generateConstructorWithAllArgs" to "false",
+		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
-		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	)
 	)
 	library.set("resttemplate")
@@ -302,9 +303,9 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
-		"generateConstructorWithAllArgs" to "false",
+		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
-		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
 }
@@ -328,9 +329,9 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
-		"generateConstructorWithAllArgs" to "false",
+		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
-		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
 }
@@ -354,9 +355,9 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
-		"generateConstructorWithAllArgs" to "false",
+		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
-		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
 }
@@ -380,9 +381,9 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
-		"generateConstructorWithAllArgs" to "false",
+		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
-		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
 }
@@ -406,9 +407,9 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
-		"generateConstructorWithAllArgs" to "false",
+		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
-		"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
 }
@@ -424,17 +425,17 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
 	apiPackage.set("it.gov.pagopa.pu.processexecutions.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.processexecutions.dto.generated")
 	configOptions.set(mapOf(
-			"swaggerAnnotations" to "false",
-			"openApiNullable" to "false",
-			"dateLibrary" to "java8",
-			"serializableModel" to "true",
-			"useSpringBoot3" to "true",
-			"useJakartaEe" to "true",
-			"serializationLibrary" to "jackson",
-			"generateSupportingFiles" to "true",
-			"generateConstructorWithAllArgs" to "false",
-			"generatedConstructorWithRequiredArgs" to "true",
-			"additionalModelTypeAnnotations" to "@lombok.Data @lombok.Builder @lombok.AllArgsConstructor"
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"serializableModel" to "true",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "true",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
 }
