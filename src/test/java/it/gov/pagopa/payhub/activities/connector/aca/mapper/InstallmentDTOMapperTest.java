@@ -3,7 +3,10 @@ package it.gov.pagopa.payhub.activities.connector.aca.mapper;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.InstallmentDTOMapper;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.PersonDTOMapper;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.TransferDTOMapper;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentDTO;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -14,18 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildPaymentsInstallmentDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPaymentsPersonDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
 class InstallmentDTOMapperTest {
 
     @Mock
     private TransferDTOMapper transferDTOMapperMock;
-
     @Mock
     private PersonDTOMapper personDTOMapperMock;
 
@@ -34,15 +32,24 @@ class InstallmentDTOMapperTest {
 
     @Test
     void testMapInstallmentDTO(){
-        InstallmentDTO installmentDTOexpected = buildPaymentsInstallmentDTO();
-        installmentDTOexpected.setDebtPositionOrigin(null);
+        // Given
+        InstallmentDTO installmentDTO = buildInstallmentDTO();
 
-        Mockito.when(transferDTOMapperMock.map(buildTransferDTO())).thenReturn(buildPaymentsTransferDTO());
-        Mockito.when(personDTOMapperMock.map(buildPersonDTO())).thenReturn(buildPaymentsPersonDTO());
+        TransferDTO expectedPaymentsTransfer = Mockito.mock(TransferDTO.class);
+        Mockito.when(transferDTOMapperMock.map(installmentDTO.getTransfers().getFirst()))
+                .thenReturn(expectedPaymentsTransfer);
 
-        InstallmentDTO result = mapper.map(buildInstallmentDTO());
+        PersonDTO expectedPaymentsPerson = Mockito.mock(PersonDTO.class);
+        Mockito.when(personDTOMapperMock.map(installmentDTO.getDebtor()))
+                .thenReturn(expectedPaymentsPerson);
 
-        assertEquals(installmentDTOexpected, result);
-        checkNotNullFields(result, "debtPositionOrigin", "syncStatus");
+        // When
+        it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentDTO result = mapper.map(installmentDTO);
+
+        // Then
+        TestUtils.reflectionEqualsByName(installmentDTO, result, "transfers", "debtor");
+        assertSame(expectedPaymentsTransfer, result.getTransfers().getFirst());
+        assertSame(expectedPaymentsPerson, result.getDebtor());
+        checkNotNullFields(result, "debtPositionOrigin");
     }
 }

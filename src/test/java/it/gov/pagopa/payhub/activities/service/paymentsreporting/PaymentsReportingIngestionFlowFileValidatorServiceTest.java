@@ -5,6 +5,8 @@ import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,14 +43,12 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 	@Test
 	void givenValidDataWhenValidateThenSuccess() {
 		//given
-		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
-			.organizationId(1L)
-			.build();
+		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile()
+			.organizationId(1L);
 
-		Organization organization = Organization.builder()
+		Organization organization = OrganizationFaker.buildOrganizationDTO()
 			.organizationId(1L)
-			.orgFiscalCode("80010020011")
-			.build();
+			.orgFiscalCode("80010020011");
 
 		// when then
 		when(organizationService.getOrganizationById(1L)).thenReturn(java.util.Optional.of(organization));
@@ -58,14 +58,12 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 	@Test
 	void givenInvalidOrganizationWhenValidateThenThrowInvalidIngestionFlowFileDataException() {
 		//given
-		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
-				.organizationId(1L)
-				.build();
+		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile()
+				.organizationId(1L);
 
-		Organization organization = Organization.builder()
+		Organization organization = OrganizationFaker.buildOrganizationDTO()
 				.organizationId(1L)
-				.orgFiscalCode("80010023")
-				.build();
+				.orgFiscalCode("80010023");
 		// when then
 		when(organizationService.getOrganizationById(1L)).thenReturn(java.util.Optional.of(organization));
 		assertThrows(InvalidIngestionFlowFileDataException.class,

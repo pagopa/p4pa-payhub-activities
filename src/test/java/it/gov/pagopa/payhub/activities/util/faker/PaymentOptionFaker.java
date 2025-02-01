@@ -12,7 +12,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildP
 public class PaymentOptionFaker {
 
     public static PaymentOptionDTO buildPaymentOptionDTO(){
-        return PaymentOptionDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(PaymentOptionDTO.class)
                 .debtPositionId(1L)
                 .paymentOptionId(1L)
                 .debtPositionId(1L)
@@ -22,12 +22,11 @@ public class PaymentOptionFaker {
                 .installments(List.of(buildInstallmentDTO()))
                 .multiDebtor(false)
                 .description("description")
-                .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT)
-                .build();
+                .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
     }
 
     public static it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO buildPaymentsPaymentOptionDTO(){
-        return it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.class)
                 .debtPositionId(1L)
                 .paymentOptionId(1L)
                 .debtPositionId(1L)
@@ -37,7 +36,6 @@ public class PaymentOptionFaker {
                 .installments(List.of(buildPaymentsInstallmentDTO()))
                 .multiDebtor(false)
                 .description("description")
-                .paymentOptionType(it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT)
-                .build();
+                .paymentOptionType(it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
     }
 }

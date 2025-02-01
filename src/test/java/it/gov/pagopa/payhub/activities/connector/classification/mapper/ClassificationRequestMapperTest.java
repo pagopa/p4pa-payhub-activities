@@ -5,30 +5,25 @@ import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationRequestBody;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ClassificationRequestMapperTest {
 
+    private final ClassificationRequestMapper mapper = Mappers.getMapper(ClassificationRequestMapper.class);
+
     @Test
     void testMap() {
         // Given
-        Classification classification = ClassificationFaker.buildFullClassificationDTO();
+        Classification classification = ClassificationFaker.buildClassificationDTO();
 
 
         // When
-        ClassificationRequestBody result = ClassificationRequestMapper.map(classification);
+        ClassificationRequestBody result = mapper.map(classification);
 
         // Then
-        assertEquals(classification.getClassificationId(), result.getClassificationId());
-        assertEquals(classification.getLabel(), result.getLabel());
-        assertEquals(classification.getOrganizationId(), result.getOrganizationId());
-        assertEquals(classification.getIuf(), result.getIuf());
-        assertEquals(classification.getIuv(), result.getIuv());
-        assertEquals(classification.getCreationDate(), result.getCreationDate());
-        assertEquals(classification.getUpdateDate(), result.getUpdateDate());
-
+        TestUtils.reflectionEqualsByName(classification, result);
         TestUtils.checkNotNullFields(result, "updateOperatorExternalId", "updateDate", "creationDate");
     }
 
@@ -38,7 +33,7 @@ class ClassificationRequestMapperTest {
         Classification classification = null;
 
         // When
-        ClassificationRequestBody result = ClassificationRequestMapper.map(classification);
+        ClassificationRequestBody result = mapper.map(classification);
 
         // Then
         assertNull(result);

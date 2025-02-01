@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
 import it.gov.pagopa.pu.auth.dto.generated.UserOrganizationRoles;
 
@@ -8,8 +9,7 @@ import java.util.List;
 public class UserInfoFaker {
 
     public static UserInfo buildUserInfo() {
-        return UserInfo.builder()
-
+        return TestUtils.getPodamFactory().manufacturePojo(UserInfo.class)
                 .userId("USERID")
                 .mappedExternalUserId("MAPPEDEXTERNALUSERID")
                 .fiscalCode("FISCALCODE")
@@ -25,7 +25,6 @@ public class UserInfoFaker {
                         .operatorId("OPERATORID")
                         .organizationIpaCode("ORGIPACODE")
                         .roles(List.of("ROLE_ADMIN"))
-                        .build()))
-                .build();
+                        .build()));
     }
 }

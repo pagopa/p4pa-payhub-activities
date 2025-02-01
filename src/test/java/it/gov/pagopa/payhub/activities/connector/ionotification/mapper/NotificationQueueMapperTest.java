@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
-import static it.gov.pagopa.payhub.activities.util.faker.NotificationQueueFaker.buildNotificationQueueDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,14 +25,21 @@ class NotificationQueueMapperTest {
 
     @Test
     void givenMapDebtPositionDTO2NotificationQueueDTOThenSuccess() {
-
+        // Given
         DebtPositionDTO debtPosition = DebtPositionFaker.buildDebtPositionDTO();
+        NotificationQueueDTO expectedResult = NotificationQueueDTO.builder()
+                .fiscalCode(debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().getDebtor().getFiscalCode())
+                .enteId(debtPosition.getOrganizationId())
+                .tipoDovutoId(debtPosition.getDebtPositionTypeOrgId())
+                .build();
 
+        // When
         List<NotificationQueueDTO> result =
                 mapper.mapDebtPositionDTO2NotificationQueueDTO(debtPosition);
 
+        // Then
         checkNotNullFields(result.getFirst(), "operationType", "iuv", "paymentReason", "paymentDate", "amount");
-        assertEquals(buildNotificationQueueDTO(), result.getFirst());
+        assertEquals(expectedResult, result.getFirst());
         assertEquals("uniqueIdentifierCode", result.getFirst().getFiscalCode());
     }
 }

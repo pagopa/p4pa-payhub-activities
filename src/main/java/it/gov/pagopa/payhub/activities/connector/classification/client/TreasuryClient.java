@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 public class TreasuryClient {
 
     private final TreasuryApisHolder treasuryApisHolder;
+    private final TreasuryRequestMapper mapper;
 
-    public TreasuryClient(TreasuryApisHolder treasuryApisHolder) {
+    public TreasuryClient(TreasuryApisHolder treasuryApisHolder, TreasuryRequestMapper mapper) {
         this.treasuryApisHolder = treasuryApisHolder;
+        this.mapper = mapper;
     }
 
     public Treasury findByOrganizationIdAndIuf(Long organizationId, String iuf, String accessToken) {
@@ -27,7 +29,7 @@ public class TreasuryClient {
 
     public Treasury insert(Treasury treasury, String accessToken) {
         return treasuryApisHolder.getTreasuryEntityControllerApi(accessToken)
-                .crudCreateTreasury(TreasuryRequestMapper.map(treasury));
+                .crudCreateTreasury(mapper.map(treasury));
     }
 
     public Long deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear, String accessToken) {
