@@ -103,6 +103,7 @@ dependencies {
 
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+	testAnnotationProcessor("org.projectlombok:lombok")
 
 	/**
 	 * Mapstruct
