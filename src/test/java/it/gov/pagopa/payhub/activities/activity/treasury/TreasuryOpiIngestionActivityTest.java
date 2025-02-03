@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.treasury;
 
-import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
@@ -9,9 +8,8 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowType
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryErrorsArchiverService;
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.service.treasury.TreasuryOpiParserService;
-import it.gov.pagopa.payhub.activities.service.treasury.TreasuryUnmarshallerService;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
@@ -43,13 +41,7 @@ class TreasuryOpiIngestionActivityTest {
     @Mock
     private IngestionFlowFileService ingestionFlowFileServiceMock;
     @Mock
-    private TreasuryService treasuryServiceMock;
-    @Mock
     private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverServiceMock;
-    @Mock
-    private TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
-    @Mock
-    private TreasuryMapperService<?> treasuryMapperServiceMock;
     @Mock
     private TreasuryOpiParserService treasuryOpiParserServiceMock;
     @Mock
@@ -134,10 +126,9 @@ class TreasuryOpiIngestionActivityTest {
     void givenIngestionFlowTypeInvalidWhenProcessFileThenNoSuccess() {
         //given
         long ingestionFlowFileId = 1L;
-        IngestionFlowFile ingestionFlowFile = IngestionFlowFile.builder()
+        IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile()
                 .ingestionFlowFileId(ingestionFlowFileId)
-                .flowFileType(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING)
-                .build();
+                .flowFileType(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING);
 
         when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFile));
 
@@ -220,12 +211,11 @@ class TreasuryOpiIngestionActivityTest {
     }
 
     private IngestionFlowFile buildIngestionFlowFile(Long ingestionFlowFileId) {
-        return IngestionFlowFile.builder()
+        return IngestionFlowFileFaker.buildIngestionFlowFile()
                 .ingestionFlowFileId(ingestionFlowFileId)
                 .flowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI)
                 .filePathName(workingDir.toString())
                 .fileName("testFile.zip")
-                .organizationId(0L)
-                .build();
+                .organizationId(0L);
     }
 }

@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionOrigin;
@@ -19,7 +20,7 @@ public class InstallmentFaker {
     public static InstallmentDTO buildInstallmentDTO(){
         List<TransferDTO> transfers = new ArrayList<>();
         transfers.add(buildTransferDTO());
-        return InstallmentDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(InstallmentDTO.class)
                 .installmentId(1L)
                 .paymentOptionId(1L)
                 .status(InstallmentDTO.StatusEnum.PAID)
@@ -40,14 +41,13 @@ public class InstallmentFaker {
                 .humanFriendlyRemittanceInformation("humanFriendlyRemittanceInformation")
                 .balance("balance")
                 .transfers(transfers)
-                .debtor(buildPersonDTO())
-                .build();
+                .debtor(buildPersonDTO());
     }
 
     public static it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentDTO buildPaymentsInstallmentDTO(){
         List<it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO> transfers = new ArrayList<>();
         transfers.add(buildPaymentsTransferDTO());
-        return it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentDTO.class)
                 .installmentId(1L)
                 .paymentOptionId(1L)
                 .status(InstallmentStatus.PAID)
@@ -69,7 +69,6 @@ public class InstallmentFaker {
                 .humanFriendlyRemittanceInformation("humanFriendlyRemittanceInformation")
                 .balance("balance")
                 .debtor(buildPaymentsPersonDTO())
-                .transfers(transfers)
-                .build();
+                .transfers(transfers);
     }
 }

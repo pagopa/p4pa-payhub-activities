@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.time.OffsetDateTime;
 public class TreasuryFaker {
 
 	public static Treasury buildTreasuryDTO() {
-		return Treasury.builder()
+		return TestUtils.getPodamFactory().manufacturePojo(Treasury.class)
 			.treasuryId("treasuryId")
 			.billYear("2025")
 			.billCode("BILL123")
@@ -52,7 +53,6 @@ public class TreasuryFaker {
 			.managementProvisionalCode("MAN-PROV123")
 			.endToEndId("E2E123456")
 			.regularized(true)
-			.updateOperatorExternalId("operatorId")
-			.build();
+			.updateOperatorExternalId("operatorId");
 	}
 }

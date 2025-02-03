@@ -14,6 +14,8 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
 import it.gov.pagopa.payhub.activities.service.paymentsreporting.PaymentsReportingMapperService;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
@@ -97,17 +99,18 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	void givenSuccessfulConditionsWhenProcessFileThenOk() throws IOException {
 		// Given
 		long ingestionFlowFileId = 123L;
-		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFile.builder()
+		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile()
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
 			.filePathName(workingDir.toString())
 			.flowFileType(FLOW_FILE_TYPE)
-			.organizationId(0L)
-			.build();
+			.organizationId(0L);
+
 		Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
-		PaymentsReporting paymentsReportingDTO = PaymentsReporting.builder().iuf("idFlow").organizationId(1L).iuv("iuv").iur("iur").transferIndex(1).build();
+		PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting()
+				.iuf("idFlow").organizationId(1L).iuv("iuv").iur("iur").transferIndex(1);
 		List<PaymentsReporting> dtoList = List.of(paymentsReportingDTO);
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = PaymentsReportingTransferDTO.builder()
 			.orgId(1L).iuv("iuv").iur("iur").transferIndex(1).paymentOutcomeCode("0").build();
@@ -150,10 +153,9 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	void givenWrongTypeIngestionFlowFileWhenProcessFileThenFails() {
 		// Given
 		long ingestionFlowFileId = 123L;
-		IngestionFlowFile ingestionFlowFile = IngestionFlowFile.builder()
+		IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile()
 			.ingestionFlowFileId(ingestionFlowFileId)
-			.flowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI)
-			.build();
+			.flowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFile));
 

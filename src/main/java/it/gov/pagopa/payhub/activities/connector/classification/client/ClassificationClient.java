@@ -13,9 +13,11 @@ import java.util.List;
 public class ClassificationClient {
 
     private final ClassificationApisHolder classificationApisHolder;
+    private final ClassificationRequestMapper mapper;
 
-    public ClassificationClient(ClassificationApisHolder classificationApisHolder) {
+    public ClassificationClient(ClassificationApisHolder classificationApisHolder, ClassificationRequestMapper mapper) {
         this.classificationApisHolder = classificationApisHolder;
+        this.mapper = mapper;
     }
     public Integer saveAll(List<Classification> classificationList, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
@@ -24,7 +26,7 @@ public class ClassificationClient {
 
     public Classification save(Classification classificationDTO, String accessToken) {
         return classificationApisHolder.getClassificationEntityControllerApi(accessToken)
-                .crudCreateClassification(ClassificationRequestMapper.map(classificationDTO));
+                .crudCreateClassification(mapper.map(classificationDTO));
     }
 
     public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, String classification, String accessToken) {

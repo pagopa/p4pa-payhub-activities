@@ -88,12 +88,17 @@ class IufClassificationActivityTest {
 
     @Test
     void givenNoReportedTransferWhenClassifyThenAnomalyClassificationSave() {
-        Classification classificationDTO = ClassificationFaker.buildClassificationDTO();
+        Classification expectedClassification = Classification.builder()
+                .organizationId(ORGANIZATIONID)
+                .treasuryId(TREASURYID)
+                .iuf(IUF)
+                .label("TES_NO_MATCH")
+                .build();
 
         IufClassificationActivityResult expectedIufClassificationActivityResult =
                 IufClassificationActivityResult
                         .builder()
-                        .organizationId(1L)
+                        .organizationId(ORGANIZATIONID)
                         .transfers2classify(new ArrayList<>())
                         .build();
 
@@ -111,7 +116,7 @@ class IufClassificationActivityTest {
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
         Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
-        Mockito.verify(classificationServiceMock, Mockito.times(1)).save(classificationDTO);
+        Mockito.verify(classificationServiceMock, Mockito.times(1)).save(expectedClassification);
     }
 }
 

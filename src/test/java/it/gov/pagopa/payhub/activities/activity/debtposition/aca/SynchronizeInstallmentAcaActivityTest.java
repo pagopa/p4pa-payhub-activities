@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.AcaService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.DebtPositionDTOMapper;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,17 +30,16 @@ class SynchronizeInstallmentAcaActivityTest {
         activity = new SynchronizeInstallmentAcaActivityImpl(acaServiceMock, debtPositionDTOMapperMock);
     }
 
-
     @Test
     void testSynchronizeInstallmentAcaActivity(){
         String iud = "IUD";
-        DebtPositionDTO paymentsDebtPositionDTO = buildPaymentsDebtPositionDTO();
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO paymentsDebtPositionDTO = buildPaymentsDebtPositionDTO();
 
-        when(debtPositionDTOMapperMock.map(buildDebtPositionDTO())).thenReturn(paymentsDebtPositionDTO);
+        when(debtPositionDTOMapperMock.map(debtPositionDTO)).thenReturn(paymentsDebtPositionDTO);
 
-        activity.synchronizeInstallmentAca(buildDebtPositionDTO(), iud);
+        activity.synchronizeInstallmentAca(debtPositionDTO, iud);
 
-        Mockito.verify(acaServiceMock, Mockito.times(1))
-                .syncInstallmentAca(iud, buildPaymentsDebtPositionDTO());
+        Mockito.verify(acaServiceMock).syncInstallmentAca(iud, paymentsDebtPositionDTO);
     }
 }

@@ -1,9 +1,12 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
+import it.gov.pagopa.payhub.activities.connector.classification.mapper.ClassificationRequestMapper;
+import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationRequestBody;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,17 +24,19 @@ import static org.mockito.Mockito.*;
 class ClassificationClientTest {
 
     @Mock
-    private ClassificationApisHolder classificationApisHolder;
+    private ClassificationApisHolder classificationApisHolderMock;
+    @Mock
+    private ClassificationRequestMapper mapperMock;
 
     private ClassificationClient classificationClient;
 
     @BeforeEach
     void setUp() {
-        classificationClient = new ClassificationClient(classificationApisHolder);
+        classificationClient = new ClassificationClient(classificationApisHolderMock, mapperMock);
     }
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(classificationApisHolder);
+        Mockito.verifyNoMoreInteractions(classificationApisHolderMock, mapperMock);
     }
 
 
@@ -42,7 +47,7 @@ class ClassificationClientTest {
         String accessToken = "accessToken";
         Integer expectedResponse = 1;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
-        when(classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.saveAll2(classificationList)).thenReturn(expectedResponse);
 
         // When
@@ -50,18 +55,19 @@ class ClassificationClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
                 .saveAll2(classificationList);
     }
 
     @Test
     void testSave() {
         // Given
-        Classification classification = new Classification();
+        Classification classification = ClassificationFaker.buildClassificationDTO();
         String accessToken = "accessToken";
         Classification expectedResponse = new Classification();
         ClassificationEntityControllerApi mockApi = mock(ClassificationEntityControllerApi.class);
-        when(classificationApisHolder.getClassificationEntityControllerApi(accessToken)).thenReturn(mockApi);
+        when(mapperMock.map(classification)).thenReturn(mock(ClassificationRequestBody.class));
+        when(classificationApisHolderMock.getClassificationEntityControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudCreateClassification(any())).thenReturn(expectedResponse);
 
         // When
@@ -69,7 +75,7 @@ class ClassificationClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(classificationApisHolder.getClassificationEntityControllerApi(accessToken), times(1))
+        verify(classificationApisHolderMock.getClassificationEntityControllerApi(accessToken), times(1))
                 .crudCreateClassification(any());
     }
 
@@ -82,7 +88,7 @@ class ClassificationClientTest {
         String accessToken = "accessToken";
         Long expectedResponse = 1L;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
-        when(classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification)).thenReturn(expectedResponse);
 
         // When
@@ -90,7 +96,7 @@ class ClassificationClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification);
     }
 
@@ -104,7 +110,7 @@ class ClassificationClientTest {
         String accessToken = "accessToken";
         Long expectedResponse = 1L;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
-        when(classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex)).thenReturn(expectedResponse);
 
         // When
@@ -112,7 +118,7 @@ class ClassificationClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
     }
 }

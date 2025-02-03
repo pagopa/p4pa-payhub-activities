@@ -1,12 +1,13 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.Stamp;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 
 public class TransferFaker {
 
     public static Transfer buildTransfer(){
-        return Transfer.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(Transfer.class)
                 .transferId(1L)
                 .installmentId(1L)
                 .orgFiscalCode("orgFiscalCode")
@@ -22,12 +23,11 @@ public class TransferFaker {
                     .build()
                 )
                 .category("category")
-                .transferIndex(1)
-                .build();
+                .transferIndex(1);
     }
 
     public static it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO buildPaymentsTransferDTO(){
-        return it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO.class)
                 .transferId(1L)
                 .installmentId(1L)
                 .orgFiscalCode("orgFiscalCode")
@@ -40,12 +40,11 @@ public class TransferFaker {
                 .stampHashDocument("stampHashDocument")
                 .stampProvincialResidence("stampProvincialResidence")
                 .category("category")
-                .transferIndex(1)
-                .build();
+                .transferIndex(1);
     }
 
     public static it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO buildTransferDTO(){
-        return it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO.class)
             .transferId(1L)
             .installmentId(1L)
             .orgFiscalCode("orgFiscalCode")
@@ -58,7 +57,6 @@ public class TransferFaker {
             .stampHashDocument("stampHashDocument")
             .stampProvincialResidence("stampProvincialResidence")
             .category("category")
-            .transferIndex(1)
-            .build();
+            .transferIndex(1);
     }
 }

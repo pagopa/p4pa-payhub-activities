@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PagedModelPaymentsReportingEmbedded;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
@@ -12,7 +13,7 @@ import java.util.List;
 public class PaymentsReportingFaker {
 
     public static PaymentsReporting buildPaymentsReporting() {
-        return PaymentsReporting.builder()
+        return TestUtils.getPodamFactory().manufacturePojo(PaymentsReporting.class)
                 .paymentsReportingId("paymentsReportingId")
                 .ingestionFlowFileId(1L)
                 .organizationId(1L)
@@ -36,8 +37,7 @@ public class PaymentsReportingFaker {
                 .paymentOutcomeCode("paymentOutcomeCode")
                 .payDate(LocalDate.now())
                 .acquiringDate(LocalDate.now())
-                .bicCodePouringBank("bicCodePouringBank")
-                .build();
+                .bicCodePouringBank("bicCodePouringBank");
     }
 
     public static CollectionModelPaymentsReporting buildCollectionModelPaymentsReporting() {
