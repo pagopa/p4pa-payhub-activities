@@ -13,5 +13,5 @@ public interface IngestionFlowFileService {
 
     Optional<IngestionFlowFile> findById(Long ingestionFlowFileId);
     Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum status, String codError, String discardFileName);
-    List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, OffsetDateTime creationDateTo);
+    List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom);
 }

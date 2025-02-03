@@ -31,15 +31,22 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 		List<PaymentsReportingIdDTO> paymentsReportingIds = paymentsReportingPagoPaService.getPaymentsReportingList(organizationId);
 		OffsetDateTime oldestDate = findOldestDate(paymentsReportingIds);
 
-		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FLOW_FILE_TYPE, oldestDate, OffsetDateTime.now());
+		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FLOW_FILE_TYPE, oldestDate);
 
-		getNotImportedFilterredByFileName(ingestionFlowFiles, paymentsReportingIds);
+		getNotImportedFilteredByFileName(ingestionFlowFiles, paymentsReportingIds);
 
 		// TODO in P4ADEV-2005: implement loop to retrieve ingestion flow file from PagoPA
 		return List.of();
 	}
 
-	private List<PaymentsReportingIdDTO> getNotImportedFilterredByFileName(List<IngestionFlowFile> ingestionFlowFiles, List<PaymentsReportingIdDTO> paymentsReportingIds) {
+	/**
+	 * Filters the list of PaymentsReportingIdDTOs to find those that have not been imported yet based on file names.
+	 *
+	 * @param ingestionFlowFiles the list of ingestion flow files
+	 * @param paymentsReportingIds the list of payments reporting IDs
+	 * @return a list of PaymentsReportingIdDTOs that have not been imported
+	 */
+	private List<PaymentsReportingIdDTO> getNotImportedFilteredByFileName(List<IngestionFlowFile> ingestionFlowFiles, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		List<String> importedFileNames = ingestionFlowFiles.stream()
 			.map(IngestionFlowFile::getFileName)
 			.toList();
@@ -49,6 +56,12 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 			.toList();
 	}
 
+	/**
+	 * Finds the oldest date in the list of PaymentsReportingIdDTOs.
+	 *
+	 * @param paymentsReportingIds the list of payments reporting IDs
+	 * @return the oldest date found in the list, or null if the list is empty
+	 */
 	private OffsetDateTime findOldestDate(List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		return paymentsReportingIds.stream()
 			.map(PaymentsReportingIdDTO::getFlowDateTime)

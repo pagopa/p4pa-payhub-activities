@@ -25,6 +25,8 @@ public class IngestionFlowFileFaker {
                 .flowDateTime(OffsetDateTime.now())
                 .discardFileName("DiscardFileName")
                 .flowFileType(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING)
+                .fileSize(100L)
+                .fileOrigin("PAGOPA")
                 .build();
     }
 

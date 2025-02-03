@@ -30,9 +30,9 @@ public class IngestionFlowFileClient {
                 .updateStatus(ingestionFlowFileId, status.name() ,codError, discardFileName);
     }
 
-    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, OffsetDateTime creationDateTo, String accessToken) {
+    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, String accessToken) {
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDateFrom, creationDateTo,null, null, null, null, null);
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDateFrom, null,null, null, null, null, null);
     }
 
 }
