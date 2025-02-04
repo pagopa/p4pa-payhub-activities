@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 /**
@@ -17,5 +18,7 @@ public interface DebtPositionService {
      * @param syncStatusUpdateDTO the map of IUD and {@link IupdSyncStatusUpdateDTO} containing new status and IUPD PagoPa of installment
      */
     DebtPositionDTO finalizeSyncStatus(Long debtPositionId, Map<String, IupdSyncStatusUpdateDTO> syncStatusUpdateDTO);
+
+    OffsetDateTime checkAndUpdateInstallmentExpiration(Long debtPositionId);
 
 }
