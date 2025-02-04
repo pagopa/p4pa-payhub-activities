@@ -61,4 +61,24 @@ class DebtPositionClientTest {
         // Then
         Assertions.assertSame(expectedResult, result);
     }
+
+    @Test
+    void givenCheckAndUpdateInstallmentExpirationThenOk(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long debtPositionId = 0L;
+
+        DebtPositionDTO expectedResult = buildDebtPositionDTO();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+                .thenReturn(debtPositionApiMock);
+        Mockito.when(debtPositionApiMock.checkAndUpdateInstallmentExpiration(debtPositionId))
+                .thenReturn(expectedResult);
+
+        // When
+        DebtPositionDTO result = debtPositionClient.checkAndUpdateInstallmentExpiration(accessToken, debtPositionId);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
 }

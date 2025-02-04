@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 @Lazy
 @Service
 public class DebtPositionExpirationActivityImpl implements DebtPositionExpirationActivity{
+
     private final DebtPositionService debtPositionService;
 
     public DebtPositionExpirationActivityImpl(DebtPositionService debtPositionService) {

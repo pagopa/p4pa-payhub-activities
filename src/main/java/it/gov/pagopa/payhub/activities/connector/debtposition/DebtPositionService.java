@@ -19,6 +19,11 @@ public interface DebtPositionService {
      */
     DebtPositionDTO finalizeSyncStatus(Long debtPositionId, Map<String, IupdSyncStatusUpdateDTO> syncStatusUpdateDTO);
 
+    /**
+     * Checks and updates the expiration date of the installments associated to a debt position
+     *
+     * @param debtPositionId the unique identifier of the debt position to be processed.
+     * @return the minimum due date ({@link OffsetDateTime}) among all unpaid installments
+     */
     OffsetDateTime checkAndUpdateInstallmentExpiration(Long debtPositionId);
-
 }
