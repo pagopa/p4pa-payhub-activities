@@ -21,4 +21,8 @@ public class DebtPositionClient {
     public DebtPositionDTO finalizeSyncStatus(String accessToken, Long debtPositionId, Map<String, IupdSyncStatusUpdateDTO> syncStatusUpdateDTO){
         return debtPositionApisHolder.getDebtPositionApi(accessToken).finalizeSyncStatus(debtPositionId, syncStatusUpdateDTO);
     }
+
+    public DebtPositionDTO checkAndUpdateInstallmentExpiration(String accessToken, Long debtPositionId){
+        return debtPositionApisHolder.getDebtPositionApi(accessToken).checkAndUpdateInstallmentExpiration(debtPositionId);
+    }
 }
