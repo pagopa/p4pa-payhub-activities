@@ -127,9 +127,7 @@ public class ZipFileService {
 	 *           <li>An I/O error occurs during extraction.</li>
 	 *         </ul>
 	 */
-	public List<Path> unzip(Path path) {
-		return unzip(path, path);
-	}
+	public List<Path> unzip(Path path) { return unzip(path, path.getParent()); }
 
 	/**
 	 * Validates the entry count against the maximum allowed entries.

@@ -16,7 +16,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildPaymentsDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
-class AcaApisHoldetTest  extends BaseApiHolderTest {
+class AcaApisHolderTest extends BaseApiHolderTest {
 
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.OffsetDateTime;
+
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class IngestionFlowFileApisHolderTest extends BaseApiHolderTest {
+class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
 
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
@@ -51,6 +54,7 @@ class IngestionFlowFileApisHolderTest extends BaseApiHolderTest {
                 String.class,
                 ingestionFlowFileApisHolder::unload);
     }
+
     @Test
     void whenGetIngestionFlowFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
@@ -63,4 +67,15 @@ class IngestionFlowFileApisHolderTest extends BaseApiHolderTest {
                 ingestionFlowFileApisHolder::unload);
     }
 
+    @Test
+    void whenGetIngestionFlowFileSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> {
+                ingestionFlowFileApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
+                    .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(1L), FlowFileTypeEnum.PAYMENTS_REPORTING.getValue(), OffsetDateTime.now().minusDays(1L), null, null, null, null, null, null, null);
+                return null;
+            },
+            String.class,
+            ingestionFlowFileApisHolder::unload);
+    }
 }

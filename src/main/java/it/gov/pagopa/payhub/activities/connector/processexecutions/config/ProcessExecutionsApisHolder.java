@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityExtendedControllerApi;
+import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSearchControllerApi;
 import it.gov.pagopa.pu.processexecutions.generated.ApiClient;
 import it.gov.pagopa.pu.processexecutions.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -17,7 +18,7 @@ public class ProcessExecutionsApisHolder {
 
     private final IngestionFlowFileEntityControllerApi ingestionFlowFileEntityControllerApi;
     private final IngestionFlowFileEntityExtendedControllerApi ingestionFlowFileEntityExtendedControllerApi;
-
+    private final IngestionFlowFileSearchControllerApi ingestionFlowFileSearchControllerApi;
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public ProcessExecutionsApisHolder(
@@ -30,6 +31,7 @@ public class ProcessExecutionsApisHolder {
 
         this.ingestionFlowFileEntityControllerApi = new IngestionFlowFileEntityControllerApi(apiClient);
         this.ingestionFlowFileEntityExtendedControllerApi = new IngestionFlowFileEntityExtendedControllerApi(apiClient);
+        this.ingestionFlowFileSearchControllerApi = new IngestionFlowFileSearchControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -45,7 +47,9 @@ public class ProcessExecutionsApisHolder {
         return getApi(accessToken, ingestionFlowFileEntityExtendedControllerApi);
     }
 
-
+    public IngestionFlowFileSearchControllerApi getIngestionFlowFileSearchControllerApi(String accessToken){
+        return getApi(accessToken, ingestionFlowFileSearchControllerApi);
+    }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
         bearerTokenHolder.set(accessToken);

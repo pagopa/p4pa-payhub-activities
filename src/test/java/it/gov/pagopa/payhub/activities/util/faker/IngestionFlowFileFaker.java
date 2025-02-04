@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 
 public class IngestionFlowFileFaker {
 
+
     public static IngestionFlowFile buildIngestionFlowFile(){
         return TestUtils.getPodamFactory().manufacturePojo(IngestionFlowFile.class)
                 .ingestionFlowFileId(1L)
@@ -24,7 +25,9 @@ public class IngestionFlowFileFaker {
                 .pspIdentifier("PspId")
                 .flowDateTime(OffsetDateTime.now())
                 .discardFileName("DiscardFileName")
-                .flowFileType(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING);
+                .flowFileType(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING)
+                .fileSize(100L)
+                .fileOrigin("PAGOPA");
     }
 
 }
