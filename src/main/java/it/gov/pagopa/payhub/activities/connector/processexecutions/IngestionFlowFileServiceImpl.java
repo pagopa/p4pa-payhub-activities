@@ -42,6 +42,7 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
 
     @Override
     public List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom) {
+        log.info("Fetching IngestionFlowFile type {} by organizationId: {}, created from: {}", flowFileType, organizationId, creationDateFrom);
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = ingestionFlowFileClient
             .findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDateFrom, authnService.getAccessToken());
         return Objects.requireNonNull(pagedModelIngestionFlowFile.getEmbedded()).getIngestionFlowFiles();

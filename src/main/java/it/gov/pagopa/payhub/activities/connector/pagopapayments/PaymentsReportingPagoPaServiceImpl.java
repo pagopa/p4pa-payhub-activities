@@ -23,6 +23,7 @@ public class PaymentsReportingPagoPaServiceImpl implements PaymentsReportingPago
 
 	@Override
 	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId) {
+		log.info("Getting payments reporting list for organizationId: {}", organizationId);
 		return paymentsReportingPagoPaClient.getPaymentsReportingList(organizationId, authnService.getAccessToken());
 	}
 }

@@ -89,7 +89,7 @@ class IngestionFlowFileClientTest {
         IngestionFlowFileSearchControllerApi mockApi = mock(IngestionFlowFileSearchControllerApi.class);
         PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
         when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDate, null, null, null, null, null, null)).thenReturn(expectedResponse);
+        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDate, null, null, null, null, null, null, null)).thenReturn(expectedResponse);
 
         // When
         PagedModelIngestionFlowFile result = ingestionFlowFileClient.findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, accessToken);
@@ -97,6 +97,6 @@ class IngestionFlowFileClientTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
-                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDate, null, null, null, null, null, null);
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDate, null, null, null, null, null, null, null);
     }
 }

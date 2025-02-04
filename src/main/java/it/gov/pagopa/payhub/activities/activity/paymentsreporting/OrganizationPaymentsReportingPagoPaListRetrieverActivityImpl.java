@@ -5,38 +5,41 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlow
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Lazy
+@Slf4j
 @Service
-public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements OrganizationPaymentsReportingPagoPaRetrieverActivity {
-	private static final FlowFileTypeEnum FLOW_FILE_TYPE = FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA;
-
+public class OrganizationPaymentsReportingPagoPaListRetrieverActivityImpl implements OrganizationPaymentsReportingPagoPaListRetrieverActivity {
 	private final PaymentsReportingPagoPaService paymentsReportingPagoPaService;
 	private final IngestionFlowFileService ingestionFlowFileService;
 
-	public OrganizationPaymentsReportingPagoPaRetrieverActivityImpl(PaymentsReportingPagoPaService paymentsReportingPagoPaService,
-	                                                                IngestionFlowFileService ingestionFlowFileService) {
+	public OrganizationPaymentsReportingPagoPaListRetrieverActivityImpl(PaymentsReportingPagoPaService paymentsReportingPagoPaService,
+	                                                                    IngestionFlowFileService ingestionFlowFileService) {
 		this.paymentsReportingPagoPaService = paymentsReportingPagoPaService;
 		this.ingestionFlowFileService = ingestionFlowFileService;
 	}
 
 	@Override
-	public List<Long> retrieve(Long organizationId) {
+	public List<PaymentsReportingIdDTO> retrieve(Long organizationId) {
+		log.info("Retrive payments reporting from PagoPA for the organization ID: {}", organizationId);
 		List<PaymentsReportingIdDTO> paymentsReportingIds = paymentsReportingPagoPaService.getPaymentsReportingList(organizationId);
+		if (paymentsReportingIds.isEmpty()) {
+			return Collections.emptyList();
+		}
 		OffsetDateTime oldestDate = findOldestDate(paymentsReportingIds);
+		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, oldestDate);
 
-		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FLOW_FILE_TYPE, oldestDate);
-
-		getNotImportedFilteredByFileName(ingestionFlowFiles, paymentsReportingIds);
-
-		// TODO in P4ADEV-2005: implement loop to retrieve ingestion flow file from PagoPA
-		return List.of();
+		return getNotImportedFilteredByFileName(ingestionFlowFiles, paymentsReportingIds);
 	}
 
 	/**
@@ -47,9 +50,9 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 	 * @return a list of PaymentsReportingIdDTOs that have not been imported
 	 */
 	private List<PaymentsReportingIdDTO> getNotImportedFilteredByFileName(List<IngestionFlowFile> ingestionFlowFiles, List<PaymentsReportingIdDTO> paymentsReportingIds) {
-		List<String> importedFileNames = ingestionFlowFiles.stream()
+		Set<String> importedFileNames = ingestionFlowFiles.stream()
 			.map(IngestionFlowFile::getFileName)
-			.toList();
+			.collect(Collectors.toSet());
 
 		return paymentsReportingIds.stream()
 			.filter(item -> !importedFileNames.contains(item.getPaymentsReportingFileName()))

@@ -32,7 +32,7 @@ public class IngestionFlowFileClient {
 
     public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, String accessToken) {
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDateFrom, null,null, null, null, null, null);
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDateFrom, null,null, null, null, null, null, null);
     }
 
 }
