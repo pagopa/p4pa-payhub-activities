@@ -35,9 +35,9 @@ public class ZipFileService {
 	/** Maximum allowed compression ratio (compressed size / uncompressed size), for example 10% */
 	private final double maxCompressionRatio;
 
-	public ZipFileService(@Value("${zip-file.max-entries:1000}") int maxEntries,
-						  @Value("${zip-file.max-uncompressed-size:#{50 * 1024 * 1024}}") long maxUncompressedSize,
-						  @Value("${zip-file.max-compression-ratio:0.1}") double maxCompressionRatio) {
+	public ZipFileService(@Value("${zip-file.max-entries}") int maxEntries,
+						  @Value("${zip-file.max-uncompressed-size}") long maxUncompressedSize,
+						  @Value("${zip-file.max-compression-ratio}") double maxCompressionRatio) {
 		this.maxEntries = maxEntries;
 		this.maxUncompressedSize = maxUncompressedSize;
 		this.maxCompressionRatio = maxCompressionRatio;

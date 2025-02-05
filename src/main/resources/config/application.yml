@@ -28,6 +28,11 @@ csv:
   separator: "\${CSV_SEPARATOR_CHAR:;}"
   quote-char: "\${CSV_QUOTE_CHAR:\\\"}"
 
+zip-file:
+  max-entries: "\${ZIP_MAX_ENTRIES:1000}"
+  max-uncompressed-size: "\${ZIP_MAX_UNCOMPRESSED_SIZE:52_428_800}" # 50MB
+  max-compression-ratio: "\${ZIP_MAX_COMPRESSION_RATIO:0.1}"
+
 rest:
   default-timeout:
     connect-millis: "\${DEFAULT_REST_CONNECT_TIMEOUT_MILLIS:60000}"
