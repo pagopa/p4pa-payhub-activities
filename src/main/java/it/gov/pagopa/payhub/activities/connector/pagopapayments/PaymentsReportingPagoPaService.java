@@ -16,4 +16,12 @@ public interface PaymentsReportingPagoPaService {
 	 * @return the list of payments reporting info data to download
 	 */
 	List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId);
+	/**
+	 * Fetch the payment reporting for the organization
+	 *
+	 * @param organizationId the organization id
+	 * @param flowId the flow id
+	 * @return the payment reporting data to download
+	 */
+	String fetchPaymentReporting(Long organizationId, String flowId);
 }
