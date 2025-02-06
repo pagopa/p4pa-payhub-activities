@@ -56,13 +56,13 @@ class PaymentsReportingPagoPaServiceTest {
 		String accessToken = "accessToken";
 		Long organizationId = 1L;
 		String flowId = "flowId";
-		String expectedResponse = "response";
+		Long expectedResponse = 123L;
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
 		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organizationId, flowId, accessToken)).thenReturn(expectedResponse);
 
 		// When
-		String result = service.fetchPaymentReporting(organizationId, flowId);
+		Long result = service.fetchPaymentReporting(organizationId, flowId);
 
 		// Then
 		assertEquals(expectedResponse, result);

@@ -55,16 +55,16 @@ class PaymentsReportingPagoPaClientTest {
 		Long organizationId = 1L;
 		String flowId = "flowId";
 		String accessToken = "accessToken";
-		String expectedResponse = "response";
+		String expectedResponse = "123";
 
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
 		when(mockApi.fetchPaymentReporting(organizationId, flowId)).thenReturn(expectedResponse);
 
 		// When
-		String result = client.fetchPaymentReporting(organizationId, flowId, accessToken);
+		Long result = client.fetchPaymentReporting(organizationId, flowId, accessToken);
 
 		// Then
-		assertEquals(expectedResponse, result);
+		assertEquals(Long.valueOf(expectedResponse), result);
 	}
 }

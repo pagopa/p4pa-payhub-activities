@@ -28,7 +28,7 @@ public class PaymentsReportingPagoPaServiceImpl implements PaymentsReportingPago
 	}
 
 	@Override
-	public String fetchPaymentReporting(Long organizationId, String flowId) {
+	public Long fetchPaymentReporting(Long organizationId, String flowId) {
 		log.info("Fetching payment reporting for organizationId: {} and flowId: {}", organizationId, flowId);
 		return paymentsReportingPagoPaClient.fetchPaymentReporting(organizationId, flowId, authnService.getAccessToken());
 	}

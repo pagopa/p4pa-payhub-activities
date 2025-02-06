@@ -10,13 +10,13 @@ import java.util.List;
  * Interface for retrieving the payments reporting files from PagoPA.
  */
 @ActivityInterface
-public interface OrganizationPaymentsReportingPagoPaFileRetrieverActivity {
+public interface OrganizationPaymentsReportingPagoPaRetrieverActivity {
 	/**
-	 * Retrieves the payments reporting files from PagoPA.
+	 * Fetch the ingestion flow files data of the relative payments reporting files from PagoPA.
 	 *
 	 * @param paymentsReportingIds the list of payments reporting IDs
 	 * @return a list of ingestion flow file IDs
 	 */
 	@ActivityMethod
-	List<Long> getPaymentsReportingFile(List<PaymentsReportingIdDTO> paymentsReportingIds);
+	List<Long> fetch(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds);
 }
