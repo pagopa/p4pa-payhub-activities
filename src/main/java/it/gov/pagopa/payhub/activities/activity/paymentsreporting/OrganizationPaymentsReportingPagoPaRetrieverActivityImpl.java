@@ -32,7 +32,7 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 		if (paymentsReportingIds.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<String> ingestionFlowFileNames = getFilenamesFilteredByNotCompleted(organizationId, paymentsReportingIds);
+		List<String> ingestionFlowFileNames = getFilenamesFilteredByStatus(organizationId, paymentsReportingIds);
 
 		return paymentsReportingIds.stream()
 			.filter(item -> ingestionFlowFileNames.contains(item.getPaymentsReportingFileName()))
@@ -46,7 +46,7 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 	 * @param paymentsReportingIds
 	 * @return a list of file names that have not been processed
 	 */
-	private List<String> getFilenamesFilteredByNotCompleted(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
+	private List<String> getFilenamesFilteredByStatus(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		return paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName)
 			.map(item -> ingestionFlowFileService
 				.findByOrganizationIdFlowTypeFilename(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, item))
