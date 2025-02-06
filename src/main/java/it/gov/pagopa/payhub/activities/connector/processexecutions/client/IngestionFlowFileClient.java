@@ -35,4 +35,8 @@ public class IngestionFlowFileClient {
                 .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDateFrom, null,null, null, null, null, null, null);
     }
 
+    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeFilename(Long organizationId, FlowFileTypeEnum flowFileType, String fileName, String accessToken) {
+        return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
+            .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), null, null,null, fileName, null, null, null, null);
+    }
 }

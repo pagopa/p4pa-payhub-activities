@@ -99,4 +99,25 @@ class IngestionFlowFileClientTest {
         verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
                 .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDate, null, null, null, null, null, null, null);
     }
+
+    @Test
+    void testFindByOrganizationIDFlowTypeFilename() {
+        // Given
+        Long organizationId = 1L;
+        FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
+        String fileName = "fileName";
+        String accessToken = "accessToken";
+        IngestionFlowFileSearchControllerApi mockApi = mock(IngestionFlowFileSearchControllerApi.class);
+        PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
+        when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), null, null, null, fileName, null, null, null, null)).thenReturn(expectedResponse);
+
+        // When
+        PagedModelIngestionFlowFile result = ingestionFlowFileClient.findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
+            .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), null, null, null, fileName, null, null, null, null);
+    }
 }

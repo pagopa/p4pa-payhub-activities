@@ -99,4 +99,25 @@ class IngestionFlowFileServiceTest {
         assertEquals(expectedResponse, result);
         verify(ingestionFlowFileClientMock, times(1)).findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, accessToken);
     }
+
+    @Test
+    void testFindByOrganizationIdFlowTypeFilename() {
+        // Given
+        String accessToken = "accessToken";
+        Long organizationId = 1L;
+        FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
+        String fileName = "fileName";
+        PagedModelIngestionFlowFileEmbedded embedded = mock(PagedModelIngestionFlowFileEmbedded.class);
+        PagedModelIngestionFlowFile pagedModelIngestionFlowFile = new PagedModelIngestionFlowFile(embedded, null, null);
+        List<IngestionFlowFile> expectedResponse = pagedModelIngestionFlowFile.getEmbedded().getIngestionFlowFiles();
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(ingestionFlowFileClientMock.findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken)).thenReturn(pagedModelIngestionFlowFile);
+
+        // When
+        List<IngestionFlowFile> result = ingestionFlowFileService.findByOrganizationIdFlowTypeFilename(organizationId, flowFileType, fileName);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(ingestionFlowFileClientMock, times(1)).findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken);
+    }
 }
