@@ -49,4 +49,22 @@ class PaymentsReportingPagoPaServiceTest {
 		assertEquals(expectedResponse, result);
 		verify(authnServiceMock, Mockito.times(1)).getAccessToken();
 	}
+
+	@Test
+	void testFetchPaymentReporting() {
+		// Given
+		String accessToken = "accessToken";
+		Long organizationId = 1L;
+		String flowId = "flowId";
+		Long expectedResponse = 123L;
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organizationId, flowId, accessToken)).thenReturn(expectedResponse);
+
+		// When
+		Long result = service.fetchPaymentReporting(organizationId, flowId);
+
+		// Then
+		assertEquals(expectedResponse, result);
+	}
 }

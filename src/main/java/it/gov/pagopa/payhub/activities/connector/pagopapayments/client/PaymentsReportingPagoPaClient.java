@@ -19,4 +19,9 @@ public class PaymentsReportingPagoPaClient {
 	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken).getPaymentsReportingList(organizationId);
 	}
+
+	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String accessToken) {
+		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
+				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId);
+	}
 }

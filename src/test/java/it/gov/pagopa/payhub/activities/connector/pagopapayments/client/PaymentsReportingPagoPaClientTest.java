@@ -48,4 +48,23 @@ class PaymentsReportingPagoPaClientTest {
 		verify(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken), times(1))
 			.getPaymentsReportingList(organizationId);
 	}
+
+	@Test
+	void testFetchPaymentReporting() {
+		// Given
+		Long organizationId = 1L;
+		String flowId = "flowId";
+		String accessToken = "accessToken";
+		Long expectedResponse = 123L;
+
+		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
+		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
+		when(mockApi.fetchPaymentReporting(organizationId, flowId)).thenReturn(expectedResponse);
+
+		// When
+		Long result = client.fetchPaymentReporting(organizationId, flowId, accessToken);
+
+		// Then
+		assertEquals(expectedResponse, result);
+	}
 }
