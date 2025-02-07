@@ -37,8 +37,8 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 		Set<String> alreadyProcessedFileNames = getFilenamesFilteredByStatus(organizationId, paymentsReportingIds);
 
 		return paymentsReportingIds.stream()
-			.filter(item -> !alreadyProcessedFileNames.contains(item.getPaymentsReportingFileName()))
-			.map(item -> paymentsReportingPagoPaService.fetchPaymentReporting(organizationId, item.getPagopaPaymentsReportingId()))
+			.filter(idDTO -> !alreadyProcessedFileNames.contains(idDTO.getPaymentsReportingFileName()))
+			.map(idDTO -> paymentsReportingPagoPaService.fetchPaymentReporting(organizationId, idDTO.getPagopaPaymentsReportingId()))
 			.toList();
 	}
 
@@ -50,8 +50,8 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 	 */
 	private Set<String> getFilenamesFilteredByStatus(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		return paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName)
-			.flatMap(item -> ingestionFlowFileService
-				.findByOrganizationIdFlowTypeFilename(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, item)
+			.flatMap(fileName -> ingestionFlowFileService
+				.findByOrganizationIdFlowTypeFilename(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, fileName)
 				.stream())
 			.map(IngestionFlowFile::getFileName)
 			.collect(Collectors.toSet());
