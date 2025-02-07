@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA;
-import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.StatusEnum.UPLOADED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 
@@ -46,12 +45,7 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 			.flowDateTime(now)
 			.paymentsReportingFileName(filename)
 			.build();
-		List<PaymentsReportingIdDTO> paymentsReportingIds = List.of(dto);
-		IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile().toBuilder()
-			.fileName(filename)
-			.status(UPLOADED)
-			.build();
-
+		IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile();
 		Long expectedIngestionFlowFileId = 123L;
 
 		doReturn(List.of(ingestionFlowFile)).when(ingestionFlowFileServiceMock)
@@ -59,7 +53,7 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 		doReturn(expectedIngestionFlowFileId).when(paymentsReportingPagoPaServiceMock).fetchPaymentReporting(organizationId, idFlow);
 
 		// When
-		List<Long> result = activity.fetch(organizationId, paymentsReportingIds);
+		List<Long> result = activity.fetch(organizationId, List.of(dto));
 
 		// When Then
 		assertEquals(List.of(expectedIngestionFlowFileId), result);

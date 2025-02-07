@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Lazy
 @Slf4j
@@ -32,27 +34,26 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 		if (paymentsReportingIds.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<String> ingestionFlowFileNames = getFilenamesFilteredByStatus(organizationId, paymentsReportingIds);
+		Set<String> alreadyProcessedFileNames = getFilenamesFilteredByStatus(organizationId, paymentsReportingIds);
 
 		return paymentsReportingIds.stream()
-			.filter(item -> ingestionFlowFileNames.contains(item.getPaymentsReportingFileName()))
+			.filter(item -> !alreadyProcessedFileNames.contains(item.getPaymentsReportingFileName()))
 			.map(item -> paymentsReportingPagoPaService.fetchPaymentReporting(organizationId, item.getPagopaPaymentsReportingId()))
 			.toList();
 	}
 
 	/**
-	 * Filters the list of PaymentsReportingIdDTOs to find those that have not been processed yet based on file names.
+	 * Filters the Set of PaymentsReportingIdDTOs to find those that have not been processed yet based on file names.
 	 * @param organizationId
 	 * @param paymentsReportingIds
-	 * @return a list of file names that have not been processed
+	 * @return a Set of file names that have not been processed
 	 */
-	private List<String> getFilenamesFilteredByStatus(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
+	private Set<String> getFilenamesFilteredByStatus(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		return paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName)
-			.map(item -> ingestionFlowFileService
-				.findByOrganizationIdFlowTypeFilename(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, item))
-			.flatMap(List::stream)
-			.filter(item -> item.getStatus().equals(StatusEnum.UPLOADED))
+			.flatMap(item -> ingestionFlowFileService
+				.findByOrganizationIdFlowTypeFilename(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, item)
+				.stream())
 			.map(IngestionFlowFile::getFileName)
-			.toList();
+			.collect(Collectors.toSet());
 	}
 }
