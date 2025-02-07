@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PaymentsReportingPagoPaService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +47,7 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 			.paymentsReportingFileName(filename)
 			.build();
 		List<PaymentsReportingIdDTO> paymentsReportingIds = List.of(dto);
-		IngestionFlowFile ingestionFlowFile = IngestionFlowFile.builder()
+		IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile().toBuilder()
 			.fileName(filename)
 			.status(UPLOADED)
 			.build();
