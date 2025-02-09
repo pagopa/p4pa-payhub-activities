@@ -77,7 +77,7 @@ public class IngestionFlowFileRetrieverService {
         Path encryptedFilePath = sharedDirectoryPath
                 .resolve(organizationFolder)
                 .resolve(sourcePath)
-                .resolve(filename);
+                .resolve(filename + AESUtils.CIPHER_EXTENSION);
 
         fileValidatorService.validateFile(encryptedFilePath);
 
