@@ -44,7 +44,7 @@ class IngestionFlowFileRetrieverServiceTest {
 	@BeforeEach
 	void setup() throws IOException {
 		service = new IngestionFlowFileRetrieverService(SHARED_PATH, TEMPORARY_PATH, TEST_CIPHER_PSW, fileValidatorService, zipFileService);
-		zipFile = tempDir.resolve("encryptedFile.zip.cipher");
+		zipFile = tempDir.resolve("encryptedFile.zip");
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 			addZipEntry(zos, "file1.txt", "This is the content of file1.");
 			addZipEntry(zos, "file2.txt", "This is the content of file2.");
@@ -60,15 +60,15 @@ class IngestionFlowFileRetrieverServiceTest {
 		Path workingPath = Path.of(TEMPORARY_PATH)
 				.resolve(String.valueOf(organizationId))
 				.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
-		Path zipFilePath = workingPath.resolve(filename.replace(AESUtils.CIPHER_EXTENSION, ""));
+		Path zipFileInWorkingDirectory = workingPath.resolve(filename);
 		List<Path> unzippedPaths = List.of(workingPath.resolve("file1.txt"), workingPath.resolve("file2.txt"));
 
-		doNothing().when(fileValidatorService).validateFile(zipFile);
-		doReturn(true).when(fileValidatorService).isArchive(zipFilePath);
-		when(zipFileService.unzip(zipFilePath)).thenReturn(unzippedPaths);
+		doNothing().when(fileValidatorService).validateFile(sourcePath.resolve(filename + AESUtils.CIPHER_EXTENSION));
+		doReturn(true).when(fileValidatorService).isArchive(zipFileInWorkingDirectory);
+		when(zipFileService.unzip(zipFileInWorkingDirectory)).thenReturn(unzippedPaths);
 
 		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
-			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFilePath.toFile(), workingPath.toFile()))
+			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFileInWorkingDirectory.toFile(), workingPath.toFile()))
 				.then(invocation -> null);
 
 			// when
@@ -90,7 +90,7 @@ class IngestionFlowFileRetrieverServiceTest {
 		Path sourcePath = zipFile.getParent();
 		String filename = zipFile.getFileName().toString();
 
-		doThrow(new InvalidIngestionFileException("File validation failed")).when(fileValidatorService).validateFile(zipFile);
+		doThrow(new InvalidIngestionFileException("File validation failed")).when(fileValidatorService).validateFile(sourcePath.resolve(filename + AESUtils.CIPHER_EXTENSION));
 
 		//When & Then
 		assertThrows(InvalidIngestionFileException.class,
@@ -106,13 +106,13 @@ class IngestionFlowFileRetrieverServiceTest {
 		Path workingPath = Path.of(TEMPORARY_PATH)
 				.resolve(String.valueOf(organizationId))
 				.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
-		Path zipFilePath = workingPath.resolve(filename.replace(AESUtils.CIPHER_EXTENSION, ""));
+		Path zipFileInWorkingDirectory = workingPath.resolve(filename);
 
-		doNothing().when(fileValidatorService).validateFile(zipFile);
-		doThrow(new InvalidIngestionFileException("ZIP validation failed")).when(fileValidatorService).isArchive(zipFilePath);
+		doNothing().when(fileValidatorService).validateFile(sourcePath.resolve(filename + AESUtils.CIPHER_EXTENSION));
+		doThrow(new InvalidIngestionFileException("ZIP validation failed")).when(fileValidatorService).isArchive(zipFileInWorkingDirectory);
 
 		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
-			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFilePath.toFile(), workingPath.toFile()))
+			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFileInWorkingDirectory.toFile(), workingPath.toFile()))
 				.then(invocation -> null);
 
 			//When & Then

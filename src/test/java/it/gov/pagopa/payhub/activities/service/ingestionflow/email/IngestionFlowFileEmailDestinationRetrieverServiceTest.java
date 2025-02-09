@@ -61,7 +61,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
 
         // Then
         Assertions.assertEquals(1, emailDTO.getTo().length);
-        Assertions.assertEquals(userInfo.getEmail(), emailDTO.getTo()[0]);
+        Assertions.assertNull(emailDTO.getTo()[0]);
         Assertions.assertNull(emailDTO.getCc());
     }
 
@@ -72,7 +72,8 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
-        organizationDTO.setOrgEmail(userInfo.getEmail());
+        organizationDTO.setOrgEmail("user@email.it");
+        ingestionFlowFileDTO.setOrganizationId(organizationDTO.getOrganizationId());
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
@@ -85,7 +86,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
 
         // Then
         Assertions.assertEquals(1, emailDTO.getTo().length);
-        Assertions.assertEquals(userInfo.getEmail(), emailDTO.getTo()[0]);
+        Assertions.assertEquals("user@email.it", emailDTO.getTo()[0]);
         Assertions.assertNull(emailDTO.getCc());
     }
 
@@ -96,6 +97,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
+        ingestionFlowFileDTO.setOrganizationId(organizationDTO.getOrganizationId());
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
@@ -108,7 +110,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
 
         // Then
         Assertions.assertEquals(1, emailDTO.getTo().length);
-        Assertions.assertEquals(userInfo.getEmail(), emailDTO.getTo()[0]);
+        Assertions.assertEquals("user@email.it", emailDTO.getTo()[0]);
         Assertions.assertEquals(1, emailDTO.getCc().length);
         Assertions.assertEquals(organizationDTO.getOrgEmail(), emailDTO.getCc()[0]);
     }

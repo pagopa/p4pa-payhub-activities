@@ -15,7 +15,6 @@ public class UserInfoFaker {
                 .fiscalCode("FISCALCODE")
                 .familyName("FAMILYNAME")
                 .name("NAME")
-                .email("user@email.it")
                 .issuer("ISSUER")
                 .brokerId(1L)
                 .brokerFiscalCode("BRFISCALCODE")
@@ -23,8 +22,16 @@ public class UserInfoFaker {
                 .organizations(List.of(UserOrganizationRoles.builder()
                         .organizationId(1L)
                         .operatorId("OPERATORID")
+                        .email("user@email.it")
                         .organizationIpaCode("ORGIPACODE")
                         .roles(List.of("ROLE_ADMIN"))
-                        .build()));
+                        .build(),
+                        UserOrganizationRoles.builder()
+                                .organizationId(2L)
+                                .operatorId("OPERATORID2")
+                                .email("user@email2.it")
+                                .organizationIpaCode("ORGIPACODE2")
+                                .roles(List.of("ROLE_ADMIN"))
+                                .build()));
     }
 }
