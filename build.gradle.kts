@@ -425,6 +425,9 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
 	invokerPackage.set("it.gov.pagopa.pu.processexecutions.generated")
 	apiPackage.set("it.gov.pagopa.pu.processexecutions.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.processexecutions.dto.generated")
+	typeMappings.set(mapOf(
+		"LocalDateTime" to "java.time.LocalDateTime"
+	))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",

@@ -36,7 +36,7 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
     void givenUnexpectedIngestionFlowFileTypeWhenResolveThenIngestionFlowTypeNotSupportedException() {
         // Given
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
+        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_CSV);
 
         // When, Then
         Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> emailTemplateResolverService.resolve(ingestionFlowFileDTO, true));

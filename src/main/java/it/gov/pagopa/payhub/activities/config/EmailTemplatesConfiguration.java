@@ -16,6 +16,10 @@ public class EmailTemplatesConfiguration {
     private EmailTemplate paymentsReportingFlowOk;
     @NestedConfigurationProperty
     private EmailTemplate paymentsReportingFlowKo;
+    @NestedConfigurationProperty
+    private EmailTemplate treasuryOpiFlowOk;
+    @NestedConfigurationProperty
+    private EmailTemplate treasuryOpiFlowKo;
     private String mailTextLoadOk;
     private String mailTextLoadKo;
 }
