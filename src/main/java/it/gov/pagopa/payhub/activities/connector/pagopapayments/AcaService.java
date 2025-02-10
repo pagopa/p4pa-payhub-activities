@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
-import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
 /**
  * This interface provides a method for synchronize installment of a debt position on ACA service

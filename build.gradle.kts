@@ -399,6 +399,9 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 	invokerPackage.set("it.gov.pagopa.pu.pagopapayments.generated")
 	apiPackage.set("it.gov.pagopa.pu.pagopapayments.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
+	typeMappings.set(mapOf(
+		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+	))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",

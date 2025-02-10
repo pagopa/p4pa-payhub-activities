@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.client;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.config.PagoPaPaymentsApisHolder;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 

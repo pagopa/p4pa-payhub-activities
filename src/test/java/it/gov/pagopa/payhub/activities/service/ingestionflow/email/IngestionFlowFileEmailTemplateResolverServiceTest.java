@@ -42,6 +42,7 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
         Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> emailTemplateResolverService.resolve(ingestionFlowFileDTO, true));
     }
 
+//region PAYMENTS_REPORTING
     @Test
     void givenSuccessfulPaymentsReportingTypeWhenResolveThenOk(){
         // Given
@@ -74,4 +75,42 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
         // Then
         Assertions.assertSame(expectedResult, result);
     }
+//endregion
+
+//region TREASURY_OPI
+    @Test
+    void givenSuccessfulTreasuryOpiTypeWhenResolveThenOk(){
+        // Given
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
+        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
+        EmailTemplate expectedResult = new EmailTemplate();
+
+        Mockito.when(emailTemplatesConfigurationMock.getTreasuryOpiFlowOk())
+                .thenReturn(expectedResult);
+
+        // When
+        EmailTemplate result = emailTemplateResolverService.resolve(ingestionFlowFileDTO, true);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotSuccessfulTreasuryOpiTypeWhenResolveThenOk(){
+        // Given
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
+        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
+        EmailTemplate expectedResult = EmailTemplate.builder()
+                .build();
+
+        Mockito.when(emailTemplatesConfigurationMock.getTreasuryOpiFlowKo())
+                .thenReturn(expectedResult);
+
+        // When
+        EmailTemplate result = emailTemplateResolverService.resolve(ingestionFlowFileDTO, false);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+//endregion
 }

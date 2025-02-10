@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.AcaClient;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildPaymentsDebtPositionDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
 class AcaServiceTest {
@@ -41,7 +41,7 @@ class AcaServiceTest {
     void whenSyncInstallmentAcaThenInvokeClient() {
         // Given
         String iud = "IUD";
-        DebtPositionDTO debtPosition = buildPaymentsDebtPositionDTO();
+        DebtPositionDTO debtPosition = buildDebtPositionDTO();
         String accessToken = "ACCESSTOKEN";
 
         Mockito.when(authnServiceMock.getAccessToken())

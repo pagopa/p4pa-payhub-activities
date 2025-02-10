@@ -2,12 +2,10 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionStatus;
 
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildPaymentsInstallmentDTO;
 
 public class PaymentOptionFaker {
 
@@ -20,22 +18,8 @@ public class PaymentOptionFaker {
                 .status(PaymentOptionDTO.StatusEnum.PAID)
                 .dueDate(TestUtils.OFFSETDATETIME)
                 .installments(List.of(buildInstallmentDTO()))
-                .multiDebtor(false)
                 .description("description")
                 .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
     }
 
-    public static it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO buildPaymentsPaymentOptionDTO(){
-        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.class)
-                .debtPositionId(1L)
-                .paymentOptionId(1L)
-                .debtPositionId(1L)
-                .totalAmountCents(100L)
-                .status(PaymentOptionStatus.PAID)
-                .dueDate(TestUtils.OFFSETDATETIME)
-                .installments(List.of(buildPaymentsInstallmentDTO()))
-                .multiDebtor(false)
-                .description("description")
-                .paymentOptionType(it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
-    }
 }
