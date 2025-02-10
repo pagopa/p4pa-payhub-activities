@@ -21,7 +21,7 @@ public class IngestionFlowFileFaker {
                 .filePathName("filePathName")
                 .fileName("fileName.csv")
                 .pdfGenerated(2L)
-                .codError("codError")
+                .errorDescription("errorDescription")
                 .pspIdentifier("PspId")
                 .flowDateTime(OffsetDateTime.now())
                 .discardFileName("DiscardFileName")
