@@ -2,11 +2,15 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Service
+@Slf4j
 public class TransferSearchClient {
     private final DebtPositionApisHolder debtPositionApisHolder;
 
@@ -15,7 +19,15 @@ public class TransferSearchClient {
 	}
 
 	public Transfer findBySemanticKey(Long orgId, String iuv, String iur, Integer transferIndex, String accessToken) {
-        return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
-                .crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex, null);
+        try{
+			return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
+					.crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex, null);
+		} catch (HttpClientErrorException e) {
+			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+				log.info("Transfer not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
+				return null;
+			}
+			throw e;
+		}
     }
 }

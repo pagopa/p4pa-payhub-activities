@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationSearchClientTest {
@@ -53,6 +55,24 @@ class OrganizationSearchClientTest {
     }
 
     @Test
+    void givenNotExistentOrganizationWhenFindByIpaCodeThenNull(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String orgIpaCode = "ORGIPACODE";
+
+        Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
+                .thenReturn(organizationSearchControllerApiMock);
+        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        // When
+        Organization result = organizationSearchClient.findByIpaCode(orgIpaCode, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
+
+    @Test
     void whenGetOrgFiscalCodeThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
@@ -69,5 +89,23 @@ class OrganizationSearchClientTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotExistentOrganizationWhenGetOrgFiscalCodeThenNull(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String orgFiscalCode = "ORGFISCALCODE";
+
+        Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
+                .thenReturn(organizationSearchControllerApiMock);
+        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByOrgFiscalCode(orgFiscalCode))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        // When
+        Organization result = organizationSearchClient.findByOrgFiscalCode(orgFiscalCode, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
     }
 }

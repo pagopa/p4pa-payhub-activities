@@ -9,12 +9,15 @@ import it.gov.pagopa.pu.classification.client.generated.TreasurySearchController
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.classification.dto.generated.TreasuryRequestBody;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,7 +43,7 @@ class TreasuryClientTest {
     }
 
     @Test
-    void testFindByOrganizationIdAndIuf() {
+    void whenFindByOrganizationIdAndIufThenOk() {
         // Given
         Long organizationId = 1L;
         String iuf = "IUF123";
@@ -60,7 +63,25 @@ class TreasuryClientTest {
     }
 
     @Test
-    void testGetByOrganizationIdAndBillCodeAndBillYear() {
+    void givenNotExistentTreasuryWhenFindByOrganizationIdAndIufThenNull() {
+        // Given
+        Long organizationId = 1L;
+        String iuf = "IUF123";
+        String accessToken = "accessToken";
+        TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
+        when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        // When
+        Treasury result = treasuryClient.findByOrganizationIdAndIuf(organizationId, iuf, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void whenGetByOrganizationIdAndBillCodeAndBillYearThenOk() {
         // Given
         Long organizationId = 1L;
         String billCode = "BILL123";
@@ -78,6 +99,25 @@ class TreasuryClientTest {
         assertEquals(expectedTreasury, result);
         verify(treasuryApisHolderMock.getTreasurySearchApi(accessToken), times(1))
                 .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear);
+    }
+
+    @Test
+    void givenNotExistentTreasuryWhenGetByOrganizationIdAndBillCodeAndBillYearThenNull() {
+        // Given
+        Long organizationId = 1L;
+        String billCode = "BILL123";
+        String billYear = "2023";
+        String accessToken = "accessToken";
+        TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
+        when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        // When
+        Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
     }
 
     @Test
