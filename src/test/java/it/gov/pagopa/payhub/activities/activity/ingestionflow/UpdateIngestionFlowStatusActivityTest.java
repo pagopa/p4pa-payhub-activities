@@ -22,26 +22,27 @@ class UpdateIngestionFlowStatusActivityTest {
 
   private static final Long VALID_ID=1L;
   private static final Long INVALID_ID=9L;
-  private static final IngestionFlowFile.StatusEnum VALID_STATUS = IngestionFlowFile.StatusEnum.PROCESSING;
-  private static final String COD_ERROR="CODE_ERROR";
-  private static final String DISCARD_FILE_NAME="DISCARDFILENAME";
+  private static final IngestionFlowFile.StatusEnum OLD_STATUS = IngestionFlowFile.StatusEnum.UPLOADED;
+  private static final IngestionFlowFile.StatusEnum NEW_STATUS = IngestionFlowFile.StatusEnum.PROCESSING;
+  private static final String ERROR_DESCRIPTION ="ERROR_DESCRIPTION";
+  private static final String DISCARD_FILE_NAME="DISCARD_FILENAME";
 
   @Test
   void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
     //given
-    Mockito.when(ingestionFlowFileServiceMock.updateStatus(VALID_ID, VALID_STATUS, COD_ERROR,DISCARD_FILE_NAME)).thenReturn(1);
+    Mockito.when(ingestionFlowFileServiceMock.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME)).thenReturn(1);
     //when
-    updateIngestionFlowStatusActivity.updateStatus(VALID_ID, VALID_STATUS, COD_ERROR,DISCARD_FILE_NAME);
+    updateIngestionFlowStatusActivity.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME);
     //verify
-    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateStatus(VALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME);
+    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME);
   }
 
   @Test
   void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
     //given
-    Mockito.when(ingestionFlowFileServiceMock.updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME)).thenReturn(0);
+    Mockito.when(ingestionFlowFileServiceMock.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME)).thenReturn(0);
     //when
-    Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, VALID_STATUS, COD_ERROR, DISCARD_FILE_NAME));
+    Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME));
   }
 
 }

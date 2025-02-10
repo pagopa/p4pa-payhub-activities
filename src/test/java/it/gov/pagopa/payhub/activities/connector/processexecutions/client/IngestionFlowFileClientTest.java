@@ -13,10 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.OffsetDateTime;
 
-import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.*;
+import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.StatusEnum;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -38,7 +41,7 @@ class IngestionFlowFileClientTest {
     }
 
     @Test
-    void testFindById() {
+    void whenFindByIdThenOk() {
         // Given
         Long ingestionFlowFileId = 1L;
         String ingestionFlowFileIdString = String.valueOf(ingestionFlowFileId);
@@ -58,29 +61,53 @@ class IngestionFlowFileClientTest {
     }
 
     @Test
-    void testUpdateStatus() {
+    void whenUpdateStatusThenOk() {
         // Given
         Long ingestionFlowFileId = 1L;
-        StatusEnum status = StatusEnum.COMPLETED;
+        StatusEnum oldStatus = StatusEnum.PROCESSING;
+        StatusEnum newStatus = StatusEnum.COMPLETED;
         String discardFileName = "discardFileName";
         String codError = "codError";
         String accessToken = "accessToken";
         Integer expectedResponse = 1;
         IngestionFlowFileEntityExtendedControllerApi mockApi = mock(IngestionFlowFileEntityExtendedControllerApi.class);
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.updateStatus(ingestionFlowFileId, status.name(), codError, discardFileName)).thenReturn(expectedResponse);
+        when(mockApi.updateStatus(ingestionFlowFileId, oldStatus.name(), newStatus.name(), codError, discardFileName)).thenReturn(expectedResponse);
 
         // When
-        Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, status, codError, discardFileName, accessToken);
+        Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
         verify(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken), times(1))
-                .updateStatus(ingestionFlowFileId, status.name(), codError, discardFileName);
+                .updateStatus(ingestionFlowFileId, oldStatus.name(), newStatus.name(), codError, discardFileName);
     }
 
     @Test
-    void testFindByOrganizationIDFlowTypeCreateDate() {
+    void givenNotFoundWhenUpdateStatusThenOk() {
+        // Given
+        Long ingestionFlowFileId = 1L;
+        StatusEnum oldStatus = StatusEnum.PROCESSING;
+        StatusEnum newStatus = StatusEnum.COMPLETED;
+        String discardFileName = "discardFileName";
+        String codError = "codError";
+        String accessToken = "accessToken";
+        IngestionFlowFileEntityExtendedControllerApi mockApi = mock(IngestionFlowFileEntityExtendedControllerApi.class);
+        when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.updateStatus(ingestionFlowFileId, oldStatus.name(), newStatus.name(), codError, discardFileName))
+                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        // When
+        Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName, accessToken);
+
+        // Then
+        assertEquals(0, result);
+        verify(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken), times(1))
+                .updateStatus(ingestionFlowFileId, oldStatus.name(), newStatus.name(), codError, discardFileName);
+    }
+
+    @Test
+    void whenFindByOrganizationIDFlowTypeCreateDateThenOk() {
         // Given
         Long organizationId = 1L;
         FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
@@ -101,7 +128,7 @@ class IngestionFlowFileClientTest {
     }
 
     @Test
-    void testFindByOrganizationIDFlowTypeFilename() {
+    void whenFindByOrganizationIDFlowTypeFilenameThenOk() {
         // Given
         Long organizationId = 1L;
         FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;

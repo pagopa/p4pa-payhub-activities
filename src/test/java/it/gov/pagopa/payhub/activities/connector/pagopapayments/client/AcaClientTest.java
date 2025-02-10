@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.connector.aca.client;
+package it.gov.pagopa.payhub.activities.connector.pagopapayments.client;
 
-import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.AcaClient;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.config.PagoPaPaymentsApisHolder;
 import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
