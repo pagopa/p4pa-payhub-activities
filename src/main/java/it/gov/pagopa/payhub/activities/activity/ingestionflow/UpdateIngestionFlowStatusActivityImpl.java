@@ -22,9 +22,9 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
     }
 
     @Override
-    public void updateStatus(Long id, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName) {
-        log.info("Updating IngestionFlowFile {} to new status {}", id, newStatus);
-        if(ingestionFlowFileService.updateStatus(id, newStatus, codError, discardFileName) != 1){
+    public void updateStatus(Long id, IngestionFlowFile.StatusEnum  oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName) {
+        log.info("Updating IngestionFlowFile {} to new status {} from {}", id, newStatus, oldStatus);
+        if(ingestionFlowFileService.updateStatus(id, oldStatus, newStatus, codError, discardFileName) != 1){
             throw new IngestionFlowFileNotFoundException("Cannot update ingestionFlowFile having id " + ingestionFlowFileService + " to status " + newStatus);
         }
     }

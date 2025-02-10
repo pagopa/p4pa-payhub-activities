@@ -60,7 +60,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> {
                     ingestionFlowFileApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                            .updateStatus(1L, "status", "message", "error");
+                            .updateStatus(1L, "oldStatus", "newStatus", "message", "error");
                     return null;
                 },
                 String.class,

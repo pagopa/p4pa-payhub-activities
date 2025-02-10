@@ -5,7 +5,9 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.OffsetDateTime;
 
@@ -25,9 +27,16 @@ public class IngestionFlowFileClient {
     }
 
 
-    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum  status, String codError, String discardFileName, String accessToken) {
-        return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                .updateStatus(ingestionFlowFileId, status.name() ,codError, discardFileName);
+    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum  oldStatus, IngestionFlowFile.StatusEnum  newStatus, String codError, String discardFileName, String accessToken) {
+        try{
+            return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
+                    .updateStatus(ingestionFlowFileId, oldStatus.name(), newStatus.name() ,codError, discardFileName);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return 0;
+            }
+            throw e;
+        }
     }
 
     public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, String accessToken) {

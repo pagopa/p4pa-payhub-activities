@@ -65,18 +65,19 @@ class IngestionFlowFileServiceTest {
         // Given
         String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
-        IngestionFlowFile.StatusEnum status = IngestionFlowFile.StatusEnum.PROCESSING;
-        String codError = "codError";
+        IngestionFlowFile.StatusEnum oldStatus = IngestionFlowFile.StatusEnum.UPLOADED;
+        IngestionFlowFile.StatusEnum newStatus = IngestionFlowFile.StatusEnum.PROCESSING;
+        String errorDescription = "errorDescription";
         String discardFileName = "discardFileName";
         Integer expectedResponse = 1;
-        when(ingestionFlowFileClientMock.updateStatus(ingestionFlowFileId, status, codError, discardFileName, accessToken)).thenReturn(expectedResponse);
+        when(ingestionFlowFileClientMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus, errorDescription, discardFileName, accessToken)).thenReturn(expectedResponse);
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
         // When
-        Integer result = ingestionFlowFileService.updateStatus(ingestionFlowFileId, status, codError, discardFileName);
+        Integer result = ingestionFlowFileService.updateStatus(ingestionFlowFileId, oldStatus, newStatus, errorDescription, discardFileName);
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileClientMock, times(1)).updateStatus(ingestionFlowFileId, status, codError, discardFileName,accessToken);
+        verify(ingestionFlowFileClientMock, times(1)).updateStatus(ingestionFlowFileId, oldStatus, newStatus, errorDescription, discardFileName,accessToken);
     }
 
     @Test

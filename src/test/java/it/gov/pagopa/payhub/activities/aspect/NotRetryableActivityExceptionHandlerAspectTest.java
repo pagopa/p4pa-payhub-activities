@@ -27,13 +27,14 @@ class NotRetryableActivityExceptionHandlerAspectTest {
     @Test
     void givenNotRetryableActivityExceptionExtensionWhenInvokeActivityThenExceptionWrapped(){
         // Given
-        IngestionFlowFile.StatusEnum status = IngestionFlowFile.StatusEnum.PROCESSING;
+        IngestionFlowFile.StatusEnum oldStatus = IngestionFlowFile.StatusEnum.UPLOADED;
+        IngestionFlowFile.StatusEnum newStatus = IngestionFlowFile.StatusEnum.PROCESSING;
         NotRetryableActivityException expectedNestedException = new NotRetryableActivityException("DUMMY"){};
-        Mockito.when(ingestionFlowFileServiceMock.updateStatus(1L, status,"COD_ERROR", null))
+        Mockito.when(ingestionFlowFileServiceMock.updateStatus(1L, oldStatus, newStatus,"ERROR_DESCRIPTION", null))
                 .thenThrow(expectedNestedException);
 
         // When
-        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateStatus(1L, status, "COD_ERROR", null));
+        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateStatus(1L, oldStatus, newStatus, "ERROR_DESCRIPTION", null));
 
         // Then
         Assertions.assertTrue(result.isNonRetryable());

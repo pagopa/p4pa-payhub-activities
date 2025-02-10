@@ -35,8 +35,8 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
     }
 
     @Override
-    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum status, String codError,String discardFileName) {
-        return ingestionFlowFileClient.updateStatus(ingestionFlowFileId,status, codError,discardFileName, authnService.getAccessToken());
+    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum  oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError,String discardFileName) {
+        return ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName, authnService.getAccessToken());
 
     }
 

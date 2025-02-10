@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.connector.aca;
+package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
-import it.gov.pagopa.payhub.activities.connector.pagopapayments.AcaServiceImpl;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.AcaClient;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.DebtPositionDTO;
