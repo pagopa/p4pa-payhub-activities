@@ -5,11 +5,14 @@ import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.pu.debtposition.client.generated.TransferSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -60,5 +63,36 @@ class TransferSearchClientTest {
 
 		// Then
 		assertSame(expectedResult, result);
+	}
+
+	@Test
+	void givenNotExistentTransferWhenFindBySemanticKeyThenNull() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long organizationId = 0L;
+		String iuv = "IUV";
+		String iur = "IUR";
+		Integer transferIndex = 1;
+
+		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
+		when(transferSearchControllerApiMock.crudTransfersFindBySemanticKey(
+				organizationId,
+				iuv,
+				iur,
+				transferIndex,
+				null
+		)).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+		// When
+		Transfer result = transferSearchClient.findBySemanticKey(
+				organizationId,
+				iuv,
+				iur,
+				transferIndex,
+				accessToken
+		);
+
+		// Then
+		Assertions.assertNull(result);
 	}
 }

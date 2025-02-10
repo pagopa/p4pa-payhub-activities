@@ -3,13 +3,16 @@ package it.gov.pagopa.payhub.activities.connector.classification.client;
 import it.gov.pagopa.payhub.activities.connector.classification.config.PaymentsReportingApisHolder;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
 @Lazy
 @Service
+@Slf4j
 public class PaymentsReportingClient {
 
     private final PaymentsReportingApisHolder paymentsReportingApisHolder;
@@ -22,6 +25,7 @@ public class PaymentsReportingClient {
         return paymentsReportingApisHolder.getPaymentsReportingEntityExtendedControllerApi(accessToken)
                 .saveAll1(dtos);
     }
+
     public CollectionModelPaymentsReporting getByOrganizationIdAndIuf(Long organizationId, String iuf, String accessToken) {
         return paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken)
                 .crudPaymentsReportingFindByOrganizationIdAndIuf(organizationId, iuf);
@@ -29,8 +33,13 @@ public class PaymentsReportingClient {
 
 
     public PaymentsReporting getBySemanticKey(Long orgId, String iuv, String iur, int transferIndex, String accessToken) {
-        return paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken)
-                .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
+        try {
+            return paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken)
+                    .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
+        } catch (HttpClientErrorException.NotFound e) {
+            log.info("PaymentsReporting not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
+            return null;
+        }
     }
 
 }

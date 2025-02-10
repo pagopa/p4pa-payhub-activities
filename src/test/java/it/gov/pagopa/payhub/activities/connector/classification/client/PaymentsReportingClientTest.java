@@ -1,15 +1,18 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.PaymentsReportingApisHolder;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
-import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingSearchControllerApi;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -55,7 +58,7 @@ class PaymentsReportingClientTest {
     }
 
     @Test
-    void testGetByOrganizationIdAndIuf() {
+    void whenGetByOrganizationIdAndIufThenOk() {
         // Given
         Long organizationId = 1L;
         String iuf = "IUF123";
@@ -77,7 +80,7 @@ class PaymentsReportingClientTest {
     }
 
     @Test
-    void testGetBySemanticKey() {
+    void whenGetBySemanticKeyThenOk() {
         // Given
         Long orgId = 1L;
         String iuv = "IUV123";
@@ -98,5 +101,26 @@ class PaymentsReportingClientTest {
         assertEquals(expectedResponse, result);
         verify(paymentsReportingSearchControllerApi, times(1))
                 .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
+    }
+
+    @Test
+    void givenNotExistentPaymentsReportingWhenGetBySemanticKeyThenNull() {
+        // Given
+        Long orgId = 1L;
+        String iuv = "IUV123";
+        String iur = "IUR123";
+        int transferIndex = 0;
+        String accessToken = "accessToken";
+
+        when(paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken))
+                .thenReturn(paymentsReportingSearchControllerApi);
+        when(paymentsReportingSearchControllerApi.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        PaymentsReporting result = paymentsReportingClient.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
     }
 }
