@@ -26,22 +26,6 @@ public class TransferFaker {
                 .transferIndex(1);
     }
 
-    public static it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO buildPaymentsTransferDTO(){
-        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.pagopapayments.dto.generated.TransferDTO.class)
-                .transferId(1L)
-                .installmentId(1L)
-                .orgFiscalCode("orgFiscalCode")
-                .orgName("beneficiaryName")
-                .iban("iban")
-                .postalIban("postalIban")
-                .amountCents(100L)
-                .remittanceInformation("remittanceInformation")
-                .stampType("stampType")
-                .stampHashDocument("stampHashDocument")
-                .stampProvincialResidence("stampProvincialResidence")
-                .category("category")
-                .transferIndex(1);
-    }
 
     public static it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO buildTransferDTO(){
         return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO.class)

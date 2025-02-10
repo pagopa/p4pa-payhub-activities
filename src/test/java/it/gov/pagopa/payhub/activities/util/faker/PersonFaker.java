@@ -19,17 +19,4 @@ public class PersonFaker {
                 .email("email@test.it");
     }
 
-    public static it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO buildPaymentsPersonDTO(){
-        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO.class)
-                .entityType(it.gov.pagopa.pu.pagopapayments.dto.generated.PersonDTO.EntityTypeEnum.F)
-                .fiscalCode("uniqueIdentifierCode")
-                .fullName("fullName")
-                .address("address")
-                .civic("civic")
-                .postalCode("postalCode")
-                .location("location")
-                .province("province")
-                .nation("nation")
-                .email("email@test.it");
-    }
 }

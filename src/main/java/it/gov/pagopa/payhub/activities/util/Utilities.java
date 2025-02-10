@@ -2,12 +2,15 @@ package it.gov.pagopa.payhub.activities.util;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utilities {
     private Utilities(){}
+
+    public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
     public static final int IBAN_LENGTH = 27;
 

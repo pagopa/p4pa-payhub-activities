@@ -13,7 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 
@@ -72,7 +73,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> {
                 ingestionFlowFileApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                    .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(1L), FlowFileTypeEnum.PAYMENTS_REPORTING.getValue(), OffsetDateTime.now().minusDays(1L), null, null, null, null, null, null, null);
+                    .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(1L), List.of(FlowFileTypeEnum.PAYMENTS_REPORTING.getValue()), LocalDateTime.now().minusDays(1L), null, null, null, null, null, null, null);
                 return null;
             },
             String.class,

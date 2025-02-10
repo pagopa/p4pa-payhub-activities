@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildPaymentsDebtPositionDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +45,7 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
 			accessToken -> {
 				pagoPaPaymentsApisHolder.getAcaApi(accessToken)
-					.syncAca("IUD", buildPaymentsDebtPositionDTO());
+					.syncAca("IUD", buildDebtPositionDTO());
 				return null;
 			},
 			String.class,

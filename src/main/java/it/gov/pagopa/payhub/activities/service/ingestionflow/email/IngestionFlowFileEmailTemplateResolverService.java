@@ -18,12 +18,15 @@ public class IngestionFlowFileEmailTemplateResolverService {
     }
 
     public EmailTemplate resolve(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
-        if (!(ingestionFlowFileDTO.getFlowFileType()).equals(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING)) {
-            throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type PAYMENTS_REPORTING");
-        }
-
-        return success
-                ? emailTemplatesConfiguration.getPaymentsReportingFlowOk()
-                : emailTemplatesConfiguration.getPaymentsReportingFlowKo();
+        return switch (ingestionFlowFileDTO.getFlowFileType()) {
+            case IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING -> success
+                    ? emailTemplatesConfiguration.getPaymentsReportingFlowOk()
+                    : emailTemplatesConfiguration.getPaymentsReportingFlowKo();
+            case IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI -> success
+                    ? emailTemplatesConfiguration.getTreasuryOpiFlowOk()
+                    : emailTemplatesConfiguration.getTreasuryOpiFlowKo();
+            default ->
+                    throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type " + ingestionFlowFileDTO.getFlowFileType());
+        };
     }
 }

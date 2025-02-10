@@ -16,7 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.OffsetDateTime;
+import java.time.*;
+import java.util.List;
 
 import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
 import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.StatusEnum;
@@ -111,12 +112,13 @@ class IngestionFlowFileClientTest {
         // Given
         Long organizationId = 1L;
         FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
-        OffsetDateTime creationDate = OffsetDateTime.now().minusDays(1);
+        OffsetDateTime creationDate = OffsetDateTime.of(LocalDateTime.of(LocalDate.of(2025,1,1), LocalTime.MIDNIGHT), ZoneOffset.UTC);
+        LocalDateTime exptectedCreationDateFrom = LocalDateTime.of(LocalDate.of(2025,1,1), LocalTime.of(1,0));
         String accessToken = "accessToken";
         IngestionFlowFileSearchControllerApi mockApi = mock(IngestionFlowFileSearchControllerApi.class);
         PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
         when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDate, null, null, null, null, null, null, null)).thenReturn(expectedResponse);
+        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), exptectedCreationDateFrom, null, null, null, null, null, null, null)).thenReturn(expectedResponse);
 
         // When
         PagedModelIngestionFlowFile result = ingestionFlowFileClient.findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, accessToken);
@@ -124,7 +126,7 @@ class IngestionFlowFileClientTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
-                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), creationDate, null, null, null, null, null, null, null);
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), exptectedCreationDateFrom, null, null, null, null, null, null, null);
     }
 
     @Test
@@ -137,7 +139,7 @@ class IngestionFlowFileClientTest {
         IngestionFlowFileSearchControllerApi mockApi = mock(IngestionFlowFileSearchControllerApi.class);
         PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
         when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), null, null, null, fileName, null, null, null, null)).thenReturn(expectedResponse);
+        when(mockApi.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null)).thenReturn(expectedResponse);
 
         // When
         PagedModelIngestionFlowFile result = ingestionFlowFileClient.findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken);
@@ -145,6 +147,6 @@ class IngestionFlowFileClientTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
-            .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), flowFileType.getValue(), null, null, null, fileName, null, null, null, null);
+            .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null);
     }
 }
