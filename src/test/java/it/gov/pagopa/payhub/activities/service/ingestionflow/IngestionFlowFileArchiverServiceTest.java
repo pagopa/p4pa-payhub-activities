@@ -3,17 +3,22 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,16 +34,24 @@ class IngestionFlowFileArchiverServiceTest {
 
 	private IngestionFlowFileArchiverService service;
 
-	@TempDir
-	Path targetDir;
+	private final Path sharedDir = Path.of("build");
+	private final Path targetDir = Path.of("build", "tmp");
 
 	@BeforeEach
 	void setUp() {
-		service = new IngestionFlowFileArchiverService("/tmp", "archive", TEST_PASSWORD, zipFileServiceMock);
+		service = new IngestionFlowFileArchiverService(sharedDir.toString(), "archive", TEST_PASSWORD, zipFileServiceMock);
 	}
 
+	@AfterEach
+	void verifyNoMoreInteractions(){
+		Mockito.verifyNoMoreInteractions(
+				zipFileServiceMock
+		);
+	}
+
+//region test compressAndArchive
 	@Test
-	void givenSuccessfullConditionsWhenCompressAndArchiveThenOk(@TempDir Path sourceDir) throws Exception {
+	void givenSuccessfulConditionsWhenCompressAndArchiveThenOk(@TempDir Path sourceDir) throws Exception {
 		//given
 		Path file1 = Files.createFile(sourceDir.resolve("file1.txt"));
 		Path file2 = Files.createFile(sourceDir.resolve("file2.txt"));
@@ -100,5 +113,33 @@ class IngestionFlowFileArchiverServiceTest {
 		assertThrows(InvalidIngestionFileException.class,
 			() -> service.compressAndArchive(mockFiles, zipFilePath, targetDir),
 			"zipping failed");
+	}
+//endregion
+
+	@Test
+	void whenArchiveThenOk(){
+		// Given
+		IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile()
+				.organizationId(1L)
+				.filePathName("path/to/file")
+				.fileName("fileName.zip");
+
+		Path srcPath = sharedDir.resolve("1").resolve("path/to/file");
+		Path srcFile = srcPath.resolve(ingestionFlowFile.getFileName() + AESUtils.CIPHER_EXTENSION);
+		Path archivePath = srcPath.resolve("archive");
+		Path archiveFile = archivePath.resolve(srcFile.getFileName());
+
+		try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+			// When
+			service.archive(ingestionFlowFile);
+
+			// Then
+			mockedFiles.verify(() -> Files.createDirectories(archivePath));
+			mockedFiles.verify(() -> Files.copy(
+					srcFile,
+					archiveFile,
+					StandardCopyOption.REPLACE_EXISTING));
+			mockedFiles.verify(() -> Files.deleteIfExists(srcFile));
+		}
 	}
 }

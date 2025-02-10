@@ -87,7 +87,7 @@ public class IngestionFlowFileArchiverService {
                 .resolve(ingestionFlowFileDTO.getFilePathName());
 
         Path originalFilePath = originalFileFolder
-                .resolve(ingestionFlowFileDTO.getFileName());
+                .resolve(ingestionFlowFileDTO.getFileName() + AESUtils.CIPHER_EXTENSION);
 
         Path targetDirectory = originalFileFolder.resolve(archiveFolder);
 
