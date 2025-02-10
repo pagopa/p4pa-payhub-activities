@@ -64,6 +64,7 @@ class TransferSearchClientTest {
 		// Then
 		assertSame(expectedResult, result);
 	}
+
 	@Test
 	void givenNotExistentTransferWhenFindBySemanticKeyThenNull() {
 		// Given
@@ -80,7 +81,7 @@ class TransferSearchClientTest {
 				iur,
 				transferIndex,
 				null
-		)).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+		)).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
 		// When
 		Transfer result = transferSearchClient.findBySemanticKey(

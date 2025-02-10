@@ -63,7 +63,7 @@ class OrganizationSearchClientTest {
         Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
         Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByIpaCode(orgIpaCode))
-                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
         Organization result = organizationSearchClient.findByIpaCode(orgIpaCode, accessToken);
@@ -100,7 +100,7 @@ class OrganizationSearchClientTest {
         Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
         Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByOrgFiscalCode(orgFiscalCode))
-                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
         Organization result = organizationSearchClient.findByOrgFiscalCode(orgFiscalCode, accessToken);

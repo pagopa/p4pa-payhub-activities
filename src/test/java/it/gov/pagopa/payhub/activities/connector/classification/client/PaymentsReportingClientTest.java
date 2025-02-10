@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.PaymentsReportingApisHolder;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
-import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingSearchControllerApi;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,7 +115,7 @@ class PaymentsReportingClientTest {
         when(paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken))
                 .thenReturn(paymentsReportingSearchControllerApi);
         when(paymentsReportingSearchControllerApi.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
-                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
         PaymentsReporting result = paymentsReportingClient.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken);

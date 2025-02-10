@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsRepo
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -26,6 +25,7 @@ public class PaymentsReportingClient {
         return paymentsReportingApisHolder.getPaymentsReportingEntityExtendedControllerApi(accessToken)
                 .saveAll1(dtos);
     }
+
     public CollectionModelPaymentsReporting getByOrganizationIdAndIuf(Long organizationId, String iuf, String accessToken) {
         return paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken)
                 .crudPaymentsReportingFindByOrganizationIdAndIuf(organizationId, iuf);
@@ -33,15 +33,12 @@ public class PaymentsReportingClient {
 
 
     public PaymentsReporting getBySemanticKey(Long orgId, String iuv, String iur, int transferIndex, String accessToken) {
-        try{
+        try {
             return paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken)
                     .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                log.info("PaymentsReporting not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
-                return null;
-            }
-            throw e;
+        } catch (HttpClientErrorException.NotFound e) {
+            log.info("PaymentsReporting not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
+            return null;
         }
     }
 

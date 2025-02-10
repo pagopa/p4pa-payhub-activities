@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositio
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -14,20 +13,17 @@ import org.springframework.web.client.HttpClientErrorException;
 public class TransferSearchClient {
     private final DebtPositionApisHolder debtPositionApisHolder;
 
-	public TransferSearchClient(DebtPositionApisHolder debtPositionApisHolder) {
-		this.debtPositionApisHolder = debtPositionApisHolder;
-	}
+    public TransferSearchClient(DebtPositionApisHolder debtPositionApisHolder) {
+        this.debtPositionApisHolder = debtPositionApisHolder;
+    }
 
-	public Transfer findBySemanticKey(Long orgId, String iuv, String iur, Integer transferIndex, String accessToken) {
-        try{
-			return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
-					.crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex, null);
-		} catch (HttpClientErrorException e) {
-			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-				log.info("Transfer not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
-				return null;
-			}
-			throw e;
-		}
+    public Transfer findBySemanticKey(Long orgId, String iuv, String iur, Integer transferIndex, String accessToken) {
+        try {
+            return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
+                    .crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex, null);
+        } catch (HttpClientErrorException.NotFound e) {
+            log.info("Transfer not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
+            return null;
+        }
     }
 }

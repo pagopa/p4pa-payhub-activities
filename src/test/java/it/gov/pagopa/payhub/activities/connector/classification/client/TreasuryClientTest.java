@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,7 +71,7 @@ class TreasuryClientTest {
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf))
-                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
         Treasury result = treasuryClient.findByOrganizationIdAndIuf(organizationId, iuf, accessToken);
@@ -111,7 +111,7 @@ class TreasuryClientTest {
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear))
-                .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
         Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, accessToken);
