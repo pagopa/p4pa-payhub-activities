@@ -54,15 +54,16 @@ class PaymentsReportingPagoPaClientTest {
 		// Given
 		Long organizationId = 1L;
 		String flowId = "flowId";
+		String fileName = "fileName";
 		String accessToken = "accessToken";
 		Long expectedResponse = 123L;
 
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.fetchPaymentReporting(organizationId, flowId)).thenReturn(expectedResponse);
+		when(mockApi.fetchPaymentReporting(organizationId, flowId, fileName)).thenReturn(expectedResponse);
 
 		// When
-		Long result = client.fetchPaymentReporting(organizationId, flowId, accessToken);
+		Long result = client.fetchPaymentReporting(organizationId, flowId, fileName, accessToken);
 
 		// Then
 		assertEquals(expectedResponse, result);

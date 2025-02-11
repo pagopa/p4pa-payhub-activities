@@ -56,13 +56,14 @@ class PaymentsReportingPagoPaServiceTest {
 		String accessToken = "accessToken";
 		Long organizationId = 1L;
 		String flowId = "flowId";
+		String fileName = "fileName";
 		Long expectedResponse = 123L;
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organizationId, flowId, accessToken)).thenReturn(expectedResponse);
+		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organizationId, flowId, fileName, accessToken)).thenReturn(expectedResponse);
 
 		// When
-		Long result = service.fetchPaymentReporting(organizationId, flowId);
+		Long result = service.fetchPaymentReporting(organizationId, flowId, fileName);
 
 		// Then
 		assertEquals(expectedResponse, result);

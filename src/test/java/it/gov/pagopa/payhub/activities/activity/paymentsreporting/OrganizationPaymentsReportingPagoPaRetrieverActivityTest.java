@@ -50,7 +50,7 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 
 		doReturn(List.of(ingestionFlowFile)).when(ingestionFlowFileServiceMock)
 			.findByOrganizationIdFlowTypeFilename(organizationId, PAYMENTS_REPORTING_PAGOPA, dto.getPaymentsReportingFileName());
-		doReturn(expectedIngestionFlowFileId).when(paymentsReportingPagoPaServiceMock).fetchPaymentReporting(organizationId, idFlow);
+		doReturn(expectedIngestionFlowFileId).when(paymentsReportingPagoPaServiceMock).fetchPaymentReporting(organizationId, idFlow, filename);
 
 		// When
 		List<Long> result = activity.fetch(organizationId, List.of(dto));
