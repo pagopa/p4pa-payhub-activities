@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlow
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.StatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -38,14 +37,12 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 
 		return paymentsReportingIds.stream()
 			.filter(idDTO -> !alreadyProcessedFileNames.contains(idDTO.getPaymentsReportingFileName()))
-			.map(idDTO -> paymentsReportingPagoPaService.fetchPaymentReporting(organizationId, idDTO.getPagopaPaymentsReportingId()))
+			.map(idDTO -> paymentsReportingPagoPaService.fetchPaymentReporting(organizationId, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName()))
 			.toList();
 	}
 
 	/**
 	 * Filters the Set of PaymentsReportingIdDTOs to find those that have not been processed yet based on file names.
-	 * @param organizationId
-	 * @param paymentsReportingIds
 	 * @return a Set of file names that have not been processed
 	 */
 	private Set<String> getFilenamesFilteredByStatus(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {

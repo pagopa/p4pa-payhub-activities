@@ -20,8 +20,8 @@ public class PaymentsReportingPagoPaClient {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken).getPaymentsReportingList(organizationId);
 	}
 
-	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String accessToken) {
+	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId);
+				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName);
 	}
 }

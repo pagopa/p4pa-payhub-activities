@@ -23,5 +23,5 @@ public interface PaymentsReportingPagoPaService {
 	 * @param pagopaPaymentsReportingId the flow id
 	 * @return the payment reporting data to download
 	 */
-	Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId);
+	Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName);
 }
