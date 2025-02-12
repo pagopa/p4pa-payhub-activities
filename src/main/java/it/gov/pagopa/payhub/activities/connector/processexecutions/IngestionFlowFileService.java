@@ -14,4 +14,5 @@ public interface IngestionFlowFileService {
     Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum  oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName);
     List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom);
     List<IngestionFlowFile> findByOrganizationIdFlowTypeFilename(Long organizationId, FlowFileTypeEnum flowFileType, String fileName);
+    Integer updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId);
 }
