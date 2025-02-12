@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting;
+package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

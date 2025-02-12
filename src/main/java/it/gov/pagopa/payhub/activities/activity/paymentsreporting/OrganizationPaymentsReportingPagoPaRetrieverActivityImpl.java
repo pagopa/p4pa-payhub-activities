@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting;
+package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PaymentsReportingPagoPaService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
