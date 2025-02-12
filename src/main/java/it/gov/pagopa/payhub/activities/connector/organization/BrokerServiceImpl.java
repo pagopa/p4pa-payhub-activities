@@ -25,7 +25,7 @@ public class BrokerServiceImpl implements BrokerService {
 
 	@Override
 	public List<Broker> fetchAll() {
-		log.info("Fetching All Brokers");
+		log.debug("Fetching all Broker records");
 		PagedModelBroker pagedModelBroker = brokerClient.fetchAll(authnService.getAccessToken());
 		return Objects.requireNonNull(pagedModelBroker.getEmbedded()).getBrokers();
 	}
