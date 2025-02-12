@@ -13,6 +13,6 @@ public interface GpdService {
      * @param iud the IUD of installment to be synchronized on GPD
      * @param debtPositionDTO the debt position related to the installment.
      */
-    void syncInstallmentGpd(String iud, DebtPositionDTO debtPositionDTO);
+    String syncInstallmentGpd(String iud, DebtPositionDTO debtPositionDTO);
 
 }
