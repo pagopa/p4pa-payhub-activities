@@ -1,8 +1,8 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.massive;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.massive.InstallmentIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
