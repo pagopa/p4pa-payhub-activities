@@ -3,6 +3,9 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+
+import java.util.Map;
 
 
 /**
@@ -15,10 +18,11 @@ public interface SendDebtPositionIONotificationActivity {
     /**
      * Sends a notification message for the specified debt position to the IO Notification service.
      *
-     * @param debtPosition the {@link DebtPositionDTO} containing the details of the debt position to be notified.
+     * @param requestedDebtPosition the {@link DebtPositionDTO} containing the details of the debt position to be notified (as given to the WF).
+     * @param iupdSyncStatusUpdateDTOMap the map of the correctly synchronized IUD
      */
     @ActivityMethod
-    void sendMessage(DebtPositionDTO debtPosition);
+    void sendMessage(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
 }
 
 
