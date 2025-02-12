@@ -35,7 +35,7 @@ class SendDebtPositionIONotificationActivityTest {
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
 
         // When
-        activity.sendMessage(debtPosition);
+        activity.sendMessage(debtPosition, null);
 
         // Then
         Mockito.verify(ioNotificationServiceMock, Mockito.times(1))

@@ -27,7 +27,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
 
     @Override
     public IufClassificationActivityResult classify(Long organizationId, String treasuryId, String iuf) {
-        log.debug("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
+        log.info("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
         List<Transfer2ClassifyDTO> transfers2classify =
             Objects.requireNonNull(paymentsReportingService.getByOrganizationIdAndIuf(organizationId, iuf).getEmbedded()).getPaymentsReportings()
