@@ -52,7 +52,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
 	void whenGetBrokerEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
-                .crudGetBrokers(0, 20, null),
+                .crudGetBrokers(0, 2_000, null),
             PagedModelBroker.class,
             organizationApisHolder::unload);
 	}
