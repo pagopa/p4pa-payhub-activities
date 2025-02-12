@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.organization.client;
 
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApisHolder;
+import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -43,4 +44,8 @@ public class OrganizationSearchClient {
                 .crudGetOrganization(String.valueOf(organizationId));
     }
 
+    public CollectionModelOrganization findOrganizationsByBrokerId(Long brokerId, String accessToken) {
+        return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
+                .crudOrganizationsFindByBrokerId(brokerId);
+    }
 }
