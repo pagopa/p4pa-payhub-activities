@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class GpdServiceImpl implements GpdService {
 
     @Override
-    public void syncInstallmentGpd(String iud, DebtPositionDTO debtPositionDTO) {
+    public String syncInstallmentGpd(String iud, DebtPositionDTO debtPositionDTO) {
         throw new NotImplementedException(); //TODO P4ADEV-1375 invoke GPD sync API of pagopa-payments
     }
 }

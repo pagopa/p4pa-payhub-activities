@@ -18,8 +18,8 @@ public class SynchronizeInstallmentGpdActivityImpl implements SynchronizeInstall
     }
 
     @Override
-    public void synchronizeInstallmentGpd(DebtPositionDTO debtPosition, String iud) {
+    public String synchronizeInstallmentGpd(DebtPositionDTO debtPosition, String iud) {
         log.info("Synchronizing IUD {} of DebtPosition {} with GPD", iud, debtPosition.getDebtPositionId());
-        gpdService.syncInstallmentGpd(iud, debtPosition);
+        return gpdService.syncInstallmentGpd(iud, debtPosition);
     }
 }
