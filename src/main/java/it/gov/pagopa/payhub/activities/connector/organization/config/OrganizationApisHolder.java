@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.organization.config;
 
+import it.gov.pagopa.pu.organization.client.generated.BrokerEntityControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
 import it.gov.pagopa.pu.organization.generated.ApiClient;
@@ -14,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @Lazy
 @Service
 public class OrganizationApisHolder {
-
+    private final BrokerEntityControllerApi brokerEntityControllerApi;
     private final OrganizationSearchControllerApi organizationSearchControllerApi;
     private final OrganizationEntityControllerApi organizationEntityControllerApi;
 
@@ -22,13 +23,13 @@ public class OrganizationApisHolder {
 
     public OrganizationApisHolder(
             @Value("${rest.organization.base-url}") String baseUrl,
-
             RestTemplateBuilder restTemplateBuilder) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
         apiClient.setBasePath(baseUrl);
         apiClient.setBearerToken(bearerTokenHolder::get);
 
+        this.brokerEntityControllerApi = new BrokerEntityControllerApi(apiClient);
         this.organizationSearchControllerApi = new OrganizationSearchControllerApi(apiClient);
         this.organizationEntityControllerApi = new OrganizationEntityControllerApi(apiClient);
     }
@@ -45,6 +46,11 @@ public class OrganizationApisHolder {
     /** It will return a {@link OrganizationEntityControllerApi} instrumented with the provided accessToken. Use null if auth is not required */
     public OrganizationEntityControllerApi getOrganizationEntityControllerApi(String accessToken){
         return getApi(accessToken, organizationEntityControllerApi);
+    }
+
+    /** It will return a {@link BrokerEntityControllerApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public BrokerEntityControllerApi getBrokerEntityControllerApi(String accessToken){
+        return getApi(accessToken, brokerEntityControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {

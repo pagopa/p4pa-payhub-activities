@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.organization.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.PagedModelBroker;
 import it.gov.pagopa.pu.organization.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,4 +48,12 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
                 organizationApisHolder::unload);
     }
 
+	@Test
+	void whenGetBrokerEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
+                .crudGetBrokers(null, null, null),
+            PagedModelBroker.class,
+            organizationApisHolder::unload);
+	}
 }
