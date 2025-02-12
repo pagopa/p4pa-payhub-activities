@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.gpd;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.GpdService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,10 +28,14 @@ class SynchronizeInstallmentGpdActivityTest {
     @Test
     void testSynchronizeInstallmentAcaActivity(){
         String iud = "IUD";
+        String iupdPagoPa = "IUPDPAGOPA";
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-        activity.synchronizeInstallmentGpd(debtPositionDTO, iud);
+        Mockito.when(gpdServiceMock.syncInstallmentGpd(iud, debtPositionDTO))
+                .thenReturn(iupdPagoPa);
 
-        Mockito.verify(gpdServiceMock).syncInstallmentGpd(iud, debtPositionDTO);
+        String result = activity.synchronizeInstallmentGpd(debtPositionDTO, iud);
+
+        Assertions.assertSame(iupdPagoPa, result);
     }
 }

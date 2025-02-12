@@ -16,8 +16,9 @@ public interface SynchronizeInstallmentGpdActivity {
      *
      * @param debtPositionDTO the {@link DebtPositionDTO} containing the details of the debt position
      * @param iud the IUD of installment to be synchronized
+     * @return the iupdPagopa synchronized
      */
     @ActivityMethod
-    void synchronizeInstallmentGpd(DebtPositionDTO debtPositionDTO, String iud);
+    String synchronizeInstallmentGpd(DebtPositionDTO debtPositionDTO, String iud);
 
 }
