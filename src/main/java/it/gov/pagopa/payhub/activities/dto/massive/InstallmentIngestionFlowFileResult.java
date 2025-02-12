@@ -1,10 +1,8 @@
-package it.gov.pagopa.payhub.activities.dto.massivedp;
+package it.gov.pagopa.payhub.activities.dto.massive;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
 
 /**
  * DTO for the InstallmentIngestionResult, representing the result of installment file processing.
@@ -13,8 +11,10 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InstallmentIngestionFlowFileResult {
-    /** Map of IUDs and their corresponding Installments IDs */
-    private Map<String, String> iud2InstallmentsIdMap;
+    /** The total number of rows in the file */
+    private Long totalRows;
+    /** The number of rows correctly handled */
+    private Long processedRows;
     /** Error description */
     private String errorDescription;
     /** Discarded file name */
