@@ -149,4 +149,23 @@ class IngestionFlowFileClientTest {
         verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
             .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null);
     }
+
+    @Test
+    void whenUpdateProcessingIfNoOtherProcessing() {
+        // Given
+        Long ingestionFlowFileId = 1L;
+        String accessToken = "accessToken";
+        Integer expectedResponse = 1;
+        IngestionFlowFileSearchControllerApi mockApi = mock(IngestionFlowFileSearchControllerApi.class);
+        when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.crudIngestionFlowFilesUpdateProcessingIfNoOtherProcessing(ingestionFlowFileId)).thenReturn(expectedResponse);
+
+        // When
+        Integer result = ingestionFlowFileClient.updateProcessingIfNoOtherProcessing(ingestionFlowFileId, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken), times(1))
+                .crudIngestionFlowFilesUpdateProcessingIfNoOtherProcessing(ingestionFlowFileId);
+    }
 }
