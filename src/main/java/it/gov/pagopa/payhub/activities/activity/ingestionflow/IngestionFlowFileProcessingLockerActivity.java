@@ -4,7 +4,7 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 @ActivityInterface
-public interface IngestionFlowFileLockerActivity {
+public interface IngestionFlowFileProcessingLockerActivity {
 
     /**
      * Updates the status of the specified IngestionFlowFile to PROCESSING if no other record
@@ -13,6 +13,6 @@ public interface IngestionFlowFileLockerActivity {
      * @param ingestionFlowFileId the unique identifier of the IngestionFlowFile to update.
      */
     @ActivityMethod
-    void updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId);
+    boolean updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId);
 
 }
