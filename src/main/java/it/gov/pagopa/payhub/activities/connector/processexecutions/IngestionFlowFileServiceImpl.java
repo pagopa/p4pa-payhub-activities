@@ -35,16 +35,15 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
     }
 
     @Override
-    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum  oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError,String discardFileName) {
+    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName) {
         return ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName, authnService.getAccessToken());
-
     }
 
     @Override
     public List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom) {
         log.info("Fetching IngestionFlowFile type {} by organizationId: {}, created from: {}", flowFileType, organizationId, creationDateFrom);
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = ingestionFlowFileClient
-            .findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDateFrom, authnService.getAccessToken());
+                .findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDateFrom, authnService.getAccessToken());
         return Objects.requireNonNull(pagedModelIngestionFlowFile.getEmbedded()).getIngestionFlowFiles();
     }
 
@@ -52,7 +51,12 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
     public List<IngestionFlowFile> findByOrganizationIdFlowTypeFilename(Long organizationId, FlowFileTypeEnum flowFileType, String fileName) {
         log.info("Fetching IngestionFlowFile type {} by organizationId: {} and file name: {}", flowFileType, organizationId, fileName);
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = ingestionFlowFileClient
-            .findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, authnService.getAccessToken());
+                .findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, authnService.getAccessToken());
         return Objects.requireNonNull(pagedModelIngestionFlowFile.getEmbedded()).getIngestionFlowFiles();
+    }
+
+    @Override
+    public Integer updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId) {
+        return ingestionFlowFileClient.updateProcessingIfNoOtherProcessing(ingestionFlowFileId, authnService.getAccessToken());
     }
 }

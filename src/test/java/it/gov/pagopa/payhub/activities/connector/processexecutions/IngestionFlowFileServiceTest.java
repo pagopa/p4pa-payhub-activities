@@ -121,4 +121,20 @@ class IngestionFlowFileServiceTest {
         assertEquals(expectedResponse, result);
         verify(ingestionFlowFileClientMock, times(1)).findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken);
     }
+
+    @Test
+    void testUpdateProcessingIfNoOtherProcessing() {
+        // Given
+        String accessToken = "accessToken";
+        Long ingestionFlowFileId = 1L;
+        Integer expectedResponse = 1;
+        when(ingestionFlowFileClientMock.updateProcessingIfNoOtherProcessing(ingestionFlowFileId, accessToken)).thenReturn(expectedResponse);
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        // When
+        Integer result = ingestionFlowFileService.updateProcessingIfNoOtherProcessing(ingestionFlowFileId);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(ingestionFlowFileClientMock, times(1)).updateProcessingIfNoOtherProcessing(ingestionFlowFileId, accessToken);
+    }
 }

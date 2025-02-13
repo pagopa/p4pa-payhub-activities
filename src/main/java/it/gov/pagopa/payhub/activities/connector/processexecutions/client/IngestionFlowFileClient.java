@@ -51,4 +51,9 @@ public class IngestionFlowFileClient {
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
                 .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null);
     }
+
+    public Integer updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId, String accessToken) {
+        return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
+                .crudIngestionFlowFilesUpdateProcessingIfNoOtherProcessing(ingestionFlowFileId);
+    }
 }
