@@ -28,7 +28,7 @@ class IngestionFlowFileProcessingLockerActivityTest {
     //given
     Mockito.when(ingestionFlowFileServiceMock.updateProcessingIfNoOtherProcessing(VALID_ID)).thenReturn(1);
     //when
-    boolean result = ingestionFlowFileLockerActivity.updateProcessingIfNoOtherProcessing(VALID_ID);
+    boolean result = ingestionFlowFileLockerActivity.acquireProcessingLock(VALID_ID);
     //verify
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateProcessingIfNoOtherProcessing(VALID_ID);
     assertTrue(result);
@@ -39,7 +39,7 @@ class IngestionFlowFileProcessingLockerActivityTest {
     //given
     Mockito.when(ingestionFlowFileServiceMock.updateProcessingIfNoOtherProcessing(INVALID_ID)).thenReturn(0);
     //when
-    boolean result = ingestionFlowFileLockerActivity.updateProcessingIfNoOtherProcessing(INVALID_ID);
+    boolean result = ingestionFlowFileLockerActivity.acquireProcessingLock(INVALID_ID);
     assertFalse(result);
   }
 

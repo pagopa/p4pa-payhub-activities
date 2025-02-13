@@ -16,7 +16,7 @@ public class IngestionFlowFileProcessingLockerActivityImpl implements IngestionF
     }
 
     @Override
-    public boolean updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId) {
+    public boolean acquireProcessingLock(Long ingestionFlowFileId) {
         log.info("Updating IngestionFlowFile {} to new status PROCESSING", ingestionFlowFileId);
         return ingestionFlowFileService.updateProcessingIfNoOtherProcessing(ingestionFlowFileId) == 1;
     }
