@@ -2,7 +2,10 @@ package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
+import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
+import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.PagedModelOrganizationEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +15,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
@@ -138,6 +144,42 @@ class OrganizationServiceTest {
         // Then
         Assertions.assertTrue(result.isPresent());
         Assertions.assertSame(expectedResult, result.get());
+    }
+//endregion
+
+//region getOrganizationsByBrokerId tests
+    @Test
+    void givenNotExistentBrokerIdWhenGetOrganizationsByBrokerIdThenEmpty(){
+        // Given
+        Long brokerId = 123L;
+        PagedModelOrganizationEmbedded embedded = mock(PagedModelOrganizationEmbedded.class);
+        CollectionModelOrganization expectedResponse = new CollectionModelOrganization().embedded(embedded);
+        Mockito.when(organizationSearchClientMock.findOrganizationsByBrokerId(brokerId, accessToken))
+            .thenReturn(expectedResponse);
+
+        // When
+        List<Organization> result = organizationService.getOrganizationsByBrokerId(brokerId);
+
+        // Then
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenExistentBrokerIdWhenGetOrganizationsByBrokerIdThenReturnList(){
+        // Given
+        Long brokerId = 123L;
+        List<Organization> organizations = List.of(OrganizationFaker.buildOrganizationDTO());
+        PagedModelOrganizationEmbedded embedded = new PagedModelOrganizationEmbedded(organizations);
+        CollectionModelOrganization expectedResponse = new CollectionModelOrganization().embedded(embedded);
+        Mockito.when(organizationSearchClientMock.findOrganizationsByBrokerId(brokerId, accessToken))
+            .thenReturn(expectedResponse);
+
+        // When
+        List<Organization> result = organizationService.getOrganizationsByBrokerId(brokerId);
+
+        // Then
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertSame(embedded.getOrganizations(), result);
     }
 //endregion
 }

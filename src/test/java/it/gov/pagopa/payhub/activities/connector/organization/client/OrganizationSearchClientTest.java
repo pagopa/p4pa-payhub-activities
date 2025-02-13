@@ -1,8 +1,11 @@
 package it.gov.pagopa.payhub.activities.connector.organization.client;
 
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApisHolder;
+import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
+import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.PagedModelOrganizationEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +23,8 @@ class OrganizationSearchClientTest {
     private OrganizationApisHolder organizationApisHolderMock;
     @Mock
     private OrganizationSearchControllerApi organizationSearchControllerApiMock;
+    @Mock
+    private OrganizationEntityControllerApi organizationEntityControllerApiMock;
 
     private OrganizationSearchClient organizationSearchClient;
 
@@ -107,5 +112,43 @@ class OrganizationSearchClientTest {
 
         // Then
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void whenFindByIdThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+        Organization expectedResult = new Organization();
+
+        Mockito.when(organizationApisHolderMock.getOrganizationEntityControllerApi(accessToken))
+                .thenReturn(organizationEntityControllerApiMock);
+        Mockito.when(organizationEntityControllerApiMock.crudGetOrganization(String.valueOf(organizationId)))
+                .thenReturn(expectedResult);
+
+        // When
+        Organization result = organizationSearchClient.findById(organizationId, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void whenFindOrganizationsByBrokerIdThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long brokerId = 1L;
+        PagedModelOrganizationEmbedded embedded = new PagedModelOrganizationEmbedded();
+        CollectionModelOrganization expectedResult = new CollectionModelOrganization().embedded(embedded);
+
+        Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
+                .thenReturn(organizationSearchControllerApiMock);
+        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByBrokerId(brokerId))
+                .thenReturn(expectedResult);
+        // When
+        CollectionModelOrganization result = organizationSearchClient.findOrganizationsByBrokerId(brokerId, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
     }
 }

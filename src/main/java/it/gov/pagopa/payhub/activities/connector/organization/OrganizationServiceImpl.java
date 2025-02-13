@@ -2,10 +2,13 @@ package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
+import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Lazy
@@ -39,5 +42,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         return Optional.ofNullable(
                 organizationSearchClient.findById(organizationId, authnService.getAccessToken())
         );
+    }
+
+    @Override
+    public List<Organization> getOrganizationsByBrokerId(Long brokerId) {
+        CollectionModelOrganization organizations = organizationSearchClient.findOrganizationsByBrokerId(brokerId, authnService.getAccessToken());
+        return Objects.requireNonNull(organizations.getEmbedded()).getOrganizations();
     }
 }
