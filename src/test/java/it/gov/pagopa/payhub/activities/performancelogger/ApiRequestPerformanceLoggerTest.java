@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.performancelogger;
 
-import it.gov.pagopa.payhub.auth.performancelogger.PerformanceLoggerTest;
-import it.gov.pagopa.payhub.auth.utils.MemoryAppender;
+import it.gov.pagopa.payhub.activities.util.MemoryAppender;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
