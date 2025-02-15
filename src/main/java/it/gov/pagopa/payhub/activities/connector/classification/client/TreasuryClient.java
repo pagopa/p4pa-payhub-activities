@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
-import it.gov.pagopa.payhub.activities.connector.classification.config.TreasuryApisHolder;
+import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.payhub.activities.connector.classification.mapper.TreasuryRequestMapper;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import lombok.extern.slf4j.Slf4j;
@@ -13,17 +13,17 @@ import org.springframework.web.client.HttpClientErrorException;
 @Slf4j
 public class TreasuryClient {
 
-    private final TreasuryApisHolder treasuryApisHolder;
+    private final ClassificationApisHolder classificationApisHolder;
     private final TreasuryRequestMapper mapper;
 
-    public TreasuryClient(TreasuryApisHolder treasuryApisHolder, TreasuryRequestMapper mapper) {
-        this.treasuryApisHolder = treasuryApisHolder;
+    public TreasuryClient(ClassificationApisHolder classificationApisHolder, TreasuryRequestMapper mapper) {
+        this.classificationApisHolder = classificationApisHolder;
         this.mapper = mapper;
     }
 
     public Treasury findByOrganizationIdAndIuf(Long organizationId, String iuf, String accessToken) {
         try {
-            return treasuryApisHolder.getTreasurySearchApi(accessToken)
+            return classificationApisHolder.getTreasurySearchApi(accessToken)
                     .crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf);
         } catch (HttpClientErrorException.NotFound e) {
             log.info("Treasury not found: organizationId: {}, iuf: {}", organizationId, iuf);
@@ -33,7 +33,7 @@ public class TreasuryClient {
 
     public Treasury getBySemanticKey(Long organizationId, String billCode, String billYear, String accessToken) {
         try {
-            return treasuryApisHolder.getTreasurySearchApi(accessToken)
+            return classificationApisHolder.getTreasurySearchApi(accessToken)
                     .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear);
         } catch (HttpClientErrorException.NotFound e) {
             log.info("Treasury not found: organizationId: {}, billCode: {}, billYear: {}", organizationId, billCode, billYear);
@@ -42,12 +42,12 @@ public class TreasuryClient {
     }
 
     public Treasury insert(Treasury treasury, String accessToken) {
-        return treasuryApisHolder.getTreasuryEntityControllerApi(accessToken)
+        return classificationApisHolder.getTreasuryEntityControllerApi(accessToken)
                 .crudCreateTreasury(mapper.map(treasury));
     }
 
     public Long deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear, String accessToken) {
-        return treasuryApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
+        return classificationApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
     }
 

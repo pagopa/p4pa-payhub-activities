@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
-import it.gov.pagopa.payhub.activities.connector.classification.config.TreasuryApisHolder;
 import it.gov.pagopa.payhub.activities.connector.classification.mapper.TreasuryRequestMapper;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityControllerApi;

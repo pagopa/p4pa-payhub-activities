@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
-import it.gov.pagopa.payhub.activities.connector.classification.config.PaymentsReportingApisHolder;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;

@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
+import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.TransferApi;
@@ -23,12 +24,18 @@ public class DebtPositionApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public DebtPositionApisHolder(
-	    @Value("${rest.debt-position.base-url}") String baseUrl,
-	    RestTemplateBuilder restTemplateBuilder) {
+        DebtPositionClientConfig clientConfig,
+        RestTemplateBuilder restTemplateBuilder
+    ) {
 	    RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
-        apiClient.setBasePath(baseUrl);
+        apiClient.setBasePath(clientConfig.getBaseUrl());
         apiClient.setBearerToken(bearerTokenHolder::get);
+        apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
+        apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
+        if (clientConfig.isPrintBodyWhenError()) {
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+        }
 
         this.debtPositionSearchControllerApi = new DebtPositionSearchControllerApi(apiClient);
         this.debtPositionApi = new DebtPositionApi(apiClient);

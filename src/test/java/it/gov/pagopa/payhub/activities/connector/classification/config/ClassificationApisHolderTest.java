@@ -1,8 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.classification.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.classification.dto.generated.Classification;
-import it.gov.pagopa.pu.classification.dto.generated.ClassificationRequestBody;
+import it.gov.pagopa.pu.classification.dto.generated.*;
 import it.gov.pagopa.pu.ionotification.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.mockito.Mockito;
@@ -43,6 +42,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
         );
     }
 
+//region Classification entity
     @Test
     void whenGetClassificationEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
@@ -65,4 +65,79 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                 String.class,
                 classificationApisHolder::unload);
     }
+//endregion
+
+//region PaymentsReporting entity
+    @Test
+    void whenGetPaymentsReportingSearchApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    classificationApisHolder.getPaymentsReportingSearchApi(accessToken)
+                            .crudPaymentsReportingFindByOrganizationIdAndIuf(1L, "iuf");
+                    return null;
+                },
+                String.class,
+                classificationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetPaymentsReportingEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    classificationApisHolder.getPaymentsReportingEntityControllerApi(accessToken)
+                            .crudCreatePaymentsreporting(new PaymentsReportingRequestBody());
+                    return null;
+                },
+                String.class,
+                classificationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetPaymentsReportingEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    classificationApisHolder.getPaymentsReportingEntityExtendedControllerApi(accessToken)
+                            .saveAll1(List.of(new PaymentsReporting()));
+                    return null;
+                },
+                String.class,
+                classificationApisHolder::unload);
+    }
+//endregion
+
+//region Treasury entity
+    @Test
+    void whenGetTreasurySearchApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    classificationApisHolder.getTreasurySearchApi(accessToken)
+                            .crudTreasuryGetByOrganizationIdAndIuf(1L, "iuf");
+                    return null;
+                },
+                String.class,
+                classificationApisHolder::unload);
+    }
+    @Test
+    void whenGetTreasuryEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    classificationApisHolder.getTreasuryEntityControllerApi(accessToken)
+                            .crudCreateTreasury(new TreasuryRequestBody());
+                    return null;
+                },
+                String.class,
+                classificationApisHolder::unload);
+    }
+    @Test
+    void whenGetTreasuryEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    classificationApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
+                            .deleteByOrganizationIdAndBillCodeAndBillYear(1L, "billCode", "2021");
+                    return null;
+                },
+                String.class,
+                classificationApisHolder::unload);
+    }
+//endregion
 }
