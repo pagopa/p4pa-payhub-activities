@@ -2,20 +2,19 @@ package it.gov.pagopa.payhub.activities.connector.classification.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.classification.dto.generated.*;
-import it.gov.pagopa.pu.ionotification.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
-import org.mockito.Mockito;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ClassificationApisHolderTest extends BaseApiHolderTest {
@@ -29,10 +28,10 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     void setUp() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ApiClient apiClient = new ApiClient(restTemplateMock);
-        String baseUrl = "http://example.com";
-        apiClient.setBasePath(baseUrl);
-        classificationApisHolder = new ClassificationApisHolder(baseUrl, restTemplateBuilderMock);
+        ClassificationClientConfig clientConfig = ClassificationClientConfig.builder()
+                .baseUrl("http://example.com")
+                .build();
+        classificationApisHolder = new ClassificationApisHolder(clientConfig, restTemplateBuilderMock);
     }
     @AfterEach
     void verifyNoMoreInteractions() {

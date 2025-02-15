@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
-import it.gov.pagopa.pu.processexecutions.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,10 +29,10 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     void setUp() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ApiClient apiClient = new ApiClient(restTemplateMock);
-        String baseUrl = "http://example.com";
-        apiClient.setBasePath(baseUrl);
-        ingestionFlowFileApisHolder = new ProcessExecutionsApisHolder(baseUrl, restTemplateBuilderMock);
+        ProcessExecutionsClientConfig clientConfig = ProcessExecutionsClientConfig.builder()
+                .baseUrl("http://example.com")
+                .build();
+        ingestionFlowFileApisHolder = new ProcessExecutionsApisHolder(clientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach

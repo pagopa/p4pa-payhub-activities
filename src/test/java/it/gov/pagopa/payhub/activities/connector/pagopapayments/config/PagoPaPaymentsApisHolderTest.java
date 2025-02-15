@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.processexecutions.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +25,10 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	void setUp() {
 		when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
 		when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-		ApiClient apiClient = new ApiClient(restTemplateMock);
-		String baseUrl = "http://example.com";
-		apiClient.setBasePath(baseUrl);
-		pagoPaPaymentsApisHolder = new PagoPaPaymentsApisHolder(baseUrl, restTemplateBuilderMock);
+		PagoPaPaymentsClientConfig clientConfig = PagoPaPaymentsClientConfig.builder()
+				.baseUrl("http://example.com")
+				.build();
+		pagoPaPaymentsApisHolder = new PagoPaPaymentsApisHolder(clientConfig, restTemplateBuilderMock);
 	}
 
 	@AfterEach
