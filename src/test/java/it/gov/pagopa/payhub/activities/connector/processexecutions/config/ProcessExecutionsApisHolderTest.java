@@ -29,7 +29,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     void setUp() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ProcessExecutionsClientConfig clientConfig = ProcessExecutionsClientConfig.builder()
+        ProcessExecutionsApiClientConfig clientConfig = ProcessExecutionsApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .build();
         ingestionFlowFileApisHolder = new ProcessExecutionsApisHolder(clientConfig, restTemplateBuilderMock);

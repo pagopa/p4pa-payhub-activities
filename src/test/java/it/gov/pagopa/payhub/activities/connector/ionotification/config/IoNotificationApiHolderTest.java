@@ -23,7 +23,7 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        IoNotificationClientConfig clientConfig = IoNotificationClientConfig.builder()
+        IoNotificationApiClientConfig clientConfig = IoNotificationApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .build();
         ioNotificationApisHolder = new IoNotificationApisHolder(clientConfig, restTemplateBuilderMock);

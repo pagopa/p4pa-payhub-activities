@@ -8,7 +8,6 @@ import it.gov.pagopa.pu.debtposition.client.generated.TransferSearchControllerAp
 import it.gov.pagopa.pu.debtposition.generated.ApiClient;
 import it.gov.pagopa.pu.debtposition.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class DebtPositionApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public DebtPositionApisHolder(
-        DebtPositionClientConfig clientConfig,
+        DebtPositionApiClientConfig clientConfig,
         RestTemplateBuilder restTemplateBuilder
     ) {
 	    RestTemplate restTemplate = restTemplateBuilder.build();
@@ -34,7 +33,7 @@ public class DebtPositionApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("DEBT-POSITIONS"));
         }
 
         this.debtPositionSearchControllerApi = new DebtPositionSearchControllerApi(apiClient);

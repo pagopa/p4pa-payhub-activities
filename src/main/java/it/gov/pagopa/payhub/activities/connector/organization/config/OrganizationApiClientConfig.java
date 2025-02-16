@@ -1,14 +1,14 @@
-package it.gov.pagopa.payhub.activities.connector.auth.config;
+package it.gov.pagopa.payhub.activities.connector.organization.config;
 
-import it.gov.pagopa.payhub.activities.connector.config.ClientConfig;
+import it.gov.pagopa.payhub.activities.config.ApiClientConfig;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "rest.auth")
+@ConfigurationProperties(prefix = "rest.organization")
 @SuperBuilder
 @NoArgsConstructor
-public class AuthClientConfig extends ClientConfig {
+public class OrganizationApiClientConfig extends ApiClientConfig {
 }

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
-import it.gov.pagopa.payhub.activities.connector.config.ClientConfig;
+import it.gov.pagopa.payhub.activities.config.ApiClientConfig;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "rest.pagopa-payments")
 @SuperBuilder
 @NoArgsConstructor
-public class PagoPaPaymentsClientConfig extends ClientConfig {
+public class PagoPaPaymentsApiClientConfig extends ApiClientConfig {
 }

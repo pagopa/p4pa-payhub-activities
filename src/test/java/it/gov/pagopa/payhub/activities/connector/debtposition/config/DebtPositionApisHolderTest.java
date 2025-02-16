@@ -27,7 +27,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        DebtPositionClientConfig clientConfig = DebtPositionClientConfig.builder()
+        DebtPositionApiClientConfig clientConfig = DebtPositionApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .build();
         debtPositionApisHolder = new DebtPositionApisHolder(clientConfig, restTemplateBuilderMock);

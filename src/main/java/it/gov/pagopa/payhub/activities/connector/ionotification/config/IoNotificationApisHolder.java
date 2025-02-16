@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.ionotification.client.generated.IoNotificationApi;
 import it.gov.pagopa.pu.ionotification.generated.ApiClient;
 import it.gov.pagopa.pu.ionotification.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class IoNotificationApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public IoNotificationApisHolder(
-            IoNotificationClientConfig clientConfig,
+            IoNotificationApiClientConfig clientConfig,
             RestTemplateBuilder restTemplateBuilder
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
@@ -30,7 +29,7 @@ public class IoNotificationApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("IO-NOTIFICATION"));
         }
 
         this.ioNotificationApi = new IoNotificationApi(apiClient);

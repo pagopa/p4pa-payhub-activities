@@ -6,7 +6,6 @@ import it.gov.pagopa.pu.auth.controller.generated.AuthzApi;
 import it.gov.pagopa.pu.auth.generated.ApiClient;
 import it.gov.pagopa.pu.auth.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class AuthApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public AuthApisHolder(
-            AuthClientConfig clientConfig,
+            AuthApiClientConfig clientConfig,
             RestTemplateBuilder restTemplateBuilder
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
@@ -32,7 +31,7 @@ public class AuthApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("AUTH"));
         }
 
         this.authnApi = new AuthnApi(apiClient);

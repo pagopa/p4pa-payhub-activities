@@ -25,7 +25,7 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	void setUp() {
 		when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
 		when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-		PagoPaPaymentsClientConfig clientConfig = PagoPaPaymentsClientConfig.builder()
+		PagoPaPaymentsApiClientConfig clientConfig = PagoPaPaymentsApiClientConfig.builder()
 				.baseUrl("http://example.com")
 				.build();
 		pagoPaPaymentsApisHolder = new PagoPaPaymentsApisHolder(clientConfig, restTemplateBuilderMock);

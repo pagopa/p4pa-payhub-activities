@@ -7,7 +7,6 @@ import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSear
 import it.gov.pagopa.pu.processexecutions.generated.ApiClient;
 import it.gov.pagopa.pu.processexecutions.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class ProcessExecutionsApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public ProcessExecutionsApisHolder(
-        ProcessExecutionsClientConfig clientConfig,
+        ProcessExecutionsApiClientConfig clientConfig,
         RestTemplateBuilder restTemplateBuilder
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
@@ -33,7 +32,7 @@ public class ProcessExecutionsApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("PROCESS-EXECUTIONS"));
         }
 
         this.ingestionFlowFileEntityControllerApi = new IngestionFlowFileEntityControllerApi(apiClient);

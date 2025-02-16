@@ -6,7 +6,6 @@ import it.gov.pagopa.pu.pagopapayments.client.generated.PaymentsReportingApi;
 import it.gov.pagopa.pu.pagopapayments.generated.ApiClient;
 import it.gov.pagopa.pu.pagopapayments.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class PagoPaPaymentsApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public PagoPaPaymentsApisHolder(
-        PagoPaPaymentsClientConfig clientConfig,
+        PagoPaPaymentsApiClientConfig clientConfig,
         RestTemplateBuilder restTemplateBuilder
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
@@ -30,7 +29,7 @@ public class PagoPaPaymentsApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("ORGANIZATION"));
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("PAGOPA-PAYMENTS"));
         }
 
         this.acaApi = new AcaApi(apiClient);

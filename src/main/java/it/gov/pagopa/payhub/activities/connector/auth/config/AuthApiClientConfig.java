@@ -1,14 +1,14 @@
-package it.gov.pagopa.payhub.activities.connector.debtposition.config;
+package it.gov.pagopa.payhub.activities.connector.auth.config;
 
-import it.gov.pagopa.payhub.activities.connector.config.ClientConfig;
+import it.gov.pagopa.payhub.activities.config.ApiClientConfig;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "rest.debt-position")
+@ConfigurationProperties(prefix = "rest.auth")
 @SuperBuilder
 @NoArgsConstructor
-public class DebtPositionClientConfig extends ClientConfig {
+public class AuthApiClientConfig extends ApiClientConfig {
 }

@@ -28,7 +28,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     void setUp() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ClassificationClientConfig clientConfig = ClassificationClientConfig.builder()
+        ClassificationApiClientConfig clientConfig = ClassificationApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .build();
         classificationApisHolder = new ClassificationApisHolder(clientConfig, restTemplateBuilderMock);
