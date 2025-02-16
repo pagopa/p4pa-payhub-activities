@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 class AuthzClientTest {
@@ -51,5 +53,23 @@ class AuthzClientTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotExistentUsedWhenGetOperatorInfoThenNull(){
+        // Given
+        String accessToken = "accessToken";
+        String externalUserId = "externalUserId";
+
+        Mockito.when(authApisHolderMock.getAuthzApi(accessToken))
+                .thenReturn(authzApiMock);
+        Mockito.when(authzApiMock.getUserInfoFromMappedExternaUserId(externalUserId))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        UserInfo result = authzClient.getOperatorInfo(externalUserId, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
     }
 }

@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionSearchClientTest {
@@ -50,5 +52,23 @@ class DebtPositionSearchClientTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotExistentDebtPositionWhenFindByIdThenNull(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long debtPositionId = 0L;
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionSearchControllerApi(accessToken))
+                .thenReturn(debtPositionSearchControllerApiMock);
+        Mockito.when(debtPositionSearchControllerApiMock.crudDebtPositionsFindOneWithAllDataByDebtPositionId(debtPositionId))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        DebtPosition result = debtPositionSearchClient.findById(debtPositionId, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
     }
 }
