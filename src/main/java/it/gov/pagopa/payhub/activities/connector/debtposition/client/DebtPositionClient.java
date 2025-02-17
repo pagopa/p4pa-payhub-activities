@@ -2,8 +2,10 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -25,4 +27,12 @@ public class DebtPositionClient {
     public DebtPositionDTO checkAndUpdateInstallmentExpiration(String accessToken, Long debtPositionId){
         return debtPositionApisHolder.getDebtPositionApi(accessToken).checkAndUpdateInstallmentExpiration(debtPositionId);
     }
+
+    public String installmentSynchronize(String accessToken, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive) {
+        ResponseEntity<Void> response = debtPositionApisHolder.getDebtPositionApi(accessToken)
+                .installmentSynchronizeWithHttpInfo(installmentSynchronizeDTO, massive);
+
+        return response.getHeaders().getFirst("workflowId");
+    }
+
 }

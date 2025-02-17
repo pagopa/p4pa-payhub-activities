@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class InstallmentIngestionFlowFileResult {
     /** The total number of rows in the file */
     private Long totalRows;
@@ -19,4 +21,6 @@ public class InstallmentIngestionFlowFileResult {
     private String errorDescription;
     /** Discarded file name */
     private String discardedFileName;
+    /** Discarded file name path */
+    private String discardedFileNamePath;
 }
