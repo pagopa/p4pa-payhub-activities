@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryValidatorService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class TreasuryValidatorOpi161Service implements TreasuryValidatorService<FlussoGiornaleDiCassa> {
 
@@ -20,6 +22,8 @@ public class TreasuryValidatorOpi161Service implements TreasuryValidatorService<
 
     @Override
     public List<TreasuryErrorDTO> validateData(FlussoGiornaleDiCassa fGC161, String fileName) {
+
+        log.info("validateData start for file: {}", fileName);
 
         List<TreasuryErrorDTO> treasuryErrorDTOList = new ArrayList<>();
 
@@ -59,6 +63,7 @@ public class TreasuryValidatorOpi161Service implements TreasuryValidatorService<
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_END_TO_END_ID_NOT_FOUND", "End to end id field is not valorized but it is required");
                 }));
 
+        log.info("validateData end for file: {}", fileName);
         return treasuryErrorDTOList;
     }
 
@@ -75,12 +80,14 @@ public class TreasuryValidatorOpi161Service implements TreasuryValidatorService<
 
     @Override
     public boolean validatePageSize(FlussoGiornaleDiCassa fGC, int sizeZipFile) {
+        log.info("validatePageSize start");
         boolean isValid = false;
         if (fGC == null || fGC.getPagineTotali() == null || fGC.getPagineTotali().isEmpty())
             return isValid;
         int pageTotalNumber = fGC.getPagineTotali().getFirst();
         if (pageTotalNumber == sizeZipFile)
             isValid = true;
+        log.info("validatePageSize end");
         return isValid;
     }
 

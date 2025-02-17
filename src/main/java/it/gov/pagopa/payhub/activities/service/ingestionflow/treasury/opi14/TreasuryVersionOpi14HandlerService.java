@@ -5,12 +5,14 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryEr
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryUnmarshallerService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 
 @Service
+@Slf4j
 @Order(1)
 public class TreasuryVersionOpi14HandlerService extends TreasuryVersionBaseHandlerService<FlussoGiornaleDiCassa> {
 
@@ -28,6 +30,7 @@ public class TreasuryVersionOpi14HandlerService extends TreasuryVersionBaseHandl
 
     @Override
     public FlussoGiornaleDiCassa unmarshall(File file) {
+        log.info("Unmarshalling OPI14 file [{}]", file.getName());
         return treasuryUnmarshallerService.unmarshalOpi14(file);
     }
 }

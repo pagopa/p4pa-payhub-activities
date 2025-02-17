@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryValidatorService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<FlussoGiornaleDiCassa> {
 
     private static final String NOT_AVAILABLE = "Not available";
@@ -20,6 +22,8 @@ public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<F
 
     @Override
     public List<TreasuryErrorDTO> validateData(FlussoGiornaleDiCassa fGC14, String fileName) {
+
+        log.info("TreasuryValidatorOpi14Service.validateData - fileName: {}", fileName);
 
         List<TreasuryErrorDTO> treasuryErrorDTOList = new ArrayList<>();
 
@@ -75,12 +79,14 @@ public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<F
 
     @Override
     public boolean validatePageSize(FlussoGiornaleDiCassa fGC, int sizeZipFile) {
+        log.info("TreasuryValidatorOpi14Service.validatePageSize - sizeZipFile: {}", sizeZipFile);
         boolean isValid = false;
         if (fGC == null || fGC.getPagineTotali() == null || fGC.getPagineTotali().isEmpty())
             return isValid;
         int pageTotalNumber = fGC.getPagineTotali().getFirst();
         if (pageTotalNumber == sizeZipFile)
             isValid = true;
+        log.info("TreasuryValidatorOpi14Service.validatePageSize - isValid: {}", isValid);
         return isValid;
     }
 

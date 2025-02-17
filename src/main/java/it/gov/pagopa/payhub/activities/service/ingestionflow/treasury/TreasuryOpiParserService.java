@@ -32,13 +32,19 @@ public class TreasuryOpiParserService {
     }
 
     public Map<String, String> parseData(Path treasuryOpiFilePath, IngestionFlowFile ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
+        log.info("Parsing treasury Opi file {} and ingestionFlowFileDTO {}", treasuryOpiFilePath, ingestionFlowFileDTO.getFileName());
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
+
+        log.info("Parsing treasury Opi ingestionFlowFile {}", ingestionFlowFile);
 
         List<Treasury> newTreasuries = versionHandlerServices.stream()
                 .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles))
                 .filter(map -> !map.isEmpty())
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
+
+        log.info("Parsed {} new treasuries", newTreasuries.size());
+        log.info("first element of new treasuries: {}", newTreasuries.getFirst());
 
         return newTreasuries.stream()
             .collect(Collectors.toMap(

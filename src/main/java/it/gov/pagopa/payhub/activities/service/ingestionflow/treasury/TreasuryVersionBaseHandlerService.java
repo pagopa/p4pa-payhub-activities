@@ -36,7 +36,9 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
     @Override
     public List<Treasury> handle(File input, IngestionFlowFile ingestionFlowFileDTO, int size) {
         try {
+            log.info("file flussoGiornaleDiCassa with name {} parsing started - unmarshall phase - using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
             T unmarshalled = unmarshall(input);
+            log.info("unmarshalled ended file flussoGiornaleDiCassa with name {} using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
             List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
             Map<TreasuryOperationEnum, List<Treasury>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
@@ -69,6 +71,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         if (!validatorService.validatePageSize(fGCUnmarshalled, size)) {
             throw new TreasuryOpiInvalidFileException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFileDTO.getFileName());
         }
+        log.info("file flussoGiornaleDiCassa with name {} validation in progress using validator {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
         return validatorService.validateData(fGCUnmarshalled, ingestionFlowFileDTO.getFileName());
     }
 

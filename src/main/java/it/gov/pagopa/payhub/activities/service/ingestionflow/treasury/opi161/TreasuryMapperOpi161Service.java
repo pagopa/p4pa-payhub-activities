@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -18,9 +19,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class TreasuryMapperOpi161Service implements TreasuryMapperService<FlussoGiornaleDiCassa> {
     @Override
     public Map<TreasuryOperationEnum, List<Treasury>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFile ingestionFlowFileDTO) {
+        log.info("TreasuryMapperOpi161Service :: Mapping FlussoGiornaleDiCassa to Treasury DTOs. ingestionFlowFile name: {}",
+                ingestionFlowFileDTO.getFileName());
 
         return fGC.getInformazioniContoEvidenza().stream()
                 .flatMap(infoContoEvidenza -> infoContoEvidenza.getMovimentoContoEvidenzas().stream())

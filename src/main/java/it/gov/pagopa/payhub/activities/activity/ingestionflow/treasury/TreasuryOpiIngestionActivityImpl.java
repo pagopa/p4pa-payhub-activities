@@ -59,11 +59,13 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
     @Override
     protected TreasuryIufIngestionFlowFileResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
         int ingestionFlowFilesRetrievedSize = retrievedFiles.size();
+        log.info("Processing {} files. First retrievedFiles is {}", ingestionFlowFilesRetrievedSize, retrievedFiles.getFirst());
         final List<String> unsuccessfulParsedFiles = new ArrayList<>();
 
         Map<String, String> iuf2TreasuryIdMap = retrievedFiles.stream()
                 .map(path -> {
                     try {
+                        log.info("Processing single file {} from ingestionFlowFileDTO {}", path, ingestionFlowFileDTO);
                         return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
                     } catch (Exception e) {
                         log.error("Error processing file {}: {}", path, e.getMessage());

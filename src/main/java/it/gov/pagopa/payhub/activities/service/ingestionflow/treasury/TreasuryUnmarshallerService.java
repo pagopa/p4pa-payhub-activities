@@ -57,6 +57,7 @@ public class TreasuryUnmarshallerService {
    * @return the unmarshalled FlussoGiornaleDiCassa object
    */
   public it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa unmarshalOpi14(File file) {
+    log.info("TreasuryUnmarshallerService opi 14 file: {}", file.getName());
     return xmlUnmarshallerService.unmarshal(file, it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class, jaxbContextOpi14, schemaOpi14);
   }
 
@@ -67,6 +68,7 @@ public class TreasuryUnmarshallerService {
    * @return the unmarshalled FlussoGiornaleDiCassa object
    */
   public it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa unmarshalOpi161(File file) {
+    log.info("TreasuryUnmarshallerService opi 161 file: {}", file.getName());
     return xmlUnmarshallerService.unmarshal(file, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class, jaxbContextOpi161, schemaOpi161);
   }
 
