@@ -40,8 +40,13 @@ public class OrganizationSearchClient {
     }
 
     public Organization findById(Long organizationId, String accessToken) {
-        return organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
-                .crudGetOrganization(String.valueOf(organizationId));
+        try{
+            return organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
+                    .crudGetOrganization(String.valueOf(organizationId));
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find organization having id {}", organizationId);
+            return null;
+        }
     }
 
     public CollectionModelOrganization findOrganizationsByBrokerId(Long brokerId, String accessToken) {

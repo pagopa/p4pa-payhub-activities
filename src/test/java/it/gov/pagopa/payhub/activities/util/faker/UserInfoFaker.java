@@ -24,6 +24,7 @@ public class UserInfoFaker {
                         .operatorId("OPERATORID")
                         .email("user@email.it")
                         .organizationIpaCode("ORGIPACODE")
+                        .organizationFiscalCode("ORGFISCALCODE")
                         .roles(List.of("ROLE_ADMIN"))
                         .build(),
                         UserOrganizationRoles.builder()
@@ -31,6 +32,7 @@ public class UserInfoFaker {
                                 .operatorId("OPERATORID2")
                                 .email("user@email2.it")
                                 .organizationIpaCode("ORGIPACODE2")
+                                .organizationFiscalCode("ORGFISCALCODE2")
                                 .roles(List.of("ROLE_ADMIN"))
                                 .build()));
     }

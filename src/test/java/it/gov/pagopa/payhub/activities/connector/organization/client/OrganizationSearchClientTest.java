@@ -19,6 +19,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationSearchClientTest {
+
     @Mock
     private OrganizationApisHolder organizationApisHolderMock;
     @Mock
@@ -131,6 +132,24 @@ class OrganizationSearchClientTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotExistentOrganizationWhenFindByIdThenNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+
+        Mockito.when(organizationApisHolderMock.getOrganizationEntityControllerApi(accessToken))
+                .thenReturn(organizationEntityControllerApiMock);
+        Mockito.when(organizationEntityControllerApiMock.crudGetOrganization(String.valueOf(organizationId)))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        Organization result = organizationSearchClient.findById(organizationId, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
     }
 
     @Test

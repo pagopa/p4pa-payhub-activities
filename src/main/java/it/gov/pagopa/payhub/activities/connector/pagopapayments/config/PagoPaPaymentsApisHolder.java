@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
+import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
 import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
 import it.gov.pagopa.pu.pagopapayments.client.generated.PaymentsReportingApi;
 import it.gov.pagopa.pu.pagopapayments.generated.ApiClient;
 import it.gov.pagopa.pu.pagopapayments.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,12 +19,18 @@ public class PagoPaPaymentsApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public PagoPaPaymentsApisHolder(
-            @Value("${rest.pagopa-payments.base-url}") String baseUrl,
-            RestTemplateBuilder restTemplateBuilder) {
+        PagoPaPaymentsApiClientConfig clientConfig,
+        RestTemplateBuilder restTemplateBuilder
+    ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
-        apiClient.setBasePath(baseUrl);
+        apiClient.setBasePath(clientConfig.getBaseUrl());
         apiClient.setBearerToken(bearerTokenHolder::get);
+        apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
+        apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
+        if (clientConfig.isPrintBodyWhenError()) {
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("PAGOPA-PAYMENTS"));
+        }
 
         this.acaApi = new AcaApi(apiClient);
         this.paymentsReportingApi = new PaymentsReportingApi(apiClient);

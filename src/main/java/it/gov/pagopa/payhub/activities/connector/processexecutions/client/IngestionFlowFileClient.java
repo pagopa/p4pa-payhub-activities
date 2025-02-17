@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -14,6 +15,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Lazy
+@Slf4j
 @Service
 public class IngestionFlowFileClient {
 
@@ -24,10 +26,14 @@ public class IngestionFlowFileClient {
     }
 
     public IngestionFlowFile findById(Long ingestionFlowFileId, String accessToken) {
-        return processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
-                .crudGetIngestionflowfile(String.valueOf(ingestionFlowFileId));
+        try{
+            return processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
+                    .crudGetIngestionflowfile(String.valueOf(ingestionFlowFileId));
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find IngestionFlowFile having id {}", ingestionFlowFileId);
+            return null;
+        }
     }
-
 
     public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName, String accessToken) {
         try {

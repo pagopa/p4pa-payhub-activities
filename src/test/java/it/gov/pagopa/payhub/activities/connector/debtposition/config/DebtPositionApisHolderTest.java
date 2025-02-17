@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPosition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,10 +27,10 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ApiClient apiClient = new ApiClient(restTemplateMock);
-        String baseUrl = "http://example.com";
-        apiClient.setBasePath(baseUrl);
-        debtPositionApisHolder = new DebtPositionApisHolder(baseUrl, restTemplateBuilderMock);
+        DebtPositionApiClientConfig clientConfig = DebtPositionApiClientConfig.builder()
+                .baseUrl("http://example.com")
+                .build();
+        debtPositionApisHolder = new DebtPositionApisHolder(clientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach

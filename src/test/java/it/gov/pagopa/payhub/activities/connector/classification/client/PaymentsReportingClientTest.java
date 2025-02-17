@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
-import it.gov.pagopa.payhub.activities.connector.classification.config.PaymentsReportingApisHolder;
+import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
@@ -23,19 +23,19 @@ import static org.mockito.Mockito.*;
 class PaymentsReportingClientTest {
 
     @Mock
-    private PaymentsReportingApisHolder paymentsReportingApisHolder;
+    private ClassificationApisHolder classificationApisHolderMock;
 
     @Mock
-    private PaymentsReportingEntityExtendedControllerApi paymentsReportingEntityExtendedControllerApi;
+    private PaymentsReportingEntityExtendedControllerApi paymentsReportingEntityExtendedControllerApiMock;
 
     @Mock
-    private PaymentsReportingSearchControllerApi paymentsReportingSearchControllerApi;
+    private PaymentsReportingSearchControllerApi paymentsReportingSearchControllerApiMock;
 
     private PaymentsReportingClient paymentsReportingClient;
 
     @BeforeEach
     void setUp() {
-        paymentsReportingClient = new PaymentsReportingClient(paymentsReportingApisHolder);
+        paymentsReportingClient = new PaymentsReportingClient(classificationApisHolderMock);
     }
 
     @Test
@@ -45,16 +45,16 @@ class PaymentsReportingClientTest {
         String accessToken = "accessToken";
         Integer expectedResponse = 1;
 
-        when(paymentsReportingApisHolder.getPaymentsReportingEntityExtendedControllerApi(accessToken))
-                .thenReturn(paymentsReportingEntityExtendedControllerApi);
-        when(paymentsReportingEntityExtendedControllerApi.saveAll1(dtos)).thenReturn(expectedResponse);
+        when(classificationApisHolderMock.getPaymentsReportingEntityExtendedControllerApi(accessToken))
+                .thenReturn(paymentsReportingEntityExtendedControllerApiMock);
+        when(paymentsReportingEntityExtendedControllerApiMock.saveAll1(dtos)).thenReturn(expectedResponse);
 
         // When
         Integer result = paymentsReportingClient.saveAll(dtos, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(paymentsReportingEntityExtendedControllerApi, times(1)).saveAll1(dtos);
+        verify(paymentsReportingEntityExtendedControllerApiMock, times(1)).saveAll1(dtos);
     }
 
     @Test
@@ -65,9 +65,9 @@ class PaymentsReportingClientTest {
         String accessToken = "accessToken";
         CollectionModelPaymentsReporting expectedResponse = new CollectionModelPaymentsReporting();
 
-        when(paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken))
-                .thenReturn(paymentsReportingSearchControllerApi);
-        when(paymentsReportingSearchControllerApi.crudPaymentsReportingFindByOrganizationIdAndIuf(organizationId, iuf))
+        when(classificationApisHolderMock.getPaymentsReportingSearchApi(accessToken))
+                .thenReturn(paymentsReportingSearchControllerApiMock);
+        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindByOrganizationIdAndIuf(organizationId, iuf))
                 .thenReturn(expectedResponse);
 
         // When
@@ -75,7 +75,7 @@ class PaymentsReportingClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(paymentsReportingSearchControllerApi, times(1))
+        verify(paymentsReportingSearchControllerApiMock, times(1))
                 .crudPaymentsReportingFindByOrganizationIdAndIuf(organizationId, iuf);
     }
 
@@ -89,9 +89,9 @@ class PaymentsReportingClientTest {
         String accessToken = "accessToken";
         PaymentsReporting expectedResponse = new PaymentsReporting();
 
-        when(paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken))
-                .thenReturn(paymentsReportingSearchControllerApi);
-        when(paymentsReportingSearchControllerApi.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
+        when(classificationApisHolderMock.getPaymentsReportingSearchApi(accessToken))
+                .thenReturn(paymentsReportingSearchControllerApiMock);
+        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
                 .thenReturn(expectedResponse);
 
         // When
@@ -99,7 +99,7 @@ class PaymentsReportingClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(paymentsReportingSearchControllerApi, times(1))
+        verify(paymentsReportingSearchControllerApiMock, times(1))
                 .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
     }
 
@@ -112,9 +112,9 @@ class PaymentsReportingClientTest {
         int transferIndex = 0;
         String accessToken = "accessToken";
 
-        when(paymentsReportingApisHolder.getPaymentsReportingSearchApi(accessToken))
-                .thenReturn(paymentsReportingSearchControllerApi);
-        when(paymentsReportingSearchControllerApi.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
+        when(classificationApisHolderMock.getPaymentsReportingSearchApi(accessToken))
+                .thenReturn(paymentsReportingSearchControllerApiMock);
+        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When

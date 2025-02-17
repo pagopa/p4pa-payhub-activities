@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.connector.organization.config;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelBroker;
-import it.gov.pagopa.pu.organization.generated.ApiClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,10 +24,10 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ApiClient apiClient = new ApiClient(restTemplateMock);
-        String baseUrl = "http://example.com";
-        apiClient.setBasePath(baseUrl);
-        organizationApisHolder = new OrganizationApisHolder(baseUrl, restTemplateBuilderMock);
+        OrganizationApiClientConfig clientConfig = OrganizationApiClientConfig.builder()
+                .baseUrl("http://example.com")
+                .build();
+        organizationApisHolder = new OrganizationApisHolder(clientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach

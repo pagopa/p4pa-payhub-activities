@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
-import it.gov.pagopa.payhub.activities.connector.classification.config.TreasuryApisHolder;
+import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.payhub.activities.connector.classification.mapper.TreasuryRequestMapper;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityControllerApi;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 class TreasuryClientTest {
 
     @Mock
-    private TreasuryApisHolder treasuryApisHolderMock;
+    private ClassificationApisHolder classificationApisHolderMock;
     @Mock
     private TreasuryRequestMapper mapperMock;
 
@@ -34,12 +34,12 @@ class TreasuryClientTest {
 
     @BeforeEach
     void setUp() {
-        treasuryClient = new TreasuryClient(treasuryApisHolderMock, mapperMock);
+        treasuryClient = new TreasuryClient(classificationApisHolderMock, mapperMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(treasuryApisHolderMock, mapperMock);
+        Mockito.verifyNoMoreInteractions(classificationApisHolderMock, mapperMock);
     }
 
     @Test
@@ -50,7 +50,7 @@ class TreasuryClientTest {
         String accessToken = "accessToken";
         Treasury expectedTreasury = new Treasury();
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
-        when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf)).thenReturn(expectedTreasury);
 
         // When
@@ -58,7 +58,7 @@ class TreasuryClientTest {
 
         // Then
         assertEquals(expectedTreasury, result);
-        verify(treasuryApisHolderMock.getTreasurySearchApi(accessToken), times(1))
+        verify(classificationApisHolderMock.getTreasurySearchApi(accessToken), times(1))
                 .crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf);
     }
 
@@ -69,7 +69,7 @@ class TreasuryClientTest {
         String iuf = "IUF123";
         String accessToken = "accessToken";
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
-        when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
@@ -89,7 +89,7 @@ class TreasuryClientTest {
         String accessToken = "accessToken";
         Treasury expectedTreasury = new Treasury();
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
-        when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear)).thenReturn(expectedTreasury);
 
         // When
@@ -97,7 +97,7 @@ class TreasuryClientTest {
 
         // Then
         assertEquals(expectedTreasury, result);
-        verify(treasuryApisHolderMock.getTreasurySearchApi(accessToken), times(1))
+        verify(classificationApisHolderMock.getTreasurySearchApi(accessToken), times(1))
                 .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear);
     }
 
@@ -109,7 +109,7 @@ class TreasuryClientTest {
         String billYear = "2023";
         String accessToken = "accessToken";
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
-        when(treasuryApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
@@ -128,7 +128,7 @@ class TreasuryClientTest {
         Treasury expectedTreasury = TreasuryFaker.buildTreasuryDTO();
         TreasuryEntityControllerApi mockApi = mock(TreasuryEntityControllerApi.class);
         when(mapperMock.map(treasury)).thenReturn(mock(TreasuryRequestBody.class));
-        when(treasuryApisHolderMock.getTreasuryEntityControllerApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getTreasuryEntityControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudCreateTreasury(any())).thenReturn(expectedTreasury);
 
         // When
@@ -136,7 +136,7 @@ class TreasuryClientTest {
 
         // Then
         assertEquals(expectedTreasury, result);
-        verify(treasuryApisHolderMock.getTreasuryEntityControllerApi(accessToken), times(1)).crudCreateTreasury(any());
+        verify(classificationApisHolderMock.getTreasuryEntityControllerApi(accessToken), times(1)).crudCreateTreasury(any());
     }
 
     @Test
@@ -148,7 +148,7 @@ class TreasuryClientTest {
         String accessToken = "accessToken";
         Long expectedDeletedCount = 1L;
         TreasuryEntityExtendedControllerApi mockApi = mock(TreasuryEntityExtendedControllerApi.class);
-        when(treasuryApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(classificationApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear)).thenReturn(expectedDeletedCount);
 
         // When
@@ -156,7 +156,7 @@ class TreasuryClientTest {
 
         // Then
         assertEquals(expectedDeletedCount, result);
-        verify(treasuryApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken), times(1))
+        verify(classificationApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
     }
 }

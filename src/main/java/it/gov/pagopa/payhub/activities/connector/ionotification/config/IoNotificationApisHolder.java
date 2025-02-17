@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.config;
 
+import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
 import it.gov.pagopa.pu.ionotification.client.generated.IoNotificationApi;
 import it.gov.pagopa.pu.ionotification.generated.ApiClient;
 import it.gov.pagopa.pu.ionotification.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,13 +19,18 @@ public class IoNotificationApisHolder {
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public IoNotificationApisHolder(
-            @Value("${rest.io-notification.base-url}") String baseUrl,
-
-            RestTemplateBuilder restTemplateBuilder) {
+            IoNotificationApiClientConfig clientConfig,
+            RestTemplateBuilder restTemplateBuilder
+    ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
-        apiClient.setBasePath(baseUrl);
+        apiClient.setBasePath(clientConfig.getBaseUrl());
         apiClient.setBearerToken(bearerTokenHolder::get);
+        apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
+        apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
+        if (clientConfig.isPrintBodyWhenError()) {
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("IO-NOTIFICATION"));
+        }
 
         this.ioNotificationApi = new IoNotificationApi(apiClient);
     }
