@@ -97,7 +97,7 @@ public class TreasuryErrorsArchiverService {
                         .resolve(errorFolder);
 
                 String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
-                Path zipFile = Path.of(zipFileName);
+                Path zipFile = Path.of(workingDirectory+"/"+zipFileName);
 
                 ingestionFlowFileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
 
