@@ -16,8 +16,8 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryVersionHandlerService{
-    
+public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVersionHandlerService {
+
     private final TreasuryMapperService<T> mapperService;
     private final TreasuryValidatorService<T> validatorService;
     private final TreasuryErrorsArchiverService treasuryErrorsArchiverService;
@@ -57,7 +57,7 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
                                 .build());
                     }
                 }
-        }
+            }
             treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
             return result.get(TreasuryOperationEnum.INSERT);
         } catch (Exception e) {
@@ -72,7 +72,6 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
         }
         return validatorService.validateData(fGCUnmarshalled, ingestionFlowFileDTO.getFileName());
     }
-
 
 
 }
