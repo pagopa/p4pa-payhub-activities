@@ -41,22 +41,23 @@ public abstract class TreasuryVersionBaseHandlerService <T> implements TreasuryV
             Map<TreasuryOperationEnum, List<Treasury>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
             List<Treasury> deleteTreasuries = result.get(TreasuryOperationEnum.DELETE);
-            for (Treasury treasuryDTO : deleteTreasuries) {
-                Long rowDeleted = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(
-                                treasuryDTO.getOrganizationId(),
-                                treasuryDTO.getBillCode(),
-                                treasuryDTO.getBillYear());
-                if (rowDeleted == 0L) {
-                    errorDTOList.add(TreasuryErrorDTO.builder()
-                            .errorMessage("The bill is not present in database so it is impossible to delete it")
-                            .errorCode(treasuryDTO.getOrganizationId()+"-"+treasuryDTO.getBillCode()+"-"+treasuryDTO.getBillYear())
-                            .billCode(treasuryDTO.getBillCode())
-                            .billYear(treasuryDTO.getBillYear())
-                            .fileName(ingestionFlowFileDTO.getFileName())
-                            .build());
+            if (deleteTreasuries != null) {
+                for (Treasury treasuryDTO : deleteTreasuries) {
+                    Long rowDeleted = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(
+                            treasuryDTO.getOrganizationId(),
+                            treasuryDTO.getBillCode(),
+                            treasuryDTO.getBillYear());
+                    if (rowDeleted == 0L) {
+                        errorDTOList.add(TreasuryErrorDTO.builder()
+                                .errorMessage("The bill is not present in database so it is impossible to delete it")
+                                .errorCode(treasuryDTO.getOrganizationId() + "-" + treasuryDTO.getBillCode() + "-" + treasuryDTO.getBillYear())
+                                .billCode(treasuryDTO.getBillCode())
+                                .billYear(treasuryDTO.getBillYear())
+                                .fileName(ingestionFlowFileDTO.getFileName())
+                                .build());
+                    }
                 }
-            }
-
+        }
             treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
             return result.get(TreasuryOperationEnum.INSERT);
         } catch (Exception e) {
