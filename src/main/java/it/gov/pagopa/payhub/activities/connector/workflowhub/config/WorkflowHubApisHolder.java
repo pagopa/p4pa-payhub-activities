@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub.config;
 
 
+import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
 import it.gov.pagopa.pu.workflowhub.controller.generated.WorkflowApi;
 import it.gov.pagopa.pu.workflowhub.generated.ApiClient;
 import it.gov.pagopa.pu.workflowhub.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -14,16 +14,23 @@ import org.springframework.web.client.RestTemplate;
 @Lazy
 @Service
 public class WorkflowHubApisHolder {
+
     private final WorkflowApi workflowApi;
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public WorkflowHubApisHolder(
-	    @Value("${rest.workflow-hub.base-url}") String baseUrl,
-	    RestTemplateBuilder restTemplateBuilder) {
-	    RestTemplate restTemplate = restTemplateBuilder.build();
+            WorkflowHubApiClientConfig clientConfig,
+            RestTemplateBuilder restTemplateBuilder
+    ) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
-        apiClient.setBasePath(baseUrl);
+        apiClient.setBasePath(clientConfig.getBaseUrl());
         apiClient.setBearerToken(bearerTokenHolder::get);
+        apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
+        apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
+        if (clientConfig.isPrintBodyWhenError()) {
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("IO-NOTIFICATION"));
+        }
 
         this.workflowApi = new WorkflowApi(apiClient);
     }

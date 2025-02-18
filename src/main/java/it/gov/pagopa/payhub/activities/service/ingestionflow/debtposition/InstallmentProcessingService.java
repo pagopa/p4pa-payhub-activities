@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.enums.WorkflowStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
@@ -19,6 +18,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+
+import static it.gov.pagopa.payhub.activities.dto.debtposition.constants.WorkflowStatus.TERMINAL_STATUSES;
 
 @Service
 @Lazy
@@ -50,11 +51,11 @@ public class InstallmentProcessingService {
      * Processes a stream of InstallmentIngestionFlowFileDTO and synchronizes each installment.
      *
      * @param installmentIngestionFlowFileDTOStream Stream of InstallmentIngestionFlowFileDTO
-     * @param ingestionFlowFileDTO Metadata of the ingestion file
+     * @param ingestionFlowFile Metadata of the ingestion file
      * @return List of processed InstallmentSynchronizeDTO
      */
     public InstallmentIngestionFlowFileResult processInstallments(Stream<InstallmentIngestionFlowFileDTO> installmentIngestionFlowFileDTOStream,
-                                                                  IngestionFlowFile ingestionFlowFileDTO,
+                                                                  IngestionFlowFile ingestionFlowFile,
                                                                   Path workingDirectory,
                                                                   long totalRows) {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
@@ -63,20 +64,22 @@ public class InstallmentProcessingService {
                 .map(installmentIngestionFlowFileDTO -> {
                     InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
                             installmentIngestionFlowFileDTO,
-                            ingestionFlowFileDTO.getIngestionFlowFileId(),
-                            ingestionFlowFileDTO.getOrganizationId()
+                            ingestionFlowFile.getIngestionFlowFileId(),
+                            ingestionFlowFile.getOrganizationId()
                     );
                     try {
+                        // see massive
                         String workflowId = debtPositionService.installmentSynchronize(installmentSynchronizeDTO, true);
                         if (workflowId != null) {
-                            waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFileDTO, errorList);
+                            boolean workflowCompleted = waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), errorList);
                             log.info("Workflow with id {} completed", workflowId);
+                            return workflowCompleted;
                         }
 
                         return true;
                     } catch (Exception e) {
                         log.error("Error processing installment {}: {}", installmentIngestionFlowFileDTO.getIud(), e.getMessage());
-                        errorList.add(buildInstallmentErrorDTO(ingestionFlowFileDTO.getFileName(), installmentIngestionFlowFileDTO, "EXCEPTION", e.getMessage()));
+                        errorList.add(buildInstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentIngestionFlowFileDTO, null, "PROCESS_EXCEPTION", e.getMessage()));
                         return false;
                     }
                 })
@@ -85,8 +88,8 @@ public class InstallmentProcessingService {
 
         String zipFileName = null;
         if (!errorList.isEmpty()) {
-            installmentErrorsArchiverService.writeInstallmentErrors(workingDirectory, ingestionFlowFileDTO, errorList);
-            zipFileName = installmentErrorsArchiverService.archiveInstallmentErrors(workingDirectory, ingestionFlowFileDTO);
+            installmentErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFile, errorList);
+            zipFileName = installmentErrorsArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFile);
             log.info("Error file archived at: {}", zipFileName);
         }
 
@@ -104,22 +107,22 @@ public class InstallmentProcessingService {
      *
      * @param workflowId The ID of the workflow
      */
-    private void waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
-                                              IngestionFlowFile ingestionFlowFileDTO, List<InstallmentErrorDTO> errorList) {
+    private boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
+                                              String fileName, List<InstallmentErrorDTO> errorList) {
         int attempts = 0;
-        WorkflowStatus status;
+        String status;
 
         do {
             WorkflowStatusDTO statusDTO = workflowHubService.getWorkflowStatus(workflowId);
-            status = WorkflowStatus.fromString(statusDTO.getStatus());
-
+            status = statusDTO.getStatus();
             log.info("Workflow {} status: {}", workflowId, status);
 
-            if (status != null && status.isTerminal()) {
-                if (status != WorkflowStatus.COMPLETED) {
-                    errorList.add(buildInstallmentErrorDTO(ingestionFlowFileDTO.getFileName(), installment, status.name(), "Workflow terminated with error status"));
+            if (status != null && TERMINAL_STATUSES.contains(status)) {
+                if (!"COMPLETED".equals(status)) {
+                    errorList.add(buildInstallmentErrorDTO(fileName, installment, status, "WORKFLOW_TERMINATED_WITH_FAILURE", "Workflow terminated with error status"));
+                    return false;
                 }
-                return;
+                return true;
             }
 
             attempts++;
@@ -132,20 +135,22 @@ public class InstallmentProcessingService {
         } while (attempts < maxRetries);
 
         log.warn("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxRetries);
-        errorList.add(buildInstallmentErrorDTO(ingestionFlowFileDTO.getFileName(), installment, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
+        errorList.add(buildInstallmentErrorDTO(fileName, installment, status != null ? status : null, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
+
+        return false;
     }
 
-
-    private InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment, String workflowStatus, String errorMessage) {
-        return new InstallmentErrorDTO(
-                fileName,
-                installment.getIupdOrg(),
-                installment.getIud(),
-                workflowStatus,
-                installment.getIngestionFlowFileLineNumber(),
-                "PROCESSING_ERROR",
-                errorMessage
-        );
+    private InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment, String workflowStatus, String code, String errorMessage) {
+        return InstallmentErrorDTO.builder()
+                .fileName(fileName)
+                .iupdOrg(installment.getIupdOrg())
+                .iud(installment.getIud())
+                .workflowStatus(workflowStatus)
+                .rowNumber(installment.getIngestionFlowFileLineNumber())
+                .errorCode(code)
+                .errorMessage(errorMessage)
+                .build();
     }
+
 }
 

@@ -1,8 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentErrorDTO;
+import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.ErrorArchiverService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -11,21 +14,18 @@ import java.util.List;
 
 @Lazy
 @Service
-public class InstallmentErrorsArchiverService {
+public class InstallmentErrorsArchiverService extends ErrorArchiverService {
 
-    private final ErrorArchiverService errorArchiverService;
 
-    public InstallmentErrorsArchiverService(ErrorArchiverService errorArchiverService) {
-        this.errorArchiverService = errorArchiverService;
+    protected InstallmentErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
+                                               @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
+                                               IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
+                                               CsvService csvService) {
+        super(sharedFolder, errorFolder, ingestionFlowFileArchiverService, csvService);
     }
 
-    public void writeInstallmentErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<InstallmentErrorDTO> errorList) {
+    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<InstallmentErrorDTO> errorList) {
         List<String> headers = List.of("File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message");
-
-        errorArchiverService.writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
-    }
-
-    public String archiveInstallmentErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO) {
-        return errorArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
+        super.writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
     }
 }

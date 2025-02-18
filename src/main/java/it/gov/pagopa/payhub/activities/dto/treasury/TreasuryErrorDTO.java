@@ -1,18 +1,34 @@
 package it.gov.pagopa.payhub.activities.dto.treasury;
 
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErroDTO;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.io.Serializable;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
-public class TreasuryErrorDTO implements Serializable {
-  private String fileName;
+@NoArgsConstructor
+public class TreasuryErrorDTO extends IngestionFlowFileErroDTO {
+
   private String billYear;
   private String billCode;
-  private String errorCode;
-  private String errorMessage;
+
+  public TreasuryErrorDTO(String fileName, String billYear, String billCode, String errorCode, String errorMessage) {
+    super(fileName, errorCode, errorMessage);
+    this.billYear = billYear;
+    this.billCode = billCode;
+  }
+
+  @Override
+  public String[] toCsvRow() {
+    return new String[]{
+            getFileName(), billYear, billCode, getErrorCode(), getErrorMessage()
+    };
+  }
 }
+
+

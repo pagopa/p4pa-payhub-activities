@@ -386,9 +386,9 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
 	generatorName.set("java")
 	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/develop/openapi/generated.openapi.json")
 	outputDir.set("$projectDir/build/generated")
-	invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
-	apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
-	modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+	invokerPackage.set("it.gov.pagopa.pu.debtpositions.generated")
+	apiPackage.set("it.gov.pagopa.pu.debtpositions.client.generated")
+	modelPackage.set("it.gov.pagopa.pu.debtpositions.dto.generated")
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",

@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Service
+
 @Slf4j
-public class ErrorArchiverService {
+public abstract class ErrorArchiverService {
 
     private static final String ERRORFILE_PREFIX = "ERROR-";
 
@@ -27,9 +27,9 @@ public class ErrorArchiverService {
     private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
     private final CsvService csvService;
 
-    public ErrorArchiverService(
-            @Value("${folders.shared}") String sharedFolder,
-            @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
+    protected ErrorArchiverService(
+            String sharedFolder,
+            String errorFolder,
             IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
             CsvService csvService
     ) {
@@ -64,7 +64,7 @@ public class ErrorArchiverService {
             log.info("Error CSV created: {}", errorCsvFilePath);
 
         } catch (IOException e) {
-            throw new NotRetryableActivityException("Error writing CSV file", e);
+            throw new NotRetryableActivityException(e.getMessage());
         }
     }
 

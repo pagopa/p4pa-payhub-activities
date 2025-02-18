@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
@@ -108,7 +107,7 @@ class TreasuryErrorsArchiverServiceTest {
             String result = treasuryErrorsArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
 
             // Then
-            Assertions.assertEquals(expectedZipErrorFileName, result);
+            assertEquals(expectedZipErrorFileName, result);
 
             Mockito.verify(ingestionFlowFileArchiverServiceMock)
                     .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId()+"",ingestionFlowFileDTO.getFilePathName(), errorFolder));

@@ -25,7 +25,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "draft", required = true)
     private Boolean draft;
 
-    @CsvBindByName(column = "iupdOrg", required = true)
+    @CsvBindByName(column = "iupdOrg")
     private String iupdOrg;
 
     @CsvBindByName(column = "description", required = true)
@@ -49,7 +49,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "paymentOptionDescription", required = true)
     private String paymentOptionDescription;
 
-    @CsvBindByName(column = "iud", required = true)
+    @CsvBindByName(column = "iud")
     private String iud;
 
     @CsvBindByName(column = "iuv", required = true)

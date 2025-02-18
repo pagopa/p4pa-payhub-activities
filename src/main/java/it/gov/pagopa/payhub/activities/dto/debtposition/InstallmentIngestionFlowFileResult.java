@@ -22,5 +22,5 @@ public class InstallmentIngestionFlowFileResult {
     /** Discarded file name */
     private String discardedFileName;
     /** Discarded file name path */
-    private String discardedFileNamePath;
+    private String discardedFilePath;
 }

@@ -1,16 +1,18 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErroDTO;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serializable;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
-public class InstallmentErrorDTO extends IngestionFlowFileErroDTO implements Serializable {
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class InstallmentErrorDTO extends IngestionFlowFileErroDTO {
 
     private String iupdOrg;
     private String iud;
