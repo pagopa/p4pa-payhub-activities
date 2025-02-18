@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,6 +66,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 		doNothing().when(fileValidatorService).validateFile(sourcePath.resolve(filename + AESUtils.CIPHER_EXTENSION));
 		doReturn(true).when(fileValidatorService).isArchive(zipFileInWorkingDirectory);
+		doReturn(true).when(fileValidatorService).isZipFileByExtension(zipFileInWorkingDirectory);
 		when(zipFileService.unzip(zipFileInWorkingDirectory)).thenReturn(unzippedPaths);
 
 		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
@@ -79,6 +81,38 @@ class IngestionFlowFileRetrieverServiceTest {
 			assertEquals(2, result.size());
 			assertTrue(result.stream().anyMatch(path -> path.getFileName().toString().equals("file1.txt")));
 			assertTrue(result.stream().anyMatch(path -> path.getFileName().toString().equals("file2.txt")));
+			assertEquals(unzippedPaths, result);
+		}
+	}
+
+	@Test
+	void testRetrieveFile_successfulFlow_notZipped() throws IOException {
+		//Given
+		Long organizationId = 0L;
+		File nonZippedFileFile = File.createTempFile("testRetrieveFile_successfulFlow_notZipped", ".tmp");
+		nonZippedFileFile.deleteOnExit();
+		Path nonZippedFile = nonZippedFileFile.toPath();
+		Path sourcePath = nonZippedFile.getParent();
+		String filename = nonZippedFile.getFileName().toString();
+		Path workingPath = Path.of(TEMPORARY_PATH)
+			.resolve(String.valueOf(organizationId))
+			.resolve(sourcePath.subpath(0, sourcePath.getNameCount()));
+		Path zipFileInWorkingDirectory = workingPath.resolve(filename);
+		List<Path> unzippedPaths = List.of(workingPath.resolve(filename));
+
+		doNothing().when(fileValidatorService).validateFile(sourcePath.resolve(filename + AESUtils.CIPHER_EXTENSION));
+		doReturn(false).when(fileValidatorService).isZipFileByExtension(zipFileInWorkingDirectory);
+
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFileInWorkingDirectory.toFile(), workingPath.toFile()))
+				.then(invocation -> null);
+
+			// when
+			List<Path> result = service.retrieveAndUnzipFile(organizationId, sourcePath, filename);
+
+			// Then
+			assertNotNull(result);
+			assertEquals(1, result.size());
 			assertEquals(unzippedPaths, result);
 		}
 	}
@@ -110,6 +144,7 @@ class IngestionFlowFileRetrieverServiceTest {
 
 		doNothing().when(fileValidatorService).validateFile(sourcePath.resolve(filename + AESUtils.CIPHER_EXTENSION));
 		doThrow(new InvalidIngestionFileException("ZIP validation failed")).when(fileValidatorService).isArchive(zipFileInWorkingDirectory);
+		doReturn(true).when(fileValidatorService).isZipFileByExtension(zipFileInWorkingDirectory);
 
 		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
 			mockedAESUtils.when(() -> AESUtils.decrypt(TEST_CIPHER_PSW, zipFileInWorkingDirectory.toFile(), workingPath.toFile()))
