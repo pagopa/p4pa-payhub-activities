@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,9 +88,8 @@ class IngestionFlowFileRetrieverServiceTest {
 	void testRetrieveFile_successfulFlow_notZipped() throws IOException {
 		//Given
 		Long organizationId = 0L;
-		File nonZippedFileFile = File.createTempFile("testRetrieveFile_successfulFlow_notZipped", ".tmp");
-		nonZippedFileFile.deleteOnExit();
-		Path nonZippedFile = nonZippedFileFile.toPath();
+		Path nonZippedFile = Files.createTempFile("testRetrieveFile_successfulFlow_notZipped", ".tmp");
+		nonZippedFile.toFile().deleteOnExit();
 		Path sourcePath = nonZippedFile.getParent();
 		String filename = nonZippedFile.getFileName().toString();
 		Path workingPath = Path.of(TEMPORARY_PATH)
