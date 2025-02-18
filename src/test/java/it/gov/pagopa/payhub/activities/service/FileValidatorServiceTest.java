@@ -72,4 +72,16 @@ class FileValidatorServiceTest {
 		assertThrows(InvalidIngestionFileException.class,
 			() -> service.isArchive(emptyFile), "Expected InvalidIngestionFileException for an empty file");
 	}
+
+	@Test
+	void givenNotZipFileWhenIsZipFileByExtensionThenReturnFalse() {
+		Path notZipFile = Path.of("notZipFile.txt");
+		assertFalse(service.isZipFileByExtension(notZipFile), "Expected file to not be recognized as a ZIP file");
+	}
+
+	@Test
+	void givenZipFileWhenIsZipFileByExtensionThenReturnTrue() {
+		Path zipFile = Path.of("zipFile.zip");
+		assertTrue(service.isZipFileByExtension(zipFile), "Expected file to be recognized as a ZIP file");
+	}
 }

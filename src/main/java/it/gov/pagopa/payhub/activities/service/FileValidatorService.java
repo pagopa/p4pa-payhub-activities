@@ -45,4 +45,14 @@ public class FileValidatorService {
 			throw new InvalidIngestionFileException("Invalid zip file");
 		}
 	}
+
+	/**
+	 * Checks if the specified file is a valid ZIP file by checking file extension.
+	 *
+	 * @param zipFilePath the path to the ZIP file to check.
+	 * @return true if the file is a valid ZIP archive; false otherwise.
+	 */
+	public boolean isZipFileByExtension(Path zipFilePath) {
+		return zipFilePath.getFileName().toString().toLowerCase().endsWith(".zip");
+	}
 }
