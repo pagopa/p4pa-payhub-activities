@@ -5,9 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferCli
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferSearchClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
