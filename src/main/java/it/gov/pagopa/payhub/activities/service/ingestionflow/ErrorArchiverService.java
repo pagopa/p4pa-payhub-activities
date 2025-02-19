@@ -67,13 +67,15 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErroDTO> {
     }
 
     /**
-     * Archives error files into a ZIP archive.
+     * Archives an error file to a specified target directory.
+     * This method takes an error file and moves it to a target directory for archiving. It constructs
+     * the original file path and the target directory path, then invokes the {@link IngestionFlowFileArchiverService}
+     * to perform the archiving operation.
      *
-     * @param workingDirectory  The directory containing the error files.
-     * @param ingestionFlowFile The ingestion metadata.
-     * @return The name of the archived file, or null if no errors were found.
+     * @param workingDirectory     the working directory where to search for error files to be archived. This file is moved from its original location to the target directory.
+     * @param ingestionFlowFileDTO the ingestion flow file
      */
-    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFile ingestionFlowFile) {
+    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO) {
         try {
             List<Path> errorFiles;
             try (Stream<Path> fileListStream = Files.list(workingDirectory)) {
@@ -83,23 +85,23 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErroDTO> {
             }
 
             if (!errorFiles.isEmpty()) {
+
                 Path targetDirectory = sharedDirectoryPath
-                        .resolve(String.valueOf(ingestionFlowFile.getOrganizationId()))
-                        .resolve(ingestionFlowFile.getFilePathName())
+                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
+                        .resolve(ingestionFlowFileDTO.getFilePathName())
                         .resolve(errorFolder);
 
-                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFile.getFileName(), ".zip");
-                Path zipFile = Path.of(zipFileName);
+                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
+                Path zipFile = Path.of(workingDirectory+"/"+zipFileName);
 
                 ingestionFlowFileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
-                log.info("Archived error file: {}", zipFile);
 
                 return zipFileName;
             } else {
                 return null;
             }
-        } catch (IOException e) {
-            log.error("Error archiving installment errors!", e);
+        } catch (IOException e){
+            log.error("Something gone wrong while trying to archive error file!", e);
             return null;
         }
     }
