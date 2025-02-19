@@ -6,8 +6,6 @@ import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +16,7 @@ import java.util.stream.Stream;
 
 
 @Slf4j
-public abstract class ErrorArchiverService {
+public abstract class ErrorArchiverService<T extends IngestionFlowFileErroDTO> {
 
     private static final String ERRORFILE_PREFIX = "ERROR-";
 
@@ -47,8 +45,8 @@ public abstract class ErrorArchiverService {
      * @param errorList         The list of errors to write.
      * @param headers           The headers of the CSV file.
      */
-    public <T extends IngestionFlowFileErroDTO> void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile,
-                                                                 List<T> errorList, List<String> headers) {
+    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile,
+                            List<T> errorList, List<String> headers) {
         List<String[]> data = errorList.stream()
                 .map(IngestionFlowFileErroDTO::toCsvRow)
                 .toList();
@@ -105,4 +103,6 @@ public abstract class ErrorArchiverService {
             return null;
         }
     }
+
+    protected abstract void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<T> errorList);
 }

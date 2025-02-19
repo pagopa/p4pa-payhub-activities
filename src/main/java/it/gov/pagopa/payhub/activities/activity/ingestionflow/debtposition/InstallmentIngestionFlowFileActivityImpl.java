@@ -41,7 +41,9 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
      */
     public InstallmentIngestionFlowFileActivityImpl(IngestionFlowFileService ingestionFlowFileService,
                                                     IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-                                                    IngestionFlowFileArchiverService ingestionFlowFileArchiverService, CsvService csvService, InstallmentProcessingService installmentProcessingService) {
+                                                    IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
+                                                    CsvService csvService,
+                                                    InstallmentProcessingService installmentProcessingService) {
         super(ingestionFlowFileService, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
         this.csvService = csvService;
         this.installmentProcessingService = installmentProcessingService;

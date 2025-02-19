@@ -1,6 +1,6 @@
-package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
+package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
@@ -21,11 +21,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
-class TreasuryErrorsArchiverServiceTest {
+class InstallmentErrorsArchiverServiceTest {
 
     private final String errorFolder = "error";
     @Mock
@@ -33,21 +33,20 @@ class TreasuryErrorsArchiverServiceTest {
     @Mock
     private CsvService csvServiceMock;
 
-    private TreasuryErrorsArchiverService service;
+    private InstallmentErrorsArchiverService service;
 
     private final String sharedDirectory = "/tmp";
 
     @BeforeEach
     void setUp() {
-        service = new TreasuryErrorsArchiverService(sharedDirectory, errorFolder, ingestionFlowFileArchiverServiceMock, csvServiceMock);
+        service = new InstallmentErrorsArchiverService(sharedDirectory, errorFolder, ingestionFlowFileArchiverServiceMock, csvServiceMock);
     }
 
     @Test
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
-        // Given
-        List<TreasuryErrorDTO> errorDTOList = List.of(
-                new TreasuryErrorDTO("file1", "2023", "B123", "ERR01", "Invalid data"),
-                new TreasuryErrorDTO("file2", "2023", "B124", "ERR02", "Missing field")
+        List<InstallmentErrorDTO> errorDTOList = List.of(
+                new InstallmentErrorDTO("fileName", "iupdOrg", "iud", "workflowStatus", 1L, "errorCode", "errorMessage"),
+                new InstallmentErrorDTO("fileName", "iupdOrg", "iud", "workflowStatus", 1L, "errorCode", "errorMessage")
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -63,22 +62,21 @@ class TreasuryErrorsArchiverServiceTest {
 
     @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
-        // Given
-        List<TreasuryErrorDTO> errorDTOList = List.of(
-                new TreasuryErrorDTO("file1", "2023", "B123", "ERR01", "Invalid data")
+        List<InstallmentErrorDTO> errorDTOList = List.of(
+                new InstallmentErrorDTO("fileName", "iupdOrg", "iud", "workflowStatus", 1L, "errorCode", "errorMessage")
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
-            Mockito.doThrow(new IOException("Error creating CSV"))
-                    .when(csvServiceMock)
-                    .createCsv(eq(expectedErrorFilePath), any(), any());
+        Mockito.doThrow(new IOException("Error creating CSV"))
+                .when(csvServiceMock)
+                .createCsv(eq(expectedErrorFilePath), any(), any());
 
-            // When & Then
-            NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                    service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
-            assertEquals("Error creating CSV", exception.getMessage());
+        // When & Then
+        NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
+                service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
+        assertEquals("Error creating CSV", exception.getMessage());
     }
 
     @Test
@@ -110,10 +108,9 @@ class TreasuryErrorsArchiverServiceTest {
             Assertions.assertEquals(expectedZipErrorFileName, result);
 
             Mockito.verify(ingestionFlowFileArchiverServiceMock)
-                    .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId()+"",ingestionFlowFileDTO.getFilePathName(), errorFolder));
+                    .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId() + "", ingestionFlowFileDTO.getFilePathName(), errorFolder));
         } finally {
             Files.delete(errorFile);
         }
     }
-
 }

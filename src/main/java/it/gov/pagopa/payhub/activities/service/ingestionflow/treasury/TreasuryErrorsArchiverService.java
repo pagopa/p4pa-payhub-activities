@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class TreasuryErrorsArchiverService extends ErrorArchiverService {
+public class TreasuryErrorsArchiverService extends ErrorArchiverService<TreasuryErrorDTO> {
 
     public TreasuryErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                          @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
@@ -23,9 +23,10 @@ public class TreasuryErrorsArchiverService extends ErrorArchiverService {
         super(sharedFolder, errorFolder, ingestionFlowFileArchiverService, csvService);
     }
 
+    @Override
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<TreasuryErrorDTO> errorList) {
         List<String> headers = List.of("FileName", "Anno Bolletta", "Codice Bolletta", "Error Code", "Error Message");
-        super.writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
+        writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
     }
 }
 

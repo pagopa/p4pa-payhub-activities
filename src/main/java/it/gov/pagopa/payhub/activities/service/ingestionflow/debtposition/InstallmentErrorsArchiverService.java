@@ -14,7 +14,7 @@ import java.util.List;
 
 @Lazy
 @Service
-public class InstallmentErrorsArchiverService extends ErrorArchiverService {
+public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorDTO> {
 
 
     protected InstallmentErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
@@ -24,8 +24,9 @@ public class InstallmentErrorsArchiverService extends ErrorArchiverService {
         super(sharedFolder, errorFolder, ingestionFlowFileArchiverService, csvService);
     }
 
+    @Override
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<InstallmentErrorDTO> errorList) {
         List<String> headers = List.of("File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message");
-        super.writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
+        writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
     }
 }

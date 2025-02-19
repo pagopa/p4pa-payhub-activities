@@ -22,7 +22,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "action", required = true)
     private ActionEnum action;
 
-    @CsvBindByName(column = "draft", required = true)
+    @CsvBindByName(column = "draft")
     private Boolean draft;
 
     @CsvBindByName(column = "iupdOrg")
@@ -31,13 +31,13 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "description", required = true)
     private String description;
 
-    @CsvBindByName(column = "validityDate", required = true)
+    @CsvBindByName(column = "validityDate")
     private OffsetDateTime validityDate;
 
-    @CsvBindByName(column = "multiDebtor", required = true)
+    @CsvBindByName(column = "multiDebtor")
     private Boolean multiDebtor;
 
-    @CsvBindByName(column = "notificationDate", required = true)
+    @CsvBindByName(column = "notificationDate")
     private OffsetDateTime notificationDate;
 
     @CsvBindByName(column = "paymentOptionIndex", required = true)
@@ -46,13 +46,13 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "paymentOptionType", required = true)
     private String paymentOptionType;
 
-    @CsvBindByName(column = "paymentOptionDescription", required = true)
+    @CsvBindByName(column = "paymentOptionDescription")
     private String paymentOptionDescription;
 
     @CsvBindByName(column = "iud")
     private String iud;
 
-    @CsvBindByName(column = "iuv", required = true)
+    @CsvBindByName(column = "iuv")
     private String iuv;
 
     @CsvBindByName(column = "entityType", required = true)
@@ -64,28 +64,28 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "fullName", required = true)
     private String fullName;
 
-    @CsvBindByName(column = "address", required = true)
+    @CsvBindByName(column = "address")
     private String address;
 
-    @CsvBindByName(column = "civic", required = true)
+    @CsvBindByName(column = "civic")
     private String civic;
 
-    @CsvBindByName(column = "postalCode", required = true)
+    @CsvBindByName(column = "postalCode")
     private String postalCode;
 
-    @CsvBindByName(column = "location", required = true)
+    @CsvBindByName(column = "location")
     private String location;
 
-    @CsvBindByName(column = "province", required = true)
+    @CsvBindByName(column = "province")
     private String province;
 
-    @CsvBindByName(column = "nation", required = true)
+    @CsvBindByName(column = "nation")
     private String nation;
 
-    @CsvBindByName(column = "email", required = true)
+    @CsvBindByName(column = "email")
     private String email;
 
-    @CsvBindByName(column = "dueDate", required = true)
+    @CsvBindByName(column = "dueDate")
     private OffsetDateTime dueDate;
 
     @CsvBindByName(column = "amount", required = true)
@@ -94,7 +94,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "debtPositionTypeCode", required = true)
     private String debtPositionTypeCode;
 
-    @CsvBindByName(column = "paymentTypeCode", required = true)
+    @CsvBindByName(column = "paymentTypeCode")
     private String paymentTypeCode;
 
     @CsvBindByName(column = "remittanceInformation", required = true)
@@ -106,10 +106,10 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "flagPagoPaPayment", required = true)
     private Boolean flagPagoPaPayment;
 
-    @CsvBindByName(column = "balance", required = true)
+    @CsvBindByName(column = "balance")
     private String balance;
 
-    @CsvBindByName(column = "flagMultiBeneficiary", required = true)
+    @CsvBindByName(column = "flagMultiBeneficiary")
     private Boolean flagMultiBeneficiary;
 
     @CsvBindByName(column = "numberBeneficiary")
@@ -157,6 +157,9 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "orgName_3")
     private String orgName_3;
 
+    @CsvBindByName(column = "orgRemittanceInformation_3")
+    private String orgRemittanceInformation_3;
+
     @CsvBindByName(column = "iban_3")
     private String iban_3;
 
@@ -172,6 +175,9 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "orgName_4")
     private String orgName_4;
 
+    @CsvBindByName(column = "orgRemittanceInformation_4")
+    private String orgRemittanceInformation_4;
+
     @CsvBindByName(column = "iban_4")
     private String iban_4;
 
@@ -186,6 +192,9 @@ public class InstallmentIngestionFlowFileDTO {
 
     @CsvBindByName(column = "orgName_5")
     private String orgName_5;
+
+    @CsvBindByName(column = "orgRemittanceInformation_5")
+    private String orgRemittanceInformation_5;
 
     @CsvBindByName(column = "iban_5")
     private String iban_5;

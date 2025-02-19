@@ -49,9 +49,6 @@ class InstallmentProcessingServiceTest {
 
     private InstallmentProcessingService service;
 
-    private int maxRetries = 3;
-    private int retryDelayMs = 100;
-
     @BeforeEach
     void setUp(){
         service = new InstallmentProcessingService(
@@ -59,29 +56,28 @@ class InstallmentProcessingServiceTest {
                 workflowHubServiceMock,
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
-                maxRetries,
-                retryDelayMs);
+                3,
+                100);
     }
 
     @Test
     void givenProcessInstallmentsThenSuccess(){
-        // given
+        // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         String workflowId = "workflow-123";
 
-        // when
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, true))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
                 .thenReturn(workflowId);
 
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(workflowId))
                 .thenReturn(new WorkflowStatusDTO().status(COMPLETED));
 
-        // then
+        // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
@@ -89,6 +85,7 @@ class InstallmentProcessingServiceTest {
                 1
         );
 
+        // Then
         assertEquals(1, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertNull(result.getErrorDescription());
@@ -97,19 +94,18 @@ class InstallmentProcessingServiceTest {
 
     @Test
     void givenProcessInstallmentsWhenWorkflowIdNullThenSuccess(){
-        // given
+        // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 
-        // when
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, true))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
                 .thenReturn(null);
 
-        // then
+        // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
@@ -117,6 +113,7 @@ class InstallmentProcessingServiceTest {
                 1
         );
 
+        // Then
         assertEquals(1, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertNull(result.getErrorDescription());
@@ -125,23 +122,22 @@ class InstallmentProcessingServiceTest {
 
     @Test
     void givenProcessInstallmentsWhenThrowExceptionThenAddError() throws URISyntaxException {
-        // given
+        // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-        // when
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error in synchronizing the installment"))
-                        .when(debtPositionServiceMock).installmentSynchronize(installmentSynchronizeDTO, true);
+                        .when(debtPositionServiceMock).installmentSynchronize(installmentSynchronizeDTO, false);
 
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName");
 
-        // then
+        // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
@@ -149,6 +145,7 @@ class InstallmentProcessingServiceTest {
                 1
         );
 
+        // Then
         assertEquals(0, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
@@ -165,18 +162,17 @@ class InstallmentProcessingServiceTest {
 
     @Test
     void givenProcessInstallmentsWhenStatusFailedThenAddError() throws URISyntaxException {
-        // given
+        // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
         String workflowId = "workflow-123";
 
-        // when
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, true))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
                 .thenReturn(workflowId);
 
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(workflowId))
@@ -185,7 +181,7 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName");
 
-        // then
+        // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
@@ -193,6 +189,7 @@ class InstallmentProcessingServiceTest {
                 1
         );
 
+        // Then
         assertEquals(0, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
@@ -210,18 +207,17 @@ class InstallmentProcessingServiceTest {
 
     @Test
     void givenProcessInstallmentsWhenRetryLimitReachedThenAddError() throws URISyntaxException {
-        // given
+        // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
         String workflowId = "workflow-123";
-
-        // when
+        
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, true))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
                 .thenReturn(workflowId);
 
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(workflowId))
@@ -236,7 +232,7 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName");
 
-        // then
+        // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
@@ -244,6 +240,7 @@ class InstallmentProcessingServiceTest {
                 1
         );
 
+        // Then
         assertEquals(0, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
@@ -261,17 +258,16 @@ class InstallmentProcessingServiceTest {
 
     @Test
     void givenProcessInstallmentsWhenThrowInterruptedExceptionThenRetry() {
-        // given
+        // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         String workflowId = "workflow-123";
 
-        // when
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, true))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
                 .thenReturn(workflowId);
 
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(workflowId))
@@ -281,7 +277,7 @@ class InstallmentProcessingServiceTest {
                 })
                 .thenReturn(new WorkflowStatusDTO().status("COMPLETED"));
 
-        // then
+        // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
@@ -289,6 +285,7 @@ class InstallmentProcessingServiceTest {
                 1
         );
 
+        // Then
         assertEquals(1, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertNull(result.getErrorDescription());

@@ -69,7 +69,7 @@ public class InstallmentProcessingService {
                     );
                     try {
                         // see massive
-                        String workflowId = debtPositionService.installmentSynchronize(installmentSynchronizeDTO, true);
+                        String workflowId = debtPositionService.installmentSynchronize(installmentSynchronizeDTO, false);
                         if (workflowId != null) {
                             boolean workflowCompleted = waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), errorList);
                             log.info("Workflow with id {} completed", workflowId);
@@ -135,7 +135,7 @@ public class InstallmentProcessingService {
         } while (attempts < maxRetries);
 
         log.warn("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxRetries);
-        errorList.add(buildInstallmentErrorDTO(fileName, installment, status != null ? status : null, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
+        errorList.add(buildInstallmentErrorDTO(fileName, installment, status, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
 
         return false;
     }

@@ -11,7 +11,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static org.springframework.util.StringUtils.capitalize;
@@ -22,7 +21,7 @@ public class InstallmentSynchronizeMapper {
 
     public InstallmentSynchronizeDTO map(InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO,
                                          Long ingestionFlowFileId,
-                                         Long organizationId){
+                                         Long organizationId) {
         return InstallmentSynchronizeDTO.builder()
                 .ingestionFlowFileId(ingestionFlowFileId)
                 .ingestionFlowFileLineNumber(installmentIngestionFlowFileDTO.getIngestionFlowFileLineNumber())
@@ -57,47 +56,43 @@ public class InstallmentSynchronizeMapper {
                 .flagPagoPaPayment(installmentIngestionFlowFileDTO.getFlagPagoPaPayment())
                 .balance(installmentIngestionFlowFileDTO.getBalance())
                 .flagMultibeneficiary(installmentIngestionFlowFileDTO.getFlagMultiBeneficiary())
-                .numberBeneficiary(Long.valueOf(installmentIngestionFlowFileDTO.getNumberBeneficiary()))
+                .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? Long.valueOf(installmentIngestionFlowFileDTO.getNumberBeneficiary()) : null)
                 .transfersList(buildTransferList(installmentIngestionFlowFileDTO))
                 .build();
     }
 
-    private static List<TransferSynchronizeDTO> buildTransferList(InstallmentIngestionFlowFileDTO dto) {
+    private List<TransferSynchronizeDTO> buildTransferList(InstallmentIngestionFlowFileDTO dto) {
         if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && dto.getNumberBeneficiary() != null && dto.getNumberBeneficiary() >= 2) {
             return IntStream.rangeClosed(2, dto.getNumberBeneficiary())
                     .mapToObj(index -> createTransfer(dto, index))
-                    .filter(Objects::nonNull)
                     .toList();
         }
         return new ArrayList<>();
     }
 
-    private static TransferSynchronizeDTO createTransfer(InstallmentIngestionFlowFileDTO dto, int index) {
-        try {
-            String suffix = "_" + index;
+    private TransferSynchronizeDTO createTransfer(InstallmentIngestionFlowFileDTO dto, int index) {
 
-            String orgFiscalCode = (String) getFieldValue(dto, "orgFiscalCode" + suffix);
-            String orgName = (String) getFieldValue(dto, "orgName" + suffix);
-            BigDecimal amount = (BigDecimal) getFieldValue(dto, "amount" + suffix);
-            String remittanceInformation = (String) getFieldValue(dto, "orgRemittanceInformation" + suffix);
-            String iban = (String) getFieldValue(dto, "iban" + suffix);
-            String category = (String) getFieldValue(dto, "category" + suffix);
+        String suffix = "_" + index;
 
-            return new TransferSynchronizeDTO(
-                    orgFiscalCode,
-                    orgName,
-                    amount,
-                    remittanceInformation,
-                    iban,
-                    category,
-                    index
-            );
-        } catch (Exception e) {
-            return null;
-        }
+        String orgFiscalCode = (String) getFieldValue(dto, "orgFiscalCode" + suffix);
+        String orgName = (String) getFieldValue(dto, "orgName" + suffix);
+        BigDecimal amount = (BigDecimal) getFieldValue(dto, "amount" + suffix);
+        String remittanceInformation = (String) getFieldValue(dto, "orgRemittanceInformation" + suffix);
+        String iban = (String) getFieldValue(dto, "iban" + suffix);
+        String category = (String) getFieldValue(dto, "category" + suffix);
+
+        return new TransferSynchronizeDTO(
+                orgFiscalCode,
+                orgName,
+                amount,
+                remittanceInformation,
+                iban,
+                category,
+                index
+        );
     }
 
-    private static Object getFieldValue(InstallmentIngestionFlowFileDTO dto, String fieldName) {
+    private Object getFieldValue(InstallmentIngestionFlowFileDTO dto, String fieldName) {
         try {
             Method getter = InstallmentIngestionFlowFileDTO.class.getMethod("get" + capitalize(fieldName));
             return getter.invoke(dto);
