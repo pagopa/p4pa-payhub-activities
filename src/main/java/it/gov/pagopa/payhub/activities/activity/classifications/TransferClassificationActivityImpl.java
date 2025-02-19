@@ -11,7 +11,7 @@ import it.gov.pagopa.payhub.activities.service.classifications.TransferClassific
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.StatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -110,6 +110,6 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 * @return the set of installment statuses to filter
 	 */
 	private Set<String> getInstallmentStatusSetFilter() {
-		return Set.of(InstallmentStatus.PAID.getValue(), InstallmentStatus.REPORTED.getValue());
+		return Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue());
 	}
 }

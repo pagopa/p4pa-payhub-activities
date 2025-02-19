@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPosition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,9 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.Map;
+import java.util.Set;
+
+import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.*;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionApisHolderTest extends BaseApiHolderTest {
@@ -67,7 +71,8 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     void whenGetTransferSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
-                .crudTransfersFindBySemanticKey(0L, "iuv", "iud", 1, null),
+                .crudTransfersFindBySemanticKey(0L, "iuv", "iud", 1,
+                    Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue())),
             Object.class,
             debtPositionApisHolder::unload);
     }
