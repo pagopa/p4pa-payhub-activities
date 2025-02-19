@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
-import it.gov.pagopa.pagopa_api.pa.pafornode.PaSendRTV2Request;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import uk.co.jemos.podam.api.PodamFactory;
     PaSendRTV2Request request = podamFactory.manufacturePojo(PaSendRTV2Request.class);
     //fix due to the fact that the field setter has non-standard name
     request.getReceipt().setPSPCompanyName(podamFactory.manufacturePojo(String.class));
-    request.getReceipt().getTransferList().getTransfer().forEach(t -> {
+    request.getReceipt().getTransferList().getTransfers().forEach(t -> {
       t.setIBAN(podamFactory.manufacturePojo(String.class));
       t.setMBDAttachment(podamFactory.manufacturePojo(byte[].class));
     });
@@ -34,8 +34,8 @@ import uk.co.jemos.podam.api.PodamFactory;
     TestUtils.checkNotNullFields(response, "receiptId", "ingestionFlowFileId", "creationDate", "updateDate");
     TestUtils.checkNotNullFields(response.getDebtor());
     TestUtils.checkNotNullFields(response.getPayer());
-    Assertions.assertEquals(request.getReceipt().getTransferList().getTransfer().size(), response.getTransfers().size());
-    Assertions.assertEquals(request.getReceipt().getMetadata().getMapEntry().size(), response.getMetadata().size());
+    Assertions.assertEquals(request.getReceipt().getTransferList().getTransfers().size(), response.getTransfers().size());
+    Assertions.assertEquals(request.getReceipt().getMetadata().getMapEntries().size(), response.getMetadata().size());
     response.getTransfers().forEach(TestUtils::checkNotNullFields);
 
   }

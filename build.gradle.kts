@@ -185,6 +185,7 @@ jaxb {
 			args = listOf("-xmlschema","-Xsimplify")
 			outputDir = file("$projectDir/build/generated/jaxb/java")
 			schema = file("src/main/resources/receipt/wsdl/xsd/paForNode.xsd")
+			bindings = layout.files("src/main/resources/receipt/wsdl/xsd/paForNode.xjb")
 		}
 	}
 }

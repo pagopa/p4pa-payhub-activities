@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
-import it.gov.pagopa.pagopa_api.pa.pafornode.PaSendRTV2Request;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
+import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;
@@ -47,10 +47,10 @@ class ReceiptUnmarshallerServiceTest {
       DatatypeFactory.newInstance().newXMLGregorianCalendar(2021, 10, 1, 17, 48, 22, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED),
       response.getReceipt().getPaymentDateTime());
     Assertions.assertEquals("JHNDOE00A01F205N", response.getReceipt().getDebtor().getUniqueIdentifier().getEntityUniqueIdentifierValue());
-    Assertions.assertEquals(2, response.getReceipt().getTransferList().getTransfer().size());
-    Assertions.assertEquals("0201102IM", response.getReceipt().getTransferList().getTransfer().get(1).getTransferCategory());
-    Assertions.assertEquals(1, response.getReceipt().getMetadata().getMapEntry().size());
-    Assertions.assertEquals("keytest3", response.getReceipt().getMetadata().getMapEntry().get(0).getKey());
+    Assertions.assertEquals(2, response.getReceipt().getTransferList().getTransfers().size());
+    Assertions.assertEquals("0201102IM", response.getReceipt().getTransferList().getTransfers().get(1).getTransferCategory());
+    Assertions.assertEquals(1, response.getReceipt().getMetadata().getMapEntries().size());
+    Assertions.assertEquals("keytest3", response.getReceipt().getMetadata().getMapEntries().get(0).getKey());
   }
 
   @Test

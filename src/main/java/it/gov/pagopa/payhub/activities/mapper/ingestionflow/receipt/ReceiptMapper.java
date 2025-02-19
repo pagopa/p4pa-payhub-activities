@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
-import it.gov.pagopa.pagopa_api.pa.pafornode.CtReceiptV2;
-import it.gov.pagopa.pagopa_api.pa.pafornode.CtSubject;
-import it.gov.pagopa.pagopa_api.pa.pafornode.CtTransferPAReceiptV2;
-import it.gov.pagopa.pagopa_api.pa.pafornode.PaSendRTV2Request;
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMapEntry;
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMetadata;
 import it.gov.pagopa.payhub.activities.util.ConversionUtils;
+import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtReceiptV2;
+import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtSubject;
+import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtTransferPAReceiptV2;
+import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptTransferDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
@@ -51,7 +51,7 @@ public class ReceiptMapper {
       .payer(map(rec.getPayer()))
       .creationDate(null)
       .updateDate(null)
-      .transfers(rec.getTransferList().getTransfer().stream().map(this::map).toList())
+      .transfers(rec.getTransferList().getTransfers().stream().map(this::map).toList())
       .metadata(map(rec.getMetadata()));
   }
 
@@ -83,6 +83,6 @@ public class ReceiptMapper {
   }
 
   public Map<String, String> map(CtMetadata metadata) {
-    return metadata == null ? null : metadata.getMapEntry().stream().collect(Collectors.toUnmodifiableMap(CtMapEntry::getKey, CtMapEntry::getValue));
+    return metadata == null ? null : metadata.getMapEntries().stream().collect(Collectors.toUnmodifiableMap(CtMapEntry::getKey, CtMapEntry::getValue));
   }
 }
