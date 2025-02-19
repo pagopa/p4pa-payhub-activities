@@ -6,12 +6,15 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferSea
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
@@ -43,12 +46,13 @@ class TransferServiceTest {
 		String accessToken = "ACCESSTOKEN";
 		Transfer expected = mock(Transfer.class);
 		TransferSemanticKeyDTO transferSemanticKey = new TransferSemanticKeyDTO(1L, "IUV", "IUR", 1);
+		Set<String> installmentStatusSet = Set.of(InstallmentStatus.PAID.getValue(), InstallmentStatus.REPORTED.getValue());
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(transferSearchClientMock.findBySemanticKey(1L, "IUV", "IUR", 1, accessToken)).thenReturn(expected);
+		when(transferSearchClientMock.findBySemanticKey(1L, "IUV", "IUR", 1, installmentStatusSet, accessToken)).thenReturn(expected);
 
 		// When
-		Transfer result = transferService.findBySemanticKey(transferSemanticKey);
+		Transfer result = transferService.findBySemanticKey(transferSemanticKey, installmentStatusSet);
 
 		// Then
 		assertSame(expected, result);

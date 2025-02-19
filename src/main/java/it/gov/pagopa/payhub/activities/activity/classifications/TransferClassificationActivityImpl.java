@@ -11,11 +11,13 @@ import it.gov.pagopa.payhub.activities.service.classifications.TransferClassific
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Lazy
 @Slf4j
@@ -53,7 +55,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Retrieve Transfer 2 classify
-		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey);
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, getInstallmentStatusSetFilter());
 
 		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
@@ -100,5 +102,14 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		if(transferDTO != null && paymentsReportingDTO != null) {
 			transferService.notifyReportedTransferId(transferDTO.getTransferId());
 		}
+	}
+
+	/**
+	 * Returns the set of installment statuses, PAID and REPORTED only, to filter.
+	 *
+	 * @return the set of installment statuses to filter
+	 */
+	private Set<String> getInstallmentStatusSetFilter() {
+		return Set.of(InstallmentStatus.PAID.getValue(), InstallmentStatus.REPORTED.getValue());
 	}
 }

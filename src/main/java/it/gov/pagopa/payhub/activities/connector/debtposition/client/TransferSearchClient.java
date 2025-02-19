@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.Set;
+
 @Lazy
 @Service
 @Slf4j
@@ -17,10 +19,10 @@ public class TransferSearchClient {
         this.debtPositionApisHolder = debtPositionApisHolder;
     }
 
-    public Transfer findBySemanticKey(Long orgId, String iuv, String iur, Integer transferIndex, String accessToken) {
+    public Transfer findBySemanticKey(Long orgId, String iuv, String iur, Integer transferIndex, Set<String> installmentStatusSet, String accessToken) {
         try {
             return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
-                    .crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex, null);
+                    .crudTransfersFindBySemanticKey(orgId, iuv, iur, transferIndex, installmentStatusSet);
         } catch (HttpClientErrorException.NotFound e) {
             log.info("Transfer not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
             return null;

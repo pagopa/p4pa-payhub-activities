@@ -9,6 +9,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Lazy
 @Service
 public class TransferServiceImpl implements TransferService {
@@ -23,12 +25,13 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public Transfer findBySemanticKey(TransferSemanticKeyDTO transferSemanticKey) {
+    public Transfer findBySemanticKey(TransferSemanticKeyDTO transferSemanticKey, Set<String> installmentStatusSet) {
         return transferSearchClient.findBySemanticKey(
                 transferSemanticKey.getOrgId(),
                 transferSemanticKey.getIuv(),
                 transferSemanticKey.getIur(),
                 transferSemanticKey.getTransferIndex(),
+                installmentStatusSet,
                 authnService.getAccessToken()
         );
     }
