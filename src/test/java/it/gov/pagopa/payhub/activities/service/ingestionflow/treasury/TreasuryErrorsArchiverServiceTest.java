@@ -110,7 +110,7 @@ class TreasuryErrorsArchiverServiceTest {
             Assertions.assertEquals(expectedZipErrorFileName, result);
 
             Mockito.verify(ingestionFlowFileArchiverServiceMock)
-                    .compressAndArchive(List.of(errorFile), Path.of(expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId()+"",ingestionFlowFileDTO.getFilePathName(), errorFolder));
+                    .compressAndArchive(List.of(errorFile), Path.of("build/test/"+expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId()+"",ingestionFlowFileDTO.getFilePathName(), errorFolder));
         } finally {
             Files.delete(errorFile);
         }
