@@ -1,0 +1,44 @@
+package it.gov.pagopa.payhub.activities.connector.debtposition;
+
+import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.ReceiptClient;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ReceiptServiceTest {
+	@Mock
+	private AuthnService authnServiceMock;
+	@Mock
+	private ReceiptClient receiptClientMock;
+	@InjectMocks
+	private ReceiptServiceImpl receiptService;
+
+	@Test
+	void whenCreateReceiptThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		ReceiptDTO expected = new ReceiptDTO();
+		ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+		when(receiptClientMock.createReceipt(accessToken, receiptWithAdditionalNodeDataDTO)).thenReturn(expected);
+
+		// When
+		ReceiptDTO result = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
+
+		// Then
+		assertSame(expected, result);
+		verify(authnServiceMock,times(1)).getAccessToken();
+		verify(receiptClientMock,times(1)).createReceipt(accessToken, receiptWithAdditionalNodeDataDTO);
+	}
+
+}

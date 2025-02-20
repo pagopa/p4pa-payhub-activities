@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPosition;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,6 +80,15 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
             accessToken -> debtPositionApisHolder.getTransferApi(accessToken)
                 .notifyReportedTransferId(0L),
             Object.class,
+            debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetReceiptApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> debtPositionApisHolder.getReceiptApi(accessToken)
+              .createReceipt(new ReceiptWithAdditionalNodeDataDTO()),
+            ReceiptDTO.class,
             debtPositionApisHolder::unload);
     }
 }

@@ -43,6 +43,7 @@ public class XMLUnmarshallerService {
 			JAXBElement<T> element = unmarshaller.unmarshal(new StreamSource(is), clazz);
 			return element.getValue();
 		} catch (IOException | JAXBException e) {
+			log.error("Error while parsing file: {}", file.getName(), e);
 			throw new InvalidValueException("Error while parsing file: "+ file.getName());
 		}
 	}
