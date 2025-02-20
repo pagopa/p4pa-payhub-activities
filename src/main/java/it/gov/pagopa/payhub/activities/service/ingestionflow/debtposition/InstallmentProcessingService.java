@@ -50,9 +50,11 @@ public class InstallmentProcessingService {
     /**
      * Processes a stream of InstallmentIngestionFlowFileDTO and synchronizes each installment.
      *
-     * @param installmentIngestionFlowFileDTOStream Stream of InstallmentIngestionFlowFileDTO
-     * @param ingestionFlowFile Metadata of the ingestion file
-     * @return List of processed InstallmentSynchronizeDTO
+     * @param installmentIngestionFlowFileDTOStream Stream of installment ingestion flow file DTOs to be processed.
+     * @param ingestionFlowFile Metadata of the ingestion file containing details about the ingestion process.
+     * @param workingDirectory The directory where error files will be written if processing fails.
+     * @param totalRows The total number of rows in the ingestion file.
+     * @return An {@link InstallmentIngestionFlowFileResult} containing details about the processed rows, errors, and archived files.
      */
     public InstallmentIngestionFlowFileResult processInstallments(Stream<InstallmentIngestionFlowFileDTO> installmentIngestionFlowFileDTOStream,
                                                                   IngestionFlowFile ingestionFlowFile,
@@ -105,7 +107,11 @@ public class InstallmentProcessingService {
     /**
      * Waits for a workflow to reach a terminal status.
      *
-     * @param workflowId The ID of the workflow
+     * @param workflowId The ID of the workflow to monitor.
+     * @param installment The installment ingestion flow file DTO associated with the workflow.
+     * @param fileName The name of the file being processed.
+     * @param errorList The list where errors encountered during processing will be recorded.
+     * @return {@code true} if the workflow completed successfully, {@code false} if it terminated with an error or exceeded the retry limit.
      */
     private boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
                                               String fileName, List<InstallmentErrorDTO> errorList) {
