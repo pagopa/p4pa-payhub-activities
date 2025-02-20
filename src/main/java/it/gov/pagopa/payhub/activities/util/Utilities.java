@@ -1,8 +1,13 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +18,16 @@ public class Utilities {
     public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
     public static final int IBAN_LENGTH = 27;
+    public static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
+    private static final DatatypeFactory DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR;
+
+    static {
+        try {
+            DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
 
     public static boolean isValidEmail(final String email) {
         Matcher matcher = EMAIL_PATTERN.matcher(email);
@@ -64,5 +79,25 @@ public class Utilities {
                 gregorianCalendar.getTimeZone().toZoneId()
         );
     }
+
+    public static Long bigDecimalEuroToLongCentsAmount(BigDecimal euroAmount) {
+        return euroAmount != null ? euroAmount.multiply(HUNDRED).longValue() : null;
+    }
+
+    public static XMLGregorianCalendar toXMLGregorianCalendar(OffsetDateTime offsetDateTime) {
+        return offsetDateTime != null ? DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR.newXMLGregorianCalendar(GregorianCalendar.from(offsetDateTime.toZonedDateTime())) : null;
+    }
+
+
+    public static OffsetDateTime toOffsetDateTime(XMLGregorianCalendar xmlGregorianCalendar) {
+        if(xmlGregorianCalendar == null) {
+            return null;
+        }
+
+        OffsetDateTime odt = OffsetDateTime.parse(xmlGregorianCalendar.toString());
+        ZoneOffset zoneOffset = ZONEID.getRules().getOffset(odt.toInstant());
+        return odt.withOffsetSameInstant(zoneOffset);
+    }
+
 
 }

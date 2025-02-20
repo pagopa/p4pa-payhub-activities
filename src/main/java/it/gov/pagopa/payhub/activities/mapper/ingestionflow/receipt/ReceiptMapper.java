@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMapEntry;
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMetadata;
-import it.gov.pagopa.payhub.activities.util.ConversionUtils;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtReceiptV2;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtSubject;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtTransferPAReceiptV2;
@@ -31,7 +31,7 @@ public class ReceiptMapper {
       .orgFiscalCode(rec.getFiscalCode())
       .outcome(rec.getOutcome().value())
       .creditorReferenceId(rec.getCreditorReferenceId())
-      .paymentAmountCents(ConversionUtils.bigDecimalEuroToLongCentsAmount(rec.getPaymentAmount()))
+      .paymentAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(rec.getPaymentAmount()))
       .description(rec.getDescription())
       .companyName(rec.getCompanyName())
       .officeName(rec.getOfficeName())
@@ -42,10 +42,10 @@ public class ReceiptMapper {
       .idChannel(rec.getIdChannel())
       .channelDescription(rec.getChannelDescription())
       .paymentMethod(rec.getPaymentMethod())
-      .feeCents(ConversionUtils.bigDecimalEuroToLongCentsAmount(rec.getFee()))
-      .paymentDateTime(ConversionUtils.toOffsetDateTime(rec.getPaymentDateTime()))
-      .applicationDate(ConversionUtils.toOffsetDateTime(rec.getApplicationDate()))
-      .transferDate(ConversionUtils.toOffsetDateTime(rec.getTransferDate()))
+      .feeCents(Utilities.bigDecimalEuroToLongCentsAmount(rec.getFee()))
+      .paymentDateTime(Utilities.toOffsetDateTime(rec.getPaymentDateTime()))
+      .applicationDate(Utilities.toOffsetDateTime(rec.getApplicationDate()))
+      .transferDate(Utilities.toOffsetDateTime(rec.getTransferDate()))
       .standin(rec.isStandIn())
       .debtor(map(rec.getDebtor()))
       .payer(map(rec.getPayer()))
@@ -72,7 +72,7 @@ public class ReceiptMapper {
   public ReceiptTransferDTO map(CtTransferPAReceiptV2 transfer) {
     return new ReceiptTransferDTO()
       .idTransfer(transfer.getIdTransfer())
-      .transferAmountCents(ConversionUtils.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
+      .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
       .fiscalCodePA(transfer.getFiscalCodePA())
       .companyName(transfer.getCompanyName())
       .mbdAttachment(transfer.getMBDAttachment())
