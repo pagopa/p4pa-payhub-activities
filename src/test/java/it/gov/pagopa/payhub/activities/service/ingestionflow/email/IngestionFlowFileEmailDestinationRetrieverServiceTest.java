@@ -49,6 +49,7 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         EmailDTO emailDTO = new EmailDTO();
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
+        userInfo.getOrganizations().getFirst().setEmail(null);
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
