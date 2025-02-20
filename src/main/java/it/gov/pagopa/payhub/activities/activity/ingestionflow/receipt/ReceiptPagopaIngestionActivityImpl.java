@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
-import it.gov.pagopa.payhub.activities.exception.ingestionflow.receipt.ReceiptIngestionFlowProcessingException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
@@ -63,24 +62,16 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
     }
     Path fileToProcess = retrievedFiles.getFirst();
 
-    try {
-      //parse receipt file
-      ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = parseData(ingestionFlowFileDTO, fileToProcess);
+    //parse receipt file
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = parseData(ingestionFlowFileDTO, fileToProcess);
 
-      //invoke service to send receipt to debt-position for its persistence and processing
-      ReceiptDTO receiptDTO = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
+    //invoke service to send receipt to debt-position for its persistence and processing
+    ReceiptDTO receiptDTO = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
 
-      //set the missing ID in the DTO
-      receiptWithAdditionalNodeDataDTO.setReceiptId(receiptDTO.getReceiptId());
+    //set the missing ID in the DTO
+    receiptWithAdditionalNodeDataDTO.setReceiptId(receiptDTO.getReceiptId());
 
-      return new ReceiptPagopaIngestionFlowFileResult(receiptWithAdditionalNodeDataDTO);
-    } catch (Exception e) {
-      log.error("Unexpected error when processing receipt pagopa file[{}] with id[{}]",
-        fileToProcess, ingestionFlowFileDTO.getIngestionFlowFileId(), e);
-      throw new ReceiptIngestionFlowProcessingException(
-        "Unexpected error when processing receipt pagopa file with id[" + ingestionFlowFileDTO.getIngestionFlowFileId() + "]: " + e.getMessage(),
-        e);
-    }
+    return new ReceiptPagopaIngestionFlowFileResult(receiptWithAdditionalNodeDataDTO);
   }
 
   private ReceiptWithAdditionalNodeDataDTO parseData(IngestionFlowFile ingestionFlowFileDTO, Path fileToProcess) {

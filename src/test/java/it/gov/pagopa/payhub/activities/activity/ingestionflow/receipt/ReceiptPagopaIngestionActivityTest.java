@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
-import it.gov.pagopa.payhub.activities.exception.ingestionflow.receipt.ReceiptIngestionFlowProcessingException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
@@ -133,12 +132,13 @@ class ReceiptPagopaIngestionActivityTest {
       .thenReturn(mockedListPath);
 
     Mockito.when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
-      .thenThrow(new RuntimeException("error"));
+      .thenThrow(new RuntimeException("test error"));
 
     // When
-    Assertions.assertThrows(ReceiptIngestionFlowProcessingException.class, () -> receiptPagopaIngestionActivity.processFile(ingestionFlowFileId));
+    RuntimeException response = Assertions.assertThrows(RuntimeException.class, () -> receiptPagopaIngestionActivity.processFile(ingestionFlowFileId));
 
     // Then
+    Assertions.assertEquals("test error", response.getMessage());
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(ingestionFlowFileId);
     Mockito.verify(ingestionFlowFileRetrieverServiceMock, Mockito.times(1)).retrieveAndUnzipFile(
       ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
