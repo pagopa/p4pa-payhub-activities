@@ -76,8 +76,8 @@ class CsvServiceTest {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "input.csv");
         List<String[]> data = Arrays.asList(
-                new String[]{"Data1", "Data2", "Data3"},
-                new String[]{"Data4", "Data5", "Data6"}
+                new String[]{"Data1", "Data2", "2025-02-20"},
+                new String[]{"Data4", "Data5", "2025-02-20"}
         );
         List<String> headers = List.of("Column1", "Column2", "Column3");
         List<String[]> headerList = new ArrayList<>();
@@ -90,7 +90,7 @@ class CsvServiceTest {
 
         // Then
         List<String[]> actualData = result.getDataStream()
-                .map(testCsv -> new String[]{testCsv.getColumn1(), testCsv.getColumn2(), testCsv.getColumn3()})
+                .map(testCsv -> new String[]{testCsv.getColumn1(), testCsv.getColumn2(), testCsv.getColumn3().toLocalDate().toString()})
                 .toList();
 
         assertEquals(2, result.getTotalRows());

@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
 import com.opencsv.bean.CsvIgnore;
+import it.gov.pagopa.payhub.activities.util.CsvOffsetDateTimeConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,13 +33,13 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "description", required = true)
     private String description;
 
-    @CsvBindByName(column = "validityDate")
+    @CsvCustomBindByName(column = "validityDate", converter = CsvOffsetDateTimeConverter.class)
     private OffsetDateTime validityDate;
 
     @CsvBindByName(column = "multiDebtor")
     private Boolean multiDebtor;
 
-    @CsvBindByName(column = "notificationDate")
+    @CsvCustomBindByName(column = "notificationDate", converter = CsvOffsetDateTimeConverter.class)
     private OffsetDateTime notificationDate;
 
     @CsvBindByName(column = "paymentOptionIndex", required = true)
@@ -85,7 +87,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "email")
     private String email;
 
-    @CsvBindByName(column = "dueDate")
+    @CsvCustomBindByName(column = "dueDate", converter = CsvOffsetDateTimeConverter.class)
     private OffsetDateTime dueDate;
 
     @CsvBindByName(column = "amount", required = true)
@@ -100,7 +102,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "remittanceInformation", required = true)
     private String remittanceInformation;
 
-    @CsvBindByName(column = "legacyPaymentMetadata", required = true)
+    @CsvBindByName(column = "legacyPaymentMetadata")
     private String legacyPaymentMetadata;
 
     @CsvBindByName(column = "flagPagoPaPayment", required = true)
