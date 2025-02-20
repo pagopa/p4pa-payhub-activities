@@ -11,16 +11,20 @@ import it.gov.pagopa.payhub.activities.service.classifications.TransferClassific
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.StatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Lazy
 @Slf4j
 @Component
 public class TransferClassificationActivityImpl implements TransferClassificationActivity {
+	private static final Set<StatusEnum> INSTALLMENT_STATUS_SET = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
+
 	private final ClassificationService classificationService;
 	private final TransferService transferService;
 	private final PaymentsReportingService paymentsReportingService;
@@ -53,7 +57,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Retrieve Transfer 2 classify
-		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey);
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_STATUS_SET);
 
 		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
