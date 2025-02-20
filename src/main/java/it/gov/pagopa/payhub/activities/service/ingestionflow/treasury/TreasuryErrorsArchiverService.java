@@ -44,6 +44,10 @@ public class TreasuryErrorsArchiverService {
 
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<TreasuryErrorDTO> errorDTOList) {
 
+        if(errorDTOList.isEmpty()){
+            return;
+        }
+
         List<String[]> data = errorDTOList.stream()
                 .map(errorDTO -> new String[]{
                         errorDTO.getFileName(),

@@ -49,7 +49,7 @@ public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<F
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_CAUSALE_NOT_FOUND", "Causale field is not valorized but it is required");
                     if (iuf == null)
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_IUF_NOT_FOUND", "Iuf field is not valorized but it is required");
-                    if (StringUtils.isNotBlank(iuf) && iuf.length() > 34)
+                    if (StringUtils.isNotBlank(iuf) && iuf.length() > 35)
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_IUF_TOO_LONG", "Codice univoco Flusso exceed max length of 35 chars");
                     if (movimentoContoEvidenza.getSospesoDaRegolarizzare() == null || movimentoContoEvidenza.getSospesoDaRegolarizzare().getDataEffettivaSospeso() == null)
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_DATA_EFFETTIVA_SOSPESO_NOT_FOUND", "Data effettiva sospeso field is not valorized but it is required");
