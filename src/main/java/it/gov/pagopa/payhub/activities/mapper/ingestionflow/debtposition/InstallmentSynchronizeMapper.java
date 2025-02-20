@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.mapper;
+package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
