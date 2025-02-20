@@ -23,6 +23,8 @@ import java.util.Set;
 @Slf4j
 @Component
 public class TransferClassificationActivityImpl implements TransferClassificationActivity {
+	private static final Set<StatusEnum> INSTALLMENT_STATUS_SET = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
+
 	private final ClassificationService classificationService;
 	private final TransferService transferService;
 	private final PaymentsReportingService paymentsReportingService;
@@ -55,7 +57,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Retrieve Transfer 2 classify
-		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, getInstallmentStatusSetFilter());
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_STATUS_SET);
 
 		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
@@ -102,14 +104,5 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		if(transferDTO != null && paymentsReportingDTO != null) {
 			transferService.notifyReportedTransferId(transferDTO.getTransferId());
 		}
-	}
-
-	/**
-	 * Returns the set of installment statuses, PAID and REPORTED only, to filter.
-	 *
-	 * @return the set of installment statuses to filter
-	 */
-	private Set<String> getInstallmentStatusSetFilter() {
-		return Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue());
 	}
 }
