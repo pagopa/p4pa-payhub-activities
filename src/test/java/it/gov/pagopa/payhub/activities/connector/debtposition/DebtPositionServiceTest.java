@@ -21,8 +21,6 @@ import java.util.Map;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionServiceTest {
@@ -55,14 +53,14 @@ class DebtPositionServiceTest {
                 .build();
         String accessToken = "ACCESSTOKEN";
 
-        when(authnServiceMock.getAccessToken())
+        Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
         debtPositionService.finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO));
 
         // Then
-        verify(debtPositionClientMock).finalizeSyncStatus(accessToken, 0L, Map.of("iud", iupdSyncStatusUpdateDTO));
+        Mockito.verify(debtPositionClientMock).finalizeSyncStatus(accessToken, 0L, Map.of("iud", iupdSyncStatusUpdateDTO));
     }
 
     @Test
@@ -83,10 +81,10 @@ class DebtPositionServiceTest {
 
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installment1, installment2));
 
-        when(authnServiceMock.getAccessToken())
+        Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
-        when(debtPositionClientMock.checkAndUpdateInstallmentExpiration(accessToken, 1L))
+        Mockito.when(debtPositionClientMock.checkAndUpdateInstallmentExpiration(accessToken, 1L))
                 .thenReturn(debtPositionDTO);
 
         // When
@@ -95,7 +93,7 @@ class DebtPositionServiceTest {
         // Then
         assertNotNull(dueDate);
         assertEquals(installment2.getDueDate(), dueDate);
-        verify(debtPositionClientMock).checkAndUpdateInstallmentExpiration(accessToken, 1L);
+        Mockito.verify(debtPositionClientMock).checkAndUpdateInstallmentExpiration(accessToken, 1L);
     }
 
     @Test
@@ -104,10 +102,10 @@ class DebtPositionServiceTest {
         String accessToken = "ACCESSTOKEN";
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-        when(authnServiceMock.getAccessToken())
+        Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
-        when(debtPositionClientMock.checkAndUpdateInstallmentExpiration(accessToken,1L))
+        Mockito.when(debtPositionClientMock.checkAndUpdateInstallmentExpiration(accessToken,1L))
                 .thenReturn(debtPositionDTO);
 
         // When
@@ -115,7 +113,7 @@ class DebtPositionServiceTest {
 
         // Then
         assertNull(dueDate);
-        verify(debtPositionClientMock).checkAndUpdateInstallmentExpiration(accessToken,1L);
+        Mockito.verify(debtPositionClientMock).checkAndUpdateInstallmentExpiration(accessToken,1L);
     }
 
     @Test
@@ -126,8 +124,8 @@ class DebtPositionServiceTest {
         boolean massive = false;
         String expectedWorkflowId = "workflow-123";
 
-        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        when(debtPositionClientMock.installmentSynchronize(accessToken, installmentSynchronizeDTO, massive))
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(debtPositionClientMock.installmentSynchronize(accessToken, installmentSynchronizeDTO, massive))
                 .thenReturn(expectedWorkflowId);
 
         // When
@@ -135,6 +133,6 @@ class DebtPositionServiceTest {
 
         // Then
         assertEquals(expectedWorkflowId, result);
-        verify(debtPositionClientMock).installmentSynchronize(accessToken, installmentSynchronizeDTO, massive);
+        Mockito.verify(debtPositionClientMock).installmentSynchronize(accessToken, installmentSynchronizeDTO, massive);
     }
 }
