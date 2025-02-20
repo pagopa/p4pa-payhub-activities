@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileAr
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptParserService;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -21,8 +22,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Implementation of {@link ReceiptPagopaIngestionActivity} for processing OPI treasury ingestion files.
- * This class handles file retrieval, parsing, archiving, and deletion of OPI treasury files.
+ * Implementation of {@link ReceiptPagopaIngestionActivity} for processing receipt pagopa ingestion files.
+ * This class handles file retrieval, parsing, archiving, and deletion of receipt pagopa files.
  */
 @Slf4j
 @Lazy
@@ -67,11 +68,14 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
 
     //invoke service to send receipt to debt-position for its persistence and processing
     ReceiptDTO receiptDTO = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
+    //TODO installment will be retrieved from the response of the createReceipt service, with the implementation of a future task
+    InstallmentDTO installmentDTO = null;
 
     //set the missing ID in the DTO
     receiptWithAdditionalNodeDataDTO.setReceiptId(receiptDTO.getReceiptId());
 
-    return new ReceiptPagopaIngestionFlowFileResult(receiptWithAdditionalNodeDataDTO);
+
+    return new ReceiptPagopaIngestionFlowFileResult(receiptWithAdditionalNodeDataDTO, installmentDTO);
   }
 
   private ReceiptWithAdditionalNodeDataDTO parseData(IngestionFlowFile ingestionFlowFileDTO, Path fileToProcess) {
