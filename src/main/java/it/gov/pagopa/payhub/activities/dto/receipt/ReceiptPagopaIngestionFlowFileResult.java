@@ -14,8 +14,4 @@ import lombok.NoArgsConstructor;
 public class ReceiptPagopaIngestionFlowFileResult {
     /** Receipt */
     private ReceiptWithAdditionalNodeDataDTO receiptDTO;
-    /** Error description */
-    private String errorDescription;
-    /** Discarded file name */
-    private String discardedFileName;
 }
