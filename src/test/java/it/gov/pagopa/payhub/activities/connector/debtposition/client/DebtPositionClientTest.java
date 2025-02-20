@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -12,10 +13,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionClientTest {
@@ -81,4 +87,29 @@ class DebtPositionClientTest {
         // Then
         Assertions.assertSame(expectedResult, result);
     }
+
+    @Test
+    void givenInstallmentSynchronizeThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
+        boolean massive = false;
+        String expectedWorkflowId = "workflow-123";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("workflowId", expectedWorkflowId);
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+                .thenReturn(debtPositionApiMock);
+        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(installmentSynchronizeDTO, massive))
+                .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
+
+        // When
+        String result = debtPositionClient.installmentSynchronize(accessToken, installmentSynchronizeDTO, massive);
+
+        // Then
+        Assertions.assertEquals(expectedWorkflowId, result);
+        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(installmentSynchronizeDTO, massive);
+    }
+
 }
