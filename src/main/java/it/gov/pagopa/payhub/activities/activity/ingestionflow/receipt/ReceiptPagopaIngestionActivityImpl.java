@@ -65,10 +65,7 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
 
     try {
       //parse receipt file
-      PaSendRTV2Request paSendRTV2Request = receiptParserService.parseReceiptPagopaFile(fileToProcess, ingestionFlowFileDTO);
-
-      //map to DTO
-      ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(paSendRTV2Request);
+      ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = parseData(ingestionFlowFileDTO, fileToProcess);
 
       //invoke service to send receipt to debt-position for its persistence and processing
       ReceiptDTO receiptDTO = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
@@ -85,5 +82,13 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
         e);
     }
   }
-  
+
+  private ReceiptWithAdditionalNodeDataDTO parseData(IngestionFlowFile ingestionFlowFileDTO, Path fileToProcess) {
+    //parse receipt file
+    PaSendRTV2Request paSendRTV2Request = receiptParserService.parseReceiptPagopaFile(fileToProcess, ingestionFlowFileDTO);
+
+    //map to DTO
+    return receiptMapper.map(paSendRTV2Request);
+  }
+
 }
