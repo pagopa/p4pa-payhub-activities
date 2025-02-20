@@ -1,10 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionSearchControllerApi;
-import it.gov.pagopa.pu.debtposition.client.generated.TransferApi;
-import it.gov.pagopa.pu.debtposition.client.generated.TransferSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.*;
 import it.gov.pagopa.pu.debtposition.generated.ApiClient;
 import it.gov.pagopa.pu.debtposition.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -20,6 +17,7 @@ public class DebtPositionApisHolder {
     private final TransferApi transferApi;
     private final DebtPositionSearchControllerApi debtPositionSearchControllerApi;
     private final DebtPositionApi debtPositionApi;
+    private final ReceiptApi receiptApi;
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public DebtPositionApisHolder(
@@ -40,6 +38,7 @@ public class DebtPositionApisHolder {
         this.debtPositionApi = new DebtPositionApi(apiClient);
         this.transferSearchControllerApi = new TransferSearchControllerApi(apiClient);
         this.transferApi = new TransferApi(apiClient);
+        this.receiptApi = new ReceiptApi(apiClient);
     }
 
     @PreDestroy
@@ -68,6 +67,11 @@ public class DebtPositionApisHolder {
     public TransferApi getTransferApi(String accessToken){
         return getApi(accessToken, transferApi);
     }
+
+    public ReceiptApi getReceiptApi(String accessToken){
+        return getApi(accessToken, receiptApi);
+    }
+
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
         bearerTokenHolder.set(accessToken);

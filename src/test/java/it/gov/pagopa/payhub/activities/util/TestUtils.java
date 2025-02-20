@@ -4,15 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
-import uk.co.jemos.podam.api.AttributeMetadata;
-import uk.co.jemos.podam.api.DataProviderStrategy;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
+import uk.co.jemos.podam.api.*;
 import uk.co.jemos.podam.common.ManufacturingContext;
 import uk.co.jemos.podam.typeManufacturers.AbstractTypeManufacturer;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -165,7 +164,21 @@ public class TestUtils {
     }
 
     public static PodamFactory getPodamFactory() {
-        PodamFactoryImpl podamFactory = new PodamFactoryImpl();
+        PodamFactory externalFactory = new AbstractExternalFactory() {
+            @Override
+            public <T> T manufacturePojo(Class<T> pojoClass, Type... genericTypeArgs) {
+                if(pojoClass.isAssignableFrom(XMLGregorianCalendar.class)) {
+                    return (T) Utilities.toXMLGregorianCalendar(OffsetDateTime.now());
+                }
+                return null;
+            }
+
+            @Override
+            public <T> T populatePojo(T pojo, Type... genericTypeArgs) {
+                return null;
+            }
+        };
+        PodamFactoryImpl podamFactory = new PodamFactoryImpl(externalFactory);
         podamFactory.getStrategy().addOrReplaceTypeManufacturer(SortedSet.class, new AbstractTypeManufacturer<>(){
             @Override
             public SortedSet<?> getType(DataProviderStrategy strategy, AttributeMetadata attributeMetadata, ManufacturingContext manufacturingCtx) {
