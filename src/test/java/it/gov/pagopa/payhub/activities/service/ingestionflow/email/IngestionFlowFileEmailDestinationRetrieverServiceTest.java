@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,8 +48,8 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
         // Given
         EmailDTO emailDTO = new EmailDTO();
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
+        ingestionFlowFileDTO.setOrganizationId(0L);
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
-        userInfo.setOrganizations(new ArrayList<>());
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
