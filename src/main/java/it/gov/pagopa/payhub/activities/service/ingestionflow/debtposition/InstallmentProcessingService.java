@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 @Service
@@ -42,16 +43,15 @@ public class InstallmentProcessingService {
      * @param installmentIngestionFlowFileDTOStream Stream of installment ingestion flow file DTOs to be processed.
      * @param ingestionFlowFile Metadata of the ingestion file containing details about the ingestion process.
      * @param workingDirectory The directory where error files will be written if processing fails.
-     * @param totalRows The total number of rows in the ingestion file.
      * @return An {@link InstallmentIngestionFlowFileResult} containing details about the processed rows, errors, and archived files.
      */
     public InstallmentIngestionFlowFileResult processInstallments(Stream<InstallmentIngestionFlowFileDTO> installmentIngestionFlowFileDTOStream,
                                                                   IngestionFlowFile ingestionFlowFile,
-                                                                  Path workingDirectory,
-                                                                  long totalRows) {
+                                                                  Path workingDirectory) {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
+        AtomicLong processedRows = new AtomicLong(0);
 
-        long processedRows = installmentIngestionFlowFileDTOStream
+        long totalRows = installmentIngestionFlowFileDTOStream
                 .filter(installmentIngestionFlowFileDTO -> {
                     InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
                             installmentIngestionFlowFileDTO,
@@ -64,9 +64,12 @@ public class InstallmentProcessingService {
                         if (workflowId != null) {
                             boolean workflowCompleted = workflowCompletionService.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), errorList);
                             log.info("Workflow with id {} completed", workflowId);
+                            if (workflowCompleted) {
+                                processedRows.incrementAndGet();
+                            }
                             return workflowCompleted;
                         }
-
+                        processedRows.incrementAndGet();
                         return true;
                     } catch (Exception e) {
                         log.error("Error processing installment {}: {}", installmentIngestionFlowFileDTO.getIud(), e.getMessage());
@@ -93,7 +96,7 @@ public class InstallmentProcessingService {
 
         return new InstallmentIngestionFlowFileResult(
                 totalRows,
-                processedRows,
+                processedRows.get(),
                 errorsZipFileName != null ? "Some rows have failed" : null,
                 errorsZipFileName,
                 discardedFilePath

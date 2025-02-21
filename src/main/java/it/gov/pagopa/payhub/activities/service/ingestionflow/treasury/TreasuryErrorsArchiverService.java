@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.dto.ingestion.constants.CsvHeaders.TREASURY_HEADERS;
-
 @Service
 @Slf4j
 public class TreasuryErrorsArchiverService extends ErrorArchiverService<TreasuryErrorDTO> {
+
+    public static final List<String> TREASURY_HEADERS = List.of(
+            "FileName", "Anno Bolletta", "Codice Bolletta", "Error Code", "Error Message"
+    );
 
     public TreasuryErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                          @Value("${folders.process-target-sub-folders.errors}") String errorFolder,

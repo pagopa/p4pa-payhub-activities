@@ -17,12 +17,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Lazy
 @Service
@@ -91,37 +89,41 @@ public class CsvService {
      * @return A {@link CsvReadResult} containing a stream of parsed objects and the total number of rows.
      * @throws IOException If an error occurs while reading the file or parsing its contents.
      */
-    public <T> CsvReadResult<T> readCsv(Path csvFilePath, Class<T> typeClass, BiConsumer<T, Long> ingestionFlowFileLineNumber) throws IOException {
-        try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
+    public <T> Iterator<T> readCsv(Path csvFilePath, Class<T> typeClass, BiConsumer<T, Long> ingestionFlowFileLineNumber) throws IOException {
+        FileReader fileReader = new FileReader(csvFilePath.toFile());
 
-            HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
-            strategy.setType(typeClass);
+        HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
+        strategy.setType(typeClass);
 
-            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
-                    .withType(typeClass)
-                    .withMappingStrategy(strategy)
-                    .withSeparator(separator)
-                    .withQuoteChar(quoteChar)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .withThrowExceptions(true)
-                    .build();
+        CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
+                .withType(typeClass)
+                .withMappingStrategy(strategy)
+                .withSeparator(separator)
+                .withQuoteChar(quoteChar)
+                .withIgnoreLeadingWhiteSpace(true)
+                .withThrowExceptions(true)
+                .build();
 
-            log.info("CSV file read successfully: {}", csvFilePath);
+        log.info("CSV file read successfully: {}", csvFilePath);
 
-            AtomicLong rowNumber = new AtomicLong(0);
-            var iterator = csvToBean.iterator();
+        AtomicLong rowNumber = new AtomicLong(0);
+        Iterator<T> iterator = csvToBean.iterator();
 
-            Stream<T> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
-                    .map(fileLineNumber -> {
-                        ingestionFlowFileLineNumber.accept(fileLineNumber, rowNumber.incrementAndGet());
-                        return fileLineNumber;
-                    });
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
 
-            return new CsvReadResult<>(stream, rowNumber);
-
-        } catch (Exception e) {
-            throw new IOException("Error while reading csv file: " + e.getMessage(), e);
-        }
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                T fileLineNumber = iterator.next();
+                ingestionFlowFileLineNumber.accept(fileLineNumber, rowNumber.incrementAndGet());
+                return fileLineNumber;
+            }
+        };
     }
-
 }

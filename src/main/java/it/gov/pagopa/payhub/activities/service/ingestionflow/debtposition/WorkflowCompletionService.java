@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
+import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 
-import static it.gov.pagopa.payhub.activities.dto.ingestion.constants.WorkflowStatus.*;
+import static io.temporal.api.enums.v1.WorkflowExecutionStatus.*;
 
 @Service
 @Lazy
@@ -23,7 +24,13 @@ public class WorkflowCompletionService {
     private final int maxRetries;
     private final int retryDelayMs;
 
-    public static final Set<String> TERMINAL_STATUSES = Set.of(COMPLETED, FAILED, CANCELLED, TERMINATED, TIMED_OUT);
+    private final Set<WorkflowExecutionStatus> TERMINAL_STATUSES = Set.of(
+            WORKFLOW_EXECUTION_STATUS_FAILED,
+            WORKFLOW_EXECUTION_STATUS_TERMINATED,
+            WORKFLOW_EXECUTION_STATUS_CANCELED,
+            WORKFLOW_EXECUTION_STATUS_TIMED_OUT,
+            WORKFLOW_EXECUTION_STATUS_COMPLETED
+    );
 
     public WorkflowCompletionService(WorkflowHubService workflowHubService,
                                      @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes:5}") double maxWaitingMinutes,
@@ -36,24 +43,25 @@ public class WorkflowCompletionService {
     /**
      * Waits for a workflow to reach a terminal status.
      *
-     * @param workflowId The ID of the workflow to monitor.
+     * @param workflowId  The ID of the workflow to monitor.
      * @param installment The installment ingestion flow file DTO associated with the workflow.
-     * @param fileName The name of the file being processed.
-     * @param errorList The list where errors encountered during processing will be recorded.
+     * @param fileName    The name of the file being processed.
+     * @param errorList   The list where errors encountered during processing will be recorded.
      * @return {@code true} if the workflow completed successfully, {@code false} if it terminated with an error or exceeded the retry limit.
      */
     public boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
-                                              String fileName, List<InstallmentErrorDTO> errorList) {
+                                             String fileName, List<InstallmentErrorDTO> errorList) {
         int attempts = 0;
         String status;
 
         do {
             WorkflowStatusDTO statusDTO = workflowHubService.getWorkflowStatus(workflowId);
             status = statusDTO.getStatus();
+            WorkflowExecutionStatus workflowStatus = convertToWorkflowExecutionStatus(status);
             log.info("Workflow {} status: {}", workflowId, status);
 
-            if (status != null && TERMINAL_STATUSES.contains(status)) {
-                if (!"COMPLETED".equals(status)) {
+            if (workflowStatus != null && TERMINAL_STATUSES.contains(workflowStatus)) {
+                if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
                     errorList.add(buildInstallmentErrorDTO(fileName, installment, status, "WORKFLOW_TERMINATED_WITH_FAILURE", "Workflow terminated with error status"));
                     return false;
                 }
@@ -86,4 +94,17 @@ public class WorkflowCompletionService {
                 .errorMessage(errorMessage)
                 .build();
     }
+
+    private WorkflowExecutionStatus convertToWorkflowExecutionStatus(String status) {
+        if (status == null) {
+            return null;
+        }
+        try {
+            return WorkflowExecutionStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            log.warn("Unknown workflow status received: {}", status);
+            return null;
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,7 +49,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile,
                             List<T> errorList, List<String> headers) {
 
-        if(errorList.isEmpty()){
+        if(CollectionUtils.isEmpty(errorList)){
             return;
         }
 
@@ -94,7 +95,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
                 Path targetDirectory = createTargetDirectory(ingestionFlowFileDTO);
 
                 String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
-                Path zipFile = Path.of(workingDirectory+"/"+zipFileName);
+                Path zipFile = workingDirectory.resolve(zipFileName);
 
                 ingestionFlowFileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
 

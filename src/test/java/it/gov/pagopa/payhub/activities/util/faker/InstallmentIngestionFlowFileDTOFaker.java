@@ -5,7 +5,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.math.BigDecimal;
-import java.util.stream.IntStream;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 
@@ -46,22 +45,23 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .balance("balance")
                 .flagMultiBeneficiary(true)
                 .numberBeneficiary(3)
-                .transfers(buildTransferData(3))
+                .transfer2(buildTransferData(2))
+                .transfer3(buildTransferData(3))
                 .build();
     }
 
     static class TransferFake extends InstallmentIngestionFlowFileDTO {
         @Override
-        public MultiValuedMap<String, String> getTransfers() {
-            MultiValuedMap<String, String> fakeTransfers = new ArrayListValuedHashMap<>();
+        public MultiValuedMap<String, String> getTransfer2() {
+            MultiValuedMap<String, String> fakeTransfer2 = new ArrayListValuedHashMap<>();
 
-            fakeTransfers.put("orgName_2", "orgName_2");
-            fakeTransfers.put("iban_2", "iban_2");
-            fakeTransfers.put("orgRemittanceInformation_2", "remittanceInformation_2");
-            fakeTransfers.put("amount_2", BigDecimal.valueOf(1).toString());
-            fakeTransfers.put("category_2", "category_2");
+            fakeTransfer2.put("orgName", "orgName_2");
+            fakeTransfer2.put("iban", "iban_2");
+            fakeTransfer2.put("orgRemittanceInformation", "remittanceInformation_2");
+            fakeTransfer2.put("amount", BigDecimal.valueOf(1).toString());
+            fakeTransfer2.put("category", "category_2");
 
-            return fakeTransfers;
+            return fakeTransfer2;
         }
     }
 
@@ -84,24 +84,21 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setFullName("name");
         installmentIngestionFlowFileDTO.setNumberBeneficiary(2);
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(true);
-        installmentIngestionFlowFileDTO.setTransfers(buildTransferData(2));
+        installmentIngestionFlowFileDTO.setTransfer2(buildTransferData(2));
         return installmentIngestionFlowFileDTO;
     }
 
-    private static MultiValuedMap<String, String> buildTransferData(int numberOfBeneficiaries) {
-        MultiValuedMap<String, String> transfers = new ArrayListValuedHashMap<>();
+    private static MultiValuedMap<String, String> buildTransferData(int index) {
+        MultiValuedMap<String, String> transferData = new ArrayListValuedHashMap<>();
 
-        IntStream.rangeClosed(2, numberOfBeneficiaries)
-                .forEach(i -> {
-                    transfers.put("orgFiscalCode_" + i, "orgFiscalCode_" + i);
-                    transfers.put("orgName_" + i, "orgName_" + i);
-                    transfers.put("iban_" + i, "iban_" + i);
-                    transfers.put("orgRemittanceInformation_" + i, "remittanceInformation_" + i);
-                    transfers.put("amount_" + i, BigDecimal.valueOf(1).toString());
-                    transfers.put("category_" + i, "category_" + i);
-                });
+        transferData.put("orgFiscalCode", "orgFiscalCode_" + index);
+        transferData.put("orgName", "orgName_" + index);
+        transferData.put("iban", "iban_" + index);
+        transferData.put("orgRemittanceInformation", "remittanceInformation_" + index);
+        transferData.put("amount", BigDecimal.valueOf(1).toString());
+        transferData.put("category", "category_" + index);
 
-        return transfers;
+        return transferData;
     }
 
 }

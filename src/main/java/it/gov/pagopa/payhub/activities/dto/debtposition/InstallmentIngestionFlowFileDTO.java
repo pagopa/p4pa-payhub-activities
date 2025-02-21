@@ -119,8 +119,18 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "numberBeneficiary")
     private Integer numberBeneficiary;
 
-    @CsvBindAndJoinByName(column = "*_*", elementType = String.class)
-    private MultiValuedMap<String, String> transfers;
+    @CsvBindAndJoinByName(column = "*_2", elementType = String.class)
+    private MultiValuedMap<String, String> transfer2;
+
+    @CsvBindAndJoinByName(column = "*_3", elementType = String.class)
+    private MultiValuedMap<String, String> transfer3;
+
+    @CsvBindAndJoinByName(column = "*_4", elementType = String.class)
+    private MultiValuedMap<String, String> transfer4;
+
+    @CsvBindAndJoinByName(column = "*_5", elementType = String.class)
+    private MultiValuedMap<String, String> transfer5;
+
 
     public enum ActionEnum {
         I, M, A

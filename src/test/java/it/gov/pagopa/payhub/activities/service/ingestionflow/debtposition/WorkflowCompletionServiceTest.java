@@ -14,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.dto.ingestion.constants.WorkflowStatus.COMPLETED;
-import static it.gov.pagopa.payhub.activities.dto.ingestion.constants.WorkflowStatus.FAILED;
+import static io.temporal.api.enums.v1.WorkflowExecutionStatus.*;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentIngestionFlowFileDTOFaker.buildInstallmentIngestionFlowFileDTO;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,7 +47,7 @@ class WorkflowCompletionServiceTest {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(COMPLETED));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
@@ -65,7 +64,7 @@ class WorkflowCompletionServiceTest {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(FAILED));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_FAILED.name()));
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
@@ -73,7 +72,7 @@ class WorkflowCompletionServiceTest {
         // Then
         assertFalse(result);
         assertNotNull(errorList);
-        assertEquals(FAILED, errorList.getFirst().getWorkflowStatus());
+        assertEquals(WORKFLOW_EXECUTION_STATUS_FAILED.name(), errorList.getFirst().getWorkflowStatus());
         assertEquals("WORKFLOW_TERMINATED_WITH_FAILURE", errorList.getFirst().getErrorCode());
         assertEquals("Workflow terminated with error status", errorList.getFirst().getErrorMessage());
     }
@@ -85,11 +84,11 @@ class WorkflowCompletionServiceTest {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status("RUNNING"));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name()));
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status("RUNNING"));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name()));
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(COMPLETED));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
@@ -108,9 +107,9 @@ class WorkflowCompletionServiceTest {
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
                 .thenAnswer(invocation -> {
                     Thread.currentThread().interrupt();
-                    return new WorkflowStatusDTO().status("RUNNING");
+                    return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name());
                 })
-                .thenReturn(new WorkflowStatusDTO().status(COMPLETED));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
@@ -140,6 +139,26 @@ class WorkflowCompletionServiceTest {
         assertEquals("Maximum number of retries reached", errorList.getFirst().getErrorMessage());
     }
 
+    @Test
+    void givenWaitForWorkflowCompletionWhenStatusNullThenAddError() {
+        // Given
+        InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
+        List<InstallmentErrorDTO> errorList = new ArrayList<>();
+
+        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
+                .thenReturn(new WorkflowStatusDTO());
+
+        // When
+        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
+
+        // Then
+        assertFalse(result);
+        assertEquals(1, errorList.size());
+        assertEquals("RETRY_LIMIT_REACHED", errorList.getFirst().getErrorCode());
+        assertNull(errorList.getFirst().getWorkflowStatus());
+        assertEquals("Maximum number of retries reached", errorList.getFirst().getErrorMessage());
+    }
+
 
 
     @Test
@@ -148,13 +167,13 @@ class WorkflowCompletionServiceTest {
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
 
         // When
-        InstallmentErrorDTO installmentErrorDTO = service.buildInstallmentErrorDTO(FILE_NAME, installment, COMPLETED, ERROR_CODE, ERROR_MESSAGE);
+        InstallmentErrorDTO installmentErrorDTO = service.buildInstallmentErrorDTO(FILE_NAME, installment, WORKFLOW_EXECUTION_STATUS_COMPLETED.name(), ERROR_CODE, ERROR_MESSAGE);
 
         // Then
         assertEquals(FILE_NAME, installmentErrorDTO.getFileName());
         assertEquals(installment.getIupdOrg(), installmentErrorDTO.getIupdOrg());
         assertEquals(installment.getIud(), installmentErrorDTO.getIud());
-        assertEquals(COMPLETED, installmentErrorDTO.getWorkflowStatus());
+        assertEquals(WORKFLOW_EXECUTION_STATUS_COMPLETED.name(), installmentErrorDTO.getWorkflowStatus());
         assertEquals(installment.getIngestionFlowFileLineNumber(), installmentErrorDTO.getRowNumber());
         assertEquals(ERROR_CODE, installmentErrorDTO.getErrorCode());
         assertEquals(ERROR_MESSAGE, installmentErrorDTO.getErrorMessage());

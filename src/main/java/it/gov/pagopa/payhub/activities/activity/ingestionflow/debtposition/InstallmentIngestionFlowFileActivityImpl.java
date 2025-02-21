@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowF
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.dto.ingestion.CsvReadResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
@@ -16,7 +15,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Implementation of {@link InstallmentIngestionFlowFileActivity} for processing Installments ingestion files.
@@ -61,14 +65,19 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
         log.info("Processing file: {}", filePath);
 
         try {
-            CsvReadResult<InstallmentIngestionFlowFileDTO> csvReadResult =
+            Iterator<InstallmentIngestionFlowFileDTO> csvIterator =
                     csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, InstallmentIngestionFlowFileDTO::setIngestionFlowFileLineNumber);
 
-            return installmentProcessingService
-                    .processInstallments(csvReadResult.getDataStream(), ingestionFlowFileDTO, workingDirectory, csvReadResult.getTotalRows());
+
+            Stream<InstallmentIngestionFlowFileDTO> stream = StreamSupport.stream(
+                    Spliterators.spliteratorUnknownSize(csvIterator, Spliterator.ORDERED), false
+            );
+
+            return installmentProcessingService.processInstallments(stream, ingestionFlowFileDTO, workingDirectory);
         } catch (Exception e) {
             log.error("Error processing file {}: {}", filePath, e.getMessage());
             throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
         }
     }
+
 }

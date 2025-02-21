@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.dto.ingestion.constants.CsvHeaders.INSTALLMENT_HEADERS;
-
 @Lazy
 @Service
 public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorDTO> {
+
+    public static final List<String> INSTALLMENT_HEADERS = List.of(
+            "File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message"
+    );
 
 
     protected InstallmentErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,

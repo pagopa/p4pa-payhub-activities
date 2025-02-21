@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Service
@@ -58,36 +59,51 @@ public class InstallmentSynchronizeMapper {
     }
 
     private List<TransferSynchronizeDTO> buildTransferList(InstallmentIngestionFlowFileDTO dto) {
-        MultiValuedMap<String, String> map = dto.getTransfers();
-        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && dto.getNumberBeneficiary() != null && dto.getNumberBeneficiary() >= 2) {
+        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1) >= 2) {
             return IntStream.rangeClosed(2, dto.getNumberBeneficiary())
-                    .mapToObj(index -> createTransfer(map, index))
+                    .mapToObj(index -> createTransfer(dto, index))
                     .toList();
         }
         return List.of();
     }
 
-    private TransferSynchronizeDTO createTransfer(MultiValuedMap<String, String> map, int index) {
+    private TransferSynchronizeDTO createTransfer(InstallmentIngestionFlowFileDTO dto, int index) {
+        MultiValuedMap<String, String> transferMap = getTransferMapByIndex(dto, index);
+        if (transferMap == null) {
+            return null;
+        }
+
         return TransferSynchronizeDTO.builder()
-                .orgFiscalCode(getFirstValue(map, "orgFiscalCode_" + index))
-                .orgName(getFirstValue(map, "orgName_" + index))
-                .amount(getNullableBigDecimal(map, "amount_" + index))
-                .remittanceInformation(getFirstValue(map, "orgRemittanceInformation_" + index))
-                .iban(getFirstValue(map, "iban_" + index))
-                .category(getFirstValue(map, "category_" + index))
+                .orgFiscalCode(getFirstValue(transferMap, "orgFiscalCode"))
+                .orgName(getFirstValue(transferMap, "orgName"))
+                .amount(getNullableBigDecimal(transferMap))
+                .remittanceInformation(getFirstValue(transferMap, "orgRemittanceInformation"))
+                .iban(getFirstValue(transferMap, "iban"))
+                .category(getFirstValue(transferMap, "category"))
                 .transferIndex(index)
                 .build();
     }
 
+    private MultiValuedMap<String, String> getTransferMapByIndex(InstallmentIngestionFlowFileDTO dto, int index) {
+        return switch (index) {
+            case 2 -> dto.getTransfer2();
+            case 3 -> dto.getTransfer3();
+            case 4 -> dto.getTransfer4();
+            case 5 -> dto.getTransfer5();
+            default -> null;
+        };
+    }
+
     private String getFirstValue(MultiValuedMap<String, String> map, String key) {
-        return map.containsKey(key) && map.get(key) != null
-                ? map.get(key).stream().findFirst().orElse(null)
-                : null;
+        return Optional.ofNullable(map.get(key))
+                .flatMap(values -> values.stream().findFirst())
+                .orElse(null);
     }
 
-    private BigDecimal getNullableBigDecimal(MultiValuedMap<String, String> map, String key) {
-        String value = getFirstValue(map, key);
-        return (value != null && !value.isBlank()) ? new BigDecimal(value) : null;
+    private BigDecimal getNullableBigDecimal(MultiValuedMap<String, String> map) {
+        return Optional.ofNullable(getFirstValue(map, "amount"))
+                .filter(value -> !value.isBlank())
+                .map(BigDecimal::new)
+                .orElse(null);
     }
-
 }
