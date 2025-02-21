@@ -47,6 +47,11 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
      */
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile,
                             List<T> errorList, List<String> headers) {
+
+        if(errorList.isEmpty()){
+            return;
+        }
+
         List<String[]> data = errorList.stream()
                 .map(IngestionFlowFileErrorDTO::toCsvRow)
                 .toList();

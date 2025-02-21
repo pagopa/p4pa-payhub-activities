@@ -65,6 +65,20 @@ class InstallmentErrorsArchiverServiceTest {
     }
 
     @Test
+    void testWriteErrors_whenErrorListEmpty_thenReturn() throws IOException {
+        Path workingDirectory = Path.of("build", "test");
+        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
+        Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+
+        // When
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of());
+
+        // Then
+        Mockito.verify(csvServiceMock, Mockito.times(0))
+                .createCsv(eq(expectedErrorFilePath), any(), any());
+    }
+
+    @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
         List<InstallmentErrorDTO> errorDTOList = List.of(
                 new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
