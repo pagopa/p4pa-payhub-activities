@@ -147,7 +147,7 @@ class InstallmentProcessingServiceTest {
         assertEquals(0, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
-        assertEquals("zipFileName", result.getDiscardedFileName());
+        assertEquals("zipFileName.csv", result.getDiscardedFileName());
         assertEquals("\\tmp\\path\\zipFileName.csv", result.getDiscardedFilePath());
     }
 
