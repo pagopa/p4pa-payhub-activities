@@ -20,6 +20,8 @@ public class EmailTemplatesConfiguration {
     private EmailTemplate treasuryOpiFlowOk;
     @NestedConfigurationProperty
     private EmailTemplate treasuryOpiFlowKo;
+    @NestedConfigurationProperty
+    private EmailTemplate receivedPagopaReceipt;
     private String mailTextLoadOk;
     private String mailTextLoadKo;
 }

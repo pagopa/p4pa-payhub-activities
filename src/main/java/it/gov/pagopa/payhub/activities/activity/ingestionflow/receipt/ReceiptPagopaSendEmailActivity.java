@@ -6,18 +6,18 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 
 /**
- * Interface for the ReceiptPagopaNotifySilActivity.
- * Defines methods for sending notification to sil after a pagopa receipt has been received.
+ * Interface for ReceiptPagopaSendEmailActivity.
+ * If the received receipt is linked to a ordinary installment, send email to citizen.
  */
 @ActivityInterface
-public interface ReceiptPagopaNotifySilActivity {
+public interface ReceiptPagopaSendEmailActivity {
 
     /**
-     * Processes a file based on the provided IngestionFlow ID.
+     * Sends an email to citizen.
      *
      * @param receiptDTO the received receipt.
      * @param installmentDTO the "ordinary" installment associated to the receipt.
      */
     @ActivityMethod
-    void handleNotifySil(ReceiptDTO receiptDTO, InstallmentDTO installmentDTO);
+    void sendEmail(ReceiptDTO receiptDTO, InstallmentDTO installmentDTO);
 }

@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.GregorianCalendar;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,5 +100,10 @@ public class Utilities {
         return odt.withOffsetSameInstant(zoneOffset);
     }
 
-
+    public static <T, R> R ifNotNull(T in, Function<T, R> func) {
+        return in==null?null:func.apply(in);
+    }
+    public static <R> R ifNotBlank(String in, Function<String, R> func) {
+        return (in==null || in.trim().isEmpty())?null:func.apply(in);
+    }
 }
