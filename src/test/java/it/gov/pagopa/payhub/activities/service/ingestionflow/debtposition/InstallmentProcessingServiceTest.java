@@ -148,7 +148,7 @@ class InstallmentProcessingServiceTest {
         assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
-        assertEquals("/tmp/path/zipFileName.csv", result.getDiscardedFilePath());
+        assertEquals(Path.of("/tmp/path/zipFileName.csv").toString(), result.getDiscardedFilePath());
     }
 
     private InstallmentErrorDTO buildInstallmentErrorDTO(InstallmentIngestionFlowFileDTO installment) {
