@@ -10,25 +10,28 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.function.Function;
+
 @ExtendWith(MockitoExtension.class)
 class IngestionFlowFileEmailTemplateResolverServiceTest {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private EmailTemplatesConfiguration emailTemplatesConfigurationMock;
 
     private IngestionFlowFileEmailTemplateResolverService emailTemplateResolverService;
 
     @BeforeEach
-    void init(){
+    void init() {
         this.emailTemplateResolverService = new IngestionFlowFileEmailTemplateResolverService(emailTemplatesConfigurationMock);
     }
 
     @AfterEach
-    void verifyNoMoreInteractions(){
+    void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(emailTemplatesConfigurationMock);
     }
 
@@ -42,75 +45,63 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
         Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> emailTemplateResolverService.resolve(ingestionFlowFileDTO, true));
     }
 
-//region PAYMENTS_REPORTING
-    @Test
-    void givenSuccessfulPaymentsReportingTypeWhenResolveThenOk(){
+    void test(
+            IngestionFlowFile.FlowFileTypeEnum flowType,
+            Function<EmailTemplatesConfiguration, EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates> getFlowTypeOutcomeTemplate,
+            boolean success
+    ) {
         // Given
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
+        ingestionFlowFileDTO.setFlowFileType(flowType);
         EmailTemplate expectedResult = new EmailTemplate();
 
-        Mockito.when(emailTemplatesConfigurationMock.getPaymentsReportingFlowOk())
+        EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates mockedFlowTypeOutcomeTemplate = getFlowTypeOutcomeTemplate.apply(emailTemplatesConfigurationMock);
+        Mockito.when(success
+                        ? mockedFlowTypeOutcomeTemplate.getOk()
+                        : mockedFlowTypeOutcomeTemplate.getKo())
                 .thenReturn(expectedResult);
 
         // When
-        EmailTemplate result = emailTemplateResolverService.resolve(ingestionFlowFileDTO, true);
+        EmailTemplate result = emailTemplateResolverService.resolve(ingestionFlowFileDTO, success);
 
         // Then
         Assertions.assertSame(expectedResult, result);
+        getFlowTypeOutcomeTemplate.apply(Mockito.verify(emailTemplatesConfigurationMock, Mockito.times(2))); // one when configuring mock
+    }
+
+    //region PAYMENTS_REPORTING
+    @Test
+    void givenSuccessfulPaymentsReportingTypeWhenResolveThenOk() {
+        test(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, EmailTemplatesConfiguration::getPaymentsReportingFlow, true);
     }
 
     @Test
-    void givenNotSuccessfulPaymentsReportingTypeWhenResolveThenOk(){
-        // Given
-        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        EmailTemplate expectedResult = EmailTemplate.builder()
-                .build();
-
-        Mockito.when(emailTemplatesConfigurationMock.getPaymentsReportingFlowKo())
-                .thenReturn(expectedResult);
-
-        // When
-        EmailTemplate result = emailTemplateResolverService.resolve(ingestionFlowFileDTO, false);
-
-        // Then
-        Assertions.assertSame(expectedResult, result);
+    void givenNotSuccessfulPaymentsReportingTypeWhenResolveThenOk() {
+        test(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, EmailTemplatesConfiguration::getPaymentsReportingFlow, false);
     }
 //endregion
 
-//region TREASURY_OPI
+    //region TREASURY_OPI
     @Test
-    void givenSuccessfulTreasuryOpiTypeWhenResolveThenOk(){
-        // Given
-        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
-        EmailTemplate expectedResult = new EmailTemplate();
-
-        Mockito.when(emailTemplatesConfigurationMock.getTreasuryOpiFlowOk())
-                .thenReturn(expectedResult);
-
-        // When
-        EmailTemplate result = emailTemplateResolverService.resolve(ingestionFlowFileDTO, true);
-
-        // Then
-        Assertions.assertSame(expectedResult, result);
+    void givenSuccessfulTreasuryOpiTypeWhenResolveThenOk() {
+        test(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, EmailTemplatesConfiguration::getTreasuryOpiFlow, true);
     }
 
     @Test
-    void givenNotSuccessfulTreasuryOpiTypeWhenResolveThenOk(){
-        // Given
-        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
-        EmailTemplate expectedResult = EmailTemplate.builder()
-                .build();
+    void givenNotSuccessfulTreasuryOpiTypeWhenResolveThenOk() {
+        test(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, EmailTemplatesConfiguration::getTreasuryOpiFlow, false);
+    }
+//endregion
 
-        Mockito.when(emailTemplatesConfigurationMock.getTreasuryOpiFlowKo())
-                .thenReturn(expectedResult);
+    //region DP_INSTALLMENTS
+    @Test
+    void givenSuccessfulDpInstallmentsTypeWhenResolveThenOk() {
+        test(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, EmailTemplatesConfiguration::getDpInstallmentsFlow, true);
+    }
 
-        // When
-        EmailTemplate result = emailTemplateResolverService.resolve(ingestionFlowFileDTO, false);
-
-        // Then
-        Assertions.assertSame(expectedResult, result);
+    @Test
+    void givenNotSuccessfulDpInstallmentsTypeWhenResolveThenOk() {
+        test(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, EmailTemplatesConfiguration::getDpInstallmentsFlow, false);
     }
 //endregion
 }
