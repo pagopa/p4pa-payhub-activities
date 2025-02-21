@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,13 +30,13 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   @Test
   void givenValidReceiptAndInstallmentWhenRetrieveRecipientsThenOk(){
     //given
-    ReceiptDTO receiptDTO = new ReceiptDTO()
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .debtor(new PersonDTO().email("receiptDebtor@mail.it"))
       .payer(new PersonDTO().email("receiptPayer@mail.it"));
     InstallmentDTO installmentDTO = new InstallmentDTO()
       .debtor(new PersonDTO().email("installmentDebtor@mail.it"));
     //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptDTO, installmentDTO);
+    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     //then
     Assertions.assertNotNull(result);
     Assertions.assertEquals(2, result.size());
@@ -47,13 +47,13 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   @Test
   void givenValidReceiptAndInstallmentWithNoMailWhenRetrieveRecipientsThenOk(){
     //given
-    ReceiptDTO receiptDTO = new ReceiptDTO()
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .debtor(new PersonDTO().email("receiptDebtor@mail.it"))
       .payer(new PersonDTO().email("receiptPayer@mail.it"));
     InstallmentDTO installmentDTO = new InstallmentDTO()
       .debtor(new PersonDTO().email(null));
     //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptDTO, installmentDTO);
+    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     //then
     Assertions.assertNotNull(result);
     Assertions.assertEquals(2, result.size());
@@ -64,13 +64,13 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   @Test
   void givenValidReceiptWithNoDebtorMailAndInstallmentWhenRetrieveRecipientsThenOk(){
     //given
-    ReceiptDTO receiptDTO = new ReceiptDTO()
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .debtor(new PersonDTO().email(null))
       .payer(new PersonDTO().email("receiptPayer@mail.it"));
     InstallmentDTO installmentDTO = new InstallmentDTO()
       .debtor(new PersonDTO().email("installmentDebtor@mail.it"));
     //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptDTO, installmentDTO);
+    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     //then
     Assertions.assertNotNull(result);
     Assertions.assertEquals(2, result.size());
@@ -81,13 +81,13 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   @Test
   void givenValidReceiptWithNoMailAndInstallmentWhenRetrieveRecipientsThenOk(){
     //given
-    ReceiptDTO receiptDTO = new ReceiptDTO()
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .debtor(new PersonDTO().email(null))
       .payer(new PersonDTO().email(null));
     InstallmentDTO installmentDTO = new InstallmentDTO()
       .debtor(new PersonDTO().email("installmentDebtor@mail.it"));
     //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptDTO, installmentDTO);
+    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     //then
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.size());
@@ -97,13 +97,13 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   @Test
   void givenValidReceiptWithNoMailAndInstallmentWithNoMailWhenRetrieveRecipientsThenEmpty(){
     //given
-    ReceiptDTO receiptDTO = new ReceiptDTO()
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .debtor(new PersonDTO().email(null))
       .payer(new PersonDTO().email(null));
     InstallmentDTO installmentDTO = new InstallmentDTO()
       .debtor(new PersonDTO().email(null));
     //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptDTO, installmentDTO);
+    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     //then
     Assertions.assertNotNull(result);
     Assertions.assertEquals(0, result.size());
@@ -115,7 +115,7 @@ class ReceiptPagopaEmailConfigurerServiceTest {
     //given
     Mockito.when(emailTemplateMock.getSubject()).thenReturn("subject");
     Mockito.when(emailTemplateMock.getBody()).thenReturn("body {noticeNumber}");
-    ReceiptDTO receiptDTO = new ReceiptDTO()
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .companyName("companyName")
       .orgFiscalCode("orgFiscalCode")
       .noticeNumber("noticeNumber")
@@ -123,7 +123,7 @@ class ReceiptPagopaEmailConfigurerServiceTest {
       .paymentDateTime(OffsetDateTime.of(2025, 2, 21, 10, 30, 23, 0, ZoneOffset.UTC));
 
     //when
-    EmailDTO response = receiptPagopaEmailConfigurerService.configure(receiptDTO);
+    EmailDTO response = receiptPagopaEmailConfigurerService.configure(receiptWithAdditionalNodeDataDTO);
 
     //verify
     Assertions.assertNotNull(response);

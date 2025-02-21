@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 
 /**
  * Interface for ReceiptPagopaSendEmailActivity.
@@ -19,5 +19,5 @@ public interface ReceiptPagopaSendEmailActivity {
      * @param installmentDTO the "ordinary" installment associated to the receipt.
      */
     @ActivityMethod
-    void sendEmail(ReceiptDTO receiptDTO, InstallmentDTO installmentDTO);
+    void sendEmail(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO);
 }

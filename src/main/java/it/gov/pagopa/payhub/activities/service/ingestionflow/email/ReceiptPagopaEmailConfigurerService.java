@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -30,7 +30,7 @@ public class ReceiptPagopaEmailConfigurerService {
     this.receivedReceiptEmailTemplate = receivedReceiptEmailTemplate;
   }
 
-  public List<String> retrieveRecipients(ReceiptDTO receiptDTO, InstallmentDTO installmentDTO) {
+  public List<String> retrieveRecipients(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
     //finding recipients
     List<String> toList = new ArrayList<>();
     //add debtor email
@@ -46,7 +46,7 @@ public class ReceiptPagopaEmailConfigurerService {
     return toList;
   }
 
-  public EmailDTO configure(ReceiptDTO receiptDTO) {
+  public EmailDTO configure(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     Map<String, String> mailParams = getMailParameters(receiptDTO);
     return EmailDTO.builder()
       .params(getMailParameters(receiptDTO))
@@ -57,7 +57,7 @@ public class ReceiptPagopaEmailConfigurerService {
       .build();
   }
 
-  private Map<String, String> getMailParameters(ReceiptDTO receiptDTO) {
+  private Map<String, String> getMailParameters(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     return Map.of(
       "companyName", StringUtils.firstNonBlank(receiptDTO.getCompanyName(),"-"),
       "orgFiscalCode", receiptDTO.getOrgFiscalCode(),
