@@ -11,6 +11,13 @@ spring:
           enable: "\${MAIL_SMTP_STARTTLS:true}"
           required: "\${MAIL_SMTP_STARTTLS_REQUIRED:true}"
 
+ingestion-flow-files:
+  dp-installments:
+    wf-await:
+      max-waiting-minutes: 5 # Default: wait 5 minutes
+      retry-delays-ms: 1000  # Default: 1 sec
+
+
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
 
@@ -78,9 +85,12 @@ rest:
 
   process-executions:
     base-url: "\${PROCESS_EXECUTIONS_BASE_URL:http://localhost:8080}"
-
-  workflow-hub:
-    base-url: "\${WORKFLOW_HUB_BASE_URL:http://localhost:8080}"
     max-attempts: "\${PROCESS_EXECUTIONS_MAX_ATTEMPTS:3}" # It's counting also the first attempt
     wait-time-millis: "\${PROCESS_EXECUTIONS_WAIT_TIME_MILLIS:500}"
     print-body-when-error: "\${PROCESS_EXECUTIONS_PRINT_BODY_WHEN_ERROR:true}"
+
+  workflow-hub:
+    base-url: "\${WORKFLOW_HUB_BASE_URL:http://localhost:8080}"
+    max-attempts: "\${WORKFLOW_HUB_MAX_ATTEMPTS:3}" # It's counting also the first attempt
+    wait-time-millis: "\${WORKFLOW_HUB_WAIT_TIME_MILLIS:500}"
+    print-body-when-error: "\${WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR:true}"

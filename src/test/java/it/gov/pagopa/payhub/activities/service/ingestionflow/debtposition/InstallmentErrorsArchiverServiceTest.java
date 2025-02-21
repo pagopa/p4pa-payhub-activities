@@ -27,6 +27,10 @@ import static org.mockito.ArgumentMatchers.eq;
 @ExtendWith(MockitoExtension.class)
 class InstallmentErrorsArchiverServiceTest {
 
+    public static final String FILE_NAME = "fileName";
+    public static final String WORKFLOW_STATUS = "workflowStatus";
+    public static final String ERROR_CODE = "errorCode";
+    public static final String ERROR_MESSAGE = "errorMessage";
     private final String errorFolder = "error";
     @Mock
     private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
@@ -45,8 +49,8 @@ class InstallmentErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
         List<InstallmentErrorDTO> errorDTOList = List.of(
-                new InstallmentErrorDTO("fileName", "iupdOrg", "iud", "workflowStatus", 1L, "errorCode", "errorMessage"),
-                new InstallmentErrorDTO("fileName", "iupdOrg", "iud", "workflowStatus", 1L, "errorCode", "errorMessage")
+                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE),
+                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -63,7 +67,7 @@ class InstallmentErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
         List<InstallmentErrorDTO> errorDTOList = List.of(
-                new InstallmentErrorDTO("fileName", "iupdOrg", "iud", "workflowStatus", 1L, "errorCode", "errorMessage")
+                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();

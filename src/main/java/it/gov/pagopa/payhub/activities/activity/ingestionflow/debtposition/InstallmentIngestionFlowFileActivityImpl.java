@@ -62,7 +62,7 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
 
         try {
             CsvReadResult<InstallmentIngestionFlowFileDTO> csvReadResult =
-                    csvService.readCsvToStream(filePath, InstallmentIngestionFlowFileDTO.class, InstallmentIngestionFlowFileDTO::setIngestionFlowFileLineNumber);
+                    csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, InstallmentIngestionFlowFileDTO::setIngestionFlowFileLineNumber);
 
             return installmentProcessingService
                     .processInstallments(csvReadResult.getDataStream(), ingestionFlowFileDTO, workingDirectory, csvReadResult.getTotalRows());

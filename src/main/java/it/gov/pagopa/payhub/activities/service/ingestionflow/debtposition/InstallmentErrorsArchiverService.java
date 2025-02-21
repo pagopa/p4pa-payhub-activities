@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.dto.ingestion.constants.CsvHeaders.INSTALLMENT_HEADERS;
+
 @Lazy
 @Service
 public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorDTO> {
@@ -26,7 +28,6 @@ public class InstallmentErrorsArchiverService extends ErrorArchiverService<Insta
 
     @Override
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<InstallmentErrorDTO> errorList) {
-        List<String> headers = List.of("File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message");
-        writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
+        writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, INSTALLMENT_HEADERS);
     }
 }

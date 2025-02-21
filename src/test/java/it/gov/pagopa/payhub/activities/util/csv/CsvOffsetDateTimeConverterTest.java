@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.util;
+package it.gov.pagopa.payhub.activities.util.csv;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

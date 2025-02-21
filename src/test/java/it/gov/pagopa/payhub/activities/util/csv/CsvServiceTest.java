@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.util;
+package it.gov.pagopa.payhub.activities.util.csv;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.CsvReadResult;
 import it.gov.pagopa.payhub.activities.service.CsvService;
@@ -72,7 +72,7 @@ class CsvServiceTest {
 
 
     @Test
-    void testReadCsvToStream_success() throws IOException {
+    void testReadCsv_success() throws IOException {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "input.csv");
         List<String[]> data = Arrays.asList(
@@ -86,13 +86,14 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        CsvReadResult<TestCsv> result = csvService.readCsvToStream(filePath, TestCsv.class, TestCsv::setLineNumber);
+        CsvReadResult<TestCsv> result = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
 
         // Then
         List<String[]> actualData = result.getDataStream()
                 .map(testCsv -> new String[]{testCsv.getColumn1(), testCsv.getColumn2(), testCsv.getColumn3().toLocalDate().toString()})
                 .toList();
 
+        System.out.println("result.getTotalRows(): "+result.getTotalRows());
         assertEquals(2, result.getTotalRows());
         assertEquals(data.size(), actualData.size());
         assertArrayEquals(data.toArray(new String[0][]), actualData.toArray(new String[0][]));
@@ -100,7 +101,7 @@ class CsvServiceTest {
     }
 
     @Test
-    void testReadCsvToStream_emptyFile() throws IOException {
+    void testReadCsv_emptyFile() throws IOException {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "empty.csv");
         List<String> headers = List.of("Column1", "Column2", "Column3");
@@ -111,14 +112,14 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        CsvReadResult<TestCsv> result = csvService.readCsvToStream(filePath, TestCsv.class, TestCsv::setLineNumber);
+        CsvReadResult<TestCsv> result = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
 
         // Then
         assertEquals(0, result.getTotalRows());
     }
 
     @Test
-    void testReadCsvToStream_requiredColumn() throws IOException {
+    void testReadCsv_requiredColumn() throws IOException {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "empty.csv");
         List<String> headers = List.of("Column1", "Column3");
@@ -130,18 +131,18 @@ class CsvServiceTest {
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsvToStream(filePath, TestCsv.class, TestCsv::setLineNumber)
+                csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber)
         );
     }
 
     @Test
-    void testReadCsvToStream_invalidFile() {
+    void testReadCsv_invalidFile() {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "nonexistent.csv");
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsvToStream(filePath, TestCsv.class, TestCsv::setLineNumber)
+                csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber)
         );
     }
 

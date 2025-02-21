@@ -1,8 +1,11 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.math.BigDecimal;
+import java.util.stream.IntStream;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 
@@ -43,25 +46,22 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .balance("balance")
                 .flagMultiBeneficiary(true)
                 .numberBeneficiary(3)
-                .orgFiscalCode_2("orgFiscalCode_2")
-                .orgName_2("orgName_2")
-                .iban_2("iban_2")
-                .orgRemittanceInformation_2("orgRemittanceInformation_2")
-                .amount_2(BigDecimal.valueOf(1))
-                .category_2("category_2")
-                .orgFiscalCode_3("orgFiscalCode_3")
-                .orgName_3("orgName_3")
-                .iban_3("iban_3")
-                .orgRemittanceInformation_3("orgRemittanceInformation_3")
-                .amount_3(BigDecimal.valueOf(1))
-                .category_3("category_3")
+                .transfers(buildTransferData(3))
                 .build();
     }
 
     static class TransferFake extends InstallmentIngestionFlowFileDTO {
         @Override
-        public String getOrgFiscalCode_2() {
-            throw new NoSuchMethodError("Error");
+        public MultiValuedMap<String, String> getTransfers() {
+            MultiValuedMap<String, String> fakeTransfers = new ArrayListValuedHashMap<>();
+
+            fakeTransfers.put("orgName_2", "orgName_2");
+            fakeTransfers.put("iban_2", "iban_2");
+            fakeTransfers.put("orgRemittanceInformation_2", "remittanceInformation_2");
+            fakeTransfers.put("amount_2", BigDecimal.valueOf(1).toString());
+            fakeTransfers.put("category_2", "category_2");
+
+            return fakeTransfers;
         }
     }
 
@@ -84,12 +84,24 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setFullName("name");
         installmentIngestionFlowFileDTO.setNumberBeneficiary(2);
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(true);
-        installmentIngestionFlowFileDTO.setOrgFiscalCode_2(null);
-        installmentIngestionFlowFileDTO.setOrgName_2("orgName_2");
-        installmentIngestionFlowFileDTO.setAmount_2(BigDecimal.valueOf(1));
-        installmentIngestionFlowFileDTO.setOrgRemittanceInformation_2("remittanceInformation_2");
-        installmentIngestionFlowFileDTO.setIban_2("iban_2");
-        installmentIngestionFlowFileDTO.setCategory_2("category_2");
+        installmentIngestionFlowFileDTO.setTransfers(buildTransferData(2));
         return installmentIngestionFlowFileDTO;
     }
+
+    private static MultiValuedMap<String, String> buildTransferData(int numberOfBeneficiaries) {
+        MultiValuedMap<String, String> transfers = new ArrayListValuedHashMap<>();
+
+        IntStream.rangeClosed(2, numberOfBeneficiaries)
+                .forEach(i -> {
+                    transfers.put("orgFiscalCode_" + i, "orgFiscalCode_" + i);
+                    transfers.put("orgName_" + i, "orgName_" + i);
+                    transfers.put("iban_" + i, "iban_" + i);
+                    transfers.put("orgRemittanceInformation_" + i, "remittanceInformation_" + i);
+                    transfers.put("amount_" + i, BigDecimal.valueOf(1).toString());
+                    transfers.put("category_" + i, "category_" + i);
+                });
+
+        return transfers;
+    }
+
 }

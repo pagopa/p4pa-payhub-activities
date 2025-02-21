@@ -32,7 +32,7 @@ public class DebtPositionClient {
         ResponseEntity<Void> response = debtPositionApisHolder.getDebtPositionApi(accessToken)
                 .installmentSynchronizeWithHttpInfo(installmentSynchronizeDTO, massive);
 
-        return response.getHeaders().getFirst("workflowId");
+        return response.getHeaders().getFirst("x-workflow-id");
     }
 
 }

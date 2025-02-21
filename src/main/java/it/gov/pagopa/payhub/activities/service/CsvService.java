@@ -18,8 +18,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Lazy
 @Service
@@ -77,6 +80,10 @@ public class CsvService {
     /**
      * Reads a CSV file and converts it into a Stream of objects of a specified generic type.
      *
+     * <p>To optimize memory usage in batch processing, this method uses {@code CsvToBean.iterator()}
+     * instead of {@code parse()} or {@code stream()}. This approach reads and processes one record at a time,
+     * reducing memory consumption at the cost of lower performance.</p>
+     *
      * @param <T>                        The generic type of the DTO to which CSV rows will be mapped.
      * @param csvFilePath                 The path to the CSV file to read.
      * @param typeClass                   The class type to map each row of the CSV to.
@@ -84,7 +91,7 @@ public class CsvService {
      * @return A {@link CsvReadResult} containing a stream of parsed objects and the total number of rows.
      * @throws IOException If an error occurs while reading the file or parsing its contents.
      */
-    public <T> CsvReadResult<T> readCsvToStream(Path csvFilePath, Class<T> typeClass, BiConsumer<T, Long> ingestionFlowFileLineNumber) throws IOException {
+    public <T> CsvReadResult<T> readCsv(Path csvFilePath, Class<T> typeClass, BiConsumer<T, Long> ingestionFlowFileLineNumber) throws IOException {
         try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
 
             HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
@@ -101,23 +108,20 @@ public class CsvService {
 
             log.info("CSV file read successfully: {}", csvFilePath);
 
-            List<T> records = csvToBean.parse();
+            AtomicLong rowNumber = new AtomicLong(0);
+            var iterator = csvToBean.iterator();
 
-            Stream<T> stream = records.stream()
-                    .map(new Function<>() {
-                        private long rowNumber = 1;
-
-                        @Override
-                        public T apply(T fileLineNumber) {
-                            ingestionFlowFileLineNumber.accept(fileLineNumber, rowNumber++);
-                            return fileLineNumber;
-                        }
+            Stream<T> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+                    .map(fileLineNumber -> {
+                        ingestionFlowFileLineNumber.accept(fileLineNumber, rowNumber.incrementAndGet());
+                        return fileLineNumber;
                     });
 
-            return new CsvReadResult<>(stream, records.size());
+            return new CsvReadResult<>(stream, rowNumber);
 
         } catch (Exception e) {
             throw new IOException("Error while reading csv file: " + e.getMessage(), e);
         }
     }
+
 }

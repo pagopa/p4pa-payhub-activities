@@ -1,13 +1,15 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
+import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
 import com.opencsv.bean.CsvIgnore;
-import it.gov.pagopa.payhub.activities.util.CsvOffsetDateTimeConverter;
+import it.gov.pagopa.payhub.activities.util.csv.CsvOffsetDateTimeConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.MultiValuedMap;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -117,95 +119,8 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "numberBeneficiary")
     private Integer numberBeneficiary;
 
-    @CsvBindByName(column = "orgFiscalCode_2")
-    private String orgFiscalCode_2;
-
-    @CsvBindByName(column = "orgName_2")
-    private String orgName_2;
-
-    @CsvBindByName(column = "iban_2")
-    private String iban_2;
-
-    @CsvBindByName(column = "orgAddress_2")
-    private String orgAddress_2;
-
-    @CsvBindByName(column = "orgCivic_2")
-    private String orgCivic_2;
-
-    @CsvBindByName(column = "orgPostCode_2")
-    private String orgPostCode_2;
-
-    @CsvBindByName(column = "orgCity_2")
-    private String orgCity_2;
-
-    @CsvBindByName(column = "orgProvince_2")
-    private String orgProvince_2;
-
-    @CsvBindByName(column = "orgNation_2")
-    private String orgNation_2;
-
-    @CsvBindByName(column = "orgRemittanceInformation_2")
-    private String orgRemittanceInformation_2;
-
-    @CsvBindByName(column = "amount_2")
-    private BigDecimal amount_2;
-
-    @CsvBindByName(column = "category_2")
-    private String category_2;
-
-    @CsvBindByName(column = "orgFiscalCode_3")
-    private String orgFiscalCode_3;
-
-    @CsvBindByName(column = "orgName_3")
-    private String orgName_3;
-
-    @CsvBindByName(column = "orgRemittanceInformation_3")
-    private String orgRemittanceInformation_3;
-
-    @CsvBindByName(column = "iban_3")
-    private String iban_3;
-
-    @CsvBindByName(column = "amount_3")
-    private BigDecimal amount_3;
-
-    @CsvBindByName(column = "category_3")
-    private String category_3;
-
-    @CsvBindByName(column = "orgFiscalCode_4")
-    private String orgFiscalCode_4;
-
-    @CsvBindByName(column = "orgName_4")
-    private String orgName_4;
-
-    @CsvBindByName(column = "orgRemittanceInformation_4")
-    private String orgRemittanceInformation_4;
-
-    @CsvBindByName(column = "iban_4")
-    private String iban_4;
-
-    @CsvBindByName(column = "amount_4")
-    private BigDecimal amount_4;
-
-    @CsvBindByName(column = "category_4")
-    private String category_4;
-
-    @CsvBindByName(column = "orgFiscalCode_5")
-    private String orgFiscalCode_5;
-
-    @CsvBindByName(column = "orgName_5")
-    private String orgName_5;
-
-    @CsvBindByName(column = "orgRemittanceInformation_5")
-    private String orgRemittanceInformation_5;
-
-    @CsvBindByName(column = "iban_5")
-    private String iban_5;
-
-    @CsvBindByName(column = "amount_5")
-    private BigDecimal amount_5;
-
-    @CsvBindByName(column = "category_5")
-    private String category_5;
+    @CsvBindAndJoinByName(column = "*_*", elementType = String.class)
+    private MultiValuedMap<String, String> transfers;
 
     public enum ActionEnum {
         I, M, A

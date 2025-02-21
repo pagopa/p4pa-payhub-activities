@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
@@ -94,7 +95,7 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsvToStream(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
                 .thenReturn(csvReadResult);
 
         Mockito.when(installmentProcessingServiceMock.processInstallments(csvReadResult.getDataStream(), ingestionFlowFileDTO, workingDir, csvReadResult.getTotalRows()))
@@ -127,7 +128,7 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsvToStream(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
                 .thenReturn(csvReadResult);
 
         Mockito.when(installmentProcessingServiceMock
@@ -166,6 +167,6 @@ class InstallmentIngestionFlowFileActivityTest {
 
         Stream<InstallmentIngestionFlowFileDTO> stream = installmentIngestionFlowFileDTOList.stream();
 
-        return new CsvReadResult<>(stream, installmentIngestionFlowFileDTOList.size());
+        return new CsvReadResult<>(stream, new AtomicLong(installmentIngestionFlowFileDTOList.size()));
     }
 }

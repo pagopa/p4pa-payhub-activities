@@ -29,7 +29,7 @@ public class WorkflowHubApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("IO-NOTIFICATION"));
+            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("WORKFLOW-HUB"));
         }
 
         this.workflowApi = new WorkflowApi(apiClient);

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.dto.ingestion.constants.CsvHeaders.TREASURY_HEADERS;
+
 @Service
 @Slf4j
 public class TreasuryErrorsArchiverService extends ErrorArchiverService<TreasuryErrorDTO> {
@@ -25,8 +27,7 @@ public class TreasuryErrorsArchiverService extends ErrorArchiverService<Treasury
 
     @Override
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<TreasuryErrorDTO> errorList) {
-        List<String> headers = List.of("FileName", "Anno Bolletta", "Codice Bolletta", "Error Code", "Error Message");
-        writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, headers);
+        writeErrors(workingDirectory, ingestionFlowFileDTO, errorList, TREASURY_HEADERS);
     }
 }
 

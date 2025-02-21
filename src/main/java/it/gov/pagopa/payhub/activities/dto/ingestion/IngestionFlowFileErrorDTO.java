@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public abstract class IngestionFlowFileErroDTO implements Serializable {
+public abstract class IngestionFlowFileErrorDTO implements Serializable {
 
     private String fileName;
     private String errorCode;

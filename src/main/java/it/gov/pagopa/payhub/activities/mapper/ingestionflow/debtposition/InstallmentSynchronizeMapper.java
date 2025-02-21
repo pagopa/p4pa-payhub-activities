@@ -3,17 +3,13 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import static org.springframework.util.StringUtils.capitalize;
 
 @Service
 @Lazy
@@ -62,42 +58,36 @@ public class InstallmentSynchronizeMapper {
     }
 
     private List<TransferSynchronizeDTO> buildTransferList(InstallmentIngestionFlowFileDTO dto) {
+        MultiValuedMap<String, String> map = dto.getTransfers();
         if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && dto.getNumberBeneficiary() != null && dto.getNumberBeneficiary() >= 2) {
             return IntStream.rangeClosed(2, dto.getNumberBeneficiary())
-                    .mapToObj(index -> createTransfer(dto, index))
+                    .mapToObj(index -> createTransfer(map, index))
                     .toList();
         }
-        return new ArrayList<>();
+        return List.of();
     }
 
-    private TransferSynchronizeDTO createTransfer(InstallmentIngestionFlowFileDTO dto, int index) {
-
-        String suffix = "_" + index;
-
-        String orgFiscalCode = (String) getFieldValue(dto, "orgFiscalCode" + suffix);
-        String orgName = (String) getFieldValue(dto, "orgName" + suffix);
-        BigDecimal amount = (BigDecimal) getFieldValue(dto, "amount" + suffix);
-        String remittanceInformation = (String) getFieldValue(dto, "orgRemittanceInformation" + suffix);
-        String iban = (String) getFieldValue(dto, "iban" + suffix);
-        String category = (String) getFieldValue(dto, "category" + suffix);
-
-        return new TransferSynchronizeDTO(
-                orgFiscalCode,
-                orgName,
-                amount,
-                remittanceInformation,
-                iban,
-                category,
-                index
-        );
+    private TransferSynchronizeDTO createTransfer(MultiValuedMap<String, String> map, int index) {
+        return TransferSynchronizeDTO.builder()
+                .orgFiscalCode(getFirstValue(map, "orgFiscalCode_" + index))
+                .orgName(getFirstValue(map, "orgName_" + index))
+                .amount(getNullableBigDecimal(map, "amount_" + index))
+                .remittanceInformation(getFirstValue(map, "orgRemittanceInformation_" + index))
+                .iban(getFirstValue(map, "iban_" + index))
+                .category(getFirstValue(map, "category_" + index))
+                .transferIndex(index)
+                .build();
     }
 
-    private Object getFieldValue(InstallmentIngestionFlowFileDTO dto, String fieldName) {
-        try {
-            Method getter = InstallmentIngestionFlowFileDTO.class.getMethod("get" + capitalize(fieldName));
-            return getter.invoke(dto);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            return null;
-        }
+    private String getFirstValue(MultiValuedMap<String, String> map, String key) {
+        return map.containsKey(key) && map.get(key) != null
+                ? map.get(key).stream().findFirst().orElse(null)
+                : null;
     }
+
+    private BigDecimal getNullableBigDecimal(MultiValuedMap<String, String> map, String key) {
+        String value = getFirstValue(map, key);
+        return (value != null && !value.isBlank()) ? new BigDecimal(value) : null;
+    }
+
 }

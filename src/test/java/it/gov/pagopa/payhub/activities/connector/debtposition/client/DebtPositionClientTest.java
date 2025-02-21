@@ -97,7 +97,7 @@ class DebtPositionClientTest {
         String expectedWorkflowId = "workflow-123";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("workflowId", expectedWorkflowId);
+        headers.add("x-workflow-id", expectedWorkflowId);
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
                 .thenReturn(debtPositionApiMock);

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErroDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 
 @Slf4j
-public abstract class ErrorArchiverService<T extends IngestionFlowFileErroDTO> {
+public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> {
 
     private static final String ERRORFILE_PREFIX = "ERROR-";
 
@@ -48,7 +48,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErroDTO> {
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile,
                             List<T> errorList, List<String> headers) {
         List<String[]> data = errorList.stream()
-                .map(IngestionFlowFileErroDTO::toCsvRow)
+                .map(IngestionFlowFileErrorDTO::toCsvRow)
                 .toList();
 
         try {
@@ -86,10 +86,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErroDTO> {
 
             if (!errorFiles.isEmpty()) {
 
-                Path targetDirectory = sharedDirectoryPath
-                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
-                        .resolve(ingestionFlowFileDTO.getFilePathName())
-                        .resolve(errorFolder);
+                Path targetDirectory = createTargetDirectory(ingestionFlowFileDTO);
 
                 String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
                 Path zipFile = Path.of(workingDirectory+"/"+zipFileName);
@@ -104,6 +101,13 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErroDTO> {
             log.error("Something gone wrong while trying to archive error file!", e);
             return null;
         }
+    }
+
+    public Path createTargetDirectory(IngestionFlowFile ingestionFlowFileDTO) {
+        return sharedDirectoryPath
+                .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
+                .resolve(ingestionFlowFileDTO.getFilePathName())
+                .resolve(errorFolder);
     }
 
     protected abstract void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<T> errorList);
