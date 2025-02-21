@@ -12,14 +12,21 @@ import org.springframework.context.annotation.PropertySource;
 @ConfigurationProperties(prefix= "email.templates")
 @Data
 public class EmailTemplatesConfiguration {
-    @NestedConfigurationProperty
-    private EmailTemplate paymentsReportingFlowOk;
-    @NestedConfigurationProperty
-    private EmailTemplate paymentsReportingFlowKo;
-    @NestedConfigurationProperty
-    private EmailTemplate treasuryOpiFlowOk;
-    @NestedConfigurationProperty
-    private EmailTemplate treasuryOpiFlowKo;
     private String mailTextLoadOk;
     private String mailTextLoadKo;
+
+    @NestedConfigurationProperty
+    private IngestionFlowEmailOutcomeTemplates paymentsReportingFlow;
+    @NestedConfigurationProperty
+    private IngestionFlowEmailOutcomeTemplates treasuryOpiFlow;
+    @NestedConfigurationProperty
+    private IngestionFlowEmailOutcomeTemplates dpInstallmentsFlow;
+
+    @Data
+    public static class IngestionFlowEmailOutcomeTemplates {
+        @NestedConfigurationProperty
+        private EmailTemplate ok;
+        @NestedConfigurationProperty
+        private EmailTemplate ko;
+    }
 }

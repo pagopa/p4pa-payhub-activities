@@ -396,7 +396,7 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
 	invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
 	apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
-	typeMappings.set(mapOf(  "LocalDateTime" to "java.time.LocalDateTime"))
+	typeMappings.set(mapOf("LocalDateTime" to "java.time.LocalDateTime"))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
