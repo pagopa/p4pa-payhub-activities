@@ -15,7 +15,7 @@ public interface ReceiptPagopaIngestionActivity {
      * Processes a file based on the provided IngestionFlow ID.
      *
      * @param ingestionFlowFileId the unique identifier related to the file to process.
-     * @return {@link ReceiptPagopaIngestionFlowFileResult} containing the list of IUFs and status.
+     * @return {@link ReceiptPagopaIngestionFlowFileResult} containing the receiptDto and the mapped "ordinary" installment (if present).
      */
     @ActivityMethod
     ReceiptPagopaIngestionFlowFileResult processFile(Long ingestionFlowFileId);
