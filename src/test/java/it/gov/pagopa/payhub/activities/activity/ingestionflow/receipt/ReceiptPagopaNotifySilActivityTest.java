@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
-import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptNotifySilResult;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import org.junit.jupiter.api.Assertions;
@@ -23,12 +22,10 @@ class ReceiptPagopaNotifySilActivityTest {
     InstallmentDTO installmentDTO = new InstallmentDTO();
 
     // When
-    ReceiptNotifySilResult result = receiptPagopaNotifySilActivity.handleNotifySil(receiptDTO, installmentDTO);
+    Assertions.assertDoesNotThrow(() -> receiptPagopaNotifySilActivity.handleNotifySil(receiptDTO, installmentDTO));
 
     // Then
-    Assertions.assertNotNull(result);
-    Assertions.assertFalse(result.isNotificationToSend());
-    Assertions.assertTrue(result.isSuccess());
+
   }
 
 }
