@@ -8,6 +8,9 @@ import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeData
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaEmailConfigurerServiceTest {
@@ -27,55 +31,45 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   private EmailTemplate emailTemplateMock;
 
   //region retrieveRecipients
-  @Test
-  void givenValidReceiptAndInstallmentWhenRetrieveRecipientsThenOk(){
-    //given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
-      .debtor(new PersonDTO().email("receiptDebtor@mail.it"))
-      .payer(new PersonDTO().email("receiptPayer@mail.it"));
-    InstallmentDTO installmentDTO = new InstallmentDTO()
-      .debtor(new PersonDTO().email("installmentDebtor@mail.it"));
-    //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    //then
+
+  @ParameterizedTest
+  @MethodSource("provideRetrieveRecipientsTestCases")
+  void givenValidReceiptAndInstallmentWhenRetrieveRecipientsThenOk(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO, List<String> expectedRecipients) {
+    // when
+    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptDTO, installmentDTO);
+    // then
     Assertions.assertNotNull(result);
-    Assertions.assertEquals(2, result.size());
-    Assertions.assertEquals("installmentDebtor@mail.it", result.get(0));
-    Assertions.assertEquals("receiptPayer@mail.it", result.get(1));
+    Assertions.assertEquals(expectedRecipients.size(), result.size());
+    Assertions.assertIterableEquals(expectedRecipients, result);
   }
 
-  @Test
-  void givenValidReceiptAndInstallmentWithNoMailWhenRetrieveRecipientsThenOk(){
-    //given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
-      .debtor(new PersonDTO().email("receiptDebtor@mail.it"))
-      .payer(new PersonDTO().email("receiptPayer@mail.it"));
-    InstallmentDTO installmentDTO = new InstallmentDTO()
-      .debtor(new PersonDTO().email(null));
-    //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    //then
-    Assertions.assertNotNull(result);
-    Assertions.assertEquals(2, result.size());
-    Assertions.assertEquals("receiptDebtor@mail.it", result.get(0));
-    Assertions.assertEquals("receiptPayer@mail.it", result.get(1));
-  }
-
-  @Test
-  void givenValidReceiptWithNoDebtorMailAndInstallmentWhenRetrieveRecipientsThenOk(){
-    //given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
-      .debtor(new PersonDTO().email(null))
-      .payer(new PersonDTO().email("receiptPayer@mail.it"));
-    InstallmentDTO installmentDTO = new InstallmentDTO()
-      .debtor(new PersonDTO().email("installmentDebtor@mail.it"));
-    //when
-    List<String> result = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    //then
-    Assertions.assertNotNull(result);
-    Assertions.assertEquals(2, result.size());
-    Assertions.assertEquals("installmentDebtor@mail.it", result.get(0));
-    Assertions.assertEquals("receiptPayer@mail.it", result.get(1));
+  private static Stream<Arguments> provideRetrieveRecipientsTestCases() {
+    return Stream.of(
+      Arguments.of(
+        new ReceiptWithAdditionalNodeDataDTO()
+          .debtor(new PersonDTO().email("receiptDebtor@mail.it"))
+          .payer(new PersonDTO().email("receiptPayer@mail.it")),
+        new InstallmentDTO()
+          .debtor(new PersonDTO().email("installmentDebtor@mail.it")),
+        List.of("installmentDebtor@mail.it", "receiptPayer@mail.it")
+      ),
+      Arguments.of(
+        new ReceiptWithAdditionalNodeDataDTO()
+          .debtor(new PersonDTO().email("receiptDebtor@mail.it"))
+          .payer(new PersonDTO().email("receiptPayer@mail.it")),
+        new InstallmentDTO()
+          .debtor(new PersonDTO().email(null)),
+        List.of("receiptDebtor@mail.it", "receiptPayer@mail.it")
+      ),
+      Arguments.of(
+        new ReceiptWithAdditionalNodeDataDTO()
+          .debtor(new PersonDTO().email(null))
+          .payer(new PersonDTO().email("receiptPayer@mail.it")),
+        new InstallmentDTO()
+          .debtor(new PersonDTO().email("installmentDebtor@mail.it")),
+        List.of("installmentDebtor@mail.it", "receiptPayer@mail.it")
+      )
+    );
   }
 
   @Test
