@@ -1,18 +1,16 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
+import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -24,11 +22,21 @@ import java.util.stream.Stream;
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaEmailConfigurerServiceTest {
 
-  @InjectMocks
   private ReceiptPagopaEmailConfigurerService receiptPagopaEmailConfigurerService;
 
-  @Mock
-  private EmailTemplate emailTemplateMock;
+  @BeforeEach
+  void init(TestInfo info) {
+    EmailTemplatesConfiguration emailTemplatesConfigurationMock = Mockito.mock(EmailTemplatesConfiguration.class);
+    if(info.getTags().contains("needEmailTemplate")) {
+      Mockito.when(emailTemplatesConfigurationMock.getReceivedPagopaReceipt()).thenReturn(
+        EmailTemplate.builder()
+          .subject("subject")
+          .body("body {noticeNumber}")
+          .build()
+      );
+    }
+    receiptPagopaEmailConfigurerService = new ReceiptPagopaEmailConfigurerService(emailTemplatesConfigurationMock);
+  }
 
   //region retrieveRecipients
 
@@ -73,7 +81,7 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   }
 
   @Test
-  void givenValidReceiptWithNoMailAndInstallmentWhenRetrieveRecipientsThenOk(){
+  void givenValidReceiptWithNoMailAndInstallmentWhenRetrieveRecipientsThenOk() {
     //given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .debtor(new PersonDTO().email(null))
@@ -89,7 +97,7 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   }
 
   @Test
-  void givenValidReceiptWithNoMailAndInstallmentWithNoMailWhenRetrieveRecipientsThenEmpty(){
+  void givenValidReceiptWithNoMailAndInstallmentWithNoMailWhenRetrieveRecipientsThenEmpty() {
     //given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .debtor(new PersonDTO().email(null))
@@ -105,10 +113,9 @@ class ReceiptPagopaEmailConfigurerServiceTest {
   //endregion
 
   @Test
-  void givenValidTemplateWhenConfigureThenOk(){
+  @Tag("needEmailTemplate")
+  void givenValidTemplateWhenConfigureThenOk() {
     //given
-    Mockito.when(emailTemplateMock.getSubject()).thenReturn("subject");
-    Mockito.when(emailTemplateMock.getBody()).thenReturn("body {noticeNumber}");
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
       .companyName("companyName")
       .orgFiscalCode("orgFiscalCode")
