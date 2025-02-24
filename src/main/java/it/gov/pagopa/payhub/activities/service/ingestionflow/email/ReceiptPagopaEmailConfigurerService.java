@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
+import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
@@ -26,8 +27,8 @@ public class ReceiptPagopaEmailConfigurerService {
 
   private final EmailTemplate receivedReceiptEmailTemplate;
 
-  public ReceiptPagopaEmailConfigurerService(EmailTemplate receivedReceiptEmailTemplate) {
-    this.receivedReceiptEmailTemplate = receivedReceiptEmailTemplate;
+  public ReceiptPagopaEmailConfigurerService(EmailTemplatesConfiguration emailTemplatesConfiguration) {
+    this.receivedReceiptEmailTemplate = emailTemplatesConfiguration.getReceivedPagopaReceipt();
   }
 
   public List<String> retrieveRecipients(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
