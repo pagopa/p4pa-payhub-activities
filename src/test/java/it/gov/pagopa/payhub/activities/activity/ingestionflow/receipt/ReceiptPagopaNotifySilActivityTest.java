@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ class ReceiptPagopaNotifySilActivityTest {
   @Test
   void givenValidReceiptAndInstallmentWhenHandleNotifySilThenOk() {
     // Given
-    ReceiptDTO receiptDTO = new ReceiptDTO();
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
 
     // When

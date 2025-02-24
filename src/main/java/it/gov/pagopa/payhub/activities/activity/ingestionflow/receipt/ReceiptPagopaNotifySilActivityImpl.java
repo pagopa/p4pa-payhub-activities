@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySilActivity {
 
   @Override
-  public void handleNotifySil(ReceiptDTO receiptDTO, InstallmentDTO installmentDTO) {
+  public void handleNotifySil(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
     //TODO the real implementation will be added in the future
   }
 }
