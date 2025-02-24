@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentErrorDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -72,8 +72,7 @@ class InstallmentProcessingServiceTest {
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
-                Path.of("/tmp"),
-                1
+                Path.of("/tmp")
         );
 
         // Then
@@ -100,8 +99,7 @@ class InstallmentProcessingServiceTest {
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
-                Path.of("/tmp"),
-                1
+                Path.of("/tmp")
         );
 
         // Then
@@ -139,13 +137,12 @@ class InstallmentProcessingServiceTest {
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO),
                 ingestionFlowFile,
-                workingDirectory,
-                1
+                workingDirectory
         );
 
         // Then
         assertEquals(0, result.getProcessedRows());
-        assertEquals(1, result.getTotalRows());
+        assertEquals(0, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
         assertEquals(Path.of("/tmp/path/zipFileName.csv").toString(), result.getDiscardedFilePath());

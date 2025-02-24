@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.util.csv;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.CsvReadResult;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +70,6 @@ class CsvServiceTest {
         assertTrue(file.length() > 0, "The file should not be empty.");
     }
 
-
     @Test
     void testReadCsv_success() throws IOException {
         // Given
@@ -86,18 +85,22 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        CsvReadResult<TestCsv> result = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
+        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
 
         // Then
-        List<String[]> actualData = result.getDataStream()
-                .map(testCsv -> new String[]{testCsv.getColumn1(), testCsv.getColumn2(), testCsv.getColumn3().toLocalDate().toString()})
+        List<TestCsv> resultList = new ArrayList<>();
+        iterator.forEachRemaining(resultList::add);
+        List<String[]> actualData = resultList.stream()
+                .map(testCsv -> new String[]{
+                        testCsv.getColumn1(),
+                        testCsv.getColumn2(),
+                        testCsv.getColumn3().toLocalDate().toString()
+                })
                 .toList();
 
-        System.out.println("result.getTotalRows(): "+result.getTotalRows());
-        assertEquals(2, result.getTotalRows());
+        assertEquals(2, resultList.size());
         assertEquals(data.size(), actualData.size());
         assertArrayEquals(data.toArray(new String[0][]), actualData.toArray(new String[0][]));
-
     }
 
     @Test
@@ -112,10 +115,12 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        CsvReadResult<TestCsv> result = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
+        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
 
         // Then
-        assertEquals(0, result.getTotalRows());
+        List<TestCsv> resultList = new ArrayList<>();
+        iterator.forEachRemaining(resultList::add);
+        assertEquals(0, resultList.size());
     }
 
     @Test
@@ -134,6 +139,7 @@ class CsvServiceTest {
                 csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber)
         );
     }
+
 
     @Test
     void testReadCsv_invalidFile() {

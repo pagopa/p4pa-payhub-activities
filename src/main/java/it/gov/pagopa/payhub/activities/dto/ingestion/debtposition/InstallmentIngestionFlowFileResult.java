@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.debtposition;
+package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

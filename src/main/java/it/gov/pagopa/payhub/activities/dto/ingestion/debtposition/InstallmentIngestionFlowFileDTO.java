@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.debtposition;
+package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;

@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
@@ -79,5 +79,4 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
             throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
         }
     }
-
 }

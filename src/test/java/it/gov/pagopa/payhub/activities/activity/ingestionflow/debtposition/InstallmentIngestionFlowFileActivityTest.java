@@ -1,9 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.dto.ingestion.CsvReadResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
@@ -25,10 +24,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -84,7 +82,7 @@ class InstallmentIngestionFlowFileActivityTest {
         IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS);
-        CsvReadResult<InstallmentIngestionFlowFileDTO> csvReadResult = buildCsvReadResult();
+        Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -96,9 +94,9 @@ class InstallmentIngestionFlowFileActivityTest {
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
         Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
-                .thenReturn(csvReadResult);
+                .thenReturn(iterator);
 
-        Mockito.when(installmentProcessingServiceMock.processInstallments(csvReadResult.getDataStream(), ingestionFlowFileDTO, workingDir, csvReadResult.getTotalRows()))
+        Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenReturn(buildInstallmentIngestionFlowFileResult());
 
         // When
@@ -111,13 +109,13 @@ class InstallmentIngestionFlowFileActivityTest {
     }
 
     @Test
-    void givenValidIngestionFlowWhenExceptionThenThwrowInvalidIngestionFileException() throws IOException {
+    void givenValidIngestionFlowWhenExceptionThenThrowInvalidIngestionFileException() throws IOException {
         // Given
         Long ingestionFlowFileId = 1L;
         IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS);
-        CsvReadResult<InstallmentIngestionFlowFileDTO> csvReadResult = buildCsvReadResult();
+        Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -129,10 +127,9 @@ class InstallmentIngestionFlowFileActivityTest {
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
         Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
-                .thenReturn(csvReadResult);
+                .thenReturn(iterator);
 
-        Mockito.when(installmentProcessingServiceMock
-                        .processInstallments(csvReadResult.getDataStream(), ingestionFlowFileDTO, workingDir, csvReadResult.getTotalRows()))
+        Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenThrow(new RestClientException("Error"));
 
         // When & Then
@@ -149,7 +146,7 @@ class InstallmentIngestionFlowFileActivityTest {
                 .build();
     }
 
-    private CsvReadResult<InstallmentIngestionFlowFileDTO> buildCsvReadResult() {
+    private Iterator<InstallmentIngestionFlowFileDTO> buildInstallmentIngestionFlowFileDTO() {
         List<InstallmentIngestionFlowFileDTO> installmentIngestionFlowFileDTOList = List.of(
                 InstallmentIngestionFlowFileDTO.builder()
                         .ingestionFlowFileLineNumber(1L)
@@ -165,8 +162,6 @@ class InstallmentIngestionFlowFileActivityTest {
                         .build()
         );
 
-        Stream<InstallmentIngestionFlowFileDTO> stream = installmentIngestionFlowFileDTOList.stream();
-
-        return new CsvReadResult<>(stream, new AtomicLong(installmentIngestionFlowFileDTOList.size()));
+        return installmentIngestionFlowFileDTOList.iterator();
     }
 }

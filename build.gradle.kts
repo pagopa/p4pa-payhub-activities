@@ -281,7 +281,7 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 	description = "openapi"
 
 	generatorName.set("java")
-	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/p4pa-workflow-hub.openapi.yaml")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/generated.openapi.json")
 	outputDir.set("$projectDir/build/generated")
 	invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
 	apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")

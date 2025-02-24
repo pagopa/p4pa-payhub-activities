@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.debtposition;
+package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErrorDTO;
 import lombok.AllArgsConstructor;
