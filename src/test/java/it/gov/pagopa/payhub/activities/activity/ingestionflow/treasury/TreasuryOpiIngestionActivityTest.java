@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury;
 
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury.TreasuryOpiIngestionActivity;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury.TreasuryOpiIngestionActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
@@ -47,18 +45,18 @@ class TreasuryOpiIngestionActivityTest {
     @Mock
     private TreasuryOpiParserService treasuryOpiParserServiceMock;
     @Mock
-    private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
-    @Mock
     private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
     @Mock
     private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
+
+    private TreasuryOpiIngestionActivity activity;
 
     @TempDir
     Path workingDir;
 
     @BeforeEach
     void setUp() {
-        treasuryOpiIngestionActivityMock = new TreasuryOpiIngestionActivityImpl(
+        activity = new TreasuryOpiIngestionActivityImpl(
                 ingestionFlowFileServiceMock,
                 ingestionFlowFileRetrieverServiceMock,
                 treasuryOpiParserServiceMock,
@@ -100,7 +98,7 @@ class TreasuryOpiIngestionActivityTest {
                 .thenReturn("DISCARDFILENAME");
 
         // When
-        TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
+        TreasuryIufIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
         // Then
         Assertions.assertNotNull(result);
@@ -121,7 +119,7 @@ class TreasuryOpiIngestionActivityTest {
         when(ingestionFlowFileServiceMock.findById(ingestionFlowId)).thenReturn(Optional.empty());
 
         // When, Then
-        Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> treasuryOpiIngestionActivityMock.processFile(ingestionFlowId));
+        Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> activity.processFile(ingestionFlowId));
     }
 
     @Test
@@ -135,7 +133,7 @@ class TreasuryOpiIngestionActivityTest {
         when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFile));
 
         //when
-        Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId));
+        Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> activity.processFile(ingestionFlowFileId));
     }
 
     @Test
@@ -147,7 +145,7 @@ class TreasuryOpiIngestionActivityTest {
         Pair<List<Path>, Map<String, String>> mockConfig = configureExceptionWhenParse(ingestionFlowFileDTO, null);
 
         // When
-        TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
+        TreasuryIufIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
         // Then
         assertEquals(ingestionFlowFileDTO.getOrganizationId(), result.getOrganizationId());
@@ -170,7 +168,7 @@ class TreasuryOpiIngestionActivityTest {
         Pair<List<Path>, Map<String, String>> mockConfig = configureExceptionWhenParse(ingestionFlowFileDTO, discardFileName);
 
         // When
-        TreasuryIufIngestionFlowFileResult result = treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId);
+        TreasuryIufIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
         // Then
         assertEquals(ingestionFlowFileDTO.getOrganizationId(), result.getOrganizationId());

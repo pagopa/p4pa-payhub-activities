@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 
 /**
  * Interface for the InstallmentIngestionFlowFileActivity.
