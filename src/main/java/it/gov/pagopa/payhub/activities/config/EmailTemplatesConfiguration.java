@@ -20,6 +20,8 @@ public class EmailTemplatesConfiguration {
     @NestedConfigurationProperty
     private IngestionFlowEmailOutcomeTemplates treasuryOpiFlow;
     @NestedConfigurationProperty
+    private EmailTemplate receivedPagopaReceipt;
+    @NestedConfigurationProperty
     private IngestionFlowEmailOutcomeTemplates dpInstallmentsFlow;
 
     @Data

@@ -98,6 +98,4 @@ public class Utilities {
         ZoneOffset zoneOffset = ZONEID.getRules().getOffset(odt.toInstant());
         return odt.withOffsetSameInstant(zoneOffset);
     }
-
-
 }
