@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.1"
+	id("org.springframework.boot") version "3.4.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.sonarqube") version "6.0.1.5171"
 	`java-library`
@@ -69,8 +69,9 @@ val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
 val jsoupVersion = "1.18.3"
 val openApiToolsVersion = "0.2.6"
-val temporalVersion = "1.27.0"
-val protobufJavaVersion = "3.25.5"
+val temporalVersion = "1.27.1"
+val protobufJavaVersion = "4.29.3"
+val guavaVersion = "33.4.0-jre"
 val openCsvVersion = "5.9"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
@@ -82,26 +83,37 @@ dependencies {
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
-
-	//apache commons
 	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
 	implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
-
-	// Security fixes
-	implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
-
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
-
- 	//temporal
-	implementation("io.temporal:temporal-sdk:$temporalVersion"){
-		exclude(group = "com.google.protobuf", module = "protobuf-java")
-	}
-
-    //mail
+	implementation("org.mapstruct:mapstruct:$mapStructVersion")
+	// openApi
+	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+	//mail
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.retry:spring-retry")
 	implementation("org.jsoup:jsoup:$jsoupVersion")
+	//temporal
+	implementation("io.temporal:temporal-sdk:$temporalVersion"){
+		exclude(group = "com.google.protobuf", module = "protobuf-java")
+		exclude(group = "com.google.guava", module = "guava")
+	}
+	implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
+	implementation("com.google.guava:guava:$guavaVersion")
+	//openCsv
+	implementation("com.opencsv:opencsv:$openCsvVersion")
+
+
+	//jaxb
+	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
+	implementation("com.sun.xml.bind:jaxb-jxc:$jaxbVersion")
+	implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")
+	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
+	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
+	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+
+	compileOnly("org.projectlombok:lombok")
 
 	//	Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -111,32 +123,17 @@ dependencies {
 	testImplementation ("org.projectlombok:lombok")
 	testImplementation("uk.co.jemos.podam:podam:$podamVersion")
 
-	compileOnly("org.projectlombok:lombok")
-	annotationProcessor("org.projectlombok:lombok")
-	testAnnotationProcessor("org.projectlombok:lombok")
-
 	/**
 	 * Mapstruct
 	 * https://mapstruct.org/
 	 * mapstruct dependencies must always be placed after the lombok dependency
 	 * or the generated mappers will return an empty object
 	 **/
-	implementation("org.mapstruct:mapstruct:$mapStructVersion")
+	annotationProcessor("org.projectlombok:lombok")
 	annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
-	//openCsv
-	implementation("com.opencsv:opencsv:$openCsvVersion")
-
-	//jaxb
-	runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
-	implementation("com.sun.xml.bind:jaxb-xjc:$jaxbVersion")
-	implementation("com.sun.xml.bind:jaxb-jxc:$jaxbVersion")
-	implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")
-	implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
-	implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
-
-	// openApi
-	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+	testAnnotationProcessor("org.projectlombok:lombok")
+	testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
     jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
     jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
@@ -364,6 +361,7 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
 	invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
 	apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+	typeMappings.set(mapOf("LocalDateTime" to "java.time.LocalDateTime"))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",

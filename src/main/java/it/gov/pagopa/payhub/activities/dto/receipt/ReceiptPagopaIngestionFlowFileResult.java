@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.receipt;
 
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,4 +15,6 @@ import lombok.NoArgsConstructor;
 public class ReceiptPagopaIngestionFlowFileResult {
     /** Receipt */
     private ReceiptWithAdditionalNodeDataDTO receiptDTO;
+    /** Ordinary installment mapped to receipt, if found */
+    private InstallmentDTO installmentDTO;
 }
