@@ -92,6 +92,7 @@ class DebtPositionClientTest {
     void givenInstallmentSynchronizeThenOk() {
         // Given
         String accessToken = "ACCESSTOKEN";
+        String origin = "origin";
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         boolean massive = false;
         String expectedWorkflowId = "workflow-123";
@@ -101,15 +102,15 @@ class DebtPositionClientTest {
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
                 .thenReturn(debtPositionApiMock);
-        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(installmentSynchronizeDTO, massive))
+        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive))
                 .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
 
         // When
-        String result = debtPositionClient.installmentSynchronize(accessToken, installmentSynchronizeDTO, massive);
+        String result = debtPositionClient.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive);
 
         // Then
         Assertions.assertEquals(expectedWorkflowId, result);
-        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(installmentSynchronizeDTO, massive);
+        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive);
     }
 
 }

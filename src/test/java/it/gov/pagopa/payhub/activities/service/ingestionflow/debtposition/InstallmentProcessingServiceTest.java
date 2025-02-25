@@ -62,7 +62,7 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false))
                 .thenReturn(workflowId);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
@@ -93,7 +93,7 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false))
                 .thenReturn(workflowId);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
@@ -121,7 +121,7 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false))
                 .thenReturn(null);
 
         // When
@@ -151,7 +151,7 @@ class InstallmentProcessingServiceTest {
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
-                        .when(debtPositionServiceMock).installmentSynchronize(installmentSynchronizeDTO, false);
+                        .when(debtPositionServiceMock).installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.buildInstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentIngestionFlowFileDTO, null,"PROCESS_EXCEPTION", "Error synchronizing the installment"))
                         .thenReturn(error);

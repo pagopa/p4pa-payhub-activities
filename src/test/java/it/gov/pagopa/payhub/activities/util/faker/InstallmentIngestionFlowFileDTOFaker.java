@@ -44,9 +44,11 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .flagPagoPaPayment(false)
                 .balance("balance")
                 .flagMultiBeneficiary(true)
-                .numberBeneficiary(3)
+                .numberBeneficiary(5)
                 .transfer2(buildTransferData(2))
                 .transfer3(buildTransferData(3))
+                .transfer4(buildTransferData(4))
+                .transfer5(buildTransferData(5))
                 .build();
     }
 
@@ -55,9 +57,9 @@ public class InstallmentIngestionFlowFileDTOFaker {
         public MultiValuedMap<String, String> getTransfer2() {
             MultiValuedMap<String, String> fakeTransfer2 = new ArrayListValuedHashMap<>();
 
+            fakeTransfer2.put("orgFiscalCode", "orgFiscalCode_2");
             fakeTransfer2.put("orgName", "orgName_2");
             fakeTransfer2.put("iban", "iban_2");
-            fakeTransfer2.put("orgRemittanceInformation", "remittanceInformation_2");
             fakeTransfer2.put("amount", BigDecimal.valueOf(1).toString());
             fakeTransfer2.put("category", "category_2");
 
@@ -84,6 +86,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setFullName("name");
         installmentIngestionFlowFileDTO.setNumberBeneficiary(2);
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(true);
+        installmentIngestionFlowFileDTO.setFlagPagoPaPayment(true);
         installmentIngestionFlowFileDTO.setTransfer2(buildTransferData(2));
         return installmentIngestionFlowFileDTO;
     }

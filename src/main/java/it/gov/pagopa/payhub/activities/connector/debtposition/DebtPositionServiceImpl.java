@@ -39,8 +39,8 @@ public class DebtPositionServiceImpl implements DebtPositionService {
     }
 
     @Override
-    public String installmentSynchronize(InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive) {
+    public String installmentSynchronize(String origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive) {
         String accessToken = authnService.getAccessToken();
-        return debtPositionClient.installmentSynchronize(accessToken, installmentSynchronizeDTO, massive);
+        return debtPositionClient.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive);
     }
 }

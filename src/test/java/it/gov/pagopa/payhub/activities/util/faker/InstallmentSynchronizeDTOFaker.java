@@ -22,7 +22,8 @@ public class InstallmentSynchronizeDTOFaker {
                 .validityDate(OFFSETDATETIME)
                 .multiDebtor(false)
                 .notificationDate(OFFSETDATETIME)
-                .paymentOptionIndex(1L)
+                .paymentOptionIndex(1)
+                .paymentOptionDescription("paymentOptionDescription")
                 .paymentOptionType("paymentOptionType")
                 .iud("iud")
                 .iuv("iuv")
@@ -45,32 +46,25 @@ public class InstallmentSynchronizeDTOFaker {
                 .flagPagoPaPayment(false)
                 .balance("balance")
                 .flagMultibeneficiary(true)
-                .numberBeneficiary(3L)
-                .transfersList(List.of(buildTransferSynchronizeDTO2(), buildTransferSynchronizeDTO3()))
+                .numberBeneficiary(5)
+                .additionalTransfers(List.of(
+                        buildTransferSynchronizeDTO(2),
+                        buildTransferSynchronizeDTO(3),
+                        buildTransferSynchronizeDTO(4),
+                        buildTransferSynchronizeDTO(5)
+                ))
                 .build();
     }
 
-    private static TransferSynchronizeDTO buildTransferSynchronizeDTO2(){
+    private static TransferSynchronizeDTO buildTransferSynchronizeDTO(int index) {
         return TransferSynchronizeDTO.builder()
-                .orgFiscalCode("orgFiscalCode_2")
-                .orgName("orgName_2")
-                .iban("iban_2")
-                .remittanceInformation("remittanceInformation_2")
+                .orgFiscalCode("orgFiscalCode_" + index)
+                .orgName("orgName_" + index)
+                .iban("iban_" + index)
+                .remittanceInformation("remittanceInformation_" + index)
                 .amount(BigDecimal.valueOf(1))
-                .category("category_2")
-                .transferIndex(2)
-                .build();
-    }
-
-    private static TransferSynchronizeDTO buildTransferSynchronizeDTO3(){
-        return TransferSynchronizeDTO.builder()
-                .orgFiscalCode("orgFiscalCode_3")
-                .orgName("orgName_3")
-                .iban("iban_3")
-                .remittanceInformation("remittanceInformation_3")
-                .amount(BigDecimal.valueOf(1))
-                .category("category_3")
-                .transferIndex(3)
+                .category("category_" + index)
+                .transferIndex(index)
                 .build();
     }
 }

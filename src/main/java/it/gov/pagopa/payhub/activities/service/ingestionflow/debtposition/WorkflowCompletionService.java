@@ -63,11 +63,11 @@ public class WorkflowCompletionService {
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                log.warn("Thread interrupted while waiting for workflow completion. Attempt {}/{}", attempts, maxRetries);
+                log.error("Thread interrupted while waiting for workflow completion. Attempt {}/{}", attempts, maxRetries);
             }
         } while (attempts < maxRetries);
 
-        log.warn("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxRetries);
+        log.info("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxRetries);
         throw new TooManyAttemptsException("Maximum number of retries reached for workflow " + workflowId);
     }
 
@@ -78,7 +78,7 @@ public class WorkflowCompletionService {
         try {
             return WorkflowExecutionStatus.valueOf(status);
         } catch (IllegalArgumentException e) {
-            log.warn("Unknown workflow status received: {}", status);
+            log.error("Unknown workflow status received: {}", status);
             return null;
         }
     }

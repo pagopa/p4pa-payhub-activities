@@ -97,7 +97,21 @@ class WorkflowCompletionServiceTest {
 
         // When & Then
         TooManyAttemptsException exception = assertThrows(TooManyAttemptsException.class, () ->
-                service.waitTerminationStatus(WORKFLOW_ID, 3, 100)
+                service.waitTerminationStatus(WORKFLOW_ID, 1, 100)
+        );
+
+        assertEquals("Maximum number of retries reached for workflow " + WORKFLOW_ID, exception.getMessage());
+    }
+
+    @Test
+    void givenWaitTerminationStatusWhenStatusNullThenRetry() {
+        // Given
+        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
+                .thenReturn(new WorkflowStatusDTO().status(null));
+
+        // When & Then
+        TooManyAttemptsException exception = assertThrows(TooManyAttemptsException.class, () ->
+                service.waitTerminationStatus(WORKFLOW_ID, 1, 100)
         );
 
         assertEquals("Maximum number of retries reached for workflow " + WORKFLOW_ID, exception.getMessage());

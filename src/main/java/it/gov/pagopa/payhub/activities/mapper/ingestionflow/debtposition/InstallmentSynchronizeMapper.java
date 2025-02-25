@@ -30,8 +30,9 @@ public class InstallmentSynchronizeMapper {
                 .validityDate(installmentIngestionFlowFileDTO.getValidityDate())
                 .multiDebtor(installmentIngestionFlowFileDTO.getMultiDebtor())
                 .notificationDate(installmentIngestionFlowFileDTO.getNotificationDate())
-                .paymentOptionIndex(Long.valueOf(installmentIngestionFlowFileDTO.getPaymentOptionIndex()))
+                .paymentOptionIndex(installmentIngestionFlowFileDTO.getPaymentOptionIndex())
                 .paymentOptionType(installmentIngestionFlowFileDTO.getPaymentOptionType())
+                .paymentOptionDescription(installmentIngestionFlowFileDTO.getPaymentOptionDescription())
                 .iud(installmentIngestionFlowFileDTO.getIud())
                 .iuv(installmentIngestionFlowFileDTO.getIuv())
                 .entityType(InstallmentSynchronizeDTO.EntityTypeEnum.valueOf(installmentIngestionFlowFileDTO.getEntityType().name()))
@@ -53,8 +54,8 @@ public class InstallmentSynchronizeMapper {
                 .flagPagoPaPayment(installmentIngestionFlowFileDTO.getFlagPagoPaPayment())
                 .balance(installmentIngestionFlowFileDTO.getBalance())
                 .flagMultibeneficiary(installmentIngestionFlowFileDTO.getFlagMultiBeneficiary())
-                .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? Long.valueOf(installmentIngestionFlowFileDTO.getNumberBeneficiary()) : null)
-                .transfersList(buildTransferList(installmentIngestionFlowFileDTO))
+                .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? installmentIngestionFlowFileDTO.getNumberBeneficiary() : null)
+                .additionalTransfers(buildTransferList(installmentIngestionFlowFileDTO))
                 .build();
     }
 
@@ -71,14 +72,15 @@ public class InstallmentSynchronizeMapper {
 
     private TransferSynchronizeDTO createTransfer(InstallmentIngestionFlowFileDTO dto, int index) {
         MultiValuedMap<String, String> transferMap = getTransferMapByIndex(dto, index);
+
         if (transferMap == null) {
-            return null;
+            throw new IllegalStateException("Missing or empty transfer map for index: " + index);
         }
 
         return TransferSynchronizeDTO.builder()
                 .orgFiscalCode(getFirstValue(transferMap, "orgFiscalCode"))
                 .orgName(getFirstValue(transferMap, "orgName"))
-                .amount(getAmountAsBigDecimal(transferMap))
+                .amount(new BigDecimal(getFirstValue(transferMap, "amount")))
                 .remittanceInformation(getFirstValue(transferMap, "orgRemittanceInformation"))
                 .iban(getFirstValue(transferMap, "iban"))
                 .category(getFirstValue(transferMap, "category"))
@@ -97,16 +99,9 @@ public class InstallmentSynchronizeMapper {
     }
 
     private String getFirstValue(MultiValuedMap<String, String> map, String key) {
-        return Optional.ofNullable(map.get(key))
+        return Optional.ofNullable(map)
+                .map(m -> m.get(key))
                 .flatMap(values -> values.stream().findFirst())
-                .orElse(null);
+                .orElseThrow(() -> new IllegalArgumentException("Missing required value for key: " + key));
     }
-
-    private BigDecimal getAmountAsBigDecimal(MultiValuedMap<String, String> map) {
-        return Optional.ofNullable(getFirstValue(map, "amount"))
-                .filter(value -> !value.isBlank())
-                .map(BigDecimal::new)
-                .orElse(null);
-    }
-
 }

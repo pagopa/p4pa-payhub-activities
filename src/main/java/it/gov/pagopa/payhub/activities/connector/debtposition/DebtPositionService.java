@@ -36,5 +36,5 @@ public interface DebtPositionService {
      * @param massive a flag indicating whether the synchronization is a bulk operation.
      * @return the workflow ID if a workflow is triggered, otherwise null.
      */
-    String installmentSynchronize(InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive);
+    String installmentSynchronize(String origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive);
 }

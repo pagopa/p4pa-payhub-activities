@@ -131,4 +131,28 @@ class InstallmentErrorsArchiverServiceTest {
             Files.delete(errorFile);
         }
     }
+
+    @Test
+    void givenArchiveErrorFilesWhenIOExceptionThenReturnNull() throws IOException {
+        // Given
+        Path workingDirectory = Path.of("build", "test");
+        Files.createDirectories(workingDirectory);
+        Path errorFile = Files.createTempFile(workingDirectory, "ERROR-", ".csv");
+        try {
+            IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
+            String expectedZipErrorFileName = "ERROR-fileName.zip";
+
+            Mockito.doThrow(new IOException("Error")).when(ingestionFlowFileArchiverServiceMock)
+                    .compressAndArchive(List.of(errorFile), Path.of("build/test/" + expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId() + "", ingestionFlowFileDTO.getFilePathName(), errorFolder));
+
+            // When
+            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
+
+            // Then
+            Assertions.assertNull(result);
+
+        } finally {
+            Files.delete(errorFile);
+        }
+    }
 }
