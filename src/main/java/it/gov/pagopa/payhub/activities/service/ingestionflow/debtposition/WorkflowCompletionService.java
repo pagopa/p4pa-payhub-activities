@@ -20,7 +20,8 @@ public class WorkflowCompletionService {
 
     private final WorkflowHubService workflowHubService;
 
-    private final Set<WorkflowExecutionStatus> TERMINAL_STATUSES = Set.of(
+    /** <a href="https://docs.temporal.io/workflows#status">Closed statuses</a> */
+    private final Set<WorkflowExecutionStatus> wfTerminationStatuses = Set.of(
             WORKFLOW_EXECUTION_STATUS_FAILED,
             WORKFLOW_EXECUTION_STATUS_TERMINATED,
             WORKFLOW_EXECUTION_STATUS_CANCELED,
@@ -53,7 +54,7 @@ public class WorkflowCompletionService {
             workflowStatus = convertToWorkflowExecutionStatus(status);
             log.info("Workflow {} status: {}", workflowId, status);
 
-            if (workflowStatus != null && TERMINAL_STATUSES.contains(workflowStatus)) {
+            if (workflowStatus != null && wfTerminationStatuses.contains(workflowStatus)) {
                 return workflowStatus;
             }
 
