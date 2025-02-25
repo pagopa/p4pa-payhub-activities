@@ -45,24 +45,23 @@ class TransferSearchClientTest {
 		String iur = "IUR";
 		Integer transferIndex = 1;
 		Transfer expectedResult = TransferFaker.buildTransfer();
-		Set<String> installmentStatusSet = Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue());
 
 		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
 		when(transferSearchControllerApiMock.crudTransfersFindBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
-				installmentStatusSet
-			)).thenReturn(expectedResult);
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue())
+		)).thenReturn(expectedResult);
 
 		// When
 		Transfer result = transferSearchClient.findBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
-				installmentStatusSet,
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID, StatusEnum.REPORTED),
 			accessToken
 		);
 
@@ -78,25 +77,24 @@ class TransferSearchClientTest {
 		String iuv = "IUV";
 		String iur = "IUR";
 		Integer transferIndex = 1;
-		Set<String> installmentStatusSet = Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue());
 
 		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
 		when(transferSearchControllerApiMock.crudTransfersFindBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
-				installmentStatusSet
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue())
 		)).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
 		// When
 		Transfer result = transferSearchClient.findBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
-				installmentStatusSet,
-				accessToken
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID, StatusEnum.REPORTED),
+			accessToken
 		);
 
 		// Then

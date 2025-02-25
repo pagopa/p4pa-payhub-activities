@@ -46,7 +46,7 @@ class TransferServiceTest {
 		String accessToken = "ACCESSTOKEN";
 		Transfer expected = mock(Transfer.class);
 		TransferSemanticKeyDTO transferSemanticKey = new TransferSemanticKeyDTO(1L, "IUV", "IUR", 1);
-		Set<String> installmentStatusSet = Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue());
+		Set<StatusEnum> installmentStatusSet = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
 		when(transferSearchClientMock.findBySemanticKey(1L, "IUV", "IUR", 1, installmentStatusSet, accessToken)).thenReturn(expected);

@@ -41,7 +41,7 @@ class TransferClassificationActivityImplTest {
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 	private final Transfer transferDTO = TransferFaker.buildTransfer();
 	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
-	private final Set<String> installmentStatusSet = Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue());
+	private final Set<StatusEnum> installmentStatusSet = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
 
 	@Mock
 	private ClassificationService classificationServiceMock;
