@@ -47,6 +47,16 @@ public interface TransferClassifier {
 	}
 
 	/**
+	 * Extracts the amount in cents from the payment reporting data.
+	 *
+	 * @param paymentsReportingDTO the payment reporting data.
+	 * @return the amount in cents, or {@code null} if the amount is not available.
+	 */
+	default Long getTotalAmountCents(PaymentsReporting paymentsReportingDTO) {
+		return Optional.ofNullable(paymentsReportingDTO).map(PaymentsReporting::getTotalAmountCents).orElse(0L);
+	}
+
+	/**
 	 * Extracts the amount in cents from the treasury data.
 	 *
 	 * @param treasury the treasury data.
