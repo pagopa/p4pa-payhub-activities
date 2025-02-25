@@ -85,7 +85,7 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
+        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class);
 
         // Then
         List<TestCsv> resultList = new ArrayList<>();
@@ -115,7 +115,7 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber);
+        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class);
 
         // Then
         List<TestCsv> resultList = new ArrayList<>();
@@ -136,7 +136,7 @@ class CsvServiceTest {
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber)
+                csvService.readCsv(filePath, TestCsv.class)
         );
     }
 
@@ -148,7 +148,7 @@ class CsvServiceTest {
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsv(filePath, TestCsv.class, TestCsv::setLineNumber)
+                csvService.readCsv(filePath, TestCsv.class)
         );
     }
 

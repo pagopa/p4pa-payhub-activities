@@ -1,9 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.temporal.api.enums.v1.WorkflowExecutionStatus.*;
+import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
+import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentIngestionFlowFileDTOFaker.buildInstallmentIngestionFlowFileDTO;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DPInstallmentsWorkflowCompletionServiceTest {
 
     @Mock
-    private WorkflowHubService workflowHubServiceMock;
+    private WorkflowCompletionService workflowCompletionServiceMock;
 
     private DPInstallmentsWorkflowCompletionService service;
 
@@ -30,13 +30,18 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     private static final String FILE_NAME = "fileName";
     private static final String ERROR_CODE = "ERROR_CODE";
     private static final String ERROR_MESSAGE = "Error message";
+    private int retryDelayMs;
+    private int maxRetries;
 
     @BeforeEach
     void setUp() {
+        double maxWaitingMinutes = 0.005;
+        retryDelayMs = 100;
+        maxRetries = (int) ((maxWaitingMinutes * 60_000) / retryDelayMs);
         service = new DPInstallmentsWorkflowCompletionService(
-                workflowHubServiceMock,
-                0.005,
-                100
+                workflowCompletionServiceMock,
+                maxWaitingMinutes,
+                retryDelayMs
         );
     }
 
@@ -46,8 +51,8 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
+        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(WORKFLOW_ID, maxRetries, retryDelayMs))
+                .thenReturn(WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
@@ -58,13 +63,13 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionWhenStatusFailedThenRetry() {
+    void givenWaitForWorkflowCompletionWhenStatusFailedThenAddErrorList() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_FAILED.name()));
+        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(WORKFLOW_ID, maxRetries, retryDelayMs))
+                .thenReturn(WORKFLOW_EXECUTION_STATUS_FAILED);
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
@@ -78,55 +83,13 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionWhenStatusNotTerminalThenRetry() {
+    void givenWaitForWorkflowCompletionWhenRetryReachedLimitThenCatchTooManyAttemptsExceptionAndAddError() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name()));
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name()));
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
-
-        // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
-
-        // Then
-        assertTrue(result, "Workflow succeeded");
-        assertTrue(errorList.isEmpty(), "Error list is empty");
-    }
-
-    @Test
-    void givenWaitForWorkflowCompletionWhenThreadInterruptedThenSuccess() {
-        // Given
-        InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-        List<InstallmentErrorDTO> errorList = new ArrayList<>();
-
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenAnswer(invocation -> {
-                    Thread.currentThread().interrupt();
-                    return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name());
-                })
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
-
-        // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
-
-        // Then
-        assertTrue(result, "Workflow succeeded");
-        assertTrue(errorList.isEmpty(), "Error list is empty");
-    }
-
-    @Test
-    void givenWaitForWorkflowCompletionWhenRetryReachedLimitThenAddError() {
-        // Given
-        InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-        List<InstallmentErrorDTO> errorList = new ArrayList<>();
-
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status("RUNNING"));
+        Mockito.doThrow(new TooManyAttemptsException("Error"))
+                .when(workflowCompletionServiceMock).waitTerminationStatus(WORKFLOW_ID, maxRetries, retryDelayMs);
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
@@ -135,30 +98,8 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         assertFalse(result);
         assertEquals(1, errorList.size());
         assertEquals("RETRY_LIMIT_REACHED", errorList.getFirst().getErrorCode());
-        assertEquals("RUNNING", errorList.getFirst().getWorkflowStatus());
         assertEquals("Maximum number of retries reached", errorList.getFirst().getErrorMessage());
     }
-
-    @Test
-    void givenWaitForWorkflowCompletionWhenStatusNullThenAddError() {
-        // Given
-        InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-        List<InstallmentErrorDTO> errorList = new ArrayList<>();
-
-        Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO());
-
-        // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
-
-        // Then
-        assertFalse(result);
-        assertEquals(1, errorList.size());
-        assertEquals("RETRY_LIMIT_REACHED", errorList.getFirst().getErrorCode());
-        assertNull(errorList.getFirst().getWorkflowStatus());
-        assertEquals("Maximum number of retries reached", errorList.getFirst().getErrorMessage());
-    }
-
 
 
     @Test

@@ -93,7 +93,7 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
+        Mockito.when(csvServiceMock.readCsv(filePath, InstallmentIngestionFlowFileDTO.class))
                 .thenReturn(iterator);
 
         Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
@@ -126,7 +126,7 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
+        Mockito.when(csvServiceMock.readCsv(filePath, InstallmentIngestionFlowFileDTO.class))
                 .thenReturn(iterator);
 
         Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
@@ -142,7 +142,6 @@ class InstallmentIngestionFlowFileActivityTest {
                 .processedRows(2L)
                 .errorDescription("errorDescription")
                 .discardedFileName("discardedFileName")
-                .discardedFilePath("discardedFilePath")
                 .build();
     }
 

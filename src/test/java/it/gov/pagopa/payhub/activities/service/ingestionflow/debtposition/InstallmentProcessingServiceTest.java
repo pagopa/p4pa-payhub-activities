@@ -37,7 +37,7 @@ class InstallmentProcessingServiceTest {
     @Mock
     private InstallmentErrorsArchiverService installmentErrorsArchiverServiceMock;
     @Mock
-    private WorkflowCompletionService workflowCompletionServiceMock;
+    private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
 
     private InstallmentProcessingService service;
 
@@ -47,7 +47,7 @@ class InstallmentProcessingServiceTest {
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
-                workflowCompletionServiceMock
+                dpInstallmentsWorkflowCompletionServiceMock
                 );
     }
 
@@ -65,12 +65,12 @@ class InstallmentProcessingServiceTest {
         Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
                 .thenReturn(workflowId);
 
-        Mockito.when(workflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
                 .thenReturn(true);
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(),
                 ingestionFlowFile,
                 Path.of("/tmp")
         );
@@ -80,6 +80,35 @@ class InstallmentProcessingServiceTest {
         assertEquals(1, result.getTotalRows());
         assertNull(result.getErrorDescription());
         assertNull(result.getDiscardedFileName());
+    }
+
+    @Test
+    void givenProcessInstallmentsWhenWorkflowNotCompletedThenSuccess(){
+        // Given
+        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        String workflowId = "workflow-123";
+
+        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
+                .thenReturn(installmentSynchronizeDTO);
+
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(installmentSynchronizeDTO, false))
+                .thenReturn(workflowId);
+
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
+                .thenReturn(false);
+
+        // When
+        InstallmentIngestionFlowFileResult result = service.processInstallments(
+                Stream.of(installmentIngestionFlowFileDTO).iterator(),
+                ingestionFlowFile,
+                Path.of("/tmp")
+        );
+
+        // Then
+        assertEquals(0, result.getProcessedRows());
+        assertEquals(1, result.getTotalRows());
     }
 
     @Test
@@ -97,7 +126,7 @@ class InstallmentProcessingServiceTest {
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(),
                 ingestionFlowFile,
                 Path.of("/tmp")
         );
@@ -124,28 +153,24 @@ class InstallmentProcessingServiceTest {
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
                         .when(debtPositionServiceMock).installmentSynchronize(installmentSynchronizeDTO, false);
 
-        Mockito.when(workflowCompletionServiceMock.buildInstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentIngestionFlowFileDTO, null,"PROCESS_EXCEPTION", "Error synchronizing the installment"))
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.buildInstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentIngestionFlowFileDTO, null,"PROCESS_EXCEPTION", "Error synchronizing the installment"))
                         .thenReturn(error);
 
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
-        Mockito.when(installmentErrorsArchiverServiceMock.createTargetDirectory(ingestionFlowFile))
-                .thenReturn(Path.of("/tmp/path"));
-
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(),
                 ingestionFlowFile,
                 workingDirectory
         );
 
         // Then
         assertEquals(0, result.getProcessedRows());
-        assertEquals(0, result.getTotalRows());
+        assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
-        assertEquals(Path.of("/tmp/path/zipFileName.csv").toString(), result.getDiscardedFilePath());
     }
 
     private InstallmentErrorDTO buildInstallmentErrorDTO(InstallmentIngestionFlowFileDTO installment) {

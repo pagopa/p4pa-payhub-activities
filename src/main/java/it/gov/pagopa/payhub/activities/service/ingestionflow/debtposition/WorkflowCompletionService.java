@@ -48,10 +48,9 @@ public class WorkflowCompletionService {
         WorkflowExecutionStatus workflowStatus;
 
         do {
-
             WorkflowStatusDTO statusDTO = workflowHubService.getWorkflowStatus(workflowId);
             String status = statusDTO.getStatus();
-            workflowStatus = convertToWorkflowExecutionStatus(status);
+            workflowStatus = mapToString(status);
             log.info("Workflow {} status: {}", workflowId, status);
 
             if (workflowStatus != null && wfTerminationStatuses.contains(workflowStatus)) {
@@ -72,7 +71,7 @@ public class WorkflowCompletionService {
         throw new TooManyAttemptsException("Maximum number of retries reached for workflow " + workflowId);
     }
 
-    private WorkflowExecutionStatus convertToWorkflowExecutionStatus(String status) {
+    private WorkflowExecutionStatus mapToString(String status) {
         if (status == null) {
             return null;
         }
