@@ -55,9 +55,10 @@ public class InstallmentSynchronizeDTOFaker {
                 .orgFiscalCode("orgFiscalCode_2")
                 .orgName("orgName_2")
                 .iban("iban_2")
-                .remittanceInformation("orgRemittanceInformation_2")
+                .remittanceInformation("remittanceInformation_2")
                 .amount(BigDecimal.valueOf(1))
                 .category("category_2")
+                .transferIndex(2)
                 .build();
     }
 
@@ -66,9 +67,10 @@ public class InstallmentSynchronizeDTOFaker {
                 .orgFiscalCode("orgFiscalCode_3")
                 .orgName("orgName_3")
                 .iban("iban_3")
-                .remittanceInformation("orgRemittanceInformation_3")
+                .remittanceInformation("remittanceInformation_3")
                 .amount(BigDecimal.valueOf(1))
                 .category("category_3")
+                .transferIndex(3)
                 .build();
     }
 }

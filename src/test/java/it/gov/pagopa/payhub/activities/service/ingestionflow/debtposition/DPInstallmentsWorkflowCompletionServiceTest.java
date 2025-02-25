@@ -19,12 +19,12 @@ import static it.gov.pagopa.payhub.activities.util.faker.InstallmentIngestionFlo
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class WorkflowCompletionServiceTest {
+class DPInstallmentsWorkflowCompletionServiceTest {
 
     @Mock
     private WorkflowHubService workflowHubServiceMock;
 
-    private WorkflowCompletionService service;
+    private DPInstallmentsWorkflowCompletionService service;
 
     private static final String WORKFLOW_ID = "workflow-123";
     private static final String FILE_NAME = "fileName";
@@ -33,7 +33,7 @@ class WorkflowCompletionServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new WorkflowCompletionService(
+        service = new DPInstallmentsWorkflowCompletionService(
                 workflowHubServiceMock,
                 0.005,
                 100

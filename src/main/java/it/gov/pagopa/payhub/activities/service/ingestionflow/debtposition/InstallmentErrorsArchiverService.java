@@ -10,16 +10,16 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 @Lazy
 @Service
 public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorDTO> {
 
-    public static final List<String> INSTALLMENT_HEADERS = List.of(
-            "File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message"
+    public static final List<String[]> INSTALLMENT_HEADERS = Collections.singletonList(
+            new String[]{"File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message"}
     );
-
 
     protected InstallmentErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                                @Value("${folders.process-target-sub-folders.errors}") String errorFolder,

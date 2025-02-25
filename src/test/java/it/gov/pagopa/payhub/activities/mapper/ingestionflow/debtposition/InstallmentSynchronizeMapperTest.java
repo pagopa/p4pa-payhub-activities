@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
@@ -33,7 +34,7 @@ class InstallmentSynchronizeMapperTest {
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(buildInstallmentIngestionFlowFileDTO(), 1L, 1L);
 
-        reflectionEqualsByName(expected, result, "transfersList");
+        reflectionEqualsByName(expected, result);
         assertEquals(2, Objects.requireNonNull(result.getTransfersList()).size());
         checkNotNullFields(result);
     }
@@ -42,14 +43,15 @@ class InstallmentSynchronizeMapperTest {
     void givenMapWhenFlagMultiBeneficiaryFalseThenOk(){
         InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
         expected.setFlagMultibeneficiary(false);
+        expected.setTransfersList(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(false);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L);
 
-        reflectionEqualsByName(expected, result, "transfersList");
-            assertTrue(Objects.requireNonNull(result.getTransfersList()).isEmpty());
+        reflectionEqualsByName(expected, result);
+        assertTrue(Objects.requireNonNull(result.getTransfersList()).isEmpty());
         checkNotNullFields(result);
     }
 
@@ -57,13 +59,14 @@ class InstallmentSynchronizeMapperTest {
     void givenMapWhenNumberBeneficiaryNullThenOk(){
         InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
         expected.setNumberBeneficiary(null);
+        expected.setTransfersList(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setNumberBeneficiary(null);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L);
 
-        reflectionEqualsByName(expected, result, "transfersList");
+        reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getTransfersList()).isEmpty());
         checkNotNullFields(result, "numberBeneficiary");
     }
@@ -72,13 +75,14 @@ class InstallmentSynchronizeMapperTest {
     void givenMapWhenNumberBeneficiaryLessThan2ThenOk(){
         InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
         expected.setNumberBeneficiary(1L);
+        expected.setTransfersList(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setNumberBeneficiary(1);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L);
 
-        reflectionEqualsByName(expected, result, "transfersList");
+        reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getTransfersList()).isEmpty());
         checkNotNullFields(result);
     }

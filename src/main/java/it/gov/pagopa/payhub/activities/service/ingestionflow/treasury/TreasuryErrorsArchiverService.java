@@ -10,14 +10,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @Slf4j
 public class TreasuryErrorsArchiverService extends ErrorArchiverService<TreasuryErrorDTO> {
 
-    public static final List<String> TREASURY_HEADERS = List.of(
-            "FileName", "Anno Bolletta", "Codice Bolletta", "Error Code", "Error Message"
+    public static final List<String[]> TREASURY_HEADERS = Collections.singletonList(
+            new String[]{"FileName", "Anno Bolletta", "Codice Bolletta", "Error Code", "Error Message"}
     );
 
     public TreasuryErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,

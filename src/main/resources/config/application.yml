@@ -14,8 +14,8 @@ spring:
 ingestion-flow-files:
   dp-installments:
     wf-await:
-      max-waiting-minutes: 5 # Default: wait 5 minutes
-      retry-delays-ms: 1000  # Default: 1 sec
+      max-waiting-minutes: 5
+      retry-delays-ms: 1000
 
 
 mail:

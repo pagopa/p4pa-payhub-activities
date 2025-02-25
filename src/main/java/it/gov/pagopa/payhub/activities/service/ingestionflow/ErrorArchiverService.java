@@ -11,7 +11,6 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -47,7 +46,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
      * @param headers           The headers of the CSV file.
      */
     public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile,
-                            List<T> errorList, List<String> headers) {
+                            List<T> errorList, List<String[]> headers) {
 
         if(CollectionUtils.isEmpty(errorList)){
             return;
@@ -58,13 +57,10 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
                 .toList();
 
         try {
-            List<String[]> headerList = new ArrayList<>();
-            headerList.add(headers.toArray(new String[0]));
-
             String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFile.getFileName(), ".csv");
             Path errorCsvFilePath = workingDirectory.resolve(errorFileName);
 
-            csvService.createCsv(errorCsvFilePath, headerList, data);
+            csvService.createCsv(errorCsvFilePath, headers, data);
             log.info("Error CSV created: {}", errorCsvFilePath);
 
         } catch (IOException e) {
@@ -92,7 +88,10 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
 
             if (!errorFiles.isEmpty()) {
 
-                Path targetDirectory = createTargetDirectory(ingestionFlowFileDTO);
+                Path targetDirectory = sharedDirectoryPath
+                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
+                        .resolve(ingestionFlowFileDTO.getFilePathName())
+                        .resolve(errorFolder);
 
                 String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
                 Path zipFile = workingDirectory.resolve(zipFileName);
@@ -107,13 +106,6 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
             log.error("Something gone wrong while trying to archive error file!", e);
             return null;
         }
-    }
-
-    public Path createTargetDirectory(IngestionFlowFile ingestionFlowFileDTO) {
-        return sharedDirectoryPath
-                .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
-                .resolve(ingestionFlowFileDTO.getFilePathName())
-                .resolve(errorFolder);
     }
 
     protected abstract void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<T> errorList);

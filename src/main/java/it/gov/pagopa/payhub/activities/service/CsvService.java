@@ -6,7 +6,6 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.BiConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -18,8 +17,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Lazy
 @Service
@@ -84,11 +81,10 @@ public class CsvService {
      * @param <T>                         The generic type of the DTO to which CSV rows will be mapped.
      * @param csvFilePath                 The path to the CSV file to read.
      * @param typeClass                   The class type to map each row of the CSV to.
-     * @param ingestionFlowFileLineNumber A {@link BiConsumer} used to assign a line number to each record.
      * @return An {@link Iterator} of parsed objects.
      * @throws IOException If an error occurs while reading the file or parsing its contents.
      */
-    public <T> Iterator<T> readCsv(Path csvFilePath, Class<T> typeClass, BiConsumer<T, Long> ingestionFlowFileLineNumber) throws IOException {
+    public <T> Iterator<T> readCsv(Path csvFilePath, Class<T> typeClass) throws IOException {
         try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
 
             HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
@@ -105,25 +101,7 @@ public class CsvService {
 
             log.info("CSV file read successfully: {}", csvFilePath);
 
-            AtomicLong rowNumber = new AtomicLong(0);
-            Iterator<T> iterator = csvToBean.iterator();
-
-            return new Iterator<>() {
-                @Override
-                public boolean hasNext() {
-                    return iterator.hasNext();
-                }
-
-                @Override
-                public T next() {
-                    if (!hasNext()) {
-                        throw new NoSuchElementException();
-                    }
-                    T fileLineNumber = iterator.next();
-                    ingestionFlowFileLineNumber.accept(fileLineNumber, rowNumber.incrementAndGet());
-                    return fileLineNumber;
-                }
-            };
+            return csvToBean.iterator();
 
         } catch (Exception e) {
             throw new IOException("Error while reading csv file: " + e.getMessage(), e);

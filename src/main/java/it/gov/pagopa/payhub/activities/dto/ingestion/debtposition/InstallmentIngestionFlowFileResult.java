@@ -21,6 +21,4 @@ public class InstallmentIngestionFlowFileResult {
     private String errorDescription;
     /** Discarded file name */
     private String discardedFileName;
-    /** Discarded file name path */
-    private String discardedFilePath;
 }

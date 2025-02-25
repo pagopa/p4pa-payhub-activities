@@ -59,13 +59,15 @@ public class InstallmentSynchronizeMapper {
     }
 
     private List<TransferSynchronizeDTO> buildTransferList(InstallmentIngestionFlowFileDTO dto) {
-        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1) >= 2) {
-            return IntStream.rangeClosed(2, dto.getNumberBeneficiary())
+        int nBeneficiary = Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1);
+        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 2) {
+            return IntStream.rangeClosed(2, nBeneficiary)
                     .mapToObj(index -> createTransfer(dto, index))
                     .toList();
         }
         return List.of();
     }
+
 
     private TransferSynchronizeDTO createTransfer(InstallmentIngestionFlowFileDTO dto, int index) {
         MultiValuedMap<String, String> transferMap = getTransferMapByIndex(dto, index);
@@ -76,7 +78,7 @@ public class InstallmentSynchronizeMapper {
         return TransferSynchronizeDTO.builder()
                 .orgFiscalCode(getFirstValue(transferMap, "orgFiscalCode"))
                 .orgName(getFirstValue(transferMap, "orgName"))
-                .amount(getNullableBigDecimal(transferMap))
+                .amount(getAmountAsBigDecimal(transferMap))
                 .remittanceInformation(getFirstValue(transferMap, "orgRemittanceInformation"))
                 .iban(getFirstValue(transferMap, "iban"))
                 .category(getFirstValue(transferMap, "category"))
@@ -100,10 +102,11 @@ public class InstallmentSynchronizeMapper {
                 .orElse(null);
     }
 
-    private BigDecimal getNullableBigDecimal(MultiValuedMap<String, String> map) {
+    private BigDecimal getAmountAsBigDecimal(MultiValuedMap<String, String> map) {
         return Optional.ofNullable(getFirstValue(map, "amount"))
                 .filter(value -> !value.isBlank())
                 .map(BigDecimal::new)
                 .orElse(null);
     }
+
 }

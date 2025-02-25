@@ -278,13 +278,14 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 	description = "openapi"
 
 	generatorName.set("java")
-	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/generated.openapi.json")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/p4pa-workflow-hub.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
 	invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
 	apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")
 	modelPackage.set("it.gov.pagopa.pu.workflowhub.dto.generated")
 	typeMappings.set(mapOf(
-		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO"
+		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+		"IngestionFlowFileType" to "String"
 	))
 	configOptions.set(
 		mapOf(

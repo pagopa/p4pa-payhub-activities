@@ -17,10 +17,6 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Implementation of {@link InstallmentIngestionFlowFileActivity} for processing Installments ingestion files.
@@ -66,14 +62,9 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
 
         try {
             Iterator<InstallmentIngestionFlowFileDTO> csvIterator =
-                    csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, InstallmentIngestionFlowFileDTO::setIngestionFlowFileLineNumber);
+                    csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class);
 
-
-            Stream<InstallmentIngestionFlowFileDTO> stream = StreamSupport.stream(
-                    Spliterators.spliteratorUnknownSize(csvIterator, Spliterator.ORDERED), false
-            );
-
-            return installmentProcessingService.processInstallments(stream, ingestionFlowFileDTO, workingDirectory);
+            return installmentProcessingService.processInstallments(csvIterator, ingestionFlowFileDTO, workingDirectory);
         } catch (Exception e) {
             log.error("Error processing file {}: {}", filePath, e.getMessage());
             throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
