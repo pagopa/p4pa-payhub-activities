@@ -14,8 +14,8 @@ public class RtIufTesClassifier implements TransferClassifier {
 	@Override
 	public ClassificationsEnum classify(Transfer transferDTO, PaymentsReporting paymentsReportingDTO, Treasury treasuryDTO) {
 		if(transferDTO != null && paymentsReportingDTO != null && treasuryDTO != null &&
-			getAmountCentsFromTransfer(transferDTO).equals(getAmountPaidCentsFromPaymentsReporting(paymentsReportingDTO)) &&
-			getAmountCentsFromTransfer(transferDTO).equals(getBillAmountCentsFromTreasury(treasuryDTO))) {
+			getAmountCents(transferDTO).equals(getTransferAmountCents(paymentsReportingDTO)) &&
+			getAmountCents(transferDTO).equals(getIufAmountCents(treasuryDTO))) {
 			return ClassificationsEnum.RT_IUF_TES;
 		}
 		return null;
