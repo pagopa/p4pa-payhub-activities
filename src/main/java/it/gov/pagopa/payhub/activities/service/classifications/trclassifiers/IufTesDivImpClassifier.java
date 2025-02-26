@@ -13,7 +13,7 @@ public class IufTesDivImpClassifier implements TransferClassifier {
 
 	@Override
 	public ClassificationsEnum classify(Transfer transferDTO, PaymentsReporting paymentsReportingDTO, Treasury treasuryDTO) {
-		if (paymentsReportingDTO != null && treasuryDTO != null	&& !getIufAmountCents(paymentsReportingDTO).equals(treasuryDTO.getBillAmountCents())) {
+		if (paymentsReportingDTO != null && treasuryDTO != null	&& !getIufAmountCents(paymentsReportingDTO).equals(getIufAmountCents(treasuryDTO))) {
 			return ClassificationsEnum.IUF_TES_DIV_IMP;
 		}
 		return null;
