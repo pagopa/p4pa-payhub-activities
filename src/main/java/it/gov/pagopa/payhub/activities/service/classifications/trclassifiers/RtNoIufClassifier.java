@@ -16,10 +16,10 @@ public class RtNoIufClassifier implements TransferClassifier {
 		if(transferDTO != null && paymentsReportingDTO == null && treasuryDTO == null) {
 			return ClassificationsEnum.RT_NO_IUF;
 		}
-		if (transferDTO != null && paymentsReportingDTO != null && treasuryDTO == null && !getAmountCents(transferDTO).equals(getAmountCents(paymentsReportingDTO))) {
+		if (transferDTO != null && paymentsReportingDTO != null && treasuryDTO == null && !getAmountCentsFromTransfer(transferDTO).equals(getAmountPaidCentsFromPaymentsReporting(paymentsReportingDTO))) {
 			return ClassificationsEnum.RT_NO_IUF;
 		}
-		if (transferDTO != null && treasuryDTO != null && paymentsReportingDTO == null && !getAmountCents(transferDTO).equals(getAmountCents(treasuryDTO))) {
+		if (transferDTO != null && treasuryDTO != null && paymentsReportingDTO == null && !getAmountCentsFromTransfer(transferDTO).equals(getBillAmountCentsFromTreasury(treasuryDTO))) {
 			return ClassificationsEnum.RT_NO_IUF;
 		}
 		return null;

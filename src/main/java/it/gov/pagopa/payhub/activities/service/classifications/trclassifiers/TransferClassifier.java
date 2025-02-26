@@ -32,7 +32,7 @@ public interface TransferClassifier {
 	 * @param transferDTO the transfer data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountCents(Transfer transferDTO) {
+	default Long getAmountCentsFromTransfer(Transfer transferDTO) {
 		return Optional.ofNullable(transferDTO).map(Transfer::getAmountCents).orElse(0L);
 	}
 
@@ -42,17 +42,17 @@ public interface TransferClassifier {
 	 * @param paymentsReportingDTO the payment reporting data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountCents(PaymentsReporting paymentsReportingDTO) {
+	default Long getAmountPaidCentsFromPaymentsReporting(PaymentsReporting paymentsReportingDTO) {
 		return Optional.ofNullable(paymentsReportingDTO).map(PaymentsReporting::getAmountPaidCents).orElse(0L);
 	}
 
 	/**
-	 * Extracts the amount in cents from the payment reporting data.
+	 * Extracts the total amount in cents from the payment reporting data.
 	 *
 	 * @param paymentsReportingDTO the payment reporting data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getTotalAmountCents(PaymentsReporting paymentsReportingDTO) {
+	default Long getTotalAmountCentsFromPaymentsReporting(PaymentsReporting paymentsReportingDTO) {
 		return Optional.ofNullable(paymentsReportingDTO).map(PaymentsReporting::getTotalAmountCents).orElse(0L);
 	}
 
@@ -62,7 +62,7 @@ public interface TransferClassifier {
 	 * @param treasury the treasury data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountCents(Treasury treasury) {
+	default Long getBillAmountCentsFromTreasury(Treasury treasury) {
 		return Optional.ofNullable(treasury).map(Treasury::getBillAmountCents).orElse(0L);
 	}
 }
