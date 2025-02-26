@@ -62,7 +62,7 @@ public interface TransferClassifier {
 	 * @param treasury the treasury data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getBillAmountCentsFromTreasury(Treasury treasury) {
+	default Long getIufAmountCents(Treasury treasury) {
 		return Optional.ofNullable(treasury).map(Treasury::getBillAmountCents).orElse(0L);
 	}
 }
