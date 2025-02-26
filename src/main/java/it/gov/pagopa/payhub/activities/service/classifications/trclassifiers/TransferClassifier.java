@@ -32,7 +32,7 @@ public interface TransferClassifier {
 	 * @param transferDTO the transfer data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountCentsFromTransfer(Transfer transferDTO) {
+	default Long getAmountCents(Transfer transferDTO) {
 		return Optional.ofNullable(transferDTO).map(Transfer::getAmountCents).orElse(0L);
 	}
 
