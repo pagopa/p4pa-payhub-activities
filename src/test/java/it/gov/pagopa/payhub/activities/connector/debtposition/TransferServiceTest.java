@@ -13,6 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Set;
+
+import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.*;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
@@ -43,12 +46,13 @@ class TransferServiceTest {
 		String accessToken = "ACCESSTOKEN";
 		Transfer expected = mock(Transfer.class);
 		TransferSemanticKeyDTO transferSemanticKey = new TransferSemanticKeyDTO(1L, "IUV", "IUR", 1);
+		Set<StatusEnum> installmentStatusSet = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(transferSearchClientMock.findBySemanticKey(1L, "IUV", "IUR", 1, accessToken)).thenReturn(expected);
+		when(transferSearchClientMock.findBySemanticKey(1L, "IUV", "IUR", 1, installmentStatusSet, accessToken)).thenReturn(expected);
 
 		// When
-		Transfer result = transferService.findBySemanticKey(transferSemanticKey);
+		Transfer result = transferService.findBySemanticKey(transferSemanticKey, installmentStatusSet);
 
 		// Then
 		assertSame(expected, result);

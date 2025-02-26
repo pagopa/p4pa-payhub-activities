@@ -14,6 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.Set;
+
+import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.*;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -45,19 +48,20 @@ class TransferSearchClientTest {
 
 		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
 		when(transferSearchControllerApiMock.crudTransfersFindBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
-				null
-			)).thenReturn(expectedResult);
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue())
+		)).thenReturn(expectedResult);
 
 		// When
 		Transfer result = transferSearchClient.findBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID, StatusEnum.REPORTED),
 			accessToken
 		);
 
@@ -76,20 +80,21 @@ class TransferSearchClientTest {
 
 		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
 		when(transferSearchControllerApiMock.crudTransfersFindBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
-				null
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue())
 		)).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
 		// When
 		Transfer result = transferSearchClient.findBySemanticKey(
-				organizationId,
-				iuv,
-				iur,
-				transferIndex,
-				accessToken
+			organizationId,
+			iuv,
+			iur,
+			transferIndex,
+			Set.of(StatusEnum.PAID, StatusEnum.REPORTED),
+			accessToken
 		);
 
 		// Then
