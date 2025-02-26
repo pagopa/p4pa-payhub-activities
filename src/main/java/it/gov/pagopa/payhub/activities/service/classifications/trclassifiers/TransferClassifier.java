@@ -42,7 +42,7 @@ public interface TransferClassifier {
 	 * @param paymentsReportingDTO the payment reporting data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getAmountPaidCentsFromPaymentsReporting(PaymentsReporting paymentsReportingDTO) {
+	default Long getTransferAmountCents(PaymentsReporting paymentsReportingDTO) {
 		return Optional.ofNullable(paymentsReportingDTO).map(PaymentsReporting::getAmountPaidCents).orElse(0L);
 	}
 
