@@ -78,7 +78,8 @@ class UtilitiesTest {
         // Given
         OffsetDateTime now = OffsetDateTime.now();
         XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(now.withOffsetSameInstant(ZoneOffset.UTC).toString());
-        whenConvertThenAssertSuccessfully(now, date);
+        OffsetDateTime result = Utilities.toOffsetDateTime(date);
+        assertConversion(now, result);
     }
 
     @Test
@@ -86,7 +87,8 @@ class UtilitiesTest {
         // Given
         OffsetDateTime now = OffsetDateTime.now();
         LocalDateTime date = now.toLocalDateTime();
-        whenConvertThenAssertSuccessfully(now, date);
+        OffsetDateTime result = Utilities.toOffsetDateTime(date);
+        assertConversion(now, result);
     }
 
     @Test
@@ -94,25 +96,21 @@ class UtilitiesTest {
         // Given
         OffsetDateTime now = OffsetDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDate date = now.toLocalDate();
-        whenConvertThenAssertSuccessfully(now, date);
+        OffsetDateTime result = Utilities.toOffsetDateTime(date);
+        assertConversion(now, result);
     }
 
     @Test
     void testToOffsetDateTimeNull(){
+        // Given
+        LocalDate date = null;
         // When
-        OffsetDateTime result = Utilities.toOffsetDateTime(null);
+        OffsetDateTime result = Utilities.toOffsetDateTime(date);
         // Then
         assertNull(result);
     }
 
-    @Test
-    void whenConvertToOffsetDateTimeThenException(){
-        assertThrows(IllegalArgumentException.class, () -> Utilities.toOffsetDateTime("text"), "unsupported");
-    }
-
-    private <T> void whenConvertThenAssertSuccessfully(OffsetDateTime expected, T actual) {
-        // When
-        OffsetDateTime result = Utilities.toOffsetDateTime(actual);
+    private <T> void assertConversion(OffsetDateTime expected, OffsetDateTime result) {
         // Then
         assertNotNull(result);
         assertEquals(expected.getYear(), result.getYear());

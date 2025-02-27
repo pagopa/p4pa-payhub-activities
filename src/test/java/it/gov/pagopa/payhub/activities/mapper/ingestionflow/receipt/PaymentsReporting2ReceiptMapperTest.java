@@ -10,16 +10,18 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class DummyReceiptMapperTest {
+class PaymentsReporting2ReceiptMapperTest {
 	@InjectMocks
-	private DummyReceiptMapper mapper;
+	private PaymentsReporting2ReceiptMapper mapper;
 
 	@Test
 	void testMapper() {
 		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
-		ReceiptWithAdditionalNodeDataDTO receipt = mapper.map2DummyReceipt(paymentsReportingFake);
+		ReceiptWithAdditionalNodeDataDTO receipt = mapper.map2DummyReceipt(paymentsReportingFake, "fiscalCodePA");
 
-		TestUtils.checkNotNullFields(receipt, "creationDate", "standin", "feeCents", "paymentMethod", "pspPartitaIva", "payer", "officeName", "receiptId", "receiptOrigin", "transfers", "updateDate", "paymentNote");
+		TestUtils.checkNotNullFields(receipt, "receiptId", "receiptOrigin", "paymentNote", "officeName", "pspPartitaIva", "paymentMethod", "feeCents", "creationDate", "updateDate");
 		TestUtils.checkNotNullFields(receipt.getDebtor(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
+		TestUtils.checkNotNullFields(receipt.getPayer(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
+		TestUtils.checkNotNullFields(receipt.getTransfers().getFirst(), "companyName", "mbdAttachment", "iban", "metadata");
 	}
 }
