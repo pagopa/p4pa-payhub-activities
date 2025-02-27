@@ -7,7 +7,7 @@ import io.temporal.activity.ActivityMethod;
  * Synchronize taxonomy activity
  */
 @ActivityInterface
-public interface TaxonomyActivity {
+public interface SynchronizeTaxonomyActivity {
     @ActivityMethod
     Integer syncTaxonomy();
 }

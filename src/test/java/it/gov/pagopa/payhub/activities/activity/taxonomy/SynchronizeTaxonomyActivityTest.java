@@ -11,16 +11,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class TaxonomyActivityTest {
+class SynchronizeTaxonomyActivityTest {
 
     @Mock
     private TaxonomyService taxonomyServiceMock;
 
-    private TaxonomyActivity taxonomyActivity;
+    private SynchronizeTaxonomyActivity synchronizeTaxonomyActivity;
 
     @BeforeEach
     void init() {
-        taxonomyActivity = new TaxonomyActivityImpl(taxonomyServiceMock);
+        synchronizeTaxonomyActivity = new SynchronizeTaxonomyActivityImpl(taxonomyServiceMock);
     }
 
 
@@ -28,7 +28,7 @@ class TaxonomyActivityTest {
     void syncTaxonomyReturnsSyncedCount() {
         Mockito.when(taxonomyServiceMock.syncTaxonomies()).thenReturn(42);
 
-        Integer result = taxonomyActivity.syncTaxonomy();
+        Integer result = synchronizeTaxonomyActivity.syncTaxonomy();
 
         assertEquals(42, result);
         Mockito.verify(taxonomyServiceMock).syncTaxonomies();

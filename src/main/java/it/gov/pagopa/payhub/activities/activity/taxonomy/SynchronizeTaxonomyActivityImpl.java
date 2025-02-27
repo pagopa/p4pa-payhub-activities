@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Lazy
 @Service
-public class TaxonomyActivityImpl implements TaxonomyActivity {
+public class SynchronizeTaxonomyActivityImpl implements SynchronizeTaxonomyActivity {
 
     private final TaxonomyService taxonomyService;
 
-    public TaxonomyActivityImpl(TaxonomyService taxonomyService) {
+    public SynchronizeTaxonomyActivityImpl(TaxonomyService taxonomyService) {
         this.taxonomyService = taxonomyService;
     }
 
