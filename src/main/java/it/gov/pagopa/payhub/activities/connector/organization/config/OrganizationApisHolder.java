@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
 import it.gov.pagopa.pu.organization.client.generated.BrokerEntityControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
+import it.gov.pagopa.pu.organization.client.generated.TaxonomyApi;
 import it.gov.pagopa.pu.organization.generated.ApiClient;
 import it.gov.pagopa.pu.organization.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -18,6 +19,7 @@ public class OrganizationApisHolder {
     private final BrokerEntityControllerApi brokerEntityControllerApi;
     private final OrganizationSearchControllerApi organizationSearchControllerApi;
     private final OrganizationEntityControllerApi organizationEntityControllerApi;
+    private final TaxonomyApi taxonomyApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -38,6 +40,7 @@ public class OrganizationApisHolder {
         this.brokerEntityControllerApi = new BrokerEntityControllerApi(apiClient);
         this.organizationSearchControllerApi = new OrganizationSearchControllerApi(apiClient);
         this.organizationEntityControllerApi = new OrganizationEntityControllerApi(apiClient);
+        this.taxonomyApi = new TaxonomyApi(apiClient);
     }
 
     @PreDestroy
@@ -58,6 +61,14 @@ public class OrganizationApisHolder {
     public BrokerEntityControllerApi getBrokerEntityControllerApi(String accessToken){
         return getApi(accessToken, brokerEntityControllerApi);
     }
+
+    /**
+     * It will return a {@link TaxonomyApi} instrumented with the provided accessToken. Use null if auth is not required.
+     */
+    public TaxonomyApi getTaxonomyApi(String accessToken){
+        return getApi(accessToken, taxonomyApi);
+    }
+
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
         bearerTokenHolder.set(accessToken);
