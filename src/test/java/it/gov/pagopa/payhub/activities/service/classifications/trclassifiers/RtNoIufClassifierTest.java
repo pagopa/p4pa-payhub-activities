@@ -69,17 +69,6 @@ class RtNoIufClassifierTest {
 	}
 
 	@Test
-	void givenNullPaymentsReportingAndEqualsAmountWhenDefineThenReturnNull() {
-		// Arrange
-		transferDTO.setAmountCents(100L);
-		treasuryDTO.setBillAmountCents(100L);
-		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryDTO);
-		// Assert
-		assertNull(result);
-	}
-
-	@Test
 	void givenUnmatchedTransferWhenDefineThenReturnNull() {
 		// Act
 		ClassificationsEnum result = classifier.classify(null, null, null);

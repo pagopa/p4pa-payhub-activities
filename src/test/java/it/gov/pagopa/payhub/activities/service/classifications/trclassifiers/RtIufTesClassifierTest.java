@@ -26,6 +26,7 @@ class RtIufTesClassifierTest {
 		// Arrange
 		transferDTO.setAmountCents(10000L);
 		paymentsReportingDTO.setAmountPaidCents(10000L);
+		paymentsReportingDTO.setTotalAmountCents(10000L);
 		treasuryDTO.setBillAmountCents(10000L);
 		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryDTO);
