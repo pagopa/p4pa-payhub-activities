@@ -4,10 +4,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,14 +85,17 @@ public class Utilities {
         return offsetDateTime != null ? DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR.newXMLGregorianCalendar(GregorianCalendar.from(offsetDateTime.toZonedDateTime())) : null;
     }
 
-
-    public static OffsetDateTime toOffsetDateTime(XMLGregorianCalendar xmlGregorianCalendar) {
-        if(xmlGregorianCalendar == null) {
+    public static <T> OffsetDateTime toOffsetDateTime(T date) {
+        if (date == null) {
             return null;
         }
 
-        OffsetDateTime odt = OffsetDateTime.parse(xmlGregorianCalendar.toString());
-        ZoneOffset zoneOffset = ZONEID.getRules().getOffset(odt.toInstant());
-        return odt.withOffsetSameInstant(zoneOffset);
+        return switch (date) {
+            case XMLGregorianCalendar xmlCal -> xmlCal.toGregorianCalendar().toZonedDateTime().toOffsetDateTime()
+                .withOffsetSameInstant(ZONEID.getRules().getOffset(Instant.now()));
+            case LocalDateTime ldt -> ldt.atZone(ZONEID).toOffsetDateTime();
+            case LocalDate ld -> ld.atStartOfDay(ZONEID).toOffsetDateTime();
+            default -> throw new IllegalArgumentException("Unable to convert to OffsetDateTime due to unsupported date type: " + date.getClass().getName());
+        };
     }
 }
