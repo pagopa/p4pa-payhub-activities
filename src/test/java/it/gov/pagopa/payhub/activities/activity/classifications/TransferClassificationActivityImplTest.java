@@ -24,7 +24,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 
+import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -39,6 +41,7 @@ class TransferClassificationActivityImplTest {
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 	private final Transfer transferDTO = TransferFaker.buildTransfer();
 	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
+	private final Set<StatusEnum> installmentStatusSet = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
 
 	@Mock
 	private ClassificationService classificationServiceMock;
@@ -82,7 +85,7 @@ class TransferClassificationActivityImplTest {
 	@Test
 	void classificationSuccess() {
 		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
-		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
+		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(transferDTO);
 		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenReturn(paymentsReportingDTO);
 		when(treasuryServiceMock.getByOrganizationIdAndIuf(ORGANIZATION, IUF)).thenReturn(treasuryDTO);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(List.of(ClassificationsEnum.RT_IUF_TES));
@@ -93,7 +96,7 @@ class TransferClassificationActivityImplTest {
 		assertDoesNotThrow(() -> activity.classify(transferSemanticKeyDTO));
 
 		Mockito.verify(classificationServiceMock, Mockito.times(1)).deleteBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(transferServiceMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
+		Mockito.verify(transferServiceMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet);
 		Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
@@ -101,7 +104,7 @@ class TransferClassificationActivityImplTest {
 	@Test
 	void whenPaymentsReportingIsEmptyShouldNotCallTreasury() {
 		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
-		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO)).thenReturn(transferDTO);
+		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(transferDTO);
 		when(paymentsReportingServiceMock.getBySemanticKey(transferSemanticKeyDTO)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
 		doReturn(1).when(transferClassificationStoreServiceMock)
@@ -110,7 +113,7 @@ class TransferClassificationActivityImplTest {
 		assertDoesNotThrow(() -> activity.classify(transferSemanticKeyDTO));
 
 		Mockito.verify(classificationServiceMock, Mockito.times(1)).deleteBySemanticKey(transferSemanticKeyDTO);
-		Mockito.verify(transferServiceMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO);
+		Mockito.verify(transferServiceMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet);
 		Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getBySemanticKey(transferSemanticKeyDTO);
 		Mockito.verify(treasuryServiceMock, Mockito.times(0)).getByOrganizationIdAndIuf(ORGANIZATION, IUF);
 	}
