@@ -4,7 +4,7 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 /**
- * Sends an email.
+ * Synchronize taxonomy activity
  */
 @ActivityInterface
 public interface TaxonomyActivity {
