@@ -37,7 +37,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .nation("nation")
                 .email("email")
                 .dueDate(OFFSETDATETIME)
-                .amountCents(1L)
+                .amountCents(100L)
                 .debtPositionTypeCode("debtPositionTypeCode")
                 .paymentTypeCode("paymentTypeCode")
                 .remittanceInformation("remittanceInformation")
@@ -61,7 +61,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .orgName("orgName_" + index)
                 .iban("iban_" + index)
                 .remittanceInformation("remittanceInformation_" + index)
-                .amountCents(1L)
+                .amountCents(100L)
                 .category("category_" + index)
                 .transferIndex(index)
                 .build();

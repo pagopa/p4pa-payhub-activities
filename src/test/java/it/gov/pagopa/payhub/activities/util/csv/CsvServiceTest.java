@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,11 +84,13 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class);
+        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, iterator -> {
+            List<TestCsv> list = new ArrayList<>();
+            iterator.forEachRemaining(list::add);
+            return list;
+        });
 
         // Then
-        List<TestCsv> resultList = new ArrayList<>();
-        iterator.forEachRemaining(resultList::add);
         List<String[]> actualData = resultList.stream()
                 .map(testCsv -> new String[]{
                         testCsv.getColumn1(),
@@ -115,11 +116,13 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        Iterator<TestCsv> iterator = csvService.readCsv(filePath, TestCsv.class);
+        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, iterator -> {
+            List<TestCsv> list = new ArrayList<>();
+            iterator.forEachRemaining(list::add);
+            return list;
+        });
 
         // Then
-        List<TestCsv> resultList = new ArrayList<>();
-        iterator.forEachRemaining(resultList::add);
         assertEquals(0, resultList.size());
     }
 
@@ -136,7 +139,11 @@ class CsvServiceTest {
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsv(filePath, TestCsv.class)
+                csvService.readCsv(filePath, TestCsv.class, iterator -> {
+                    List<TestCsv> list = new ArrayList<>();
+                    iterator.forEachRemaining(list::add);
+                    return list;
+                })
         );
     }
 
@@ -148,7 +155,11 @@ class CsvServiceTest {
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsv(filePath, TestCsv.class)
+                csvService.readCsv(filePath, TestCsv.class, iterator -> {
+                    List<TestCsv> list = new ArrayList<>();
+                    iterator.forEachRemaining(list::add);
+                    return list;
+                })
         );
     }
 

@@ -36,7 +36,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .nation("nation")
                 .email("email")
                 .dueDate(OFFSETDATETIME)
-                .amountCents(1L)
+                .amount(BigDecimal.valueOf(1L))
                 .debtPositionTypeCode("debtPositionTypeCode")
                 .paymentTypeCode("paymentTypeCode")
                 .remittanceInformation("remittanceInformation")
@@ -52,27 +52,12 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .build();
     }
 
-    static class TransferFake extends InstallmentIngestionFlowFileDTO {
-        @Override
-        public MultiValuedMap<String, String> getTransfer2() {
-            MultiValuedMap<String, String> fakeTransfer2 = new ArrayListValuedHashMap<>();
-
-            fakeTransfer2.put("orgFiscalCode", "orgFiscalCode_2");
-            fakeTransfer2.put("orgName", "orgName_2");
-            fakeTransfer2.put("iban", "iban_2");
-            fakeTransfer2.put("amount", BigDecimal.valueOf(1).toString());
-            fakeTransfer2.put("category", "category_2");
-
-            return fakeTransfer2;
-        }
-    }
-
     public static InstallmentIngestionFlowFileDTO buildTransferFake() {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = new TransferFake();
         installmentIngestionFlowFileDTO.setIngestionFlowFileLineNumber(1L);
         installmentIngestionFlowFileDTO.setAction(InstallmentIngestionFlowFileDTO.ActionEnum.I);
         installmentIngestionFlowFileDTO.setDescription("description");
-        installmentIngestionFlowFileDTO.setAmountCents(1L);
+        installmentIngestionFlowFileDTO.setAmount(BigDecimal.valueOf(1L));
         installmentIngestionFlowFileDTO.setDebtPositionTypeCode("typeCode");
         installmentIngestionFlowFileDTO.setEntityType(InstallmentIngestionFlowFileDTO.EntityTypeEnum.F);
         installmentIngestionFlowFileDTO.setIupdOrg("iupd");
@@ -104,4 +89,18 @@ public class InstallmentIngestionFlowFileDTOFaker {
         return transferData;
     }
 
+    static class TransferFake extends InstallmentIngestionFlowFileDTO {
+        @Override
+        public MultiValuedMap<String, String> getTransfer2() {
+            MultiValuedMap<String, String> fakeTransfer2 = new ArrayListValuedHashMap<>();
+
+            fakeTransfer2.put("orgFiscalCode", "orgFiscalCode_2");
+            fakeTransfer2.put("orgName", "orgName_2");
+            fakeTransfer2.put("iban", "iban_2");
+            fakeTransfer2.put("amount", Long.toString(1L));
+            fakeTransfer2.put("category", "category_2");
+
+            return fakeTransfer2;
+        }
+    }
 }

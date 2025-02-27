@@ -105,8 +105,6 @@ public class CsvService {
                     .withThrowExceptions(true)
                     .build();
 
-            log.info("CSV file read successfully: {}", csvFilePath);
-
             return rowProcessor.apply(csvToBean.iterator());
 
         } catch (Exception e) {

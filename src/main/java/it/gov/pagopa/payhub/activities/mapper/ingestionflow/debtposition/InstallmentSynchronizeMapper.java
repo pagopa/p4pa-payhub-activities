@@ -7,9 +7,12 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
+
+import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
 
 @Service
 @Lazy
@@ -45,7 +48,7 @@ public class InstallmentSynchronizeMapper {
                 .nation(installmentIngestionFlowFileDTO.getNation())
                 .email(installmentIngestionFlowFileDTO.getEmail())
                 .dueDate(installmentIngestionFlowFileDTO.getDueDate())
-                .amountCents(installmentIngestionFlowFileDTO.getAmountCents())
+                .amountCents(bigDecimalEuroToLongCentsAmount(installmentIngestionFlowFileDTO.getAmount()))
                 .debtPositionTypeCode(installmentIngestionFlowFileDTO.getDebtPositionTypeCode())
                 .paymentTypeCode(installmentIngestionFlowFileDTO.getPaymentTypeCode())
                 .remittanceInformation(installmentIngestionFlowFileDTO.getRemittanceInformation())
@@ -79,7 +82,7 @@ public class InstallmentSynchronizeMapper {
         return TransferSynchronizeDTO.builder()
                 .orgFiscalCode(getFirstValue(transferMap, "orgFiscalCode"))
                 .orgName(getFirstValue(transferMap, "orgName"))
-                .amountCents(Long.getLong(getFirstValue(transferMap, "amountCents")))
+                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "amount"))))
                 .remittanceInformation(getFirstValue(transferMap, "orgRemittanceInformation"))
                 .iban(getFirstValue(transferMap, "iban"))
                 .category(getFirstValue(transferMap, "category"))

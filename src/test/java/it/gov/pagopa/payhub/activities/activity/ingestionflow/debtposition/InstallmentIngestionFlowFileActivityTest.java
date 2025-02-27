@@ -21,11 +21,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -92,8 +94,11 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(filePath, InstallmentIngestionFlowFileDTO.class))
-                .thenReturn(iterator);
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
+                .thenAnswer(invocation -> {
+                    Function<Iterator<InstallmentIngestionFlowFileDTO>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+                    return rowProcessor.apply(iterator);
+                });
 
         Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenReturn(buildInstallmentIngestionFlowFileResult());
@@ -125,8 +130,11 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(filePath, InstallmentIngestionFlowFileDTO.class))
-                .thenReturn(iterator);
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
+                .thenAnswer(invocation -> {
+                    Function<Iterator<InstallmentIngestionFlowFileDTO>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+                    return rowProcessor.apply(iterator);
+                });
 
         Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenThrow(new RestClientException("Error"));
@@ -150,13 +158,13 @@ class InstallmentIngestionFlowFileActivityTest {
                         .ingestionFlowFileLineNumber(1L)
                         .iupdOrg("iupd1")
                         .iud("iud1")
-                        .amountCents(1L)
+                        .amount(BigDecimal.valueOf(1L))
                         .build(),
                 InstallmentIngestionFlowFileDTO.builder()
                         .ingestionFlowFileLineNumber(2L)
                         .iupdOrg("iupd2")
                         .iud("iud2")
-                        .amountCents(2L)
+                        .amount(BigDecimal.valueOf(2L))
                         .build()
         );
 

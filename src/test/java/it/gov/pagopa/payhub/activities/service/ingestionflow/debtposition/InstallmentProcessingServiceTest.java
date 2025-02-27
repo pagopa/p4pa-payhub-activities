@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
@@ -26,10 +25,14 @@ import static it.gov.pagopa.payhub.activities.util.faker.InstallmentIngestionFlo
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class InstallmentProcessingServiceTest {
 
+    public static final String ORDINARY_SIL = "ORDINARY_SIL";
     @Mock
     private DebtPositionService debtPositionServiceMock;
     @Mock
@@ -62,7 +65,7 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true))
                 .thenReturn(workflowId);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
@@ -93,7 +96,7 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true))
                 .thenReturn(workflowId);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
@@ -121,8 +124,11 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true))
                 .thenReturn(null);
+
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(null, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
+                .thenReturn(true);
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
@@ -145,16 +151,12 @@ class InstallmentProcessingServiceTest {
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
-        InstallmentErrorDTO error = buildInstallmentErrorDTO(installmentIngestionFlowFileDTO);
 
                 Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
-                        .when(debtPositionServiceMock).installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false);
-
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.buildInstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentIngestionFlowFileDTO, null,"PROCESS_EXCEPTION", "Error synchronizing the installment"))
-                        .thenReturn(error);
+                        .when(debtPositionServiceMock).installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true);
 
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
@@ -171,17 +173,7 @@ class InstallmentProcessingServiceTest {
         assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
-    }
 
-    private InstallmentErrorDTO buildInstallmentErrorDTO(InstallmentIngestionFlowFileDTO installment) {
-        return InstallmentErrorDTO.builder()
-                .fileName("fileName.csv")
-                .iupdOrg(installment.getIupdOrg())
-                .iud(installment.getIud())
-                .workflowStatus(null)
-                .rowNumber(installment.getIngestionFlowFileLineNumber())
-                .errorCode("PROCESS_EXCEPTION")
-                .errorMessage("Error in synchronizing the installment")
-                .build();
+        verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), any());
     }
 }

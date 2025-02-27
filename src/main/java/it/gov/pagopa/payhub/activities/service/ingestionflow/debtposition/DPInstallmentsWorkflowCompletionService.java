@@ -20,7 +20,7 @@ import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTIO
 public class DPInstallmentsWorkflowCompletionService {
 
     private final WorkflowCompletionService workflowCompletionService;
-    private final int maxRetries;
+    private final int maxAttempts;
     private final int retryDelayMs;
 
     public DPInstallmentsWorkflowCompletionService(WorkflowCompletionService workflowCompletionService,
@@ -28,7 +28,7 @@ public class DPInstallmentsWorkflowCompletionService {
                                                    @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms:1000}") int retryDelayMs) {
         this.workflowCompletionService = workflowCompletionService;
         this.retryDelayMs = retryDelayMs;
-        this.maxRetries = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
+        this.maxAttempts = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
     }
 
     /**
@@ -47,7 +47,7 @@ public class DPInstallmentsWorkflowCompletionService {
                 return true;
             }
             WorkflowExecutionStatus workflowStatus = workflowCompletionService.waitTerminationStatus(
-                    workflowId, maxRetries, retryDelayMs);
+                    workflowId, maxAttempts, retryDelayMs);
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
                 errorList.add(buildInstallmentErrorDTO(fileName, installment, workflowStatus.name(),

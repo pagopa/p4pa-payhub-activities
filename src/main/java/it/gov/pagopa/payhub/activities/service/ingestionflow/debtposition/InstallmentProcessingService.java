@@ -56,15 +56,15 @@ public class InstallmentProcessingService {
             totalRows++;
 
             InstallmentIngestionFlowFileDTO installment = iterator.next();
-            InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
-                    installment,
-                    ingestionFlowFile.getIngestionFlowFileId(),
-                    ingestionFlowFile.getOrganizationId()
-            );
-            try {
 
-                // For the moment we have decided to call the GPD api for a single DP because their development for the massive v2.0 is not yet ready
-                String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, false);
+            try {
+                InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
+                        installment,
+                        ingestionFlowFile.getIngestionFlowFileId(),
+                        ingestionFlowFile.getOrganizationId()
+                );
+
+                String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true);
                 if (dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, ingestionFlowFile.getFileName(), errorList)) {
                     processedRows++;
                 }
