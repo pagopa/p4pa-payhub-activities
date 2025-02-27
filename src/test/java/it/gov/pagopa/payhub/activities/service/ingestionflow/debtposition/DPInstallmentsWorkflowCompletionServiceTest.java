@@ -62,6 +62,20 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
+    void givenWaitForWorkflowCompletionWhenWorkflowIdNullThenReturnTrue() {
+        // Given
+        InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
+        List<InstallmentErrorDTO> errorList = new ArrayList<>();
+
+        // When
+        boolean result = service.waitForWorkflowCompletion(null, installment, FILE_NAME, errorList);
+
+        // Then
+        assertTrue(result, "Workflow succeeded");
+        assertTrue(errorList.isEmpty(), "Error list is empty");
+    }
+
+    @Test
     void givenWaitForWorkflowCompletionWhenStatusFailedThenAddErrorList() throws TooManyAttemptsException {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
