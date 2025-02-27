@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.MultiValuedMap;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Data
@@ -93,7 +92,7 @@ public class InstallmentIngestionFlowFileDTO {
     private OffsetDateTime dueDate;
 
     @CsvBindByName(column = "amount", required = true)
-    private BigDecimal amount;
+    private Long amountCents;
 
     @CsvBindByName(column = "debtPositionTypeCode", required = true)
     private String debtPositionTypeCode;

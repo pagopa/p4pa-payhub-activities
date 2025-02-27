@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
+package it.gov.pagopa.payhub.activities.service;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
@@ -12,7 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static io.temporal.api.enums.v1.WorkflowExecutionStatus.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class WorkflowCompletionServiceTest {
@@ -30,7 +31,7 @@ class WorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitTerminationStatusThenSuccess() {
+    void givenWaitTerminationStatusThenSuccess() throws TooManyAttemptsException {
         // Given
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
                 .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
@@ -43,7 +44,7 @@ class WorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitTerminationStatusWhenStatusFailedThenTerminate() {
+    void givenWaitTerminationStatusWhenStatusFailedThenTerminate() throws TooManyAttemptsException {
         // Given
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
                 .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_FAILED.name()));
@@ -56,7 +57,7 @@ class WorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitTerminationStatusWhenStatusNotTerminalThenRetryAndComplete() {
+    void givenWaitTerminationStatusWhenStatusNotTerminalThenRetryAndComplete() throws TooManyAttemptsException {
         // Given
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
                 .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name()));
@@ -73,7 +74,7 @@ class WorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitTerminationStatusWhenThreadInterruptedThenRestoreThreadAndTerminate() {
+    void givenWaitTerminationStatusWhenThreadInterruptedThenRestoreThreadAndTerminate() throws TooManyAttemptsException {
         // Given
         Mockito.when(workflowHubServiceMock.getWorkflowStatus(WORKFLOW_ID))
                 .thenAnswer(invocation -> {

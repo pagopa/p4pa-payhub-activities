@@ -36,7 +36,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .nation("nation")
                 .email("email")
                 .dueDate(OFFSETDATETIME)
-                .amount(BigDecimal.valueOf(1))
+                .amountCents(1L)
                 .debtPositionTypeCode("debtPositionTypeCode")
                 .paymentTypeCode("paymentTypeCode")
                 .remittanceInformation("remittanceInformation")
@@ -72,7 +72,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setIngestionFlowFileLineNumber(1L);
         installmentIngestionFlowFileDTO.setAction(InstallmentIngestionFlowFileDTO.ActionEnum.I);
         installmentIngestionFlowFileDTO.setDescription("description");
-        installmentIngestionFlowFileDTO.setAmount(BigDecimal.valueOf(1));
+        installmentIngestionFlowFileDTO.setAmountCents(1L);
         installmentIngestionFlowFileDTO.setDebtPositionTypeCode("typeCode");
         installmentIngestionFlowFileDTO.setEntityType(InstallmentIngestionFlowFileDTO.EntityTypeEnum.F);
         installmentIngestionFlowFileDTO.setIupdOrg("iupd");

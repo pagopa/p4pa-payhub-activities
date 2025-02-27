@@ -7,7 +7,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -46,7 +45,7 @@ public class InstallmentSynchronizeMapper {
                 .nation(installmentIngestionFlowFileDTO.getNation())
                 .email(installmentIngestionFlowFileDTO.getEmail())
                 .dueDate(installmentIngestionFlowFileDTO.getDueDate())
-                .amount(installmentIngestionFlowFileDTO.getAmount())
+                .amountCents(installmentIngestionFlowFileDTO.getAmountCents())
                 .debtPositionTypeCode(installmentIngestionFlowFileDTO.getDebtPositionTypeCode())
                 .paymentTypeCode(installmentIngestionFlowFileDTO.getPaymentTypeCode())
                 .remittanceInformation(installmentIngestionFlowFileDTO.getRemittanceInformation())
@@ -55,11 +54,11 @@ public class InstallmentSynchronizeMapper {
                 .balance(installmentIngestionFlowFileDTO.getBalance())
                 .flagMultibeneficiary(installmentIngestionFlowFileDTO.getFlagMultiBeneficiary())
                 .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? installmentIngestionFlowFileDTO.getNumberBeneficiary() : null)
-                .additionalTransfers(buildTransferList(installmentIngestionFlowFileDTO))
+                .additionalTransfers(buildAdditionalTransferList(installmentIngestionFlowFileDTO))
                 .build();
     }
 
-    private List<TransferSynchronizeDTO> buildTransferList(InstallmentIngestionFlowFileDTO dto) {
+    private List<TransferSynchronizeDTO> buildAdditionalTransferList(InstallmentIngestionFlowFileDTO dto) {
         int nBeneficiary = Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1);
         if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 2) {
             return IntStream.rangeClosed(2, nBeneficiary)
@@ -80,7 +79,7 @@ public class InstallmentSynchronizeMapper {
         return TransferSynchronizeDTO.builder()
                 .orgFiscalCode(getFirstValue(transferMap, "orgFiscalCode"))
                 .orgName(getFirstValue(transferMap, "orgName"))
-                .amount(new BigDecimal(getFirstValue(transferMap, "amount")))
+                .amountCents(Long.getLong(getFirstValue(transferMap, "amountCents")))
                 .remittanceInformation(getFirstValue(transferMap, "orgRemittanceInformation"))
                 .iban(getFirstValue(transferMap, "iban"))
                 .category(getFirstValue(transferMap, "category"))

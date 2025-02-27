@@ -4,6 +4,7 @@ import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
+import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -23,11 +24,11 @@ public class DPInstallmentsWorkflowCompletionService {
     private final int retryDelayMs;
 
     public DPInstallmentsWorkflowCompletionService(WorkflowCompletionService workflowCompletionService,
-                                                   @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes:5}") double maxWaitingMinutes,
+                                                   @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes:5}") int maxWaitingMinutes,
                                                    @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms:1000}") int retryDelayMs) {
         this.workflowCompletionService = workflowCompletionService;
         this.retryDelayMs = retryDelayMs;
-        this.maxRetries = (int) ((maxWaitingMinutes * 60_000) / retryDelayMs);
+        this.maxRetries = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
     }
 
     /**
@@ -42,6 +43,9 @@ public class DPInstallmentsWorkflowCompletionService {
     public boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
                                              String fileName, List<InstallmentErrorDTO> errorList) {
         try {
+            if (workflowId == null) {
+                return true;
+            }
             WorkflowExecutionStatus workflowStatus = workflowCompletionService.waitTerminationStatus(
                     workflowId, maxRetries, retryDelayMs);
 
@@ -59,7 +63,7 @@ public class DPInstallmentsWorkflowCompletionService {
         }
     }
 
-    public InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment,
+    private InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment,
                                                          String workflowStatus, String errorCode, String errorMessage) {
         return InstallmentErrorDTO.builder()
                 .fileName(fileName)

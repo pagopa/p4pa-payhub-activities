@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -61,10 +60,8 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
         log.info("Processing file: {}", filePath);
 
         try {
-            Iterator<InstallmentIngestionFlowFileDTO> csvIterator =
-                    csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class);
-
-            return installmentProcessingService.processInstallments(csvIterator, ingestionFlowFileDTO, workingDirectory);
+            return csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, csvIterator ->
+                    installmentProcessingService.processInstallments(csvIterator, ingestionFlowFileDTO, workingDirectory));
         } catch (Exception e) {
             log.error("Error processing file {}: {}", filePath, e.getMessage());
             throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));

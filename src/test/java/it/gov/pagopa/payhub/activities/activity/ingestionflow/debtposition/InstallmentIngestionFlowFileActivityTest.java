@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -151,13 +150,13 @@ class InstallmentIngestionFlowFileActivityTest {
                         .ingestionFlowFileLineNumber(1L)
                         .iupdOrg("iupd1")
                         .iud("iud1")
-                        .amount(BigDecimal.valueOf(100))
+                        .amountCents(1L)
                         .build(),
                 InstallmentIngestionFlowFileDTO.builder()
                         .ingestionFlowFileLineNumber(2L)
                         .iupdOrg("iupd2")
                         .iud("iud2")
-                        .amount(BigDecimal.valueOf(200))
+                        .amountCents(2L)
                         .build()
         );
 

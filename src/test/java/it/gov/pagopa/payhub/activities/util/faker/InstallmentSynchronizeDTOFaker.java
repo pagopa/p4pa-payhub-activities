@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.util.faker;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
@@ -38,7 +37,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .nation("nation")
                 .email("email")
                 .dueDate(OFFSETDATETIME)
-                .amount(BigDecimal.valueOf(1))
+                .amountCents(1L)
                 .debtPositionTypeCode("debtPositionTypeCode")
                 .paymentTypeCode("paymentTypeCode")
                 .remittanceInformation("remittanceInformation")
@@ -62,7 +61,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .orgName("orgName_" + index)
                 .iban("iban_" + index)
                 .remittanceInformation("remittanceInformation_" + index)
-                .amount(BigDecimal.valueOf(1))
+                .amountCents(1L)
                 .category("category_" + index)
                 .transferIndex(index)
                 .build();

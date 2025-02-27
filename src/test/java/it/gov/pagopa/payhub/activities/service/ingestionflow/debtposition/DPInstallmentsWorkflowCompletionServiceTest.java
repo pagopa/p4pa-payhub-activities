@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
+import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,16 +29,14 @@ class DPInstallmentsWorkflowCompletionServiceTest {
 
     private static final String WORKFLOW_ID = "workflow-123";
     private static final String FILE_NAME = "fileName";
-    private static final String ERROR_CODE = "ERROR_CODE";
-    private static final String ERROR_MESSAGE = "Error message";
     private int retryDelayMs;
     private int maxRetries;
 
     @BeforeEach
     void setUp() {
-        double maxWaitingMinutes = 0.005;
-        retryDelayMs = 100;
-        maxRetries = (int) ((maxWaitingMinutes * 60_000) / retryDelayMs);
+        int maxWaitingMinutes = 1;
+        retryDelayMs = 10;
+        maxRetries = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
         service = new DPInstallmentsWorkflowCompletionService(
                 workflowCompletionServiceMock,
                 maxWaitingMinutes,
@@ -46,7 +45,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionThenSuccess() {
+    void givenWaitForWorkflowCompletionThenSuccess() throws TooManyAttemptsException {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
@@ -63,7 +62,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionWhenStatusFailedThenAddErrorList() {
+    void givenWaitForWorkflowCompletionWhenStatusFailedThenAddErrorList() throws TooManyAttemptsException {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
@@ -83,7 +82,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionWhenRetryReachedLimitThenCatchTooManyAttemptsExceptionAndAddError() {
+    void givenWaitForWorkflowCompletionWhenRetryReachedLimitThenCatchTooManyAttemptsExceptionAndAddError() throws TooManyAttemptsException {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
@@ -99,24 +98,5 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         assertEquals(1, errorList.size());
         assertEquals("RETRY_LIMIT_REACHED", errorList.getFirst().getErrorCode());
         assertEquals("Maximum number of retries reached", errorList.getFirst().getErrorMessage());
-    }
-
-
-    @Test
-    void givenHandleProcessingErrorThenOk() {
-        //Given
-        InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-
-        // When
-        InstallmentErrorDTO installmentErrorDTO = service.buildInstallmentErrorDTO(FILE_NAME, installment, WORKFLOW_EXECUTION_STATUS_COMPLETED.name(), ERROR_CODE, ERROR_MESSAGE);
-
-        // Then
-        assertEquals(FILE_NAME, installmentErrorDTO.getFileName());
-        assertEquals(installment.getIupdOrg(), installmentErrorDTO.getIupdOrg());
-        assertEquals(installment.getIud(), installmentErrorDTO.getIud());
-        assertEquals(WORKFLOW_EXECUTION_STATUS_COMPLETED.name(), installmentErrorDTO.getWorkflowStatus());
-        assertEquals(installment.getIngestionFlowFileLineNumber(), installmentErrorDTO.getRowNumber());
-        assertEquals(ERROR_CODE, installmentErrorDTO.getErrorCode());
-        assertEquals(ERROR_MESSAGE, installmentErrorDTO.getErrorMessage());
     }
 }

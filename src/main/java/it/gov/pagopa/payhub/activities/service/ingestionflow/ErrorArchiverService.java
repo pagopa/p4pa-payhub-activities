@@ -37,16 +37,17 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
         this.csvService = csvService;
     }
 
+
+    protected abstract List<String[]> getHeaders();
+
     /**
      * Writes error data into a CSV file.
      *
      * @param workingDirectory  The directory where the file should be created.
      * @param ingestionFlowFile The metadata of the ingestion file.
      * @param errorList         The list of errors to write.
-     * @param headers           The headers of the CSV file.
      */
-    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile,
-                            List<T> errorList, List<String[]> headers) {
+    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile, List<T> errorList) {
 
         if(CollectionUtils.isEmpty(errorList)){
             return;
@@ -60,7 +61,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
             String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFile.getFileName(), ".csv");
             Path errorCsvFilePath = workingDirectory.resolve(errorFileName);
 
-            csvService.createCsv(errorCsvFilePath, headers, data);
+            csvService.createCsv(errorCsvFilePath, getHeaders(), data);
             log.info("Error CSV created: {}", errorCsvFilePath);
 
         } catch (IOException e) {
@@ -76,6 +77,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
      *
      * @param workingDirectory     the working directory where to search for error files to be archived. This file is moved from its original location to the target directory.
      * @param ingestionFlowFileDTO the ingestion flow file
+     * @return the name of the archived error file (ZIP) if exists
      */
     public String archiveErrorFiles(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO) {
         try {
@@ -107,6 +109,4 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
             return null;
         }
     }
-
-    protected abstract void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO, List<T> errorList);
 }

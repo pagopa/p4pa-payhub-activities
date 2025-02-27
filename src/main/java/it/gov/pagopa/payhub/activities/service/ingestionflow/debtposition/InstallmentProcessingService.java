@@ -21,6 +21,7 @@ import java.util.List;
 @Slf4j
 public class InstallmentProcessingService {
 
+    public static final String ORDINARY_SIL = "ORDINARY_SIL";
     private final DebtPositionService debtPositionService;
     private final InstallmentSynchronizeMapper installmentSynchronizeMapper;
     private final InstallmentErrorsArchiverService installmentErrorsArchiverService;
@@ -61,41 +62,44 @@ public class InstallmentProcessingService {
                     ingestionFlowFile.getOrganizationId()
             );
             try {
+
                 // For the moment we have decided to call the GPD api for a single DP because their development for the massive v2.0 is not yet ready
-                String workflowId = debtPositionService.installmentSynchronize("ORDINARY_SIL", installmentSynchronizeDTO, false);
-                if (workflowId != null) {
-                    boolean workflowCompleted = dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(
-                            workflowId, installment, ingestionFlowFile.getFileName(), errorList
-                    );
-                    log.info("Workflow with id {} completed", workflowId);
-                    if (workflowCompleted) {
-                        processedRows++;
-                    }
-                } else {
+                String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, false);
+                if (dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, ingestionFlowFile.getFileName(), errorList)) {
                     processedRows++;
                 }
+
             } catch (Exception e) {
                 log.error("Error processing installment {}: {}", installment.getIud(), e.getMessage());
-                InstallmentErrorDTO error = dpInstallmentsWorkflowCompletionService.buildInstallmentErrorDTO(
-                        ingestionFlowFile.getFileName(), installment, null, "PROCESS_EXCEPTION", e.getMessage());
+                InstallmentErrorDTO error = new InstallmentErrorDTO(
+                        ingestionFlowFile.getFileName(),
+                        installment.getIupdOrg(), installment.getIud(), null,
+                        installment.getIngestionFlowFileLineNumber(), "PROCESS_EXCEPTION", e.getMessage());
                 errorList.add(error);
                 log.info("Current error list size after handleProcessingError: {}", errorList.size());
             }
         }
 
-        String errorsZipFileName = null;
-        if (!errorList.isEmpty()) {
-            installmentErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFile, errorList);
-            errorsZipFileName = installmentErrorsArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFile);
-            log.info("Error file archived at: {}", errorsZipFileName);
-        }
-
+        String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
         return new InstallmentIngestionFlowFileResult(
                 totalRows,
                 processedRows,
                 errorsZipFileName != null ? "Some rows have failed" : null,
                 errorsZipFileName
         );
+    }
+
+    private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<InstallmentErrorDTO> errorList) {
+        if (errorList.isEmpty()) {
+            log.info("No errors to archive for file: {}", ingestionFlowFile.getFileName());
+            return null;
+        }
+
+        installmentErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFile, errorList);
+        String errorsZipFileName = installmentErrorsArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFile);
+        log.info("Error file archived at: {}", errorsZipFileName);
+
+        return errorsZipFileName;
     }
 }
 

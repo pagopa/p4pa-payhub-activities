@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
+package it.gov.pagopa.payhub.activities.service;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
@@ -37,21 +37,21 @@ public class WorkflowCompletionService {
      * Waits for a workflow to reach a terminal status.
      *
      * @param workflowId   The ID of the workflow to monitor.
-     * @param maxRetries   The maximum number of retry attempts.
+     * @param maxAttempts   The maximum number of retry attempts.
      * @param retryDelayMs The delay in milliseconds between retries.
      * @return The final {@link WorkflowExecutionStatus}.
      * @throws TooManyAttemptsException If the retry limit is exceeded.
      */
-    public WorkflowExecutionStatus waitTerminationStatus(String workflowId, int maxRetries, int retryDelayMs) throws TooManyAttemptsException {
+    public WorkflowExecutionStatus waitTerminationStatus(String workflowId, int maxAttempts, int retryDelayMs) throws TooManyAttemptsException {
 
+        maxAttempts = Math.max(maxAttempts, 1);
         int attempts = 0;
         WorkflowExecutionStatus workflowStatus;
 
         do {
             WorkflowStatusDTO statusDTO = workflowHubService.getWorkflowStatus(workflowId);
-            String status = statusDTO.getStatus();
-            workflowStatus = mapToString(status);
-            log.info("Workflow {} status: {}", workflowId, status);
+            log.debug("Retrieved workflow status: {}", statusDTO);
+            workflowStatus = transcodeStatus(statusDTO.getStatus());
 
             if (workflowStatus != null && wfTerminationStatuses.contains(workflowStatus)) {
                 return workflowStatus;
@@ -63,15 +63,15 @@ public class WorkflowCompletionService {
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                log.error("Thread interrupted while waiting for workflow completion. Attempt {}/{}", attempts, maxRetries);
+                log.error("Thread interrupted while waiting for workflow completion. Attempt {}/{}", attempts, maxAttempts);
             }
-        } while (attempts < maxRetries);
+        } while (attempts <= maxAttempts);
 
-        log.info("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxRetries);
+        log.info("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxAttempts);
         throw new TooManyAttemptsException("Maximum number of retries reached for workflow " + workflowId);
     }
 
-    private WorkflowExecutionStatus mapToString(String status) {
+    private WorkflowExecutionStatus transcodeStatus(String status) {
         if (status == null) {
             return null;
         }
