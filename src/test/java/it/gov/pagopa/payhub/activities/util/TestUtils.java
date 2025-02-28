@@ -13,10 +13,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -26,7 +23,8 @@ import java.util.*;
 public class TestUtils {
     private TestUtils(){}
 
-    public static final LocalDateTime LOCALDATETIME = LocalDateTime.of(2024, 5, 15, 10, 30, 0);
+    public static final LocalDate LOCALDATE = LocalDate.of(2024, 5, 15);
+    public static final LocalDateTime LOCALDATETIME = LocalDateTime.of(LOCALDATE, LocalTime.of(10, 30, 0));
     public static final OffsetDateTime OFFSETDATETIME = ZonedDateTime.of(LOCALDATETIME, ZoneId.of("Europe/Rome")).toOffsetDateTime();
     public static final Date DATE = Date.from(LOCALDATETIME
             .atZone(ZoneId.systemDefault())
