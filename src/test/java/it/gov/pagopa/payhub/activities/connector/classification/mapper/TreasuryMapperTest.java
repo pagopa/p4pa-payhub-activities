@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -21,7 +23,12 @@ class TreasuryMapperTest {
 
     @BeforeEach
     void init(){
-        this.mapper = new TreasuryMapper(mapperInnerMock);
+        try(MockedStatic<Mappers> mappersMockedStatic = Mockito.mockStatic(Mappers.class)) {
+            mappersMockedStatic.when(() -> Mappers.getMapper(TreasuryMapperInner.class))
+                    .thenReturn(mapperInnerMock);
+
+            this.mapper = new TreasuryMapper();
+        }
     }
 
 //region test map2Iuf
