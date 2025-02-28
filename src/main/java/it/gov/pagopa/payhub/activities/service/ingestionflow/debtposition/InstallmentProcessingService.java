@@ -16,12 +16,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO.DebtPositionOriginEnum.ORDINARY_SIL;
+
 @Service
 @Lazy
 @Slf4j
 public class InstallmentProcessingService {
 
-    public static final String ORDINARY_SIL = "ORDINARY_SIL";
     private final DebtPositionService debtPositionService;
     private final InstallmentSynchronizeMapper installmentSynchronizeMapper;
     private final InstallmentErrorsArchiverService installmentErrorsArchiverService;
@@ -56,6 +57,8 @@ public class InstallmentProcessingService {
             totalRows++;
 
             InstallmentIngestionFlowFileDTO installment = iterator.next();
+
+            installment.setIngestionFlowFileLineNumber(totalRows);
 
             try {
                 InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(

@@ -80,15 +80,16 @@ public class InstallmentSynchronizeMapper {
         }
 
         return TransferSynchronizeDTO.builder()
-                .orgFiscalCode(getFirstValue(transferMap, "codiceFiscaleEnte"))
-                .orgName(getFirstValue(transferMap, "denominazioneEnte"))
-                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "importoVersamentoEnte"))))
-                .remittanceInformation(getFirstValue(transferMap, "causaleVersamentoEnte"))
-                .iban(getFirstValue(transferMap, "ibanAccreditoEnte"))
-                .category(getFirstValue(transferMap, "codiceTassonomiaEnte"))
+                .orgFiscalCode(getFirstValue(transferMap, "codiceFiscaleEnte", "orgFiscalCode"))
+                .orgName(getFirstValue(transferMap, "denominazioneEnte", "orgName"))
+                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "importoVersamentoEnte", "amount"))))
+                .remittanceInformation(getFirstValue(transferMap, "causaleVersamentoEnte", "remittanceInformation"))
+                .iban(getFirstValue(transferMap, "ibanAccreditoEnte", "iban"))
+                .category(getFirstValue(transferMap, "codiceTassonomiaEnte", "category"))
                 .transferIndex(index)
                 .build();
     }
+
 
     private MultiValuedMap<String, String> getTransferMapByIndex(InstallmentIngestionFlowFileDTO dto, int index) {
         return switch (index) {
@@ -100,10 +101,14 @@ public class InstallmentSynchronizeMapper {
         };
     }
 
-    private String getFirstValue(MultiValuedMap<String, String> map, String key) {
+    private String getFirstValue(MultiValuedMap<String, String> map, String italianKey, String englishKey) {
         return Optional.ofNullable(map)
-                .map(m -> m.get(key))
+                .map(m -> m.get(italianKey))
                 .flatMap(values -> values.stream().findFirst())
-                .orElseThrow(() -> new IllegalArgumentException("Missing required value for key: " + key));
+                .or(() -> Optional.ofNullable(map)
+                        .map(m -> m.get(englishKey))
+                        .flatMap(values -> values.stream().findFirst()))
+                .orElseThrow(() -> new IllegalArgumentException("Missing required value for keys: %s or %s".formatted(italianKey, englishKey)));
     }
+
 }

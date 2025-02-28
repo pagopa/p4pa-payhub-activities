@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
+import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO.DebtPositionOriginEnum.ORDINARY_SIL;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,7 +93,7 @@ class DebtPositionClientTest {
     void givenInstallmentSynchronizeThenOk() {
         // Given
         String accessToken = "ACCESSTOKEN";
-        String origin = "origin";
+        DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         boolean massive = false;
         String expectedWorkflowId = "workflow-123";
@@ -102,7 +103,7 @@ class DebtPositionClientTest {
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
                 .thenReturn(debtPositionApiMock);
-        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive))
+        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive))
                 .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
 
         // When
@@ -110,7 +111,7 @@ class DebtPositionClientTest {
 
         // Then
         Assertions.assertEquals(expectedWorkflowId, result);
-        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive);
+        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive);
     }
 
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
+import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO.DebtPositionOriginEnum.ORDINARY_SIL;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -120,7 +121,7 @@ class DebtPositionServiceTest {
     void givenInstallmentSynchronizeThenReturnsWorkflowId() {
         // Given
         String accessToken = "ACCESSTOKEN";
-        String origin = "origin";
+        DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         boolean massive = false;
         String expectedWorkflowId = "workflow-123";

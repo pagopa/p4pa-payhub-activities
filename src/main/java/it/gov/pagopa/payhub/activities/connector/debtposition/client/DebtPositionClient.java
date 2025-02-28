@@ -28,9 +28,9 @@ public class DebtPositionClient {
         return debtPositionApisHolder.getDebtPositionApi(accessToken).checkAndUpdateInstallmentExpiration(debtPositionId);
     }
 
-    public String installmentSynchronize(String accessToken, String origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive) {
+    public String installmentSynchronize(String accessToken, DebtPositionDTO.DebtPositionOriginEnum origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive) {
         ResponseEntity<Void> response = debtPositionApisHolder.getDebtPositionApi(accessToken)
-                .installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive);
+                .installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive);
 
         return response.getHeaders().getFirst("x-workflow-id");
     }
