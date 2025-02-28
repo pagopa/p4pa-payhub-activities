@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptTransferDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO.ReceiptOriginEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,13 +17,15 @@ import java.util.List;
 public class PaymentsReporting2ReceiptMapper {
 	public static final String CREDITOR_REFERENCE_ID_PREFIX = "3";
 	public static final String ANONYMOUS_PERSON = "ANONIMO";
-	public static final String FAKE_COMPANY_NAME = "PaymentsReportingCode9";
+	public static final String ALIAS_ORIGIN_PREFIX = ReceiptOriginEnum.PAYMENTS_REPORTING.getValue() + "_CODE_";
 	public static final String CHANNEL = "BATCH";
+	/** Taxonomy for general incomes */
+	public static final String DEFAULT_TRANSFER_CATEGORY = "9/0801100AP/";
 
 	public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, String fiscalCodePA) {
 		return new ReceiptWithAdditionalNodeDataDTO()
 			.ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
-			.receiptOrigin(ReceiptWithAdditionalNodeDataDTO.ReceiptOriginEnum.PAYMENTS_REPORTING)
+			.receiptOrigin(ReceiptOriginEnum.PAYMENTS_REPORTING)
 			.paymentReceiptId(paymentsReporting.getIur())
 			.noticeNumber(paymentsReporting.getIuv())
 			.orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
@@ -30,7 +33,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.creditorReferenceId(CREDITOR_REFERENCE_ID_PREFIX + paymentsReporting.getIuv())
 			.paymentAmountCents(paymentsReporting.getAmountPaidCents())
 			.description(paymentsReporting.getIuf())
-			.companyName(FAKE_COMPANY_NAME)
+			.companyName(ALIAS_ORIGIN_PREFIX + paymentsReporting.getPaymentOutcomeCode())
 			.idPsp(paymentsReporting.getPspIdentifier())
 			.pspFiscalCode(paymentsReporting.getSenderPspCode())
 			.pspCompanyName(paymentsReporting.getSenderPspName())
@@ -57,7 +60,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.idTransfer(1)
 			.transferAmountCents(paymentsReporting.getAmountPaidCents())
 			.fiscalCodePA(fiscalCodePA)
-			.remittanceInformation("code_" + paymentsReporting.getPaymentOutcomeCode())
-			.transferCategory("9/---");
+			.remittanceInformation(ALIAS_ORIGIN_PREFIX + paymentsReporting.getPaymentOutcomeCode())
+			.transferCategory(DEFAULT_TRANSFER_CATEGORY);
 	}
 }
