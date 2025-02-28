@@ -1,13 +1,14 @@
 package it.gov.pagopa.payhub.activities.service.classifications;
 
-import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuv;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufClassifier;
 import it.gov.pagopa.payhub.activities.service.classifications.trclassifiers.RtIufTesClassifier;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,26 +26,27 @@ class TransferTreasuryServiceTest {
 
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 	private final Transfer transferDTO = TransferFaker.buildTransfer();
-	private final Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO();
+	private final TreasuryIuf treasuryIUF = TreasuryFaker.buildTreasuryIuf();
+	private final TreasuryIuv treasuryIUV = TreasuryFaker.buildTreasuryIuv();
 
 	@Mock
-	RtIufClassifier rtIufClassifierMock;
+	private RtIufClassifier rtIufClassifierMock;
 
 	@Mock
-	RtIufTesClassifier rtIufTesClassifierMock;
+	private RtIufTesClassifier rtIufTesClassifierMock;
 
-	TransferClassificationService service;
+	private TransferClassificationService service;
 
 	@Test
 	void whenDefineLabelsThenReturnsLabels() {
 		// Arrange
 		service = new TransferClassificationService(List.of(rtIufClassifierMock, rtIufTesClassifierMock));
 
-		when(rtIufTesClassifierMock.classify(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(ClassificationsEnum.RT_IUF_TES);
-		when(rtIufClassifierMock.classify(transferDTO, paymentsReportingDTO, treasuryDTO)).thenReturn(ClassificationsEnum.RT_IUF);
+		when(rtIufTesClassifierMock.classify(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV)).thenReturn(ClassificationsEnum.RT_IUF_TES);
+		when(rtIufClassifierMock.classify(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV)).thenReturn(ClassificationsEnum.RT_IUF);
 
 		// Act
-		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
+		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV);
 
 		// Assert
 		assertEquals(2, labels.size());
@@ -57,7 +59,7 @@ class TransferTreasuryServiceTest {
 		// Arrange
 		service = new TransferClassificationService(List.of());
 		// Act
-		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, paymentsReportingDTO, treasuryDTO);
+		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV);
 
 		// Assert
 		assertEquals(1, labels.size());

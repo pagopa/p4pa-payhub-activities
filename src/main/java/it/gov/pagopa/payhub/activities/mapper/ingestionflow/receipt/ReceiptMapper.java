@@ -24,7 +24,7 @@ public class ReceiptMapper {
     return new ReceiptWithAdditionalNodeDataDTO()
       .receiptId(null)
       .ingestionFlowFileId(null)
-      .receiptOrigin(ReceiptWithAdditionalNodeDataDTO.ReceiptOriginEnum.PAGOPA)
+      .receiptOrigin(ReceiptWithAdditionalNodeDataDTO.ReceiptOriginEnum.RECEIPT_PAGOPA)
       .paymentReceiptId(rec.getReceiptId())
       .noticeNumber(rec.getNoticeNumber())
       .paymentNote(rec.getPaymentNote())

@@ -14,12 +14,12 @@ class IuvNoRtClassifierTest {
 	private final Transfer transferDTO = TransferFaker.buildTransfer();
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 
-	TransferClassifier classifier = new IuvNoRtClassifier();
+	private final TransferClassifier classifier = new IuvNoRtClassifier();
 
 	@Test
 	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, null, null);
 		// Assert
 		assertEquals(ClassificationsEnum.IUV_NO_RT, result);
 	}
@@ -27,7 +27,7 @@ class IuvNoRtClassifierTest {
 	@Test
 	void givenUnmatchedTransferDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null, null);
 		// Assert
 		assertNull(result);
 	}
@@ -35,7 +35,7 @@ class IuvNoRtClassifierTest {
 	@Test
 	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, null);
+		ClassificationsEnum result = classifier.classify(null, null, null, null);
 		// Assert
 		assertNull(result);
 	}
