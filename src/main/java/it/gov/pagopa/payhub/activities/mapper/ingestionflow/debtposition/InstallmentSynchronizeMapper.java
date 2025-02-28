@@ -80,12 +80,12 @@ public class InstallmentSynchronizeMapper {
         }
 
         return TransferSynchronizeDTO.builder()
-                .orgFiscalCode(getFirstValue(transferMap, "orgFiscalCode"))
-                .orgName(getFirstValue(transferMap, "orgName"))
-                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "amount"))))
-                .remittanceInformation(getFirstValue(transferMap, "orgRemittanceInformation"))
-                .iban(getFirstValue(transferMap, "iban"))
-                .category(getFirstValue(transferMap, "category"))
+                .orgFiscalCode(getFirstValue(transferMap, "codiceFiscaleEnte"))
+                .orgName(getFirstValue(transferMap, "denominazioneEnte"))
+                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "importoVersamentoEnte"))))
+                .remittanceInformation(getFirstValue(transferMap, "causaleVersamentoEnte"))
+                .iban(getFirstValue(transferMap, "ibanAccreditoEnte"))
+                .category(getFirstValue(transferMap, "codiceTassonomiaEnte"))
                 .transferIndex(index)
                 .build();
     }

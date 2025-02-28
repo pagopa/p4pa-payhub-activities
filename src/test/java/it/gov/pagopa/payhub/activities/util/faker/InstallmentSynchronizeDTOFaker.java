@@ -57,12 +57,12 @@ public class InstallmentSynchronizeDTOFaker {
 
     private static TransferSynchronizeDTO buildTransferSynchronizeDTO(int index) {
         return TransferSynchronizeDTO.builder()
-                .orgFiscalCode("orgFiscalCode_" + index)
-                .orgName("orgName_" + index)
-                .iban("iban_" + index)
-                .remittanceInformation("remittanceInformation_" + index)
+                .orgFiscalCode("codiceFiscaleEnte_" + index)
+                .orgName("denominazioneEnte_" + index)
+                .iban("ibanAccreditoEnte_" + index)
+                .remittanceInformation("causaleVersamentoEnte_" + index)
                 .amountCents(100L)
-                .category("category_" + index)
+                .category("codiceTassonomiaEnte_" + index)
                 .transferIndex(index)
                 .build();
     }

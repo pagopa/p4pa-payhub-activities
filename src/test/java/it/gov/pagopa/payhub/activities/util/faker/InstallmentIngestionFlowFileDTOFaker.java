@@ -79,12 +79,12 @@ public class InstallmentIngestionFlowFileDTOFaker {
     private static MultiValuedMap<String, String> buildTransferData(int index) {
         MultiValuedMap<String, String> transferData = new ArrayListValuedHashMap<>();
 
-        transferData.put("orgFiscalCode", "orgFiscalCode_" + index);
-        transferData.put("orgName", "orgName_" + index);
-        transferData.put("iban", "iban_" + index);
-        transferData.put("orgRemittanceInformation", "remittanceInformation_" + index);
-        transferData.put("amount", BigDecimal.valueOf(1).toString());
-        transferData.put("category", "category_" + index);
+        transferData.put("codiceFiscaleEnte", "codiceFiscaleEnte_" + index);
+        transferData.put("denominazioneEnte", "denominazioneEnte_" + index);
+        transferData.put("ibanAccreditoEnte", "ibanAccreditoEnte_" + index);
+        transferData.put("causaleVersamentoEnte", "causaleVersamentoEnte_" + index);
+        transferData.put("importoVersamentoEnte", BigDecimal.valueOf(1).toString());
+        transferData.put("codiceTassonomiaEnte", "codiceTassonomiaEnte_" + index);
 
         return transferData;
     }
@@ -94,11 +94,11 @@ public class InstallmentIngestionFlowFileDTOFaker {
         public MultiValuedMap<String, String> getTransfer2() {
             MultiValuedMap<String, String> fakeTransfer2 = new ArrayListValuedHashMap<>();
 
-            fakeTransfer2.put("orgFiscalCode", "orgFiscalCode_2");
-            fakeTransfer2.put("orgName", "orgName_2");
-            fakeTransfer2.put("iban", "iban_2");
-            fakeTransfer2.put("amount", Long.toString(1L));
-            fakeTransfer2.put("category", "category_2");
+            fakeTransfer2.put("codiceFiscaleEnte", "codiceFiscaleEnte_2");
+            fakeTransfer2.put("denominazioneEnte", "denominazioneEnte_2");
+            fakeTransfer2.put("ibanAccreditoEnte", "ibanAccreditoEnte_2");
+            fakeTransfer2.put("importoVersamentoEnte", Long.toString(1L));
+            fakeTransfer2.put("codiceTassonomiaEnte", "codiceTassonomiaEnte_2");
 
             return fakeTransfer2;
         }

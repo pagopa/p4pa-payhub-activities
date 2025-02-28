@@ -102,13 +102,13 @@ class InstallmentSynchronizeMapperTest {
     }
 
     @Test
-    void givenMapWhenAmountFieldIsEmptyThenThrowException() {
+    void givenMapWhenRemittanceInformationFieldIsEmptyThenThrowException() {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildTransferFake();
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L)
         );
 
-        assertEquals("Missing required value for key: orgRemittanceInformation", exception.getMessage());
+        assertEquals("Missing required value for key: causaleVersamentoEnte", exception.getMessage());
     }
 }

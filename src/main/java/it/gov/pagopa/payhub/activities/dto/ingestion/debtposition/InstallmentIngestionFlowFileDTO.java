@@ -23,100 +23,100 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvIgnore
     private Long ingestionFlowFileLineNumber;
 
-    @CsvBindByName(column = "action", required = true)
+    @CsvBindByName(column = "azione", required = true)
     private ActionEnum action;
 
     @CsvBindByName(column = "draft")
     private Boolean draft;
 
-    @CsvBindByName(column = "iupdOrg")
+    @CsvBindByName(column = "IUPD")
     private String iupdOrg;
 
-    @CsvBindByName(column = "description", required = true)
+    @CsvBindByName(column = "descrizione", required = true)
     private String description;
 
-    @CsvCustomBindByName(column = "validityDate", converter = CsvOffsetDateTimeConverter.class)
+    @CsvCustomBindByName(column = "dataValidita", converter = CsvOffsetDateTimeConverter.class)
     private OffsetDateTime validityDate;
 
     @CsvBindByName(column = "multiDebtor")
     private Boolean multiDebtor;
 
-    @CsvCustomBindByName(column = "notificationDate", converter = CsvOffsetDateTimeConverter.class)
+    @CsvCustomBindByName(column = "dataNotifica", converter = CsvOffsetDateTimeConverter.class)
     private OffsetDateTime notificationDate;
 
-    @CsvBindByName(column = "paymentOptionIndex", required = true)
+    @CsvBindByName(column = "indiceOpzionePagamento", required = true)
     private Integer paymentOptionIndex;
 
-    @CsvBindByName(column = "paymentOptionType", required = true)
+    @CsvBindByName(column = "tipoOpzionePagamento", required = true)
     private String paymentOptionType;
 
-    @CsvBindByName(column = "paymentOptionDescription")
+    @CsvBindByName(column = "descrizioneOpzionePagamento")
     private String paymentOptionDescription;
 
-    @CsvBindByName(column = "iud")
+    @CsvBindByName(column = "IUD")
     private String iud;
 
-    @CsvBindByName(column = "iuv")
+    @CsvBindByName(column = "codIUV")
     private String iuv;
 
-    @CsvBindByName(column = "entityType", required = true)
+    @CsvBindByName(column = "tipoIdentificativoUnivoco", required = true)
     private EntityTypeEnum entityType;
 
-    @CsvBindByName(column = "fiscalCode", required = true)
+    @CsvBindByName(column = "codiceIdentificativoUnivoco", required = true)
     private String fiscalCode;
 
-    @CsvBindByName(column = "fullName", required = true)
+    @CsvBindByName(column = "anagraficaPagatore", required = true)
     private String fullName;
 
-    @CsvBindByName(column = "address")
+    @CsvBindByName(column = "indirizzoPagatore")
     private String address;
 
-    @CsvBindByName(column = "civic")
+    @CsvBindByName(column = "civicoPagatore")
     private String civic;
 
-    @CsvBindByName(column = "postalCode")
+    @CsvBindByName(column = "capPagatore")
     private String postalCode;
 
-    @CsvBindByName(column = "location")
+    @CsvBindByName(column = "localitaPagatore")
     private String location;
 
-    @CsvBindByName(column = "province")
+    @CsvBindByName(column = "provinciaPagatore")
     private String province;
 
-    @CsvBindByName(column = "nation")
+    @CsvBindByName(column = "nazionePagatore")
     private String nation;
 
-    @CsvBindByName(column = "email")
+    @CsvBindByName(column = "emailPagatore")
     private String email;
 
-    @CsvCustomBindByName(column = "dueDate", converter = CsvOffsetDateTimeConverter.class)
+    @CsvCustomBindByName(column = "dataEsecuzionePagamento", converter = CsvOffsetDateTimeConverter.class)
     private OffsetDateTime dueDate;
 
-    @CsvBindByName(column = "amount", required = true)
+    @CsvBindByName(column = "importoDovuto", required = true)
     private BigDecimal amount;
 
-    @CsvBindByName(column = "debtPositionTypeCode", required = true)
+    @CsvBindByName(column = "tipoDovuto", required = true)
     private String debtPositionTypeCode;
 
-    @CsvBindByName(column = "paymentTypeCode")
+    @CsvBindByName(column = "tipoVersamento")
     private String paymentTypeCode;
 
-    @CsvBindByName(column = "remittanceInformation", required = true)
+    @CsvBindByName(column = "causaleVersamento", required = true)
     private String remittanceInformation;
 
-    @CsvBindByName(column = "legacyPaymentMetadata")
+    @CsvBindByName(column = "datiSpecificiRiscossione")
     private String legacyPaymentMetadata;
 
-    @CsvBindByName(column = "flagPagoPaPayment", required = true)
+    @CsvBindByName(column = "flagGeneraIuv", required = true)
     private Boolean flagPagoPaPayment;
 
-    @CsvBindByName(column = "balance")
+    @CsvBindByName(column = "bilancio")
     private String balance;
 
-    @CsvBindByName(column = "flagMultiBeneficiary")
+    @CsvBindByName(column = "flagMultiBeneficiario")
     private Boolean flagMultiBeneficiary;
 
-    @CsvBindByName(column = "numberBeneficiary")
+    @CsvBindByName(column = "numeroBeneficiari")
     private Integer numberBeneficiary;
 
     @CsvBindAndJoinByName(column = "*_2", elementType = String.class)
