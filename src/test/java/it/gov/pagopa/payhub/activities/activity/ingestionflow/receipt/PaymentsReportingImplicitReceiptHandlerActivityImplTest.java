@@ -12,7 +12,6 @@ import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ReceiptDummyGenerationActivityImplTest {
+class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 	@Mock
 	private PaymentsReportingService paymentsReportingServiceMock;
 	@Mock
@@ -36,11 +35,11 @@ class ReceiptDummyGenerationActivityImplTest {
 	@Mock
 	private ReceiptService receiptServiceMock;
 
-	private ReceiptDummyGenerationActivity activity;
+	private PaymentsReportingImplicitReceiptHandlerActivity activity;
 
 	@BeforeEach
 	void setUp() {
-		activity = new ReceiptDummyGenerationActivityImpl(
+		activity = new PaymentsReportingImplicitReceiptHandlerActivityImpl(
 			paymentsReportingServiceMock,
 			organizationServiceMock,
 			paymentsReporting2ReceiptMapperMock,
@@ -49,7 +48,7 @@ class ReceiptDummyGenerationActivityImplTest {
 	}
 
 	@Test
-	void whenGenerateThenCompleteSuccessfully() {
+	void whenHandleThenCompleteSuccessfully() {
 		// Given
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
 		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
@@ -63,7 +62,7 @@ class ReceiptDummyGenerationActivityImplTest {
 		when(receiptServiceMock.createReceipt(dummyReceiptMocked)).thenReturn(dummyReceiptCreated);
 
 		// When Then
-		assertDoesNotThrow(() -> activity.generate(paymentsReportingTransferDTO));
+		assertDoesNotThrow(() -> activity.handle(paymentsReportingTransferDTO));
 
 		verify(paymentsReportingServiceMock, times(1)).getBySemanticKey(paymentsReportingTransferDTO);
 		verify(organizationServiceMock, times(1)).getOrganizationById(paymentsReportingFake.getOrganizationId());
@@ -72,7 +71,7 @@ class ReceiptDummyGenerationActivityImplTest {
 	}
 
 	@Test
-	void givenInvalidOrgIdWhenGenerateThenThrowsException() {
+	void givenInvalidOrgIdWhenHandleThenThrowsException() {
 		// Given
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
 		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
@@ -82,6 +81,6 @@ class ReceiptDummyGenerationActivityImplTest {
 			.thenThrow(InvalidValueException.class);
 
 		// When Then
-		assertThrows(InvalidValueException.class, () -> activity.generate(paymentsReportingTransferDTO), "invalid");
+		assertThrows(InvalidValueException.class, () -> activity.handle(paymentsReportingTransferDTO), "invalid");
 	}
 }

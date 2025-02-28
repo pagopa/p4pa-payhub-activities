@@ -17,16 +17,16 @@ import org.springframework.stereotype.Component;
 @Lazy
 @Slf4j
 @Component
-public class ReceiptDummyGenerationActivityImpl implements ReceiptDummyGenerationActivity {
+public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements PaymentsReportingImplicitReceiptHandlerActivity {
 	private final PaymentsReportingService paymentsReportingService;
 	private final OrganizationService organizationService;
 	private final PaymentsReporting2ReceiptMapper paymentsReporting2ReceiptMapper;
 	private final ReceiptService receiptService;
 
-	public ReceiptDummyGenerationActivityImpl(PaymentsReportingService paymentsReportingService,
-	                                          OrganizationService organizationService,
-	                                          PaymentsReporting2ReceiptMapper paymentsReporting2ReceiptMapper,
-	                                          ReceiptService receiptService) {
+	public PaymentsReportingImplicitReceiptHandlerActivityImpl(PaymentsReportingService paymentsReportingService,
+	                                                           OrganizationService organizationService,
+	                                                           PaymentsReporting2ReceiptMapper paymentsReporting2ReceiptMapper,
+	                                                           ReceiptService receiptService) {
 		this.paymentsReportingService = paymentsReportingService;
 		this.organizationService = organizationService;
 		this.paymentsReporting2ReceiptMapper = paymentsReporting2ReceiptMapper;
@@ -34,7 +34,7 @@ public class ReceiptDummyGenerationActivityImpl implements ReceiptDummyGeneratio
 	}
 
 	@Override
-	public void generate(PaymentsReportingTransferDTO paymentsReportingTransferDTO) {
+	public void handle(PaymentsReportingTransferDTO paymentsReportingTransferDTO) {
 		log.info("Retrieve payment reporting with payment outcome code {} for organization id: {} and iuv: {} and iur {} and transfer index: {}", paymentsReportingTransferDTO.getPaymentOutcomeCode(),
 			paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());
 		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(paymentsReportingTransferDTO);
