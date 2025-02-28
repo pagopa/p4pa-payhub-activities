@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.PaymentsReporting2ReceiptMapper;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
@@ -38,7 +39,8 @@ public class ReceiptDummyGenerationActivityImpl implements ReceiptDummyGeneratio
 			paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());
 		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(paymentsReportingTransferDTO);
 
-		String organizationFiscalCode = organizationService.getOrganizationById(paymentsReporting.getOrganizationId()).map(Organization::getOrgFiscalCode).get();
+		String organizationFiscalCode = organizationService.getOrganizationById(paymentsReporting.getOrganizationId()).map(Organization::getOrgFiscalCode)
+			.orElseThrow(() -> new InvalidValueException("Organization not found: " + paymentsReporting.getOrganizationId()));
 
 		ReceiptWithAdditionalNodeDataDTO dummyReceipt = paymentsReporting2ReceiptMapper.map2DummyReceipt(paymentsReporting, organizationFiscalCode);
 

@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.PaymentsReporting2ReceiptMapper;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,5 +69,19 @@ class ReceiptDummyGenerationActivityImplTest {
 		verify(organizationServiceMock, times(1)).getOrganizationById(paymentsReportingFake.getOrganizationId());
 		verify(paymentsReporting2ReceiptMapperMock, times(1)).map2DummyReceipt(paymentsReportingFake, organizationFake.getOrgFiscalCode());
 		verify(receiptServiceMock, times(1)).createReceipt(dummyReceiptMocked);
+	}
+
+	@Test
+	void givenInvalidOrgIdWhenGenerateThenThrowsException() {
+		// Given
+		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
+		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
+
+		when(paymentsReportingServiceMock.getBySemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
+		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId()))
+			.thenThrow(InvalidValueException.class);
+
+		// When Then
+		assertThrows(InvalidValueException.class, () -> activity.generate(paymentsReportingTransferDTO), "invalid");
 	}
 }
