@@ -22,7 +22,7 @@ public class PaymentsReporting2ReceiptMapper {
 	public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, String fiscalCodePA) {
 		return new ReceiptWithAdditionalNodeDataDTO()
 			.ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
-			//.receiptOrigin() may add something like RECEIPT_DUMMY at ReceiptOriginEnum???
+			.receiptOrigin(ReceiptWithAdditionalNodeDataDTO.ReceiptOriginEnum.PAYMENTS_REPORTING)
 			.paymentReceiptId(paymentsReporting.getIur())
 			.noticeNumber(paymentsReporting.getIuv())
 			.orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
