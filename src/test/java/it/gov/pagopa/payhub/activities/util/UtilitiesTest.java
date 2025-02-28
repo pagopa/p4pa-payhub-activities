@@ -101,13 +101,15 @@ class UtilitiesTest {
     }
 
     @Test
-    void testToOffsetDateTimeNull(){
+    void givenNullDatesWhenTestToOffsetDateTimeThenAssertNull(){
         // Given
-        LocalDate date = null;
-        // When
-        OffsetDateTime result = Utilities.toOffsetDateTime(date);
-        // Then
-        assertNull(result);
+        LocalDate localDate = null;
+        LocalDateTime localDateTime = null;
+        XMLGregorianCalendar xmlGregorianCalendar = null;
+        // When Then
+        assertNull(Utilities.toOffsetDateTime(localDate));
+        assertNull(Utilities.toOffsetDateTime(localDateTime));
+        assertNull(Utilities.toOffsetDateTime(xmlGregorianCalendar));
     }
 
     private <T> void assertConversion(OffsetDateTime expected, OffsetDateTime result) {
