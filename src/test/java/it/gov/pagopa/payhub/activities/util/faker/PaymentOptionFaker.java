@@ -16,7 +16,7 @@ public class PaymentOptionFaker {
                 .debtPositionId(1L)
                 .totalAmountCents(100L)
                 .status(PaymentOptionDTO.StatusEnum.PAID)
-                .dueDate(TestUtils.OFFSETDATETIME)
+                .dueDate(TestUtils.LOCALDATE)
                 .installments(List.of(buildInstallmentDTO()))
                 .description("description")
                 .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);

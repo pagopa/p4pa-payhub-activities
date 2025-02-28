@@ -8,7 +8,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.Map;
 
 @Lazy
@@ -30,7 +30,7 @@ public class DebtPositionServiceImpl implements DebtPositionService {
     }
 
     @Override
-    public OffsetDateTime checkAndUpdateInstallmentExpiration(Long debtPositionId) {
+    public LocalDate checkAndUpdateInstallmentExpiration(Long debtPositionId) {
         String accessToken = authnService.getAccessToken();
         DebtPositionDTO debtPositionDTO = debtPositionClient.checkAndUpdateInstallmentExpiration(accessToken, debtPositionId);
 
