@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCALDATE;
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
@@ -28,7 +29,7 @@ public class InstallmentFaker {
                 .nav("nav")
                 .creationDate(OFFSETDATETIME)
                 .updateDate(OFFSETDATETIME)
-                .dueDate(OFFSETDATETIME)
+                .dueDate(LOCALDATE)
                 .paymentTypeCode("paymentTypeCode")
                 .amountCents(100L)
                 .remittanceInformation("remittanceInformation")

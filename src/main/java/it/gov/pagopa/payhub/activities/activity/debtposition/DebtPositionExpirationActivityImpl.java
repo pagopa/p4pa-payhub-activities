@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
 @Slf4j
 @Lazy
@@ -19,7 +19,7 @@ public class DebtPositionExpirationActivityImpl implements DebtPositionExpiratio
     }
 
     @Override
-    public OffsetDateTime checkAndUpdateInstallmentExpiration(Long debtPositionId) {
+    public LocalDate checkAndUpdateInstallmentExpiration(Long debtPositionId) {
         log.info("Checking expiration of DebtPosition {}", debtPositionId);
         return debtPositionService.checkAndUpdateInstallmentExpiration(debtPositionId);
     }
