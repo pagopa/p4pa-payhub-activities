@@ -22,7 +22,7 @@ public class PaymentsReporting2ReceiptMapper {
 	public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, String fiscalCodePA) {
 		return new ReceiptWithAdditionalNodeDataDTO()
 			.ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
-			//.receiptOrigin() may add something like RECEIPT_DUMMY at ReceiptOriginEnum???
+			.receiptOrigin(ReceiptWithAdditionalNodeDataDTO.ReceiptOriginEnum.PAYMENTS_REPORTING)
 			.paymentReceiptId(paymentsReporting.getIur())
 			.noticeNumber(paymentsReporting.getIuv())
 			.orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
@@ -49,9 +49,7 @@ public class PaymentsReporting2ReceiptMapper {
 		return new PersonDTO()
 			.entityType(PersonDTO.EntityTypeEnum.F)
 			.fiscalCode(ANONYMOUS_PERSON)
-			.fullName(ANONYMOUS_PERSON)
-			//.email() it's mandatory but it shouldn't
-			;
+			.fullName(ANONYMOUS_PERSON);
 	}
 
 	private ReceiptTransferDTO buildDummyTransfer(PaymentsReporting paymentsReporting, String fiscalCodePA) {
