@@ -17,7 +17,7 @@ import java.util.List;
 public class PaymentsReporting2ReceiptMapper {
 	public static final String CREDITOR_REFERENCE_ID_PREFIX = "3";
 	public static final String ANONYMOUS_PERSON = "ANONIMO";
-	public static final String ALIAS_ORIGIN_PREFIX = ReceiptOriginEnum.PAYMENTS_REPORTING.getValue() + "_CODE_";
+	public static final String ALIAS_TEMPLATE = "CODE_%s_" + ReceiptOriginEnum.PAYMENTS_REPORTING.getValue();
 	public static final String CHANNEL = "BATCH";
 	/** Taxonomy for general incomes */
 	public static final String DEFAULT_TRANSFER_CATEGORY = "9/0801100AP/";
@@ -33,7 +33,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.creditorReferenceId(CREDITOR_REFERENCE_ID_PREFIX + paymentsReporting.getIuv())
 			.paymentAmountCents(paymentsReporting.getAmountPaidCents())
 			.description(paymentsReporting.getIuf())
-			.companyName(ALIAS_ORIGIN_PREFIX + paymentsReporting.getPaymentOutcomeCode())
+			.companyName(String.format(ALIAS_TEMPLATE, paymentsReporting.getPaymentOutcomeCode()))
 			.idPsp(paymentsReporting.getPspIdentifier())
 			.pspFiscalCode(paymentsReporting.getSenderPspCode())
 			.pspCompanyName(paymentsReporting.getSenderPspName())
@@ -60,7 +60,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.idTransfer(1)
 			.transferAmountCents(paymentsReporting.getAmountPaidCents())
 			.fiscalCodePA(fiscalCodePA)
-			.remittanceInformation(ALIAS_ORIGIN_PREFIX + paymentsReporting.getPaymentOutcomeCode())
+			.remittanceInformation(String.format(ALIAS_TEMPLATE, paymentsReporting.getPaymentOutcomeCode()))
 			.transferCategory(DEFAULT_TRANSFER_CATEGORY);
 	}
 }
