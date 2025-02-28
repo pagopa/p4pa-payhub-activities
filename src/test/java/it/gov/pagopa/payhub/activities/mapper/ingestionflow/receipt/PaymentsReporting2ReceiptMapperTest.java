@@ -19,7 +19,7 @@ class PaymentsReporting2ReceiptMapperTest {
 		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
 		ReceiptWithAdditionalNodeDataDTO receipt = mapper.map2DummyReceipt(paymentsReportingFake, "fiscalCodePA");
 
-		TestUtils.checkNotNullFields(receipt, "receiptId", "receiptOrigin", "paymentNote", "officeName", "pspPartitaIva", "paymentMethod", "feeCents", "creationDate", "updateDate");
+		TestUtils.checkNotNullFields(receipt, "receiptId", "paymentNote", "officeName", "pspPartitaIva", "paymentMethod", "feeCents", "creationDate", "updateDate");
 		TestUtils.checkNotNullFields(receipt.getDebtor(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
 		TestUtils.checkNotNullFields(receipt.getPayer(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
 		TestUtils.checkNotNullFields(receipt.getTransfers().getFirst(), "companyName", "mbdAttachment", "iban", "metadata");
