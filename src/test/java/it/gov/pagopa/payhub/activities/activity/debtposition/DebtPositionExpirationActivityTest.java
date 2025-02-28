@@ -9,9 +9,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCALDATE;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,12 +35,12 @@ class DebtPositionExpirationActivityTest {
     @Test
     void givenCheckAndUpdateInstallmentExpirationThenOk(){
         Mockito.when(debtPositionServiceMock.checkAndUpdateInstallmentExpiration(1L))
-                .thenReturn(OFFSETDATETIME);
+                .thenReturn(LOCALDATE);
 
-        OffsetDateTime offsetDateTime = activity.checkAndUpdateInstallmentExpiration(1L);
+        LocalDate offsetDateTime = activity.checkAndUpdateInstallmentExpiration(1L);
 
         Mockito.verify(debtPositionServiceMock, Mockito.times(1))
                 .checkAndUpdateInstallmentExpiration(1L);
-        assertSame(OFFSETDATETIME, offsetDateTime);
+        assertSame(LOCALDATE, offsetDateTime);
     }
 }
