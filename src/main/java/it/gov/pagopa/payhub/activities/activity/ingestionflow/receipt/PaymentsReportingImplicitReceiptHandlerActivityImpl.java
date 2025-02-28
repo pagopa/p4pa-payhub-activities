@@ -14,10 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Lazy
 @Slf4j
 @Component
 public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements PaymentsReportingImplicitReceiptHandlerActivity {
+	private static final List<String> PAYMENT_OUTCOME_CODES = List.of("8", "9");
+
 	private final PaymentsReportingService paymentsReportingService;
 	private final OrganizationService organizationService;
 	private final PaymentsReporting2ReceiptMapper paymentsReporting2ReceiptMapper;
@@ -35,16 +39,18 @@ public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements Paym
 
 	@Override
 	public void handle(PaymentsReportingTransferDTO paymentsReportingTransferDTO) {
-		log.info("Retrieve payment reporting with payment outcome code {} for organization id: {} and iuv: {} and iur {} and transfer index: {}", paymentsReportingTransferDTO.getPaymentOutcomeCode(),
-			paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());
-		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(paymentsReportingTransferDTO);
+		if (PAYMENT_OUTCOME_CODES.contains(paymentsReportingTransferDTO.getPaymentOutcomeCode())) {
+			log.info("Retrieve payment reporting with payment outcome code {} for organization id: {} and iuv: {} and iur {} and transfer index: {}", paymentsReportingTransferDTO.getPaymentOutcomeCode(),
+				paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());
+			PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(paymentsReportingTransferDTO);
 
-		String organizationFiscalCode = organizationService.getOrganizationById(paymentsReporting.getOrganizationId()).map(Organization::getOrgFiscalCode)
-			.orElseThrow(() -> new InvalidValueException("Organization not found: " + paymentsReporting.getOrganizationId()));
+			String organizationFiscalCode = organizationService.getOrganizationById(paymentsReporting.getOrganizationId()).map(Organization::getOrgFiscalCode)
+				.orElseThrow(() -> new InvalidValueException("Organization not found: " + paymentsReporting.getOrganizationId()));
 
-		ReceiptWithAdditionalNodeDataDTO dummyReceipt = paymentsReporting2ReceiptMapper.map2DummyReceipt(paymentsReporting, organizationFiscalCode);
+			ReceiptWithAdditionalNodeDataDTO dummyReceipt = paymentsReporting2ReceiptMapper.map2DummyReceipt(paymentsReporting, organizationFiscalCode);
 
-		ReceiptDTO dummyReceiptCreated = receiptService.createReceipt(dummyReceipt);
-		log.info("Dummy Receipt has been created with id: {}", dummyReceiptCreated.getReceiptId());
+			ReceiptDTO dummyReceiptCreated = receiptService.createReceipt(dummyReceipt);
+			log.info("Dummy Receipt has been created with id: {}", dummyReceiptCreated.getReceiptId());
+		}
 	}
 }
