@@ -4,11 +4,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.GregorianCalendar;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,14 +86,20 @@ public class Utilities {
         return offsetDateTime != null ? DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR.newXMLGregorianCalendar(GregorianCalendar.from(offsetDateTime.toZonedDateTime())) : null;
     }
 
-
     public static OffsetDateTime toOffsetDateTime(XMLGregorianCalendar xmlGregorianCalendar) {
-        if(xmlGregorianCalendar == null) {
-            return null;
-        }
+        return Optional.ofNullable(xmlGregorianCalendar)
+            .map(xmlCal -> xmlCal.toGregorianCalendar().toZonedDateTime().toOffsetDateTime()
+                .withOffsetSameInstant(ZONEID.getRules().getOffset(Instant.now())))
+            .orElse(null);
+    }
 
-        OffsetDateTime odt = OffsetDateTime.parse(xmlGregorianCalendar.toString());
-        ZoneOffset zoneOffset = ZONEID.getRules().getOffset(odt.toInstant());
-        return odt.withOffsetSameInstant(zoneOffset);
+    public static OffsetDateTime toOffsetDateTime(LocalDateTime localDateTime) {
+        return Optional.ofNullable(localDateTime)
+            .map(ldt -> ldt.atZone(ZONEID).toOffsetDateTime()).orElse(null);
+    }
+
+    public static OffsetDateTime toOffsetDateTime(LocalDate localDate) {
+        return Optional.ofNullable(localDate)
+            .map(ld -> ld.atStartOfDay(ZONEID).toOffsetDateTime()).orElse(null);
     }
 }
