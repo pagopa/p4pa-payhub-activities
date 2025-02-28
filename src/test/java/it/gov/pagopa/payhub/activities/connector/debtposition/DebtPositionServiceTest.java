@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +70,7 @@ class DebtPositionServiceTest {
         String accessToken = "ACCESSTOKEN";
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO.StatusEnum unpaidStatus = InstallmentDTO.StatusEnum.UNPAID;
-        OffsetDateTime now = OffsetDateTime.now();
+        LocalDate now = LocalDate.now();
 
         InstallmentDTO installment1 = new InstallmentDTO();
         installment1.setStatus(unpaidStatus);
@@ -89,7 +89,7 @@ class DebtPositionServiceTest {
                 .thenReturn(debtPositionDTO);
 
         // When
-        OffsetDateTime dueDate = debtPositionService.checkAndUpdateInstallmentExpiration(1L);
+        LocalDate dueDate = debtPositionService.checkAndUpdateInstallmentExpiration(1L);
 
         // Then
         assertNotNull(dueDate);
@@ -110,7 +110,7 @@ class DebtPositionServiceTest {
                 .thenReturn(debtPositionDTO);
 
         // When
-        OffsetDateTime dueDate = debtPositionService.checkAndUpdateInstallmentExpiration(1L);
+        LocalDate dueDate = debtPositionService.checkAndUpdateInstallmentExpiration(1L);
 
         // Then
         assertNull(dueDate);

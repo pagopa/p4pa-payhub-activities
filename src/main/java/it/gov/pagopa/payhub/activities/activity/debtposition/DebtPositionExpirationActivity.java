@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 /**
@@ -21,5 +22,5 @@ public interface DebtPositionExpirationActivity {
      *         or {@code null} if no unpaid installments exist.
      */
     @ActivityMethod
-    OffsetDateTime checkAndUpdateInstallmentExpiration(Long debtPositionId);
+    LocalDate checkAndUpdateInstallmentExpiration(Long debtPositionId);
 }

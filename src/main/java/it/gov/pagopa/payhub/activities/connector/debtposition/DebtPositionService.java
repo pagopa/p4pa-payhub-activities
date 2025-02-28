@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
@@ -25,10 +26,9 @@ public interface DebtPositionService {
      * Checks and updates the expiration date of the installments associated with a debt position.
      *
      * @param debtPositionId the unique identifier of the debt position to be processed.
-     * @return the minimum due date ({@link OffsetDateTime}) among all unpaid installments.
+     * @return the minimum due date ({@link LocalDate}) among all unpaid installments.
      */
-    OffsetDateTime checkAndUpdateInstallmentExpiration(Long debtPositionId);
-
+    LocalDate checkAndUpdateInstallmentExpiration(Long debtPositionId);
     /**
      * Synchronizes an installment from a file.
      *
