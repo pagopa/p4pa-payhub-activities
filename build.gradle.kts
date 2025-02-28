@@ -268,8 +268,41 @@ tasks.register("dependenciesBuild") {
 		"openApiGenerateDEBTPOSITIONS",
 		"openApiGenerateCLASSIFICATION",
 		"openApiGeneratePAGOPAPAYMENTS",
-		"openApiGeneratePROCESSEXECUTIONS"
+		"openApiGeneratePROCESSEXECUTIONS",
+		"openApiGenerateWORKFLOWHUB"
 	)
+}
+
+tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
+	group = "AutomaticallyGeneratedCode"
+	description = "openapi"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/p4pa-workflow-hub.openapi.yaml")
+	outputDir.set("$projectDir/build/generated")
+	invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
+	apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.workflowhub.dto.generated")
+	typeMappings.set(mapOf(
+		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+		"IngestionFlowFileType" to "String"
+	))
+	configOptions.set(
+		mapOf(
+			"swaggerAnnotations" to "false",
+			"openApiNullable" to "false",
+			"dateLibrary" to "java8",
+			"serializableModel" to "true",
+			"useSpringBoot3" to "true",
+			"useJakartaEe" to "true",
+			"serializationLibrary" to "jackson",
+			"generateSupportingFiles" to "true",
+			"generateConstructorWithAllArgs" to "true",
+			"generatedConstructorWithRequiredArgs" to "true",
+			"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
+		)
+	)
+	library.set("resttemplate")
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
