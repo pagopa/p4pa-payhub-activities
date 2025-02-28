@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuv;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 
@@ -54,5 +56,17 @@ public class TreasuryFaker {
 			.endToEndId("E2E123456")
 			.regularized(true)
 			.updateOperatorExternalId("operatorId");
+	}
+
+	public static TreasuryIuf buildTreasuryIuf() {
+		return TestUtils.getPodamFactory().manufacturePojo(TreasuryIuf.class).toBuilder()
+				.billAmountCents(100_00L)
+				.build();
+	}
+
+	public static TreasuryIuv buildTreasuryIuv() {
+		return TestUtils.getPodamFactory().manufacturePojo(TreasuryIuv.class).toBuilder()
+				.billAmountCents(1_00L)
+				.build();
 	}
 }
