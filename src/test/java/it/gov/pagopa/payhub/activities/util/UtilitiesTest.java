@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -8,6 +9,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -121,5 +123,16 @@ class UtilitiesTest {
         assertEquals(expected.getHour(), result.getHour());
         assertEquals(expected.getMinute(), result.getMinute());
         assertEquals(expected.getSecond(), result.getSecond());
+    }
+
+    @Test
+    void givenUriWhenRemovePiiFromURIThenOk(){
+        String result = Utilities.removePiiFromURI(URI.create("https://host/path?param1=PII&param2=noPII"));
+        Assertions.assertEquals("https://host/path?param1=***&param2=***", result);
+    }
+
+    @Test
+    void givenNullUriWhenRemovePiiFromURIThenOk(){
+        Assertions.assertNull(Utilities.removePiiFromURI(null));
     }
 }
