@@ -58,17 +58,16 @@ public class InstallmentProcessingService {
 
             InstallmentIngestionFlowFileDTO installment = iterator.next();
 
-            installment.setIngestionFlowFileLineNumber(totalRows);
-
             try {
                 InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
                         installment,
+                        totalRows,
                         ingestionFlowFile.getIngestionFlowFileId(),
                         ingestionFlowFile.getOrganizationId()
                 );
 
                 String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true);
-                if (dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, ingestionFlowFile.getFileName(), errorList)) {
+                if (dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, totalRows, ingestionFlowFile.getFileName(), errorList)) {
                     processedRows++;
                 }
 
@@ -77,7 +76,7 @@ public class InstallmentProcessingService {
                 InstallmentErrorDTO error = new InstallmentErrorDTO(
                         ingestionFlowFile.getFileName(),
                         installment.getIupdOrg(), installment.getIud(), null,
-                        installment.getIngestionFlowFileLineNumber(), "PROCESS_EXCEPTION", e.getMessage());
+                        totalRows, "PROCESS_EXCEPTION", e.getMessage());
                 errorList.add(error);
                 log.info("Current error list size after handleProcessingError: {}", errorList.size());
             }

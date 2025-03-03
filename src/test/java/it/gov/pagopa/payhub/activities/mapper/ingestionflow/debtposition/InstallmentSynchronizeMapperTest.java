@@ -31,7 +31,7 @@ class InstallmentSynchronizeMapperTest {
     void givenMapThenOk(){
         InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
 
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(buildInstallmentIngestionFlowFileDTO(), 1L, 1L);
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(buildInstallmentIngestionFlowFileDTO(), 1L, 1L, 1L);
 
         reflectionEqualsByName(expected, result);
         assertEquals(4, Objects.requireNonNull(result.getAdditionalTransfers()).size());
@@ -46,7 +46,7 @@ class InstallmentSynchronizeMapperTest {
 
         // When & Then
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L)
+                installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L)
         );
 
         assertEquals("Missing or empty transfer map for index: 2", exception.getMessage());
@@ -62,7 +62,7 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(false);
 
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L);
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
 
         reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getAdditionalTransfers()).isEmpty());
@@ -78,7 +78,7 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setNumberBeneficiary(null);
 
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L);
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
 
         reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getAdditionalTransfers()).isEmpty());
@@ -94,7 +94,7 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setNumberBeneficiary(1);
 
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L);
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
 
         reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getAdditionalTransfers()).isEmpty());
@@ -106,7 +106,7 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildTransferFake();
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L)
+                installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L)
         );
 
         assertEquals("Missing required value for keys: causaleVersamentoEnte or remittanceInformation", exception.getMessage());

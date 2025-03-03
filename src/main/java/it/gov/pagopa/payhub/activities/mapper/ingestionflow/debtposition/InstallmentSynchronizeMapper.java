@@ -21,10 +21,11 @@ public class InstallmentSynchronizeMapper {
 
     public InstallmentSynchronizeDTO map(InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO,
                                          Long ingestionFlowFileId,
+                                         Long ingestionFlowFileLineNumber,
                                          Long organizationId) {
         return InstallmentSynchronizeDTO.builder()
                 .ingestionFlowFileId(ingestionFlowFileId)
-                .ingestionFlowFileLineNumber(installmentIngestionFlowFileDTO.getIngestionFlowFileLineNumber())
+                .ingestionFlowFileLineNumber(ingestionFlowFileLineNumber)
                 .organizationId(organizationId)
                 .action(InstallmentSynchronizeDTO.ActionEnum.valueOf(installmentIngestionFlowFileDTO.getAction().name()))
                 .draft(installmentIngestionFlowFileDTO.getDraft())

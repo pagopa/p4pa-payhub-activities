@@ -155,13 +155,11 @@ class InstallmentIngestionFlowFileActivityTest {
     private Iterator<InstallmentIngestionFlowFileDTO> buildInstallmentIngestionFlowFileDTO() {
         List<InstallmentIngestionFlowFileDTO> installmentIngestionFlowFileDTOList = List.of(
                 InstallmentIngestionFlowFileDTO.builder()
-                        .ingestionFlowFileLineNumber(1L)
                         .iupdOrg("iupd1")
                         .iud("iud1")
                         .amount(BigDecimal.valueOf(1L))
                         .build(),
                 InstallmentIngestionFlowFileDTO.builder()
-                        .ingestionFlowFileLineNumber(2L)
                         .iupdOrg("iupd2")
                         .iud("iud2")
                         .amount(BigDecimal.valueOf(2L))

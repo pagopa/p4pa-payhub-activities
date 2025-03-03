@@ -65,13 +65,13 @@ class InstallmentProcessingServiceTest {
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         String workflowId = "workflow-123";
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
+        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L,1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORIGIN, installmentSynchronizeDTO, true))
                 .thenReturn(workflowId);
 
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
                 .thenReturn(true);
 
         // When
@@ -84,7 +84,6 @@ class InstallmentProcessingServiceTest {
         // Then
         assertEquals(1, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
-        assertEquals(1, installmentIngestionFlowFileDTO.getIngestionFlowFileLineNumber());
         assertNull(result.getErrorDescription());
         assertNull(result.getDiscardedFileName());
     }
@@ -97,13 +96,13 @@ class InstallmentProcessingServiceTest {
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         String workflowId = "workflow-123";
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
+        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORIGIN, installmentSynchronizeDTO, true))
                 .thenReturn(workflowId);
 
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
                 .thenReturn(false);
 
         // When
@@ -125,13 +124,13 @@ class InstallmentProcessingServiceTest {
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
+        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORIGIN, installmentSynchronizeDTO, true))
                 .thenReturn(null);
 
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(null, installmentIngestionFlowFileDTO, ingestionFlowFile.getFileName(), List.of()))
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(null, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
                 .thenReturn(true);
 
         // When
@@ -156,7 +155,7 @@ class InstallmentProcessingServiceTest {
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L))
+                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))

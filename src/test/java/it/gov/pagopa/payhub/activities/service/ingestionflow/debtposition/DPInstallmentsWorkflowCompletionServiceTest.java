@@ -54,7 +54,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
         // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
+        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
 
         // Then
         assertTrue(result, "Workflow succeeded");
@@ -68,7 +68,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         // When
-        boolean result = service.waitForWorkflowCompletion(null, installment, FILE_NAME, errorList);
+        boolean result = service.waitForWorkflowCompletion(null, installment, 1L, FILE_NAME, errorList);
 
         // Then
         assertTrue(result, "Workflow succeeded");
@@ -85,7 +85,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(WORKFLOW_EXECUTION_STATUS_FAILED);
 
         // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
+        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
 
         // Then
         assertFalse(result);
@@ -105,7 +105,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .when(workflowCompletionServiceMock).waitTerminationStatus(WORKFLOW_ID, maxRetries, retryDelayMs);
 
         // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, FILE_NAME, errorList);
+        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
 
         // Then
         assertFalse(result);

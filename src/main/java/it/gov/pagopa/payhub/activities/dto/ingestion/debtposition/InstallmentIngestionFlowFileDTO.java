@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvIgnore;
+import com.opencsv.bean.CsvDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +17,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class InstallmentIngestionFlowFileDTO {
-
-    @CsvIgnore
-    private Long ingestionFlowFileLineNumber;
 
     @CsvBindByName(column = "azione", required = true, profiles = "legacy")
     @CsvBindByName(column = "action", required = true)
@@ -38,6 +35,7 @@ public class InstallmentIngestionFlowFileDTO {
 
     @CsvBindByName(column = "dataValidita", profiles = "legacy")
     @CsvBindByName(column = "validityDate")
+    @CsvDate(value = "yyyy-MM-dd")
     private LocalDate validityDate;
 
     @CsvBindByName(column = "multiDebtor")
@@ -45,6 +43,7 @@ public class InstallmentIngestionFlowFileDTO {
 
     @CsvBindByName(column = "dataNotifica", profiles = "legacy")
     @CsvBindByName(column = "notificationDate")
+    @CsvDate(value = "yyyy-MM-dd")
     private LocalDate notificationDate;
 
     @CsvBindByName(column = "indiceOpzionePagamento", required = true, profiles = "legacy")
@@ -108,6 +107,7 @@ public class InstallmentIngestionFlowFileDTO {
 
     @CsvBindByName(column = "dataEsecuzionePagamento", profiles = "legacy")
     @CsvBindByName(column = "dueDate")
+    @CsvDate(value = "yyyy-MM-dd")
     private LocalDate dueDate;
 
     @CsvBindByName(column = "importoDovuto", required = true, profiles = "legacy")

@@ -95,7 +95,7 @@ class CsvServiceTest {
                 .map(testCsv -> new String[]{
                         testCsv.getColumn1(),
                         testCsv.getColumn2(),
-                        testCsv.getColumn3().toLocalDate().toString()
+                        String.valueOf(testCsv.getColumn3())
                 })
                 .toList();
 

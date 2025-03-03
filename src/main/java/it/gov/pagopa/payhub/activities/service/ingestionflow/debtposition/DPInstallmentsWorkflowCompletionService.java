@@ -40,7 +40,7 @@ public class DPInstallmentsWorkflowCompletionService {
      * @param errorList   The list where errors encountered during processing will be recorded.
      * @return {@code true} if the workflow completed successfully, {@code false} if it terminated with an error or exceeded the retry limit.
      */
-    public boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
+    public boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
                                              String fileName, List<InstallmentErrorDTO> errorList) {
         try {
             if (workflowId == null) {
@@ -50,7 +50,7 @@ public class DPInstallmentsWorkflowCompletionService {
                     workflowId, maxAttempts, retryDelayMs);
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
-                errorList.add(buildInstallmentErrorDTO(fileName, installment, workflowStatus.name(),
+                errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, workflowStatus.name(),
                         "WORKFLOW_TERMINATED_WITH_FAILURE", "Workflow terminated with error status"));
                 return false;
             }
@@ -58,19 +58,19 @@ public class DPInstallmentsWorkflowCompletionService {
             return true;
         } catch (TooManyAttemptsException e) {
             log.warn("Workflow {} did not complete within retry limits.", workflowId);
-            errorList.add(buildInstallmentErrorDTO(fileName, installment, null, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
+            errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, null, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
             return false;
         }
     }
 
-    private InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment,
+    private InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
                                                          String workflowStatus, String errorCode, String errorMessage) {
         return InstallmentErrorDTO.builder()
                 .fileName(fileName)
                 .iupdOrg(installment.getIupdOrg())
                 .iud(installment.getIud())
                 .workflowStatus(workflowStatus)
-                .rowNumber(installment.getIngestionFlowFileLineNumber())
+                .rowNumber(ingestionFlowFileLineNumber)
                 .errorCode(errorCode)
                 .errorMessage(errorMessage)
                 .build();

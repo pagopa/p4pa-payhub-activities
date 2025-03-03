@@ -12,7 +12,6 @@ public class InstallmentIngestionFlowFileDTOFaker {
 
     public static InstallmentIngestionFlowFileDTO buildInstallmentIngestionFlowFileDTO() {
         return InstallmentIngestionFlowFileDTO.builder()
-                .ingestionFlowFileLineNumber(1L)
                 .action(InstallmentIngestionFlowFileDTO.ActionEnum.I)
                 .draft(false)
                 .iupdOrg("iupd")
@@ -54,7 +53,6 @@ public class InstallmentIngestionFlowFileDTOFaker {
 
     public static InstallmentIngestionFlowFileDTO buildTransferFake() {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = new TransferFake();
-        installmentIngestionFlowFileDTO.setIngestionFlowFileLineNumber(1L);
         installmentIngestionFlowFileDTO.setAction(InstallmentIngestionFlowFileDTO.ActionEnum.I);
         installmentIngestionFlowFileDTO.setDescription("description");
         installmentIngestionFlowFileDTO.setAmount(BigDecimal.valueOf(1L));
