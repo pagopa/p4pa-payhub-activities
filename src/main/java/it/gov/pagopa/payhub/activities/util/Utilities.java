@@ -108,6 +108,14 @@ public class Utilities {
 	    return localDate.atStartOfDay(ZONEID).toOffsetDateTime();
     }
 
+    public static OffsetDateTime toOffsetDateTimeEndOfTheDay(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        LocalDateTime endOfDay = LocalDateTime.of(localDate, LocalTime.MAX.truncatedTo(java.time.temporal.ChronoUnit.MILLIS));
+        return endOfDay.atZone(ZONEID).toOffsetDateTime();
+    }
+
     public static String removePiiFromURI(URI uri){
         return uri != null
                 ? uri.toString().replaceAll("=[^&]*", "=***")
