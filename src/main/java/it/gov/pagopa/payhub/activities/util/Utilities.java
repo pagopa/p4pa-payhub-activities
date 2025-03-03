@@ -4,6 +4,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.*;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
@@ -105,5 +106,11 @@ public class Utilities {
 		    return null;
 	    }
 	    return localDate.atStartOfDay(ZONEID).toOffsetDateTime();
+    }
+
+    public static String removePiiFromURI(URI uri){
+        return uri != null
+                ? uri.toString().replaceAll("=[^&]*", "=***")
+                : null;
     }
 }
