@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -8,6 +9,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
@@ -62,6 +66,7 @@ class UtilitiesTest {
         assertEquals(date.getMinute(), result.toGregorianCalendar().get(Calendar.MINUTE));
         assertEquals(date.getSecond(), result.toGregorianCalendar().get(Calendar.SECOND));
     }
+
     @Test
     void testToXMLGregorianCalendarNull(){
         // When
@@ -71,26 +76,63 @@ class UtilitiesTest {
     }
 
     @Test
-    void testToOffsetDateTime() throws DatatypeConfigurationException {
+    void testToOffsetDateTimeWithXMLGregorianCalendar() throws DatatypeConfigurationException {
         // Given
         OffsetDateTime now = OffsetDateTime.now();
         XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(now.withOffsetSameInstant(ZoneOffset.UTC).toString());
-        // When
         OffsetDateTime result = Utilities.toOffsetDateTime(date);
+        assertConversion(now, result);
+    }
+
+    @Test
+    void testToOffsetDateTimeWithLocalDateTime() {
+        // Given
+        OffsetDateTime now = OffsetDateTime.now();
+        LocalDateTime date = now.toLocalDateTime();
+        OffsetDateTime result = Utilities.toOffsetDateTime(date);
+        assertConversion(now, result);
+    }
+
+    @Test
+    void testToOffsetDateTimeWithLocalDate() {
+        // Given
+        OffsetDateTime now = OffsetDateTime.now().withHour(0).withMinute(0).withSecond(0);
+        LocalDate date = now.toLocalDate();
+        OffsetDateTime result = Utilities.toOffsetDateTime(date);
+        assertConversion(now, result);
+    }
+
+    @Test
+    void givenNullDatesWhenTestToOffsetDateTimeThenAssertNull(){
+        // Given
+        LocalDate localDate = null;
+        LocalDateTime localDateTime = null;
+        XMLGregorianCalendar xmlGregorianCalendar = null;
+        // When Then
+        assertNull(Utilities.toOffsetDateTime(localDate));
+        assertNull(Utilities.toOffsetDateTime(localDateTime));
+        assertNull(Utilities.toOffsetDateTime(xmlGregorianCalendar));
+    }
+
+    private <T> void assertConversion(OffsetDateTime expected, OffsetDateTime result) {
         // Then
         assertNotNull(result);
-        assertEquals(now.getYear(), result.getYear());
-        assertEquals(now.getMonthValue(), result.getMonthValue());
-        assertEquals(now.getDayOfMonth(), result.getDayOfMonth());
-        assertEquals(now.getHour(), result.getHour());
-        assertEquals(now.getMinute(), result.getMinute());
-        assertEquals(now.getSecond(), result.getSecond());
+        assertEquals(expected.getYear(), result.getYear());
+        assertEquals(expected.getMonthValue(), result.getMonthValue());
+        assertEquals(expected.getDayOfMonth(), result.getDayOfMonth());
+        assertEquals(expected.getHour(), result.getHour());
+        assertEquals(expected.getMinute(), result.getMinute());
+        assertEquals(expected.getSecond(), result.getSecond());
     }
+
     @Test
-    void testToOffsetDateTimeNull(){
-        // When
-        OffsetDateTime result = Utilities.toOffsetDateTime(null);
-        // Then
-        assertNull(result);
+    void givenUriWhenRemovePiiFromURIThenOk(){
+        String result = Utilities.removePiiFromURI(URI.create("https://host/path?param1=PII&param2=noPII"));
+        Assertions.assertEquals("https://host/path?param1=***&param2=***", result);
+    }
+
+    @Test
+    void givenNullUriWhenRemovePiiFromURIThenOk(){
+        Assertions.assertNull(Utilities.removePiiFromURI(null));
     }
 }

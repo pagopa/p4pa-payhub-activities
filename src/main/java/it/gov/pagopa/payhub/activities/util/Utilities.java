@@ -4,10 +4,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.net.URI;
+import java.time.*;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,14 +86,39 @@ public class Utilities {
         return offsetDateTime != null ? DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR.newXMLGregorianCalendar(GregorianCalendar.from(offsetDateTime.toZonedDateTime())) : null;
     }
 
-
     public static OffsetDateTime toOffsetDateTime(XMLGregorianCalendar xmlGregorianCalendar) {
-        if(xmlGregorianCalendar == null) {
+	    if (xmlGregorianCalendar == null) {
+		    return null;
+	    }
+	    return xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toOffsetDateTime()
+	        .withOffsetSameInstant(ZONEID.getRules().getOffset(Instant.now()));
+    }
+
+    public static OffsetDateTime toOffsetDateTime(LocalDateTime localDateTime) {
+	    if (localDateTime == null) {
+		    return null;
+	    }
+	    return localDateTime.atZone(ZONEID).toOffsetDateTime();
+    }
+
+    public static OffsetDateTime toOffsetDateTime(LocalDate localDate) {
+	    if (localDate == null) {
+		    return null;
+	    }
+	    return localDate.atStartOfDay(ZONEID).toOffsetDateTime();
+    }
+
+    public static OffsetDateTime toOffsetDateTimeEndOfTheDay(LocalDate localDate) {
+        if (localDate == null) {
             return null;
         }
+        LocalDateTime endOfDay = LocalDateTime.of(localDate, LocalTime.MAX.truncatedTo(java.time.temporal.ChronoUnit.MILLIS));
+        return endOfDay.atZone(ZONEID).toOffsetDateTime();
+    }
 
-        OffsetDateTime odt = OffsetDateTime.parse(xmlGregorianCalendar.toString());
-        ZoneOffset zoneOffset = ZONEID.getRules().getOffset(odt.toInstant());
-        return odt.withOffsetSameInstant(zoneOffset);
+    public static String removePiiFromURI(URI uri){
+        return uri != null
+                ? uri.toString().replaceAll("=[^&]*", "=***")
+                : null;
     }
 }

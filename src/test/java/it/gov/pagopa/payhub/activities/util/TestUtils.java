@@ -23,13 +23,13 @@ import java.util.*;
 public class TestUtils {
     private TestUtils(){}
 
+    public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
     public static final LocalDate LOCALDATE = LocalDate.of(2024, 5, 15);
     public static final LocalDateTime LOCALDATETIME = LocalDateTime.of(LOCALDATE, LocalTime.of(10, 30, 0));
-    public static final OffsetDateTime OFFSETDATETIME = ZonedDateTime.of(LOCALDATETIME, ZoneId.of("Europe/Rome")).toOffsetDateTime();
-    public static final Date DATE = Date.from(LOCALDATETIME
-            .atZone(ZoneId.systemDefault())
-            .toInstant()
-    );
+    public static final OffsetDateTime OFFSETDATETIME = ZonedDateTime.of(LOCALDATETIME, ZONEID).toOffsetDateTime();
+
+    public static final LocalDateTime LOCALDATETIMEENDOFTHEDAY = LocalDateTime.of(LOCALDATE, LocalTime.MAX.truncatedTo(java.time.temporal.ChronoUnit.MILLIS));
+    public static final OffsetDateTime OFFSETDATETIMEENDOFTHEDAY = ZonedDateTime.of(LOCALDATETIMEENDOFTHEDAY, ZONEID).toOffsetDateTime();
 
     /**
      * It will assert not null on all o's fields

@@ -33,13 +33,13 @@ class TreasuryErrorsArchiverServiceTest {
     @Mock
     private CsvService csvServiceMock;
 
-    private TreasuryErrorsArchiverService treasuryErrorsArchiverService;
+    private TreasuryErrorsArchiverService service;
 
     private final String sharedDirectory = "/tmp";
 
     @BeforeEach
     void setUp() {
-        treasuryErrorsArchiverService = new TreasuryErrorsArchiverService(sharedDirectory, errorFolder, ingestionFlowFileArchiverServiceMock, csvServiceMock);
+        service = new TreasuryErrorsArchiverService(sharedDirectory, errorFolder, ingestionFlowFileArchiverServiceMock, csvServiceMock);
     }
 
     @Test
@@ -54,7 +54,7 @@ class TreasuryErrorsArchiverServiceTest {
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
         // When
-        treasuryErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
 
         // Then
         Mockito.verify(csvServiceMock)
@@ -77,7 +77,7 @@ class TreasuryErrorsArchiverServiceTest {
 
             // When & Then
             NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                    treasuryErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
+                    service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
             assertEquals("Error creating CSV", exception.getMessage());
     }
 
@@ -87,7 +87,7 @@ class TreasuryErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build");
 
         // When
-        String result = treasuryErrorsArchiverService.archiveErrorFiles(workingDirectory, new IngestionFlowFile());
+        String result = service.archiveErrorFiles(workingDirectory, new IngestionFlowFile());
 
         // Then
         Assertions.assertNull(result);
@@ -104,7 +104,7 @@ class TreasuryErrorsArchiverServiceTest {
             String expectedZipErrorFileName = "ERROR-fileName.zip";
 
             // When
-            String result = treasuryErrorsArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
+            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
 
             // Then
             Assertions.assertEquals(expectedZipErrorFileName, result);
