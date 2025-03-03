@@ -14,7 +14,7 @@ class RtIufClassifierTest {
 	private final Transfer transferDTO = TransferFaker.buildTransfer();
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 
-	TransferClassifier classifier = new RtIufClassifier();
+	private final TransferClassifier classifier = new RtIufClassifier();
 
 	@Test
 	void givenMatchedConditionWhenDefineThenSuccess() {
@@ -22,7 +22,7 @@ class RtIufClassifierTest {
 		transferDTO.setAmountCents(100L);
 		paymentsReportingDTO.setAmountPaidCents(100L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null, null);
 		// Assert
 		assertEquals(ClassificationsEnum.RT_IUF, result);
 	}
@@ -30,7 +30,7 @@ class RtIufClassifierTest {
 	@Test
 	void givenUnmatchedTransferDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, null, null);
 		// Assert
 		assertNull(result);
 	}
@@ -41,7 +41,7 @@ class RtIufClassifierTest {
 		transferDTO.setAmountCents(100L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null, null);
 		// Assert
 		assertNull(result);
 	}
@@ -49,7 +49,7 @@ class RtIufClassifierTest {
 	@Test
 	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, null, null);
 		// Assert
 		assertNull(result);
 	}

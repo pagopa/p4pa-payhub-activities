@@ -4,7 +4,6 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 
 /**
  * Service interface responsible for handling the expiration process of a debt position.
@@ -18,7 +17,7 @@ public interface DebtPositionExpirationActivity {
      * and updates the overall status of the debt position accordingly.
      *
      * @param debtPositionId the unique identifier of the debt position to be processed.
-     * @return the minimum due date ({@link OffsetDateTime}) among all unpaid installments,
+     * @return the minimum due date ({@link LocalDate}) among all unpaid installments,
      *         or {@code null} if no unpaid installments exist.
      */
     @ActivityMethod

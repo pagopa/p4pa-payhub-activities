@@ -5,13 +5,13 @@ import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationService;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.StatusEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -65,27 +65,27 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(transferSemanticKey);
 
 		// Retrieve related Treasury
-		Treasury treasuryDTO = retrieveTreasury(transferSemanticKey.getOrgId(), paymentsReporting);
+		TreasuryIuf treasuryIUF = retrieveTreasuryIuf(transferSemanticKey.getOrgId(), paymentsReporting);
 
 		// Classify
-		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReporting, treasuryDTO);
+		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReporting, treasuryIUF, null);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex(),
 			String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
 		// Store results
-		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, paymentsReporting, treasuryDTO, classifications);
+		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, paymentsReporting, treasuryIUF, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
 	}
 
 	/**
-	 * Retrieves the {@link Treasury} record for the given ID.
+	 * Retrieves the {@link TreasuryIuf} record for the given ID.
 	 *
 	 * @param orgId the ID of the organization
 	 * @param paymentsReportingDTO the payments reporting data transfer object containing payment reporting details
-	 * @return the {@link Treasury} corresponding to the given ID
+	 * @return the {@link TreasuryIuf} corresponding to the given ID
 	 */
-	private Treasury retrieveTreasury(Long orgId, PaymentsReporting paymentsReportingDTO) {
+	private TreasuryIuf retrieveTreasuryIuf(Long orgId, PaymentsReporting paymentsReportingDTO) {
 		if (paymentsReportingDTO != null) {
 			String iuf = paymentsReportingDTO.getIuf();
 			log.info("Retrieve treasury for organization id: {} and iuf {}", orgId, iuf);
