@@ -84,6 +84,7 @@ class InstallmentProcessingServiceTest {
         // Then
         assertEquals(1, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
+        assertEquals(1, installmentIngestionFlowFileDTO.getIngestionFlowFileLineNumber());
         assertNull(result.getErrorDescription());
         assertNull(result.getDiscardedFileName());
     }

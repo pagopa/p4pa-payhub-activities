@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CsvServiceTest {
 
-    private final CsvService csvService = new CsvService(';', '\"');
+    private final CsvService csvService = new CsvService(';', '\"', "legacies");
 
     @Test
     void testCreateCsv_success() throws IOException {

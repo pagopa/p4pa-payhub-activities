@@ -6,7 +6,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.math.BigDecimal;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCALDATE;
 
 public class InstallmentIngestionFlowFileDTOFaker {
 
@@ -17,9 +17,9 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .draft(false)
                 .iupdOrg("iupd")
                 .description("description")
-                .validityDate(OFFSETDATETIME)
+                .validityDate(LOCALDATE)
                 .multiDebtor(false)
-                .notificationDate(OFFSETDATETIME)
+                .notificationDate(LOCALDATE)
                 .paymentOptionIndex(1)
                 .paymentOptionType("paymentOptionType")
                 .paymentOptionDescription("paymentOptionDescription")
@@ -35,7 +35,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .province("province")
                 .nation("nation")
                 .email("email")
-                .dueDate(OFFSETDATETIME)
+                .dueDate(LOCALDATE)
                 .amount(BigDecimal.valueOf(1L))
                 .debtPositionTypeCode("debtPositionTypeCode")
                 .paymentTypeCode("paymentTypeCode")

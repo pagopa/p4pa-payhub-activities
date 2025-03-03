@@ -26,12 +26,15 @@ public class CsvService {
 
     private final char separator;
     private final char quoteChar;
+    private final String profile;
 
     public CsvService(
             @Value("${csv.separator}") char separator,
-            @Value("${csv.quote-char}") char quoteChar) {
+            @Value("${csv.quote-char}") char quoteChar,
+            @Value("${csv.profile}") String profile) {
         this.separator = separator;
         this.quoteChar = quoteChar;
+        this.profile = profile;
     }
 
     /**
@@ -98,6 +101,7 @@ public class CsvService {
 
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
                     .withType(typeClass)
+                    .withProfile(profile)
                     .withMappingStrategy(strategy)
                     .withSeparator(separator)
                     .withQuoteChar(quoteChar)

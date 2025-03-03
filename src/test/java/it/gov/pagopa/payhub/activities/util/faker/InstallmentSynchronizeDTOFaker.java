@@ -5,7 +5,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
 
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.*;
 
 public class InstallmentSynchronizeDTOFaker {
 
@@ -18,9 +18,9 @@ public class InstallmentSynchronizeDTOFaker {
                 .draft(false)
                 .iupdOrg("iupd")
                 .description("description")
-                .validityDate(OFFSETDATETIME)
+                .validityDate(LOCALDATE)
                 .multiDebtor(false)
-                .notificationDate(OFFSETDATETIME)
+                .notificationDate(OFFSETDATETIMEENDOFTHEDAY)
                 .paymentOptionIndex(1)
                 .paymentOptionDescription("paymentOptionDescription")
                 .paymentOptionType("paymentOptionType")
@@ -36,7 +36,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .province("province")
                 .nation("nation")
                 .email("email")
-                .dueDate(OFFSETDATETIME)
+                .dueDate(LOCALDATE)
                 .amountCents(100L)
                 .debtPositionTypeCode("debtPositionTypeCode")
                 .paymentTypeCode("paymentTypeCode")

@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 
-import com.opencsv.bean.*;
-import it.gov.pagopa.payhub.activities.util.csv.CsvOffsetDateTimeConverter;
+import com.opencsv.bean.CsvBindAndJoinByName;
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.MultiValuedMap;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -35,16 +36,16 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "description", required = true)
     private String description;
 
-    @CsvCustomBindByName(column = "dataValidita", converter = CsvOffsetDateTimeConverter.class, profiles = "legacy")
-    @CsvCustomBindByName(column = "validityDate", converter = CsvOffsetDateTimeConverter.class)
-    private OffsetDateTime validityDate;
+    @CsvBindByName(column = "dataValidita", profiles = "legacy")
+    @CsvBindByName(column = "validityDate")
+    private LocalDate validityDate;
 
     @CsvBindByName(column = "multiDebtor")
     private Boolean multiDebtor;
 
-    @CsvCustomBindByName(column = "dataNotifica", converter = CsvOffsetDateTimeConverter.class, profiles = "legacy")
-    @CsvCustomBindByName(column = "notificationDate", converter = CsvOffsetDateTimeConverter.class)
-    private OffsetDateTime notificationDate;
+    @CsvBindByName(column = "dataNotifica", profiles = "legacy")
+    @CsvBindByName(column = "notificationDate")
+    private LocalDate notificationDate;
 
     @CsvBindByName(column = "indiceOpzionePagamento", required = true, profiles = "legacy")
     @CsvBindByName(column = "paymentOptionIndex", required = true)
@@ -105,9 +106,9 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "email")
     private String email;
 
-    @CsvCustomBindByName(column = "dataEsecuzionePagamento", converter = CsvOffsetDateTimeConverter.class, profiles = "legacy")
-    @CsvCustomBindByName(column = "dueDate", converter = CsvOffsetDateTimeConverter.class)
-    private OffsetDateTime dueDate;
+    @CsvBindByName(column = "dataEsecuzionePagamento", profiles = "legacy")
+    @CsvBindByName(column = "dueDate")
+    private LocalDate dueDate;
 
     @CsvBindByName(column = "importoDovuto", required = true, profiles = "legacy")
     @CsvBindByName(column = "amount", required = true)

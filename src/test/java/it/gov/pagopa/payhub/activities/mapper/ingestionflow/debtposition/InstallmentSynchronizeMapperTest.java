@@ -109,6 +109,6 @@ class InstallmentSynchronizeMapperTest {
                 installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L)
         );
 
-        assertEquals("Missing required value for key: causaleVersamentoEnte", exception.getMessage());
+        assertEquals("Missing required value for keys: causaleVersamentoEnte or remittanceInformation", exception.getMessage());
     }
 }

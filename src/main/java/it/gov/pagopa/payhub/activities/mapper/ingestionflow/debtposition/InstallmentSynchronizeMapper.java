@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
+import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
 
 @Service
 @Lazy
@@ -31,7 +32,7 @@ public class InstallmentSynchronizeMapper {
                 .description(installmentIngestionFlowFileDTO.getDescription())
                 .validityDate(installmentIngestionFlowFileDTO.getValidityDate())
                 .multiDebtor(installmentIngestionFlowFileDTO.getMultiDebtor())
-                .notificationDate(installmentIngestionFlowFileDTO.getNotificationDate())
+                .notificationDate(toOffsetDateTimeEndOfTheDay(installmentIngestionFlowFileDTO.getNotificationDate()))
                 .paymentOptionIndex(installmentIngestionFlowFileDTO.getPaymentOptionIndex())
                 .paymentOptionType(installmentIngestionFlowFileDTO.getPaymentOptionType())
                 .paymentOptionDescription(installmentIngestionFlowFileDTO.getPaymentOptionDescription())
