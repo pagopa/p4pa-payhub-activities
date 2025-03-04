@@ -13,6 +13,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeData
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,14 +49,14 @@ public class ReceiptMapper {
       .transferDate(Utilities.toOffsetDateTime(rec.getTransferDate()))
       .standin(rec.isStandIn())
       .debtor(map(rec.getDebtor()))
-      .payer(map(rec.getPayer()))
+      .payer(Optional.ofNullable(rec.getPayer()).map(this::map).orElse(null))
       .creationDate(null)
       .updateDate(null)
       .transfers(rec.getTransferList().getTransfers().stream().map(this::map).toList())
       .metadata(map(rec.getMetadata()));
   }
 
-  public PersonDTO map(CtSubject subject) {
+  private PersonDTO map(CtSubject subject) {
     return new PersonDTO()
       .entityType(PersonDTO.EntityTypeEnum.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
       .fiscalCode(subject.getUniqueIdentifier().getEntityUniqueIdentifierValue())
@@ -69,7 +70,7 @@ public class ReceiptMapper {
       .civic(subject.getCivicNumber());
   }
 
-  public ReceiptTransferDTO map(CtTransferPAReceiptV2 transfer) {
+  private ReceiptTransferDTO map(CtTransferPAReceiptV2 transfer) {
     return new ReceiptTransferDTO()
       .idTransfer(transfer.getIdTransfer())
       .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
@@ -82,7 +83,7 @@ public class ReceiptMapper {
       .metadata(map(transfer.getMetadata()));
   }
 
-  public Map<String, String> map(CtMetadata metadata) {
+  private Map<String, String> map(CtMetadata metadata) {
     return metadata == null ? null : metadata.getMapEntries().stream().collect(Collectors.toUnmodifiableMap(CtMapEntry::getKey, CtMapEntry::getValue));
   }
 }
