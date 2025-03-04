@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.ionotification.dto.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> {
                     ioNotificationApisHolder.getIoNotificationApi(accessToken)
-                            .sendMessage(new NotificationQueueDTO());
+                            .sendMessage(new NotificationRequestDTO());
                     return null;
                 },
                 String.class,
