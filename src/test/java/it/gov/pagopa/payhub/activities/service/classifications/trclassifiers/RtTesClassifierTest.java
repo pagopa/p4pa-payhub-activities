@@ -27,17 +27,9 @@ class RtTesClassifierTest {
 		transferDTO.setAmountCents(100L);
 		treasuryIUV.setBillAmountCents(100L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryIUF, treasuryIUV);
-		// Assert
-		assertEquals(ClassificationsEnum.RT_TES, result);
-	}
-
-	@Test
-	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
-		// Act
 		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV);
 		// Assert
-		assertNull(result);
+		assertEquals(ClassificationsEnum.RT_TES, result);
 	}
 
 	@Test

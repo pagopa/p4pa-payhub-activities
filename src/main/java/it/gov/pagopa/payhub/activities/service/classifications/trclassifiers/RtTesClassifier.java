@@ -14,7 +14,7 @@ public class RtTesClassifier implements TransferClassifier {
 
 	@Override
 	public ClassificationsEnum classify(Transfer transferDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, TreasuryIuv treasuryIuv) {
-		if(transferDTO != null && treasuryIuv != null && paymentsReportingDTO == null &&
+		if(transferDTO != null && treasuryIuv != null &&
 			getAmountCents(transferDTO).equals(getTransferAmountCents(treasuryIuv))) {
 			return ClassificationsEnum.RT_TES;
 		}

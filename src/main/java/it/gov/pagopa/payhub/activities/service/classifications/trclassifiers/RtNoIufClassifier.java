@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class RtNoIufClassifier implements TransferClassifier {
 
-	@Override
-	public ClassificationsEnum classify(Transfer transferDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, TreasuryIuv treasuryIuv) {
-		if(transferDTO != null && paymentsReportingDTO == null && treasuryIuv == null) {
-			return ClassificationsEnum.RT_NO_IUF;
-		}
-		if (transferDTO != null && paymentsReportingDTO != null && treasuryIuv == null && !getAmountCents(transferDTO).equals(getTransferAmountCents(paymentsReportingDTO))) {
-			return ClassificationsEnum.RT_NO_IUF;
-		}
-		if (transferDTO != null && treasuryIuv != null && paymentsReportingDTO == null && !getAmountCents(transferDTO).equals(getTransferAmountCents(treasuryIuv))) {
-			return ClassificationsEnum.RT_NO_IUF;
-		}
-		return null;
-	}
+    @Override
+    public ClassificationsEnum classify(Transfer transferDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, TreasuryIuv treasuryIuv) {
+        if (transferDTO != null &&
+                (
+                   paymentsReportingDTO == null
+                   ||
+                   !getAmountCents(transferDTO).equals(getTransferAmountCents(paymentsReportingDTO))
+                )
+        ) {
+            return ClassificationsEnum.RT_NO_IUF;
+        }
+        return null;
+    }
 }

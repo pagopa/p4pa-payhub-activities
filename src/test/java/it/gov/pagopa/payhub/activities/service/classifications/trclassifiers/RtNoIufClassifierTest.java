@@ -51,21 +51,14 @@ class RtNoIufClassifierTest {
 		assertEquals(ClassificationsEnum.RT_NO_IUF, result);
 	}
 
-	@Test
-	void givenUnmatchedConditionWhenDefineThenReturnNull() {
-		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV);
-		// Assert
-		assertNull(result);
-	}
 
 	@Test
-	void givenNullTreasuryDTOAndEqualsAmountWhenDefineThenReturnNull() {
+	void givenEqualsAmountWhenDefineThenReturnNull() {
 		// Arrange
 		transferDTO.setAmountCents(1000L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryIUF, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV);
 		// Assert
 		assertNull(result);
 	}
