@@ -55,7 +55,7 @@ public class ReceiptMapper {
       .metadata(map(rec.getMetadata()));
   }
 
-  public PersonDTO map(CtSubject subject) {
+  private PersonDTO map(CtSubject subject) {
     return subject == null ? null : new PersonDTO()
       .entityType(PersonDTO.EntityTypeEnum.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
       .fiscalCode(subject.getUniqueIdentifier().getEntityUniqueIdentifierValue())
@@ -69,8 +69,8 @@ public class ReceiptMapper {
       .civic(subject.getCivicNumber());
   }
 
-  public ReceiptTransferDTO map(CtTransferPAReceiptV2 transfer) {
-    return transfer == null ? null : new ReceiptTransferDTO()
+  private ReceiptTransferDTO map(CtTransferPAReceiptV2 transfer) {
+    return new ReceiptTransferDTO()
       .idTransfer(transfer.getIdTransfer())
       .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
       .fiscalCodePA(transfer.getFiscalCodePA())
@@ -82,7 +82,7 @@ public class ReceiptMapper {
       .metadata(map(transfer.getMetadata()));
   }
 
-  public Map<String, String> map(CtMetadata metadata) {
+  private Map<String, String> map(CtMetadata metadata) {
     return metadata == null ? null : metadata.getMapEntries().stream().collect(Collectors.toUnmodifiableMap(CtMapEntry::getKey, CtMapEntry::getValue));
   }
 }
