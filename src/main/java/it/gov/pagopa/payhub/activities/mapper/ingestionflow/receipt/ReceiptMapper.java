@@ -13,6 +13,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeData
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +49,7 @@ public class ReceiptMapper {
       .transferDate(Utilities.toOffsetDateTime(rec.getTransferDate()))
       .standin(rec.isStandIn())
       .debtor(map(rec.getDebtor()))
-      .payer(map(rec.getPayer()))
+      .payer(Optional.ofNullable(rec.getPayer()).map(this::map).orElse(null))
       .creationDate(null)
       .updateDate(null)
       .transfers(rec.getTransferList().getTransfers().stream().map(this::map).toList())
@@ -56,7 +57,7 @@ public class ReceiptMapper {
   }
 
   private PersonDTO map(CtSubject subject) {
-    return subject == null ? null : new PersonDTO()
+    return new PersonDTO()
       .entityType(PersonDTO.EntityTypeEnum.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
       .fiscalCode(subject.getUniqueIdentifier().getEntityUniqueIdentifierValue())
       .fullName(subject.getFullName())
