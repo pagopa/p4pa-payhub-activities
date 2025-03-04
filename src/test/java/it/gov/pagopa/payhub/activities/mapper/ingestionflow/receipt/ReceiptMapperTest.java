@@ -4,8 +4,9 @@ import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
@@ -18,10 +19,13 @@ import uk.co.jemos.podam.api.PodamFactory;
 
   private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
-  @Test
-  void givenPaSendRTV2RequestWhenMapThenOk(){
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void givenPaSendRTV2RequestWhenMapThenOk(boolean isPayerNull) {
     //given
     PaSendRTV2Request request = podamFactory.manufacturePojo(PaSendRTV2Request.class);
+    if(isPayerNull)
+      request.getReceipt().setPayer(null);
     //fix due to the fact that the field setter has non-standard name
     request.getReceipt().setPSPCompanyName(podamFactory.manufacturePojo(String.class));
     request.getReceipt().getTransferList().getTransfers().forEach(t -> {
@@ -31,9 +35,12 @@ import uk.co.jemos.podam.api.PodamFactory;
     //when
     ReceiptWithAdditionalNodeDataDTO response = receiptMapper.map(request);
     //verify
-    TestUtils.checkNotNullFields(response, "receiptId", "ingestionFlowFileId", "creationDate", "updateDate");
+    TestUtils.checkNotNullFields(response, "receiptId", "ingestionFlowFileId", "creationDate", "updateDate", "payer");
     TestUtils.checkNotNullFields(response.getDebtor());
-    TestUtils.checkNotNullFields(response.getPayer());
+    if(!isPayerNull) {
+      Assertions.assertNotNull(response.getPayer());
+      TestUtils.checkNotNullFields(response.getPayer());
+    }
     Assertions.assertEquals(request.getReceipt().getTransferList().getTransfers().size(), response.getTransfers().size());
     Assertions.assertEquals(request.getReceipt().getMetadata().getMapEntries().size(), response.getMetadata().size());
     response.getTransfers().forEach(TestUtils::checkNotNullFields);
