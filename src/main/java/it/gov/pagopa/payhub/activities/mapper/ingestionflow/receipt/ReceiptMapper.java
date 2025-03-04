@@ -56,7 +56,7 @@ public class ReceiptMapper {
   }
 
   public PersonDTO map(CtSubject subject) {
-    return new PersonDTO()
+    return subject == null ? null : new PersonDTO()
       .entityType(PersonDTO.EntityTypeEnum.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
       .fiscalCode(subject.getUniqueIdentifier().getEntityUniqueIdentifierValue())
       .fullName(subject.getFullName())
@@ -70,7 +70,7 @@ public class ReceiptMapper {
   }
 
   public ReceiptTransferDTO map(CtTransferPAReceiptV2 transfer) {
-    return new ReceiptTransferDTO()
+    return transfer == null ? null : new ReceiptTransferDTO()
       .idTransfer(transfer.getIdTransfer())
       .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
       .fiscalCodePA(transfer.getFiscalCodePA())
