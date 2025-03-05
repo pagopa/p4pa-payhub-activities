@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Map;
 
 /**
@@ -36,5 +35,5 @@ public interface DebtPositionService {
      * @param massive a flag indicating whether the synchronization is a bulk operation.
      * @return the workflow ID if a workflow is triggered, otherwise null.
      */
-    String installmentSynchronize(DebtPositionDTO.DebtPositionOriginEnum origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive);
+    String installmentSynchronize(DebtPositionDTO.DebtPositionOriginEnum origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive, String operatorUserId);
 }
