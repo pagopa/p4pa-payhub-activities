@@ -35,8 +35,8 @@ class TreasuryServiceTest {
     }
 
     @AfterEach
-    void tearDown() {
-        verifyNoMoreInteractions(
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
                 treasuryClientMock,
                 authnServiceMock,
                 treasuryMapperMock);
