@@ -124,17 +124,18 @@ class DebtPositionServiceTest {
         DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         boolean massive = false;
+        String userId = "USERID";
         String expectedWorkflowId = "workflow-123";
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionClientMock.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive))
+        Mockito.when(debtPositionClientMock.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive, userId))
                 .thenReturn(expectedWorkflowId);
 
         // When
-        String result = debtPositionService.installmentSynchronize(origin, installmentSynchronizeDTO, massive);
+        String result = debtPositionService.installmentSynchronize(origin, installmentSynchronizeDTO, massive, userId);
 
         // Then
         assertEquals(expectedWorkflowId, result);
-        Mockito.verify(debtPositionClientMock).installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive);
+        Mockito.verify(debtPositionClientMock).installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive, userId);
     }
 }
