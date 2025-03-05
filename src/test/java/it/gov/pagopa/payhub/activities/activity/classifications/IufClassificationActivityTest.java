@@ -2,14 +2,13 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
+import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
-import it.gov.pagopa.pu.classification.dto.generated.Classification;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
-import it.gov.pagopa.pu.classification.dto.generated.PagedModelPaymentsReportingEmbedded;
-import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
+import it.gov.pagopa.pu.classification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +32,9 @@ class IufClassificationActivityTest {
     @Mock
     private ClassificationService classificationServiceMock;
 
+    @Mock
+    private TreasuryService treasuryServiceMock;
+
     private IufClassificationActivity iufClassificationActivity;
 
     private static final Long ORGANIZATIONID = 1L;
@@ -40,12 +43,12 @@ class IufClassificationActivityTest {
 
     @BeforeEach
     void init() {
-        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingServiceMock, classificationServiceMock);
+        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingServiceMock, classificationServiceMock, treasuryServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(paymentsReportingServiceMock, classificationServiceMock);
+        Mockito.verifyNoMoreInteractions(paymentsReportingServiceMock, classificationServiceMock, treasuryServiceMock);
     }
 
     @Test
@@ -88,12 +91,20 @@ class IufClassificationActivityTest {
 
     @Test
     void givenNoReportedTransferWhenClassifyThenAnomalyClassificationSave() {
+        Treasury treasury = TreasuryFaker.buildTreasuryDTO();
+
         Classification expectedClassification = Classification.builder()
-                .organizationId(ORGANIZATIONID)
-                .treasuryId(TREASURYID)
-                .iuf(IUF)
-                .label("TES_NO_MATCH")
-                .build();
+            .organizationId(ORGANIZATIONID)
+            .treasuryId(TREASURYID)
+            .iuf(IUF)
+            .label("TES_NO_MATCH")
+            .lastClassificationDate(LocalDate.now())
+            .billDate(treasury.getBillDate())
+            .regionValueDate(treasury.getRegionValueDate())
+            .pspLastName(treasury.getPspLastName())
+            .accountRegistryCode(treasury.getAccountRegistryCode())
+            .billAmountCents(treasury.getBillAmountCents())
+            .build();
 
         IufClassificationActivityResult expectedIufClassificationActivityResult =
                 IufClassificationActivityResult
@@ -109,6 +120,8 @@ class IufClassificationActivityTest {
                                 .build())
                         .build());
 
+        when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
+
         IufClassificationActivityResult iufClassificationActivityResult =
                 iufClassificationActivity.classify(ORGANIZATIONID, TREASURYID, IUF);
 
@@ -116,6 +129,7 @@ class IufClassificationActivityTest {
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
         Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
+        Mockito.verify(treasuryServiceMock, Mockito.times(1)).getById(TREASURYID);
         Mockito.verify(classificationServiceMock, Mockito.times(1)).save(expectedClassification);
     }
 }
