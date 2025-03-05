@@ -66,7 +66,7 @@ public class InstallmentProcessingService {
                         ingestionFlowFile.getOrganizationId()
                 );
 
-                String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true);
+                String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true, ingestionFlowFile.getOperatorExternalId());
                 if (dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, totalRows, ingestionFlowFile.getFileName(), errorList)) {
                     processedRows++;
                 }

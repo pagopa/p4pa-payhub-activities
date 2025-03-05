@@ -15,7 +15,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.util.Map;
 import java.util.Set;
 
-import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.*;
+import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.StatusEnum;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionApisHolderTest extends BaseApiHolderTest {
@@ -62,6 +62,20 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                         .finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO)),
                 DebtPositionDTO.class,
                 debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void givenExternalUserIdWhenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
+                .iupdPagopa("iudpPagopa")
+                .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC)
+                .build();
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                (accessToken, userId) -> debtPositionApisHolder.getDebtPositionApi(accessToken, userId)
+                        .finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO)),
+                DebtPositionDTO.class,
+                debtPositionApisHolder::unload,
+                true);
     }
 
     @Test

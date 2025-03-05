@@ -96,18 +96,19 @@ class DebtPositionClientTest {
         DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         boolean massive = false;
+        String operatorUserId = "USERID";
         String expectedWorkflowId = "workflow-123";
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-workflow-id", expectedWorkflowId);
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken, operatorUserId))
                 .thenReturn(debtPositionApiMock);
         Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive))
                 .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
 
         // When
-        String result = debtPositionClient.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive);
+        String result = debtPositionClient.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive, operatorUserId);
 
         // Then
         Assertions.assertEquals(expectedWorkflowId, result);
