@@ -159,4 +159,23 @@ class TreasuryClientTest {
         verify(classificationApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
     }
+
+
+    @Test
+    void testGetById() {
+        // Given
+        String treasuryId = "TREASURY123";
+        String accessToken = "accessToken";
+        Treasury expectedTreasury = mock(Treasury.class);
+        TreasuryEntityControllerApi mockApi = mock(TreasuryEntityControllerApi.class);
+        when(classificationApisHolderMock.getTreasuryEntityControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.crudGetTreasury(treasuryId)).thenReturn(expectedTreasury);
+
+        // When
+        Treasury result = treasuryClient.getById(treasuryId, accessToken);
+
+        // Then
+        assertEquals(expectedTreasury, result);
+        verify(classificationApisHolderMock.getTreasuryEntityControllerApi(accessToken), times(1)).crudGetTreasury(treasuryId);
+    }
 }
