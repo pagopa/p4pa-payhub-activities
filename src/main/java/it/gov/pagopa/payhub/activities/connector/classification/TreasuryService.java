@@ -11,5 +11,5 @@ public interface TreasuryService {
     TreasuryIuf getByOrganizationIdAndIuf(Long organizationId, String iuf);
     Treasury insert(Treasury treasury);
     Long deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
-
+    Treasury getById(String treasuryId);
 }

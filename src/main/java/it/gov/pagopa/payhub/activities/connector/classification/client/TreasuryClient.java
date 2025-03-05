@@ -51,4 +51,8 @@ public class TreasuryClient {
                 .deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
     }
 
+    public Treasury getById(String treasuryId, String accessToken) {
+        return classificationApisHolder.getTreasuryEntityControllerApi(accessToken)
+                .crudGetTreasury(treasuryId);
+    }
 }

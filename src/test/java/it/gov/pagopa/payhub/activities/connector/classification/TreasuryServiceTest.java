@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
@@ -51,9 +52,9 @@ class TreasuryServiceTest {
         TreasuryIuf expectedTreasuryIuf = new TreasuryIuf();
         when(treasuryClientMock.findByOrganizationIdAndIuf(organizationId, iuf, accessToken))
                 .thenReturn(expectedTreasury);
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(treasuryMapperMock.map2Iuf(expectedTreasury))
+        when(treasuryMapperMock.map2Iuf(expectedTreasury))
                 .thenReturn(expectedTreasuryIuf);
 
         // When
@@ -92,7 +93,7 @@ class TreasuryServiceTest {
         Long expectedDeletedCount = 1L;
         when(treasuryClientMock.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken))
                 .thenReturn(expectedDeletedCount);
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
@@ -101,5 +102,22 @@ class TreasuryServiceTest {
         // Then
         assertSame(expectedDeletedCount, result);
         verify(treasuryClientMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken);
+    }
+
+    @Test
+    void testGetById() {
+        // Given
+        String treasuryId = "TREASURY123";
+        String accessToken = "accessToken";
+        Treasury expectedTreasury = mock(Treasury.class);
+        when(treasuryClientMock.getById(treasuryId, accessToken)).thenReturn(expectedTreasury);
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+        // When
+        Treasury result = treasuryService.getById(treasuryId);
+
+        // Then
+        assertEquals(expectedTreasury, result);
+        verify(treasuryClientMock, times(1)).getById(treasuryId, accessToken);
     }
 }
