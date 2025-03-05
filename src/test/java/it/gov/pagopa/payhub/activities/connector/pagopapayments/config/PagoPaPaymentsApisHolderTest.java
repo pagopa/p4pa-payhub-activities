@@ -62,4 +62,16 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 			String.class,
 			pagoPaPaymentsApisHolder::unload);
 	}
+
+	@Test
+	void whenSyncGpdApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+		assertAuthenticationShouldBeSetInThreadSafeMode(
+				accessToken -> {
+					pagoPaPaymentsApisHolder.getGpdApi(accessToken)
+							.syncGpd("IUD", buildDebtPositionDTO());
+					return null;
+				},
+				String.class,
+				pagoPaPaymentsApisHolder::unload);
+	}
 }
