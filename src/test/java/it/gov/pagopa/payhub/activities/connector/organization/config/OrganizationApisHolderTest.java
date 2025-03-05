@@ -55,4 +55,13 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
             PagedModelBroker.class,
             organizationApisHolder::unload);
 	}
+
+    @Test
+    void whenGetOrganizationApiKeyApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> organizationApisHolder.getOrganizationApi(accessToken)
+                        .getOrganizationApiKey(1L, "operationType"),
+                String.class,
+                organizationApisHolder::unload);
+    }
 }

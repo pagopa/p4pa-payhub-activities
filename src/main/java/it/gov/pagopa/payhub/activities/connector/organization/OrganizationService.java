@@ -14,4 +14,6 @@ public interface OrganizationService {
   Optional<Organization> getOrganizationById(Long organizationId);
 
   List<Organization> getOrganizationsByBrokerId(Long brokerId);
+
+  String getOrganizationApiKey(Long organizationId, String keyType);
 }

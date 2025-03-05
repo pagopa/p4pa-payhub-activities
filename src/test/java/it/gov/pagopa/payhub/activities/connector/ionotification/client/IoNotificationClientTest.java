@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.ionotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.ionotification.config.IoNotificationApisHolder;
 import it.gov.pagopa.pu.ionotification.client.generated.IoNotificationApi;
-import it.gov.pagopa.pu.ionotification.dto.generated.NotificationQueueDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class IoNotificationClientTest {
     void whenSendMessageThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
-        NotificationQueueDTO request = new NotificationQueueDTO();
+        NotificationRequestDTO request = new NotificationRequestDTO();
 
         Mockito.when(ioNotificationApisHolder.getIoNotificationApi(accessToken))
                 .thenReturn(ioNotificationApi);

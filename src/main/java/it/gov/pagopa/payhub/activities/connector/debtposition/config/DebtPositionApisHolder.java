@@ -18,13 +18,15 @@ public class DebtPositionApisHolder {
     private final DebtPositionSearchControllerApi debtPositionSearchControllerApi;
     private final DebtPositionApi debtPositionApi;
     private final ReceiptApi receiptApi;
+    private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public DebtPositionApisHolder(
-        DebtPositionApiClientConfig clientConfig,
-        RestTemplateBuilder restTemplateBuilder
+            DebtPositionApiClientConfig clientConfig,
+            RestTemplateBuilder restTemplateBuilder
     ) {
-	    RestTemplate restTemplate = restTemplateBuilder.build();
+
+        RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
         apiClient.setBasePath(clientConfig.getBaseUrl());
         apiClient.setBearerToken(bearerTokenHolder::get);
@@ -39,6 +41,7 @@ public class DebtPositionApisHolder {
         this.transferSearchControllerApi = new TransferSearchControllerApi(apiClient);
         this.transferApi = new TransferApi(apiClient);
         this.receiptApi = new ReceiptApi(apiClient);
+        this.debtPositionTypeOrgApi = new DebtPositionTypeOrgApi(apiClient);
     }
 
     @PreDestroy
@@ -70,6 +73,10 @@ public class DebtPositionApisHolder {
 
     public ReceiptApi getReceiptApi(String accessToken){
         return getApi(accessToken, receiptApi);
+    }
+
+    public DebtPositionTypeOrgApi getDebtPositionTypeOrgApi(String accessToken) {
+        return getApi(accessToken, debtPositionTypeOrgApi);
     }
 
 

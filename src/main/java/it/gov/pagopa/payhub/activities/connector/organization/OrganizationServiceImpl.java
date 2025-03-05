@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
+import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -17,10 +18,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private final AuthnService authnService;
     private final OrganizationSearchClient organizationSearchClient;
+    private final OrganizationClient organizationClient;
 
-    public OrganizationServiceImpl(AuthnService authnService, OrganizationSearchClient organizationSearchClient) {
+    public OrganizationServiceImpl(AuthnService authnService, OrganizationSearchClient organizationSearchClient, OrganizationClient organizationClient) {
         this.authnService = authnService;
         this.organizationSearchClient = organizationSearchClient;
+        this.organizationClient = organizationClient;
     }
 
     @Override
@@ -48,5 +51,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     public List<Organization> getOrganizationsByBrokerId(Long brokerId) {
         CollectionModelOrganization organizations = organizationSearchClient.findOrganizationsByBrokerId(brokerId, authnService.getAccessToken());
         return Objects.requireNonNull(organizations.getEmbedded()).getOrganizations();
+    }
+
+    @Override
+    public String getOrganizationApiKey(Long organizationId, String keyType) {
+        String accessToken = authnService.getAccessToken();
+        return organizationClient.getOrganizationApiKey(organizationId, keyType, accessToken);
     }
 }
