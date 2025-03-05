@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.TreasuryClient;
+import it.gov.pagopa.payhub.activities.connector.classification.mapper.TreasuryMapper;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,19 +23,22 @@ class TreasuryServiceTest {
     private TreasuryClient treasuryClientMock;
     @Mock
     private AuthnService authnServiceMock;
+    @Mock
+    private TreasuryMapper treasuryMapperMock;
 
     private TreasuryServiceImpl treasuryService;
 
     @BeforeEach
     void setUp() {
-        treasuryService = new TreasuryServiceImpl(treasuryClientMock, authnServiceMock);
+        treasuryService = new TreasuryServiceImpl(treasuryClientMock, authnServiceMock, treasuryMapperMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
                 treasuryClientMock,
-                authnServiceMock);
+                authnServiceMock,
+                treasuryMapperMock);
     }
 
     @Test
@@ -43,16 +48,19 @@ class TreasuryServiceTest {
         String iuf = "IUF123";
         String accessToken = "accessToken";
         Treasury expectedTreasury = new Treasury();
+        TreasuryIuf expectedTreasuryIuf = new TreasuryIuf();
         when(treasuryClientMock.findByOrganizationIdAndIuf(organizationId, iuf, accessToken))
                 .thenReturn(expectedTreasury);
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
+        Mockito.when(treasuryMapperMock.map2Iuf(expectedTreasury))
+                .thenReturn(expectedTreasuryIuf);
 
         // When
         Treasury result = treasuryService.getByOrganizationIdAndIuf(organizationId, iuf);
 
         // Then
-        assertEquals(expectedTreasury, result);
+        assertSame(expectedTreasuryIuf, result);
         verify(treasuryClientMock, times(1)).findByOrganizationIdAndIuf(organizationId, iuf, accessToken);
     }
 
@@ -70,7 +78,7 @@ class TreasuryServiceTest {
         Treasury result = treasuryService.insert(treasury);
 
         // Then
-        assertEquals(expectedTreasury, result);
+        assertSame(expectedTreasury, result);
         verify(treasuryClientMock, times(1)).insert(treasury, accessToken);
     }
 
@@ -91,7 +99,7 @@ class TreasuryServiceTest {
         Long result = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
 
         // Then
-        assertEquals(expectedDeletedCount, result);
+        assertSame(expectedDeletedCount, result);
         verify(treasuryClientMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken);
     }
 

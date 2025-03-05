@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.TreasuryClient;
+import it.gov.pagopa.payhub.activities.connector.classification.mapper.TreasuryMapper;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -13,15 +15,17 @@ import org.springframework.stereotype.Service;
 public class TreasuryServiceImpl implements TreasuryService {
     private final TreasuryClient treasuryClient;
     private final AuthnService authnService;
+    private final TreasuryMapper mapper;
 
-    public TreasuryServiceImpl(TreasuryClient treasuryClient, AuthnService authnService) {
+    public TreasuryServiceImpl(TreasuryClient treasuryClient, AuthnService authnService, TreasuryMapper mapper) {
         this.treasuryClient = treasuryClient;
         this.authnService = authnService;
+        this.mapper = mapper;
     }
 
     @Override
-    public Treasury getByOrganizationIdAndIuf(Long organizationId, String iuf) {
-        return treasuryClient.findByOrganizationIdAndIuf(organizationId,iuf, authnService.getAccessToken());
+    public TreasuryIuf getByOrganizationIdAndIuf(Long organizationId, String iuf) {
+        return mapper.map2Iuf(treasuryClient.findByOrganizationIdAndIuf(organizationId,iuf, authnService.getAccessToken()));
     }
 
     @Override
