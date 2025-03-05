@@ -8,9 +8,9 @@ import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 public interface DebtPositionTypeOrgService {
 
     /**
-     * Finalizes the update of the debt position status from the installments.
+     * Get the serviceId, subject e markdown from debt position type org to send IO Notification.
      *
-     * @param debtPositionTypeOrgId the identifier of the debt position to be updated.
+     * @param debtPositionTypeOrgId the identifier of the debt position.
      * @param context the operation type
      * @return the updated {@link IONotificationDTO} object.
      */
