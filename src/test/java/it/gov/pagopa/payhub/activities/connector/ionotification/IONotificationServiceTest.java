@@ -56,7 +56,7 @@ class IONotificationServiceTest {
         String subject = "subject";
         String markdown = "markdown";
 
-        Mockito.when(notificationRequestMapperMock.mapDebtPositionDTO2NotificationRequestDTO(debtPosition, serviceId, subject, markdown))
+        Mockito.when(notificationRequestMapperMock.map(debtPosition, serviceId, subject, markdown))
                 .thenReturn(List.of(notificationRequestDTO));
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);

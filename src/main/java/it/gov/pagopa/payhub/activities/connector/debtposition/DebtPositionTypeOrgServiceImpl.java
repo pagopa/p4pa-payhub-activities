@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class DebtPositionTypeOrgServiceImpl implements DebtPositionTypeOrgServic
     }
 
     @Override
-    public IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, String context) {
+    public IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, NotificationRequestDTO.OperationTypeEnum context) {
         String accessToken = authnService.getAccessToken();
         return debtPositionTypeOrgClient.getIONotificationDetails(accessToken, debtPositionTypeOrgId, context);
     }

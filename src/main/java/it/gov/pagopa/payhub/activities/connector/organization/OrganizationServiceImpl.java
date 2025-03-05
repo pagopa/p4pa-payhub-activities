@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.client.Organizatio
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +55,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public String getOrganizationApiKey(Long organizationId, String keyType) {
+    public String getOrganizationApiKey(Long organizationId, OrganizationApiKeys.KeyTypeEnum keyType) {
         String accessToken = authnService.getAccessToken();
         return organizationClient.getOrganizationApiKey(organizationId, keyType, accessToken);
     }

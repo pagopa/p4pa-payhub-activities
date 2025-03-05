@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys.KeyTypeEnum.IO;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -191,11 +192,11 @@ class OrganizationServiceTest {
     void givenGetOrganizationApiKeyThenOk(){
         //Given
         String apiKey = "apiKey";
-        Mockito.when(organizationClientMock.getOrganizationApiKey(1L, "operationType", accessToken))
+        Mockito.when(organizationClientMock.getOrganizationApiKey(1L, IO, accessToken))
                 .thenReturn(apiKey);
 
         //When
-        String result = organizationService.getOrganizationApiKey(1L, "operationType");
+        String result = organizationService.getOrganizationApiKey(1L, IO);
 
         //Then
         Assertions.assertEquals(apiKey, result);

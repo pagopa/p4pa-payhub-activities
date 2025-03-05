@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
 import it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +25,13 @@ class NotificationRequestMapperTest {
     }
 
     @Test
-    void givenMapDebtPositionDTO2NotificationRequestDTOThenSuccess() {
+    void givenMapThenSuccess() {
         // Given
         DebtPositionDTO debtPosition = DebtPositionFaker.buildDebtPositionDTO();
         String serviceId = "serviceId";
         String subject = "subject";
         String markdown = "markdown";
+        String apiKey = "apikey";
         NotificationRequestDTO expectedResult = NotificationRequestDTO.builder()
                 .fiscalCode(debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().getDebtor().getFiscalCode())
                 .orgId(debtPosition.getOrganizationId())
@@ -37,15 +39,18 @@ class NotificationRequestMapperTest {
                 .serviceId(serviceId)
                 .subject(subject)
                 .markdown(markdown)
+                .apiKey(apiKey)
+                .dueDate("dueDate")
+                .amount(1L)
                 .build();
 
         // When
         List<NotificationRequestDTO> result =
-                mapper.mapDebtPositionDTO2NotificationRequestDTO(debtPosition, serviceId, subject, markdown);
+                mapper.map(debtPosition, serviceId, new IONotificationDTO());
 
         // Then
         // TODO fix test
-        checkNotNullFields(result.getFirst(), "operationType", "iuv", "paymentReason", "paymentDate", "amount", "apiKey", "dueDate");
+        checkNotNullFields(result.getFirst(), "operationType", "iuv", "paymentReason", "paymentDate");
         assertEquals(expectedResult, result.getFirst());
         assertEquals("uniqueIdentifierCode", result.getFirst().getFiscalCode());
     }

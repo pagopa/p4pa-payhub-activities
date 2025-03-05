@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IONotificationDTOFaker.buildIONotificationDTO;
+import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.CREATE_DP;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgClientTest {
@@ -49,7 +50,7 @@ class DebtPositionTypeOrgClientTest {
                 .thenReturn(expectedResult);
 
         // When
-        IONotificationDTO result = debtPositionTypeOrgClient.getIONotificationDetails(accessToken, 1L, "operationType");
+        IONotificationDTO result = debtPositionTypeOrgClient.getIONotificationDetails(accessToken, 1L, CREATE_DP);
 
         // Then
         Assertions.assertSame(expectedResult, result);

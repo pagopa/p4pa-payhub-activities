@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,5 +16,5 @@ public interface OrganizationService {
 
   List<Organization> getOrganizationsByBrokerId(Long brokerId);
 
-  String getOrganizationApiKey(Long organizationId, String keyType);
+  String getOrganizationApiKey(Long organizationId, OrganizationApiKeys.KeyTypeEnum keyType);
 }

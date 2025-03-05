@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.CREATE_DP;
+
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgServiceTest {
 
@@ -41,9 +43,9 @@ class DebtPositionTypeOrgServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        debtPositionTypeOrgService.getIONotificationDetails(1L, "operationType");
+        debtPositionTypeOrgService.getIONotificationDetails(1L, CREATE_DP);
 
         // Then
-        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, "operationType");
+        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, CREATE_DP);
     }
 }

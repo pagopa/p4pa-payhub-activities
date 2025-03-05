@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 
 
 /**
@@ -9,9 +10,9 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 public interface IONotificationService {
 
     /**
-     * Sends a notification message to the IO Notification Queue.
+     * Sends a notification message to the IO Notification.
      *
-     * @param debtPositionDTO the debt position data to be sent.
+     * @param notificationRequestDTO the payload data to be sent.
      */
-    void sendMessage(DebtPositionDTO debtPositionDTO);
+    MessageResponseDTO sendMessage(NotificationRequestDTO notificationRequestDTO);
 }
