@@ -91,4 +91,13 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
             ReceiptDTO.class,
             debtPositionApisHolder::unload);
     }
+
+    @Test
+    void whenGetDebtPositionTypeOrgApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken)
+                        .getIONotificationDetails(1L, "operationType"),
+                IONotificationDTO.class,
+                debtPositionApisHolder::unload);
+    }
 }
