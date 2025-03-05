@@ -34,7 +34,7 @@ class GpdClientTest {
     }
 
     @Test
-    void whenSyncAcaThenInvokeWithAccessToken(){
+    void whenSyncGpdThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
         String iud = "IUD";
