@@ -94,4 +94,21 @@ class TreasuryServiceTest {
         assertEquals(expectedDeletedCount, result);
         verify(treasuryClientMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken);
     }
+
+    @Test
+    void testGetById() {
+        // Given
+        String treasuryId = "TREASURY123";
+        String accessToken = "accessToken";
+        Treasury expectedTreasury = mock(Treasury.class);
+        when(treasuryClientMock.getById(treasuryId, accessToken)).thenReturn(expectedTreasury);
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+        // When
+        Treasury result = treasuryService.getById(treasuryId);
+
+        // Then
+        assertEquals(expectedTreasury, result);
+        verify(treasuryClientMock, times(1)).getById(treasuryId, accessToken);
+    }
 }

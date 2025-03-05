@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class TreasuryServiceImpl implements TreasuryService {
-
     private final TreasuryClient treasuryClient;
     private final AuthnService authnService;
 
@@ -35,4 +34,8 @@ public class TreasuryServiceImpl implements TreasuryService {
         return treasuryClient.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, authnService.getAccessToken());
     }
 
+    @Override
+    public Treasury getById(String treasuryId) {
+        return treasuryClient.getById(treasuryId, authnService.getAccessToken());
+    }
 }
