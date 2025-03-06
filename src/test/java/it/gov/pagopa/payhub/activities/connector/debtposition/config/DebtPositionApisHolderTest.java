@@ -114,4 +114,13 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                 IONotificationDTO.class,
                 debtPositionApisHolder::unload);
     }
+
+    @Test
+    void whenGetReceiptNoPiiSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> debtPositionApisHolder.getReceiptNoPiiSearchControllerApi(accessToken)
+                        .crudReceiptsGetByTransferId(1L),
+                ReceiptNoPII.class,
+                debtPositionApisHolder::unload);
+    }
 }
