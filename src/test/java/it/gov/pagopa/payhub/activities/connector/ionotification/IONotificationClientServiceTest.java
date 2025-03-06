@@ -19,7 +19,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.build
 import static it.gov.pagopa.payhub.activities.util.faker.NotificationRequestDTOFaker.buildNotificationRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
-class IONotificationServiceTest {
+class IONotificationClientServiceTest {
 
     @Mock
     private IoNotificationClient ioNotificationClientMock;
@@ -28,11 +28,11 @@ class IONotificationServiceTest {
     @Mock
     private AuthnService authnServiceMock;
 
-    private IONotificationServiceImpl sendIONotificationActivity;
+    private IONotificationClientServiceImpl sendIONotificationActivity;
 
     @BeforeEach
     void setUp() {
-        sendIONotificationActivity = new IONotificationServiceImpl(
+        sendIONotificationActivity = new IONotificationClientServiceImpl(
                 ioNotificationClientMock,
                 notificationRequestMapperMock,
                 authnServiceMock);

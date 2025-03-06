@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IONotificationActivityService;
+import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IONotificationService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
@@ -15,15 +15,15 @@ import java.util.Map;
 @Slf4j
 public class SendDebtPositionIONotificationActivityImpl implements SendDebtPositionIONotificationActivity {
 
-    private final IONotificationActivityService ioNotificationActivityService;
+    private final IONotificationService ioNotificationService;
 
-    public SendDebtPositionIONotificationActivityImpl(IONotificationActivityService ioNotificationActivityService) {
-        this.ioNotificationActivityService = ioNotificationActivityService;
+    public SendDebtPositionIONotificationActivityImpl(IONotificationService ioNotificationService) {
+        this.ioNotificationService = ioNotificationService;
     }
 
     @Override
     public MessageResponseDTO sendMessage(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
         log.info("Sending message to IONotification for debt position type org id {}", debtPosition.getDebtPositionTypeOrgId());
-        return ioNotificationActivityService.sendMessage(debtPosition);
+        return ioNotificationService.sendMessage(debtPosition, iupdSyncStatusUpdateDTOMap);
     }
 }

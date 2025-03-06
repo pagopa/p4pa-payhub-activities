@@ -26,6 +26,3 @@ public interface SendDebtPositionIONotificationActivity {
     @ActivityMethod
     MessageResponseDTO sendMessage(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
 }
-
-
-
