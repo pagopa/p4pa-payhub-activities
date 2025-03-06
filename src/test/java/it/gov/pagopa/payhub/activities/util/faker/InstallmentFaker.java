@@ -39,4 +39,29 @@ public class InstallmentFaker {
                 .debtor(buildPersonDTO());
     }
 
+    public static InstallmentDTO buildInstallmentDTO2(){
+        List<TransferDTO> transfers = new ArrayList<>();
+        transfers.add(buildTransferDTO());
+        return TestUtils.getPodamFactory().manufacturePojo(InstallmentDTO.class)
+                .installmentId(2L)
+                .paymentOptionId(2L)
+                .status(InstallmentDTO.StatusEnum.UNPAID)
+                .iupdPagopa("iupdPagopa")
+                .iud("iud")
+                .iuv("iuv")
+                .iur("iur")
+                .iuf("iuf")
+                .nav("nav")
+                .creationDate(OFFSETDATETIME)
+                .updateDate(OFFSETDATETIME)
+                .dueDate(LOCALDATE)
+                .paymentTypeCode("paymentTypeCode")
+                .amountCents(100L)
+                .remittanceInformation("remittanceInformation")
+                .legacyPaymentMetadata("legacyPaymentMetadata")
+                .balance("balance")
+                .transfers(transfers)
+                .debtor(buildPersonDTO());
+    }
+
 }

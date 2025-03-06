@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.ionotification.config.IoNotificationApisHolder;
+import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,8 @@ public class IoNotificationClient {
         this.ioNotificationApisHolder = ioNotificationApisHolder;
     }
 
-    public void sendMessage(NotificationRequestDTO notificationQueueDTO, String accessToken) {
-        ioNotificationApisHolder.getIoNotificationApi(accessToken)
+    public MessageResponseDTO sendMessage(NotificationRequestDTO notificationQueueDTO, String accessToken) {
+        return ioNotificationApisHolder.getIoNotificationApi(accessToken)
                 .sendMessage(notificationQueueDTO);
     }
 }
