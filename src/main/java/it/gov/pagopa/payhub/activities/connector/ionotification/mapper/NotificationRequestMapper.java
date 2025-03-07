@@ -19,10 +19,13 @@ public class NotificationRequestMapper {
         if (paymentOptions.size() == 1) {
             InstallmentDTO firstInstallment = paymentOptions.getFirst().getInstallments().getFirst();
 
-            return List.of(mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, apiKey, ioNotificationDTO, firstInstallment, operationType)
-                            .nav(firstInstallment.getNav())
-                            .build()
+            NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
+                    orgId, debtPositionTypeOrgId, apiKey, ioNotificationDTO, firstInstallment, operationType
             );
+
+            notificationRequestDTO.setNav(firstInstallment.getNav());
+
+            return List.of(notificationRequestDTO);
         }
 
         // If more than one PO, iterate on every installment and map only distinct fiscal codes
@@ -34,26 +37,31 @@ public class NotificationRequestMapper {
                         (i1, i2) -> i1
                 ))
                 .values().stream()
-                .map(installmentDTO -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId,  apiKey, ioNotificationDTO, installmentDTO, operationType).build())
-                .collect(Collectors.toList());
+                .map(installmentDTO -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, apiKey, ioNotificationDTO, installmentDTO, operationType))
+                .toList();
     }
 
-    private static NotificationRequestDTO.NotificationRequestDTOBuilder<?, ?> mapNotificationRequestDTO(
-            Long orgId, Long debtPositionTypeOrgId, String apiKey, IONotificationDTO ioNotificationDTO, InstallmentDTO installmentDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
+    private static NotificationRequestDTO mapNotificationRequestDTO(
+            Long orgId, Long debtPositionTypeOrgId, String apiKey, IONotificationDTO ioNotificationDTO,
+            InstallmentDTO installmentDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
 
-        return NotificationRequestDTO.builder()
-                .fiscalCode(installmentDTO.getDebtor().getFiscalCode())
-                .orgId(orgId)
-                .debtPositionTypeOrgId(debtPositionTypeOrgId)
-                .apiKey(apiKey)
-                .iuv(installmentDTO.getIuv())
-                .subject(ioNotificationDTO.getIoTemplateSubject())
-                .markdown(ioNotificationDTO.getIoTemplateMessage())
-                .serviceId(ioNotificationDTO.getServiceId())
-                .amount(installmentDTO.getAmountCents())
-                .operationType(operationType)
-                .dueDate(String.valueOf(installmentDTO.getDueDate()))
-                .paymentReason(installmentDTO.getRemittanceInformation());
+        NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO();
+        notificationRequestDTO.setFiscalCode(installmentDTO.getDebtor().getFiscalCode());
+        notificationRequestDTO.setOrgId(orgId);
+        notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
+        notificationRequestDTO.setApiKey(apiKey);
+        notificationRequestDTO.setIuv(installmentDTO.getIuv());
+        if (ioNotificationDTO.getIoTemplateSubject() != null && ioNotificationDTO.getIoTemplateMessage() != null && ioNotificationDTO.getServiceId() != null) {
+            notificationRequestDTO.setSubject(ioNotificationDTO.getIoTemplateSubject());
+            notificationRequestDTO.setMarkdown(ioNotificationDTO.getIoTemplateMessage());
+            notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
+        }
+        notificationRequestDTO.setAmount(installmentDTO.getAmountCents());
+        notificationRequestDTO.setOperationType(operationType);
+        notificationRequestDTO.setDueDate(String.valueOf(installmentDTO.getDueDate()));
+        notificationRequestDTO.setPaymentReason(installmentDTO.getRemittanceInformation());
+
+        return notificationRequestDTO;
     }
 }
 
