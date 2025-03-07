@@ -13,6 +13,7 @@ public interface IONotificationClientService {
      * Sends a notification message to the IO Notification.
      *
      * @param notificationRequestDTO the payload data to be sent.
+     * @return the object {@link MessageResponseDTO} with the notification id.
      */
     MessageResponseDTO sendMessage(NotificationRequestDTO notificationRequestDTO);
 }
