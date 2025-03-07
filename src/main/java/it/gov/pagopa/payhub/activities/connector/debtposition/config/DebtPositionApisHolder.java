@@ -19,6 +19,7 @@ public class DebtPositionApisHolder {
     private final DebtPositionApi debtPositionApi;
     private final ReceiptApi receiptApi;
     private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
+    private final ReceiptNoPiiSearchControllerApi receiptNoPiiSearchControllerApi;
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
 
@@ -26,7 +27,6 @@ public class DebtPositionApisHolder {
             DebtPositionApiClientConfig clientConfig,
             RestTemplateBuilder restTemplateBuilder
     ) {
-
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClientExt apiClient = new ApiClientExt(restTemplate);
         apiClient.setBasePath(clientConfig.getBaseUrl());
@@ -44,6 +44,7 @@ public class DebtPositionApisHolder {
         this.transferApi = new TransferApi(apiClient);
         this.receiptApi = new ReceiptApi(apiClient);
         this.debtPositionTypeOrgApi = new DebtPositionTypeOrgApi(apiClient);
+	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -79,6 +80,9 @@ public class DebtPositionApisHolder {
         return getApi(accessToken, null, debtPositionTypeOrgApi);
     }
 
+	public ReceiptNoPiiSearchControllerApi getReceiptNoPiiSearchControllerApi(String accessToken) {
+        return getApi(accessToken, null, receiptNoPiiSearchControllerApi);
+    }
 
     private <T extends BaseApi> T getApi(String accessToken, String mappedExternalUserId, T api) {
         authContextHolder.set(Pair.of(accessToken, mappedExternalUserId));
