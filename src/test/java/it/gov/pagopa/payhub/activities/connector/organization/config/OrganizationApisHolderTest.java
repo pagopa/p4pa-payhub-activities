@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.organization.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.organization.dto.generated.PagedModelBroker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +42,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
                         .crudOrganizationsFindByIpaCode("ORGIPACODE"),
-                Organization.class,
+                new ParameterizedTypeReference<>() {},
                 organizationApisHolder::unload);
     }
 
@@ -52,7 +51,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
                 .crudGetBrokers(0, 2_000, null),
-            PagedModelBroker.class,
+            new ParameterizedTypeReference<>() {},
             organizationApisHolder::unload);
 	}
 
@@ -61,7 +60,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> organizationApisHolder.getOrganizationApi(accessToken)
                         .getOrganizationApiKey(1L, "operationType"),
-                String.class,
+                new ParameterizedTypeReference<>() {},
                 organizationApisHolder::unload);
     }
 }

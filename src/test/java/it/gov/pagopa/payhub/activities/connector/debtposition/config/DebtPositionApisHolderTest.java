@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.Map;
@@ -47,7 +49,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionSearchControllerApi(accessToken)
                         .crudDebtPositionsFindOneWithAllDataByDebtPositionId(0L),
-                DebtPosition.class,
+                new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
 
@@ -60,7 +62,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionApi(accessToken)
                         .finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO)),
-                DebtPositionDTO.class,
+                new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
 
@@ -73,7 +75,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 (accessToken, userId) -> debtPositionApisHolder.getDebtPositionApi(accessToken, userId)
                         .finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO)),
-                DebtPositionDTO.class,
+                new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload,
                 true);
     }
@@ -84,7 +86,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
             accessToken -> debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
                 .crudTransfersFindBySemanticKey(0L, "iuv", "iud", 1,
                     Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue())),
-            Object.class,
+            new ParameterizedTypeReference<>() {},
             debtPositionApisHolder::unload);
     }
 
@@ -93,7 +95,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> debtPositionApisHolder.getTransferApi(accessToken)
                 .notifyReportedTransferId(0L),
-            Object.class,
+            new ParameterizedTypeReference<>() {},
             debtPositionApisHolder::unload);
     }
 
@@ -102,7 +104,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> debtPositionApisHolder.getReceiptApi(accessToken)
               .createReceipt(new ReceiptWithAdditionalNodeDataDTO()),
-            ReceiptDTO.class,
+            new ParameterizedTypeReference<>() {},
             debtPositionApisHolder::unload);
     }
 
@@ -111,7 +113,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken)
                         .getIONotificationDetails(1L, "operationType"),
-                IONotificationDTO.class,
+                new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
 
@@ -120,7 +122,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getReceiptNoPiiSearchControllerApi(accessToken)
                         .crudReceiptsGetByTransferId(1L),
-                ReceiptNoPII.class,
+                new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
 }

@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
@@ -45,21 +46,18 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 			accessToken -> {
 				pagoPaPaymentsApisHolder.getAcaApi(accessToken)
 					.syncAca("IUD", buildDebtPositionDTO());
-				return null;
+				return voidMock;
 			},
-			String.class,
+			new ParameterizedTypeReference<>() {},
 			pagoPaPaymentsApisHolder::unload);
 	}
 
 	@Test
 	void whenGetPaymentsReportingApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
-			accessToken -> {
-				pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-					.getPaymentsReportingList(1L);
-				return null;
-			},
-			String.class,
+			accessToken -> pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
+					.getPaymentsReportingList(1L),
+			new ParameterizedTypeReference<>() {},
 			pagoPaPaymentsApisHolder::unload);
 	}
 
@@ -69,9 +67,9 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 				accessToken -> {
 					pagoPaPaymentsApisHolder.getGpdApi(accessToken)
 							.syncGpd("IUD", buildDebtPositionDTO());
-					return null;
+					return voidMock;
 				},
-				String.class,
+				new ParameterizedTypeReference<>() {},
 				pagoPaPaymentsApisHolder::unload);
 	}
 }
