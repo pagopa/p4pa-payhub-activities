@@ -45,7 +45,7 @@ class NotificationRequestMapperTest {
 
         // Then
         // TODO fix test
-        checkNotNullFields(result.getFirst(), "operationType", "iuv", "paymentReason", "paymentDate", "amount", "apiKey", "dueDate");
+        checkNotNullFields(result.getFirst(), "operationType", "iuv", "paymentReason", "paymentDate", "amount", "apiKey", "dueDate", "nav");
         assertEquals(expectedResult, result.getFirst());
         assertEquals("uniqueIdentifierCode", result.getFirst().getFiscalCode());
     }
