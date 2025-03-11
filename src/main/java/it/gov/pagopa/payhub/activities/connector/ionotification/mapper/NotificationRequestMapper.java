@@ -11,25 +11,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+
 @Service
 @Lazy
 public class NotificationRequestMapper {
 
     public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
-        // If only one PaymentOption exists, map with nav field the first installment
+        // If only one PaymentOption exists, map with nav field
         if (paymentOptions.size() == 1) {
-            List<InstallmentDTO> installments = paymentOptions.getFirst().getInstallments();
+            List<InstallmentDTO> installmentDTOList = paymentOptions.getFirst().getInstallments();
 
             // If at least one installment has a dueDate, select those with the earliest dueDate, otherwise take the first installment
-            List<InstallmentDTO> selectedInstallments = installments.stream()
+            List<InstallmentDTO> installments = installmentDTOList.stream()
                     .filter(i -> i.getDueDate() != null)
-                    .collect(Collectors.groupingBy(InstallmentDTO::getDueDate))
+                    .collect(groupingBy(InstallmentDTO::getDueDate))
                     .entrySet().stream()
                     .min(Map.Entry.comparingByKey())
                     .map(Map.Entry::getValue)
-                    .orElse(List.of(installments.getFirst()));
+                    .orElse(List.of(installmentDTOList.getFirst()));
 
-            return selectedInstallments.stream()
+            return installments.stream()
                     .map(installment -> {
                         NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
                                 orgId, debtPositionTypeOrgId, ioNotificationDTO, installment, operationType);

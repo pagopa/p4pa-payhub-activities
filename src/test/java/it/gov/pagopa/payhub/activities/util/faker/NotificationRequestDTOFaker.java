@@ -12,12 +12,8 @@ public class NotificationRequestDTOFaker {
                 .debtPositionTypeOrgId(3L)
                 .serviceId("serviceId")
                 .subject("subject")
-                .apiKey("apikey")
-                .dueDate("2025-03-03")
-                .iuv("iuv")
                 .nav("nav")
                 .amount(100L)
-                .paymentReason("paymentReason")
                 .operationType(NotificationRequestDTO.OperationTypeEnum.CREATE_DP)
                 .markdown("markdown");
     }
