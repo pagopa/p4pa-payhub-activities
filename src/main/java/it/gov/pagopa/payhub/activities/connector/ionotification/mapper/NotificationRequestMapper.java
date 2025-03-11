@@ -8,21 +8,37 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Lazy
 public class NotificationRequestMapper {
 
-    public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, String apiKey, IONotificationDTO ioNotificationDTO) {
-        // If only one PaymentOption exists, map with nav field only the first installment
+    public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
+        // If only one PaymentOption exists, map with nav field
         if (paymentOptions.size() == 1) {
-            InstallmentDTO firstInstallment = paymentOptions.getFirst().getInstallments().getFirst();
+            List<InstallmentDTO> installmentDTOList = paymentOptions.getFirst().getInstallments();
 
-            return List.of(mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, apiKey, ioNotificationDTO, firstInstallment)
-                            .nav(firstInstallment.getNav())
-                            .build()
-            );
+            // If at least one installment has a dueDate, select those with the earliest dueDate, otherwise take the first installment
+            List<InstallmentDTO> installments = installmentDTOList.stream()
+                    .filter(i -> i.getDueDate() != null)
+                    .collect(groupingBy(InstallmentDTO::getDueDate))
+                    .entrySet().stream()
+                    .min(Map.Entry.comparingByKey())
+                    .map(Map.Entry::getValue)
+                    .orElse(List.of(installmentDTOList.getFirst()));
+
+            return installments.stream()
+                    .map(installment -> {
+                        NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
+                                orgId, debtPositionTypeOrgId, ioNotificationDTO, installment, operationType);
+                        notificationRequestDTO.setNav(installment.getNav());
+                        return notificationRequestDTO;
+                    })
+                    .toList();
         }
 
         // If more than one PO, iterate on every installment and map only distinct fiscal codes
@@ -34,23 +50,27 @@ public class NotificationRequestMapper {
                         (i1, i2) -> i1
                 ))
                 .values().stream()
-                .map(i -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId,  apiKey, ioNotificationDTO, i).build())
-                .collect(Collectors.toList());
+                .map(installmentDTO -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, ioNotificationDTO, installmentDTO, operationType))
+                .toList();
     }
 
-    private static NotificationRequestDTO.NotificationRequestDTOBuilder<?, ?> mapNotificationRequestDTO(
-            Long orgId, Long debtPositionTypeOrgId, String apiKey, IONotificationDTO ioNotificationDTO, InstallmentDTO installmentDTO) {
+    private static NotificationRequestDTO mapNotificationRequestDTO(
+            Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO,
+            InstallmentDTO installmentDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
 
-        return NotificationRequestDTO.builder()
-                .fiscalCode(installmentDTO.getDebtor().getFiscalCode())
-                .orgId(orgId)
-                .debtPositionTypeOrgId(debtPositionTypeOrgId)
-                .apiKey(apiKey)
-                .subject(ioNotificationDTO.getIoTemplateSubject())
-                .markdown(ioNotificationDTO.getIoTemplateMessage())
-                .serviceId(ioNotificationDTO.getServiceId())
-                .amount(installmentDTO.getAmountCents())
-                .dueDate(String.valueOf(installmentDTO.getDueDate()));
+        NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO();
+        notificationRequestDTO.setFiscalCode(installmentDTO.getDebtor().getFiscalCode());
+        notificationRequestDTO.setOrgId(orgId);
+        notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
+        if (ioNotificationDTO.getIoTemplateSubject() != null && ioNotificationDTO.getIoTemplateMessage() != null && ioNotificationDTO.getServiceId() != null) {
+            notificationRequestDTO.setSubject(ioNotificationDTO.getIoTemplateSubject());
+            notificationRequestDTO.setMarkdown(ioNotificationDTO.getIoTemplateMessage());
+            notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
+        }
+        notificationRequestDTO.setAmount(installmentDTO.getAmountCents());
+        notificationRequestDTO.setOperationType(operationType);
+
+        return notificationRequestDTO;
     }
 }
 

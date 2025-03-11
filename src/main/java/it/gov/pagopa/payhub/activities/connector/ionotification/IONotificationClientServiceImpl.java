@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.connector.ionotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.client.IoNotificationClient;
-import it.gov.pagopa.payhub.activities.exception.ionotification.IONotificationInvocationException;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +26,7 @@ public class IONotificationClientServiceImpl implements IONotificationClientServ
     @Override
     public MessageResponseDTO sendMessage(NotificationRequestDTO notificationRequestDTO) {
         log.info("Sending message to IONotification for debt position type org {}", notificationRequestDTO.getDebtPositionTypeOrgId());
-        try {
-            String accessToken = authnService.getAccessToken();
-            return ioNotificationClient.sendMessage(notificationRequestDTO, accessToken);
-        } catch (Exception e) {
-            log.error("Failed to send message for org {} and debt position type org {}",
-                    notificationRequestDTO.getOrgId(), notificationRequestDTO.getDebtPositionTypeOrgId(), e);
-            throw new IONotificationInvocationException(e.getMessage());
-        }
+        String accessToken = authnService.getAccessToken();
+        return ioNotificationClient.sendMessage(notificationRequestDTO, accessToken);
     }
 }

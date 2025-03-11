@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,12 +41,9 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetIoNotificationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> {
-                    ioNotificationApisHolder.getIoNotificationApi(accessToken)
-                            .sendMessage(new NotificationRequestDTO());
-                    return null;
-                },
-                String.class,
+                accessToken -> ioNotificationApisHolder.getIoNotificationApi(accessToken)
+                            .sendMessage(new NotificationRequestDTO()),
+                new ParameterizedTypeReference<>() {},
                 ioNotificationApisHolder::unload);
     }
 

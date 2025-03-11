@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 
 /**
@@ -8,4 +9,5 @@ import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeData
  */
 public interface ReceiptService {
 	ReceiptDTO createReceipt(ReceiptWithAdditionalNodeDataDTO receipt);
+	ReceiptNoPII getByTransferId(Long transferId);
 }
