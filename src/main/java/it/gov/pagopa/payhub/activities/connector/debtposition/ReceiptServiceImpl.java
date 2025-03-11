@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.ReceiptClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Override
     public ReceiptDTO createReceipt(ReceiptWithAdditionalNodeDataDTO receipt) {
         return receiptClient.createReceipt(authnService.getAccessToken(), receipt);
+    }
+
+    @Override
+    public ReceiptNoPII getByTransferId(Long transferId) {
+        return receiptClient.getByTransferId(authnService.getAccessToken(), transferId);
     }
 }

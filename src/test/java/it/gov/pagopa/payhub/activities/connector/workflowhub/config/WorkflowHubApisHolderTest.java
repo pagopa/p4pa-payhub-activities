@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static org.mockito.Mockito.when;
@@ -42,12 +43,9 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetWorkflowHubApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> {
-                    workflowHubApisHolder.getWorkflowHubApi(accessToken)
-                            .getWorkflowStatus("workflowId");
-                    return null;
-                },
-                String.class,
+                accessToken -> workflowHubApisHolder.getWorkflowHubApi(accessToken)
+                            .getWorkflowStatus("workflowId"),
+                new ParameterizedTypeReference<>() {},
                 workflowHubApisHolder::unload);
     }
 }
