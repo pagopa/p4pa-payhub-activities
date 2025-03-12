@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 
-import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationClientService;
+import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationFacadeService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -16,18 +16,18 @@ import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.build
 @ExtendWith(MockitoExtension.class)
 class SendDebtPositionIONotificationActivityTest {
     @Mock
-    private IONotificationClientService ioNotificationClientServiceMock;
+    private IONotificationFacadeService ioNotificationFacadeService;
 
     private SendDebtPositionIONotificationActivity activity;
 
     @BeforeEach
     void init() {
-        activity = new SendDebtPositionIONotificationActivityImpl(ioNotificationClientServiceMock);
+        activity = new SendDebtPositionIONotificationActivityImpl(ioNotificationFacadeService);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(ioNotificationClientServiceMock);
+        Mockito.verifyNoMoreInteractions(ioNotificationFacadeService);
     }
 
     @Test
@@ -39,7 +39,7 @@ class SendDebtPositionIONotificationActivityTest {
         activity.sendMessage(debtPosition, null);
 
         // Then
-        Mockito.verify(ioNotificationClientServiceMock, Mockito.times(1))
+        Mockito.verify(ioNotificationFacadeService, Mockito.times(1))
                 .sendMessage(new NotificationRequestDTO());
     }
 }

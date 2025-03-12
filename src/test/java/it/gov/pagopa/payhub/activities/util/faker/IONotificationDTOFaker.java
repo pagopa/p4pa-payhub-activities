@@ -8,7 +8,10 @@ public class IONotificationDTOFaker {
     public static IONotificationDTO buildIONotificationDTO(){
         return TestUtils.getPodamFactory().manufacturePojo(IONotificationDTO.class)
                 .serviceId("serviceId")
-                .ioTemplateMessage("markdown")
+                .ioTemplateMessage("Causale %causaleVersamento%. " +
+                        "Codice identificativo unico %codIUV%. " +
+                        "Totale di %importoDovuto% euro. " +
+                        "Data di scadenza %dataEsecuzionePagamento%.")
                 .ioTemplateSubject("subject");
     }
 }

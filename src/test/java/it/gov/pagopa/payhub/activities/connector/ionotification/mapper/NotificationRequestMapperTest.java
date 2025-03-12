@@ -15,7 +15,6 @@ import java.util.List;
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
 import static it.gov.pagopa.payhub.activities.util.faker.IONotificationDTOFaker.buildIONotificationDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
-import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.CREATE_DP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,11 +39,11 @@ class NotificationRequestMapperTest {
                 debtPosition.getPaymentOptions(),
                 debtPosition.getOrganizationId(),
                 debtPosition.getDebtPositionTypeOrgId(),
-                ioNotificationDTO,
-                CREATE_DP);
+                ioNotificationDTO);
 
         // Then
         checkNotNullFields(result.getFirst());
+        assertEquals("Causale remittanceInformation. Codice identificativo unico iuv. Totale di 1,00 euro. Data di scadenza 2024-05-15.", result.getFirst().getMarkdown());
         assertEquals(2, result.size());
     }
 
@@ -58,17 +57,19 @@ class NotificationRequestMapperTest {
         installment2.setDueDate(null);
         debtPosition.getPaymentOptions().getFirst().setInstallments(List.of(installment1,installment2));
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
+        ioNotificationDTO.setIoTemplateMessage("Totale di %importoDovuto% euro. Data di scadenza %dataEsecuzionePagamento%.");
 
         // When
         List<NotificationRequestDTO> result = mapper.map(
                 debtPosition.getPaymentOptions(),
                 debtPosition.getOrganizationId(),
                 debtPosition.getDebtPositionTypeOrgId(),
-                ioNotificationDTO,
-                CREATE_DP);
+                ioNotificationDTO);
 
         // Then
         checkNotNullFields(result.getFirst());
+        assertEquals("Totale di 1,00 euro. Data di scadenza Not Specified.", result.getFirst().getMarkdown());
+
         // size is 1 because dueDate is null for all installments
         assertEquals(1, result.size());
     }
@@ -84,8 +85,7 @@ class NotificationRequestMapperTest {
                 debtPosition.getPaymentOptions(),
                 debtPosition.getOrganizationId(),
                 debtPosition.getDebtPositionTypeOrgId(),
-                ioNotificationDTO,
-                CREATE_DP);
+                ioNotificationDTO);
 
         // Then
         checkNotNullFields(result.getFirst(), "nav");
