@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IONotificationDTOFaker.buildIONotificationDTO;
-import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.CREATE_DP;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgClientTest {
@@ -46,11 +46,11 @@ class DebtPositionTypeOrgClientTest {
         Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgApi(accessToken))
                 .thenReturn(debtPositionTypeOrgApiMock);
 
-        Mockito.when(debtPositionTypeOrgApiMock.getIONotificationDetails(1L, "operationType"))
+        Mockito.when(debtPositionTypeOrgApiMock.getIONotificationDetails(1L, "CREATE_DP"))
                 .thenReturn(expectedResult);
 
         // When
-        IONotificationDTO result = debtPositionTypeOrgClient.getIONotificationDetails(accessToken, 1L, CREATE_DP);
+        IONotificationDTO result = debtPositionTypeOrgClient.getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
 
         // Then
         Assertions.assertSame(expectedResult, result);
