@@ -90,4 +90,48 @@ class TransferClassificationStoreServiceTest {
 		assertDoesNotThrow(() ->
 			service.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, classifications));
 	}
+
+	@Test
+	void givenNullTransferDTOWhenSaveAllThenReturnSavedList() {
+		// Arrange
+		List<ClassificationsEnum> classifications = List.of(ClassificationsEnum.RT_IUF_TES);
+		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
+			.orgId(123L)
+			.iuv("01011112222333345")
+			.iur("IUR")
+			.transferIndex(1)
+			.build();
+
+		List<Classification> dtoList = List.of(
+			Classification.builder()
+				.organizationId(transferSemanticKeyDTO.getOrgId())
+				.transferId(null)
+				.paymentsReportingId(paymentsReportingDTO.getPaymentsReportingId())
+				.treasuryId(treasuryDTO.getTreasuryId())
+				.iuf(paymentsReportingDTO.getIuf())
+				.iuv(transferSemanticKeyDTO.getIuv())
+				.iur(transferSemanticKeyDTO.getIur())
+				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
+				.label(classifications.getFirst().name())
+				.lastClassificationDate(LocalDate.now())
+				.payDate(paymentsReportingDTO.getPayDate())
+				.paymentDateTime(null)
+				.regulationDate(paymentsReportingDTO.getRegulationDate())
+				.billDate(treasuryDTO.getBillDate())
+				.regionValueDate(treasuryDTO.getRegionValueDate())
+				.pspCompanyName(null)
+				.pspLastName(treasuryDTO.getPspLastName())
+				.regulationUniqueIdentifier(paymentsReportingDTO.getRegulationUniqueIdentifier())
+				.accountRegistryCode(treasuryDTO.getAccountRegistryCode())
+				.billAmountCents(treasuryDTO.getBillAmountCents())
+				.remittanceInformation(null)
+				.build());
+
+		when(classificationServiceMock.saveAll(dtoList)).thenReturn(dtoList.size());
+
+		// Act & Assert
+		assertEquals(classifications.size(), dtoList.size());
+		assertDoesNotThrow(() ->
+			service.saveClassifications(transferSemanticKeyDTO, null, paymentsReportingDTO, treasuryDTO, classifications));
+	}
 }

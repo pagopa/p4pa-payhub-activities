@@ -50,16 +50,19 @@ public class TransferClassificationStoreService {
 		PaymentsReporting paymentsReportingDTO,
 		Treasury treasuryDTO,
 		List<ClassificationsEnum> classifications) {
-		log.debug("retrieving Receipt from Transfer ID {}", transferDTO.getTransferId());
-		Optional<ReceiptNoPII> optionalReceipt = Optional.ofNullable(receiptService.getByTransferId(transferDTO.getTransferId()));
+		Optional<PaymentsReporting> optionalPaymentsReporting = Optional.ofNullable(paymentsReportingDTO);
+		Optional<Treasury> optionalTreasury = Optional.ofNullable(treasuryDTO);
+		Optional<Transfer> optionalTransfer = Optional.ofNullable(transferDTO);
+		Optional<ReceiptNoPII> optionalReceipt = optionalTransfer
+			.map(transfer -> {
+		        log.debug("retrieving Receipt from Transfer ID {}", transfer.getTransferId());
+		        return receiptService.getByTransferId(transfer.getTransferId());
+		    });
 
 		log.info("Saving classifications {} for semantic key organization id: {} and iuv: {} and iur {} and transfer index: {}",
 			String.join(", ", classifications.stream().map(String::valueOf).toList()),
 			transferSemanticKeyDTO.getOrgId(), transferSemanticKeyDTO.getIuv(), transferSemanticKeyDTO.getIur(), transferSemanticKeyDTO.getTransferIndex());
 
-		Optional<PaymentsReporting> optionalPaymentsReporting = Optional.ofNullable(paymentsReportingDTO);
-		Optional<Treasury> optionalTreasury = Optional.ofNullable(treasuryDTO);
-		Optional<Transfer> optionalTransfer = Optional.ofNullable(transferDTO);
 		List<Classification> dtoList = classifications.stream()
 			.map(classification -> (Classification) Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
