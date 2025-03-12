@@ -24,4 +24,8 @@ public class SendClient {
     sendApisHolder.getSendApi(accessToken).uploadSendFile(sendNotificationId);
   }
 
+  public void deliveryNotification(String accessToken, String sendNotificationId) {
+    sendApisHolder.getSendApi(accessToken).deliveryNotification(sendNotificationId);
+  }
+
 }

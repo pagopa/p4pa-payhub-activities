@@ -62,4 +62,20 @@ class SendClientTest {
         Mockito.verify(sendApiMock).uploadSendFile(sendNotificationId);
     }
 
+    @Test
+    void whenDeliveryNotificationThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "notificationId";
+
+        Mockito.when(sendApisHolderMock.getSendApi(accessToken))
+                .thenReturn(sendApiMock);
+
+        // When
+        sendClient.deliveryNotification(accessToken, sendNotificationId);
+
+        // Then
+        Mockito.verify(sendApiMock).deliveryNotification(sendNotificationId);
+    }
+
 }
