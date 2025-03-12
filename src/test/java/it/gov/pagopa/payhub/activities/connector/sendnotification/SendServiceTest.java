@@ -41,4 +41,28 @@ class SendServiceTest {
         // Then
         Mockito.verify(sendClientMock).preloadSendFile(null, sendNotificationId);
     }
+
+    @Test
+    void givenSendNotificationIdWhenUploadSendFileThenOk() {
+        // Given
+        String sendNotificationId = "sendNotificationId";
+
+        // When
+        sendService.uploadSendFile(sendNotificationId);
+
+        // Then
+        Mockito.verify(sendClientMock).uploadSendFile(null, sendNotificationId);
+    }
+
+    @Test
+    void givenSendNotificationIdWhenDeliveryNotificationThenOk() {
+        // Given
+        String sendNotificationId = "sendNotificationId";
+
+        // When
+        sendService.deliveryNotification(sendNotificationId);
+
+        // Then
+        Mockito.verify(sendClientMock).deliveryNotification(null, sendNotificationId);
+    }
 }
