@@ -6,9 +6,11 @@ import it.gov.pagopa.pu.sendnotification.controller.BaseApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
 import jakarta.annotation.PreDestroy;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Lazy
 @Service
 public class SendApisHolder {
 
@@ -27,7 +29,7 @@ public class SendApisHolder {
         ApiClient apiClient = buildApiClient();
 
         if (clientConfig.isPrintBodyWhenError()) {
-          restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("SEND"));
+          restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("SEND_NOTIFICATION"));
         }
 
         this.sendApi = new SendApi(apiClient);
