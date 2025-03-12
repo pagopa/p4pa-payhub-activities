@@ -2,8 +2,10 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
+import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,5 +48,25 @@ class DebtPositionTypeOrgServiceTest {
 
         // Then
         Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+    }
+
+    @Test
+    void whenGetIONotificationDetailsThrowsExceptionThenReturnNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        Mockito.when(debtPositionTypeOrgClientMock.getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP))
+                .thenThrow(new RuntimeException("API error"));
+
+        // When
+        IONotificationDTO result = debtPositionTypeOrgService.getIONotificationDetails(1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+
+        // Then
+        Assertions.assertNull(result);
+        Mockito.verify(debtPositionTypeOrgClientMock)
+                .getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
     }
 }
