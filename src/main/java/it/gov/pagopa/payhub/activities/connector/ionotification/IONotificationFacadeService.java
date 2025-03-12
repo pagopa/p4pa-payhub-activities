@@ -7,7 +7,7 @@ import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 /**
  * This interface provides a method for sending notification messages to the microservice IO Notification.
  */
-public interface IONotificationClientService {
+public interface IONotificationFacadeService {
 
     /**
      * Sends a notification message to the IO Notification.

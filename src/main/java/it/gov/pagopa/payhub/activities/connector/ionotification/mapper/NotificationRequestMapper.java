@@ -9,15 +9,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static it.gov.pagopa.payhub.activities.util.Utilities.centsAmountToEuroString;
 import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Lazy
 public class NotificationRequestMapper {
 
-    public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
+    public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO) {
         // If only one PaymentOption exists, map with nav field
         if (paymentOptions.size() == 1) {
             List<InstallmentDTO> installmentDTOList = paymentOptions.getFirst().getInstallments();
@@ -34,7 +36,7 @@ public class NotificationRequestMapper {
             return installments.stream()
                     .map(installment -> {
                         NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
-                                orgId, debtPositionTypeOrgId, ioNotificationDTO, installment, operationType);
+                                orgId, debtPositionTypeOrgId, ioNotificationDTO, installment);
                         notificationRequestDTO.setNav(installment.getNav());
                         return notificationRequestDTO;
                     })
@@ -50,13 +52,12 @@ public class NotificationRequestMapper {
                         (i1, i2) -> i1
                 ))
                 .values().stream()
-                .map(installmentDTO -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, ioNotificationDTO, installmentDTO, operationType))
+                .map(installmentDTO -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, ioNotificationDTO, installmentDTO))
                 .toList();
     }
 
-    private static NotificationRequestDTO mapNotificationRequestDTO(
-            Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO,
-            InstallmentDTO installmentDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
+    private NotificationRequestDTO mapNotificationRequestDTO(Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO,
+                                                                    InstallmentDTO installmentDTO) {
 
         NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO();
         notificationRequestDTO.setFiscalCode(installmentDTO.getDebtor().getFiscalCode());
@@ -64,13 +65,26 @@ public class NotificationRequestMapper {
         notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
         if (ioNotificationDTO.getIoTemplateSubject() != null && ioNotificationDTO.getIoTemplateMessage() != null && ioNotificationDTO.getServiceId() != null) {
             notificationRequestDTO.setSubject(ioNotificationDTO.getIoTemplateSubject());
-            notificationRequestDTO.setMarkdown(ioNotificationDTO.getIoTemplateMessage());
+            notificationRequestDTO.setMarkdown(replacePlaceholders(ioNotificationDTO.getIoTemplateMessage(), installmentDTO));
             notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
         }
         notificationRequestDTO.setAmount(installmentDTO.getAmountCents());
-        notificationRequestDTO.setOperationType(operationType);
+        notificationRequestDTO.setOperationType(NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
 
         return notificationRequestDTO;
+    }
+
+    private String replacePlaceholders(String markdown, InstallmentDTO installment) {
+        Map<String, String> placeholders = Map.of(
+                "%importoDovuto%", centsAmountToEuroString(installment.getAmountCents()),
+                "%dataEsecuzionePagamento%", String.valueOf(installment.getDueDate()),
+                "%codIUV%", Objects.toString(installment.getIuv(), ""),
+                "%causaleVersamento%", installment.getRemittanceInformation()
+        );
+        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+            markdown = markdown.replace(entry.getKey(), entry.getValue() != null ? entry.getValue() : "");
+        }
+        return markdown.replaceAll("\\s{2,}", " ").trim();
     }
 }
 

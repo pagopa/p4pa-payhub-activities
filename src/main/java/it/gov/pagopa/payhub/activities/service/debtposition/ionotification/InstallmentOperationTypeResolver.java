@@ -6,32 +6,24 @@ import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Objects;
-
 @Lazy
 @Component
 public class InstallmentOperationTypeResolver {
 
-    public NotificationRequestDTO.OperationTypeEnum calculateOperationType(List<InstallmentDTO> installmentDTOList) {
-        return installmentDTOList.stream()
-                .map(InstallmentDTO::getSyncStatus)
-                .filter(Objects::nonNull)
-                .map(syncStatus -> {
-                    InstallmentSyncStatus.SyncStatusFromEnum fromStatus = syncStatus.getSyncStatusFrom();
-                    InstallmentSyncStatus.SyncStatusToEnum toStatus = syncStatus.getSyncStatusTo();
+    public NotificationRequestDTO.OperationTypeEnum calculateOperationType(InstallmentDTO installment) {
+        InstallmentSyncStatus syncStatus = installment.getSyncStatus();
+        if (syncStatus == null) return null;
 
-                    return switch (toStatus) {
-                        case UNPAID -> (fromStatus.equals(InstallmentSyncStatus.SyncStatusFromEnum.DRAFT))
-                                ? NotificationRequestDTO.OperationTypeEnum.CREATE_DP
-                                : NotificationRequestDTO.OperationTypeEnum.UPDATE_DP;
-                        case INVALID, EXPIRED -> NotificationRequestDTO.OperationTypeEnum.UPDATE_DP;
-                        case CANCELLED -> NotificationRequestDTO.OperationTypeEnum.DELETE_DP;
-                        default -> null;
-                    };
-                })
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+        InstallmentSyncStatus.SyncStatusFromEnum fromStatus = syncStatus.getSyncStatusFrom();
+        InstallmentSyncStatus.SyncStatusToEnum toStatus = syncStatus.getSyncStatusTo();
+
+        return switch (toStatus) {
+            case UNPAID -> (fromStatus == InstallmentSyncStatus.SyncStatusFromEnum.DRAFT)
+                    ? NotificationRequestDTO.OperationTypeEnum.CREATE_DP
+                    : NotificationRequestDTO.OperationTypeEnum.UPDATE_DP;
+            case INVALID, EXPIRED -> NotificationRequestDTO.OperationTypeEnum.UPDATE_DP;
+            case CANCELLED -> NotificationRequestDTO.OperationTypeEnum.DELETE_DP;
+            default -> null;
+        };
     }
 }

@@ -1,11 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -21,12 +19,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private final AuthnService authnService;
     private final OrganizationSearchClient organizationSearchClient;
-    private final OrganizationClient organizationClient;
 
-    public OrganizationServiceImpl(AuthnService authnService, OrganizationSearchClient organizationSearchClient, OrganizationClient organizationClient) {
+    public OrganizationServiceImpl(AuthnService authnService, OrganizationSearchClient organizationSearchClient) {
         this.authnService = authnService;
         this.organizationSearchClient = organizationSearchClient;
-        this.organizationClient = organizationClient;
     }
 
     @Override
@@ -54,17 +50,5 @@ public class OrganizationServiceImpl implements OrganizationService {
     public List<Organization> getOrganizationsByBrokerId(Long brokerId) {
         CollectionModelOrganization organizations = organizationSearchClient.findOrganizationsByBrokerId(brokerId, authnService.getAccessToken());
         return Objects.requireNonNull(organizations.getEmbedded()).getOrganizations();
-    }
-
-    @Override
-    public String getOrganizationApiKey(Long organizationId, OrganizationApiKeys.KeyTypeEnum keyType) {
-        log.info("Fetching API key for organizationId: {} and keyType: {}", organizationId, keyType);
-        try {
-            String accessToken = authnService.getAccessToken();
-            return organizationClient.getOrganizationApiKey(organizationId, keyType, accessToken);
-        } catch (Exception e) {
-            log.error("Failed to retrieve API key for organizationId: {} and keyType: {}", organizationId, keyType, e);
-            return null;
-        }
     }
 }

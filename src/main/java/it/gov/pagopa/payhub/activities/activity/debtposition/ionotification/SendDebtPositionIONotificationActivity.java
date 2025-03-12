@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -21,8 +22,8 @@ public interface SendDebtPositionIONotificationActivity {
      *
      * @param requestedDebtPosition the {@link DebtPositionDTO} containing the details of the debt position to be notified (as given to the WF).
      * @param iupdSyncStatusUpdateDTOMap the map of the correctly synchronized IUD
-     * @return the {@link MessageResponseDTO} that contains the notification id
+     * @return a {@link Map} where the key is the IUD and the value is the {@link MessageResponseDTO} containing the notification ID
      */
     @ActivityMethod
-    MessageResponseDTO sendMessage(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
+    List<MessageResponseDTO> sendMessage(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
 }
