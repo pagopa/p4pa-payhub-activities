@@ -20,4 +20,8 @@ public class SendClient {
     sendApisHolder.getSendApi(accessToken).preloadSendFile(sendNotificationId);
   }
 
+  public void uploadSendFile(String accessToken, String sendNotificationId) {
+    sendApisHolder.getSendApi(accessToken).uploadSendFile(sendNotificationId);
+  }
+
 }
