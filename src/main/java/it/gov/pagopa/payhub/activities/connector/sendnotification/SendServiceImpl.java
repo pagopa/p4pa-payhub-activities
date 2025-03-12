@@ -25,4 +25,9 @@ public class SendServiceImpl implements SendService {
     public void uploadSendFile(String sendNotificationId) {
         sendClient.uploadSendFile(authnService.getAccessToken(), sendNotificationId);
     }
+
+    @Override
+    public void deliveryNotification(String sendNotificationId) {
+        sendClient.deliveryNotification(authnService.getAccessToken(), sendNotificationId);
+    }
 }
