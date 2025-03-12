@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,9 +42,9 @@ class DebtPositionTypeOrgServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        debtPositionTypeOrgService.getIONotificationDetails(1L, "operationType");
+        debtPositionTypeOrgService.getIONotificationDetails(1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
 
         // Then
-        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, "operationType");
+        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
     }
 }

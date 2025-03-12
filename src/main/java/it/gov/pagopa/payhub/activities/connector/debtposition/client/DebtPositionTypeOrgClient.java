@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ public class DebtPositionTypeOrgClient {
         this.debtPositionApisHolder = debtPositionApisHolder;
     }
 
-    public IONotificationDTO getIONotificationDetails(String accessToken, Long debtPositionTypeOrgId, String context) {
-        return debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken).getIONotificationDetails(debtPositionTypeOrgId, context);
+    public IONotificationDTO getIONotificationDetails(String accessToken, Long debtPositionTypeOrgId, NotificationRequestDTO.OperationTypeEnum context) {
+        return debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken).getIONotificationDetails(debtPositionTypeOrgId, context.getValue());
     }
 }
