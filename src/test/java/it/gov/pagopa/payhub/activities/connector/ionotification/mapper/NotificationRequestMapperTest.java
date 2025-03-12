@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
 import it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
+import static it.gov.pagopa.payhub.activities.util.faker.IONotificationDTOFaker.buildIONotificationDTO;
+import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
+import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.CREATE_DP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,29 +29,67 @@ class NotificationRequestMapperTest {
     }
 
     @Test
-    void givenMapDebtPositionDTO2NotificationRequestDTOThenSuccess() {
+    void givenMapWhenOnlyOnePOAndMultipleInstallmentThenOk() {
         // Given
         DebtPositionDTO debtPosition = DebtPositionFaker.buildDebtPositionDTO();
-        String serviceId = "serviceId";
-        String subject = "subject";
-        String markdown = "markdown";
-        NotificationRequestDTO expectedResult = NotificationRequestDTO.builder()
-                .fiscalCode(debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().getDebtor().getFiscalCode())
-                .orgId(debtPosition.getOrganizationId())
-                .debtPositionTypeOrgId(debtPosition.getDebtPositionTypeOrgId())
-                .serviceId(serviceId)
-                .subject(subject)
-                .markdown(markdown)
-                .build();
+        debtPosition.getPaymentOptions().getFirst().setInstallments(List.of(buildInstallmentDTO(),buildInstallmentDTO()));
+        IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
         // When
-        List<NotificationRequestDTO> result =
-                mapper.mapDebtPositionDTO2NotificationRequestDTO(debtPosition, serviceId, subject, markdown);
+        List<NotificationRequestDTO> result = mapper.map(
+                debtPosition.getPaymentOptions(),
+                debtPosition.getOrganizationId(),
+                debtPosition.getDebtPositionTypeOrgId(),
+                ioNotificationDTO,
+                CREATE_DP);
 
         // Then
-        // TODO fix test
-        checkNotNullFields(result.getFirst(), "operationType", "iuv", "paymentReason", "paymentDate", "amount", "apiKey", "dueDate", "nav");
-        assertEquals(expectedResult, result.getFirst());
-        assertEquals("uniqueIdentifierCode", result.getFirst().getFiscalCode());
+        checkNotNullFields(result.getFirst());
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void givenMapWhenOnlyOnePOWithInstallmentWithoutDueDateThenOk() {
+        // Given
+        DebtPositionDTO debtPosition = DebtPositionFaker.buildDebtPositionDTO();
+        InstallmentDTO installment1 = buildInstallmentDTO();
+        installment1.setDueDate(null);
+        InstallmentDTO installment2 = buildInstallmentDTO();
+        installment2.setDueDate(null);
+        debtPosition.getPaymentOptions().getFirst().setInstallments(List.of(installment1,installment2));
+        IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
+
+        // When
+        List<NotificationRequestDTO> result = mapper.map(
+                debtPosition.getPaymentOptions(),
+                debtPosition.getOrganizationId(),
+                debtPosition.getDebtPositionTypeOrgId(),
+                ioNotificationDTO,
+                CREATE_DP);
+
+        // Then
+        checkNotNullFields(result.getFirst());
+        // size is 1 because dueDate is null for all installments
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void givenMapWhenMoreThenOnePOThenOk() {
+        // Given
+        DebtPositionDTO debtPosition = DebtPositionFaker.buildDebtPositionDTOWithMultiplePO();
+        IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
+
+        // When
+        List<NotificationRequestDTO> result = mapper.map(
+                debtPosition.getPaymentOptions(),
+                debtPosition.getOrganizationId(),
+                debtPosition.getDebtPositionTypeOrgId(),
+                ioNotificationDTO,
+                CREATE_DP);
+
+        // Then
+        checkNotNullFields(result.getFirst(), "nav");
+        // size is 1 because fiscalCode is the same for all installments
+        assertEquals(1, result.size());
     }
 }

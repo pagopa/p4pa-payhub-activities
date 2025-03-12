@@ -2,8 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.ionotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.client.IoNotificationClient;
-import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.NotificationRequestMapper;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,28 +12,24 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
-import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.NotificationRequestDTOFaker.buildNotificationRequestDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class IONotificationServiceTest {
+class IONotificationClientServiceTest {
 
     @Mock
     private IoNotificationClient ioNotificationClientMock;
     @Mock
-    private NotificationRequestMapper notificationRequestMapperMock;
-    @Mock
     private AuthnService authnServiceMock;
 
-    private IONotificationServiceImpl sendIONotificationActivity;
+    private IONotificationClientServiceImpl sendIONotificationActivity;
 
     @BeforeEach
     void setUp() {
-        sendIONotificationActivity = new IONotificationServiceImpl(
+        sendIONotificationActivity = new IONotificationClientServiceImpl(
                 ioNotificationClientMock,
-                notificationRequestMapperMock,
                 authnServiceMock);
     }
 
@@ -42,29 +37,26 @@ class IONotificationServiceTest {
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
                 ioNotificationClientMock,
-                notificationRequestMapperMock,
                 authnServiceMock);
     }
 
     @Test
     void whenSendMessageThenInvokeClient() {
         // Given
-        DebtPositionDTO debtPosition = buildDebtPositionDTO();
         NotificationRequestDTO notificationRequestDTO = buildNotificationRequestDTO();
         String accessToken = "ACCESSTOKEN";
-        String serviceId = "serviceId";
-        String subject = "subject";
-        String markdown = "markdown";
 
-        Mockito.when(notificationRequestMapperMock.mapDebtPositionDTO2NotificationRequestDTO(debtPosition, serviceId, subject, markdown))
-                .thenReturn(List.of(notificationRequestDTO));
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
+        Mockito.when(ioNotificationClientMock.sendMessage(notificationRequestDTO, accessToken))
+                .thenReturn(new MessageResponseDTO("id"));
+
         // When
-        sendIONotificationActivity.sendMessage(debtPosition);
+        MessageResponseDTO messageResponseDTO = sendIONotificationActivity.sendMessage(notificationRequestDTO);
 
         // Then
-        Mockito.verify(ioNotificationClientMock).sendMessage(notificationRequestDTO, accessToken);
+        assertNotNull(messageResponseDTO);
+        assertEquals("id", messageResponseDTO.getNotificationId());
     }
 }

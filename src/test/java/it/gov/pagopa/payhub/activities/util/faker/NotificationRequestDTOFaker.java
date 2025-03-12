@@ -7,11 +7,14 @@ public class NotificationRequestDTOFaker {
 
     public static NotificationRequestDTO buildNotificationRequestDTO(){
         return TestUtils.getPodamFactory().manufacturePojo(NotificationRequestDTO.class)
-                .fiscalCode("uniqueIdentifierCode")
+                .fiscalCode("fiscalCode")
                 .orgId(2L)
                 .debtPositionTypeOrgId(3L)
                 .serviceId("serviceId")
                 .subject("subject")
+                .nav("nav")
+                .amount(100L)
+                .operationType(NotificationRequestDTO.OperationTypeEnum.CREATE_DP)
                 .markdown("markdown");
     }
 }
