@@ -16,18 +16,18 @@ import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.build
 @ExtendWith(MockitoExtension.class)
 class SendDebtPositionIONotificationActivityTest {
     @Mock
-    private IONotificationFacadeService ioNotificationFacadeService;
+    private IONotificationFacadeService ioNotificationFacadeServiceMock;
 
     private SendDebtPositionIONotificationActivity activity;
 
     @BeforeEach
     void init() {
-        activity = new SendDebtPositionIONotificationActivityImpl(ioNotificationFacadeService);
+        activity = new SendDebtPositionIONotificationActivityImpl(ioNotificationFacadeServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(ioNotificationFacadeService);
+        Mockito.verifyNoMoreInteractions(ioNotificationFacadeServiceMock);
     }
 
     @Test
@@ -39,7 +39,7 @@ class SendDebtPositionIONotificationActivityTest {
         activity.sendMessage(debtPosition, null);
 
         // Then
-        Mockito.verify(ioNotificationFacadeService, Mockito.times(1))
+        Mockito.verify(ioNotificationFacadeServiceMock, Mockito.times(1))
                 .sendMessage(new NotificationRequestDTO());
     }
 }

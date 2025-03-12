@@ -19,8 +19,6 @@ import static java.util.stream.Collectors.groupingBy;
 @Lazy
 public class NotificationRequestMapper {
 
-    public static final String placeholderDefault = "Not Specified";
-
     public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO) {
         // If only one PaymentOption exists, map with nav field
         if (paymentOptions.size() == 1) {
@@ -77,6 +75,7 @@ public class NotificationRequestMapper {
     }
 
     private String replacePlaceholders(String markdown, InstallmentDTO installment) {
+        String placeholderDefault = "Not Specified";
         Map<String, String> placeholders = Map.of(
                 "%importoDovuto%", Objects.toString(centsAmountToEuroString(installment.getAmountCents()), placeholderDefault),
                 "%dataEsecuzionePagamento%", Objects.toString(installment.getDueDate(), placeholderDefault),
@@ -84,7 +83,7 @@ public class NotificationRequestMapper {
                 "%causaleVersamento%", Objects.toString(installment.getRemittanceInformation(), placeholderDefault)
         );
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            markdown = markdown.replace(entry.getKey(), entry.getValue() != null ? entry.getValue() : "");
+            markdown = markdown.replace(entry.getKey(), entry.getValue());
         }
         return markdown.replaceAll("\\s{2,}", " ").trim();
     }
