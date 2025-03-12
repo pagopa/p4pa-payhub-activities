@@ -27,7 +27,7 @@ public class SendApisHolder {
         ApiClient apiClient = buildApiClient();
 
         if (clientConfig.isPrintBodyWhenError()) {
-          restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("AUTH"));
+          restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("SEND"));
         }
 
         this.sendApi = new SendApi(apiClient);

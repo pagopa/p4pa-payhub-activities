@@ -497,7 +497,7 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
-	group = "openapi"
+	group = "AutomaticallyGeneratedCode"
 	description = "description"
 
 	generatorName.set("java")
