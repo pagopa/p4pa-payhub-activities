@@ -1,7 +1,14 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
-import it.gov.pagopa.pu.debtposition.client.generated.*;
+import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
+import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgApi;
+import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.ReceiptApi;
+import it.gov.pagopa.pu.debtposition.client.generated.ReceiptNoPiiSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.TransferApi;
+import it.gov.pagopa.pu.debtposition.client.generated.TransferSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,6 +27,7 @@ public class DebtPositionApisHolder {
     private final ReceiptApi receiptApi;
     private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
     private final ReceiptNoPiiSearchControllerApi receiptNoPiiSearchControllerApi;
+    private final InstallmentNoPiiSearchControllerApi installmentNoPiiSearchControllerApi;
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
 
@@ -44,7 +52,8 @@ public class DebtPositionApisHolder {
         this.transferApi = new TransferApi(apiClient);
         this.receiptApi = new ReceiptApi(apiClient);
         this.debtPositionTypeOrgApi = new DebtPositionTypeOrgApi(apiClient);
-	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
+	      this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
+        this.installmentNoPiiSearchControllerApi = new InstallmentNoPiiSearchControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -80,8 +89,12 @@ public class DebtPositionApisHolder {
         return getApi(accessToken, null, debtPositionTypeOrgApi);
     }
 
-	public ReceiptNoPiiSearchControllerApi getReceiptNoPiiSearchControllerApi(String accessToken) {
+	  public ReceiptNoPiiSearchControllerApi getReceiptNoPiiSearchControllerApi(String accessToken) {
         return getApi(accessToken, null, receiptNoPiiSearchControllerApi);
+    }
+
+    public InstallmentNoPiiSearchControllerApi getInstallmentNoPIISearchControllerApi(String accessToken) {
+        return getApi(accessToken, null, installmentNoPiiSearchControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, String mappedExternalUserId, T api) {
