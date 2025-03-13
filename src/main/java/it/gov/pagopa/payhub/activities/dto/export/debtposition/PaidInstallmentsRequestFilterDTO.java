@@ -2,18 +2,20 @@ package it.gov.pagopa.payhub.activities.dto.export.debtposition;
 
 
 import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-public class PaidInstallmentsRequestFilterDTO extends OffsetDateTimeIntervalFilter {
+@Builder
+public class PaidInstallmentsRequestFilterDTO {
 
     private Long organizationId;
     private String operatorExternalUserId;
     private Long debtPositionTypeOrgId;
+    private OffsetDateTimeIntervalFilter paymentDate;
 }

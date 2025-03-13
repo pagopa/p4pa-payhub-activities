@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
 import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentsRequestFilterDTO;
 import it.gov.pagopa.pu.debtposition.client.generated.DataExportsApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
@@ -54,12 +55,12 @@ class DataExportClientTest {
         OffsetDateTime paymentDateTo = OffsetDateTime.now().plusMonths(1).withOffsetSameInstant(ZoneOffset.UTC);
         Long debtPositionTypeOrgId = 1L;
 
+        OffsetDateTimeIntervalFilter offsetDateTimeIntervalFilter = OffsetDateTimeIntervalFilter.builder().from(paymentDateFrom).to(paymentDateTo).build();
         PaidInstallmentsRequestFilterDTO paidInstallmentsRequestFilterDTO = PaidInstallmentsRequestFilterDTO
                 .builder()
                 .organizationId(organizationId)
                 .operatorExternalUserId(operatorExternalUserId)
-                .from(paymentDateFrom)
-                .to(paymentDateTo)
+                .paymentDate(offsetDateTimeIntervalFilter)
                 .debtPositionTypeOrgId(debtPositionTypeOrgId).build();
 
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);

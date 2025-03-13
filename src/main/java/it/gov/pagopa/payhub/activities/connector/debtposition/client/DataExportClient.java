@@ -21,7 +21,8 @@ public class DataExportClient {
     }
 
     public PagedInstallmentsPaidView getExportPaidInstallments(String accessToken, PaidInstallmentsRequestFilterDTO paidInstallmentsRequestFilterDTO, Integer page, Integer size, List<String> sort) {
-        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(paidInstallmentsRequestFilterDTO.getOrganizationId(), paidInstallmentsRequestFilterDTO.getOperatorExternalUserId(), paidInstallmentsRequestFilterDTO.getFrom(), paidInstallmentsRequestFilterDTO.getTo(), paidInstallmentsRequestFilterDTO.getDebtPositionTypeOrgId(), page, size, sort);
+
+        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(paidInstallmentsRequestFilterDTO.getOrganizationId(), paidInstallmentsRequestFilterDTO.getOperatorExternalUserId(), paidInstallmentsRequestFilterDTO.getPaymentDate().getFrom(), paidInstallmentsRequestFilterDTO.getPaymentDate().getTo(), paidInstallmentsRequestFilterDTO.getDebtPositionTypeOrgId(), page, size, sort);
     }
 
 }
