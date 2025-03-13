@@ -36,7 +36,8 @@ class OrganizationServiceTest {
     void init(){
         organizationService = new OrganizationServiceImpl(
                 authnServiceMock,
-                organizationSearchClientMock);
+                organizationSearchClientMock
+        );
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
