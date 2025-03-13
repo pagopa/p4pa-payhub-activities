@@ -24,7 +24,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private ProcessExecutionsApisHolder ingestionFlowFileApisHolder;
+    private ProcessExecutionsApisHolder processExecutionsApisHolder;
 
     @BeforeEach
     void setUp() {
@@ -33,7 +33,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
         ProcessExecutionsApiClientConfig clientConfig = ProcessExecutionsApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .build();
-        ingestionFlowFileApisHolder = new ProcessExecutionsApisHolder(clientConfig, restTemplateBuilderMock);
+        processExecutionsApisHolder = new ProcessExecutionsApisHolder(clientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -47,27 +47,36 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetIngestionFlowFileEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> ingestionFlowFileApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
+                accessToken -> processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
                             .crudGetIngestionflowfile(String.valueOf(1L)),
                 new ParameterizedTypeReference<>() {},
-                ingestionFlowFileApisHolder::unload);
+                processExecutionsApisHolder::unload);
     }
 
     @Test
     void whenGetIngestionFlowFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> ingestionFlowFileApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
+                accessToken -> processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
                             .updateStatus(1L, "oldStatus", "newStatus", "message", "error"),
                 new ParameterizedTypeReference<>() {},
-                ingestionFlowFileApisHolder::unload);
+                processExecutionsApisHolder::unload);
     }
 
     @Test
     void whenGetIngestionFlowFileSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> ingestionFlowFileApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
+            accessToken -> processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
                     .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(1L), List.of(FlowFileTypeEnum.PAYMENTS_REPORTING.getValue()), LocalDateTime.now().minusDays(1L), null, null, null, null, null, null, null),
             new ParameterizedTypeReference<>() {},
-            ingestionFlowFileApisHolder::unload);
+            processExecutionsApisHolder::unload);
+    }
+
+    @Test
+    void whenGetPaidExportFileEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> processExecutionsApisHolder.getPaidExportFileEntityControllerApi(accessToken)
+                        .crudGetPaidexportfile(String.valueOf(1L)),
+                new ParameterizedTypeReference<>() {},
+                processExecutionsApisHolder::unload);
     }
 }
