@@ -17,18 +17,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class IONotificationClientServiceTest {
+class IONotificationFacadeServiceTest {
 
     @Mock
     private IoNotificationClient ioNotificationClientMock;
     @Mock
     private AuthnService authnServiceMock;
 
-    private IONotificationClientServiceImpl sendIONotificationActivity;
+    private IONotificationFacadeServiceImpl sendIONotificationActivity;
 
     @BeforeEach
     void setUp() {
-        sendIONotificationActivity = new IONotificationClientServiceImpl(
+        sendIONotificationActivity = new IONotificationFacadeServiceImpl(
                 ioNotificationClientMock,
                 authnServiceMock);
     }

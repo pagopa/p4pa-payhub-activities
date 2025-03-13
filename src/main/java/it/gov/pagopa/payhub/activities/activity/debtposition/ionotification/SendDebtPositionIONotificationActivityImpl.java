@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 
-import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationClientService;
+import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationFacadeService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
@@ -15,16 +15,16 @@ import java.util.Map;
 @Slf4j
 public class SendDebtPositionIONotificationActivityImpl implements SendDebtPositionIONotificationActivity {
 
-    private final IONotificationClientService ioNotificationClientService;
+    private final IONotificationFacadeService ioNotificationFacadeService;
 
-    public SendDebtPositionIONotificationActivityImpl(IONotificationClientService ioNotificationClientService) {
-        this.ioNotificationClientService = ioNotificationClientService;
+    public SendDebtPositionIONotificationActivityImpl(IONotificationFacadeService ioNotificationFacadeService) {
+        this.ioNotificationFacadeService = ioNotificationFacadeService;
     }
 
     @Override
     public void sendMessage(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
         log.info("Sending message to IONotification for debt position type org id {}", debtPosition.getDebtPositionTypeOrgId());
         // TODO to be fix https://pagopa.atlassian.net/browse/P4ADEV-2089
-        ioNotificationClientService.sendMessage(new NotificationRequestDTO());
+        ioNotificationFacadeService.sendMessage(new NotificationRequestDTO());
     }
 }
