@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
+import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationPlaceholderResolverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
@@ -8,19 +9,21 @@ import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static it.gov.pagopa.payhub.activities.util.Utilities.centsAmountToEuroString;
 import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Lazy
 public class NotificationRequestMapper {
+
+    private final IoNotificationPlaceholderResolverService ioNotificationPlaceholderResolverService;
+
+    public NotificationRequestMapper(IoNotificationPlaceholderResolverService ioNotificationPlaceholderResolverService) {
+        this.ioNotificationPlaceholderResolverService = ioNotificationPlaceholderResolverService;
+    }
 
     public List<NotificationRequestDTO> map(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
         // If only one PaymentOption exists, map with nav field
@@ -69,7 +72,7 @@ public class NotificationRequestMapper {
         notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionDTO.getDebtPositionTypeOrgId());
         if (ioNotificationDTO.getIoTemplateSubject() != null && ioNotificationDTO.getIoTemplateMessage() != null && ioNotificationDTO.getServiceId() != null) {
             notificationRequestDTO.setSubject(ioNotificationDTO.getIoTemplateSubject());
-            notificationRequestDTO.setMarkdown(replacePlaceholders(ioNotificationDTO.getIoTemplateMessage(), installmentDTO, debtPositionDTO.getDescription()));
+            notificationRequestDTO.setMarkdown(ioNotificationPlaceholderResolverService.applyDefaultPlaceholder(ioNotificationDTO.getIoTemplateMessage(), debtPositionDTO, installmentDTO));
             notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
         }
         notificationRequestDTO.setAmount(installmentDTO.getAmountCents());
@@ -77,28 +80,6 @@ public class NotificationRequestMapper {
 
         return notificationRequestDTO;
     }
-
-    private String replacePlaceholders(String markdown, InstallmentDTO installment, String dpDescription) {
-        Map<String, String> placeholders = new HashMap<>();
-
-        placeholders.put("%posizioneDebitoria_descrizione%", Objects.toString(dpDescription, ""));
-        placeholders.put("%debitore_nomeCompleto%", Objects.toString(installment.getDebtor().getFullName(), ""));
-        placeholders.put("%debitore_codiceFiscale%", Objects.toString(installment.getDebtor().getFiscalCode(), ""));
-        placeholders.put("%importoTotale%", Objects.toString(centsAmountToEuroString(installment.getAmountCents()), ""));
-        placeholders.put("%IUV%", Objects.toString(installment.getIuv(), ""));
-        placeholders.put("%NAV%", Objects.toString(installment.getNav(), ""));
-        placeholders.put("%causale%", Objects.toString(installment.getRemittanceInformation(), ""));
-
-        String formattedDueDate = installment.getDueDate() != null ? installment.getDueDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "";
-        placeholders.put("%dataScadenza%", formattedDueDate);
-
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            markdown = markdown.replace(entry.getKey(), entry.getValue());
-        }
-
-        return markdown.replaceAll("\\s{2,}", " ").trim();
-    }
-
 }
 
 
