@@ -14,6 +14,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Set;
 
@@ -122,6 +124,21 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getReceiptNoPiiSearchControllerApi(accessToken)
                         .crudReceiptsGetByTransferId(1L),
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetDataExportsApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        Long organizationId = 1L;
+        String operatorExternalUserId = "operatorExternalUserId";
+        OffsetDateTime paymentDateFrom = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
+        OffsetDateTime paymentDateTo = OffsetDateTime.now().plusMonths(1).withOffsetSameInstant(ZoneOffset.UTC);
+        Long debtPositionTypeOrgId = 1L;
+
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> debtPositionApisHolder.getDataExportsApi(accessToken)
+                        .exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateFrom, paymentDateTo, debtPositionTypeOrgId, 0, 10, null),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
