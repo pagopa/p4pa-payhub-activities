@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentsRequestDTO;
 import it.gov.pagopa.pu.debtposition.client.generated.DataExportsApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import org.junit.jupiter.api.AfterEach;
@@ -53,12 +54,20 @@ class DataExportClientTest {
         OffsetDateTime paymentDateTo = OffsetDateTime.now().plusMonths(1).withOffsetSameInstant(ZoneOffset.UTC);
         Long debtPositionTypeOrgId = 1L;
 
+        PaidInstallmentsRequestDTO paidInstallmentsRequestDTO = PaidInstallmentsRequestDTO
+                .builder()
+                .organizationId(organizationId)
+                .operatorExternalUserId(operatorExternalUserId)
+                .paymentDateFrom(paymentDateFrom)
+                .paymentDateTo(paymentDateTo)
+                .debtPositionTypeOrgId(debtPositionTypeOrgId).build();
+
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
         Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateFrom, paymentDateTo, debtPositionTypeOrgId, 0, 10, null)). thenReturn(expected);
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
-        PagedInstallmentsPaidView result = dataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paymentDateFrom, paymentDateTo, debtPositionTypeOrgId, 0, 10, null);
+        PagedInstallmentsPaidView result = dataExportClient.getExportPaidInstallments(accessToken,paidInstallmentsRequestDTO, 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);

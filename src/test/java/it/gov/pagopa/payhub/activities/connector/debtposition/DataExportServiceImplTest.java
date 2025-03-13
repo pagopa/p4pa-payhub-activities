@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DataExportClient;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentsRequestDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,10 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class DataExportServiceImplTest {
@@ -47,18 +46,14 @@ class DataExportServiceImplTest {
     void givenParameters_WhenGetExportPaidInstallments_ThenReturnPagedInstallmentsPaidView() {
         //given
         String accessToken = "accessToken";
-        Long organizationId = 1L;
-        String operatorExternalUserId = "operatorExternalUserId";
-        OffsetDateTime paymentDateFrom = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
-        OffsetDateTime paymentDateTo = OffsetDateTime.now().plusMonths(1).withOffsetSameInstant(ZoneOffset.UTC);
-        Long debtPositionTypeOrgId = 1L;
 
+        PaidInstallmentsRequestDTO paidInstallmentsRequestDTO = podamFactory.manufacturePojo(PaidInstallmentsRequestDTO.class);
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(dataExportClientMock.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paymentDateFrom, paymentDateTo, debtPositionTypeOrgId, 0, 10, null)).thenReturn(expected);
+        Mockito.when(dataExportClientMock.getExportPaidInstallments(accessToken, paidInstallmentsRequestDTO, 0, 10, null)).thenReturn(expected);
         //when
-        PagedInstallmentsPaidView result = dataExportService.exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateFrom, paymentDateTo, debtPositionTypeOrgId, 0, 10, null);
+        PagedInstallmentsPaidView result = dataExportService.exportPaidInstallments(paidInstallmentsRequestDTO, 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);
