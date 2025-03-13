@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DataExportClient;
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentsRequestDTO;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentsRequestFilterDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ public class DataExportServiceImpl implements DataExportService{
     }
 
     @Override
-    public PagedInstallmentsPaidView exportPaidInstallments(PaidInstallmentsRequestDTO paidInstallmentsRequestDTO, Integer page, Integer size, List<String> sort) {
-        return dataExportClient.getExportPaidInstallments(authnService.getAccessToken(), paidInstallmentsRequestDTO, page, size, sort);
+    public PagedInstallmentsPaidView exportPaidInstallments(PaidInstallmentsRequestFilterDTO paidInstallmentsRequestFilterDTO, Integer page, Integer size, List<String> sort) {
+        return dataExportClient.getExportPaidInstallments(authnService.getAccessToken(), paidInstallmentsRequestFilterDTO, page, size, sort);
     }
 
 }

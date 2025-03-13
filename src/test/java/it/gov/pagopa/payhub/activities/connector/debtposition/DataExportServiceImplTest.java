@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DataExportClient;
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentsRequestDTO;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentsRequestFilterDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,13 +47,13 @@ class DataExportServiceImplTest {
         //given
         String accessToken = "accessToken";
 
-        PaidInstallmentsRequestDTO paidInstallmentsRequestDTO = podamFactory.manufacturePojo(PaidInstallmentsRequestDTO.class);
+        PaidInstallmentsRequestFilterDTO paidInstallmentsRequestFilterDTO = podamFactory.manufacturePojo(PaidInstallmentsRequestFilterDTO.class);
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(dataExportClientMock.getExportPaidInstallments(accessToken, paidInstallmentsRequestDTO, 0, 10, null)).thenReturn(expected);
+        Mockito.when(dataExportClientMock.getExportPaidInstallments(accessToken, paidInstallmentsRequestFilterDTO, 0, 10, null)).thenReturn(expected);
         //when
-        PagedInstallmentsPaidView result = dataExportService.exportPaidInstallments(paidInstallmentsRequestDTO, 0, 10, null);
+        PagedInstallmentsPaidView result = dataExportService.exportPaidInstallments(paidInstallmentsRequestFilterDTO, 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);
