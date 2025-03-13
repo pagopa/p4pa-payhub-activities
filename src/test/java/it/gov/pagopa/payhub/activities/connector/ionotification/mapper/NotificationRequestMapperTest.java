@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Objects;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
 import static it.gov.pagopa.payhub.activities.util.faker.IONotificationDTOFaker.buildIONotificationDTO;
@@ -34,13 +35,13 @@ class NotificationRequestMapperTest {
         debtPosition.getPaymentOptions().getFirst().setInstallments(List.of(buildInstallmentDTO(),buildInstallmentDTO()));
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
+        System.out.println("DueDate: "+Objects.toString(debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().getDueDate(), ""));
+
         // When
         List<NotificationRequestDTO> result = mapper.map(
-                debtPosition.getPaymentOptions(),
-                debtPosition.getOrganizationId(),
-                debtPosition.getDebtPositionTypeOrgId(),
-                debtPosition.getDescription(),
-                ioNotificationDTO);
+                debtPosition,
+                ioNotificationDTO,
+                NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
 
         // Then
         String expectedMarkdown = "Descrizione posizione debitoria: " + debtPosition.getDescription() + ". " +
@@ -50,7 +51,7 @@ class NotificationRequestMapperTest {
                 "Codice IUV: iuv. " +
                 "NAV: nav. " +
                 "Causale: remittanceInformation. " +
-                "Data di esecuzione pagamento: 2024-05-15.";
+                "Data di esecuzione pagamento: 15/05/2024.";
 
         checkNotNullFields(result.getFirst());
         assertEquals(expectedMarkdown, result.getFirst().getMarkdown());
@@ -71,11 +72,9 @@ class NotificationRequestMapperTest {
 
         // When
         List<NotificationRequestDTO> result = mapper.map(
-                debtPosition.getPaymentOptions(),
-                debtPosition.getOrganizationId(),
-                debtPosition.getDebtPositionTypeOrgId(),
-                debtPosition.getDescription(),
-                ioNotificationDTO);
+                debtPosition,
+                ioNotificationDTO,
+                NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
 
         // Then
         checkNotNullFields(result.getFirst());
@@ -93,11 +92,9 @@ class NotificationRequestMapperTest {
 
         // When
         List<NotificationRequestDTO> result = mapper.map(
-                debtPosition.getPaymentOptions(),
-                debtPosition.getOrganizationId(),
-                debtPosition.getDebtPositionTypeOrgId(),
-                debtPosition.getDescription(),
-                ioNotificationDTO);
+                debtPosition,
+                ioNotificationDTO,
+                NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
 
         // Then
         checkNotNullFields(result.getFirst(), "nav");
