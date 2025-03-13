@@ -20,6 +20,7 @@ public class DebtPositionApisHolder {
     private final ReceiptApi receiptApi;
     private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
     private final ReceiptNoPiiSearchControllerApi receiptNoPiiSearchControllerApi;
+    private final DataExportsApi dataExportsApi;
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
 
@@ -45,6 +46,7 @@ public class DebtPositionApisHolder {
         this.receiptApi = new ReceiptApi(apiClient);
         this.debtPositionTypeOrgApi = new DebtPositionTypeOrgApi(apiClient);
 	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
+        this.dataExportsApi = new DataExportsApi(apiClient);
     }
 
     @PreDestroy
@@ -84,6 +86,9 @@ public class DebtPositionApisHolder {
         return getApi(accessToken, null, receiptNoPiiSearchControllerApi);
     }
 
+    public DataExportsApi getDataExportsApi(String accessToken){
+        return getApi(accessToken, null, dataExportsApi);
+    }
     private <T extends BaseApi> T getApi(String accessToken, String mappedExternalUserId, T api) {
         authContextHolder.set(Pair.of(accessToken, mappedExternalUserId));
         return api;
