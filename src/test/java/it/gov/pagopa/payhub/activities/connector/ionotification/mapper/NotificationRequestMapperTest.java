@@ -39,11 +39,21 @@ class NotificationRequestMapperTest {
                 debtPosition.getPaymentOptions(),
                 debtPosition.getOrganizationId(),
                 debtPosition.getDebtPositionTypeOrgId(),
+                debtPosition.getDescription(),
                 ioNotificationDTO);
 
         // Then
+        String expectedMarkdown = "Descrizione posizione debitoria: " + debtPosition.getDescription() + ". " +
+                "Nome completo debitore: fullName. " +
+                "Codice Fiscale debitore: uniqueIdentifierCode. " +
+                "Importo totale: 1,00 euro. " +
+                "Codice IUV: iuv. " +
+                "NAV: nav. " +
+                "Causale: remittanceInformation. " +
+                "Data di esecuzione pagamento: 2024-05-15.";
+
         checkNotNullFields(result.getFirst());
-        assertEquals("Causale remittanceInformation. Codice identificativo unico iuv. Totale di 1,00 euro. Data di scadenza 2024-05-15.", result.getFirst().getMarkdown());
+        assertEquals(expectedMarkdown, result.getFirst().getMarkdown());
         assertEquals(2, result.size());
     }
 
@@ -57,18 +67,19 @@ class NotificationRequestMapperTest {
         installment2.setDueDate(null);
         debtPosition.getPaymentOptions().getFirst().setInstallments(List.of(installment1,installment2));
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
-        ioNotificationDTO.setIoTemplateMessage("Totale di %importoDovuto% euro. Data di scadenza %dataEsecuzionePagamento%.");
+        ioNotificationDTO.setIoTemplateMessage("Importo totale: %importoTotale% euro. Data di scadenza %dataScadenza%.");
 
         // When
         List<NotificationRequestDTO> result = mapper.map(
                 debtPosition.getPaymentOptions(),
                 debtPosition.getOrganizationId(),
                 debtPosition.getDebtPositionTypeOrgId(),
+                debtPosition.getDescription(),
                 ioNotificationDTO);
 
         // Then
         checkNotNullFields(result.getFirst());
-        assertEquals("Totale di 1,00 euro. Data di scadenza Not Specified.", result.getFirst().getMarkdown());
+        assertEquals("Importo totale: 1,00 euro. Data di scadenza .", result.getFirst().getMarkdown());
 
         // size is 1 because dueDate is null for all installments
         assertEquals(1, result.size());
@@ -85,6 +96,7 @@ class NotificationRequestMapperTest {
                 debtPosition.getPaymentOptions(),
                 debtPosition.getOrganizationId(),
                 debtPosition.getDebtPositionTypeOrgId(),
+                debtPosition.getDescription(),
                 ioNotificationDTO);
 
         // Then

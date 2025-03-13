@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,7 +20,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Lazy
 public class NotificationRequestMapper {
 
-    public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO) {
+    public List<NotificationRequestDTO> map(List<PaymentOptionDTO> paymentOptions, Long orgId, Long debtPositionTypeOrgId, String dpDescription, IONotificationDTO ioNotificationDTO) {
         // If only one PaymentOption exists, map with nav field
         if (paymentOptions.size() == 1) {
             List<InstallmentDTO> installmentDTOList = paymentOptions.getFirst().getInstallments();
@@ -36,7 +37,7 @@ public class NotificationRequestMapper {
             return installments.stream()
                     .map(installment -> {
                         NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
-                                orgId, debtPositionTypeOrgId, ioNotificationDTO, installment);
+                                orgId, debtPositionTypeOrgId, dpDescription, ioNotificationDTO, installment);
                         notificationRequestDTO.setNav(installment.getNav());
                         return notificationRequestDTO;
                     })
@@ -52,11 +53,11 @@ public class NotificationRequestMapper {
                         (i1, i2) -> i1
                 ))
                 .values().stream()
-                .map(installmentDTO -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, ioNotificationDTO, installmentDTO))
+                .map(installmentDTO -> mapNotificationRequestDTO(orgId, debtPositionTypeOrgId, dpDescription, ioNotificationDTO, installmentDTO))
                 .toList();
     }
 
-    private NotificationRequestDTO mapNotificationRequestDTO(Long orgId, Long debtPositionTypeOrgId, IONotificationDTO ioNotificationDTO,
+    private NotificationRequestDTO mapNotificationRequestDTO(Long orgId, Long debtPositionTypeOrgId, String dpDescription, IONotificationDTO ioNotificationDTO,
                                                                     InstallmentDTO installmentDTO) {
 
         NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO();
@@ -65,7 +66,7 @@ public class NotificationRequestMapper {
         notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
         if (ioNotificationDTO.getIoTemplateSubject() != null && ioNotificationDTO.getIoTemplateMessage() != null && ioNotificationDTO.getServiceId() != null) {
             notificationRequestDTO.setSubject(ioNotificationDTO.getIoTemplateSubject());
-            notificationRequestDTO.setMarkdown(replacePlaceholders(ioNotificationDTO.getIoTemplateMessage(), installmentDTO));
+            notificationRequestDTO.setMarkdown(replacePlaceholders(ioNotificationDTO.getIoTemplateMessage(), installmentDTO, dpDescription));
             notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
         }
         notificationRequestDTO.setAmount(installmentDTO.getAmountCents());
@@ -74,19 +75,25 @@ public class NotificationRequestMapper {
         return notificationRequestDTO;
     }
 
-    private String replacePlaceholders(String markdown, InstallmentDTO installment) {
-        String placeholderDefault = "Not Specified";
-        Map<String, String> placeholders = Map.of(
-                "%importoDovuto%", Objects.toString(centsAmountToEuroString(installment.getAmountCents()), placeholderDefault),
-                "%dataEsecuzionePagamento%", Objects.toString(installment.getDueDate(), placeholderDefault),
-                "%codIUV%", Objects.toString(installment.getIuv(), placeholderDefault),
-                "%causaleVersamento%", Objects.toString(installment.getRemittanceInformation(), placeholderDefault)
-        );
+    private String replacePlaceholders(String markdown, InstallmentDTO installment, String dpDescription) {
+        Map<String, String> placeholders = new HashMap<>();
+
+        placeholders.put("%posizioneDebitoria_descrizione%", Objects.toString(dpDescription, ""));
+        placeholders.put("%debitore_nomeCompleto%", Objects.toString(installment.getDebtor().getFullName(), ""));
+        placeholders.put("%debitore_codiceFiscale%", Objects.toString(installment.getDebtor().getFiscalCode(), ""));
+        placeholders.put("%importoTotale%", Objects.toString(centsAmountToEuroString(installment.getAmountCents()), ""));
+        placeholders.put("%IUV%", Objects.toString(installment.getIuv(), ""));
+        placeholders.put("%NAV%", Objects.toString(installment.getNav(), ""));
+        placeholders.put("%causale%", Objects.toString(installment.getRemittanceInformation(), ""));
+        placeholders.put("%dataScadenza%", Objects.toString(installment.getDueDate(), ""));
+
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
             markdown = markdown.replace(entry.getKey(), entry.getValue());
         }
+
         return markdown.replaceAll("\\s{2,}", " ").trim();
     }
+
 }
 
 
