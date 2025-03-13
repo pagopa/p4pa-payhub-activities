@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationClient;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
@@ -28,8 +27,6 @@ class OrganizationServiceTest {
     private AuthnService authnServiceMock;
     @Mock
     private OrganizationSearchClient organizationSearchClientMock;
-    @Mock
-    private OrganizationClient organizationClientMock;
 
     private OrganizationService organizationService;
 
@@ -39,8 +36,7 @@ class OrganizationServiceTest {
     void init(){
         organizationService = new OrganizationServiceImpl(
                 authnServiceMock,
-                organizationSearchClientMock,
-                organizationClientMock
+                organizationSearchClientMock
         );
 
         Mockito.when(authnServiceMock.getAccessToken())
@@ -186,18 +182,4 @@ class OrganizationServiceTest {
         Assertions.assertSame(embedded.getOrganizations(), result);
     }
 //endregion
-
-    @Test
-    void givenGetOrganizationApiKeyThenOk(){
-        //Given
-        String apiKey = "apiKey";
-        Mockito.when(organizationClientMock.getOrganizationApiKey(1L, "operationType", accessToken))
-                .thenReturn(apiKey);
-
-        //When
-        String result = organizationService.getOrganizationApiKey(1L, "operationType");
-
-        //Then
-        Assertions.assertEquals(apiKey, result);
-    }
 }

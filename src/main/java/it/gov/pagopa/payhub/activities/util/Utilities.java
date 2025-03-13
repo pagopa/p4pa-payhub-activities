@@ -4,9 +4,13 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.*;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -120,5 +124,26 @@ public class Utilities {
         return uri != null
                 ? uri.toString().replaceAll("=[^&]*", "=***")
                 : null;
+    }
+
+    public static BigDecimal longCentsToBigDecimalEuro(Long centsAmount) {
+        return centsAmount != null ? BigDecimal.valueOf(centsAmount).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_DOWN) : null;
+    }
+
+    public static String parseBigDecimalToString(BigDecimal importo) {
+        if (importo == null) {
+            return null;
+        }
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ITALIAN);
+        symbols.setDecimalSeparator(',');
+        symbols.setGroupingSeparator('.');
+
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00", symbols);
+        return decimalFormat.format(importo);
+    }
+
+    public static String centsAmountToEuroString(Long centsAmount){
+        return parseBigDecimalToString(longCentsToBigDecimalEuro(centsAmount));
     }
 }

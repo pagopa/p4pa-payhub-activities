@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @Lazy
 @Service
 @Slf4j
-public class IONotificationClientServiceImpl implements IONotificationClientService {
+public class IONotificationFacadeServiceImpl implements IONotificationFacadeService {
 
     private final IoNotificationClient ioNotificationClient;
     private final AuthnService authnService;
 
 
-    public IONotificationClientServiceImpl(IoNotificationClient ioNotificationClient, AuthnService authnService) {
+    public IONotificationFacadeServiceImpl(IoNotificationClient ioNotificationClient, AuthnService authnService) {
         this.ioNotificationClient = ioNotificationClient;
         this.authnService = authnService;
     }
