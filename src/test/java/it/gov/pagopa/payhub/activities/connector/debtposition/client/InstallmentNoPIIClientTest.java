@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiSearchCont
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPIIEmbedded;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class InstallmentNoPIIClientTest {
     List<InstallmentNoPIIResponse> result = installmentNoPIIClient.getByReceiptId(accessToken,
         receiptId);
 
-    Assertions.assertNull(result);
+    Assertions.assertEquals(Collections.emptyList(),result);
     verify(debtPositionApisHolderMock, times(1)).getInstallmentNoPIISearchControllerApi(
         accessToken);
     verify(installmentNoPiiSearchControllerApiMock, times(1)).crudInstallmentsFindByReceiptId(

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.pu.debtposition.client.generated.DataExportsApi;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgApi;
