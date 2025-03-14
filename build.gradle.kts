@@ -370,10 +370,6 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
 	apiPackage.set("it.gov.pagopa.pu.organization.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.organization.dto.generated")
 	configOptions.set(mapOf(
-		"useEnumAsRef" to "true",
-		"enumUnknownDefaultCase" to "true",
-		"generateEnumsAsString" to "false",
-		"enableEnumsAsString" to "false",
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
 		"dateLibrary" to "java8",
