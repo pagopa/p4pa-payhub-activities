@@ -17,7 +17,6 @@ ingestion-flow-files:
       max-waiting-minutes: 5
       retry-delays-ms: 1000
 
-
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
 
@@ -101,3 +100,9 @@ rest:
     max-attempts: "\${WORKFLOW_HUB_MAX_ATTEMPTS:3}" # It's counting also the first attempt
     wait-time-millis: "\${WORKFLOW_HUB_WAIT_TIME_MILLIS:500}"
     print-body-when-error: "\${WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR:true}"
+
+query-limits:
+  default:
+    size: "\${DEFAULT_PAGE_SIZE:1000}"
+  debt-positions:
+    size: "\${DEBT_POSITIONS_PAGE_SIZE:\${query-limits.default.size}}"
