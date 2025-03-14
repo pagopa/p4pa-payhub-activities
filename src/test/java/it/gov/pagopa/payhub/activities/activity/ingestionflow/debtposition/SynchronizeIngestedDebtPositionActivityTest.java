@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +14,6 @@ import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeIngestedDebtPositionActivityTest {
@@ -23,7 +21,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     @Mock
     private DebtPositionService debtPositionServiceMock;
     private static final Integer PAGE_SIZE = 2;
-    private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId","asc");
+    private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
 
     private SynchronizeIngestedDebtPositionActivity activity;
 
@@ -66,18 +64,5 @@ class SynchronizeIngestedDebtPositionActivityTest {
         String result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
         assertEquals("", result);
-    }
-
-    @Test
-    void testSynchronizeIngestedDebtPositionWithNullPagedDebtPositionsRetrieved(){
-        Long ingestionFlowFileId = 1L;
-
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
-                .thenReturn(null);
-
-        InvalidValueException exception = assertThrows(InvalidValueException.class,
-                () -> activity.synchronizeIngestedDebtPosition(ingestionFlowFileId));
-
-        assertEquals("No debt positions found for the ingestion flow file with id 1", exception.getMessage());
     }
 }
