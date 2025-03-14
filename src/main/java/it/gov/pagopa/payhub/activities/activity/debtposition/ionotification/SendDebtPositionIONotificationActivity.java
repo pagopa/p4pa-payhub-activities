@@ -22,7 +22,7 @@ public interface SendDebtPositionIONotificationActivity {
      * @param iupdSyncStatusUpdateDTOMap the map of the correctly synchronized IUD
      */
     @ActivityMethod
-    void sendMessage(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
+    void sendIoNotification(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
 }
 
 

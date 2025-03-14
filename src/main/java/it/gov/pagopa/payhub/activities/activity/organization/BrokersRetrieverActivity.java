@@ -17,5 +17,5 @@ public interface BrokersRetrieverActivity {
 	 * @return a list of brokers
 	 */
 	@ActivityMethod
-	List<Broker> fetchAll();
+	List<Broker> fetchAllBrokers();
 }

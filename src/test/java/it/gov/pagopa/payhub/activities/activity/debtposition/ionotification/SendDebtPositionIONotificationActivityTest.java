@@ -31,12 +31,12 @@ class SendDebtPositionIONotificationActivityTest {
     }
 
     @Test
-    void givenSendMessageThenSuccess(){
+    void givenSendIoNotificationThenSuccess(){
         // Given
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
 
         // When
-        activity.sendMessage(debtPosition, null);
+        activity.sendIoNotification(debtPosition, null);
 
         // Then
         Mockito.verify(ioNotificationFacadeServiceMock, Mockito.times(1))

@@ -34,7 +34,7 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 	}
 
 	@Test
-	void whenFetchThenReturnIngestionFlowFileIds() {
+	void whenFetchPagoPaPaymentsReportingFilesThenReturnIngestionFlowFileIds() {
 		// Given
 		Long organizationId = 1L;
 		String idFlow = "flow-123";
@@ -53,20 +53,20 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 		doReturn(expectedIngestionFlowFileId).when(paymentsReportingPagoPaServiceMock).fetchPaymentReporting(organizationId, idFlow, filename);
 
 		// When
-		List<Long> result = activity.fetch(organizationId, List.of(dto));
+		List<Long> result = activity.fetchPagoPaPaymentsReportingFiles(organizationId, List.of(dto));
 
 		// When Then
 		assertEquals(List.of(expectedIngestionFlowFileId), result);
 	}
 
 	@Test
-	void whenFetchThenReturnEmptyList() {
+	void whenFetchPagoPaPaymentsReportingFilesThenReturnEmptyList() {
 		// Given
 		Long organizationId = 1L;
 		List<PaymentsReportingIdDTO> paymentsReportingIds = Collections.emptyList();
 
 		// When
-		List<Long> result = activity.fetch(organizationId, paymentsReportingIds);
+		List<Long> result = activity.fetchPagoPaPaymentsReportingFiles(organizationId, paymentsReportingIds);
 
 		// Then
 		assertTrue(result.isEmpty());
