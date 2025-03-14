@@ -166,6 +166,7 @@ class InstallmentExportFlowFileDTOMapperTest {
         installmentPaidViewDTO.getDebtor().setFiscalCode(null);
         installmentPaidViewDTO.getPayer().setEntityType(null);
         installmentPaidViewDTO.getPayer().setFiscalCode(null);
+        installmentPaidViewDTO.setFeeCents(null);
 
         //when
         InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.1F, installmentPaidViewDTO);
@@ -177,6 +178,7 @@ class InstallmentExportFlowFileDTOMapperTest {
         assertEquals("ANONIMO", result.getDebtorUniqueIdentifierCode());
         assertNull(result.getPayerEntityType());
         assertEquals("ANONIMO", result.getPayerUniqueIdentifierCode());
+        assertNull(result.getPspAppliedFees());
     }
 
 
