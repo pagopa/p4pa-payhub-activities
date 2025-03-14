@@ -106,7 +106,7 @@ public class InstallmentExportFlowFileDTO {
     @CsvBindByName(column = "soggPagTipoIdentificativoUnivoco", required = true)
     private EntityIdentifierType debtorEntityType;
     @CsvBindByName(column = "soggPagCodiceIdentificativoUnivoco", required = true)
-    private String debtorIndentifierCode;
+    private String debtorUniqueIdentifierCode;
     @CsvBindByName(column = "anagraficaPagatore")
     private String debtorFullName;
     @CsvBindByName(column = "indirizzoPagatore")

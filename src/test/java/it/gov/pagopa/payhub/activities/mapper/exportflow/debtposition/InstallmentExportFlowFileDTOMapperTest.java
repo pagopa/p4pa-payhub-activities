@@ -159,15 +159,47 @@ class InstallmentExportFlowFileDTOMapperTest {
     }
 
     @Test
-    void  givenValidInstallmentPaidWithoutCodeViewAndVersionTrack1_1_whenMap_thenReturnInstallmentPaidViewDTO() {
+    void  givenValidInstallmentPaidWithNullFieldViewAndVersionTrack1_1_whenMap_thenReturnInstallmentPaidViewDTO() {
         //given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
+        installmentPaidViewDTO.getDebtor().setEntityType(null);
+        installmentPaidViewDTO.getDebtor().setFiscalCode(null);
+        installmentPaidViewDTO.getPayer().setEntityType(null);
+        installmentPaidViewDTO.getPayer().setFiscalCode(null);
+
         //when
         InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.1F, installmentPaidViewDTO);
         //then
         assertNotNull(result);
         assertNull(result.getReceiptAttachmentType());
         assertNull(result.getReceiptAttachmentTest());
+        assertNull(result.getDebtorEntityType());
+        assertEquals("ANONIMO", result.getDebtorUniqueIdentifierCode());
+        assertNull(result.getPayerEntityType());
+        assertEquals("ANONIMO", result.getPayerUniqueIdentifierCode());
+    }
+
+
+    @Test
+    void  givenValidInstallmentPaidWithNullPayerViewAndVersionTrack1_1_whenMap_thenReturnInstallmentPaidViewDTO() {
+        //given
+        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
+        installmentPaidViewDTO.setPayer(null);
+
+        //when
+        InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.1F, installmentPaidViewDTO);
+        //then
+        assertNotNull(result);
+        assertNull(result.getPayerEntityType());
+        assertNull(result.getPayerUniqueIdentifierCode());
+        assertNull(result.getPayerFullName());
+        assertNull(result.getPayerAddress());
+        assertNull(result.getPayerStreetNumber());
+        assertNull(result.getPayerPostalCode());
+        assertNull(result.getPayerCity());
+        assertNull(result.getPayerProvince());
+        assertNull(result.getPayerCountry());
+        assertNull(result.getPayerEmail());
     }
 
     @Test
@@ -348,7 +380,7 @@ class InstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getPayer().getEmail(), exportFlowFileDTO.getPayerEmail());
 
         assertEquals(EntityIdentifierType.fromValue(paidViewDTO.getDebtor().getEntityType().getValue()) , exportFlowFileDTO.getDebtorEntityType());
-        assertEquals(paidViewDTO.getDebtor().getFiscalCode() , exportFlowFileDTO.getDebtorIndentifierCode());
+        assertEquals(paidViewDTO.getDebtor().getFiscalCode() , exportFlowFileDTO.getDebtorUniqueIdentifierCode());
         assertEquals(paidViewDTO.getDebtor().getFullName(), exportFlowFileDTO.getDebtorFullName());
         assertEquals(paidViewDTO.getDebtor().getAddress(), exportFlowFileDTO.getDebtorAddress());
         assertEquals(paidViewDTO.getDebtor().getCivic(), exportFlowFileDTO.getDebtorStreetNumber());

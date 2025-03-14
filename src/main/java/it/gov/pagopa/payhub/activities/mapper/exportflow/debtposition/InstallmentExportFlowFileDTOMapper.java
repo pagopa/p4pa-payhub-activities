@@ -51,7 +51,7 @@ public class InstallmentExportFlowFileDTOMapper {
                 .beneficiaryUniqueIdentifierCode(installmentPaidViewDTO.getOrgFiscalCode())
                 .beneficiaryName(installmentPaidViewDTO.getCompanyName())
                 .debtorEntityType(debtor.getEntityType() != null ? EntityIdentifierType.fromValue(debtor.getEntityType().getValue()) : null)
-                .debtorIndentifierCode(debtor.getFiscalCode() != null ? debtor.getFiscalCode() : "ANONIMO")
+                .debtorUniqueIdentifierCode(debtor.getFiscalCode() != null ? debtor.getFiscalCode() : "ANONIMO")
                 .debtorFullName(debtor.getFullName())
                 .debtorAddress(debtor.getAddress())
                 .debtorStreetNumber(debtor.getCivic())
