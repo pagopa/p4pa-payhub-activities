@@ -90,6 +90,7 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:$mapStructVersion")
 	// openApi
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+	implementation("org.springframework.data:spring-data-commons")
 	//mail
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.retry:spring-retry")

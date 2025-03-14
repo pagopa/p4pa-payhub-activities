@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,6 +114,26 @@ class DebtPositionClientTest {
         // Then
         Assertions.assertEquals(expectedWorkflowId, result);
         verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive);
+    }
+
+    @Test
+    void givenGetDebtPositionsByIngestionFlowFileIdThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long ingestionFlowFileId = 1L;
+        Integer page = 0;
+        Integer size = 2;
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+                .thenReturn(debtPositionApiMock);
+        Mockito.when(debtPositionApiMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, page, size, null))
+                .thenReturn(new PagedDebtPositions());
+
+        // When
+        PagedDebtPositions result = debtPositionClient.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, page, size, null);
+
+        // Then
+        Assertions.assertEquals(new PagedDebtPositions(), result);
     }
 
 }
