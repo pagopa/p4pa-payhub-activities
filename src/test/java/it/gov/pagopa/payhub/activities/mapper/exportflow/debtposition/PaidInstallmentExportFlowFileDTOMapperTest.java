@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.InstallmentExportFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
@@ -13,7 +13,7 @@ import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InstallmentExportFlowFileDTOMapperTest {
+class PaidInstallmentExportFlowFileDTOMapperTest {
 
     private InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper;
     PodamFactory podamFactory;
@@ -25,263 +25,15 @@ class InstallmentExportFlowFileDTOMapperTest {
     }
 
     @Test
-    void  givenValidInstallmentPaidViewAndVersionTrack1_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
-        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
-        //when
-        InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.0F, installmentPaidViewDTO);
-        //then
-        assertNotNull(result);
-        assert1(installmentPaidViewDTO, result);
-
-        TestUtils.checkNotNullFields(result,
-                "objectVersion",
-                "requestingStationIdentifier",
-                "attestingUnitOperCode",
-                "attestingUnitOperName",
-                "attestingAddress",
-                "attestingStreetNumber",
-                "attestingPostalCode",
-                "attestingCity",
-                "attestingProvince",
-                "attestingCountry",
-                "beneficiaryUnitOperCode",
-                "beneficiaryUnitOperName",
-                "beneficiaryAddress",
-                "beneficiaryStreetNumber",
-                "beneficiaryPostalCode",
-                "beneficiaryCity",
-                "beneficiaryProvince",
-                "beneficiaryCountry",
-                "payerFullName",
-                "payerAddress",
-                "payerStreetNumber",
-                "payerPostalCode",
-                "payerCity",
-                "payerProvince",
-                "payerCountry",
-                "payerEmail",
-                "debtorFullName",
-                "debtorAddress",
-                "debtorStreetNumber",
-                "debtorPostalCode",
-                "debtorCity",
-                "debtorProvince",
-                "debtorCountry",
-                "debtorEmail",
-                "paymentOutcomeCode",
-                "totalAmountPaid",
-                "uniquePaymentIdentifier",
-                "paymentContextCode",
-                "singleAmountPaid",
-                "singlePaymentOutcome",
-                "singlePaymentOutcomeDateTime",
-                "uniqueCollectionIdentifier",
-                "paymentReason",
-                "collectionSpecificData",
-                "dueType",
-                "signatureType",
-                "rt",
-                "singlePaymentDataIndex",
-                "pspAppliedFees",
-                "receiptAttachmentType",
-                "receiptAttachmentTest",
-                "balance",
-                "orgFiscalCode",
-                "orgName",
-                "dueTaxonomicCode"
-        );
-    }
-
-    @Test
-    void  givenValidInstallmentPaidViewAndVersionTrack1_1_whenMap_thenReturnInstallmentPaidViewDTO() {
+    void  givenValidInstallmentPaidView_whenMap_thenReturnInstallmentPaidViewDTO() {
         //given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
         installmentPaidViewDTO.setCode("MARCA_BOLLO");
         //when
-        InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.1F, installmentPaidViewDTO);
+        PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
         //then
         assertNotNull(result);
-        assert1(installmentPaidViewDTO, result);
-        assert1_1(installmentPaidViewDTO, result);
-
-        TestUtils.checkNotNullFields(result,
-                "objectVersion",
-                "requestingStationIdentifier",
-                "attestingUnitOperCode",
-                "attestingUnitOperName",
-                "attestingAddress",
-                "attestingStreetNumber",
-                "attestingPostalCode",
-                "attestingCity",
-                "attestingProvince",
-                "attestingCountry",
-                "beneficiaryUnitOperCode",
-                "beneficiaryUnitOperName",
-                "beneficiaryAddress",
-                "beneficiaryStreetNumber",
-                "beneficiaryPostalCode",
-                "beneficiaryCity",
-                "beneficiaryProvince",
-                "beneficiaryCountry",
-                "payerFullName",
-                "payerAddress",
-                "payerStreetNumber",
-                "payerPostalCode",
-                "payerCity",
-                "payerProvince",
-                "payerCountry",
-                "payerEmail",
-                "debtorFullName",
-                "debtorAddress",
-                "debtorStreetNumber",
-                "debtorPostalCode",
-                "debtorCity",
-                "debtorProvince",
-                "debtorCountry",
-                "debtorEmail",
-                "paymentOutcomeCode",
-                "totalAmountPaid",
-                "uniquePaymentIdentifier",
-                "paymentContextCode",
-                "singleAmountPaid",
-                "singlePaymentOutcome",
-                "singlePaymentOutcomeDateTime",
-                "uniqueCollectionIdentifier",
-                "signatureType",
-                "rt",
-                "receiptAttachmentTest",
-                "balance",
-                "orgFiscalCode",
-                "orgName",
-                "dueTaxonomicCode"
-        );
-    }
-
-    @Test
-    void  givenValidInstallmentPaidWithNullFieldViewAndVersionTrack1_1_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
-        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
-        installmentPaidViewDTO.getDebtor().setEntityType(null);
-        installmentPaidViewDTO.getDebtor().setFiscalCode(null);
-        installmentPaidViewDTO.getPayer().setEntityType(null);
-        installmentPaidViewDTO.getPayer().setFiscalCode(null);
-        installmentPaidViewDTO.setFeeCents(null);
-
-        //when
-        InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.1F, installmentPaidViewDTO);
-        //then
-        assertNotNull(result);
-        assertNull(result.getReceiptAttachmentType());
-        assertNull(result.getReceiptAttachmentTest());
-        assertNull(result.getDebtorEntityType());
-        assertEquals("ANONIMO", result.getDebtorUniqueIdentifierCode());
-        assertNull(result.getPayerEntityType());
-        assertEquals("ANONIMO", result.getPayerUniqueIdentifierCode());
-        assertNull(result.getPspAppliedFees());
-    }
-
-
-    @Test
-    void  givenValidInstallmentPaidWithNullPayerViewAndVersionTrack1_1_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
-        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
-        installmentPaidViewDTO.setPayer(null);
-
-        //when
-        InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.1F, installmentPaidViewDTO);
-        //then
-        assertNotNull(result);
-        assertNull(result.getPayerEntityType());
-        assertNull(result.getPayerUniqueIdentifierCode());
-        assertNull(result.getPayerFullName());
-        assertNull(result.getPayerAddress());
-        assertNull(result.getPayerStreetNumber());
-        assertNull(result.getPayerPostalCode());
-        assertNull(result.getPayerCity());
-        assertNull(result.getPayerProvince());
-        assertNull(result.getPayerCountry());
-        assertNull(result.getPayerEmail());
-    }
-
-    @Test
-    void  givenValidInstallmentPaidViewAndVersionTrack1_2_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
-        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
-        installmentPaidViewDTO.setCode("MARCA_BOLLO");
-        //when
-        InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.2F, installmentPaidViewDTO);
-        //then
-        assertNotNull(result);
-        assert1(installmentPaidViewDTO, result);
-        assert1_1(installmentPaidViewDTO, result);
-        assert1_2(installmentPaidViewDTO, result);
-
-        TestUtils.checkNotNullFields(result,
-                "objectVersion",
-                "requestingStationIdentifier",
-                "attestingUnitOperCode",
-                "attestingUnitOperName",
-                "attestingAddress",
-                "attestingStreetNumber",
-                "attestingPostalCode",
-                "attestingCity",
-                "attestingProvince",
-                "attestingCountry",
-                "beneficiaryUnitOperCode",
-                "beneficiaryUnitOperName",
-                "beneficiaryAddress",
-                "beneficiaryStreetNumber",
-                "beneficiaryPostalCode",
-                "beneficiaryCity",
-                "beneficiaryProvince",
-                "beneficiaryCountry",
-                "payerFullName",
-                "payerAddress",
-                "payerStreetNumber",
-                "payerPostalCode",
-                "payerCity",
-                "payerProvince",
-                "payerCountry",
-                "payerEmail",
-                "debtorFullName",
-                "debtorAddress",
-                "debtorStreetNumber",
-                "debtorPostalCode",
-                "debtorCity",
-                "debtorProvince",
-                "debtorCountry",
-                "debtorEmail",
-                "paymentOutcomeCode",
-                "totalAmountPaid",
-                "uniquePaymentIdentifier",
-                "paymentContextCode",
-                "singleAmountPaid",
-                "singlePaymentOutcome",
-                "singlePaymentOutcomeDateTime",
-                "uniqueCollectionIdentifier",
-                "signatureType",
-                "rt",
-                "receiptAttachmentTest",
-                "orgFiscalCode",
-                "orgName",
-                "dueTaxonomicCode"
-        );
-    }
-
-    @Test
-    void  givenValidInstallmentPaidViewAndVersionTrack1_3_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
-        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
-        installmentPaidViewDTO.setCode("MARCA_BOLLO");
-        //when
-        InstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(1.3F, installmentPaidViewDTO);
-        //then
-        assertNotNull(result);
-        assert1(installmentPaidViewDTO, result);
-        assert1_1(installmentPaidViewDTO, result);
-        assert1_2(installmentPaidViewDTO, result);
-        assert1_3(installmentPaidViewDTO, result);
+        assertAllField(installmentPaidViewDTO, result);
         TestUtils.checkNotNullFields(result,
                 "objectVersion",
                 "requestingStationIdentifier",
@@ -332,18 +84,51 @@ class InstallmentExportFlowFileDTOMapperTest {
     }
 
     @Test
-    void givenValidInstallmentPaidViewAndWrongVersionTrack_whenMapToInstallmentPaidViewDTO_thenThrowException(){
+    void  givenValidInstallmentPaidWithNullFieldViewAndVersionTrack_whenMap_thenReturnInstallmentPaidViewDTO() {
         //given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
+        installmentPaidViewDTO.getDebtor().setEntityType(null);
+        installmentPaidViewDTO.getDebtor().setFiscalCode(null);
+        installmentPaidViewDTO.getPayer().setEntityType(null);
+        installmentPaidViewDTO.getPayer().setFiscalCode(null);
+        installmentPaidViewDTO.setFeeCents(null);
 
         //when
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> installmentExportFlowFileDTOMapper.map(1.4F, installmentPaidViewDTO));
+        PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
         //then
-        assertEquals("Unexpected versionTrack 1.4", ex.getMessage());
+        assertNotNull(result);
+        assertNull(result.getReceiptAttachmentType());
+        assertNull(result.getReceiptAttachmentTest());
+        assertNull(result.getDebtorEntityType());
+        assertEquals("ANONIMO", result.getDebtorUniqueIdentifierCode());
+        assertNull(result.getPayerEntityType());
+        assertEquals("ANONIMO", result.getPayerUniqueIdentifierCode());
+        assertNull(result.getPspAppliedFees());
     }
 
+    @Test
+    void  givenValidInstallmentPaidWithNullPayerViewAndVersionTrack_whenMap_thenReturnInstallmentPaidViewDTO() {
+        //given
+        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
+        installmentPaidViewDTO.setPayer(null);
 
-    private void assert1(InstallmentPaidViewDTO paidViewDTO, InstallmentExportFlowFileDTO exportFlowFileDTO) {
+        //when
+        PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
+        //then
+        assertNotNull(result);
+        assertNull(result.getPayerEntityType());
+        assertNull(result.getPayerUniqueIdentifierCode());
+        assertNull(result.getPayerFullName());
+        assertNull(result.getPayerAddress());
+        assertNull(result.getPayerStreetNumber());
+        assertNull(result.getPayerPostalCode());
+        assertNull(result.getPayerCity());
+        assertNull(result.getPayerProvince());
+        assertNull(result.getPayerCountry());
+        assertNull(result.getPayerEmail());
+    }
+
+    private void assertAllField(InstallmentPaidViewDTO paidViewDTO, PaidInstallmentExportFlowFileDTO exportFlowFileDTO) {
         assertEquals(paidViewDTO.getIuf(), exportFlowFileDTO.getIuf());
         assertEquals(1, exportFlowFileDTO.getFlowRowNumber());
         assertEquals(paidViewDTO.getIud(), exportFlowFileDTO.getIud());
@@ -370,7 +155,7 @@ class InstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getBeneficiaryUniqueIdentifierCode());
         assertEquals(paidViewDTO.getCompanyName(), exportFlowFileDTO.getBeneficiaryName());
 
-        assertEquals(EntityIdentifierType.fromValue(paidViewDTO.getPayer().getEntityType().getValue()) , exportFlowFileDTO.getPayerEntityType());
+        assertEquals(EntityIdentifierType.valueOf(paidViewDTO.getPayer().getEntityType().getValue()) , exportFlowFileDTO.getPayerEntityType());
         assertEquals(paidViewDTO.getPayer().getFiscalCode() , exportFlowFileDTO.getPayerUniqueIdentifierCode());
         assertEquals(paidViewDTO.getPayer().getFullName(), exportFlowFileDTO.getPayerFullName());
         assertEquals(paidViewDTO.getPayer().getAddress(), exportFlowFileDTO.getPayerAddress());
@@ -381,7 +166,7 @@ class InstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getPayer().getNation(), exportFlowFileDTO.getPayerCountry());
         assertEquals(paidViewDTO.getPayer().getEmail(), exportFlowFileDTO.getPayerEmail());
 
-        assertEquals(EntityIdentifierType.fromValue(paidViewDTO.getDebtor().getEntityType().getValue()) , exportFlowFileDTO.getDebtorEntityType());
+        assertEquals(EntityIdentifierType.valueOf(paidViewDTO.getDebtor().getEntityType().getValue()) , exportFlowFileDTO.getDebtorEntityType());
         assertEquals(paidViewDTO.getDebtor().getFiscalCode() , exportFlowFileDTO.getDebtorUniqueIdentifierCode());
         assertEquals(paidViewDTO.getDebtor().getFullName(), exportFlowFileDTO.getDebtorFullName());
         assertEquals(paidViewDTO.getDebtor().getAddress(), exportFlowFileDTO.getDebtorAddress());
@@ -399,9 +184,6 @@ class InstallmentExportFlowFileDTOMapperTest {
         assertEquals("0", exportFlowFileDTO.getSinglePaymentOutcome());
         assertEquals(paidViewDTO.getPaymentDateTime(), exportFlowFileDTO.getSinglePaymentOutcomeDateTime());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getUniqueCollectionIdentifier());
-    }
-
-    private void assert1_1(InstallmentPaidViewDTO paidViewDTO, InstallmentExportFlowFileDTO exportFlowFileDTO){
         assertEquals(paidViewDTO.getRemittanceInformation(), exportFlowFileDTO.getPaymentReason());
         assertEquals("9/"+ paidViewDTO.getCategory(), exportFlowFileDTO.getCollectionSpecificData());
         assertEquals(paidViewDTO.getCode(), exportFlowFileDTO.getDueType());
@@ -411,13 +193,7 @@ class InstallmentExportFlowFileDTOMapperTest {
         assertEquals(Utilities.longCentsToBigDecimalEuro(paidViewDTO.getFeeCents()), exportFlowFileDTO.getPspAppliedFees());
         assertEquals("BD", exportFlowFileDTO.getReceiptAttachmentType());
         assertNull(exportFlowFileDTO.getReceiptAttachmentTest());
-    }
-
-    private void assert1_2(InstallmentPaidViewDTO paidViewDTO, InstallmentExportFlowFileDTO exportFlowFileDTO){
         assertEquals(paidViewDTO.getBalance(), exportFlowFileDTO.getBalance());
-    }
-
-    private void assert1_3(InstallmentPaidViewDTO paidViewDTO, InstallmentExportFlowFileDTO exportFlowFileDTO){
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getOrgFiscalCode());
         assertEquals(paidViewDTO.getCompanyName(), exportFlowFileDTO.getOrgName());
         assertEquals(paidViewDTO.getCategory(), exportFlowFileDTO.getDueTaxonomicCode());

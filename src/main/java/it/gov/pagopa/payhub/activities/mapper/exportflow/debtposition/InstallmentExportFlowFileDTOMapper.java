@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.InstallmentExportFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
 import it.gov.pagopa.payhub.activities.util.Utilities;
@@ -13,28 +13,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class InstallmentExportFlowFileDTOMapper {
 
-    public InstallmentExportFlowFileDTO map(Float versionTrack, InstallmentPaidViewDTO installmentPaidViewDTO){
-        switch (versionTrack.toString()){
-            case "1.0" -> {
-                return mapToInstallmentExportFlowFileDTO1(installmentPaidViewDTO);
-            }
-            case "1.1" -> {
-                return mapToInstallmentExportFlowFileDTO1_1(installmentPaidViewDTO);
-            }
-            case "1.2" -> {
-                return mapToInstallmentExportFlowFileDTO1_2(installmentPaidViewDTO);
-            }
-            case "1.3" -> {
-                return mapToInstallmentExportFlowFileDTO1_3(installmentPaidViewDTO);
-            }
-            default -> throw new IllegalArgumentException("Unexpected versionTrack " + versionTrack);
-        }
-    }
-    
-    private InstallmentExportFlowFileDTO mapToInstallmentExportFlowFileDTO1(InstallmentPaidViewDTO installmentPaidViewDTO){
-        Person debtor = installmentPaidViewDTO.getDebtor();
+    private static final String ANONYMOUS = "ANONIMO";
+    private static final String MARCA_BOLLO = "MARCA_BOLLO";
+    private static final String RECEIPT_ATTACHMENT_TYPE = "BD";
 
-        InstallmentExportFlowFileDTO installmentExportFlowFileDTO = InstallmentExportFlowFileDTO.builder()
+    public PaidInstallmentExportFlowFileDTO map(InstallmentPaidViewDTO installmentPaidViewDTO) {
+
+        Person debtor = installmentPaidViewDTO.getDebtor();
+        Person payer = installmentPaidViewDTO.getPayer();
+
+        PaidInstallmentExportFlowFileDTO.PaidInstallmentExportFlowFileDTOBuilder builder = PaidInstallmentExportFlowFileDTO.builder()
                 .iuf(installmentPaidViewDTO.getIuf())
                 .flowRowNumber(1)
                 .iud(installmentPaidViewDTO.getIud())
@@ -50,8 +38,8 @@ public class InstallmentExportFlowFileDTOMapper {
                 .beneficiaryEntityType(EntityIdentifierType.G)
                 .beneficiaryUniqueIdentifierCode(installmentPaidViewDTO.getOrgFiscalCode())
                 .beneficiaryName(installmentPaidViewDTO.getCompanyName())
-                .debtorEntityType(debtor.getEntityType() != null ? EntityIdentifierType.fromValue(debtor.getEntityType().getValue()) : null)
-                .debtorUniqueIdentifierCode(debtor.getFiscalCode() != null ? debtor.getFiscalCode() : "ANONIMO")
+                .debtorEntityType(debtor.getEntityType() != null ? EntityIdentifierType.valueOf(debtor.getEntityType().getValue()) : null)
+                .debtorUniqueIdentifierCode(debtor.getFiscalCode() != null ? debtor.getFiscalCode() : ANONYMOUS)
                 .debtorFullName(debtor.getFullName())
                 .debtorAddress(debtor.getAddress())
                 .debtorStreetNumber(debtor.getCivic())
@@ -68,59 +56,35 @@ public class InstallmentExportFlowFileDTOMapper {
                 .singlePaymentOutcome("0")
                 .singlePaymentOutcomeDateTime(installmentPaidViewDTO.getPaymentDateTime())
                 .uniqueCollectionIdentifier(installmentPaidViewDTO.getPaymentReceiptId())
-                .build();
+                .paymentReason(installmentPaidViewDTO.getRemittanceInformation())
+                .collectionSpecificData("9/".concat(installmentPaidViewDTO.getCategory()))
+                .dueType(installmentPaidViewDTO.getCode())
+                .rt(null) // TODO: field rt depends on task https://pagopa.atlassian.net/browse/P4ADEV-2306
+                .singlePaymentDataIndex(installmentPaidViewDTO.getTransferIndex())
+                .pspAppliedFees(installmentPaidViewDTO.getFeeCents() != null ? Utilities.longCentsToBigDecimalEuro(installmentPaidViewDTO.getFeeCents()) : null)
+                .balance(installmentPaidViewDTO.getBalance())
+                .orgFiscalCode(installmentPaidViewDTO.getOrgFiscalCode())
+                .orgName(installmentPaidViewDTO.getCompanyName())
+                .dueTaxonomicCode(installmentPaidViewDTO.getCategory());
 
-            if (installmentPaidViewDTO.getPayer() != null){
-                Person payer = installmentPaidViewDTO.getPayer();
-                installmentExportFlowFileDTO.setPayerEntityType(payer.getEntityType() != null ? EntityIdentifierType.fromValue(payer.getEntityType().getValue()): null);
-                installmentExportFlowFileDTO.setPayerUniqueIdentifierCode(payer.getFiscalCode() != null ? payer.getFiscalCode() : "ANONIMO");
-                installmentExportFlowFileDTO.setPayerFullName(payer.getFullName());
-                installmentExportFlowFileDTO.setPayerAddress(payer.getAddress());
-                installmentExportFlowFileDTO.setPayerStreetNumber(payer.getCivic());
-                installmentExportFlowFileDTO.setPayerPostalCode(payer.getPostalCode());
-                installmentExportFlowFileDTO.setPayerCity(payer.getLocation());
-                installmentExportFlowFileDTO.setPayerProvince(payer.getProvince());
-                installmentExportFlowFileDTO.setPayerCountry(payer.getNation());
-                installmentExportFlowFileDTO.setPayerEmail(payer.getEmail());
-            }
-
-            return installmentExportFlowFileDTO;
-    }
-
-    private InstallmentExportFlowFileDTO mapToInstallmentExportFlowFileDTO1_1(InstallmentPaidViewDTO installmentPaidViewDTO){
-        InstallmentExportFlowFileDTO installmentExportFlowFileDTO = mapToInstallmentExportFlowFileDTO1(installmentPaidViewDTO);
-
-        installmentExportFlowFileDTO.setPaymentReason(installmentPaidViewDTO.getRemittanceInformation());
-        installmentExportFlowFileDTO.setCollectionSpecificData("9/".concat(installmentPaidViewDTO.getCategory()));
-        installmentExportFlowFileDTO.setDueType(installmentPaidViewDTO.getCode());
-        installmentExportFlowFileDTO.setRt(null); //TODO field rt depends on task https://pagopa.atlassian.net/browse/P4ADEV-2306
-        installmentExportFlowFileDTO.setSinglePaymentDataIndex(installmentPaidViewDTO.getTransferIndex());
-        installmentExportFlowFileDTO.setPspAppliedFees(installmentPaidViewDTO.getFeeCents() != null ? Utilities.longCentsToBigDecimalEuro(installmentPaidViewDTO.getFeeCents()) : null);
-
-        if (installmentPaidViewDTO.getCode().equals("MARCA_BOLLO")){
-            installmentExportFlowFileDTO.setReceiptAttachmentType("BD");
-            installmentExportFlowFileDTO.setReceiptAttachmentTest(null); //TODO field blbRtDatiPagDatiSingPagAllegatoRicevutaTest depends on task https://pagopa.atlassian.net/browse/P4ADEV-2306
+        if (MARCA_BOLLO.equals(installmentPaidViewDTO.getCode())) {
+            builder.receiptAttachmentType(RECEIPT_ATTACHMENT_TYPE)
+            .receiptAttachmentTest(null); // TODO: field blbRtDatiPagDatiSingPagAllegatoRicevutaTest depends on task https://pagopa.atlassian.net/browse/P4ADEV-2306
         }
 
-        return installmentExportFlowFileDTO;
-    }
+        if (payer != null) {
+            builder.payerEntityType(payer.getEntityType() != null ? EntityIdentifierType.valueOf(payer.getEntityType().getValue()) : null)
+                    .payerUniqueIdentifierCode(payer.getFiscalCode() != null ? payer.getFiscalCode() : ANONYMOUS)
+                    .payerFullName(payer.getFullName())
+                    .payerAddress(payer.getAddress())
+                    .payerStreetNumber(payer.getCivic())
+                    .payerPostalCode(payer.getPostalCode())
+                    .payerCity(payer.getLocation())
+                    .payerProvince(payer.getProvince())
+                    .payerCountry(payer.getNation())
+                    .payerEmail(payer.getEmail());
+        }
 
-
-    private InstallmentExportFlowFileDTO mapToInstallmentExportFlowFileDTO1_2(InstallmentPaidViewDTO installmentPaidViewDTO){
-        InstallmentExportFlowFileDTO installmentExportFlowFileDTO = mapToInstallmentExportFlowFileDTO1_1(installmentPaidViewDTO);
-
-        installmentExportFlowFileDTO.setBalance(installmentPaidViewDTO.getBalance());
-
-        return installmentExportFlowFileDTO;
-    }
-
-    private InstallmentExportFlowFileDTO mapToInstallmentExportFlowFileDTO1_3(InstallmentPaidViewDTO installmentPaidViewDTO){
-        InstallmentExportFlowFileDTO installmentExportFlowFileDTO = mapToInstallmentExportFlowFileDTO1_2(installmentPaidViewDTO);
-
-        installmentExportFlowFileDTO.setOrgFiscalCode(installmentPaidViewDTO.getOrgFiscalCode());
-        installmentExportFlowFileDTO.setOrgName(installmentPaidViewDTO.getCompanyName());
-        installmentExportFlowFileDTO.setDueTaxonomicCode(installmentPaidViewDTO.getCategory());
-
-        return installmentExportFlowFileDTO;
+        return builder.build();
     }
 }
