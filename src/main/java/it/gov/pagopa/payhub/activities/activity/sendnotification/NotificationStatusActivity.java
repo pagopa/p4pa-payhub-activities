@@ -16,6 +16,6 @@ public interface NotificationStatusActivity {
      * @param sendNotificationId the ID of send notification
      */
     @ActivityMethod
-    NewNotificationRequestStatusResponseV24DTO notificationStatus(String sendNotificationId);
+    NewNotificationRequestStatusResponseV24DTO getSendNotificationStatus(String sendNotificationId);
 
 }

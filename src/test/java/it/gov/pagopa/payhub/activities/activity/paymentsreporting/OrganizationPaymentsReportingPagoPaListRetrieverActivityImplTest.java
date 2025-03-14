@@ -37,7 +37,7 @@ class OrganizationPaymentsReportingPagoPaListRetrieverActivityImplTest {
 	}
 
 	@Test
-	void whenRetrieveThenReturnList() {
+	void whenRetrieveNotImportedPagoPaPaymentsReportingIdsThenReturnList() {
 		// Given
 		Long organizationId = 1L;
 		String idFlow1 = "flow-123";
@@ -64,20 +64,20 @@ class OrganizationPaymentsReportingPagoPaListRetrieverActivityImplTest {
 			.findByOrganizationIdFlowTypeCreateDate(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, theDayBeforeYesterday);
 
 		// When
-		List<PaymentsReportingIdDTO> result = activity.retrieve(organizationId);
+		List<PaymentsReportingIdDTO> result = activity.retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);
 
 		// Then
 		assertEquals(2, result.size());
 	}
 
 	@Test
-	void whenRetrieveThenReturnEmptyList() {
+	void whenRetrieveNotImportedPagoPaPaymentsReportingIdsThenReturnEmptyList() {
 		// Given
 		Long organizationId = 1L;
 		doReturn(List.of()).when(paymentsReportingPagoPaServiceMock).getPaymentsReportingList(organizationId);
 
 		// When
-		List<PaymentsReportingIdDTO> result = activity.retrieve(organizationId);
+		List<PaymentsReportingIdDTO> result = activity.retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);
 
 		// Then
 		assertTrue(result.isEmpty());

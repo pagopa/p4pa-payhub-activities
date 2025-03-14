@@ -28,7 +28,7 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 	}
 
 	@Override
-	public List<Long> fetch(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
+	public List<Long> fetchPagoPaPaymentsReportingFiles(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		log.info("fetch payments reporting from PagoPA for the organization ID: {}", organizationId);
 		if (paymentsReportingIds.isEmpty()) {
 			return Collections.emptyList();

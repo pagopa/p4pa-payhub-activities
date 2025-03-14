@@ -18,5 +18,5 @@ public interface OrganizationBrokeredRetrieverActivity {
 	 * @return a list of the organizations that are brokered by the broker
 	 */
 	@ActivityMethod
-	List<Organization> retrieve(Long brokerId);
+	List<Organization> retrieveBrokeredOrganizations(Long brokerId);
 }
