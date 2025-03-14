@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.export.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvIgnore;
 import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
 import lombok.AllArgsConstructor;
@@ -21,153 +22,166 @@ public class PaidInstallmentExportFlowFileDTO {
     private static final String EXPORT_PAID_VERSION_V1_2= "v1.2";
     private static final String EXPORT_PAID_VERSION_V1_3= "v1.3";
 
-    @CsvBindByName(column = "IUF", profiles = EXPORT_PAID_VERSION_V1 )
+    @CsvBindByName(column = "IUF")
     private String iuf;
-    @CsvBindByName(column = "numRigaFlusso", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "numRigaFlusso")
     private Integer flowRowNumber;
-    @CsvBindByName(column = "codIud", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "codIud", required = true)
     private String iud;
-    @CsvBindByName(column = "codIuv", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "codIuv", required = true)
     private String iuv;
-    @CsvBindByName(column = "versioneOggetto", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "versioneOggetto")
     private Integer objectVersion;
-    @CsvBindByName(column = "identificativoDominio", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "identificativoDominio", required = true)
     private String domainIdentifier;
-    @CsvBindByName(column = "identificativoStazioneRichiedente", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "identificativoStazioneRichiedente")
     private String requestingStationIdentifier;
-    @CsvBindByName(column = "identificativoMessaggioRicevuta", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "identificativoMessaggioRicevuta", required = true)
     private String receiptMessageIdentifier;
-    @CsvBindByName(column = "dataOraMessaggioRicevuta", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "dataOraMessaggioRicevuta")
     private OffsetDateTime receiptMessageDateTime;
-    @CsvBindByName(column = "riferimentoMessaggioRichiesta", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "riferimentoMessaggioRichiesta", required = true)
     private String requestMessageReference;
-    @CsvBindByName(column = "riferimentoDataRichiesta", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "riferimentoDataRichiesta")
     private OffsetDateTime requestDateTimeReference;
-    @CsvBindByName(column = "tipoIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "tipoIdentificativoUnivoco")
     private UniqueIdentifierType uniqueIdentifierType;
-    @CsvBindByName(column = "codiceIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "codiceIdentificativoUnivoco")
     private String uniqueIdentifierCode;
-    @CsvBindByName(column = "denominazioneAttestante", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "denominazioneAttestante", required = true)
     private String attestingName;
-    @CsvBindByName(column = "codiceUnitOperAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "codiceUnitOperAttestante")
     private String attestingUnitOperCode;
-    @CsvBindByName(column = "denomUnitOperAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "denomUnitOperAttestante")
     private String attestingUnitOperName;
-    @CsvBindByName(column = "indirizzoAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "indirizzoAttestante")
     private String attestingAddress;
-    @CsvBindByName(column = "civicoAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "civicoAttestante")
     private String attestingStreetNumber;
-    @CsvBindByName(column = "capAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "capAttestante")
     private String attestingPostalCode;
-    @CsvBindByName(column = "localitaAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "localitaAttestante")
     private String attestingCity;
-    @CsvBindByName(column = "provinciaAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "provinciaAttestante")
     private String attestingProvince;
-    @CsvBindByName(column = "nazioneAttestante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "nazioneAttestante")
     private String attestingCountry;
-    @CsvBindByName(column = "enteBenefTipoIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "enteBenefTipoIdentificativoUnivoco")
     private EntityIdentifierType beneficiaryEntityType;
-    @CsvBindByName(column = "enteBenefCodiceIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "enteBenefCodiceIdentificativoUnivoco")
     private String beneficiaryUniqueIdentifierCode;
-    @CsvBindByName(column = "denominazioneBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "denominazioneBeneficiario")
     private String beneficiaryName;
-    @CsvBindByName(column = "codiceUnitOperBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "codiceUnitOperBeneficiario")
     private String beneficiaryUnitOperCode;
-    @CsvBindByName(column = "denomUnitOperBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "denomUnitOperBeneficiario")
     private String beneficiaryUnitOperName;
-    @CsvBindByName(column = "indirizzoBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "indirizzoBeneficiario")
     private String beneficiaryAddress;
-    @CsvBindByName(column = "civicoBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "civicoBeneficiario")
     private String beneficiaryStreetNumber;
-    @CsvBindByName(column = "capBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "capBeneficiario")
     private String beneficiaryPostalCode;
-    @CsvBindByName(column = "localitaBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "localitaBeneficiario")
     private String beneficiaryCity;
-    @CsvBindByName(column = "provinciaBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "provinciaBeneficiario")
     private String beneficiaryProvince;
-    @CsvBindByName(column = "nazioneBeneficiario", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "nazioneBeneficiario")
     private String beneficiaryCountry;
-    @CsvBindByName(column = "soggVersTipoIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "soggVersTipoIdentificativoUnivoco")
     private EntityIdentifierType payerEntityType;
-    @CsvBindByName(column = "soggVersCodiceIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "soggVersCodiceIdentificativoUnivoco")
     private String payerUniqueIdentifierCode;
-    @CsvBindByName(column = "anagraficaVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "anagraficaVersante")
     private String payerFullName;
-    @CsvBindByName(column = "indirizzoVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "indirizzoVersante")
     private String payerAddress;
-    @CsvBindByName(column = "civicoVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "civicoVersante")
     private String payerStreetNumber;
-    @CsvBindByName(column = "capVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "capVersante")
     private String payerPostalCode;
-    @CsvBindByName(column = "localitaVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "localitaVersante")
     private String payerCity;
-    @CsvBindByName(column = "provinciaVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "provinciaVersante")
     private String payerProvince;
-    @CsvBindByName(column = "nazioneVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "nazioneVersante")
     private String payerCountry;
-    @CsvBindByName(column = "emailVersante", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "emailVersante")
     private String payerEmail;
-    @CsvBindByName(column = "soggPagTipoIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "soggPagTipoIdentificativoUnivoco", required = true)
     private EntityIdentifierType debtorEntityType;
-    @CsvBindByName(column = "soggPagCodiceIdentificativoUnivoco", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "soggPagCodiceIdentificativoUnivoco", required = true)
     private String debtorUniqueIdentifierCode;
-    @CsvBindByName(column = "anagraficaPagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "anagraficaPagatore")
     private String debtorFullName;
-    @CsvBindByName(column = "indirizzoPagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "indirizzoPagatore")
     private String debtorAddress;
-    @CsvBindByName(column = "civicoPagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "civicoPagatore")
     private String debtorStreetNumber;
-    @CsvBindByName(column = "capPagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "capPagatore")
     private String debtorPostalCode;
-    @CsvBindByName(column = "localitaPagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "localitaPagatore")
     private String debtorCity;
-    @CsvBindByName(column = "provinciaPagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "provinciaPagatore")
     private String debtorProvince;
-    @CsvBindByName(column = "nazionePagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "nazionePagatore")
     private String debtorCountry;
-    @CsvBindByName(column = "emailPagatore", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "emailPagatore")
     private String debtorEmail;
-    @CsvBindByName(column = "codiceEsitoPagamento", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "codiceEsitoPagamento")
     private Integer paymentOutcomeCode;
-    @CsvBindByName(column = "importoTotalePagato", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "importoTotalePagato")
     private BigDecimal totalAmountPaid;
-    @CsvBindByName(column = "identificativoUnivocoVersamento", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "identificativoUnivocoVersamento", required = true)
     private String uniquePaymentIdentifier;
-    @CsvBindByName(column = "codiceContestoPagamento", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "codiceContestoPagamento")
     private String paymentContextCode;
-    @CsvBindByName(column = "singoloImportoPagato", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "singoloImportoPagato", required = true)
     private BigDecimal singleAmountPaid;
-    @CsvBindByName(column = "esitoSingoloPagamento", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "esitoSingoloPagamento")
     private String singlePaymentOutcome;
-    @CsvBindByName(column = "dataEsitoSingoloPagamento", profiles = EXPORT_PAID_VERSION_V1)
+    @CsvBindByName(column = "dataEsitoSingoloPagamento")
     private OffsetDateTime singlePaymentOutcomeDateTime;
-    @CsvBindByName(column = "identificativoUnivocoRiscos", profiles = EXPORT_PAID_VERSION_V1, required = true)
+    @CsvBindByName(column = "identificativoUnivocoRiscos", required = true)
     private String uniqueCollectionIdentifier;
-    @CsvBindByName(column = "causaleVersamento", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1}, required = true)
+    @CsvBindByName(column = "causaleVersamento", required = true)
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String paymentReason;
-    @CsvBindByName(column = "datiSpecificiRiscossione", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} , required = true)
+    @CsvBindByName(column = "datiSpecificiRiscossione", required = true)
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String collectionSpecificData;
-    @CsvBindByName(column = "tipoDovuto", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} , required = true)
+    @CsvBindByName(column = "tipoDovuto", required = true)
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String dueType;
-    @CsvBindByName(column = "tipoFirma", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} , required = true)
+    @CsvBindByName(column = "tipoFirma", required = true)
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private Integer signatureType;
-    @CsvBindByName(column = "rt", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} )
+    @CsvBindByName(column = "rt")
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String rt;
-    @CsvBindByName(column = "indiceDatiSingoloPagamento", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} , required = true)
+    @CsvBindByName(column = "indiceDatiSingoloPagamento" , required = true)
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private Integer singlePaymentDataIndex;
-    @CsvBindByName(column = "numRtDatiPagDatiSingPagCommissioniApplicatePsp", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} )
+    @CsvBindByName(column = "numRtDatiPagDatiSingPagCommissioniApplicatePsp")
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private BigDecimal pspAppliedFees;
-    @CsvBindByName(column = "codRtDatiPagDatiSingPagAllegatoRicevutaTipo", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} )
+    @CsvBindByName(column = "codRtDatiPagDatiSingPagAllegatoRicevutaTipo")
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String receiptAttachmentType;
-    @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1} )
+    @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest")
+    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String receiptAttachmentTest;
-    @CsvBindByName(column = "bilancio", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2} )
+    @CsvBindByName(column = "bilancio")
+    @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1})
     private String balance;
-    @CsvBindByName(column = "cod_fiscale_pa1", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3}, required = true)
+    @CsvBindByName(column = "cod_fiscale_pa1",  required = true)
+    @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2})
     private String orgFiscalCode;
-    @CsvBindByName(column = "de_nome_pa1", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3})
+    @CsvBindByName(column = "de_nome_pa1")
+    @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2})
     private String orgName;
-    @CsvBindByName(column = "cod_tassonomico_dovuto_pa1", profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3})
+    @CsvBindByName(column = "cod_tassonomico_dovuto_pa1" )
+    @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2})
     private String dueTaxonomicCode;
 
 }
