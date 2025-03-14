@@ -25,5 +25,5 @@ public interface SendDebtPositionIONotificationActivity {
      * @return a list of {@link MessageResponseDTO} containing the notification IDs
      */
     @ActivityMethod
-    List<MessageResponseDTO> sendMessage(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
+    List<MessageResponseDTO> sendIoNotification(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap);
 }

@@ -37,7 +37,7 @@ class SendDebtPositionIONotificationActivityTest {
     }
 
     @Test
-    void givenSendMessageThenSuccess(){
+    void givenSendIoNotificationThenSuccess(){
         // Given
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupd");
@@ -47,7 +47,7 @@ class SendDebtPositionIONotificationActivityTest {
                 .thenReturn(List.of(expectedResult));
 
         // When
-        List<MessageResponseDTO> result = activity.sendMessage(debtPosition, Map.of("IUD", iupdSyncStatusUpdateDTO));
+        List<MessageResponseDTO> result = activity.sendIoNotification(debtPosition, Map.of("IUD", iupdSyncStatusUpdateDTO));
 
         // Then
         assertEquals(List.of(expectedResult), result);

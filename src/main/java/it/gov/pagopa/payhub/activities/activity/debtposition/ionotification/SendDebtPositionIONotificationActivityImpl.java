@@ -23,7 +23,7 @@ public class SendDebtPositionIONotificationActivityImpl implements SendDebtPosit
     }
 
     @Override
-    public List<MessageResponseDTO> sendMessage(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+    public List<MessageResponseDTO> sendIoNotification(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
         log.info("Sending message to IONotification for debt position type org id {}", debtPosition.getDebtPositionTypeOrgId());
         return ioNotificationService.sendMessage(debtPosition, iupdSyncStatusUpdateDTOMap);
     }
