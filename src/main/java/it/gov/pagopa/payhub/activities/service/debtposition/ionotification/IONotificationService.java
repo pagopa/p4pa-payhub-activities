@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.Notificat
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -39,21 +38,17 @@ public class IONotificationService {
     public List<MessageResponseDTO> sendMessage(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
         List<MessageResponseDTO> response = new ArrayList<>();
 
-        // Filter installments based on the provided IUD map
-        List<PaymentOptionDTO> paymentOptionDTOList = filterInstallmentsByIUD(debtPositionDTO.getPaymentOptions(), iupdSyncStatusUpdateDTOMap);
+        DebtPositionDTO filteredDebtPosition = filterInstallmentsByIUD(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
-        if (!paymentOptionDTOList.isEmpty()) {
-            // Get only installments that require CREATE_DP notification
-            List<PaymentOptionDTO> createDpPaymentOptions = calculateOperationType(paymentOptionDTOList);
+        if (!filteredDebtPosition.getPaymentOptions().isEmpty()) {
+            DebtPositionDTO createDpDebtPosition = calculateOperationType(filteredDebtPosition);
 
-            if (!createDpPaymentOptions.isEmpty()) {
-                // Retrieve notification details based on the operation type
+            if (!createDpDebtPosition.getPaymentOptions().isEmpty()) {
                 IONotificationDTO ioNotificationDTO = debtPositionTypeOrgService
                         .getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), CREATE_DP);
 
                 if (ioNotificationDTO != null) {
-                    // Map and send IO Notifications with custom markdown
-                    response = processNotifications(debtPositionDTO.getOrganizationId(), debtPositionDTO.getDebtPositionTypeOrgId(), createDpPaymentOptions, ioNotificationDTO);
+                    response = processNotifications(createDpDebtPosition, ioNotificationDTO);
                 }
             }
         }
@@ -61,9 +56,12 @@ public class IONotificationService {
         return response;
     }
 
-    private List<MessageResponseDTO> processNotifications(Long orgId, Long debtPositionTypeOrgId, List<PaymentOptionDTO> createDpPaymentOptions, IONotificationDTO ioNotificationDTO) {
+    /**
+     * Maps and Sends notifications for the given debt position.
+     */
+    private List<MessageResponseDTO> processNotifications(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO) {
         List<NotificationRequestDTO> notifications = notificationRequestMapper.map(
-                createDpPaymentOptions, orgId, debtPositionTypeOrgId, ioNotificationDTO
+                debtPositionDTO, ioNotificationDTO, CREATE_DP
         );
 
         return notifications.stream()
@@ -71,37 +69,44 @@ public class IONotificationService {
                 .toList();
     }
 
-
     /**
-     * Determines the operation type based on the filtered payment options.
+     * Filters payment options to keep only installments with the CREATE_DP operation type.
      */
-    private List<PaymentOptionDTO> calculateOperationType(List<PaymentOptionDTO> filteredPaymentOptions) {
-        filteredPaymentOptions.forEach(po ->
+    private DebtPositionDTO calculateOperationType(DebtPositionDTO debtPositionDTO) {
+        debtPositionDTO.getPaymentOptions().forEach(po ->
                 po.setInstallments(po.getInstallments().stream()
                         .filter(i -> NotificationRequestDTO.OperationTypeEnum.CREATE_DP
                                 .equals(installmentOperationTypeResolver.calculateOperationType(i)))
                         .toList())
         );
 
-        return filteredPaymentOptions.stream()
-                .filter(po -> !po.getInstallments().isEmpty())
-                .toList();
+        debtPositionDTO.setPaymentOptions(
+                debtPositionDTO.getPaymentOptions().stream()
+                        .filter(po -> !po.getInstallments().isEmpty())
+                        .toList()
+        );
+
+        return debtPositionDTO;
     }
 
     /**
      * Filters the installments by keeping only those whose IUD exists in the provided map.
      * Removes PaymentOptionDTO entries that have no valid installments left.
      */
-    private List<PaymentOptionDTO> filterInstallmentsByIUD(List<PaymentOptionDTO> paymentOptions, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
-        paymentOptions.forEach(po ->
+    private DebtPositionDTO filterInstallmentsByIUD(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+        debtPositionDTO.getPaymentOptions().forEach(po ->
                 po.setInstallments(po.getInstallments().stream()
                         .filter(i -> iupdSyncStatusUpdateDTOMap.containsKey(i.getIud()))
                         .toList())
         );
 
-        return paymentOptions.stream()
-                .filter(po -> !po.getInstallments().isEmpty())
-                .toList();
+        debtPositionDTO.setPaymentOptions(
+                debtPositionDTO.getPaymentOptions().stream()
+                        .filter(po -> !po.getInstallments().isEmpty())
+                        .toList()
+        );
+
+        return debtPositionDTO;
     }
 }
 
