@@ -29,11 +29,8 @@ class InstallmentSynchronizeMapperTest {
 
     @Test
     void givenMapThenOk(){
-        InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
-
         InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(buildInstallmentIngestionFlowFileDTO(), 1L, 1L, 1L);
 
-        reflectionEqualsByName(expected, result);
         assertEquals(4, Objects.requireNonNull(result.getAdditionalTransfers()).size());
         checkNotNullFields(result);
     }

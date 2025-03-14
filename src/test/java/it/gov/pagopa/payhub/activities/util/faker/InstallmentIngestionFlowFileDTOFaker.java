@@ -77,12 +77,12 @@ public class InstallmentIngestionFlowFileDTOFaker {
     private static MultiValuedMap<String, String> buildTransferData(int index) {
         MultiValuedMap<String, String> transferData = new ArrayListValuedHashMap<>();
 
-        transferData.put("codiceFiscaleEnte", "codiceFiscaleEnte_" + index);
-        transferData.put("denominazioneEnte", "denominazioneEnte_" + index);
-        transferData.put("ibanAccreditoEnte", "ibanAccreditoEnte_" + index);
-        transferData.put("causaleVersamentoEnte", "causaleVersamentoEnte_" + index);
-        transferData.put("importoVersamentoEnte", BigDecimal.valueOf(1).toString());
-        transferData.put("codiceTassonomiaEnte", "codiceTassonomiaEnte_" + index);
+        transferData.put("codiceFiscaleEnte_" + index, "codiceFiscaleEnte");
+        transferData.put("denominazioneEnte_" + index, "denominazioneEnte");
+        transferData.put("ibanAccreditoEnte_" + index, "ibanAccreditoEnte");
+        transferData.put("causaleVersamentoEnte_" + index, "causaleVersamentoEnte");
+        transferData.put("importoVersamentoEnte_" + index, BigDecimal.valueOf(1).toString());
+        transferData.put("codiceTassonomiaEnte_" + index, "codiceTassonomiaEnte");
 
         return transferData;
     }
@@ -92,11 +92,11 @@ public class InstallmentIngestionFlowFileDTOFaker {
         public MultiValuedMap<String, String> getTransfer2() {
             MultiValuedMap<String, String> fakeTransfer2 = new ArrayListValuedHashMap<>();
 
-            fakeTransfer2.put("codiceFiscaleEnte", "codiceFiscaleEnte_2");
-            fakeTransfer2.put("denominazioneEnte", "denominazioneEnte_2");
-            fakeTransfer2.put("ibanAccreditoEnte", "ibanAccreditoEnte_2");
-            fakeTransfer2.put("importoVersamentoEnte", Long.toString(1L));
-            fakeTransfer2.put("codiceTassonomiaEnte", "codiceTassonomiaEnte_2");
+            fakeTransfer2.put("codiceFiscaleEnte_2", "codiceFiscaleEnte");
+            fakeTransfer2.put("denominazioneEnte_2", "denominazioneEnte");
+            fakeTransfer2.put("ibanAccreditoEnte_2", "ibanAccreditoEnte");
+            fakeTransfer2.put("importoVersamentoEnte_2", Long.toString(1L));
+            fakeTransfer2.put("codiceTassonomiaEnte_2", "codiceTassonomiaEnte");
 
             return fakeTransfer2;
         }

@@ -86,7 +86,7 @@ public class InstallmentProcessingService {
         return new InstallmentIngestionFlowFileResult(
                 totalRows,
                 processedRows,
-                errorsZipFileName != null ? "Some rows have failed" : null,
+                errorsZipFileName != null ? errorsZipFileName : "Some rows have failed",
                 errorsZipFileName
         );
     }
