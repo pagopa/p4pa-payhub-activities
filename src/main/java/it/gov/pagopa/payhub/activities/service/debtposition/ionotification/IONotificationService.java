@@ -26,30 +26,26 @@ public class IONotificationService {
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
     private final IONotificationFacadeService ioNotificationFacadeService;
     private final NotificationRequestMapper notificationRequestMapper;
-    private final InstallmentOperationTypeResolver installmentOperationTypeResolver;
+    private final DebtOperationOperationTypeResolver debtOperationOperationTypeResolver;
 
-    public IONotificationService(DebtPositionTypeOrgService debtPositionTypeOrgService, IONotificationFacadeService ioNotificationFacadeService, NotificationRequestMapper notificationRequestMapper, InstallmentOperationTypeResolver installmentOperationTypeResolver) {
+    public IONotificationService(DebtPositionTypeOrgService debtPositionTypeOrgService, IONotificationFacadeService ioNotificationFacadeService, NotificationRequestMapper notificationRequestMapper, DebtOperationOperationTypeResolver debtOperationOperationTypeResolver) {
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
         this.ioNotificationFacadeService = ioNotificationFacadeService;
         this.notificationRequestMapper = notificationRequestMapper;
-        this.installmentOperationTypeResolver = installmentOperationTypeResolver;
+        this.debtOperationOperationTypeResolver = debtOperationOperationTypeResolver;
     }
 
     public List<MessageResponseDTO> sendMessage(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
         List<MessageResponseDTO> response = new ArrayList<>();
 
-        DebtPositionDTO filteredDebtPosition = filterInstallmentsByIUD(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        NotificationRequestDTO.OperationTypeEnum operationType = debtOperationOperationTypeResolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
-        if (!filteredDebtPosition.getPaymentOptions().isEmpty()) {
-            DebtPositionDTO createDpDebtPosition = calculateOperationType(filteredDebtPosition);
+        if (operationType != null) {
+            IONotificationDTO ioNotificationDTO = debtPositionTypeOrgService
+                    .getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), operationType);
 
-            if (!createDpDebtPosition.getPaymentOptions().isEmpty()) {
-                IONotificationDTO ioNotificationDTO = debtPositionTypeOrgService
-                        .getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), CREATE_DP);
-
-                if (ioNotificationDTO != null) {
-                    response = processNotifications(createDpDebtPosition, ioNotificationDTO);
-                }
+            if (ioNotificationDTO != null && operationType.equals(CREATE_DP)) {
+                response = processNotifications(debtPositionDTO, ioNotificationDTO, operationType);
             }
         }
 
@@ -59,54 +55,16 @@ public class IONotificationService {
     /**
      * Maps and Sends notifications for the given debt position.
      */
-    private List<MessageResponseDTO> processNotifications(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO) {
+    private List<MessageResponseDTO> processNotifications(DebtPositionDTO debtPositionDTO,
+                                                          IONotificationDTO ioNotificationDTO,
+                                                          NotificationRequestDTO.OperationTypeEnum operationType) {
         List<NotificationRequestDTO> notifications = notificationRequestMapper.map(
-                debtPositionDTO, ioNotificationDTO, CREATE_DP
+                debtPositionDTO, ioNotificationDTO, operationType
         );
 
         return notifications.stream()
                 .map(ioNotificationFacadeService::sendMessage)
                 .toList();
-    }
-
-    /**
-     * Filters payment options to keep only installments with the CREATE_DP operation type.
-     */
-    private DebtPositionDTO calculateOperationType(DebtPositionDTO debtPositionDTO) {
-        debtPositionDTO.getPaymentOptions().forEach(po ->
-                po.setInstallments(po.getInstallments().stream()
-                        .filter(i -> NotificationRequestDTO.OperationTypeEnum.CREATE_DP
-                                .equals(installmentOperationTypeResolver.calculateOperationType(i)))
-                        .toList())
-        );
-
-        debtPositionDTO.setPaymentOptions(
-                debtPositionDTO.getPaymentOptions().stream()
-                        .filter(po -> !po.getInstallments().isEmpty())
-                        .toList()
-        );
-
-        return debtPositionDTO;
-    }
-
-    /**
-     * Filters the installments by keeping only those whose IUD exists in the provided map.
-     * Removes PaymentOptionDTO entries that have no valid installments left.
-     */
-    private DebtPositionDTO filterInstallmentsByIUD(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
-        debtPositionDTO.getPaymentOptions().forEach(po ->
-                po.setInstallments(po.getInstallments().stream()
-                        .filter(i -> iupdSyncStatusUpdateDTOMap.containsKey(i.getIud()))
-                        .toList())
-        );
-
-        debtPositionDTO.setPaymentOptions(
-                debtPositionDTO.getPaymentOptions().stream()
-                        .filter(po -> !po.getInstallments().isEmpty())
-                        .toList()
-        );
-
-        return debtPositionDTO;
     }
 }
 
