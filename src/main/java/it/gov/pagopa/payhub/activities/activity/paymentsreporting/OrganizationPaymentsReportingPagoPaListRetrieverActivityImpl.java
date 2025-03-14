@@ -30,7 +30,7 @@ public class OrganizationPaymentsReportingPagoPaListRetrieverActivityImpl implem
 	}
 
 	@Override
-	public List<PaymentsReportingIdDTO> retrieve(Long organizationId) {
+	public List<PaymentsReportingIdDTO> retrieveNotImportedPagoPaPaymentsReportingIds(Long organizationId) {
 		log.info("Retrive payments reporting from PagoPA for the organization ID: {}", organizationId);
 		List<PaymentsReportingIdDTO> paymentsReportingIds = paymentsReportingPagoPaService.getPaymentsReportingList(organizationId);
 		if (paymentsReportingIds.isEmpty()) {

@@ -16,5 +16,5 @@ public interface PaymentsReportingImplicitReceiptHandlerActivity {
 	 * @param paymentsReportingTransferDTO Object contains Transfer Semantic Key and payment outcome code
 	 */
 	@ActivityMethod
-	void handle(PaymentsReportingTransferDTO paymentsReportingTransferDTO);
+	void handleImplicitReceipt(PaymentsReportingTransferDTO paymentsReportingTransferDTO);
 }

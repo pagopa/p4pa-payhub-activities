@@ -38,7 +38,7 @@ public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements Paym
 	}
 
 	@Override
-	public void handle(PaymentsReportingTransferDTO paymentsReportingTransferDTO) {
+	public void handleImplicitReceipt(PaymentsReportingTransferDTO paymentsReportingTransferDTO) {
 		if (PAYMENT_OUTCOME_CODES.contains(paymentsReportingTransferDTO.getPaymentOutcomeCode())) {
 			log.info("Retrieve payment reporting with payment outcome code {} for organization id: {} and iuv: {} and iur {} and transfer index: {}", paymentsReportingTransferDTO.getPaymentOutcomeCode(),
 				paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());

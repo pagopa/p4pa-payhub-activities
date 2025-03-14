@@ -47,7 +47,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 	}
 
 	@Test
-	void whenHandleThenCompleteSuccessfully() {
+	void whenHandleImplicitReceiptThenCompleteSuccessfully() {
 		// Given
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
 		when(paymentsReportingTransferDTO.getPaymentOutcomeCode()).thenReturn("9");
@@ -62,7 +62,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		when(receiptServiceMock.createReceipt(dummyReceiptMocked)).thenReturn(dummyReceiptCreated);
 
 		// When
-		activity.handle(paymentsReportingTransferDTO);
+		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
 
 		// Then
 		verify(paymentsReportingServiceMock, times(1)).getBySemanticKey(paymentsReportingTransferDTO);
@@ -72,7 +72,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 	}
 
 	@Test
-	void givenInvalidOrgIdWhenHandleThenThrowsException() {
+	void givenInvalidOrgIdWhenHandleImplicitReceiptThenThrowsException() {
 		// Given
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
 		when(paymentsReportingTransferDTO.getPaymentOutcomeCode()).thenReturn("8");
@@ -83,17 +83,17 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 			.thenThrow(InvalidValueException.class);
 
 		// When Then
-		assertThrows(InvalidValueException.class, () -> activity.handle(paymentsReportingTransferDTO), "invalid");
+		assertThrows(InvalidValueException.class, () -> activity.handleImplicitReceipt(paymentsReportingTransferDTO), "invalid");
 	}
 
 	@Test
-	void givenPaymentOutcomeCodeNotInListWhenHandleThenDoesNotCreateReceipt() {
+	void givenPaymentOutcomeCodeNotInListWhenHandleImplicitReceiptThenDoesNotCreateReceipt() {
 		// Given
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
 		when(paymentsReportingTransferDTO.getPaymentOutcomeCode()).thenReturn("0");
 
 		// When
-		activity.handle(paymentsReportingTransferDTO);
+		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
 
 		// Then
 		verify(paymentsReportingServiceMock, never()).getBySemanticKey(paymentsReportingTransferDTO);
