@@ -338,7 +338,7 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
 	description = "openapi"
 
 	generatorName.set("java")
-	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/fix-api-send-message/openapi/p4pa-io-notification.openapi.yaml")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-io-notification/refs/heads/develop/openapi/p4pa-io-notification.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
 	invokerPackage.set("it.gov.pagopa.pu.ionotification.generated")
 	apiPackage.set("it.gov.pagopa.pu.ionotification.client.generated")
