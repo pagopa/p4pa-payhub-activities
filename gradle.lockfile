@@ -84,6 +84,7 @@ org.springframework.boot:spring-boot-starter-tomcat:3.4.3=compileClasspath
 org.springframework.boot:spring-boot-starter-web:3.4.3=compileClasspath
 org.springframework.boot:spring-boot-starter:3.4.3=compileClasspath
 org.springframework.boot:spring-boot:3.4.3=compileClasspath
+org.springframework.data:spring-data-commons:3.4.3=compileClasspath
 org.springframework.retry:spring-retry:2.0.11=compileClasspath
 org.springframework:spring-aop:6.2.3=compileClasspath
 org.springframework:spring-beans:6.2.3=compileClasspath

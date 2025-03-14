@@ -4,10 +4,12 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositio
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Lazy
@@ -33,6 +35,10 @@ public class DebtPositionClient {
                 .installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive);
 
         return response.getHeaders().getFirst("x-workflow-id");
+    }
+
+    public PagedDebtPositions getDebtPositionsByIngestionFlowFileId(String accessToken, Long ingestionFlowFileId, Integer page, Integer size, List<String> sort){
+        return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, page, size, sort);
     }
 
 }
