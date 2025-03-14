@@ -6,15 +6,21 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Set;
 
 public class DebtPositionUtilities {
     private DebtPositionUtilities(){}
+
+    private static final Set<InstallmentDTO.StatusEnum> expirableStatuses = Set.of(
+            InstallmentDTO.StatusEnum.UNPAID,
+            InstallmentDTO.StatusEnum.UNPAYABLE
+    );
 
     /** It will return the min dueDate of all active installments */
     public static LocalDate calcDebtPositionNextDueDate(DebtPositionDTO debtPositionDTO){
         return debtPositionDTO.getPaymentOptions().stream()
                 .flatMap(po ->po.getInstallments().stream())
-                .filter(i -> InstallmentDTO.StatusEnum.UNPAID.equals(i.getStatus()))
+                .filter(i -> expirableStatuses.contains(i.getStatus()))
                 .map(InstallmentDTO::getDueDate)
                 .filter(Objects::nonNull)
                 .min(Comparator.naturalOrder())
