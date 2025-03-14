@@ -19,7 +19,7 @@ public class BrokersRetrieverActivityImpl implements BrokersRetrieverActivity {
 	}
 
 	@Override
-	public List<Broker> fetchAll() {
+	public List<Broker> fetchAllBrokers() {
 		log.info("Fetching all brokers");
 		return brokerService.fetchAll();
 	}

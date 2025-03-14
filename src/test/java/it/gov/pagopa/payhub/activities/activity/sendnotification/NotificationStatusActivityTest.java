@@ -34,7 +34,7 @@ class NotificationStatusActivityTest {
         // When
         Mockito.when(sendServiceMock.notificationStatus(notificationId)).thenReturn(expectedResponse);
 
-        NewNotificationRequestStatusResponseV24DTO result = notificationStatusActivity.notificationStatus("sendNotificationId");
+        NewNotificationRequestStatusResponseV24DTO result = notificationStatusActivity.getSendNotificationStatus("sendNotificationId");
 
         // Then
         assertEquals(expectedResponse, result);

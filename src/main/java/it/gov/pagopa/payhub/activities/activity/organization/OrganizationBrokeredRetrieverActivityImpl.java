@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Lazy
 @Slf4j
@@ -20,7 +19,7 @@ public class OrganizationBrokeredRetrieverActivityImpl implements OrganizationBr
 	}
 
 	@Override
-	public List<Organization> retrieve(Long brokerId) {
+	public List<Organization> retrieveBrokeredOrganizations(Long brokerId) {
 		log.info("Retrieving organizations brokered by broker with id: {}", brokerId);
 		return organizationService.getOrganizationsByBrokerId(brokerId);
 	}
