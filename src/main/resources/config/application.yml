@@ -101,5 +101,8 @@ rest:
     wait-time-millis: "\${WORKFLOW_HUB_WAIT_TIME_MILLIS:500}"
     print-body-when-error: "\${WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR:true}"
 
-debt-position-pagination:
-  page-size: "\${DEBT_POSITIONS_PAGE_SIZE:1000}"
+query-limits:
+  default:
+    size: "\${DEFAULT_PAGE_SIZE:1000}"
+  debt-positions:
+    size: "\${DEBT_POSITIONS_PAGE_SIZE:\${query-limits.default.size}}"
