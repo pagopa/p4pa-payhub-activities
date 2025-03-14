@@ -40,6 +40,9 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     pageSize,
                     DEFAULT_ORDERING);
 
+            log.info("Synchronizing page {} of {} retrieved searching debt positions related to ingestionFlowFileId {} (totalElements {})",
+                    currentPage, pagedDebtPositions.getTotalPages(), pagedDebtPositions.getTotalElements(), ingestionFlowFileId);
+
             pagedDebtPositions.getContent().forEach(debtPosition -> {
                 try {
                     // TODO invoke workflow sync and add any error (P4ADEV-2344)
@@ -54,6 +57,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             hasMorePages = currentPage < pagedDebtPositions.getTotalPages();
         }
 
+        log.info("Synchronization of all debt positions related to ingestion flow file id {} completed", ingestionFlowFileId);
         return errors.toString();
     }
 }
