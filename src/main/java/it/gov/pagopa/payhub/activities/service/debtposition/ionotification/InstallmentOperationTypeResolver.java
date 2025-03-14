@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class InstallmentOperationTypeResolver {
 
-    public NotificationRequestDTO.OperationTypeEnum calculateOperationType(InstallmentDTO installment) {
+    public NotificationRequestDTO.OperationTypeEnum calculateInstallmentOperationType(InstallmentDTO installment) {
         InstallmentSyncStatus syncStatus = installment.getSyncStatus();
         if (syncStatus == null) return null;
 
