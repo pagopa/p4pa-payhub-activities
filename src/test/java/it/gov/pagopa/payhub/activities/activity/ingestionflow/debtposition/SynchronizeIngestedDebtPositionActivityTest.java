@@ -1,8 +1,10 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
+import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
     @Mock
     private DebtPositionService debtPositionServiceMock;
+    @Mock
+    private WorkflowDebtPositionService workflowDebtPositionServiceMock;
+
     private static final Integer PAGE_SIZE = 2;
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
 
@@ -28,7 +33,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     @BeforeEach
     void setUp() {
         activity = new SynchronizeIngestedDebtPositionActivityImpl(
-                debtPositionServiceMock, PAGE_SIZE
+                debtPositionServiceMock, workflowDebtPositionServiceMock,PAGE_SIZE
         );
     }
 
@@ -60,6 +65,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(pagedDebtPositionsFirstPage);
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(Mockito.any(DebtPositionDTO.class), Mockito.anyBoolean(), Mockito.any()))
+                .thenReturn(WorkflowCreatedDTO.builder().build());
 
         String result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
