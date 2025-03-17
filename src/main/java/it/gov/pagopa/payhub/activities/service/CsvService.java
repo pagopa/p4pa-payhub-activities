@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.opencsv.enums.CSVReaderNullFieldIndicator.EMPTY_SEPARATORS;
+
 @Lazy
 @Service
 @Slf4j
@@ -106,6 +108,7 @@ public class CsvService {
                     .withSeparator(separator)
                     .withQuoteChar(quoteChar)
                     .withIgnoreLeadingWhiteSpace(true)
+                    .withFieldAsNull(EMPTY_SEPARATORS)
                     .withThrowExceptions(true)
                     .build();
 
