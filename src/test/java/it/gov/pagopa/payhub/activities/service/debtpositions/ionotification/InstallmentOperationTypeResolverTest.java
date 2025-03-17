@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.debtpositions.ionotification;
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.InstallmentOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
-import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
+import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class InstallmentOperationTypeResolverTest {
         installment.setSyncStatus(null);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum result = resolver.calculateInstallmentOperationType(installment);
+        PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
 
         // Then
         Assertions.assertNull(result);
@@ -36,10 +36,10 @@ class InstallmentOperationTypeResolverTest {
         InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.DRAFT, InstallmentSyncStatus.SyncStatusToEnum.UNPAID);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum result = resolver.calculateInstallmentOperationType(installment);
+        PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
 
         // Then
-        Assertions.assertEquals(NotificationRequestDTO.OperationTypeEnum.CREATE_DP, result);
+        Assertions.assertEquals(PaymentEventType.DP_CREATED, result);
     }
 
     @Test
@@ -48,10 +48,10 @@ class InstallmentOperationTypeResolverTest {
         InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.UNPAID);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum result = resolver.calculateInstallmentOperationType(installment);
+        PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
 
         // Then
-        Assertions.assertEquals(NotificationRequestDTO.OperationTypeEnum.UPDATE_DP, result);
+        Assertions.assertEquals(PaymentEventType.DP_UPDATED, result);
     }
 
     @Test
@@ -60,10 +60,10 @@ class InstallmentOperationTypeResolverTest {
         InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.INVALID);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum result = resolver.calculateInstallmentOperationType(installment);
+        PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
 
         // Then
-        Assertions.assertEquals(NotificationRequestDTO.OperationTypeEnum.UPDATE_DP, result);
+        Assertions.assertEquals(PaymentEventType.DP_UPDATED, result);
     }
 
     @Test
@@ -72,10 +72,10 @@ class InstallmentOperationTypeResolverTest {
         InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.EXPIRED);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum result = resolver.calculateInstallmentOperationType(installment);
+        PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
 
         // Then
-        Assertions.assertEquals(NotificationRequestDTO.OperationTypeEnum.UPDATE_DP, result);
+        Assertions.assertEquals(PaymentEventType.DP_UPDATED, result);
     }
 
     @Test
@@ -84,10 +84,10 @@ class InstallmentOperationTypeResolverTest {
         InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.CANCELLED);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum result = resolver.calculateInstallmentOperationType(installment);
+        PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
 
         // Then
-        Assertions.assertEquals(NotificationRequestDTO.OperationTypeEnum.DELETE_DP, result);
+        Assertions.assertEquals(PaymentEventType.DP_CANCELLED, result);
     }
 
     @Test
@@ -96,7 +96,7 @@ class InstallmentOperationTypeResolverTest {
         InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.TO_SYNC, InstallmentSyncStatus.SyncStatusToEnum.PAID);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum result = resolver.calculateInstallmentOperationType(installment);
+        PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
 
         // Then
         Assertions.assertNull(result);

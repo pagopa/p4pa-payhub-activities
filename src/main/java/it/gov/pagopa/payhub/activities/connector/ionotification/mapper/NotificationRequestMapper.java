@@ -25,7 +25,7 @@ public class NotificationRequestMapper {
         this.ioNotificationPlaceholderResolverService = ioNotificationPlaceholderResolverService;
     }
 
-    public List<NotificationRequestDTO> map(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
+    public List<NotificationRequestDTO> map(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO) {
         // If only one PaymentOption exists, map with nav field
         List<PaymentOptionDTO> paymentOptions = debtPositionDTO.getPaymentOptions();
         if (paymentOptions.size() == 1) {
@@ -43,7 +43,7 @@ public class NotificationRequestMapper {
             return installments.stream()
                     .map(installment -> {
                         NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
-                                debtPositionDTO, ioNotificationDTO, installment, operationType);
+                                debtPositionDTO, ioNotificationDTO, installment);
                         notificationRequestDTO.setNav(installment.getNav());
                         return notificationRequestDTO;
                     })
@@ -59,12 +59,11 @@ public class NotificationRequestMapper {
                         (i1, i2) -> i1
                 ))
                 .values().stream()
-                .map(installmentDTO -> mapNotificationRequestDTO(debtPositionDTO, ioNotificationDTO, installmentDTO, operationType))
+                .map(installmentDTO -> mapNotificationRequestDTO(debtPositionDTO, ioNotificationDTO, installmentDTO))
                 .toList();
     }
 
-    private NotificationRequestDTO mapNotificationRequestDTO(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO,
-                                                                    InstallmentDTO installmentDTO, NotificationRequestDTO.OperationTypeEnum operationType) {
+    private NotificationRequestDTO mapNotificationRequestDTO(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO, InstallmentDTO installmentDTO) {
 
         NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO();
         notificationRequestDTO.setFiscalCode(installmentDTO.getDebtor().getFiscalCode());
@@ -76,7 +75,6 @@ public class NotificationRequestMapper {
             notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
         }
         notificationRequestDTO.setAmount(installmentDTO.getAmountCents());
-        notificationRequestDTO.setOperationType(operationType);
 
         return notificationRequestDTO;
     }

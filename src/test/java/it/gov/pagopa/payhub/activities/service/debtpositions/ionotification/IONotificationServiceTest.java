@@ -24,8 +24,7 @@ import java.util.UUID;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTOWithMultiplePO;
 import static it.gov.pagopa.payhub.activities.util.faker.IONotificationDTOFaker.buildIONotificationDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.NotificationRequestDTOFaker.buildNotificationRequestDTO;
-import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.CREATE_DP;
-import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.UPDATE_DP;
+import static it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType.DP_CREATED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -67,12 +66,12 @@ class IONotificationServiceTest {
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
         when(debtOperationOperationTypeResolverMock.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap))
-                .thenReturn(CREATE_DP);
+                .thenReturn(DP_CREATED);
 
-        when(debtPositionTypeOrgServiceMock.getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), CREATE_DP))
+        when(debtPositionTypeOrgServiceMock.getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
                 .thenReturn(ioNotificationDTO);
 
-        when(notificationRequestMapperMock.map(debtPositionDTO, ioNotificationDTO, CREATE_DP))
+        when(notificationRequestMapperMock.map(debtPositionDTO, ioNotificationDTO))
                 .thenReturn(List.of(notificationRequestDTO, notificationRequestDTO, notificationRequestDTO));
 
         when(ioNotificationFacadeServiceMock.sendMessage(any()))
@@ -87,7 +86,7 @@ class IONotificationServiceTest {
     }
 
     @Test
-    void givenSendMessageWhenOperationTypeNullThenReturnMessageResponseEmpty(){
+    void givenSendMessageWhenPaymentEventTypeNullThenReturnMessageResponseEmpty(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
@@ -108,31 +107,6 @@ class IONotificationServiceTest {
     }
 
     @Test
-    void givenSendMessageWhenOperationTypeNotCreateDpThenReturnMessageResponseEmpty(){
-        // Given
-        IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
-        DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
-
-        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
-        iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
-        iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
-
-        when(debtOperationOperationTypeResolverMock.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap))
-                .thenReturn(UPDATE_DP);
-
-        when(debtPositionTypeOrgServiceMock.getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), UPDATE_DP))
-                .thenReturn(ioNotificationDTO);
-
-        // When
-        List<MessageResponseDTO> messageResponseDTOS = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
-
-        // Then
-        assertTrue(messageResponseDTOS.isEmpty());
-    }
-
-    @Test
     void givenSendMessageWhenNotificationDetailsNullThenReturnMessageResponseEmpty(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
@@ -144,9 +118,9 @@ class IONotificationServiceTest {
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
         when(debtOperationOperationTypeResolverMock.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap))
-                .thenReturn(CREATE_DP);
+                .thenReturn(DP_CREATED);
 
-        when(debtPositionTypeOrgServiceMock.getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), CREATE_DP))
+        when(debtPositionTypeOrgServiceMock.getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
                 .thenReturn(null);
 
         // When

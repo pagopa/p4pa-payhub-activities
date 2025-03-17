@@ -3,15 +3,16 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
-import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
+import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgServiceTest {
@@ -44,10 +45,23 @@ class DebtPositionTypeOrgServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        debtPositionTypeOrgService.getIONotificationDetails(1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+        debtPositionTypeOrgService.getIONotificationDetails(1L, PaymentEventType.DP_CREATED);
 
         // Then
-        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_CREATED);
+    }
+
+    @Test
+    void givenGetIONotificationDetailsWhenOperationTypeDPUpdatedThenInvokeClient() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+
+        // When
+        IONotificationDTO ioNotificationDetails = debtPositionTypeOrgService.getIONotificationDetails(1L, PaymentEventType.DP_UPDATED);
+
+        // Then
+        Mockito.verify(debtPositionTypeOrgClientMock, Mockito.times(0)).getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_UPDATED);
+        assertNull(ioNotificationDetails);
     }
 
     @Test
@@ -58,15 +72,15 @@ class DebtPositionTypeOrgServiceTest {
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
-        Mockito.when(debtPositionTypeOrgClientMock.getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP))
+        Mockito.when(debtPositionTypeOrgClientMock.getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_CREATED))
                 .thenThrow(new RuntimeException("API error"));
 
         // When
-        IONotificationDTO result = debtPositionTypeOrgService.getIONotificationDetails(1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+        IONotificationDTO result = debtPositionTypeOrgService.getIONotificationDetails(1L, PaymentEventType.DP_CREATED);
 
         // Then
-        Assertions.assertNull(result);
+        assertNull(result);
         Mockito.verify(debtPositionTypeOrgClientMock)
-                .getIONotificationDetails(accessToken, 1L, NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+                .getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_CREATED);
     }
 }

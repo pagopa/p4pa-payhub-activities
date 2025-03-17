@@ -14,7 +14,6 @@ public class NotificationRequestDTOFaker {
                 .subject("subject")
                 .nav("nav")
                 .amount(100L)
-                .operationType(NotificationRequestDTO.OperationTypeEnum.CREATE_DP)
                 .markdown("markdown");
     }
 }

@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.Insta
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
+import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,6 @@ import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
-import static it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO.OperationTypeEnum.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,10 +46,10 @@ class DebtOperationOperationTypeResolverTest {
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO, buildInstallmentDTO()));
 
         // When
-        NotificationRequestDTO.OperationTypeEnum operationType = resolver.calculateDebtPositionOperationType(debtPositionDTO, Map.of());
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, Map.of());
 
         // Then
-        assertEquals(UPDATE_DP, operationType);
+        assertEquals(PaymentEventType.DP_UPDATED, paymentEventType);
     }
 
     @Test
@@ -62,10 +61,10 @@ class DebtOperationOperationTypeResolverTest {
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO));
 
         // When
-        NotificationRequestDTO.OperationTypeEnum operationType = resolver.calculateDebtPositionOperationType(debtPositionDTO, Map.of());
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, Map.of());
 
         // Then
-        assertNull(operationType);
+        assertNull(paymentEventType);
     }
 
     @Test
@@ -82,10 +81,10 @@ class DebtOperationOperationTypeResolverTest {
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iudTest", iupdSyncStatusUpdateDTO);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum operationType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
         // Then
-        assertNull(operationType);
+        assertNull(paymentEventType);
     }
 
     @Test
@@ -98,13 +97,13 @@ class DebtOperationOperationTypeResolverTest {
                 new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iud", iupdSyncStatusUpdateDTO, "iud2", iupdSyncStatusUpdateDTO);
 
-        when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(CREATE_DP);
+        when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(PaymentEventType.DP_CREATED);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum operationType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
         // Then
-        assertEquals(CREATE_DP, operationType);
+        assertEquals(PaymentEventType.DP_CREATED, paymentEventType);
     }
 
     @Test
@@ -117,13 +116,13 @@ class DebtOperationOperationTypeResolverTest {
                 new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iud", iupdSyncStatusUpdateDTO, "iud2", iupdSyncStatusUpdateDTO);
 
-        when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(UPDATE_DP);
+        when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(PaymentEventType.DP_UPDATED);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum operationType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
         // Then
-        assertEquals(UPDATE_DP, operationType);
+        assertEquals(PaymentEventType.DP_UPDATED, paymentEventType);
     }
 
     @Test
@@ -136,13 +135,13 @@ class DebtOperationOperationTypeResolverTest {
                 new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iud", iupdSyncStatusUpdateDTO, "iud2", iupdSyncStatusUpdateDTO);
 
-        when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(DELETE_DP);
+        when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(PaymentEventType.DP_CANCELLED);
 
         // When
-        NotificationRequestDTO.OperationTypeEnum operationType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
         // Then
-        assertEquals(DELETE_DP, operationType);
+        assertEquals(PaymentEventType.DP_CANCELLED, paymentEventType);
     }
 
     private List<InstallmentDTO> buildInstallment(){
