@@ -82,12 +82,12 @@ public class InstallmentSynchronizeMapper {
         }
 
         return TransferSynchronizeDTO.builder()
-                .orgFiscalCode(getFirstValue(transferMap, "codiceFiscaleEnte", "orgFiscalCode"))
-                .orgName(getFirstValue(transferMap, "denominazioneEnte", "orgName"))
-                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "importoVersamentoEnte", "amount"))))
-                .remittanceInformation(getFirstValue(transferMap, "causaleVersamentoEnte", "remittanceInformation"))
-                .iban(getFirstValue(transferMap, "ibanAccreditoEnte", "iban"))
-                .category(getFirstValue(transferMap, "codiceTassonomiaEnte", "category"))
+                .orgFiscalCode(getFirstValue(transferMap, "codiceFiscaleEnte", "orgFiscalCode", index))
+                .orgName(getFirstValue(transferMap, "denominazioneEnte", "orgName", index))
+                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "importoVersamentoEnte", "amount", index))))
+                .remittanceInformation(getFirstValue(transferMap, "causaleVersamentoEnte", "remittanceInformation", index))
+                .iban(getFirstValue(transferMap, "ibanAccreditoEnte", "iban", index))
+                .category(getFirstValue(transferMap, "codiceTassonomiaEnte", "category", index))
                 .transferIndex(index)
                 .build();
     }
@@ -103,12 +103,12 @@ public class InstallmentSynchronizeMapper {
         };
     }
 
-    private String getFirstValue(MultiValuedMap<String, String> map, String italianKey, String englishKey) {
+    private String getFirstValue(MultiValuedMap<String, String> map, String italianKey, String englishKey, int index) {
         return Optional.ofNullable(map)
-                .map(m -> m.get(italianKey))
+                .map(m -> m.get(italianKey + "_" + index))
                 .flatMap(values -> values.stream().findFirst())
                 .or(() -> Optional.ofNullable(map)
-                        .map(m -> m.get(englishKey))
+                        .map(m -> m.get(englishKey + "_" + index))
                         .flatMap(values -> values.stream().findFirst()))
                 .orElseThrow(() -> new IllegalArgumentException("Missing required value for keys: %s or %s".formatted(italianKey, englishKey)));
     }
