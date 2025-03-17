@@ -12,15 +12,13 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
+import static it.gov.pagopa.payhub.activities.dto.export.ExportConstants.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PaidInstallmentExportFlowFileDTO {
-    private static final String EXPORT_PAID_VERSION_V1= "v1.0";
-    private static final String EXPORT_PAID_VERSION_V1_1= "v1.1";
-    private static final String EXPORT_PAID_VERSION_V1_2= "v1.2";
-    private static final String EXPORT_PAID_VERSION_V1_3= "v1.3";
 
     @CsvBindByName(column = "IUF")
     private String iuf;
