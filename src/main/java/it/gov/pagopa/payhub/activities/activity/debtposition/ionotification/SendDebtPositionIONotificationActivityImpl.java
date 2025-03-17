@@ -22,7 +22,7 @@ public class SendDebtPositionIONotificationActivityImpl implements SendDebtPosit
     }
 
     @Override
-    public void sendMessage(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+    public void sendIoNotification(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
         log.info("Sending message to IONotification for debt position type org id {}", debtPosition.getDebtPositionTypeOrgId());
         // TODO to be fix https://pagopa.atlassian.net/browse/P4ADEV-2089
         ioNotificationFacadeService.sendMessage(new NotificationRequestDTO());

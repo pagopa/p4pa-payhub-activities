@@ -33,13 +33,13 @@ class BrokersRetrieverActivityTest {
 	}
 
 	@Test
-	void testFetchAll() {
+	void testFetchAllBrokers() {
 		// Given
 		List<Broker> expected = List.of(new Broker());
 
 		when(brokerServiceMock.fetchAll()).thenReturn(expected);
 		// When
-		List<Broker> result = activity.fetchAll();
+		List<Broker> result = activity.fetchAllBrokers();
 		// Then
 		assertEquals(expected, result);
 	}

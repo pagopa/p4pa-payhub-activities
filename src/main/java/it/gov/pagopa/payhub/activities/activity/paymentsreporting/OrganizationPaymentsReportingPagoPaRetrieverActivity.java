@@ -18,5 +18,6 @@ public interface OrganizationPaymentsReportingPagoPaRetrieverActivity {
 	 * @return a list of ingestion flow file IDs
 	 */
 	@ActivityMethod
-	List<Long> fetch(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds);
+	List<Long> fetchPagoPaPaymentsReportingFiles(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds);
 }
+

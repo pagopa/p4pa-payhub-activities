@@ -33,7 +33,7 @@ class OrganizationBrokeredRetrieverActivityImplTest {
 	}
 
 	@Test
-	void testRetrieve() {
+	void testRetrieveBrokeredOrganizations() {
 		// Given
 		Long brokerId = 1L;
 		List<Organization> expectedOrganizations = List.of(new Organization());
@@ -41,7 +41,7 @@ class OrganizationBrokeredRetrieverActivityImplTest {
 		when(organizationServiceMock.getOrganizationsByBrokerId(brokerId)).thenReturn(expectedOrganizations);
 
 		// When
-		List<Organization> result = activity.retrieve(brokerId);
+		List<Organization> result = activity.retrieveBrokeredOrganizations(brokerId);
 
 		// Then
 		assertEquals(expectedOrganizations, result);

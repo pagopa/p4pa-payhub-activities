@@ -18,5 +18,5 @@ public interface OrganizationPaymentsReportingPagoPaListRetrieverActivity {
 	 * @return a list of PaymentsReportingIdDTOs that have not been imported
 	 */
 	@ActivityMethod
-	List<PaymentsReportingIdDTO> retrieve(Long organizationId);
+	List<PaymentsReportingIdDTO> retrieveNotImportedPagoPaPaymentsReportingIds(Long organizationId);
 }

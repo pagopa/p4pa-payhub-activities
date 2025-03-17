@@ -17,7 +17,7 @@ public class NotificationStatusActivityImpl implements NotificationStatusActivit
     }
 
     @Override
-    public NewNotificationRequestStatusResponseV24DTO notificationStatus(String sendNotificationId) {
+    public NewNotificationRequestStatusResponseV24DTO getSendNotificationStatus(String sendNotificationId) {
         log.info("Starting notificationStatus for sendNotificationId {}", sendNotificationId);
         return sendService.notificationStatus(sendNotificationId);
     }
