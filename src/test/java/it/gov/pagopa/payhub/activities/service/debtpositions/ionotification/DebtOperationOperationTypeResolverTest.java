@@ -36,6 +36,20 @@ class DebtOperationOperationTypeResolverTest {
     }
 
 
+    @Test
+    void givenCalculateDebtPositionOperationTypeWhenMapEmpty_ThenOk(){
+        // Given
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        InstallmentDTO installmentDTO = new InstallmentDTO();
+        installmentDTO.setStatus(InstallmentDTO.StatusEnum.UNPAID);
+        debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO, buildInstallmentDTO()));
+
+        // When
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, Map.of());
+
+        // Then
+        assertNull(paymentEventType);
+    }
 
     @Test
     void givenCalculateDebtPositionOperationTypeWhenStatusNotEvenOne_TOSYNC_INVALID_CANCELLED_ThenOk(){
@@ -45,8 +59,11 @@ class DebtOperationOperationTypeResolverTest {
         installmentDTO.setStatus(InstallmentDTO.StatusEnum.UNPAID);
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO, buildInstallmentDTO()));
 
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
+                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iudTest", iupdSyncStatusUpdateDTO);
         // When
-        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, Map.of());
+        PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
         // Then
         assertEquals(PaymentEventType.DP_UPDATED, paymentEventType);

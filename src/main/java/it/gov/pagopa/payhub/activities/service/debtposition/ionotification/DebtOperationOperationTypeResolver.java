@@ -23,13 +23,13 @@ public class DebtOperationOperationTypeResolver {
 
     public PaymentEventType calculateDebtPositionOperationType(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
 
+        if (iupdSyncStatusUpdateDTOMap.isEmpty()){
+            return null;
+        }
+
         if (hasActiveInstallmentsAlreadySynchronized(debtPositionDTO)){
             return PaymentEventType.DP_UPDATED;
         } else {
-            if (iupdSyncStatusUpdateDTOMap.isEmpty()){
-                return null;
-            }
-
             List<InstallmentDTO> installmentsSynchronized = debtPositionDTO.getPaymentOptions().stream()
                     .flatMap(po -> po.getInstallments().stream())
                     .filter(i -> InstallmentDTO.StatusEnum.TO_SYNC.equals(i.getStatus()) &&
