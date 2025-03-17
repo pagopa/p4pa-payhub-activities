@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
+import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +47,15 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> workflowHubApisHolder.getWorkflowHubApi(accessToken)
                             .getWorkflowStatus("workflowId"),
+                new ParameterizedTypeReference<>() {},
+                workflowHubApisHolder::unload);
+    }
+
+    @Test
+    void whenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> workflowHubApisHolder.getDebtPositionApi(accessToken)
+                        .syncDebtPosition(buildDebtPositionDTO(), false, PaymentEventType.DP_CREATED),
                 new ParameterizedTypeReference<>() {},
                 workflowHubApisHolder::unload);
     }
