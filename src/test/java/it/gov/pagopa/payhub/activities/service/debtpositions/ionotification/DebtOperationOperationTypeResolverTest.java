@@ -88,7 +88,7 @@ class DebtOperationOperationTypeResolverTest {
     }
 
     @Test
-    void givenCalculateDebtPositionOperationTypeCreateDPThenOk(){
+    void givenCalculateDebtPositionPaymentEventTypeCreateDPThenOk(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(buildInstallment());
