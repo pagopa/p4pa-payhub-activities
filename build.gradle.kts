@@ -483,6 +483,9 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
 	typeMappings.set(mapOf(
 		"LocalDateTime" to "java.time.LocalDateTime"
 	))
+	additionalProperties.set(mapOf(
+		"removeEnumValuePrefix" to "false"
+	))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",

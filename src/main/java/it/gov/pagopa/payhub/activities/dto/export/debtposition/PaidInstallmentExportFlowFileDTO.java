@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import static it.gov.pagopa.payhub.activities.dto.export.ExportConstants.*;
+import static it.gov.pagopa.payhub.activities.dto.export.ExportFlowFileVersions.*;
 
 @Data
 @NoArgsConstructor

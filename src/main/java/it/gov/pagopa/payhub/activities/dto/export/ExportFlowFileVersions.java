@@ -1,11 +1,15 @@
 package it.gov.pagopa.payhub.activities.dto.export;
 
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileVersion;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class ExportConstants {
-    private ExportConstants (){}
+public class ExportFlowFileVersions {
+    private ExportFlowFileVersions() {}
 
     public static final String EXPORT_PAID_VERSION_V1 = "v1.0";
     public static final String EXPORT_PAID_VERSION_V1_1 = "v1.1";
@@ -16,7 +20,7 @@ public class ExportConstants {
 
     static {
         availableVersions = Map.of(
-                ExportFile.FlowFileTypeEnum.PAID, Set.of(ExportConstants.EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3)
+                ExportFile.FlowFileTypeEnum.PAID, Arrays.stream(PaidExportFileVersion.values()).map(PaidExportFileVersion::getValue).collect(Collectors.toSet())
         );
     }
 
