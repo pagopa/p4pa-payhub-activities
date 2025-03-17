@@ -75,6 +75,7 @@ val guavaVersion = "33.4.0-jre"
 val openCsvVersion = "5.9"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
+val httpClientVersion = "5.4.2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -88,6 +89,7 @@ dependencies {
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 	implementation("org.mapstruct:mapstruct:$mapStructVersion")
+	implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
 	// openApi
 	implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
 	implementation("org.springframework.data:spring-data-commons")
