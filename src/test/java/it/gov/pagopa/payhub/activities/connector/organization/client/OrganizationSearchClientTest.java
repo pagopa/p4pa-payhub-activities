@@ -162,7 +162,7 @@ class OrganizationSearchClientTest {
 
         Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
-        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByBrokerId(brokerId))
+        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByBrokerIdAndStatus(brokerId, Organization.StatusEnum.ACTIVE.getValue()))
                 .thenReturn(expectedResult);
         // When
         CollectionModelOrganization result = organizationSearchClient.findActiveOrganizationsByBrokerId(brokerId, accessToken);
