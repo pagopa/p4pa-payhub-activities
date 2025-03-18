@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
@@ -65,8 +66,11 @@ public class InstallmentProcessingService {
                         ingestionFlowFile.getIngestionFlowFileId(),
                         ingestionFlowFile.getOrganizationId()
                 );
+                WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
+                wfExecutionParameters.setMassive(true);
+                wfExecutionParameters.setPartialChange(true);
 
-                String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true, ingestionFlowFile.getOperatorExternalId());
+                String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
                 if (dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, totalRows, ingestionFlowFile.getFileName(), errorList)) {
                     processedRows++;
                 }

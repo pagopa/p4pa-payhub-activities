@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
@@ -34,10 +35,10 @@ public interface DebtPositionService {
      * Synchronizes an installment from a file.
      *
      * @param installmentSynchronizeDTO the DTO containing installment data to be synchronized.
-     * @param massive a flag indicating whether the synchronization is a bulk operation.
+     * @param wfExecutionParameters wf execution config
      * @return the workflow ID if a workflow is triggered, otherwise null.
      */
-    String installmentSynchronize(DebtPositionDTO.DebtPositionOriginEnum origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, Boolean massive, String operatorUserId);
+    String installmentSynchronize(DebtPositionDTO.DebtPositionOriginEnum origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId);
 
     PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, Integer page, Integer size, List<String> sort);
 }

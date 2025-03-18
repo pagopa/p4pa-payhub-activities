@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
@@ -96,7 +97,12 @@ class DebtPositionClientTest {
         String accessToken = "ACCESSTOKEN";
         DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
-        boolean massive = false;
+        boolean massive = true;
+        boolean partialChange = false;
+        WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
+                .massive(massive)
+                .partialChange(partialChange)
+                .build();
         String operatorUserId = "USERID";
         String expectedWorkflowId = "workflow-123";
 
@@ -105,15 +111,15 @@ class DebtPositionClientTest {
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken, operatorUserId))
                 .thenReturn(debtPositionApiMock);
-        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive))
+        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive, partialChange))
                 .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
 
         // When
-        String result = debtPositionClient.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, massive, operatorUserId);
+        String result = debtPositionClient.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, wfExecutionParameters, operatorUserId);
 
         // Then
         Assertions.assertEquals(expectedWorkflowId, result);
-        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive);
+        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive, partialChange);
     }
 
     @Test

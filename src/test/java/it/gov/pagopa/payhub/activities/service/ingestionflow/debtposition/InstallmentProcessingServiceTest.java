@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
@@ -61,11 +62,15 @@ class InstallmentProcessingServiceTest {
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         String workflowId = "workflow-123";
+        WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
+                .massive(true)
+                .partialChange(true)
+                .build();
 
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L,1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true, ingestionFlowFile.getOperatorExternalId()))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
                 .thenReturn(workflowId);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
@@ -92,11 +97,15 @@ class InstallmentProcessingServiceTest {
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         String workflowId = "workflow-123";
+        WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
+                .massive(true)
+                .partialChange(true)
+                .build();
 
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true, ingestionFlowFile.getOperatorExternalId()))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
                 .thenReturn(workflowId);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
@@ -120,11 +129,15 @@ class InstallmentProcessingServiceTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
+                .massive(true)
+                .partialChange(true)
+                .build();
 
         Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true, ingestionFlowFile.getOperatorExternalId()))
+        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
                 .thenReturn(null);
 
         Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(null, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
@@ -150,13 +163,17 @@ class InstallmentProcessingServiceTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
+                .massive(true)
+                .partialChange(true)
+                .build();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
 
                 Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
-                        .when(debtPositionServiceMock).installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, true, ingestionFlowFile.getOperatorExternalId());
+                        .when(debtPositionServiceMock).installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
