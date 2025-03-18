@@ -124,13 +124,14 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, false, null))
                 .thenReturn(null);
 
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus("workflowId_2", MAX_ATTEMPS, RETRY_DELAY))
-                .thenReturn(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+        Mockito.doThrow(new TooManyAttemptsException("Error")).when(workflowCompletionServiceMock)
+                .waitTerminationStatus("workflowId_2", MAX_ATTEMPS, RETRY_DELAY);
         Mockito.when(workflowCompletionServiceMock.waitTerminationStatus("workflowId_3", MAX_ATTEMPS, RETRY_DELAY))
                 .thenReturn(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_TIMED_OUT);
 
         String result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        assertEquals("\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.", result);
+        assertEquals("\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": Error" +
+                "\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.", result);
     }
 }
