@@ -66,19 +66,18 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, false, paymentEventType);
 
                     if(workflowCreatedDTO == null || workflowCreatedDTO.getWorkflowId() == null){
-                        errors.append("No synchronization workflow created for debt position with iupdOrg " + debtPosition.getIupdOrg() + "\n");
                         return;
                     }
 
                     WorkflowExecutionStatus workflowExecutionStatus = workflowCompletionService.waitTerminationStatus(workflowCreatedDTO.getWorkflowId(), maxAttempts, retryDelayMs);
 
                     if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowExecutionStatus)) {
-                        errors.append("Synchronization workflow for debt position with iupdOrg " + debtPosition.getIupdOrg() + " terminated with error status.\n");
+                        errors.append("\nSynchronization workflow for debt position with iupdOrg " + debtPosition.getIupdOrg() + " terminated with error status.");
                     }
 
                 } catch (Exception e) {
                     log.error("Error synchronizing debt position with id {} and iupdOrg {}: {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e.getMessage());
-                    errors.append("Error on debt position with iupdOrg " + debtPosition.getIupdOrg() + ": " + e.getMessage() + " \n");
+                    errors.append("\nError on debt position with iupdOrg " + debtPosition.getIupdOrg() + ": " + e.getMessage());
                 }
             });
 

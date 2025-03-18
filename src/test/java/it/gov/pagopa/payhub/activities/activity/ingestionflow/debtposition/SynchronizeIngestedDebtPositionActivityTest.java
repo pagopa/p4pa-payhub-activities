@@ -131,8 +131,6 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         String result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        assertEquals("No synchronization workflow created for debt position with iupdOrg " + debtPosition1.getIupdOrg() + "\n" +
-                "Synchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.\n" +
-                "No synchronization workflow created for debt position with iupdOrg " + debtPosition4.getIupdOrg() + "\n", result);
+        assertEquals("\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.", result);
     }
 }
