@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class InstallmentFaker {
                 .creationDate(OFFSETDATETIME)
                 .updateDate(OFFSETDATETIME)
                 .dueDate(LOCALDATE)
+                .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentSyncStatus.SyncStatusFromEnum.DRAFT).syncStatusTo(InstallmentSyncStatus.SyncStatusToEnum.UNPAID).build())
                 .paymentTypeCode("paymentTypeCode")
                 .amountCents(100L)
                 .remittanceInformation("remittanceInformation")
@@ -47,7 +49,7 @@ public class InstallmentFaker {
                 .paymentOptionId(2L)
                 .status(InstallmentDTO.StatusEnum.UNPAID)
                 .iupdPagopa("iupdPagopa")
-                .iud("iud")
+                .iud("iud2")
                 .iuv("iuv")
                 .iur("iur")
                 .iuf("iuf")
