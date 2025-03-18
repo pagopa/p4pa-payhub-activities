@@ -153,7 +153,7 @@ class OrganizationSearchClientTest {
     }
 
     @Test
-    void whenFindOrganizationsByBrokerIdThenInvokeWithAccessToken() {
+    void whenFindActiveOrganizationsByBrokerIdThenInvokeWithAccessToken() {
         // Given
         String accessToken = "ACCESSTOKEN";
         Long brokerId = 1L;
@@ -165,7 +165,7 @@ class OrganizationSearchClientTest {
         Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByBrokerId(brokerId))
                 .thenReturn(expectedResult);
         // When
-        CollectionModelOrganization result = organizationSearchClient.findOrganizationsByBrokerId(brokerId, accessToken);
+        CollectionModelOrganization result = organizationSearchClient.findActiveOrganizationsByBrokerId(brokerId, accessToken);
 
         // Then
         Assertions.assertSame(expectedResult, result);

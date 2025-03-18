@@ -11,16 +11,16 @@ import java.util.List;
 @Lazy
 @Slf4j
 @Service
-public class OrganizationBrokeredRetrieverActivityImpl implements OrganizationBrokeredRetrieverActivity {
+public class OrganizationBrokeredActiveRetrieverActivityImpl implements OrganizationBrokeredActiveRetrieverActivity {
 	private final OrganizationService organizationService;
 
-	public OrganizationBrokeredRetrieverActivityImpl(OrganizationService organizationService) {
+	public OrganizationBrokeredActiveRetrieverActivityImpl(OrganizationService organizationService) {
 		this.organizationService = organizationService;
 	}
 
 	@Override
 	public List<Organization> retrieveBrokeredOrganizations(Long brokerId) {
 		log.info("Retrieving organizations brokered by broker with id: {}", brokerId);
-		return organizationService.getOrganizationsByBrokerId(brokerId);
+		return organizationService.getActiveOrganizationsByBrokerId(brokerId);
 	}
 }

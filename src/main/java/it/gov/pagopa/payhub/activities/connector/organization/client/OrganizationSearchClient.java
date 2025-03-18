@@ -49,8 +49,8 @@ public class OrganizationSearchClient {
         }
     }
 
-    public CollectionModelOrganization findOrganizationsByBrokerId(Long brokerId, String accessToken) {
+    public CollectionModelOrganization findActiveOrganizationsByBrokerId(Long brokerId, String accessToken) {
         return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
-                .crudOrganizationsFindByBrokerId(brokerId);
+                .crudOrganizationsFindByBrokerIdAndStatus(brokerId, Organization.StatusEnum.ACTIVE.getValue());
     }
 }
