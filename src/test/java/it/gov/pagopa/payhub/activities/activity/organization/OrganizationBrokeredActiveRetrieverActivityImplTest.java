@@ -16,15 +16,15 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class OrganizationBrokeredRetrieverActivityImplTest {
+class OrganizationBrokeredActiveRetrieverActivityImplTest {
 	@Mock
 	private OrganizationService organizationServiceMock;
 
-	private OrganizationBrokeredRetrieverActivity activity;
+	private OrganizationBrokeredActiveRetrieverActivity activity;
 
 	@BeforeEach
 	void setUp() {
-		activity = new OrganizationBrokeredRetrieverActivityImpl(organizationServiceMock);
+		activity = new OrganizationBrokeredActiveRetrieverActivityImpl(organizationServiceMock);
 	}
 
 	@AfterEach
@@ -38,7 +38,7 @@ class OrganizationBrokeredRetrieverActivityImplTest {
 		Long brokerId = 1L;
 		List<Organization> expectedOrganizations = List.of(new Organization());
 
-		when(organizationServiceMock.getOrganizationsByBrokerId(brokerId)).thenReturn(expectedOrganizations);
+		when(organizationServiceMock.getActiveOrganizationsByBrokerId(brokerId)).thenReturn(expectedOrganizations);
 
 		// When
 		List<Organization> result = activity.retrieveBrokeredOrganizations(brokerId);

@@ -47,8 +47,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public List<Organization> getOrganizationsByBrokerId(Long brokerId) {
-        CollectionModelOrganization organizations = organizationSearchClient.findOrganizationsByBrokerId(brokerId, authnService.getAccessToken());
+    public List<Organization> getActiveOrganizationsByBrokerId(Long brokerId) {
+        CollectionModelOrganization organizations = organizationSearchClient.findActiveOrganizationsByBrokerId(brokerId, authnService.getAccessToken());
         return Objects.requireNonNull(organizations.getEmbedded()).getOrganizations();
     }
 }

@@ -149,33 +149,33 @@ class OrganizationServiceTest {
 
 //region getOrganizationsByBrokerId tests
     @Test
-    void givenNotExistentBrokerIdWhenGetOrganizationsByBrokerIdThenEmpty(){
+    void givenNotExistentBrokerIdWhenGetActiveOrganizationsByBrokerIdThenEmpty(){
         // Given
         Long brokerId = 123L;
         PagedModelOrganizationEmbedded embedded = mock(PagedModelOrganizationEmbedded.class);
         CollectionModelOrganization expectedResponse = new CollectionModelOrganization().embedded(embedded);
-        Mockito.when(organizationSearchClientMock.findOrganizationsByBrokerId(brokerId, accessToken))
+        Mockito.when(organizationSearchClientMock.findActiveOrganizationsByBrokerId(brokerId, accessToken))
             .thenReturn(expectedResponse);
 
         // When
-        List<Organization> result = organizationService.getOrganizationsByBrokerId(brokerId);
+        List<Organization> result = organizationService.getActiveOrganizationsByBrokerId(brokerId);
 
         // Then
         Assertions.assertTrue(result.isEmpty());
     }
 
     @Test
-    void givenExistentBrokerIdWhenGetOrganizationsByBrokerIdThenReturnList(){
+    void givenExistentBrokerIdWhenGetActiveOrganizationsByBrokerIdThenReturnList(){
         // Given
         Long brokerId = 123L;
         List<Organization> organizations = List.of(OrganizationFaker.buildOrganizationDTO());
         PagedModelOrganizationEmbedded embedded = new PagedModelOrganizationEmbedded(organizations);
         CollectionModelOrganization expectedResponse = new CollectionModelOrganization().embedded(embedded);
-        Mockito.when(organizationSearchClientMock.findOrganizationsByBrokerId(brokerId, accessToken))
+        Mockito.when(organizationSearchClientMock.findActiveOrganizationsByBrokerId(brokerId, accessToken))
             .thenReturn(expectedResponse);
 
         // When
-        List<Organization> result = organizationService.getOrganizationsByBrokerId(brokerId);
+        List<Organization> result = organizationService.getActiveOrganizationsByBrokerId(brokerId);
 
         // Then
         Assertions.assertFalse(result.isEmpty());

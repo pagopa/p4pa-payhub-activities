@@ -13,6 +13,6 @@ public interface OrganizationService {
 
   Optional<Organization> getOrganizationById(Long organizationId);
 
-  List<Organization> getOrganizationsByBrokerId(Long brokerId);
+  List<Organization> getActiveOrganizationsByBrokerId(Long brokerId);
 
 }

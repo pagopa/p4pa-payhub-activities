@@ -7,10 +7,10 @@ import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import java.util.List;
 
 /**
- * Activity Interface that is used to find all the organizations that are brokered by a specific broker
+ * Activity Interface that is used to find all the organizations that are brokered by a specific broker having status ACTIVE
  */
 @ActivityInterface
-public interface OrganizationBrokeredRetrieverActivity {
+public interface OrganizationBrokeredActiveRetrieverActivity {
 
 	/**
 	 * Method that has the logic to find all the organizations that are brokered by a specific broker
