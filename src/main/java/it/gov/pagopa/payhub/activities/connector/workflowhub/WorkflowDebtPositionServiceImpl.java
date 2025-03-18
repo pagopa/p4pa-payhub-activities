@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.workflowhub;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.client.WorkflowDebtPositionClient;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
@@ -21,8 +22,8 @@ public class WorkflowDebtPositionServiceImpl implements WorkflowDebtPositionServ
     }
 
     @Override
-    public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, Boolean massive, PaymentEventType paymentEventType) {
+    public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters, PaymentEventType paymentEventType) {
         String accessToken = authnService.getAccessToken();
-        return workflowDebtPositionClient.syncDebtPosition(debtPositionDTO, massive, paymentEventType, accessToken);
+        return workflowDebtPositionClient.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, accessToken);
     }
 }
