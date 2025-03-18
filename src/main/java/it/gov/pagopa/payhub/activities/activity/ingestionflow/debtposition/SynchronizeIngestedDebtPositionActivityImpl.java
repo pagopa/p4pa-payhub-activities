@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
@@ -63,7 +64,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             pagedDebtPositions.getContent().forEach(debtPosition -> {
                 try {
                     PaymentEventType paymentEventType = null; //TODO task P4ADEV-2421
-                    WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, false, paymentEventType);
+                    WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType);
 
                     if(workflowCreatedDTO == null || workflowCreatedDTO.getWorkflowId() == null){
                         return;

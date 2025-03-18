@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.workflowhub.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflowhub.dto.generated.SyncDebtPositionRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
     void whenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> workflowHubApisHolder.getDebtPositionApi(accessToken)
-                        .syncDebtPosition(buildDebtPositionDTO(), false, PaymentEventType.DP_CREATED),
+                        .syncDebtPosition(new SyncDebtPositionRequestDTO(), false, false, PaymentEventType.DP_CREATED),
                 new ParameterizedTypeReference<>() {},
                 workflowHubApisHolder::unload);
     }

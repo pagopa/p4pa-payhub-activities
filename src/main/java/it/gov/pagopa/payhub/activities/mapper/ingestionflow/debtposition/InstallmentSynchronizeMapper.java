@@ -52,7 +52,7 @@ public class InstallmentSynchronizeMapper {
                 .dueDate(installmentIngestionFlowFileDTO.getDueDate())
                 .amountCents(bigDecimalEuroToLongCentsAmount(installmentIngestionFlowFileDTO.getAmount()))
                 .debtPositionTypeCode(installmentIngestionFlowFileDTO.getDebtPositionTypeCode())
-                .paymentTypeCode(installmentIngestionFlowFileDTO.getPaymentTypeCode())
+                .notificationFeeCents(bigDecimalEuroToLongCentsAmount(installmentIngestionFlowFileDTO.getNotificationFee()))
                 .remittanceInformation(installmentIngestionFlowFileDTO.getRemittanceInformation())
                 .legacyPaymentMetadata(installmentIngestionFlowFileDTO.getLegacyPaymentMetadata())
                 .flagPagoPaPayment(installmentIngestionFlowFileDTO.getFlagPagoPaPayment())
