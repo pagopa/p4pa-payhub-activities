@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
-import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
+import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 
 /**
  * This interface provides methods that manage debt positions type org within the related microservice.
@@ -12,9 +12,9 @@ public interface DebtPositionTypeOrgService {
      * Get the serviceId, subject e markdown from debt position type org to send IO Notification.
      *
      * @param debtPositionTypeOrgId the identifier of the debt position.
-     * @param context the operation type
+     * @param paymentEventType the payment event type
      * @return the updated {@link IONotificationDTO} object.
      */
-    IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, NotificationRequestDTO.OperationTypeEnum context);
+    IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType);
 
 }

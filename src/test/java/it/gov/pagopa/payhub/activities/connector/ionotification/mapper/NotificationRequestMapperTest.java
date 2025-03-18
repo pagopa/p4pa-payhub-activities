@@ -51,8 +51,7 @@ class NotificationRequestMapperTest {
         // When
         List<NotificationRequestDTO> result = mapper.map(
                 debtPosition,
-                ioNotificationDTO,
-                NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+                ioNotificationDTO);
 
         // Then
 
@@ -85,8 +84,7 @@ class NotificationRequestMapperTest {
         // When
         List<NotificationRequestDTO> result = mapper.map(
                 debtPosition,
-                ioNotificationDTO,
-                NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+                ioNotificationDTO);
 
         // Then
         checkNotNullFields(result.getFirst());
@@ -113,8 +111,7 @@ class NotificationRequestMapperTest {
         // When
         List<NotificationRequestDTO> result = mapper.map(
                 debtPosition,
-                ioNotificationDTO,
-                NotificationRequestDTO.OperationTypeEnum.CREATE_DP);
+                ioNotificationDTO);
 
         // Then
         checkNotNullFields(result.getFirst(), "nav");
