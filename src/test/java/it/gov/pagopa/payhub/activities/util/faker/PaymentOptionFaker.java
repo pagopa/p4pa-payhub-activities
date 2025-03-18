@@ -16,7 +16,6 @@ public class PaymentOptionFaker {
                 .paymentOptionId(1L)
                 .totalAmountCents(100L)
                 .status(PaymentOptionDTO.StatusEnum.PAID)
-                .dueDate(TestUtils.LOCALDATE)
                 .installments(List.of(buildInstallmentDTO()))
                 .description("description")
                 .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
@@ -28,7 +27,6 @@ public class PaymentOptionFaker {
                 .paymentOptionId(2L)
                 .totalAmountCents(100L)
                 .status(PaymentOptionDTO.StatusEnum.UNPAID)
-                .dueDate(TestUtils.LOCALDATE)
                 .installments(List.of(buildInstallmentDTO(), buildInstallmentDTO2()))
                 .description("description")
                 .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
