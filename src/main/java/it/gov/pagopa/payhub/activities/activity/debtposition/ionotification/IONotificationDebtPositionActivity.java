@@ -15,7 +15,7 @@ import java.util.Map;
  * to the IO Notification service.
  */
 @ActivityInterface
-public interface SendDebtPositionIONotificationActivity {
+public interface IONotificationDebtPositionActivity {
 
     /**
      * Sends a notification message for the specified debt position to the IO Notification service.
