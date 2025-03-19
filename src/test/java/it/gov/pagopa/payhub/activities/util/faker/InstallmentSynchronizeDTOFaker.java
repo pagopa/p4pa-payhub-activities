@@ -52,6 +52,7 @@ public class InstallmentSynchronizeDTOFaker {
                         buildTransferSynchronizeDTO(4),
                         buildTransferSynchronizeDTO(5)
                 ))
+                .executionConfig("executionConfig")
                 .build();
     }
 

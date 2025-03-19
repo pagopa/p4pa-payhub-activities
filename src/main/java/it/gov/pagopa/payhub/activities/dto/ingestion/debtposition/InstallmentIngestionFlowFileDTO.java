@@ -158,6 +158,9 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindAndJoinByName(column = ".*_5", elementType = String.class)
     private MultiValuedMap<String, String> transfer5;
 
+    @CsvBindByName(column = "configurazioniEsecuzione", profiles = "legacy")
+    @CsvBindByName(column = "executionConfig")
+    private String executionConfig;
 
     public enum ActionEnum {
         I, M, A
