@@ -60,6 +60,7 @@ public class InstallmentSynchronizeMapper {
                 .flagMultibeneficiary(installmentIngestionFlowFileDTO.getFlagMultiBeneficiary())
                 .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? installmentIngestionFlowFileDTO.getNumberBeneficiary() : null)
                 .additionalTransfers(buildAdditionalTransferList(installmentIngestionFlowFileDTO))
+                .executionConfig(installmentIngestionFlowFileDTO.getExecutionConfig())
                 .build();
     }
 
