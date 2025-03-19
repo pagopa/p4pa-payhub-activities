@@ -62,8 +62,8 @@ public class InstallmentProcessingService {
             try {
                 InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
                         installment,
-                        totalRows,
                         ingestionFlowFile.getIngestionFlowFileId(),
+                        totalRows,
                         ingestionFlowFile.getOrganizationId()
                 );
                 WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
