@@ -20,15 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SendDebtPositionIONotificationActivityTest {
+class IONotificationDebtPositionActivityTest {
     @Mock
     private IONotificationService ioNotificationServiceMock;
 
-    private SendDebtPositionIONotificationActivity activity;
+    private IONotificationDebtPositionActivity activity;
 
     @BeforeEach
     void init() {
-        activity = new SendDebtPositionIONotificationActivityImpl(ioNotificationServiceMock);
+        activity = new IONotificationDebtPositionActivityImpl(ioNotificationServiceMock);
     }
 
     @AfterEach

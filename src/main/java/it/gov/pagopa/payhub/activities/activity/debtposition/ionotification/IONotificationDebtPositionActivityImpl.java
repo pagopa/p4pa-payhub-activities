@@ -14,11 +14,11 @@ import java.util.Map;
 @Lazy
 @Service
 @Slf4j
-public class SendDebtPositionIONotificationActivityImpl implements SendDebtPositionIONotificationActivity {
+public class IONotificationDebtPositionActivityImpl implements IONotificationDebtPositionActivity {
 
     private final IONotificationService ioNotificationService;
 
-    public SendDebtPositionIONotificationActivityImpl(IONotificationService ioNotificationService) {
+    public IONotificationDebtPositionActivityImpl(IONotificationService ioNotificationService) {
         this.ioNotificationService = ioNotificationService;
     }
 
