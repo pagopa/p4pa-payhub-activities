@@ -45,6 +45,7 @@ public class NotificationRequestMapper {
                         NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
                                 debtPositionDTO, ioNotificationDTO, installment);
                         notificationRequestDTO.setNav(installment.getNav());
+                        notificationRequestDTO.setOrgFiscalCode(installment.getTransfers().getFirst().getOrgFiscalCode());
                         return notificationRequestDTO;
                     })
                     .toList();

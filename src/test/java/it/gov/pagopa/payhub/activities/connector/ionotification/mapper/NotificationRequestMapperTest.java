@@ -54,8 +54,6 @@ class NotificationRequestMapperTest {
                 ioNotificationDTO);
 
         // Then
-
-
         checkNotNullFields(result.getFirst());
         assertEquals(expectedMarkdown, result.getFirst().getMarkdown());
         assertEquals(2, result.size());
@@ -114,7 +112,7 @@ class NotificationRequestMapperTest {
                 ioNotificationDTO);
 
         // Then
-        checkNotNullFields(result.getFirst(), "nav");
+        checkNotNullFields(result.getFirst(), "nav", "orgFiscalCode");
         assertEquals(expectedMarkdown, result.getFirst().getMarkdown());
         // size is 1 because fiscalCode is the same for all installments
         assertEquals(1, result.size());
