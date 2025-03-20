@@ -61,7 +61,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "iud")
     private String iud;
 
-    @CsvBindByName(column = "codIUV")
+    @CsvBindByName(column = "codIUV", profiles = "legacy")
     @CsvBindByName(column = "iuv")
     private String iuv;
 
