@@ -1,7 +1,5 @@
-package it.gov.pagopa.payhub.activities.service.debtpositions.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition;
 
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.DebtOperationOperationTypeResolver;
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.InstallmentOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
@@ -23,16 +21,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DebtOperationOperationTypeResolverTest {
+class DebtPositionOperationTypeResolverTest {
 
     @Mock
     private InstallmentOperationTypeResolver installmentOperationTypeResolverMock;
 
-    private DebtOperationOperationTypeResolver resolver;
+    private DebtPositionOperationTypeResolver resolver;
 
     @BeforeEach
     void setUp(){
-        resolver = new DebtOperationOperationTypeResolver(installmentOperationTypeResolverMock);
+        resolver = new DebtPositionOperationTypeResolver(installmentOperationTypeResolverMock);
     }
 
 

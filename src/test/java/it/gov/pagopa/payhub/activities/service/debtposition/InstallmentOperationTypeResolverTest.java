@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.service.debtpositions.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition;
 
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.InstallmentOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;

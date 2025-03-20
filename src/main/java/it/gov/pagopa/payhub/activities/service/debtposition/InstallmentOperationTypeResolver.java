@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
