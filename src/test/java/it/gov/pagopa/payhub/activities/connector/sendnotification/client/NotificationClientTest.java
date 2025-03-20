@@ -18,11 +18,11 @@ class NotificationClientTest {
     @Mock
     private NotificationApi notificationApiMock;
 
-    private SendClient sendClient;
+    private NotificationClient notificationClient;
 
     @BeforeEach
     void setUp() {
-        sendClient = new SendClient(sendApisHolderMock);
+        notificationClient = new NotificationClient(sendApisHolderMock);
     }
 
     @AfterEach
@@ -41,7 +41,7 @@ class NotificationClientTest {
                 .thenReturn(notificationApiMock);
 
         // When
-        sendClient.preloadSendFile(accessToken, sendNotificationId);
+        notificationClient.retrieveNotificationDate(accessToken, sendNotificationId, organizationId);
 
         // Then
         Mockito.verify(notificationApiMock).retrieveNotificationDate(sendNotificationId, organizationId);
