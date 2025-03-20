@@ -72,7 +72,7 @@ class DebtPositionClientTest {
     }
 
     @Test
-    void givenCheckAndUpdateInstallmentExpirationThenOk(){
+    void whenCheckAndUpdateInstallmentExpirationThenOk(){
         // Given
         String accessToken = "ACCESSTOKEN";
         Long debtPositionId = 0L;
@@ -92,7 +92,7 @@ class DebtPositionClientTest {
     }
 
     @Test
-    void givenInstallmentSynchronizeThenOk() {
+    void whenInstallmentSynchronizeThenOk() {
         // Given
         String accessToken = "ACCESSTOKEN";
         DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
@@ -123,7 +123,7 @@ class DebtPositionClientTest {
     }
 
     @Test
-    void givenGetDebtPositionsByIngestionFlowFileIdThenOk() {
+    void whenGetDebtPositionsByIngestionFlowFileIdThenOk() {
         // Given
         String accessToken = "ACCESSTOKEN";
         Long ingestionFlowFileId = 1L;

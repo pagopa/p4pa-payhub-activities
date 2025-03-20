@@ -3,7 +3,10 @@ package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationFacadeService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.NotificationRequestMapper;
+import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
+import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
@@ -34,14 +37,18 @@ public class IONotificationService {
         this.debtOperationOperationTypeResolver = debtOperationOperationTypeResolver;
     }
 
-    public List<MessageResponseDTO> sendMessage(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+    public List<MessageResponseDTO> sendMessage(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
         List<MessageResponseDTO> response = new ArrayList<>();
 
         PaymentEventType paymentEventType = debtOperationOperationTypeResolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
         if (paymentEventType != null) {
-            IONotificationDTO ioNotificationDTO = debtPositionTypeOrgService
-                    .getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), paymentEventType);
+            IONotificationDTO ioNotificationDTO = resolveProvidedIoMessages(debtPositionDTO, paymentEventType, ioMessages);
+
+            if(ioNotificationDTO==null) {
+                ioNotificationDTO = debtPositionTypeOrgService
+                        .getDefaultIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), paymentEventType);
+            }
 
             if (ioNotificationDTO != null) {
                 response = processNotifications(debtPositionDTO, ioNotificationDTO);
@@ -49,6 +56,34 @@ public class IONotificationService {
         }
 
         return response;
+    }
+
+    private IONotificationDTO resolveProvidedIoMessages(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
+        if(ioMessages == null){
+            return null;
+        }
+
+        IONotificationMessage template = switch (paymentEventType){
+            case DP_CREATED -> ioMessages.getCreated();
+            case DP_UPDATED, DPI_ADDED, DPI_UPDATED -> ioMessages.getUpdated();
+            case DPI_CANCELLED, DP_CANCELLED -> ioMessages.getDeleted();
+            default -> null;
+        };
+
+        return transcodeTemplate(debtPositionDTO, template);
+    }
+
+    private IONotificationDTO transcodeTemplate(DebtPositionDTO debtPositionDTO, IONotificationMessage template) {
+        if(template == null){
+            return null;
+        }
+
+        DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService.getById(debtPositionDTO.getDebtPositionTypeOrgId());
+        if(debtPositionTypeOrg!=null){
+            return new IONotificationDTO(debtPositionTypeOrg.getServiceId(), template.getSubject(), template.getMessage());
+        } else {
+            return null;
+        }
     }
 
     /**

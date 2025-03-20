@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.debtposition;
 
+import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,15 +13,16 @@ import java.io.Serializable;
 @AllArgsConstructor
 @SuperBuilder
 public class GenericWfExecutionConfig implements WfExecutionConfig {
-    private IONotificationBaseMessages ioMessages;
+    private IONotificationBaseOpsMessages ioMessages;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @SuperBuilder
-    public static class IONotificationBaseMessages implements Serializable {
-        private String created;
-        private String updated;
-        private String deleted;
+    public static class IONotificationBaseOpsMessages implements Serializable {
+        private IONotificationMessage created;
+        private IONotificationMessage updated;
+        private IONotificationMessage deleted;
     }
+
 }

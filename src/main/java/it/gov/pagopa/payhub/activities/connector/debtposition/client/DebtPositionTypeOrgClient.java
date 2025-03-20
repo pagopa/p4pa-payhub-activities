@@ -1,13 +1,17 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Service
+@Slf4j
 public class DebtPositionTypeOrgClient {
 
     private final DebtPositionApisHolder debtPositionApisHolder;
@@ -16,7 +20,23 @@ public class DebtPositionTypeOrgClient {
         this.debtPositionApisHolder = debtPositionApisHolder;
     }
 
-    public IONotificationDTO getIONotificationDetails(String accessToken, Long debtPositionTypeOrgId, PaymentEventType paymentEventType) {
-        return debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken).getIONotificationDetails(debtPositionTypeOrgId, paymentEventType.getValue());
+    public DebtPositionTypeOrg findById(Long debtPositionTypeOrgId, String accessToken) {
+        try {
+            return debtPositionApisHolder.getDebtPositionTypeOrgEntityApi(accessToken)
+                    .crudGetDebtpositiontypeorg(String.valueOf(debtPositionTypeOrgId));
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find DebtPositionTypeOrg having id {}", debtPositionTypeOrgId);
+            return null;
+        }
+    }
+
+    public IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType, String accessToken) {
+        try{
+            return debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken)
+                    .getIONotificationDetails(debtPositionTypeOrgId, paymentEventType.getValue());
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find IONotificationDetails related to DebtPosition having id {} and paymentEventType {}", debtPositionTypeOrgId, paymentEventType);
+            return null;
+        }
     }
 }

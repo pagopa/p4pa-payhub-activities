@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.debtpositions.ionotification;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationFacadeService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.NotificationRequestMapper;
+import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.DebtOperationOperationTypeResolver;
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IONotificationService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
@@ -65,10 +66,12 @@ class IONotificationServiceTest {
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
+        GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages = new GenericWfExecutionConfig.IONotificationBaseOpsMessages();
+
         when(debtOperationOperationTypeResolverMock.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap))
                 .thenReturn(DP_CREATED);
 
-        when(debtPositionTypeOrgServiceMock.getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
+        when(debtPositionTypeOrgServiceMock.getDefaultIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
                 .thenReturn(ioNotificationDTO);
 
         when(notificationRequestMapperMock.map(debtPositionDTO, ioNotificationDTO))
@@ -78,7 +81,7 @@ class IONotificationServiceTest {
                 .thenAnswer(invocation -> new MessageResponseDTO(UUID.randomUUID().toString()));
 
         // When
-        List<MessageResponseDTO> messageResponseDTOS = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        List<MessageResponseDTO> messageResponseDTOS = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap, ioMessages);
 
         // Then
         assertNotNull(messageResponseDTOS);
@@ -96,11 +99,13 @@ class IONotificationServiceTest {
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
+        GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages = new GenericWfExecutionConfig.IONotificationBaseOpsMessages();
+
         when(debtOperationOperationTypeResolverMock.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap))
                 .thenReturn(null);
 
         // When
-        List<MessageResponseDTO> messageResponseDTOS = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        List<MessageResponseDTO> messageResponseDTOS = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap, ioMessages);
 
         // Then
         assertTrue(messageResponseDTOS.isEmpty());
@@ -117,14 +122,16 @@ class IONotificationServiceTest {
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
+        GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages = new GenericWfExecutionConfig.IONotificationBaseOpsMessages();
+
         when(debtOperationOperationTypeResolverMock.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap))
                 .thenReturn(DP_CREATED);
 
-        when(debtPositionTypeOrgServiceMock.getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
+        when(debtPositionTypeOrgServiceMock.getDefaultIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
                 .thenReturn(null);
 
         // When
-        List<MessageResponseDTO> messageResponseDTOS = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        List<MessageResponseDTO> messageResponseDTOS = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap, ioMessages);
 
         // Then
         assertTrue(messageResponseDTOS.isEmpty());
