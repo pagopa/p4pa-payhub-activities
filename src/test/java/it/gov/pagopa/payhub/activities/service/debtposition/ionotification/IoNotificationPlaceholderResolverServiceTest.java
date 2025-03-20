@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.service.debtpositions.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationPlaceholderResolverService;
 import it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
@@ -13,11 +13,11 @@ import java.util.Objects;
 
 @Lazy
 @Component
-public class DebtOperationOperationTypeResolver {
+public class DebtPositionOperationTypeResolver {
 
     private final InstallmentOperationTypeResolver installmentOperationTypeResolver;
 
-    public DebtOperationOperationTypeResolver(InstallmentOperationTypeResolver installmentOperationTypeResolver) {
+    public DebtPositionOperationTypeResolver(InstallmentOperationTypeResolver installmentOperationTypeResolver) {
         this.installmentOperationTypeResolver = installmentOperationTypeResolver;
     }
 
