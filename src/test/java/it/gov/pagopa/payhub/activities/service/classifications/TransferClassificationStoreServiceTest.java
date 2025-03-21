@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
@@ -10,6 +11,7 @@ import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,12 +38,14 @@ class TransferClassificationStoreServiceTest {
 	private ClassificationService classificationServiceMock;
 	@Mock
 	private ReceiptService receiptServiceMock;
+	@Mock
+	private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
 
 	private TransferClassificationStoreService service;
 
 	@BeforeEach
 	void setUp() {
-		service = new TransferClassificationStoreService(classificationServiceMock, receiptServiceMock);
+		service = new TransferClassificationStoreService(classificationServiceMock, receiptServiceMock, debtPositionTypeOrgServiceMock);
 	}
 
 	@Test
@@ -55,8 +59,10 @@ class TransferClassificationStoreServiceTest {
 			.transferIndex(1)
 			.build();
 		ReceiptNoPII receiptNoPII = mock(ReceiptNoPII.class);
+		DebtPositionTypeOrg debtPositionTypeOrg = mock(DebtPositionTypeOrg.class);
 
 		when(receiptServiceMock.getByTransferId(transferDTO.getTransferId())).thenReturn(receiptNoPII);
+		when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(transferDTO.getInstallmentId())).thenReturn(debtPositionTypeOrg);
 
 		List<Classification> dtoList = List.of(
 			Classification.builder()
@@ -81,6 +87,7 @@ class TransferClassificationStoreServiceTest {
 				.accountRegistryCode(treasuryDTO.getAccountRegistryCode())
 				.billAmountCents(treasuryDTO.getBillAmountCents())
 				.remittanceInformation(transferDTO.getRemittanceInformation())
+				.debtPositionTypeOrgCode(debtPositionTypeOrg.getCode())
 				.build());
 
 		when(classificationServiceMock.saveAll(dtoList)).thenReturn(dtoList.size());
@@ -125,6 +132,7 @@ class TransferClassificationStoreServiceTest {
 				.accountRegistryCode(treasuryDTO.getAccountRegistryCode())
 				.billAmountCents(treasuryDTO.getBillAmountCents())
 				.remittanceInformation(null)
+				.debtPositionTypeOrgCode(null)
 				.build());
 
 		when(classificationServiceMock.saveAll(dtoList)).thenReturn(dtoList.size());
