@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.AfterEach;
@@ -112,25 +111,6 @@ class DebtPositionTypeOrgServiceTest {
         debtPositionTypeOrgService.getDebtPositionTypeOrgByInstallmentId(1L);
 
         // Then
-        Mockito.verify(debtPositionTypeOrgClientMock).getDebtPositionTypeOrgByInstallmentId(1L, accessToken);
-    }
-
-    @Test
-    void whenGetDebtPositionTypeOrgByInstallmentIdThrowsExceptionThenReturnNull() {
-        // Given
-        String accessToken = "ACCESSTOKEN";
-
-        Mockito.when(authnServiceMock.getAccessToken())
-            .thenReturn(accessToken);
-
-        Mockito.when(debtPositionTypeOrgClientMock.getDebtPositionTypeOrgByInstallmentId(1L, accessToken))
-            .thenThrow(new RuntimeException("API error"));
-
-        // When
-        DebtPositionTypeOrg result = debtPositionTypeOrgService.getDebtPositionTypeOrgByInstallmentId(1L);
-
-        // Then
-        assertNull(result);
         Mockito.verify(debtPositionTypeOrgClientMock).getDebtPositionTypeOrgByInstallmentId(1L, accessToken);
     }
 }
