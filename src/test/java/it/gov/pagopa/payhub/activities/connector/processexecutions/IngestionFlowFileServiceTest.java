@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.IngestionFlowFileClient;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFileEmbedded;
 import org.junit.jupiter.api.AfterEach;
@@ -65,8 +66,8 @@ class IngestionFlowFileServiceTest {
         // Given
         String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
-        IngestionFlowFile.StatusEnum oldStatus = IngestionFlowFile.StatusEnum.UPLOADED;
-        IngestionFlowFile.StatusEnum newStatus = IngestionFlowFile.StatusEnum.PROCESSING;
+        IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.UPLOADED;
+        IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.PROCESSING;
         String errorDescription = "errorDescription";
         String discardFileName = "discardFileName";
         Integer expectedResponse = 1;

@@ -1,11 +1,14 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.pu.debtposition.dto.generated.ActionEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
 
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.*;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCALDATE;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIMEENDOFTHEDAY;
 
 public class InstallmentSynchronizeDTOFaker {
 
@@ -14,7 +17,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .organizationId(1L)
                 .ingestionFlowFileId(1L)
                 .ingestionFlowFileLineNumber(1L)
-                .action(InstallmentSynchronizeDTO.ActionEnum.I)
+                .action(ActionEnum.I)
                 .draft(false)
                 .iupdOrg("iupd")
                 .description("description")
@@ -26,7 +29,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .paymentOptionType("paymentOptionType")
                 .iud("iud")
                 .iuv("iuv")
-                .entityType(InstallmentSynchronizeDTO.EntityTypeEnum.F)
+                .entityType(EntityTypeEnum.F)
                 .fiscalCode("fiscalCode")
                 .fullName("fullName")
                 .address("address")

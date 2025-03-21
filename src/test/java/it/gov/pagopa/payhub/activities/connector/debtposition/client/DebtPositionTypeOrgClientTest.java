@@ -55,7 +55,7 @@ class DebtPositionTypeOrgClientTest {
         Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgApi(accessToken))
                 .thenReturn(debtPositionTypeOrgApiMock);
 
-        Mockito.when(debtPositionTypeOrgApiMock.getIONotificationDetails(1L, "DP_CREATED"))
+        Mockito.when(debtPositionTypeOrgApiMock.getIONotificationDetails(1L, it.gov.pagopa.pu.debtposition.dto.generated.PaymentEventType.DP_CREATED))
                 .thenReturn(expectedResult);
 
         // When
@@ -73,7 +73,7 @@ class DebtPositionTypeOrgClientTest {
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgApi(accessToken))
                 .thenReturn(debtPositionTypeOrgApiMock);
-        Mockito.when(debtPositionTypeOrgApiMock.getIONotificationDetails(debtPositionTypeOrgId, "DP_CREATED"))
+        Mockito.when(debtPositionTypeOrgApiMock.getIONotificationDetails(debtPositionTypeOrgId, it.gov.pagopa.pu.debtposition.dto.generated.PaymentEventType.DP_CREATED))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When

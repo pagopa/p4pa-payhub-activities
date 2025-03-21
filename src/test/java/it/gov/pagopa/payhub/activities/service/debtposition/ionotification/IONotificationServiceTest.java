@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
@@ -75,7 +76,7 @@ class IONotificationServiceTest {
         NotificationRequestDTO notificationRequestDTO = buildNotificationRequestDTO();
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
 
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
@@ -113,7 +114,7 @@ class IONotificationServiceTest {
         NotificationRequestDTO notificationRequestDTO = buildNotificationRequestDTO();
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
 
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
@@ -146,7 +147,7 @@ class IONotificationServiceTest {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
 
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
@@ -169,7 +170,7 @@ class IONotificationServiceTest {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
 
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);

@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
-import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO.DebtPositionOriginEnum.ORDINARY_SIL;
+import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,8 +47,7 @@ class DebtPositionServiceTest {
     void whenFinalizeSyncStatusThenInvokeClient() {
         // Given
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .iupdPagopa("iudpPagopa")
-                .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC)
+                .newStatus(InstallmentStatus.TO_SYNC)
                 .build();
         String accessToken = "ACCESSTOKEN";
 
@@ -67,7 +66,7 @@ class DebtPositionServiceTest {
         // Given
         String accessToken = "ACCESSTOKEN";
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        InstallmentDTO.StatusEnum unpaidStatus = InstallmentDTO.StatusEnum.UNPAID;
+        InstallmentStatus unpaidStatus = InstallmentStatus.UNPAID;
         LocalDate now = LocalDate.now();
 
         InstallmentDTO installment1 = new InstallmentDTO();
@@ -119,7 +118,7 @@ class DebtPositionServiceTest {
     void givenInstallmentSynchronizeThenReturnsWorkflowId() {
         // Given
         String accessToken = "ACCESSTOKEN";
-        DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
+        DebtPositionOrigin origin = ORDINARY_SIL;
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
         String userId = "USERID";

@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +20,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Set;
-
-import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.StatusEnum;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionApisHolderTest extends BaseApiHolderTest {
@@ -58,8 +58,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .iupdPagopa("iudpPagopa")
-                .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC)
+                .newStatus(InstallmentStatus.TO_SYNC)
                 .build();
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionApi(accessToken)
@@ -71,8 +70,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     @Test
     void givenExternalUserIdWhenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .iupdPagopa("iudpPagopa")
-                .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC)
+                .newStatus(InstallmentStatus.TO_SYNC)
                 .build();
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 (accessToken, userId) -> debtPositionApisHolder.getDebtPositionApi(accessToken, userId)
@@ -87,7 +85,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
                 .crudTransfersFindBySemanticKey(0L, "iuv", "iud", 1,
-                    Set.of(StatusEnum.PAID.getValue(), StatusEnum.REPORTED.getValue())),
+                    Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED)),
             new ParameterizedTypeReference<>() {},
             debtPositionApisHolder::unload);
     }
@@ -114,7 +112,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     void whenGetDebtPositionTypeOrgApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken)
-                        .getIONotificationDetails(1L, "DP_CREATED"),
+                        .getIONotificationDetails(1L, PaymentEventType.DP_CREATED),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }

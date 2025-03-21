@@ -14,6 +14,7 @@ import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Set;
 
-import static it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.StatusEnum;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -41,7 +41,7 @@ class TransferClassificationActivityImplTest {
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 	private final Transfer transferDTO = TransferFaker.buildTransfer();
 	private final TreasuryIuf treasuryIuf = TreasuryFaker.buildTreasuryIuf();
-	private final Set<StatusEnum> installmentStatusSet = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
+	private final Set<InstallmentStatus> installmentStatusSet = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
 	@Mock
 	private ClassificationService classificationServiceMock;
