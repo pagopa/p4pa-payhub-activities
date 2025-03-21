@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControll
 import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelOrganizationEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -162,7 +163,7 @@ class OrganizationSearchClientTest {
 
         Mockito.when(organizationApisHolderMock.getOrganizationSearchControllerApi(accessToken))
                 .thenReturn(organizationSearchControllerApiMock);
-        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByBrokerIdAndStatus(brokerId, Organization.StatusEnum.ACTIVE.getValue()))
+        Mockito.when(organizationSearchControllerApiMock.crudOrganizationsFindByBrokerIdAndStatus(brokerId, OrganizationStatus.ACTIVE))
                 .thenReturn(expectedResult);
         // When
         CollectionModelOrganization result = organizationSearchClient.findActiveOrganizationsByBrokerId(brokerId, accessToken);

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +33,7 @@ class InstallmentOperationTypeResolverTest {
     @Test
     void whenToStatusIsUnpaidAndFromStatusIsDraftThenReturnCreateDP() {
         // Given
-        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.DRAFT, InstallmentSyncStatus.SyncStatusToEnum.UNPAID);
+        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID);
 
         // When
         PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
@@ -44,7 +45,7 @@ class InstallmentOperationTypeResolverTest {
     @Test
     void whenToStatusIsUnpaidAndFromStatusIsNotDraftThenReturnUpdateDP() {
         // Given
-        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.UNPAID);
+        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentStatus.UNPAID, InstallmentStatus.UNPAID);
 
         // When
         PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
@@ -56,7 +57,7 @@ class InstallmentOperationTypeResolverTest {
     @Test
     void whenToStatusIsInvalidThenReturnUpdateDP() {
         // Given
-        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.INVALID);
+        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentStatus.UNPAID, InstallmentStatus.INVALID);
 
         // When
         PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
@@ -68,7 +69,7 @@ class InstallmentOperationTypeResolverTest {
     @Test
     void whenToStatusIsExpiredThenReturnUpdateDP() {
         // Given
-        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.EXPIRED);
+        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentStatus.UNPAID, InstallmentStatus.EXPIRED);
 
         // When
         PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
@@ -80,7 +81,7 @@ class InstallmentOperationTypeResolverTest {
     @Test
     void whenToStatusIsCancelledThenReturnDeleteDP() {
         // Given
-        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.UNPAID, InstallmentSyncStatus.SyncStatusToEnum.CANCELLED);
+        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentStatus.UNPAID, InstallmentStatus.CANCELLED);
 
         // When
         PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
@@ -92,7 +93,7 @@ class InstallmentOperationTypeResolverTest {
     @Test
     void whenToStatusIsUnknownThenReturnNull() {
         // Given
-        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.TO_SYNC, InstallmentSyncStatus.SyncStatusToEnum.PAID);
+        InstallmentDTO installment = buildInstalmentWithInstallmentSyncStatus(InstallmentStatus.TO_SYNC, InstallmentStatus.PAID);
 
         // When
         PaymentEventType result = resolver.calculateInstallmentOperationType(installment);
@@ -101,7 +102,7 @@ class InstallmentOperationTypeResolverTest {
         Assertions.assertNull(result);
     }
 
-    private InstallmentDTO buildInstalmentWithInstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum from, InstallmentSyncStatus.SyncStatusToEnum to) {
+    private InstallmentDTO buildInstalmentWithInstallmentSyncStatus(InstallmentStatus from, InstallmentStatus to) {
         InstallmentDTO installment = new InstallmentDTO();
         InstallmentSyncStatus syncStatus = new InstallmentSyncStatus();
         syncStatus.setSyncStatusFrom(from);

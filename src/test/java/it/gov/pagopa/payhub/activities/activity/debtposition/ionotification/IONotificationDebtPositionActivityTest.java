@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IONotificationService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -41,7 +42,7 @@ class IONotificationDebtPositionActivityTest {
     void givenSendIoNotificationThenSuccess(){
         // Given
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupd");
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
         MessageResponseDTO expectedResult = new MessageResponseDTO("id");
         GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages = new GenericWfExecutionConfig.IONotificationBaseOpsMessages();
         Map<String, IupdSyncStatusUpdateDTO> iudMap = Map.of("IUD", iupdSyncStatusUpdateDTO);

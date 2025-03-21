@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -11,9 +12,9 @@ import java.util.Set;
 public class DebtPositionUtilities {
     private DebtPositionUtilities(){}
 
-    private static final Set<InstallmentDTO.StatusEnum> expirableStatuses = Set.of(
-            InstallmentDTO.StatusEnum.UNPAID,
-            InstallmentDTO.StatusEnum.UNPAYABLE
+    private static final Set<InstallmentStatus> expirableStatuses = Set.of(
+            InstallmentStatus.UNPAID,
+            InstallmentStatus.UNPAYABLE
     );
 
     /** It will return the min dueDate of all active installments */

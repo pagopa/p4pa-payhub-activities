@@ -1,10 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,7 +35,7 @@ public interface DebtPositionService {
      * @param wfExecutionParameters wf execution config
      * @return the workflow ID if a workflow is triggered, otherwise null.
      */
-    String installmentSynchronize(DebtPositionDTO.DebtPositionOriginEnum origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId);
+    String installmentSynchronize(DebtPositionOrigin origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId);
 
     PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, Integer page, Integer size, List<String> sort);
 }

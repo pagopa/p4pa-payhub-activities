@@ -3,10 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +20,7 @@ import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
-import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO.DebtPositionOriginEnum.ORDINARY_SIL;
+import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,8 +51,7 @@ class DebtPositionClientTest {
         String accessToken = "ACCESSTOKEN";
         Long debtPositionId = 0L;
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .iupdPagopa("iudpPagopa")
-                .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC)
+                .newStatus(InstallmentStatus.TO_SYNC)
                 .build();
         DebtPositionDTO expectedResult = buildDebtPositionDTO();
 
@@ -95,7 +91,7 @@ class DebtPositionClientTest {
     void whenInstallmentSynchronizeThenOk() {
         // Given
         String accessToken = "ACCESSTOKEN";
-        DebtPositionDTO.DebtPositionOriginEnum origin = ORDINARY_SIL;
+        DebtPositionOrigin origin = ORDINARY_SIL;
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         boolean massive = true;
         boolean partialChange = false;
@@ -111,7 +107,7 @@ class DebtPositionClientTest {
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken, operatorUserId))
                 .thenReturn(debtPositionApiMock);
-        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive, partialChange))
+        Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive, partialChange))
                 .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
 
         // When
@@ -119,7 +115,7 @@ class DebtPositionClientTest {
 
         // Then
         Assertions.assertEquals(expectedWorkflowId, result);
-        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, massive, partialChange);
+        verify(debtPositionApiMock).installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive, partialChange);
     }
 
     @Test

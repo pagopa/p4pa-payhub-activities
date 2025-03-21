@@ -33,7 +33,7 @@ public class DebtPositionTypeOrgClient {
     public IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType, String accessToken) {
         try{
             return debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken)
-                    .getIONotificationDetails(debtPositionTypeOrgId, paymentEventType.getValue());
+                    .getIONotificationDetails(debtPositionTypeOrgId, it.gov.pagopa.pu.debtposition.dto.generated.PaymentEventType.valueOf(paymentEventType.getValue()));
         } catch (HttpClientErrorException.NotFound e){
             log.info("Cannot find IONotificationDetails related to DebtPosition having id {} and paymentEventType {}", debtPositionTypeOrgId, paymentEventType);
             return null;

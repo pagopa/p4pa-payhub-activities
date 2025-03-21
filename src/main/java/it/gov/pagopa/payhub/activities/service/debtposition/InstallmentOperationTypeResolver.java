@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.springframework.context.annotation.Lazy;
@@ -14,11 +15,11 @@ public class InstallmentOperationTypeResolver {
         InstallmentSyncStatus syncStatus = installment.getSyncStatus();
         if (syncStatus == null) return null;
 
-        InstallmentSyncStatus.SyncStatusFromEnum fromStatus = syncStatus.getSyncStatusFrom();
-        InstallmentSyncStatus.SyncStatusToEnum toStatus = syncStatus.getSyncStatusTo();
+        InstallmentStatus fromStatus = syncStatus.getSyncStatusFrom();
+        InstallmentStatus toStatus = syncStatus.getSyncStatusTo();
 
         return switch (toStatus) {
-            case UNPAID -> (fromStatus == InstallmentSyncStatus.SyncStatusFromEnum.DRAFT)
+            case UNPAID -> (fromStatus == InstallmentStatus.DRAFT)
                     ? PaymentEventType.DP_CREATED
                     : PaymentEventType.DP_UPDATED;
             case INVALID, EXPIRED -> PaymentEventType.DP_UPDATED;

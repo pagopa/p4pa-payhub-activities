@@ -7,9 +7,7 @@ import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtReceiptV2;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtSubject;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtTransferPAReceiptV2;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptTransferDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -25,7 +23,7 @@ public class ReceiptMapper {
     return new ReceiptWithAdditionalNodeDataDTO()
       .receiptId(null)
       .ingestionFlowFileId(null)
-      .receiptOrigin(ReceiptWithAdditionalNodeDataDTO.ReceiptOriginEnum.RECEIPT_PAGOPA)
+      .receiptOrigin(ReceiptOriginType.RECEIPT_PAGOPA)
       .paymentReceiptId(rec.getReceiptId())
       .noticeNumber(rec.getNoticeNumber())
       .paymentNote(rec.getPaymentNote())
@@ -58,7 +56,7 @@ public class ReceiptMapper {
 
   private PersonDTO map(CtSubject subject) {
     return new PersonDTO()
-      .entityType(PersonDTO.EntityTypeEnum.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
+      .entityType(EntityTypeEnum.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
       .fiscalCode(subject.getUniqueIdentifier().getEntityUniqueIdentifierValue())
       .fullName(subject.getFullName())
       .email(subject.getEMail())

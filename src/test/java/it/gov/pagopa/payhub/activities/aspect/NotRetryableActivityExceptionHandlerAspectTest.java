@@ -4,7 +4,7 @@ import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,8 +27,8 @@ class NotRetryableActivityExceptionHandlerAspectTest {
     @Test
     void givenNotRetryableActivityExceptionExtensionWhenInvokeActivityThenExceptionWrapped(){
         // Given
-        IngestionFlowFile.StatusEnum oldStatus = IngestionFlowFile.StatusEnum.UPLOADED;
-        IngestionFlowFile.StatusEnum newStatus = IngestionFlowFile.StatusEnum.PROCESSING;
+        IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.UPLOADED;
+        IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.PROCESSING;
         NotRetryableActivityException expectedNestedException = new NotRetryableActivityException("DUMMY"){};
         Mockito.when(ingestionFlowFileServiceMock.updateStatus(1L, oldStatus, newStatus,"ERROR_DESCRIPTION", null))
                 .thenThrow(expectedNestedException);
