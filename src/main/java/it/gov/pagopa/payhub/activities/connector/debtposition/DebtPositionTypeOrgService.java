@@ -19,4 +19,12 @@ public interface DebtPositionTypeOrgService {
      * @return the updated {@link IONotificationDTO} object.
      */
     IONotificationDTO getDefaultIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType);
+
+    /**
+     * Get the debt position type org by installment id.
+     *
+     * @param installmentId the identifier of the installment.
+     * @return the {@link DebtPositionTypeOrg} object.
+     */
+    DebtPositionTypeOrg getDebtPositionTypeOrgByInstallmentId(Long installmentId);
 }

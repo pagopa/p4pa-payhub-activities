@@ -98,4 +98,19 @@ class DebtPositionTypeOrgServiceTest {
         // Then
         Mockito.verify(debtPositionTypeOrgClientMock).findById(1L, accessToken);
     }
+
+    @Test
+    void whenGetDebtPositionTypeOrgByInstallmentIdThenInvokeClient() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        // When
+        debtPositionTypeOrgService.getDebtPositionTypeOrgByInstallmentId(1L);
+
+        // Then
+        Mockito.verify(debtPositionTypeOrgClientMock).getDebtPositionTypeOrgByInstallmentId(1L, accessToken);
+    }
 }
