@@ -151,4 +151,13 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
+
+    @Test
+    void whenGetDebtPositionTypeOrgSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgSearchControllerApi(accessToken)
+                        .crudDebtPositionTypeOrgsGetDebtPositionTypeOrgByInstallmentId(1L),
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload);
+    }
 }

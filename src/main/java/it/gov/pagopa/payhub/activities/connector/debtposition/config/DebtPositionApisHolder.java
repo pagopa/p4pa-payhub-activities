@@ -20,6 +20,7 @@ public class DebtPositionApisHolder {
     private final ReceiptApi receiptApi;
     private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
     private final DebtPositionTypeOrgEntityControllerApi debtPositionTypeOrgEntityApi;
+    private final DebtPositionTypeOrgSearchControllerApi debtPositionTypeOrgSearchControllerApi;
     private final ReceiptNoPiiSearchControllerApi receiptNoPiiSearchControllerApi;
     private final DataExportsApi dataExportsApi;
 
@@ -48,6 +49,7 @@ public class DebtPositionApisHolder {
         this.receiptApi = new ReceiptApi(apiClient);
         this.debtPositionTypeOrgApi = new DebtPositionTypeOrgApi(apiClient);
         this.debtPositionTypeOrgEntityApi = new DebtPositionTypeOrgEntityControllerApi(apiClient);
+        this.debtPositionTypeOrgSearchControllerApi = new DebtPositionTypeOrgSearchControllerApi(apiClient);
 	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
         this.dataExportsApi = new DataExportsApi(apiClient);
     }
@@ -87,6 +89,10 @@ public class DebtPositionApisHolder {
 
     public DebtPositionTypeOrgEntityControllerApi getDebtPositionTypeOrgEntityApi(String accessToken) {
         return getApi(accessToken, null, debtPositionTypeOrgEntityApi);
+    }
+
+    public DebtPositionTypeOrgSearchControllerApi getDebtPositionTypeOrgSearchControllerApi(String accessToken) {
+        return getApi(accessToken, null, debtPositionTypeOrgSearchControllerApi);
     }
 
 	public ReceiptNoPiiSearchControllerApi getReceiptNoPiiSearchControllerApi(String accessToken) {
