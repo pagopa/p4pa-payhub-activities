@@ -42,4 +42,15 @@ public class DebtPositionTypeOrgServiceImpl implements DebtPositionTypeOrgServic
             return null;
         }
     }
+
+    @Override
+    public DebtPositionTypeOrg getDebtPositionTypeOrgByInstallmentId(Long installmentId) {
+        log.info("Fetching DebtPositionTypeOrg with installmentId: {}", installmentId);
+        try {
+            return debtPositionTypeOrgClient.getDebtPositionTypeOrgByInstallmentId(installmentId, authnService.getAccessToken());
+        } catch (Exception e) {
+            log.error("Failed to retrieve DebtPositionTypeOrg with installmentId: {}", installmentId, e);
+            return null;
+        }
+    }
 }
