@@ -18,8 +18,8 @@ public class FineWfExecutionConfig implements WfExecutionConfig {
     @Override
     public DebtPositionSyncWfName getWorkflowTypeName() {return workflowTypeName;}
 
-    private long discountDays;
-    private long expirationDays;
+    private long discountDays=5;
+    private long expirationDays=60;
     private IONotificationFineWfMessages ioMessages;
 
     @Data
