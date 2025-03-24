@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import java.io.IOException;
 
 /**
  * Interface for the ExportFileExpirationHandlerActivity.
@@ -12,5 +11,5 @@ import java.io.IOException;
 public interface ExportFileExpirationHandlerActivity {
 
   @ActivityMethod
-  void handleExpiration(Long id, String codError) throws IOException;
+  void handleExpiration(Long id, String codError);
 }

@@ -25,7 +25,7 @@ public class ExportFileExpirationHandlerActivityImpl implements ExportFileExpira
   }
 
   @Override
-  public void handleExpiration(Long id, String codError) throws IOException {
+  public void handleExpiration(Long id, String codError) {
     log.info("Handling expiration of Export File having id {}", id);
     ExportFile file = exportFileService.findById(id)
         .orElseThrow(() -> new ExportFileNotFoundException(
