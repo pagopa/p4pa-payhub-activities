@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -18,15 +18,15 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 
 	private final IngestionFlowFileService ingestionFlowFileService;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
-	private final IngestionFlowFileArchiverService ingestionFlowFileArchiverService;
+	private final FileArchiverService fileArchiverService;
 
 	protected BaseIngestionFlowFileActivity(
 	                                                      IngestionFlowFileService ingestionFlowFileService,
 	                                                      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-	                                                      IngestionFlowFileArchiverService ingestionFlowFileArchiverService) {
+	                                                      FileArchiverService fileArchiverService) {
 		this.ingestionFlowFileService = ingestionFlowFileService;
 		this.ingestionFlowFileRetrieverService = ingestionFlowFileRetrieverService;
-		this.ingestionFlowFileArchiverService = ingestionFlowFileArchiverService;
+		this.fileArchiverService = fileArchiverService;
 	}
 
 	public T processFile(Long ingestionFlowFileId) {
@@ -39,7 +39,7 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 
 			T result = handleRetrievedFiles(retrievedFiles, ingestionFlowFileDTO);
 
-			ingestionFlowFileArchiverService.archive(ingestionFlowFileDTO);
+			fileArchiverService.archive(ingestionFlowFileDTO);
 
 			return result;
 		} finally {

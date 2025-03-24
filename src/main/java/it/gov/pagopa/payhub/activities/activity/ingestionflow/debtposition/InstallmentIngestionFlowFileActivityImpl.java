@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIng
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -34,16 +34,16 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
      *
      * @param ingestionFlowFileService          DAO for accessing ingestion flow file records.
      * @param ingestionFlowFileRetrieverService Service for retrieving and unzipping ingestion flow files.
-     * @param ingestionFlowFileArchiverService  Service for archiving files.
+     * @param fileArchiverService  Service for archiving files.
      * @param csvService                        Service for handling CSV file operations.
      * @param installmentProcessingService      Service for processing installments.
      */
     public InstallmentIngestionFlowFileActivityImpl(IngestionFlowFileService ingestionFlowFileService,
                                                     IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-                                                    IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
+                                                    FileArchiverService fileArchiverService,
                                                     CsvService csvService,
                                                     InstallmentProcessingService installmentProcessingService) {
-        super(ingestionFlowFileService, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
+        super(ingestionFlowFileService, ingestionFlowFileRetrieverService, fileArchiverService);
         this.csvService = csvService;
         this.installmentProcessingService = installmentProcessingService;
     }

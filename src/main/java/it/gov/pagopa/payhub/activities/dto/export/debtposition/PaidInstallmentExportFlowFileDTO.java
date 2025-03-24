@@ -151,7 +151,7 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "tipoDovuto", required = true)
     @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String dueType;
-    @CsvBindByName(column = "tipoFirma", required = true)
+    @CsvBindByName(column = "tipoFirma")
     @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private Integer signatureType;
     @CsvBindByName(column = "rt")

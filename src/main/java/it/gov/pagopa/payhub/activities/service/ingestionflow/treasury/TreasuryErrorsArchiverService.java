@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.ErrorArchiverService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,9 @@ public class TreasuryErrorsArchiverService extends ErrorArchiverService<Treasury
 
     public TreasuryErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                          @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
-                                         IngestionFlowFileArchiverService ingestionFlowFileArchiverService,
+                                         FileArchiverService fileArchiverService,
                                          CsvService csvService) {
-        super(sharedFolder, errorFolder, ingestionFlowFileArchiverService, csvService);
+        super(sharedFolder, errorFolder, fileArchiverService, csvService);
     }
 
     @Override

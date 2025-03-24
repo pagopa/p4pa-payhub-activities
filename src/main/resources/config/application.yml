@@ -17,6 +17,13 @@ ingestion-flow-files:
       max-waiting-minutes: 5
       retry-delays-ms: 1000
 
+export-flow-files:
+  default:
+    filename-prefix: "\${EXPORT_FLOW_FILE_FILENAME_PREFIX:EXPORT_PAID}"
+  paid:
+    page-size: "\${PAID_EXPORT_FLOW_FILE_SIZE_PAGE:20}"
+    relative-file-folder: "\${PAID_EXPORT_RELATIVE_FILE_FOLDER:export}"
+
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
 

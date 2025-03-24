@@ -3,14 +3,13 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
@@ -54,7 +53,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	@Mock
 	private PaymentsReportingService paymentsReportingServiceMock;
 	@Mock
-	private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+	private FileArchiverService fileArchiverServiceMock;
 
 	private PaymentsReportingIngestionFlowFileActivityImpl ingestionActivity;
 
@@ -72,7 +71,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			paymentsReportingIngestionFlowFileValidatorServiceMock,
 			paymentsReportingMapperServiceMock,
 			paymentsReportingServiceMock,
-			ingestionFlowFileArchiverServiceMock
+			fileArchiverServiceMock
 		);
 
 		CtIdentificativoUnivocoPersonaG ctIdentificativoUnivocoPersonaG = new CtIdentificativoUnivocoPersonaG();
@@ -92,7 +91,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 				paymentsReportingIngestionFlowFileValidatorServiceMock,
 				paymentsReportingMapperServiceMock,
 				paymentsReportingServiceMock,
-				ingestionFlowFileArchiverServiceMock
+				fileArchiverServiceMock
 		);
 	}
 
@@ -128,7 +127,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		when(paymentsReportingMapperServiceMock.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO)).thenReturn(dtoList);
 		doReturn(1).when(paymentsReportingServiceMock).saveAll(dtoList);
 		when(paymentsReportingMapperServiceMock.map(paymentsReportingDTO)).thenReturn(paymentsReportingTransferDTO);
-		doNothing().when(ingestionFlowFileArchiverServiceMock)
+		doNothing().when(fileArchiverServiceMock)
 			.archive(ingestionFlowFileDTO);
 
 		// When

@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryOpiParserService;
@@ -37,16 +37,16 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
      * @param ingestionFlowFileService          DAO for accessing ingestion flow file records.
      * @param ingestionFlowFileRetrieverService Service for retrieving and unzipping ingestion flow files.
      * @param treasuryOpiParserService          Service for parsing treasury OPI files.
-     * @param ingestionFlowFileArchiverService  Service for archiving files.
+     * @param fileArchiverService  Service for archiving files.
      */
     public TreasuryOpiIngestionActivityImpl(
             IngestionFlowFileService ingestionFlowFileService,
             IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
             TreasuryOpiParserService treasuryOpiParserService,
-            IngestionFlowFileArchiverService ingestionFlowFileArchiverService, TreasuryErrorsArchiverService errorsArchiverService
+            FileArchiverService fileArchiverService, TreasuryErrorsArchiverService errorsArchiverService
 
     ) {
-        super(ingestionFlowFileService, ingestionFlowFileRetrieverService, ingestionFlowFileArchiverService);
+        super(ingestionFlowFileService, ingestionFlowFileRetrieverService, fileArchiverService);
         this.treasuryOpiParserService = treasuryOpiParserService;
         this.errorsArchiverService = errorsArchiverService;
     }

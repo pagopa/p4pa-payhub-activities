@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InstallmentExportFlowFileResult {
+public class ExportFlowFileResult {
     /** File path */
     private String filePath;
     /** File name */

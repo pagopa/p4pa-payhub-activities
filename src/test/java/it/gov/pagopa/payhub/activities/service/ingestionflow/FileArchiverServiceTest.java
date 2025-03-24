@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
@@ -26,20 +27,20 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class IngestionFlowFileArchiverServiceTest {
+class FileArchiverServiceTest {
 	private static final String TEST_PASSWORD = "mockPassword";
 
 	@Mock
 	private ZipFileService zipFileServiceMock;
 
-	private IngestionFlowFileArchiverService service;
+	private FileArchiverService service;
 
 	private final Path sharedDir = Path.of("build");
 	private final Path targetDir = Path.of("build", "tmp");
 
 	@BeforeEach
 	void setUp() {
-		service = new IngestionFlowFileArchiverService(sharedDir.toString(), "archive", TEST_PASSWORD, zipFileServiceMock);
+		service = new FileArchiverService(sharedDir.toString(), "archive", TEST_PASSWORD, zipFileServiceMock);
 	}
 
 	@AfterEach
