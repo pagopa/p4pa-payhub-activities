@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ActionEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -27,7 +29,7 @@ public class InstallmentSynchronizeMapper {
                 .ingestionFlowFileId(ingestionFlowFileId)
                 .ingestionFlowFileLineNumber(ingestionFlowFileLineNumber)
                 .organizationId(organizationId)
-                .action(InstallmentSynchronizeDTO.ActionEnum.valueOf(installmentIngestionFlowFileDTO.getAction().name()))
+                .action(ActionEnum.valueOf(installmentIngestionFlowFileDTO.getAction().name()))
                 .draft(installmentIngestionFlowFileDTO.getDraft())
                 .iupdOrg(installmentIngestionFlowFileDTO.getIupdOrg())
                 .description(installmentIngestionFlowFileDTO.getDescription())
@@ -39,7 +41,7 @@ public class InstallmentSynchronizeMapper {
                 .paymentOptionDescription(installmentIngestionFlowFileDTO.getPaymentOptionDescription())
                 .iud(installmentIngestionFlowFileDTO.getIud())
                 .iuv(installmentIngestionFlowFileDTO.getIuv())
-                .entityType(InstallmentSynchronizeDTO.EntityTypeEnum.valueOf(installmentIngestionFlowFileDTO.getEntityType().name()))
+                .entityType(EntityTypeEnum.valueOf(installmentIngestionFlowFileDTO.getEntityType().name()))
                 .fiscalCode(installmentIngestionFlowFileDTO.getFiscalCode())
                 .fullName(installmentIngestionFlowFileDTO.getFullName())
                 .address(installmentIngestionFlowFileDTO.getAddress())

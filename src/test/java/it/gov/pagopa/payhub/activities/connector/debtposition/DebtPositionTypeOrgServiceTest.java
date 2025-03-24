@@ -37,7 +37,7 @@ class DebtPositionTypeOrgServiceTest {
     }
 
     @Test
-    void whenGetIONotificationDetailsThenInvokeClient() {
+    void whenGetDefaultIONotificationDetailsThenInvokeClient() {
         // Given
         String accessToken = "ACCESSTOKEN";
 
@@ -45,42 +45,72 @@ class DebtPositionTypeOrgServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        debtPositionTypeOrgService.getIONotificationDetails(1L, PaymentEventType.DP_CREATED);
+        debtPositionTypeOrgService.getDefaultIONotificationDetails(1L, PaymentEventType.DP_CREATED);
 
         // Then
-        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_CREATED);
+        Mockito.verify(debtPositionTypeOrgClientMock).getIONotificationDetails(1L, PaymentEventType.DP_CREATED, accessToken);
     }
 
     @Test
-    void givenGetIONotificationDetailsWhenOperationTypeDPUpdatedThenInvokeClient() {
+    void givenGetDefaultIONotificationDetailsWhenOperationTypeDPUpdatedThenInvokeClient() {
         // Given
         String accessToken = "ACCESSTOKEN";
 
         // When
-        IONotificationDTO ioNotificationDetails = debtPositionTypeOrgService.getIONotificationDetails(1L, PaymentEventType.DP_UPDATED);
+        IONotificationDTO ioNotificationDetails = debtPositionTypeOrgService.getDefaultIONotificationDetails(1L, PaymentEventType.DP_UPDATED);
 
         // Then
-        Mockito.verify(debtPositionTypeOrgClientMock, Mockito.times(0)).getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_UPDATED);
+        Mockito.verify(debtPositionTypeOrgClientMock, Mockito.times(0)).getIONotificationDetails(1L, PaymentEventType.DP_UPDATED, accessToken);
         assertNull(ioNotificationDetails);
     }
 
     @Test
-    void whenGetIONotificationDetailsThrowsExceptionThenReturnNull() {
+    void whenGetDefaultIONotificationDetailsThrowsExceptionThenReturnNull() {
         // Given
         String accessToken = "ACCESSTOKEN";
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
-        Mockito.when(debtPositionTypeOrgClientMock.getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_CREATED))
+        Mockito.when(debtPositionTypeOrgClientMock.getIONotificationDetails(1L, PaymentEventType.DP_CREATED, accessToken))
                 .thenThrow(new RuntimeException("API error"));
 
         // When
-        IONotificationDTO result = debtPositionTypeOrgService.getIONotificationDetails(1L, PaymentEventType.DP_CREATED);
+        IONotificationDTO result = debtPositionTypeOrgService.getDefaultIONotificationDetails(1L, PaymentEventType.DP_CREATED);
 
         // Then
         assertNull(result);
         Mockito.verify(debtPositionTypeOrgClientMock)
-                .getIONotificationDetails(accessToken, 1L, PaymentEventType.DP_CREATED);
+                .getIONotificationDetails(1L, PaymentEventType.DP_CREATED, accessToken);
+    }
+
+    @Test
+    void whenGetByIdThenInvokeClient() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        // When
+        debtPositionTypeOrgService.getById(1L);
+
+        // Then
+        Mockito.verify(debtPositionTypeOrgClientMock).findById(1L, accessToken);
+    }
+
+    @Test
+    void whenGetDebtPositionTypeOrgByInstallmentIdThenInvokeClient() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        // When
+        debtPositionTypeOrgService.getDebtPositionTypeOrgByInstallmentId(1L);
+
+        // Then
+        Mockito.verify(debtPositionTypeOrgClientMock).getDebtPositionTypeOrgByInstallmentId(1L, accessToken);
     }
 }

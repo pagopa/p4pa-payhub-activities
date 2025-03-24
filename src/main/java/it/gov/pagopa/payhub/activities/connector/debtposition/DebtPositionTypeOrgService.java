@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 
@@ -8,6 +9,8 @@ import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
  */
 public interface DebtPositionTypeOrgService {
 
+    DebtPositionTypeOrg getById(Long debtPositionTypeOrgId);
+
     /**
      * Get the serviceId, subject e markdown from debt position type org to send IO Notification.
      *
@@ -15,6 +18,13 @@ public interface DebtPositionTypeOrgService {
      * @param paymentEventType the payment event type
      * @return the updated {@link IONotificationDTO} object.
      */
-    IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType);
+    IONotificationDTO getDefaultIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType);
 
+    /**
+     * Get the debt position type org by installment id.
+     *
+     * @param installmentId the identifier of the installment.
+     * @return the {@link DebtPositionTypeOrg} object.
+     */
+    DebtPositionTypeOrg getDebtPositionTypeOrgByInstallmentId(Long installmentId);
 }

@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 
 import java.time.LocalDate;
 
@@ -24,7 +25,7 @@ public class OrganizationFaker {
                 .segregationCode("segregationCode")
                 .cbillInterBankCode("cbillInterbankCode")
                 .orgLogo("orgLog")
-                .status(Organization.StatusEnum.ACTIVE)
+                .status(OrganizationStatus.ACTIVE)
                 .additionalLanguage("additionalLanguage")
                 .orgTypeCode("orgTypeCode")
                 .startDate(LocalDate.of(2024, 1, 1))

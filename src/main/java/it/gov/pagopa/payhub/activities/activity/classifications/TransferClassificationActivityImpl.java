@@ -10,7 +10,7 @@ import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationService;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII.StatusEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -23,7 +23,7 @@ import java.util.Set;
 @Slf4j
 @Component
 public class TransferClassificationActivityImpl implements TransferClassificationActivity {
-	private static final Set<StatusEnum> INSTALLMENT_STATUS_SET = Set.of(StatusEnum.PAID, StatusEnum.REPORTED);
+	private static final Set<InstallmentStatus> INSTALLMENT_STATUS_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
 	private final ClassificationService classificationService;
 	private final TransferService transferService;

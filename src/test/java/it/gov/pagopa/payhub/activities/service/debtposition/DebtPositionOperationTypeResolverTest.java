@@ -1,9 +1,8 @@
-package it.gov.pagopa.payhub.activities.service.debtpositions.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition;
 
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.DebtOperationOperationTypeResolver;
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.InstallmentOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,16 +22,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DebtOperationOperationTypeResolverTest {
+class DebtPositionOperationTypeResolverTest {
 
     @Mock
     private InstallmentOperationTypeResolver installmentOperationTypeResolverMock;
 
-    private DebtOperationOperationTypeResolver resolver;
+    private DebtPositionOperationTypeResolver resolver;
 
     @BeforeEach
     void setUp(){
-        resolver = new DebtOperationOperationTypeResolver(installmentOperationTypeResolverMock);
+        resolver = new DebtPositionOperationTypeResolver(installmentOperationTypeResolverMock);
     }
 
 
@@ -41,7 +40,7 @@ class DebtOperationOperationTypeResolverTest {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
-        installmentDTO.setStatus(InstallmentDTO.StatusEnum.UNPAID);
+        installmentDTO.setStatus(InstallmentStatus.UNPAID);
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO, buildInstallmentDTO()));
 
         // When
@@ -56,11 +55,11 @@ class DebtOperationOperationTypeResolverTest {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
-        installmentDTO.setStatus(InstallmentDTO.StatusEnum.UNPAID);
+        installmentDTO.setStatus(InstallmentStatus.UNPAID);
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO, buildInstallmentDTO()));
 
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iudTest", iupdSyncStatusUpdateDTO);
         // When
         PaymentEventType paymentEventType = resolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
@@ -74,7 +73,7 @@ class DebtOperationOperationTypeResolverTest {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
-        installmentDTO.setStatus(InstallmentDTO.StatusEnum.INVALID);
+        installmentDTO.setStatus(InstallmentStatus.INVALID);
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO));
 
         // When
@@ -89,12 +88,12 @@ class DebtOperationOperationTypeResolverTest {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
-        installmentDTO.setStatus(InstallmentDTO.StatusEnum.TO_SYNC);
+        installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
         installmentDTO.setIud("iud");
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installmentDTO));
 
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iudTest", iupdSyncStatusUpdateDTO);
 
         // When
@@ -111,7 +110,7 @@ class DebtOperationOperationTypeResolverTest {
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(buildInstallment());
 
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iud", iupdSyncStatusUpdateDTO, "iud2", iupdSyncStatusUpdateDTO);
 
         when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(PaymentEventType.DP_CREATED);
@@ -130,7 +129,7 @@ class DebtOperationOperationTypeResolverTest {
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(buildInstallment());
 
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iud", iupdSyncStatusUpdateDTO, "iud2", iupdSyncStatusUpdateDTO);
 
         when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(PaymentEventType.DP_UPDATED);
@@ -149,7 +148,7 @@ class DebtOperationOperationTypeResolverTest {
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(buildInstallment());
 
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, "iupdPagopa");
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
         Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = Map.of("iud", iupdSyncStatusUpdateDTO, "iud2", iupdSyncStatusUpdateDTO);
 
         when(installmentOperationTypeResolverMock.calculateInstallmentOperationType(any())).thenReturn(PaymentEventType.DP_CANCELLED);
@@ -163,11 +162,11 @@ class DebtOperationOperationTypeResolverTest {
 
     private List<InstallmentDTO> buildInstallment(){
         InstallmentDTO installmentDTO = new InstallmentDTO();
-        installmentDTO.setStatus(InstallmentDTO.StatusEnum.TO_SYNC);
+        installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
         installmentDTO.setIud("iud");
 
         InstallmentDTO installmentDTO2 = new InstallmentDTO();
-        installmentDTO2.setStatus(InstallmentDTO.StatusEnum.TO_SYNC);
+        installmentDTO2.setStatus(InstallmentStatus.TO_SYNC);
         installmentDTO2.setIud("iud2");
 
         return List.of(installmentDTO, installmentDTO2);

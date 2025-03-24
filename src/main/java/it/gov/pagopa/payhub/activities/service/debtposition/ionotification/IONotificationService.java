@@ -3,6 +3,8 @@ package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.IONotificationFacadeService;
 import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.NotificationRequestMapper;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
@@ -23,25 +25,31 @@ import java.util.Map;
 public class IONotificationService {
 
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
+    private final IoNotificationBaseOpsMessagesResolverService baseOpsMessagesResolverService;
     private final IONotificationFacadeService ioNotificationFacadeService;
     private final NotificationRequestMapper notificationRequestMapper;
-    private final DebtOperationOperationTypeResolver debtOperationOperationTypeResolver;
+    private final DebtPositionOperationTypeResolver debtPositionOperationTypeResolver;
 
-    public IONotificationService(DebtPositionTypeOrgService debtPositionTypeOrgService, IONotificationFacadeService ioNotificationFacadeService, NotificationRequestMapper notificationRequestMapper, DebtOperationOperationTypeResolver debtOperationOperationTypeResolver) {
+    public IONotificationService(DebtPositionTypeOrgService debtPositionTypeOrgService, IoNotificationBaseOpsMessagesResolverService baseOpsMessagesResolverService, IONotificationFacadeService ioNotificationFacadeService, NotificationRequestMapper notificationRequestMapper, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver) {
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
+        this.baseOpsMessagesResolverService = baseOpsMessagesResolverService;
         this.ioNotificationFacadeService = ioNotificationFacadeService;
         this.notificationRequestMapper = notificationRequestMapper;
-        this.debtOperationOperationTypeResolver = debtOperationOperationTypeResolver;
+        this.debtPositionOperationTypeResolver = debtPositionOperationTypeResolver;
     }
 
-    public List<MessageResponseDTO> sendMessage(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+    public List<MessageResponseDTO> sendMessage(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
         List<MessageResponseDTO> response = new ArrayList<>();
 
-        PaymentEventType paymentEventType = debtOperationOperationTypeResolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
+        PaymentEventType paymentEventType = debtPositionOperationTypeResolver.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap);
 
         if (paymentEventType != null) {
-            IONotificationDTO ioNotificationDTO = debtPositionTypeOrgService
-                    .getIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), paymentEventType);
+            IONotificationDTO ioNotificationDTO = baseOpsMessagesResolverService.resolveIoMessages(debtPositionDTO, paymentEventType, ioMessages);
+
+            if(ioNotificationDTO==null) {
+                ioNotificationDTO = debtPositionTypeOrgService
+                        .getDefaultIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), paymentEventType);
+            }
 
             if (ioNotificationDTO != null) {
                 response = processNotifications(debtPositionDTO, ioNotificationDTO);

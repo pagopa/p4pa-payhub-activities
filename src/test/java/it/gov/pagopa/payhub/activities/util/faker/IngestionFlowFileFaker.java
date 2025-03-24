@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 
@@ -11,7 +12,7 @@ public class IngestionFlowFileFaker {
         return TestUtils.getPodamFactory().manufacturePojo(IngestionFlowFile.class)
                 .ingestionFlowFileId(1L)
                 .organizationId(1L)
-                .status(IngestionFlowFile.StatusEnum.PROCESSING)
+                .status(IngestionFlowFileStatus.PROCESSING)
                 .numTotalRows(3L)
                 .numCorrectlyImportedRows(2L)
                 .creationDate(OFFSETDATETIME)

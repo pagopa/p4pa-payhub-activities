@@ -2,10 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,9 +28,9 @@ public class DebtPositionClient {
         return debtPositionApisHolder.getDebtPositionApi(accessToken).checkAndUpdateInstallmentExpiration(debtPositionId);
     }
 
-    public String installmentSynchronize(String accessToken, DebtPositionDTO.DebtPositionOriginEnum origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId) {
+    public String installmentSynchronize(String accessToken, DebtPositionOrigin origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId) {
         ResponseEntity<Void> response = debtPositionApisHolder.getDebtPositionApi(accessToken, operatorUserId)
-                .installmentSynchronizeWithHttpInfo(origin.getValue(), installmentSynchronizeDTO, wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange());
+                .installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange());
 
         return response.getHeaders().getFirst("x-workflow-id");
     }

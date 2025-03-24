@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
@@ -21,7 +22,7 @@ public class InstallmentFaker {
         return TestUtils.getPodamFactory().manufacturePojo(InstallmentDTO.class)
                 .installmentId(1L)
                 .paymentOptionId(1L)
-                .status(InstallmentDTO.StatusEnum.PAID)
+                .status(InstallmentStatus.PAID)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")
@@ -31,7 +32,7 @@ public class InstallmentFaker {
                 .creationDate(OFFSETDATETIME)
                 .updateDate(OFFSETDATETIME)
                 .dueDate(LOCALDATE)
-                .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentSyncStatus.SyncStatusFromEnum.DRAFT).syncStatusTo(InstallmentSyncStatus.SyncStatusToEnum.UNPAID).build())
+                .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.DRAFT).syncStatusTo(InstallmentStatus.UNPAID).build())
                 .notificationFeeCents(1000L)
                 .amountCents(100L)
                 .remittanceInformation("remittanceInformation")
@@ -47,7 +48,7 @@ public class InstallmentFaker {
         return TestUtils.getPodamFactory().manufacturePojo(InstallmentDTO.class)
                 .installmentId(2L)
                 .paymentOptionId(2L)
-                .status(InstallmentDTO.StatusEnum.UNPAID)
+                .status(InstallmentStatus.UNPAID)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud2")
                 .iuv("iuv")

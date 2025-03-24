@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,8 +40,7 @@ class FinalizeDebtPositionSyncStatusActivityTest {
         // Given
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .iupdPagopa("iudpPagopa")
-                .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC)
+                .newStatus(InstallmentStatus.TO_SYNC)
                 .build();
 
         Mockito.when(debtPositionServiceMock.finalizeSyncStatus(1L, Map.of("iud", iupdSyncStatusUpdateDTO))).thenReturn(debtPosition);
