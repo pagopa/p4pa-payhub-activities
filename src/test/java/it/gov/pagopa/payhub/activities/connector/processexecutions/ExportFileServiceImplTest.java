@@ -43,16 +43,16 @@ class ExportFileServiceImplTest {
     }
 
     @Test
-    void givenWhenFindByIdThen() {
+    void givenWhenFindPaidExportFileByIdThen() {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
         PaidExportFile paidExportFileExpected = podamFactory.manufacturePojo(PaidExportFile.class);
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(exportFileClientMock.findById(exportFileId, accessToken)).thenReturn(paidExportFileExpected);
+        Mockito.when(exportFileClientMock.findPaidExportFileById(exportFileId, accessToken)).thenReturn(paidExportFileExpected);
         //when
-        Optional<PaidExportFile> result = exportFileService.findById(exportFileId);
+        Optional<PaidExportFile> result = exportFileService.findPaidExportFileById(exportFileId);
         //then
         assertNotNull(result);
         assertTrue(result.isPresent());

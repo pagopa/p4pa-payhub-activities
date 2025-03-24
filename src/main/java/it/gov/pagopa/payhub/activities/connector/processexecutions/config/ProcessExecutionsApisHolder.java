@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
 import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityControllerApi;
+import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSearchControllerApi;
@@ -21,6 +23,8 @@ public class ProcessExecutionsApisHolder {
     private final IngestionFlowFileEntityExtendedControllerApi ingestionFlowFileEntityExtendedControllerApi;
     private final IngestionFlowFileSearchControllerApi ingestionFlowFileSearchControllerApi;
     private final PaidExportFileEntityControllerApi paidExportFileEntityControllerApi;
+    private final ExportFileEntityControllerApi exportFileEntityControllerApi;
+    private final ExportFileEntityExtendedControllerApi exportFileEntityExtendedControllerApi;
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public ProcessExecutionsApisHolder(
@@ -41,6 +45,8 @@ public class ProcessExecutionsApisHolder {
         this.ingestionFlowFileEntityExtendedControllerApi = new IngestionFlowFileEntityExtendedControllerApi(apiClient);
         this.ingestionFlowFileSearchControllerApi = new IngestionFlowFileSearchControllerApi(apiClient);
         this.paidExportFileEntityControllerApi = new PaidExportFileEntityControllerApi(apiClient);
+        this.exportFileEntityControllerApi = new ExportFileEntityControllerApi(apiClient);
+        this.exportFileEntityExtendedControllerApi = new ExportFileEntityExtendedControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -62,6 +68,14 @@ public class ProcessExecutionsApisHolder {
 
     public PaidExportFileEntityControllerApi getPaidExportFileEntityControllerApi(String accessToken){
         return getApi(accessToken, paidExportFileEntityControllerApi);
+    }
+
+    public ExportFileEntityControllerApi getExportFileEntityControllerApi(String accessToken){
+        return getApi(accessToken, exportFileEntityControllerApi);
+    }
+
+    public ExportFileEntityExtendedControllerApi getExportFileEntityExtendedControllerApi(String accessToken){
+        return getApi(accessToken, exportFileEntityExtendedControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {

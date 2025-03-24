@@ -45,7 +45,7 @@ class ExportFileClientTest {
     }
 
     @Test
-    void givenExportFileId_WhenFindById_ThenReturnPaidExportFile() {
+    void givenExportFileId_WhenFindPaidExportFileById_ThenReturnPaidExportFile() {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
@@ -54,13 +54,13 @@ class ExportFileClientTest {
         Mockito.when(paidExportFileEntityControllerApiMock.crudGetPaidexportfile(String.valueOf(exportFileId))).thenReturn(paidExportFileExpected);
         Mockito.when(processExecutionsApisHolderMock.getPaidExportFileEntityControllerApi(accessToken)).thenReturn(paidExportFileEntityControllerApiMock);
         //when
-        PaidExportFile result = exportFileClient.findById(exportFileId, accessToken);
+        PaidExportFile result = exportFileClient.findPaidExportFileById(exportFileId, accessToken);
         //then
         Assertions.assertEquals(paidExportFileExpected, result);
     }
 
     @Test
-    void givenNotExistentPaidExportFile_WhenFindById_ThenReturnNull() {
+    void givenNotExistentPaidExportFile_WhenFindPaidExportFileById_ThenReturnNull() {
         // Given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
@@ -68,7 +68,7 @@ class ExportFileClientTest {
         Mockito.when(paidExportFileEntityControllerApiMock.crudGetPaidexportfile(String.valueOf(exportFileId))).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
         Mockito.when(processExecutionsApisHolderMock.getPaidExportFileEntityControllerApi(accessToken)).thenReturn(paidExportFileEntityControllerApiMock);
         // When
-        PaidExportFile result = exportFileClient.findById(exportFileId, accessToken);
+        PaidExportFile result = exportFileClient.findPaidExportFileById(exportFileId, accessToken);
         // Then
         assertNull(result);
     }
