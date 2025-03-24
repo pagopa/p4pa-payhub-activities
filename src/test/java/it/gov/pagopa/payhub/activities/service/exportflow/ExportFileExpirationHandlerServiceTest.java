@@ -72,7 +72,8 @@ class ExportFileExpirationHandlerServiceTest {
     try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
       mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenThrow(new IllegalStateException("DUMMY"));
 
-      Assertions.assertThrows(IllegalStateException.class, () -> exportFileExpirationHandlerService.handleExpiration(1L, ""));
+      Assertions.assertThrows(IllegalStateException.class, () -> exportFileExpirationHandlerService.handleExpiration(
+          exportFile.getExportFileId(), ""));
       Mockito.verifyNoMoreInteractions(exportFileServiceMock);
     }
   }
@@ -101,7 +102,7 @@ class ExportFileExpirationHandlerServiceTest {
       mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
 
       // when
-      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerService.handleExpiration(1L, ""));
+      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerService.handleExpiration(exportFile.getExportFileId(), ""));
 
       // then
       Mockito.verifyNoMoreInteractions(exportFileServiceMock);

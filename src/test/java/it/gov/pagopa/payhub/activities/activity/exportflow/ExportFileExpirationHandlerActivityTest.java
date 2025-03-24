@@ -17,7 +17,7 @@ class ExportFileExpirationHandlerActivityTest {
   private ExportFileExpirationHandlerService exportFileExpirationHandlerServiceMock;
 
   @InjectMocks
-  private ExportFileExpirationHandlerActivity exportFileExpirationHandlerActivity;
+  private ExportFileExpirationHandlerActivityImpl exportFileExpirationHandlerActivity;
 
   private static final Long VALID_ID=1L;
   private static final Long INVALID_ID=9L;
@@ -42,11 +42,11 @@ class ExportFileExpirationHandlerActivityTest {
   }
 
   @Test
-  void givenInvalidThenThrowNotFoundException(){
+  void givenInvalidIdThenThrowNotFoundException(){
     //given
     Mockito.doThrow(new ExportFileNotFoundException("File not found")).when(exportFileExpirationHandlerServiceMock).handleExpiration(INVALID_ID, ERROR_DESCRIPTION);
     //when
-    Assertions.assertThrows(IllegalStateException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(INVALID_ID, ERROR_DESCRIPTION));
+    Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(INVALID_ID, ERROR_DESCRIPTION));
   }
 
 }
