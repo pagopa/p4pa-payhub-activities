@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionStatus;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
 
 import java.util.List;
 
@@ -15,10 +17,10 @@ public class PaymentOptionFaker {
                 .debtPositionId(1L)
                 .paymentOptionId(1L)
                 .totalAmountCents(100L)
-                .status(PaymentOptionDTO.StatusEnum.PAID)
+                .status(PaymentOptionStatus.PAID)
                 .installments(List.of(buildInstallmentDTO()))
                 .description("description")
-                .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+                .paymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
     }
 
     public static PaymentOptionDTO buildPaymentOptionDTO2(){
@@ -26,10 +28,10 @@ public class PaymentOptionFaker {
                 .debtPositionId(1L)
                 .paymentOptionId(2L)
                 .totalAmountCents(100L)
-                .status(PaymentOptionDTO.StatusEnum.UNPAID)
+                .status(PaymentOptionStatus.UNPAID)
                 .installments(List.of(buildInstallmentDTO(), buildInstallmentDTO2()))
                 .description("description")
-                .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+                .paymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
     }
 
 }

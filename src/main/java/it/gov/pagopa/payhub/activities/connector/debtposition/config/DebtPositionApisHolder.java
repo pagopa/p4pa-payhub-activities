@@ -19,8 +19,11 @@ public class DebtPositionApisHolder {
     private final DebtPositionApi debtPositionApi;
     private final ReceiptApi receiptApi;
     private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
+    private final DebtPositionTypeOrgEntityControllerApi debtPositionTypeOrgEntityApi;
+    private final DebtPositionTypeOrgSearchControllerApi debtPositionTypeOrgSearchControllerApi;
     private final ReceiptNoPiiSearchControllerApi receiptNoPiiSearchControllerApi;
     private final DataExportsApi dataExportsApi;
+
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
 
@@ -45,6 +48,8 @@ public class DebtPositionApisHolder {
         this.transferApi = new TransferApi(apiClient);
         this.receiptApi = new ReceiptApi(apiClient);
         this.debtPositionTypeOrgApi = new DebtPositionTypeOrgApi(apiClient);
+        this.debtPositionTypeOrgEntityApi = new DebtPositionTypeOrgEntityControllerApi(apiClient);
+        this.debtPositionTypeOrgSearchControllerApi = new DebtPositionTypeOrgSearchControllerApi(apiClient);
 	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
         this.dataExportsApi = new DataExportsApi(apiClient);
     }
@@ -80,6 +85,14 @@ public class DebtPositionApisHolder {
 
     public DebtPositionTypeOrgApi getDebtPositionTypeOrgApi(String accessToken) {
         return getApi(accessToken, null, debtPositionTypeOrgApi);
+    }
+
+    public DebtPositionTypeOrgEntityControllerApi getDebtPositionTypeOrgEntityApi(String accessToken) {
+        return getApi(accessToken, null, debtPositionTypeOrgEntityApi);
+    }
+
+    public DebtPositionTypeOrgSearchControllerApi getDebtPositionTypeOrgSearchControllerApi(String accessToken) {
+        return getApi(accessToken, null, debtPositionTypeOrgSearchControllerApi);
     }
 
 	public ReceiptNoPiiSearchControllerApi getReceiptNoPiiSearchControllerApi(String accessToken) {

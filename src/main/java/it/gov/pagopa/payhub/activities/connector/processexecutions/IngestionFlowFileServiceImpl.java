@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.IngestionFlowFileClient;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -35,7 +36,7 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
     }
 
     @Override
-    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName) {
+    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, String codError, String discardFileName) {
         return ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName, authnService.getAccessToken());
     }
 

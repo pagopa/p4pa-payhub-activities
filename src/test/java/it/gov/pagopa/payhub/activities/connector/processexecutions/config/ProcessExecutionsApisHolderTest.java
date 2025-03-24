@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     void whenGetIngestionFlowFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                            .updateStatus(1L, "oldStatus", "newStatus", "message", "error"),
+                            .updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, "message", "error"),
                 new ParameterizedTypeReference<>() {},
                 processExecutionsApisHolder::unload);
     }

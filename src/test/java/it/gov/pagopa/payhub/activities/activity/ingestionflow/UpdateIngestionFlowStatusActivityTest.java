@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +22,8 @@ class UpdateIngestionFlowStatusActivityTest {
 
   private static final Long VALID_ID=1L;
   private static final Long INVALID_ID=9L;
-  private static final IngestionFlowFile.StatusEnum OLD_STATUS = IngestionFlowFile.StatusEnum.UPLOADED;
-  private static final IngestionFlowFile.StatusEnum NEW_STATUS = IngestionFlowFile.StatusEnum.PROCESSING;
+  private static final IngestionFlowFileStatus OLD_STATUS = IngestionFlowFileStatus.UPLOADED;
+  private static final IngestionFlowFileStatus NEW_STATUS = IngestionFlowFileStatus.PROCESSING;
   private static final String ERROR_DESCRIPTION ="ERROR_DESCRIPTION";
   private static final String DISCARD_FILE_NAME="DISCARD_FILENAME";
 

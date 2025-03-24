@@ -71,7 +71,7 @@ public class NotificationRequestMapper {
         notificationRequestDTO.setOrgId(debtPositionDTO.getOrganizationId());
         notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionDTO.getDebtPositionTypeOrgId());
         if (ioNotificationDTO.getIoTemplateSubject() != null && ioNotificationDTO.getIoTemplateMessage() != null && ioNotificationDTO.getServiceId() != null) {
-            notificationRequestDTO.setSubject(ioNotificationDTO.getIoTemplateSubject());
+            notificationRequestDTO.setSubject(ioNotificationPlaceholderResolverService.applyDefaultPlaceholder(ioNotificationDTO.getIoTemplateSubject(), debtPositionDTO, installmentDTO));
             notificationRequestDTO.setMarkdown(ioNotificationPlaceholderResolverService.applyDefaultPlaceholder(ioNotificationDTO.getIoTemplateMessage(), debtPositionDTO, installmentDTO));
             notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
         }

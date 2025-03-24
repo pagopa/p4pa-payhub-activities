@@ -40,13 +40,19 @@ class NotificationRequestMapperTest {
         debtPosition.getPaymentOptions().getFirst().setInstallments(List.of(buildInstallmentDTO(),buildInstallmentDTO()));
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
         String expectedMarkdown = "expectedMarkdown";
-
+        String expectedSubject = "expectedSubject";
 
         Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
+
+        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+                ioNotificationDTO.getIoTemplateSubject(),
+                debtPosition,
+                debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
+        )).thenReturn(expectedSubject);
 
         // When
         List<NotificationRequestDTO> result = mapper.map(
@@ -71,12 +77,18 @@ class NotificationRequestMapperTest {
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
         String expectedMarkdown = "expectedMarkdown";
-
         Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
+
+        String expectedSubject = "expectedSubject";
+        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+                ioNotificationDTO.getIoTemplateSubject(),
+                debtPosition,
+                debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
+        )).thenReturn(expectedSubject);
 
 
         // When
@@ -99,12 +111,18 @@ class NotificationRequestMapperTest {
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
         String expectedMarkdown = "expectedMarkdown";
-
         Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
+
+        String expectedSubject = "expectedSubject";
+        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+                ioNotificationDTO.getIoTemplateSubject(),
+                debtPosition,
+                debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
+        )).thenReturn(expectedSubject);
 
         // When
         List<NotificationRequestDTO> result = mapper.map(

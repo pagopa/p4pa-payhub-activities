@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.config.Proces
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -35,10 +36,10 @@ public class IngestionFlowFileClient {
         }
     }
 
-    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFile.StatusEnum oldStatus, IngestionFlowFile.StatusEnum newStatus, String codError, String discardFileName, String accessToken) {
+    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, String codError, String discardFileName, String accessToken) {
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                    .updateStatus(ingestionFlowFileId, oldStatus.name(), newStatus.name(), codError, discardFileName);
+                    .updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName);
         } catch (HttpClientErrorException.NotFound e) {
             return 0;
         }

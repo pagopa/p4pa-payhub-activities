@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.organization.client;
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApisHolder;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,6 @@ public class OrganizationSearchClient {
 
     public CollectionModelOrganization findActiveOrganizationsByBrokerId(Long brokerId, String accessToken) {
         return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
-                .crudOrganizationsFindByBrokerIdAndStatus(brokerId, Organization.StatusEnum.ACTIVE.getValue());
+                .crudOrganizationsFindByBrokerIdAndStatus(brokerId, OrganizationStatus.ACTIVE);
     }
 }

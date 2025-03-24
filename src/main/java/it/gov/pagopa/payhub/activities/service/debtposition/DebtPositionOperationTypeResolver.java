@@ -1,7 +1,8 @@
-package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
+package it.gov.pagopa.payhub.activities.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.springframework.context.annotation.Lazy;
@@ -13,11 +14,11 @@ import java.util.Objects;
 
 @Lazy
 @Component
-public class DebtOperationOperationTypeResolver {
+public class DebtPositionOperationTypeResolver {
 
     private final InstallmentOperationTypeResolver installmentOperationTypeResolver;
 
-    public DebtOperationOperationTypeResolver(InstallmentOperationTypeResolver installmentOperationTypeResolver) {
+    public DebtPositionOperationTypeResolver(InstallmentOperationTypeResolver installmentOperationTypeResolver) {
         this.installmentOperationTypeResolver = installmentOperationTypeResolver;
     }
 
@@ -32,7 +33,7 @@ public class DebtOperationOperationTypeResolver {
         } else {
             List<InstallmentDTO> installmentsSynchronized = debtPositionDTO.getPaymentOptions().stream()
                     .flatMap(po -> po.getInstallments().stream())
-                    .filter(i -> InstallmentDTO.StatusEnum.TO_SYNC.equals(i.getStatus()) &&
+                    .filter(i -> InstallmentStatus.TO_SYNC.equals(i.getStatus()) &&
                             iupdSyncStatusUpdateDTOMap.containsKey(i.getIud()))
                     .toList();
 
@@ -60,9 +61,9 @@ public class DebtOperationOperationTypeResolver {
         return debtPositionDTO.getPaymentOptions().stream()
                 .flatMap(po -> po.getInstallments().stream())
                 .anyMatch(i -> !List.of(
-                        InstallmentDTO.StatusEnum.TO_SYNC,
-                        InstallmentDTO.StatusEnum.INVALID,
-                        InstallmentDTO.StatusEnum.CANCELLED
+                        InstallmentStatus.TO_SYNC,
+                        InstallmentStatus.INVALID,
+                        InstallmentStatus.CANCELLED
                 ).contains(i.getStatus()));
     }
 }
