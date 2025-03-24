@@ -1,11 +1,10 @@
-package it.gov.pagopa.payhub.activities.service.ingestionflow;
+package it.gov.pagopa.payhub.activities.service.exportflow;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.export.ErrorExportDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -15,24 +14,17 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-
 @Slf4j
-public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> {
+public abstract class ExportErrorArchiverService<T extends ErrorExportDTO> {
 
     private static final String ERRORFILE_PREFIX = "ERROR-";
-
     private final Path sharedDirectoryPath;
     private final String errorFolder;
     private final FileArchiverService fileArchiverService;
     private final CsvService csvService;
 
-    protected ErrorArchiverService(
-            String sharedFolder,
-            String errorFolder,
-            FileArchiverService fileArchiverService,
-            CsvService csvService
-    ) {
-        this.sharedDirectoryPath = Path.of(sharedFolder);
+    protected ExportErrorArchiverService(Path sharedDirectoryPath, String errorFolder, FileArchiverService fileArchiverService, CsvService csvService) {
+        this.sharedDirectoryPath = sharedDirectoryPath;
         this.errorFolder = errorFolder;
         this.fileArchiverService = fileArchiverService;
         this.csvService = csvService;
@@ -42,24 +34,25 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
     protected abstract List<String[]> getHeaders();
 
     /**
-     * Writes error data into a CSV file.
+     * Writes a list of errors to a CSV file in the specified working directory.
+     * The CSV file is named using the provided file name with the ".csv" extension.
      *
-     * @param workingDirectory  The directory where the file should be created.
-     * @param ingestionFlowFile The metadata of the ingestion file.
-     * @param errorList         The list of errors to write.
+     * @param workingDirectory The working directory where the error CSV file will be created.
+     * @param fileName         The base file name to use for the error CSV file.
+     * @param errorList        The list of error DTOs to write to the CSV file.
      */
-    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile, List<T> errorList) {
+    public void writeErrors(Path workingDirectory, String fileName, List<T> errorList) {
 
         if(CollectionUtils.isEmpty(errorList)){
             return;
         }
 
         List<String[]> data = errorList.stream()
-                .map(IngestionFlowFileErrorDTO::toCsvRow)
+                .map(ErrorExportDTO::toCsvRow)
                 .toList();
 
         try {
-            String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFile.getFileName(), ".csv");
+            String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(fileName, ".csv");
             Path errorCsvFilePath = workingDirectory.resolve(errorFileName);
 
             csvService.createCsv(errorCsvFilePath, getHeaders(), data);
@@ -71,16 +64,16 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
     }
 
     /**
-     * Archives an error file to a specified target directory.
-     * This method takes an error file and moves it to a target directory for archiving. It constructs
-     * the original file path and the target directory path, then invokes the {@link FileArchiverService}
-     * to perform the archiving operation.
+     * Archives error files in the specified working directory into a ZIP archive and moves it to a target directory.
+     * The ZIP archive is named using the provided file name with the ".zip" extension.
      *
-     * @param workingDirectory     the working directory where to search for error files to be archived. This file is moved from its original location to the target directory.
-     * @param ingestionFlowFileDTO the ingestion flow file
-     * @return the name of the archived error file (ZIP) if exists
+     * @param workingDirectory The working directory where error files are located.
+     * @param organizationId   The ID of the organization, used to construct the target directory.
+     * @param filePathName     The path name of the file, used to construct the target directory.
+     * @param fileName         The base file name to use for the ZIP archive.
+     * @return The name of the ZIP archive if archiving is successful, or null if no errors are found or an error occurs during archiving.
      */
-    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO) {
+    public String archiveErrorFiles(Path workingDirectory, Long organizationId, String filePathName, String fileName) {
         try {
             List<Path> errorFiles;
             try (Stream<Path> fileListStream = Files.list(workingDirectory)) {
@@ -92,11 +85,11 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
             if (!errorFiles.isEmpty()) {
 
                 Path targetDirectory = sharedDirectoryPath
-                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
-                        .resolve(ingestionFlowFileDTO.getFilePathName())
+                        .resolve(String.valueOf(organizationId))
+                        .resolve(filePathName)
                         .resolve(errorFolder);
 
-                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
+                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(fileName, ".zip");
                 Path zipFile = workingDirectory.resolve(zipFileName);
 
                 fileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
