@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -36,9 +35,6 @@ class ExportFileExpirationHandlerServiceTest {
   private ExportFileExpirationHandlerService exportFileExpirationHandlerService;
 
   private final PodamFactory podamFactory = TestUtils.getPodamFactory();
-
-  @TempDir
-  private Path tempDir;
 
   @BeforeEach
   void setup() {

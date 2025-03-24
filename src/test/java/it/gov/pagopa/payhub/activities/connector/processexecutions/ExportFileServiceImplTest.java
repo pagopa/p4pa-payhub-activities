@@ -91,7 +91,6 @@ class ExportFileServiceImplTest {
         ExportFileStatus oldStatus = ExportFileStatus.COMPLETED;
         ExportFileStatus newStatus = ExportFileStatus.EXPIRED;
         String errorDescription = "errorDescription";
-        String discardFileName = "discardFileName";
         Integer expectedResponse = 1;
         when(exportFileClientMock.updateStatus(exportFileId, oldStatus, newStatus, errorDescription, accessToken)).thenReturn(expectedResponse);
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);

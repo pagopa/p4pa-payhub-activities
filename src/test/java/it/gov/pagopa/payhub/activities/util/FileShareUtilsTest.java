@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.nio.file.Path;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
