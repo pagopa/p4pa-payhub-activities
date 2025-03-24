@@ -1,7 +1,13 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
+import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityControllerApi;
+import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.PaidExportFileEntityControllerApi;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -16,8 +22,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 @ExtendWith(MockitoExtension.class)
 class ExportFileClientTest {
 
@@ -25,6 +29,10 @@ class ExportFileClientTest {
     private ProcessExecutionsApisHolder processExecutionsApisHolderMock;
     @Mock
     private PaidExportFileEntityControllerApi paidExportFileEntityControllerApiMock;
+    @Mock
+    private ExportFileEntityControllerApi exportFileEntityControllerApiMock;
+    @Mock
+    private ExportFileEntityExtendedControllerApi exportFileEntityExtendedControllerApiMock;
 
     ExportFileClient exportFileClient;
     PodamFactory podamFactory;
@@ -71,5 +79,65 @@ class ExportFileClientTest {
         PaidExportFile result = exportFileClient.findPaidExportFileById(exportFileId, accessToken);
         // Then
         assertNull(result);
+    }
+
+    @Test
+    void givenExportFileId_WhenFindById_ThenReturnExportFile() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
+
+        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken)).thenReturn(exportFileEntityControllerApiMock);
+        Mockito.when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId))).thenReturn(exportFile);
+        //when
+        ExportFile result = exportFileClient.findById(exportFileId, accessToken);
+        //then
+        Assertions.assertEquals(exportFile, result);
+    }
+
+    @Test
+    void givenNonExistentExportFileId_WhenFindById_ThenReturnNull() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
+
+        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken)).thenReturn(exportFileEntityControllerApiMock);
+        Mockito.when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId))).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        //when
+        ExportFile result = exportFileClient.findById(exportFileId, accessToken);
+        //then
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void whenUpdateStatusOkThenReturn1() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
+
+        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken)).thenReturn(exportFileEntityExtendedControllerApiMock);
+        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "")).thenReturn(1);
+        //when
+        Integer result = exportFileClient.updateStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "", accessToken);
+        //then
+        Assertions.assertEquals(1, result);
+    }
+
+    @Test
+    void whenUpdateStatusKoThenReturnNull() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
+
+        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken)).thenReturn(exportFileEntityExtendedControllerApiMock);
+        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "")).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        //when
+        Integer result = exportFileClient.updateStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "", accessToken);
+        //then
+        Assertions.assertNull(result);
     }
 }
