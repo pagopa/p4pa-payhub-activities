@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.customdebtposition;
+package it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
