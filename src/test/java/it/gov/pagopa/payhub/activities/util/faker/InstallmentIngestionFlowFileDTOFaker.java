@@ -48,7 +48,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .transfer3(buildTransferData(3))
                 .transfer4(buildTransferData(4))
                 .transfer5(buildTransferData(5))
-                .executionConfig("executionConfig")
+                .executionConfig("{\"executionConfig\":\"test\"}")
                 .build();
     }
 

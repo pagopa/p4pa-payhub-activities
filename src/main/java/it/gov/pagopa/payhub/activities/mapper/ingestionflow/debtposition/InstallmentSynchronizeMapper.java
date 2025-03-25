@@ -1,11 +1,17 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.ActionEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
 import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +26,12 @@ import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEnd
 @Service
 @Lazy
 public class InstallmentSynchronizeMapper {
+
+    private final ObjectMapper objectMapper;
+
+    public InstallmentSynchronizeMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     public InstallmentSynchronizeDTO map(InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO,
                                          Long ingestionFlowFileId,
@@ -62,8 +74,20 @@ public class InstallmentSynchronizeMapper {
                 .flagMultibeneficiary(installmentIngestionFlowFileDTO.getFlagMultiBeneficiary())
                 .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? installmentIngestionFlowFileDTO.getNumberBeneficiary() : null)
                 .additionalTransfers(buildAdditionalTransferList(installmentIngestionFlowFileDTO))
-                .executionConfig(installmentIngestionFlowFileDTO.getExecutionConfig())
+                .executionConfig(mapExecutionConfig(installmentIngestionFlowFileDTO.getExecutionConfig()))
                 .build();
+    }
+
+    private JsonNode mapExecutionConfig(String executionConfig) {
+        if (StringUtils.isBlank(executionConfig)) {
+            return NullNode.instance;
+        }
+
+        try {
+            return objectMapper.readTree(executionConfig);
+        } catch (JsonProcessingException e) {
+            throw new InvalidValueException(String.format("Invalid execution config value: [%s] ", executionConfig));
+        }
     }
 
     private List<TransferSynchronizeDTO> buildAdditionalTransferList(InstallmentIngestionFlowFileDTO dto) {
