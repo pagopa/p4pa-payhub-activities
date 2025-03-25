@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.aspect;
 
 import io.temporal.failure.ApplicationFailure;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
@@ -21,8 +22,24 @@ class NotRetryableActivityExceptionHandlerAspectTest {
 
     @MockitoSpyBean
     private UpdateIngestionFlowStatusActivity statusActivitySpy;
+    @MockitoSpyBean
+    private IngestionFlowFileProcessingLockerActivity lockerActivitySpy;
+
     @MockitoBean
     private IngestionFlowFileService ingestionFlowFileServiceMock;
+
+    @Test
+    void givenNotErrorWhenInvokeActivityThenReturnItsValue(){
+        // Given
+        Mockito.when(lockerActivitySpy.acquireProcessingLock(1L))
+                .thenReturn(true);
+
+        // When
+        boolean result = lockerActivitySpy.acquireProcessingLock(1L);
+
+        // Then
+        Assertions.assertTrue(result);
+    }
 
     @Test
     void givenNotRetryableActivityExceptionExtensionWhenInvokeActivityThenExceptionWrapped(){
