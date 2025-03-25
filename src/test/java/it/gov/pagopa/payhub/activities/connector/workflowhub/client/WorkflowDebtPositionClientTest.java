@@ -48,15 +48,17 @@ class WorkflowDebtPositionClientTest {
                 .massive(true)
                 .partialChange(false)
                 .build();
+        PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+        String eventDescription = "EVENTDESCRIPTION";
 
         Mockito.when(workflowHubApisHolderMock.getDebtPositionApi(accessToken))
                 .thenReturn(debtPositionApiMock);
 
         // When
-        client.syncDebtPosition(debtPositionDTO, wfExecutionParameters, PaymentEventType.DP_CREATED, accessToken);
+        client.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, eventDescription, accessToken);
 
         // Then
         Mockito.verify(debtPositionApiMock)
-                .syncDebtPosition(syncDebtPositionRequestDTO, true, false, PaymentEventType.DP_CREATED);
+                .syncDebtPosition(syncDebtPositionRequestDTO, true, false, paymentEventType, eventDescription);
     }
 }

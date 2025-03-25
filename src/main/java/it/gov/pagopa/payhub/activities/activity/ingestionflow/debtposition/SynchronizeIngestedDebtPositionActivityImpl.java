@@ -64,7 +64,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             pagedDebtPositions.getContent().forEach(debtPosition -> {
                 try {
                     PaymentEventType paymentEventType = null; //TODO task P4ADEV-2421
-                    WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType);
+                    WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType, "ingestionFlowFileId:" + ingestionFlowFileId);
 
                     if(workflowCreatedDTO == null || workflowCreatedDTO.getWorkflowId() == null){
                         return;
@@ -73,12 +73,16 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     WorkflowExecutionStatus workflowExecutionStatus = workflowCompletionService.waitTerminationStatus(workflowCreatedDTO.getWorkflowId(), maxAttempts, retryDelayMs);
 
                     if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowExecutionStatus)) {
-                        errors.append("\nSynchronization workflow for debt position with iupdOrg " + debtPosition.getIupdOrg() + " terminated with error status.");
+                        errors.append("\nSynchronization workflow for debt position with iupdOrg ")
+                                .append(debtPosition.getIupdOrg())
+                                .append(" terminated with error status.");
                     }
 
                 } catch (Exception e) {
                     log.error("Error synchronizing debt position with id {} and iupdOrg {}: {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e.getMessage());
-                    errors.append("\nError on debt position with iupdOrg " + debtPosition.getIupdOrg() + ": " + e.getMessage());
+                    errors.append("\nError on debt position with iupdOrg ")
+                            .append(debtPosition.getIupdOrg()).append(": ")
+                            .append(e.getMessage());
                 }
             });
 
