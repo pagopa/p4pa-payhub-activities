@@ -25,9 +25,9 @@ public class NotRetryableActivityExceptionHandlerAspect {
     }
 
     @Around("activityBean()")
-    public void aroundActivity(ProceedingJoinPoint jp) {
+    public Object aroundActivity(ProceedingJoinPoint jp) {
         try {
-            PerformanceLogger.execute(
+            return PerformanceLogger.execute(
                     "ACTIVITY",
                     jp.getSignature().getDeclaringType().getSimpleName() + "." + jp.getSignature().getName(),
                     () -> {
