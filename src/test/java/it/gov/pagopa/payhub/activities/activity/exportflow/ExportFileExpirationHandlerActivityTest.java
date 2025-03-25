@@ -118,16 +118,14 @@ class ExportFileExpirationHandlerActivityTest {
     Long exportFileId = exportFile.getExportFileId();
     when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 
-    try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
-      mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
+    when(exportFileServiceMock.updateStatus(exportFileId, exportFile.getStatus(), ExportFileStatus.EXPIRED, null))
+        .thenReturn(1);
 
-      // when
-      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(
-          exportFileId));
+    // when
+    exportFileExpirationHandlerActivity.handleExpiration(exportFile.getExportFileId());
 
-      // then
-      Mockito.verifyNoMoreInteractions(exportFileServiceMock);
-    }
+    // then
+    Mockito.verifyNoMoreInteractions(exportFileServiceMock);
   }
 
 }
