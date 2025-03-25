@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import it.gov.pagopa.pu.debtposition.dto.generated.ActionEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
@@ -55,7 +56,7 @@ public class InstallmentSynchronizeDTOFaker {
                         buildTransferSynchronizeDTO(4),
                         buildTransferSynchronizeDTO(5)
                 ))
-                .executionConfig("executionConfig")
+                .executionConfig(JsonNodeFactory.instance.objectNode().put("executionConfig", "test"))
                 .build();
     }
 
