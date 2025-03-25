@@ -101,7 +101,6 @@ class ExportFileClientTest {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
-        ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
 
         Mockito.when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken)).thenReturn(exportFileEntityControllerApiMock);
         Mockito.when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId))).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
@@ -116,7 +115,6 @@ class ExportFileClientTest {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
-        ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
 
         Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken)).thenReturn(exportFileEntityExtendedControllerApiMock);
         Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "")).thenReturn(1);
@@ -131,7 +129,6 @@ class ExportFileClientTest {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
-        ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
 
         Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken)).thenReturn(exportFileEntityExtendedControllerApiMock);
         Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "")).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));

@@ -65,13 +65,14 @@ class ExportFileExpirationHandlerActivityTest {
     // given
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setStatus(ExportFileStatus.COMPLETED);
-    when(exportFileServiceMock.findById(exportFile.getExportFileId())).thenReturn(Optional.of(exportFile));
+    Long exportFileId = exportFile.getExportFileId();
+    when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 
     try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
       mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenThrow(new IOException("DUMMY"));
 
       Assertions.assertThrows(IllegalStateException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(
-          exportFile.getExportFileId()));
+          exportFileId));
       Mockito.verifyNoMoreInteractions(exportFileServiceMock);
     }
   }
@@ -91,16 +92,18 @@ class ExportFileExpirationHandlerActivityTest {
     // given
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setStatus(ExportFileStatus.COMPLETED);
-    when(exportFileServiceMock.findById(exportFile.getExportFileId())).thenReturn(Optional.of(exportFile));
+    Long exportFileId = exportFile.getExportFileId();
+    when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 
-    when(exportFileServiceMock.updateStatus(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED, null))
+    when(exportFileServiceMock.updateStatus(exportFileId, exportFile.getStatus(), ExportFileStatus.EXPIRED, null))
         .thenReturn(0);
 
     try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
       mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
 
       // when
-      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(exportFile.getExportFileId()));
+      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(
+          exportFileId));
 
       // then
       Mockito.verifyNoMoreInteractions(exportFileServiceMock);
@@ -112,13 +115,15 @@ class ExportFileExpirationHandlerActivityTest {
     // given
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setFilePathName("");
-    when(exportFileServiceMock.findById(exportFile.getExportFileId())).thenReturn(Optional.of(exportFile));
+    Long exportFileId = exportFile.getExportFileId();
+    when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 
     try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
       mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
 
       // when
-      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(exportFile.getExportFileId()));
+      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(
+          exportFileId));
 
       // then
       Mockito.verifyNoMoreInteractions(exportFileServiceMock);
