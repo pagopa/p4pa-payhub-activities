@@ -77,7 +77,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(pagedDebtPositionsFirstPage);
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(Mockito.any(DebtPositionDTO.class), Mockito.eq(new WfExecutionParameters()), Mockito.any()))
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(Mockito.any(DebtPositionDTO.class), Mockito.eq(new WfExecutionParameters()), Mockito.any(), Mockito.eq("ingestionFlowFileId:1")))
                 .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId").build());
         Mockito.when(workflowCompletionServiceMock.waitTerminationStatus("workflowId", MAX_ATTEMPS, RETRY_DELAY))
                 .thenReturn(workflowExecutionStatus);
@@ -117,13 +117,13 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
 
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, null))
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, null, "ingestionFlowFileId:1"))
                 .thenReturn(WorkflowCreatedDTO.builder().build());
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, null))
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, null, "ingestionFlowFileId:1"))
                 .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_2").build());
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, null))
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, null, "ingestionFlowFileId:1"))
                 .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_3").build());
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, null))
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, null, "ingestionFlowFileId:1"))
                 .thenReturn(null);
 
         Mockito.doThrow(new TooManyAttemptsException("Error")).when(workflowCompletionServiceMock)
