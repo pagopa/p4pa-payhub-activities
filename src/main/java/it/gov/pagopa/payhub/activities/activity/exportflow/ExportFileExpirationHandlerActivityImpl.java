@@ -45,9 +45,10 @@ public class ExportFileExpirationHandlerActivityImpl implements
         .orElseThrow(() -> new ExportFileNotFoundException(
             "Export file having exportFileId %s not found.".formatted(exportFileId)));
 
-    if (StringUtils.isNotEmpty(file.getFilePathName())) {
+    Path exportFilePath = getFilePath(file);
+    if (exportFilePath != null) {
       try {
-        if (!Files.deleteIfExists(getFilePath(file))) {
+        if (!Files.deleteIfExists(exportFilePath)) {
           log.info("Export File having exportFileId {} does not exist", file.getExportFileId());
         }
       } catch (IOException e) {
@@ -69,7 +70,7 @@ public class ExportFileExpirationHandlerActivityImpl implements
 
   private Path getFilePath(ExportFile exportFile) {
     if (StringUtils.isEmpty(exportFile.getFilePathName())) {
-      log.info("ExportFile not ready: filePathName is empty");
+      return null;
     }
 
     Path organizationBasePath = FileShareUtils.buildOrganizationBasePath(sharedDirectoryPath,
@@ -77,7 +78,6 @@ public class ExportFileExpirationHandlerActivityImpl implements
 
     return organizationBasePath
         .resolve(exportFile.getFilePathName())
-        .resolve(exportFile.getFileName())
-        .resolve(AESUtils.CIPHER_EXTENSION);
+        .resolve(exportFile.getFileName() + AESUtils.CIPHER_EXTENSION);
   }
 }
