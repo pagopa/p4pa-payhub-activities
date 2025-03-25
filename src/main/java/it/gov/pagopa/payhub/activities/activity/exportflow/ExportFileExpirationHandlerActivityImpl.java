@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
+import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
@@ -44,33 +45,39 @@ public class ExportFileExpirationHandlerActivityImpl implements
         .orElseThrow(() -> new ExportFileNotFoundException(
             "Export file having exportFileId %s not found.".formatted(exportFileId)));
 
-    try {
-      if (!Files.deleteIfExists(getFilePath(file))) {
-        log.info("Export File having exportFileId {} does not exist", file.getExportFileId());
+    if (StringUtils.isNotEmpty(file.getFilePathName())) {
+      try {
+        if (!Files.deleteIfExists(getFilePath(file))) {
+          log.info("Export File having exportFileId {} does not exist", file.getExportFileId());
+        }
+      } catch (IOException e) {
+        throw new IllegalStateException(
+            "Export File %s could not be deleted".formatted(file.getFileName()), e);
       }
+    }
 
-      if (file.getStatus() != ExportFileStatus.EXPIRED &&
-          exportFileService.updateStatus(file.getExportFileId(), file.getStatus(),
-              ExportFileStatus.EXPIRED, null) != 1) {
-        throw new ExportFileNotFoundException(
-            "Cannot update exportFile having exportFileId " + file.getExportFileId() + " to status "
-                + ExportFileStatus.EXPIRED);
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException(
-          "Export File %s could not be deleted".formatted(file.getFileName()), e);
+    if (file.getStatus() != ExportFileStatus.EXPIRED &&
+        exportFileService.updateStatus(file.getExportFileId(), file.getStatus(),
+            ExportFileStatus.EXPIRED, null) != 1) {
+      throw new ExportFileNotFoundException(
+          "Cannot update exportFile having exportFileId " + file.getExportFileId()
+              + " from status " + file.getStatus() + " to status "
+              + ExportFileStatus.EXPIRED);
     }
   }
 
+
   private Path getFilePath(ExportFile exportFile) {
     if (StringUtils.isEmpty(exportFile.getFilePathName())) {
-      throw new ExportFileNotFoundException("ExportFile not ready");
+      log.info("ExportFile not ready: filePathName is empty");
     }
+
     Path organizationBasePath = FileShareUtils.buildOrganizationBasePath(sharedDirectoryPath,
         exportFile.getOrganizationId());
 
     return organizationBasePath
         .resolve(exportFile.getFilePathName())
-        .resolve(exportFile.getFileName());
+        .resolve(exportFile.getFileName())
+        .resolve(AESUtils.CIPHER_EXTENSION);
   }
 }

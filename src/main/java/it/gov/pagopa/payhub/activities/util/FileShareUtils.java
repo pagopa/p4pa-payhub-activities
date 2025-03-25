@@ -11,8 +11,9 @@ public class FileShareUtils {
   }
 
   /**
-   * This method expects two paths whose concatenation does not resolve into an outer folder. The
-   * normalized path still starts with the first path.
+   * Concatenates two path: the concatenation should not resolve into an outer folder (the
+   * normalized path should still start with the first path)
+   * @throws IllegalArgumentException if the described validation is not successful
    */
   public static Path concatenatePaths(String firstPath, String secondPath) {
     Path concatenatedPath = Paths.get(firstPath, secondPath).normalize();
