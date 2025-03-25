@@ -54,7 +54,7 @@ class TreasuryErrorsArchiverServiceTest {
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), errorDTOList);
 
         // Then
         Mockito.verify(csvServiceMock)
@@ -77,7 +77,7 @@ class TreasuryErrorsArchiverServiceTest {
 
             // When & Then
             NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                    service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
+                    service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), errorDTOList));
             assertEquals("Error creating CSV", exception.getMessage());
     }
 
@@ -87,7 +87,7 @@ class TreasuryErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build");
 
         // When
-        String result = service.archiveErrorFiles(workingDirectory, new IngestionFlowFile());
+        String result = service.archiveErrorFiles(workingDirectory, 1L, "filePathName", "fileName");
 
         // Then
         Assertions.assertNull(result);
@@ -104,7 +104,7 @@ class TreasuryErrorsArchiverServiceTest {
             String expectedZipErrorFileName = "ERROR-fileName.zip";
 
             // When
-            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
+            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
 
             // Then
             Assertions.assertEquals(expectedZipErrorFileName, result);

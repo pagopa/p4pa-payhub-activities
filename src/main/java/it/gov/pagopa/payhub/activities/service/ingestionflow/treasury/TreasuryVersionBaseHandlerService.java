@@ -58,7 +58,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
                     }
                 }
             }
-            treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
+            treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO.getFileName(), errorDTOList);
             return result.get(TreasuryOperationEnum.INSERT);
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using mapper{} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());

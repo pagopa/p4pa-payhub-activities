@@ -57,7 +57,7 @@ class InstallmentErrorsArchiverServiceTest {
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), errorDTOList);
 
         // Then
         Mockito.verify(csvServiceMock)
@@ -71,7 +71,7 @@ class InstallmentErrorsArchiverServiceTest {
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of());
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), List.of());
 
         // Then
         Mockito.verify(csvServiceMock, Mockito.times(0))
@@ -93,7 +93,7 @@ class InstallmentErrorsArchiverServiceTest {
 
         // When & Then
         NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
+                service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), errorDTOList));
         assertEquals("Error creating CSV", exception.getMessage());
     }
 
@@ -103,7 +103,7 @@ class InstallmentErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build");
 
         // When
-        String result = service.archiveErrorFiles(workingDirectory, new IngestionFlowFile());
+        String result = service.archiveErrorFiles(workingDirectory, 1L, "filePathName", "fileName");
 
         // Then
         Assertions.assertNull(result);
@@ -120,7 +120,7 @@ class InstallmentErrorsArchiverServiceTest {
             String expectedZipErrorFileName = "ERROR-fileName.zip";
 
             // When
-            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
+            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
 
             // Then
             Assertions.assertEquals(expectedZipErrorFileName, result);
@@ -146,7 +146,7 @@ class InstallmentErrorsArchiverServiceTest {
                     .compressAndArchive(List.of(errorFile), Path.of("build/test/" + expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId() + "", ingestionFlowFileDTO.getFilePathName(), errorFolder));
 
             // When
-            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
+            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
 
             // Then
             Assertions.assertNull(result);
