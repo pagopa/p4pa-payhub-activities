@@ -25,6 +25,8 @@ public class ClassificationApisHolder {
     private final TreasuryEntityControllerApi treasuryEntityControllerApi;
     private final TreasuryEntityExtendedControllerApi treasuryEntityExtendedControllerApi;
 
+    private final AssessmentsControllerApi assessmentsControllerApi;
+
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public ClassificationApisHolder(
@@ -51,6 +53,8 @@ public class ClassificationApisHolder {
         this.treasurySearchControllerApi = new TreasurySearchControllerApi(apiClient);
         this.treasuryEntityControllerApi = new TreasuryEntityControllerApi(apiClient);
         this.treasuryEntityExtendedControllerApi = new TreasuryEntityExtendedControllerApi(apiClient);
+
+        this.assessmentsControllerApi = new AssessmentsControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -85,6 +89,10 @@ public class ClassificationApisHolder {
     }
     public TreasuryEntityExtendedControllerApi getTreasuryEntityExtendedControllerApi(String accessToken){
         return getApi(accessToken, treasuryEntityExtendedControllerApi);
+    }
+
+    public AssessmentsControllerApi getAssessmentsControllerApi(String accessToken){
+        return getApi(accessToken, assessmentsControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
