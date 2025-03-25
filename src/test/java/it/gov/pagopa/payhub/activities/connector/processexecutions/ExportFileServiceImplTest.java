@@ -43,7 +43,7 @@ class ExportFileServiceImplTest {
     }
 
     @Test
-    void givenWhenFindByIdThen() {
+    void givenExportFileId_WhenFindPaidExportFileById_ThenReturnPaidExportFile() {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
@@ -52,7 +52,7 @@ class ExportFileServiceImplTest {
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
         Mockito.when(exportFileClientMock.findById(exportFileId, accessToken)).thenReturn(paidExportFileExpected);
         //when
-        Optional<PaidExportFile> result = exportFileService.findById(exportFileId);
+        Optional<PaidExportFile> result = exportFileService.findPaidExportFileById(exportFileId);
         //then
         assertNotNull(result);
         assertTrue(result.isPresent());
