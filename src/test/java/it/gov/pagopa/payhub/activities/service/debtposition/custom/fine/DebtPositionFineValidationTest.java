@@ -96,6 +96,6 @@ class DebtPositionFineValidationTest {
         InvalidDebtPositionException result =
                 assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertEquals("Payment options must be exactly of types: [SINGLE_INSTALLMENT, REDUCED_SINGLE_INSTALLMENT]", result.getMessage());
+        assertEquals("Payment options must be exactly of types: [SINGLE_INSTALLMENT, REDUCED_SINGLE_INSTALLMENT]; provided: [INSTALLMENTS]", result.getMessage());
     }
 }

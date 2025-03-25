@@ -70,7 +70,9 @@ public class DebtPositionFineValidation {
                 .collect(Collectors.toSet());
 
         if (!actualTypes.equals(expectedTypes)) {
-            throw new InvalidDebtPositionException(String.format("Payment options must be exactly of types: %s", expectedTypes));
+            throw new InvalidDebtPositionException(
+                    String.format("Payment options must be exactly of types: %s; provided: %s", expectedTypes, actualTypes)
+            );
         }
     }
 }
