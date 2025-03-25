@@ -1,7 +1,16 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow;
 
-import it.gov.pagopa.payhub.activities.service.exportflow.ExportFileExpirationHandlerService;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
+import it.gov.pagopa.payhub.activities.util.FileShareUtils;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -11,15 +20,57 @@ import org.springframework.stereotype.Component;
 public class ExportFileExpirationHandlerActivityImpl implements
     ExportFileExpirationHandlerActivity {
 
-  private final ExportFileExpirationHandlerService exportFileExpirationHandlerService;
+  /**
+   * the shared folder
+   */
+  private final Path sharedDirectoryPath;
 
-  public ExportFileExpirationHandlerActivityImpl(ExportFileExpirationHandlerService exportFileExpirationHandlerService) {
-    this.exportFileExpirationHandlerService = exportFileExpirationHandlerService;
+  private final ExportFileService exportFileService;
+
+  public ExportFileExpirationHandlerActivityImpl(
+      @Value("${folders.shared}") String sharedFolder, ExportFileService exportFileService) {
+    this.sharedDirectoryPath = Path.of(sharedFolder);
+    this.exportFileService = exportFileService;
+
+    if (!Files.exists(sharedDirectoryPath)) {
+      throw new IllegalStateException("Shared folder doesn't exist: " + sharedDirectoryPath);
+    }
   }
 
   @Override
-  public void handleExpiration(Long id, String codError) {
-    log.info("Handling expiration of Export File having id {}", id);
-    exportFileExpirationHandlerService.handleExpiration(id, codError);
+  public void handleExpiration(Long exportFileId) {
+    log.info("Handling expiration of Export File having exportFileId {}", exportFileId);
+    ExportFile file = exportFileService.findById(exportFileId)
+        .orElseThrow(() -> new ExportFileNotFoundException(
+            "Export file having exportFileId %s not found.".formatted(exportFileId)));
+
+    try {
+      if (!Files.deleteIfExists(getFilePath(file))) {
+        log.info("Export File having exportFileId {} does not exist", file.getExportFileId());
+      }
+
+      if (file.getStatus() != ExportFileStatus.EXPIRED &&
+          exportFileService.updateStatus(file.getExportFileId(), file.getStatus(),
+              ExportFileStatus.EXPIRED, null) != 1) {
+        throw new ExportFileNotFoundException(
+            "Cannot update exportFile having exportFileId " + file.getExportFileId() + " to status "
+                + ExportFileStatus.EXPIRED);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(
+          "Export File %s could not be deleted".formatted(file.getFileName()), e);
+    }
+  }
+
+  private Path getFilePath(ExportFile exportFile) {
+    if (StringUtils.isEmpty(exportFile.getFilePathName())) {
+      throw new ExportFileNotFoundException("ExportFile not ready");
+    }
+    Path organizationBasePath = FileShareUtils.buildOrganizationBasePath(sharedDirectoryPath,
+        exportFile.getOrganizationId());
+
+    return organizationBasePath
+        .resolve(exportFile.getFilePathName())
+        .resolve(exportFile.getFileName());
   }
 }
