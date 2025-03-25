@@ -23,7 +23,7 @@ public class ExportFileServiceImpl implements ExportFileService{
     }
 
     @Override
-    public Optional<PaidExportFile> findById(Long exportFileId) {
+    public Optional<PaidExportFile> findPaidExportFileById(Long exportFileId) {
         log.info("Finding a PaidExportFile with id {}", exportFileId);
         return  Optional.ofNullable(exportFileClient.findById(exportFileId, authnService.getAccessToken()));
     }

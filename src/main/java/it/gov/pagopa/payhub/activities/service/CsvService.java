@@ -5,6 +5,7 @@ import com.opencsv.ICSVWriter;
 import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidCsvRowException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -71,7 +71,7 @@ public class CsvService {
     }
 
     /**
-     * Creates a CSV file from the provided iterator of beans.
+     * Creates a CSV file from the provided supplier of beans.
      *
      * <p>This method ensures that the file is properly closed after processing
      * by using a try-with-resources statement.</p>
@@ -79,14 +79,17 @@ public class CsvService {
      * <p>This method uses {@code StatefulBeanToCsv.write()}
      * to write each bean individually, reducing memory consumption at the cost of lower performance.</p>
      *
+     * <p>The supplier is called repeatedly until it returns an empty list or null,
+     * indicating that there are no more beans to write.</p>
+     *
      * @param <C> the generic type of the beans to be written to the CSV
      * @param csvFilePath the path to the CSV file to write
      * @param typeClass the class type of the beans to be written to the CSV
-     * @param csvRowsSupplier a supplier of beans to be written to the CSV
+     * @param csvRowsSupplier a supplier of beans to be written to the CSV (called multiple times)
      * @param csvProfile the profile to be used for writing the CSV
      * @throws IOException if an error occurs while writing the file
      */
-    public <C> void createCsvFromBean(Path csvFilePath, Class<C> typeClass, Supplier<List<C>> csvRowsSupplier, String csvProfile) throws IOException {
+    public <C> void createCsv(Path csvFilePath, Class<C> typeClass, Supplier<List<C>> csvRowsSupplier, String csvProfile) throws IOException {
         if (csvFilePath == null || csvRowsSupplier == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
@@ -110,12 +113,16 @@ public class CsvService {
                     .withThrowExceptions(true)
                     .build();
 
-            if (csvRowsSupplier.get() != Collections.emptyList()){
-                beanToCsv.write(csvRowsSupplier.get());
-            }
+            List<C> rows;
+            do {
+                rows = csvRowsSupplier.get();
+                if (rows != null && !rows.isEmpty()) {
+                    beanToCsv.write(rows);
+                }
+            } while (rows != null && !rows.isEmpty());
 
         } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
-            throw new IOException("Error writing CSV: " + e.getMessage(), e);
+            throw new InvalidCsvRowException("Invalid CSV row: " + e.getMessage());
         }
     }
 

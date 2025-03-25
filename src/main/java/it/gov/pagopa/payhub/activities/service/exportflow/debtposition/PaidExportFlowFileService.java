@@ -6,6 +6,8 @@ import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentEx
 import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.InstallmentExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.CsvService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
+import it.gov.pagopa.payhub.activities.service.exportflow.ExportFileErrorArchiverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
@@ -16,17 +18,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @Lazy
 @Slf4j
-public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExportFile, InstallmentPaidViewDTO, PaidInstallmentExportFlowFileDTO>{
+public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExportFile, PaidExportFileFilter,InstallmentPaidViewDTO, PaidInstallmentExportFlowFileDTO>{
 
     private final int pageSize;
-    private final String filenamePrefix;
-    private final String relativeFileFolder;
     private final ExportFileService exportFileService;
     private final DataExportService dataExportService;
     private final InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper;
@@ -35,26 +36,27 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
 
     public PaidExportFlowFileService(CsvService csvService,
                                      Class<PaidInstallmentExportFlowFileDTO> csvRowDtoClass,
+                                     ExportFileErrorArchiverService exportFileErrorArchiverService,
+                                     FileArchiverService fileArchiverService,
+                                     @Value("${folders.tmp}") Path workingDirectory,
+                                     @Value("${export-flow-files.paid.relative-file-folder}")String relativeFileFolder,
+                                     @Value("${export-flow-files.paid.filename-prefix}")String filenamePrefix,
                                      @Value("${export-flow-files.paid.page-size}") int pageSize,
-                                     @Value("${export-flow-files.default.filename-prefix}")String filenamePrefix,
                                      ExportFileService exportFileService,
                                      DataExportService dataExportService,
-                                     InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper,
-                                     BaseErrorsArchiverService baseErrorsArchiverService,
-                                     @Value("${export-flow-files.paid.relative-file-folder}")String relativeFileFolder) {
+                                     InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper
+                                     ) {
 
-        super(csvService, csvRowDtoClass, baseErrorsArchiverService);
+        super(csvService, csvRowDtoClass, exportFileErrorArchiverService, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix);
         this.pageSize = pageSize;
-        this.filenamePrefix = filenamePrefix;
         this.exportFileService = exportFileService;
         this.dataExportService = dataExportService;
         this.installmentExportFlowFileDTOMapper = installmentExportFlowFileDTOMapper;
-        this.relativeFileFolder = relativeFileFolder;
     }
 
     @Override
     public PaidExportFile findExportFileRecord(Long exportFileId) {
-        return exportFileService.findById(exportFileId)
+        return exportFileService.findPaidExportFileById(exportFileId)
                 .orElseThrow(() -> new ExportFlowFileNotFoundException("Cannot found paidExportFile having id: %d".formatted(exportFileId)));
     }
 
@@ -69,27 +71,26 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
     }
 
     @Override
-    public List<InstallmentPaidViewDTO> retrievePage(PaidExportFile exportFile, int pageNumber) {
-        List<InstallmentPaidViewDTO> installmentPaidViewDTOList = new ArrayList<>();
+    public List<InstallmentPaidViewDTO> retrievePage(PaidExportFile exportFile, PaidExportFileFilter filter, int pageNumber) {
+        List<InstallmentPaidViewDTO> installmentPaidViewDTOList = Collections.emptyList();
 
-        if (exportFile.getStatus().equals(ExportFileStatus.PROCESSING)){
-            PaidExportFileFilter filterFields = exportFile.getFilterFields();
+        PagedInstallmentsPaidView pagedInstallmentsPaidView = dataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("paymentDateTime"));
 
-            PaidExportFileFilter paidExportFileFilter = PaidExportFileFilter.builder()
-                    .paymentDate(filterFields != null ? filterFields.getPaymentDate() : null)
-                    .debtPositionTypeOrgId(filterFields != null ? filterFields.getDebtPositionTypeOrgId() : null)
-                    .build();
-
-            PagedInstallmentsPaidView pagedInstallmentsPaidView = dataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), paidExportFileFilter, pageNumber, pageSize, null);
-
-            if (pagedInstallmentsPaidView != null){
-                installmentPaidViewDTOList= pagedInstallmentsPaidView.getContent();
-            }
-        }else if (exportFile.getStatus().equals(ExportFileStatus.REQUESTED)){
-            log.error("Paid export file status wrong during the export process for file ID %s, attempted status %s, actual %s".formatted(exportFile.getExportFileId(), ExportFileStatus.PROCESSING, ExportFileStatus.REQUESTED));
+        if (pagedInstallmentsPaidView != null){
+            installmentPaidViewDTOList= pagedInstallmentsPaidView.getContent();
         }
 
         return installmentPaidViewDTOList;
+    }
+
+    @Override
+    protected boolean checkStatusExportFileRecord(PaidExportFile exportFile) {
+        if (exportFile.getStatus().equals(ExportFileStatus.PROCESSING)){
+            return true;
+        }else {
+            log.error("Paid export file status wrong during the export process for file ID %s, attempted status %s, actual %s".formatted(exportFile.getExportFileId(), ExportFileStatus.PROCESSING, ExportFileStatus.REQUESTED));
+            return false;
+        }
     }
 
     @Override
@@ -98,14 +99,14 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
     }
 
     @Override
-    public String getRelativeFileFolder() {
-        return relativeFileFolder;
-    }
+    protected PaidExportFileFilter getExportFilter(PaidExportFile exportFile) {
+        PaidExportFileFilter filterFields = exportFile.getFilterFields();
 
-    @Override
-    public String getExportFileName(Long exportFileId) {
-        return filenamePrefix + "_" + exportFileId + ".csv";
-    }
+        return PaidExportFileFilter.builder()
+                .paymentDate(filterFields != null ? filterFields.getPaymentDate() : null)
+                .debtPositionTypeOrgId(filterFields != null ? filterFields.getDebtPositionTypeOrgId() : null)
+                .build();
 
+    }
 }
 
