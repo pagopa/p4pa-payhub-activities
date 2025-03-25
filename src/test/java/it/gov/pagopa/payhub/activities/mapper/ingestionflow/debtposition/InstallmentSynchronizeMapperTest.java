@@ -1,6 +1,9 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,18 +23,22 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class InstallmentSynchronizeMapperTest {
 
-    private InstallmentSynchronizeMapper installmentSynchronizeMapperMock;
+    private InstallmentSynchronizeMapper installmentSynchronizeMapper;
 
     @BeforeEach
     void setUp(){
-        installmentSynchronizeMapperMock = new InstallmentSynchronizeMapper();
+        installmentSynchronizeMapper = new InstallmentSynchronizeMapper(new ObjectMapper());
     }
 
     @Test
-    void givenMapThenOk(){
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(buildInstallmentIngestionFlowFileDTO(), 1L, 1L, 1L);
+    void givenMapThenOk() {
+        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setExecutionConfig(null);
+
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
 
         assertEquals(4, Objects.requireNonNull(result.getAdditionalTransfers()).size());
+        assertEquals(NullNode.instance, result.getExecutionConfig());
         checkNotNullFields(result);
     }
 
@@ -43,7 +50,7 @@ class InstallmentSynchronizeMapperTest {
 
         // When & Then
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L)
+                installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L)
         );
 
         assertEquals("Missing or empty transfer map for index: 2", exception.getMessage());
@@ -51,7 +58,7 @@ class InstallmentSynchronizeMapperTest {
 
 
     @Test
-    void givenMapWhenFlagMultiBeneficiaryFalseThenOk(){
+    void givenMapWhenFlagMultiBeneficiaryFalseThenOk() {
         InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
         expected.setFlagMultibeneficiary(false);
         expected.setAdditionalTransfers(Collections.emptyList());
@@ -59,7 +66,7 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(false);
 
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
 
         reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getAdditionalTransfers()).isEmpty());
@@ -67,7 +74,7 @@ class InstallmentSynchronizeMapperTest {
     }
 
     @Test
-    void givenMapWhenNumberBeneficiaryNullThenOk(){
+    void givenMapWhenNumberBeneficiaryNullThenOk() {
         InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
         expected.setNumberBeneficiary(null);
         expected.setAdditionalTransfers(Collections.emptyList());
@@ -75,7 +82,7 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setNumberBeneficiary(null);
 
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
 
         reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getAdditionalTransfers()).isEmpty());
@@ -83,7 +90,7 @@ class InstallmentSynchronizeMapperTest {
     }
 
     @Test
-    void givenMapWhenNumberBeneficiaryLessThan2ThenOk(){
+    void givenMapWhenNumberBeneficiaryLessThan2ThenOk() {
         InstallmentSynchronizeDTO expected = buildInstallmentSynchronizeDTO();
         expected.setNumberBeneficiary(1);
         expected.setAdditionalTransfers(Collections.emptyList());
@@ -91,7 +98,7 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setNumberBeneficiary(1);
 
-        InstallmentSynchronizeDTO result = installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L);
 
         reflectionEqualsByName(expected, result);
         assertTrue(Objects.requireNonNull(result.getAdditionalTransfers()).isEmpty());
@@ -103,9 +110,21 @@ class InstallmentSynchronizeMapperTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildTransferFake();
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L)
+                installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L)
         );
 
         assertEquals("Missing required value for keys: causaleVersamentoEnte or remittanceInformation", exception.getMessage());
+    }
+
+    @Test
+    void givenMapWhenExecutionConfigInvalidThenThrowException() {
+        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setExecutionConfig("{\"executionConfig\":\"test");
+
+        InvalidValueException exception = assertThrows(InvalidValueException.class, () ->
+                installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L)
+        );
+
+        assertEquals(String.format("Invalid execution config value: [%s] ", installmentIngestionFlowFileDTO.getExecutionConfig()), exception.getMessage());
     }
 }
