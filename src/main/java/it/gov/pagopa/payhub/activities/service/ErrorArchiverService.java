@@ -1,9 +1,7 @@
-package it.gov.pagopa.payhub.activities.service.exportflow;
+package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.dto.export.ErrorExportDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
-import it.gov.pagopa.payhub.activities.service.CsvService;
-import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -14,24 +12,47 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * A base service for archiving error files.
+ * This class provides common functionality for writing error data to CSV files and archiving them into ZIP archives.
+ * It is designed to be extended by specific error archiver services for different types of error DTOs.
+ *
+ * @param <T> The type of the error DTO.
+ */
 @Slf4j
-public abstract class ExportErrorArchiverService<T extends ErrorExportDTO> {
+public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> {
 
     private static final String ERRORFILE_PREFIX = "ERROR-";
+
     private final Path sharedDirectoryPath;
     private final String errorFolder;
     private final FileArchiverService fileArchiverService;
     private final CsvService csvService;
 
-    protected ExportErrorArchiverService(Path sharedDirectoryPath, String errorFolder, FileArchiverService fileArchiverService, CsvService csvService) {
-        this.sharedDirectoryPath = sharedDirectoryPath;
+    protected ErrorArchiverService(String sharedDirectoryPath, String errorFolder, FileArchiverService fileArchiverService, CsvService csvService) {
+        this.sharedDirectoryPath = Path.of(sharedDirectoryPath);
         this.errorFolder = errorFolder;
         this.fileArchiverService = fileArchiverService;
         this.csvService = csvService;
     }
 
 
+    /**
+     * Retrieves the headers for the error CSV file.
+     * This method must be implemented by subclasses to provide the specific headers for the CSV file.
+     *
+     * @return A list of strings representing the CSV headers.
+     */
     protected abstract List<String[]> getHeaders();
+
+    /**
+     * Converts an error DTO to a CSV row.
+     * This method must be implemented by subclasses to provide the specific logic for converting an error DTO to a CSV row.
+     *
+     * @param error The error DTO to convert.
+     * @return An array of strings representing the CSV row.
+     */
+    protected abstract String[] toCsvRow(T error);
 
     /**
      * Writes a list of errors to a CSV file in the specified working directory.
@@ -42,13 +63,12 @@ public abstract class ExportErrorArchiverService<T extends ErrorExportDTO> {
      * @param errorList        The list of error DTOs to write to the CSV file.
      */
     public void writeErrors(Path workingDirectory, String fileName, List<T> errorList) {
-
-        if(CollectionUtils.isEmpty(errorList)){
+        if (CollectionUtils.isEmpty(errorList)) {
             return;
         }
 
         List<String[]> data = errorList.stream()
-                .map(ErrorExportDTO::toCsvRow)
+                .map(this::toCsvRow)
                 .toList();
 
         try {
@@ -98,7 +118,7 @@ public abstract class ExportErrorArchiverService<T extends ErrorExportDTO> {
             } else {
                 return null;
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             log.error("Something gone wrong while trying to archive error file!", e);
             return null;
         }

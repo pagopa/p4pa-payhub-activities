@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @AllArgsConstructor
-public class ErrorExportDTO extends IngestionFlowFileErrorDTO {
+public class ExportFileErrorDTO extends IngestionFlowFileErrorDTO {
 
     @Override
     public String[] toCsvRow() {

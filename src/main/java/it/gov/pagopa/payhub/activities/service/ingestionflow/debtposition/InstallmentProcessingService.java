@@ -101,8 +101,8 @@ public class InstallmentProcessingService {
             return null;
         }
 
-        installmentErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFile, errorList);
-        String errorsZipFileName = installmentErrorsArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFile);
+        installmentErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFile.getFileName(), errorList);
+        String errorsZipFileName = installmentErrorsArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFilePathName(), ingestionFlowFile.getFileName());
         log.info("Error file archived at: {}", errorsZipFileName);
 
         return errorsZipFileName;

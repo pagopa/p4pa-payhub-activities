@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.service.CsvService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.ErrorArchiverService;
+import it.gov.pagopa.payhub.activities.service.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -26,5 +26,10 @@ public class InstallmentErrorsArchiverService extends ErrorArchiverService<Insta
     protected List<String[]> getHeaders() {
         return Collections.singletonList(
                 new String[]{"File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message"});
+    }
+
+    @Override
+    protected String[] toCsvRow(InstallmentErrorDTO error) {
+        return error.toCsvRow();
     }
 }
