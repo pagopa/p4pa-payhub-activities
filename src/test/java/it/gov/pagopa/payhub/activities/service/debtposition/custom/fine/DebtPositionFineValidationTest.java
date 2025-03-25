@@ -68,7 +68,7 @@ class DebtPositionFineValidationTest {
         InvalidDebtPositionException result =
                 assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertEquals("PaymentOption has more than one Installment", result.getMessage());
+        assertEquals("PaymentOption with index 1 has more than one Installment", result.getMessage());
     }
 
     @Test
@@ -96,6 +96,6 @@ class DebtPositionFineValidationTest {
         InvalidDebtPositionException result =
                 assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertEquals("Payment options must be exactly of types: REDUCED_SINGLE_INSTALLMENT and SINGLE_INSTALLMENT", result.getMessage());
+        assertEquals("Payment options must be exactly of types: [SINGLE_INSTALLMENT, REDUCED_SINGLE_INSTALLMENT]", result.getMessage());
     }
 }

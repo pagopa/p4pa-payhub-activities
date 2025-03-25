@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Lazy
 @Service
@@ -44,15 +45,19 @@ public class DebtPositionFineValidation {
      * Validates that each provided payment option has exactly one non-CANCELLED installment.
      */
     private void validateInstallmentsStatusAndCount(List<PaymentOptionDTO> paymentOptionDTOList) {
-        for (PaymentOptionDTO paymentOptionDTO : paymentOptionDTOList) {
-            long activeInstallments = paymentOptionDTO.getInstallments().stream()
+        IntStream.range(0, paymentOptionDTOList.size()).forEach(index -> {
+            PaymentOptionDTO option = paymentOptionDTOList.get(index);
+            long activeInstallments = option.getInstallments().stream()
                     .filter(i -> i.getStatus() != InstallmentStatus.CANCELLED)
                     .count();
 
             if (activeInstallments != 1) {
-                throw new InvalidDebtPositionException("PaymentOption has more than one Installment");
+                throw new InvalidDebtPositionException(
+                        String.format("PaymentOption with index %s has more than one Installment", index)
+                );
             }
-        }
+        });
+
     }
 
     /**
@@ -65,7 +70,7 @@ public class DebtPositionFineValidation {
                 .collect(Collectors.toSet());
 
         if (!actualTypes.equals(expectedTypes)) {
-            throw new InvalidDebtPositionException("Payment options must be exactly of types: REDUCED_SINGLE_INSTALLMENT and SINGLE_INSTALLMENT");
+            throw new InvalidDebtPositionException(String.format("Payment options must be exactly of types: %s", expectedTypes));
         }
     }
 }
