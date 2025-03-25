@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.payhub.activities.exception.debtposition.custom.fine.InvalidDebtPositionException;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +13,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.build
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTOWithMultiplePO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO2;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionFineValidationTest {
@@ -29,7 +26,7 @@ class DebtPositionFineValidationTest {
     }
 
     @Test
-    void whenValidateFineThenReturnTrue(){
+    void whenValidateFineThenOk(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));
@@ -40,18 +37,18 @@ class DebtPositionFineValidationTest {
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
 
-        boolean result = debtPositionFineValidation.validateFine(debtPositionDTO);
-
-        assertTrue(result);
+        assertDoesNotThrow(() -> debtPositionFineValidation.validateFine(debtPositionDTO));
     }
 
     @Test
-    void givenValidateFineWhenPOMoreThanTwoWithOneCancelledThenReturnTrue(){
+    void givenValidateFineWhenPOMoreThanTwoWithOneCancelledThenOk(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));
         PaymentOptionDTO paymentOptionDTO2 = new PaymentOptionDTO();
-        paymentOptionDTO2.setInstallments(List.of(buildInstallmentDTO2()));
+        InstallmentDTO installmentDTO = buildInstallmentDTO();
+        installmentDTO.setStatus(InstallmentStatus.CANCELLED);
+        paymentOptionDTO2.setInstallments(List.of(installmentDTO, buildInstallmentDTO2()));
         paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
         PaymentOptionDTO paymentOptionDTO3 = new PaymentOptionDTO();
         paymentOptionDTO3.setInstallments(List.of(buildInstallmentDTO2()));
@@ -61,31 +58,31 @@ class DebtPositionFineValidationTest {
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
 
-        boolean result = debtPositionFineValidation.validateFine(debtPositionDTO);
-
-        assertTrue(result);
+        assertDoesNotThrow(() -> debtPositionFineValidation.validateFine(debtPositionDTO));
     }
 
     @Test
-    void givenValidateFineWhenOnePOHasMoreThenOneInstallmentThenReturnFalse(){
+    void givenValidateFineWhenOnePOHasMoreThenOneInstallmentThenThrowInvalidDebtPositionException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
 
-        boolean result = debtPositionFineValidation.validateFine(debtPositionDTO);
+        InvalidDebtPositionException result =
+                assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertFalse(result);
+        assertEquals("PaymentOption has more than one Installment", result.getMessage());
     }
 
     @Test
-    void givenValidateFineWhenPOIsOnlyOneThenReturnFalse(){
+    void givenValidateFineWhenPOIsOnlyOneThenThrowInvalidDebtPositionException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-        boolean result = debtPositionFineValidation.validateFine(debtPositionDTO);
+        InvalidDebtPositionException result =
+                assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertFalse(result);
+        assertEquals("DebtPosition cannot have 1 payment options", result.getMessage());
     }
 
     @Test
-    void givenValidateFineWhen2POAnd2InstallmentsButTypeNotReducedOrSingleThenReturnTrue(){
+    void givenValidateFineWhen2POAnd2InstallmentsButTypeNotReducedOrSingleThenThrowInvalidDebtPositionException(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.INSTALLMENTS);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));
@@ -96,8 +93,9 @@ class DebtPositionFineValidationTest {
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
 
-        boolean result = debtPositionFineValidation.validateFine(debtPositionDTO);
+        InvalidDebtPositionException result =
+                assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertFalse(result);
+        assertEquals("Payment options must be exactly of types: REDUCED_SINGLE_INSTALLMENT and SINGLE_INSTALLMENT", result.getMessage());
     }
 }

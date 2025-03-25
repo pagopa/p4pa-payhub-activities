@@ -20,7 +20,7 @@ public class DebtPositionSynchronizeFineActivityImpl implements DebtPositionSync
 
     @Override
     public DebtPositionDTO handleFineDebtPosition(DebtPositionDTO debtPositionDTO, boolean massive, FineWfExecutionConfig executionParams) {
-        boolean fineValidated = debtPositionFineValidation.validateFine(debtPositionDTO);
+        debtPositionFineValidation.validateFine(debtPositionDTO);
         // TODO to be fully implemented with the task https://pagopa.atlassian.net/browse/P4ADEV-2442
         return debtPositionDTO;
     }

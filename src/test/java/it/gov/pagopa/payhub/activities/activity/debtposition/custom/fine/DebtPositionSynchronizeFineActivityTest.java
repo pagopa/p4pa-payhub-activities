@@ -8,11 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionSynchronizeFineActivityTest {
@@ -32,12 +31,10 @@ class DebtPositionSynchronizeFineActivityTest {
         //TODO to be fixed with task https://pagopa.atlassian.net/browse/P4ADEV-2442
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         FineWfExecutionConfig fineWfExecutionConfig = buildfineWfExecutionConfig();
-        Mockito.when(debtPositionFineValidationMock.validateFine(debtPositionDTO))
-                .thenReturn(true);
 
-        DebtPositionDTO result = activity.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig);
+        activity.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig);
 
-        assertEquals(debtPositionDTO, result);
+        verify(debtPositionFineValidationMock).validateFine(debtPositionDTO);
     }
 
     private FineWfExecutionConfig buildfineWfExecutionConfig() {
