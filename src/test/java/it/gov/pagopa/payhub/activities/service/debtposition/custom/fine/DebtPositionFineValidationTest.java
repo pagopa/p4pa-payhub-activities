@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTOWithMultiplePO;
@@ -68,7 +69,7 @@ class DebtPositionFineValidationTest {
         InvalidDebtPositionException result =
                 assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertEquals("PaymentOption with index 1 has more than one Installment", result.getMessage());
+        assertEquals("PaymentOption with index 2 has more than one Installment", result.getMessage());
     }
 
     @Test
@@ -96,6 +97,11 @@ class DebtPositionFineValidationTest {
         InvalidDebtPositionException result =
                 assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        assertEquals("Payment options must be exactly of types: [SINGLE_INSTALLMENT, REDUCED_SINGLE_INSTALLMENT]; provided: [INSTALLMENTS]", result.getMessage());
+        Set<PaymentOptionTypeEnum> expectedTypes = Set.of(
+                PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT,
+                PaymentOptionTypeEnum.SINGLE_INSTALLMENT
+        );
+
+        assertEquals(String.format("Payment options must be exactly of types: %s; provided: [INSTALLMENTS]", expectedTypes), result.getMessage());
     }
 }

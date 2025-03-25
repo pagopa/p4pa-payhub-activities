@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Lazy
 @Service
@@ -45,19 +44,15 @@ public class DebtPositionFineValidation {
      * Validates that each provided payment option has exactly one non-CANCELLED installment.
      */
     private void validateInstallmentsStatusAndCount(List<PaymentOptionDTO> paymentOptionDTOList) {
-        IntStream.range(0, paymentOptionDTOList.size()).forEach(index -> {
-            PaymentOptionDTO option = paymentOptionDTOList.get(index);
-            long activeInstallments = option.getInstallments().stream()
+        for (PaymentOptionDTO paymentOptionDTO : paymentOptionDTOList) {
+            long activeInstallments = paymentOptionDTO.getInstallments().stream()
                     .filter(i -> i.getStatus() != InstallmentStatus.CANCELLED)
                     .count();
 
             if (activeInstallments != 1) {
-                throw new InvalidDebtPositionException(
-                        String.format("PaymentOption with index %s has more than one Installment", index)
-                );
+                throw new InvalidDebtPositionException(String.format("PaymentOption with index %s has more than one Installment", paymentOptionDTO.getPaymentOptionIndex()));
             }
-        });
-
+        }
     }
 
     /**
