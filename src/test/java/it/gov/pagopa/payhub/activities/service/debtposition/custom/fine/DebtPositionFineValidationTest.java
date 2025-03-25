@@ -57,7 +57,7 @@ class DebtPositionFineValidationTest {
         paymentOptionDTO3.setStatus(PaymentOptionStatus.CANCELLED);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
-        debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
+        debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2, paymentOptionDTO3));
 
         assertDoesNotThrow(() -> debtPositionFineValidation.validateFine(debtPositionDTO));
     }
