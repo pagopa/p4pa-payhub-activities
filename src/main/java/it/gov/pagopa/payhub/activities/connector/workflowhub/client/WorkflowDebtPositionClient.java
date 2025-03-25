@@ -19,9 +19,9 @@ public class WorkflowDebtPositionClient {
         this.workflowHubApisHolder = workflowHubApisHolder;
     }
 
-    public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters, PaymentEventType paymentEventType, String accessToken){
+    public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters, PaymentEventType paymentEventType, String eventDescription, String accessToken){
         return workflowHubApisHolder.getDebtPositionApi(accessToken)
-                .syncDebtPosition(new SyncDebtPositionRequestDTO(debtPositionDTO, wfExecutionParameters.getWfExecutionConfig()), wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange(), paymentEventType);
+                .syncDebtPosition(new SyncDebtPositionRequestDTO(debtPositionDTO, wfExecutionParameters.getWfExecutionConfig()), wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange(), paymentEventType, eventDescription);
     }
 
 }
