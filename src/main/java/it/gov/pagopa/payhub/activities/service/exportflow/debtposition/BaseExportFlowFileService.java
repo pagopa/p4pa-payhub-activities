@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFlowFileResult;
-import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidExportStatusException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
@@ -39,50 +38,51 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
 
         E exportFileRecord = findExportFileRecord(exportFileId);
         ExportFileStatus exportStatus = getExportStatus(exportFileRecord);
+
         if (exportStatus.equals(ExportFileStatus.PROCESSING)){
             Long organizationId = getOrganizationId(exportFileRecord);
             String profile = getFlowFileVersion(exportFileRecord);
             Path csvFilePath = workingDirectory.resolve(String.valueOf(organizationId)).resolve(relativeFileFolder).resolve(getExportFileName(exportFileId));
             F exportFilter = getExportFilter(exportFileRecord);
 
-        try {
-            csvService.createCsv(csvFilePath, csvRowDtoClass, () ->{
-                        List<C> csvRows = retrieveAndMapPage(exportFileRecord, exportFilter, pageNumber[0]++);
-                        exportedRows[0] += csvRows.size();
-                        return csvRows;
-                    }
-                    , profile);
-        } catch (IOException e) {
-            throw new NotRetryableActivityException(e.getMessage());
-        }
+            try {
+                csvService.createCsv(csvFilePath, csvRowDtoClass, () ->{
+                            List<C> csvRows = retrieveAndMapPage(exportFileRecord, exportFilter, pageNumber[0]++);
+                            exportedRows[0] += csvRows.size();
+                            return csvRows;
+                        }
+                        , profile);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error writing to CSV file: " + e.getMessage(), e);
+            }
 
-            ExportFlowFileResult exportFlowFileResult = ExportFlowFileResult.builder()
-                    .fileName(getExportFileName(exportFileId))
+            Path zipFilePath = createZipArchive(csvFilePath);
+
+            return ExportFlowFileResult.builder()
+                    .fileName(zipFilePath.getFileName().toString())
+                    .filePath(zipFilePath.toString())
                     .exportedRows(exportedRows[0])
-                    .filePath(csvFilePath.toString())
                     .build();
 
-            createZipArchive(exportFlowFileResult);
-
-            return exportFlowFileResult;
         }else {
-            throw new InvalidExportStatusException("Export file status wrong during the export process for file ID %s, attempted status %s, actual %s".formatted(exportFileId, ExportFileStatus.PROCESSING, ExportFileStatus.REQUESTED));
+            throw new InvalidExportStatusException("The requested ExportFile (%s) has an invalid status %s".formatted(exportFileId, exportStatus));
         }
     }
 
     /**
-     * Creates a ZIP archive for the specified export result.
-     * This method compresses the CSV file into a ZIP archive using the {@link FileArchiverService#compressAndArchive(List, Path, Path)} method.
+     * Creates a ZIP archive for the specified CSV file.
+     * This method compresses the provided CSV file into a ZIP archive using the {@link FileArchiverService#compressAndArchive(List, Path, Path)} method.
      *
-     * @param exportFlowFileResult The export result.
+     * @param csvFilePath The path to the CSV file to be compressed.
+     * @return The path to the created ZIP archive.
      * @throws IllegalStateException If an error occurs during compression and archiving due to filesystem or permission issues.
      */
-    private void createZipArchive(ExportFlowFileResult exportFlowFileResult) {
+    private Path createZipArchive(Path csvFilePath) {
         try {
-            Path tmpZipFilePath = Path.of(exportFlowFileResult.getFilePath())
-                    .getParent()
-                    .resolve(Utilities.replaceFileExtension(exportFlowFileResult.getFileName(), ".zip"));
-            fileArchiverService.compressAndArchive(List.of(Path.of(exportFlowFileResult.getFilePath())), tmpZipFilePath, workingDirectory);
+            Path tmpZipFilePath = csvFilePath.getParent()
+                    .resolve(Utilities.replaceFileExtension(csvFilePath.getFileName().toString(), ".zip"));
+            fileArchiverService.compressAndArchive(List.of(csvFilePath), tmpZipFilePath, workingDirectory);
+            return tmpZipFilePath;
         } catch (IOException e) {
             throw new IllegalStateException("Error during compression and archiving: " + e.getMessage(), e);
         }

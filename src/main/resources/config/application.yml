@@ -18,6 +18,9 @@ ingestion-flow-files:
       retry-delays-ms: 1000
 
 export-flow-files:
+  page-request-thresholds:
+    warn: "\${EXPORT_FLOW_FILES_PAGE_REQUEST_THRESHOLDS_WARN: 100}"
+    error: "\${EXPORT_FLOW_FILES_PAGE_REQUEST_THRESHOLDS_ERROR: 1000}"
   paid:
     filename-prefix: "\${EXPORT_PAID_FLOW_FILE_FILENAME_PREFIX:EXPORT_PAID}"
     page-size: "\${PAID_EXPORT_FLOW_FILE_SIZE_PAGE:10000}"

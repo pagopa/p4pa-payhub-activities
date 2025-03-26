@@ -30,14 +30,21 @@ public class CsvService {
     private final char separator;
     private final char quoteChar;
     private final String profile;
+    private final int warnThreshold;
+    private final int errorThreshold;
+
 
     public CsvService(
             @Value("${csv.separator}") char separator,
             @Value("${csv.quote-char}") char quoteChar,
-            @Value("${csv.profile}") String profile) {
+            @Value("${csv.profile}") String profile,
+            @Value("${export-flow-files.page-request-thresholds.warn}")int warnThreshold,
+            @Value("${export-flow-files.page-request-thresholds.error}")int errorThreshold) {
         this.separator = separator;
         this.quoteChar = quoteChar;
         this.profile = profile;
+        this.warnThreshold = warnThreshold;
+        this.errorThreshold = errorThreshold;
     }
 
     /**
@@ -112,8 +119,16 @@ public class CsvService {
                     .build();
 
             List<C> rows;
+            int pageRequestCount = 0;
             while (!CollectionUtils.isEmpty(rows = csvRowsSupplier.get())) {
                 beanToCsv.write(rows);
+                pageRequestCount++;
+
+                if (pageRequestCount > warnThreshold && pageRequestCount <= errorThreshold) {
+                    log.warn("Export process reached warn threshold page request count: {}", pageRequestCount);
+                } else if (pageRequestCount > errorThreshold) {
+                    throw new IllegalStateException("Export process reached error threshold page request count: " + pageRequestCount);
+                }
             }
 
         } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {

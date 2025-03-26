@@ -70,15 +70,12 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
 
     @Override
     public List<InstallmentPaidViewDTO> retrievePage(PaidExportFile exportFile, PaidExportFileFilter filter, int pageNumber) {
-        List<InstallmentPaidViewDTO> installmentPaidViewDTOList = Collections.emptyList();
-
         PagedInstallmentsPaidView pagedInstallmentsPaidView = dataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("installmentId"));
-
         if (pagedInstallmentsPaidView != null){
-            installmentPaidViewDTOList= pagedInstallmentsPaidView.getContent();
+            return pagedInstallmentsPaidView.getContent();
+        } else {
+            return Collections.emptyList();
         }
-
-        return installmentPaidViewDTOList;
     }
 
     @Override
@@ -93,13 +90,7 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
 
     @Override
     protected PaidExportFileFilter getExportFilter(PaidExportFile exportFile) {
-        PaidExportFileFilter filterFields = exportFile.getFilterFields();
-
-        return PaidExportFileFilter.builder()
-                .paymentDate(filterFields != null ? filterFields.getPaymentDate() : null)
-                .debtPositionTypeOrgId(filterFields != null ? filterFields.getDebtPositionTypeOrgId() : null)
-                .build();
-
+        return exportFile.getFilterFields();
     }
 }
 
