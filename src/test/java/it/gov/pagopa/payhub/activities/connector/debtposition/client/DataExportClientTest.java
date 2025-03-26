@@ -74,4 +74,28 @@ class DataExportClientTest {
         assertNotNull(result);
         assertEquals(expected, result);
     }
+
+    @Test
+    void givenParametersWithNullPaymentDate_WhenGetExportPaidInstallments_ThenReturnPagedInstallmentsPaidView() {
+        //given
+        String accessToken = "accessToken";
+        Long organizationId = 1L;
+        String operatorExternalUserId = "operatorExternalUserId";
+        Long debtPositionTypeOrgId = 1L;
+
+        PaidExportFileFilter paidExportFileFilter = PaidExportFileFilter.builder()
+                .paymentDate(null)
+                .debtPositionTypeOrgId(debtPositionTypeOrgId)
+                .build();
+
+        PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
+
+        Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId,null,null, debtPositionTypeOrgId, 0, 10, null)). thenReturn(expected);
+        Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
+        //when
+        PagedInstallmentsPaidView result = dataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
+        //then
+        assertNotNull(result);
+        assertEquals(expected, result);
+    }
 }
