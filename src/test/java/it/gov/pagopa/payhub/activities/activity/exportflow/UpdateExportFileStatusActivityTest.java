@@ -24,8 +24,6 @@ class UpdateExportFileStatusActivityTest {
   private static final Long INVALID_ID=9L;
   private static final ExportFileStatus OLD_STATUS = ExportFileStatus.PROCESSING;
   private static final ExportFileStatus NEW_STATUS = ExportFileStatus.COMPLETED;
-  private static final String ERROR_DESCRIPTION ="ERROR_DESCRIPTION";
-  private static final String DISCARD_FILE_NAME="DISCARD_FILENAME";
 
   @Test
   void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
