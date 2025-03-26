@@ -21,6 +21,7 @@ public class DebtPositionFineDatesProcessor {
         boolean notified = processPaymentOptions(debtPositionDTO, executionParams, response, now);
 
         response.setNotified(notified);
+        response.setDebtPositionDTO(debtPositionDTO);
         return response;
     }
 
