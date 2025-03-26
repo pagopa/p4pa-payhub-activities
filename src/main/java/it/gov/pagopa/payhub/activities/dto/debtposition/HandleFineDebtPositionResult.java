@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig;
+package it.gov.pagopa.payhub.activities.dto.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DebtPositionFineResponse {
+public class HandleFineDebtPositionResult {
 
     private DebtPositionDTO debtPositionDTO;
     private OffsetDateTime reductionEndDate;
