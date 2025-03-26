@@ -23,6 +23,7 @@ public class DebtPositionApisHolder {
     private final DebtPositionTypeOrgSearchControllerApi debtPositionTypeOrgSearchControllerApi;
     private final ReceiptNoPiiSearchControllerApi receiptNoPiiSearchControllerApi;
     private final DataExportsApi dataExportsApi;
+    private final InstallmentApi installmentApi;
 
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
@@ -52,6 +53,7 @@ public class DebtPositionApisHolder {
         this.debtPositionTypeOrgSearchControllerApi = new DebtPositionTypeOrgSearchControllerApi(apiClient);
 	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
         this.dataExportsApi = new DataExportsApi(apiClient);
+        this.installmentApi = new InstallmentApi(apiClient);
     }
 
     @PreDestroy
@@ -73,6 +75,10 @@ public class DebtPositionApisHolder {
 
     public TransferSearchControllerApi getTransferSearchControllerApi(String accessToken) {
         return getApi(accessToken, null, transferSearchControllerApi);
+    }
+
+    public InstallmentApi getInstallmentApi(String accessToken){
+        return getApi(accessToken, null, installmentApi);
     }
 
     public TransferApi getTransferApi(String accessToken){

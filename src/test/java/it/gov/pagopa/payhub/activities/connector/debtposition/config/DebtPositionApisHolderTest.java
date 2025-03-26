@@ -1,10 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +15,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -155,6 +153,15 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionTypeOrgSearchControllerApi(accessToken)
                         .crudDebtPositionTypeOrgsGetDebtPositionTypeOrgByInstallmentId(1L),
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetInstallmentApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> debtPositionApisHolder.getInstallmentApi(accessToken)
+                        .getInstallmentsByOrganizationIdAndNav(0L, "nav", null),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }

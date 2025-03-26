@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NewNotificationRequestStatusResponseV24DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,10 @@ public class SendClient {
 
   public NewNotificationRequestStatusResponseV24DTO notificationStatus(String accessToken, String sendNotificationId) {
     return sendApisHolder.getSendApi(accessToken).notificationStatus(sendNotificationId);
+  }
+
+  public SendNotificationDTO retrieveNotificationDate(String accessToken, String sendNotificationId, Long organizationId) {
+    return sendApisHolder.getSendApi(accessToken).retrieveNotificationDate(sendNotificationId, organizationId);
   }
 
 }

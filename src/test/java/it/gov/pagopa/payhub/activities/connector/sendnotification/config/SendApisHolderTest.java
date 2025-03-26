@@ -47,15 +47,4 @@ class SendApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 sendApisHolder::unload);
     }
-
-    @Test
-    void whenGetNotificationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
-        assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> { sendApisHolder.getNotificationApi(accessToken)
-                        .retrieveNotificationDate("notificationId", 3L);
-                    return voidMock;
-                },
-                new ParameterizedTypeReference<>() {},
-                sendApisHolder::unload);
-    }
 }
