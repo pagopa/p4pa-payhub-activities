@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NewNotificationRequestStatusResponseV24DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class NotificationStatusActivityImpl implements NotificationStatusActivit
     }
 
     @Override
-    public NewNotificationRequestStatusResponseV24DTO getSendNotificationStatus(String sendNotificationId) {
+    public SendNotificationDTO getSendNotificationStatus(String sendNotificationId) {
         log.info("Starting notificationStatus for sendNotificationId {}", sendNotificationId);
         return sendService.notificationStatus(sendNotificationId);
     }
