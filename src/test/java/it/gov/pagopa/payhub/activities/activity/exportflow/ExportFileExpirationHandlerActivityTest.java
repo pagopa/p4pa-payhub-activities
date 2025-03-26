@@ -26,7 +26,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 @ExtendWith(MockitoExtension.class)
 class ExportFileExpirationHandlerActivityTest {
-  private static final String SHARED_PATH = "tmp";
+  private static final String SHARED_PATH = "/tmp";
   @Mock
   private ExportFileService exportFileServiceMock;
 
