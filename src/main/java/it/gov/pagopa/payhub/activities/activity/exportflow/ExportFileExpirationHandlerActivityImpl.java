@@ -55,6 +55,9 @@ public class ExportFileExpirationHandlerActivityImpl implements
         throw new IllegalStateException(
             "Export File %s could not be deleted".formatted(file.getFileName()), e);
       }
+    } else {
+      log.info("Export File path name of file having id {}, status {} and type {} was null",
+          file.getExportFileId(), file.getStatus(), file.getFlowFileType());
     }
 
     if (file.getStatus() != ExportFileStatus.EXPIRED &&
