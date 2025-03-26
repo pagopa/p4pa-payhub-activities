@@ -1,8 +1,9 @@
 package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
  * @param <T> The type of the error DTO.
  */
 @Slf4j
-public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> {
+public abstract class ErrorArchiverService<T extends ErrorFileDTO> {
 
     private static final String ERRORFILE_PREFIX = "ERROR-";
 
@@ -29,50 +30,40 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
     private final FileArchiverService fileArchiverService;
     private final CsvService csvService;
 
-    protected ErrorArchiverService(String sharedDirectoryPath, String errorFolder, FileArchiverService fileArchiverService, CsvService csvService) {
-        this.sharedDirectoryPath = Path.of(sharedDirectoryPath);
+    protected ErrorArchiverService(
+            String sharedFolder,
+            String errorFolder,
+            FileArchiverService fileArchiverService,
+            CsvService csvService
+    ) {
+        this.sharedDirectoryPath = Path.of(sharedFolder);
         this.errorFolder = errorFolder;
         this.fileArchiverService = fileArchiverService;
         this.csvService = csvService;
     }
 
 
-    /**
-     * Retrieves the headers for the error CSV file.
-     * This method must be implemented by subclasses to provide the specific headers for the CSV file.
-     *
-     * @return A list of strings representing the CSV headers.
-     */
     protected abstract List<String[]> getHeaders();
 
     /**
-     * Converts an error DTO to a CSV row.
-     * This method must be implemented by subclasses to provide the specific logic for converting an error DTO to a CSV row.
+     * Writes error data into a CSV file.
      *
-     * @param error The error DTO to convert.
-     * @return An array of strings representing the CSV row.
+     * @param workingDirectory  The directory where the file should be created.
+     * @param ingestionFlowFile The metadata of the ingestion file.
+     * @param errorList         The list of errors to write.
      */
-    protected abstract String[] toCsvRow(T error);
+    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile, List<T> errorList) {
 
-    /**
-     * Writes a list of errors to a CSV file in the specified working directory.
-     * The CSV file is named using the provided file name with the ".csv" extension.
-     *
-     * @param workingDirectory The working directory where the error CSV file will be created.
-     * @param fileName         The base file name to use for the error CSV file.
-     * @param errorList        The list of error DTOs to write to the CSV file.
-     */
-    public void writeErrors(Path workingDirectory, String fileName, List<T> errorList) {
-        if (CollectionUtils.isEmpty(errorList)) {
+        if(CollectionUtils.isEmpty(errorList)){
             return;
         }
 
         List<String[]> data = errorList.stream()
-                .map(this::toCsvRow)
+                .map(ErrorFileDTO::toCsvRow)
                 .toList();
 
         try {
-            String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(fileName, ".csv");
+            String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFile.getFileName(), ".csv");
             Path errorCsvFilePath = workingDirectory.resolve(errorFileName);
 
             csvService.createCsv(errorCsvFilePath, getHeaders(), data);
@@ -84,16 +75,16 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
     }
 
     /**
-     * Archives error files in the specified working directory into a ZIP archive and moves it to a target directory.
-     * The ZIP archive is named using the provided file name with the ".zip" extension.
+     * Archives an error file to a specified target directory.
+     * This method takes an error file and moves it to a target directory for archiving. It constructs
+     * the original file path and the target directory path, then invokes the {@link FileArchiverService}
+     * to perform the archiving operation.
      *
-     * @param workingDirectory The working directory where error files are located.
-     * @param organizationId   The ID of the organization, used to construct the target directory.
-     * @param filePathName     The path name of the file, used to construct the target directory.
-     * @param fileName         The base file name to use for the ZIP archive.
-     * @return The name of the ZIP archive if archiving is successful, or null if no errors are found or an error occurs during archiving.
+     * @param workingDirectory     the working directory where to search for error files to be archived. This file is moved from its original location to the target directory.
+     * @param ingestionFlowFileDTO the ingestion flow file
+     * @return the name of the archived error file (ZIP) if exists
      */
-    public String archiveErrorFiles(Path workingDirectory, Long organizationId, String filePathName, String fileName) {
+    public String archiveErrorFiles(Path workingDirectory, IngestionFlowFile ingestionFlowFileDTO) {
         try {
             List<Path> errorFiles;
             try (Stream<Path> fileListStream = Files.list(workingDirectory)) {
@@ -105,11 +96,11 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
             if (!errorFiles.isEmpty()) {
 
                 Path targetDirectory = sharedDirectoryPath
-                        .resolve(String.valueOf(organizationId))
-                        .resolve(filePathName)
+                        .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
+                        .resolve(ingestionFlowFileDTO.getFilePathName())
                         .resolve(errorFolder);
 
-                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(fileName, ".zip");
+                String zipFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFileDTO.getFileName(), ".zip");
                 Path zipFile = workingDirectory.resolve(zipFileName);
 
                 fileArchiverService.compressAndArchive(errorFiles, zipFile, targetDirectory);
@@ -118,7 +109,7 @@ public abstract class ErrorArchiverService<T extends IngestionFlowFileErrorDTO> 
             } else {
                 return null;
             }
-        } catch (IOException e) {
+        } catch (IOException e){
             log.error("Something gone wrong while trying to archive error file!", e);
             return null;
         }

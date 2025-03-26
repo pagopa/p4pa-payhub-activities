@@ -175,7 +175,7 @@ class InstallmentProcessingServiceTest {
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
                         .when(debtPositionServiceMock).installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
-        Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFilePathName(), ingestionFlowFile.getFileName()))
+        Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
         // When
@@ -191,6 +191,6 @@ class InstallmentProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-        verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile.getFileName()), any());
+        verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), any());
     }
 }

@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorFileDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryUnmarshallerService;
@@ -125,7 +125,7 @@ class TreasuryVersionOpi14HandlerServiceTest {
                 TreasuryOperationEnum.DELETE, List.of(deleteTreasury));
         List<Treasury> expectedResult = List.of(insertTreasury);
 
-        ArrayList<TreasuryErrorDTO> errorListDto = new ArrayList<>();
+        ArrayList<TreasuryErrorFileDTO> errorListDto = new ArrayList<>();
         when(validatorServiceMock.validatePageSize(flusso, 1)).thenReturn(true);
         when(validatorServiceMock.validateData(flusso, ingestionFlowFileDTO.getFileName())).thenReturn(errorListDto);
         when(mapperServiceMock.apply(flusso, ingestionFlowFileDTO)).thenReturn(expectedMap);

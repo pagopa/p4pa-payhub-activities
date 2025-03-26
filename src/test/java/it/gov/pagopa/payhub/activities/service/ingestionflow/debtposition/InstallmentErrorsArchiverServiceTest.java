@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorFileDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
@@ -48,16 +48,16 @@ class InstallmentErrorsArchiverServiceTest {
 
     @Test
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
-        List<InstallmentErrorDTO> errorDTOList = List.of(
-                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE),
-                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+        List<InstallmentErrorFileDTO> errorDTOList = List.of(
+                new InstallmentErrorFileDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE),
+                new InstallmentErrorFileDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), errorDTOList);
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
 
         // Then
         Mockito.verify(csvServiceMock)
@@ -71,7 +71,7 @@ class InstallmentErrorsArchiverServiceTest {
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), List.of());
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of());
 
         // Then
         Mockito.verify(csvServiceMock, Mockito.times(0))
@@ -80,8 +80,8 @@ class InstallmentErrorsArchiverServiceTest {
 
     @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
-        List<InstallmentErrorDTO> errorDTOList = List.of(
-                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+        List<InstallmentErrorFileDTO> errorDTOList = List.of(
+                new InstallmentErrorFileDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -93,7 +93,7 @@ class InstallmentErrorsArchiverServiceTest {
 
         // When & Then
         NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                service.writeErrors(workingDirectory, ingestionFlowFileDTO.getFileName(), errorDTOList));
+                service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
         assertEquals("Error creating CSV", exception.getMessage());
     }
 
@@ -103,7 +103,7 @@ class InstallmentErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build");
 
         // When
-        String result = service.archiveErrorFiles(workingDirectory, 1L, "filePathName", "fileName");
+        String result = service.archiveErrorFiles(workingDirectory, new IngestionFlowFile());
 
         // Then
         Assertions.assertNull(result);
@@ -120,7 +120,7 @@ class InstallmentErrorsArchiverServiceTest {
             String expectedZipErrorFileName = "ERROR-fileName.zip";
 
             // When
-            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
 
             // Then
             Assertions.assertEquals(expectedZipErrorFileName, result);
@@ -146,7 +146,7 @@ class InstallmentErrorsArchiverServiceTest {
                     .compressAndArchive(List.of(errorFile), Path.of("build/test/" + expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId() + "", ingestionFlowFileDTO.getFilePathName(), errorFolder));
 
             // When
-            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+            String result = service.archiveErrorFiles(workingDirectory, ingestionFlowFileDTO);
 
             // Then
             Assertions.assertNull(result);

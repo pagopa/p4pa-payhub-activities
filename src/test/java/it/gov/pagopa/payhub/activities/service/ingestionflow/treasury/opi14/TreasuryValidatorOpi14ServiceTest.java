@@ -1,8 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14;
 
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14.TreasuryValidatorOpi14Service;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorFileDTO;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +58,7 @@ class TreasuryValidatorOpi14ServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa,  mockFile.getName());
+        List<TreasuryErrorFileDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa,  mockFile.getName());
 
         // Then
         assertNotNull(result);
@@ -76,7 +75,7 @@ class TreasuryValidatorOpi14ServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa, mockFile.getName());
+        List<TreasuryErrorFileDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
@@ -93,7 +92,7 @@ class TreasuryValidatorOpi14ServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV14NoEsercizio;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa, mockFile.getName());
+        List<TreasuryErrorFileDTO> result = treasuryValidatorService14.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);

@@ -18,12 +18,10 @@ ingestion-flow-files:
       retry-delays-ms: 1000
 
 export-flow-files:
-  default:
-    filename-prefix: "\${EXPORT_FLOW_FILE_FILENAME_PREFIX:EXPORT}"
   paid:
     filename-prefix: "\${EXPORT_PAID_FLOW_FILE_FILENAME_PREFIX:EXPORT_PAID}"
-    page-size: "\${PAID_EXPORT_FLOW_FILE_SIZE_PAGE:20}"
-    relative-file-folder: "\${PAID_EXPORT_RELATIVE_FILE_FOLDER:export}"
+    page-size: "\${PAID_EXPORT_FLOW_FILE_SIZE_PAGE:10000}"
+    relative-file-folder: "\${PAID_EXPORT_RELATIVE_FILE_FOLDER:export/paid}"
 
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"

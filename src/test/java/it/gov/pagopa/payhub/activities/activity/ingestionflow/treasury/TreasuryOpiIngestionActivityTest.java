@@ -94,7 +94,7 @@ class TreasuryOpiIngestionActivityTest {
         Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO, mockedListPath.size()))
                 .thenReturn(Collections.singletonMap("IUF123", "treasury123"));
 
-        Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName()))
+        Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
                 .thenReturn("DISCARDFILENAME");
 
         // When
@@ -201,7 +201,7 @@ class TreasuryOpiIngestionActivityTest {
         Mockito.when(treasuryOpiParserServiceMock.parseData(filePath2, ingestionFlowFileDTO, files.size()))
                 .thenReturn(expectedParseResult);
 
-        Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(workingDir, ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName()))
+        Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(workingDir, ingestionFlowFileDTO))
                 .thenReturn(discardFileName);
 
         Mockito.doNothing().when(fileArchiverServiceMock)

@@ -7,6 +7,7 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidCsvRowException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -85,14 +86,11 @@ public class CsvService {
      * @param <C> the generic type of the beans to be written to the CSV
      * @param csvFilePath the path to the CSV file to write
      * @param typeClass the class type of the beans to be written to the CSV
-     * @param csvRowsSupplier a supplier of beans to be written to the CSV (called multiple times)
+     * @param csvRowsSupplier a supplier of beans to be written to the CSV (called multiple times until data are returned)
      * @param csvProfile the profile to be used for writing the CSV
      * @throws IOException if an error occurs while writing the file
      */
     public <C> void createCsv(Path csvFilePath, Class<C> typeClass, Supplier<List<C>> csvRowsSupplier, String csvProfile) throws IOException {
-        if (csvFilePath == null || csvRowsSupplier == null) {
-            throw new IllegalArgumentException("Arguments cannot be null");
-        }
 
         File file = csvFilePath.toFile();
         File parentDir = file.getParentFile();
@@ -114,12 +112,9 @@ public class CsvService {
                     .build();
 
             List<C> rows;
-            do {
-                rows = csvRowsSupplier.get();
-                if (rows != null && !rows.isEmpty()) {
-                    beanToCsv.write(rows);
-                }
-            } while (rows != null && !rows.isEmpty());
+            while (!CollectionUtils.isEmpty(rows = csvRowsSupplier.get())) {
+                beanToCsv.write(rows);
+            }
 
         } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
             throw new InvalidCsvRowException("Invalid CSV row: " + e.getMessage());

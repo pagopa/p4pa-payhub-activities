@@ -75,7 +75,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                 .flatMap(m -> m.entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        String discardsFileName = errorsArchiverService.archiveErrorFiles(retrievedFiles.getFirst().getParent(), ingestionFlowFileDTO.getOrganizationId(), ingestionFlowFileDTO.getFilePathName(), ingestionFlowFileDTO.getFileName());
+        String discardsFileName = errorsArchiverService.archiveErrorFiles(retrievedFiles.getFirst().getParent(), ingestionFlowFileDTO);
         String errorDescription = buildErrorDescription(unsuccessfulParsedFiles, discardsFileName);
 
         return new TreasuryIufIngestionFlowFileResult(

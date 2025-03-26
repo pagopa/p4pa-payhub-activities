@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
-import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
 import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
@@ -41,7 +41,7 @@ public class DPInstallmentsWorkflowCompletionService {
      * @return {@code true} if the workflow completed successfully, {@code false} if it terminated with an error or exceeded the retry limit.
      */
     public boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
-                                             String fileName, List<InstallmentErrorDTO> errorList) {
+                                             String fileName, List<InstallmentErrorFileDTO> errorList) {
         try {
             if (workflowId == null) {
                 return true;
@@ -63,9 +63,9 @@ public class DPInstallmentsWorkflowCompletionService {
         }
     }
 
-    private InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
-                                                         String workflowStatus, String errorCode, String errorMessage) {
-        return InstallmentErrorDTO.builder()
+    private InstallmentErrorFileDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
+                                                             String workflowStatus, String errorCode, String errorMessage) {
+        return InstallmentErrorFileDTO.builder()
                 .fileName(fileName)
                 .iupdOrg(installment.getIupdOrg())
                 .iud(installment.getIud())

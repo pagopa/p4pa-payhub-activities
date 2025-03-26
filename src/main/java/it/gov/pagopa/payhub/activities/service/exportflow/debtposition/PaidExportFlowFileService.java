@@ -7,7 +7,6 @@ import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFou
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.InstallmentExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
-import it.gov.pagopa.payhub.activities.service.exportflow.ExportFileErrorArchiverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
@@ -36,7 +35,6 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
 
     public PaidExportFlowFileService(CsvService csvService,
                                      Class<PaidInstallmentExportFlowFileDTO> csvRowDtoClass,
-                                     ExportFileErrorArchiverService exportFileErrorArchiverService,
                                      FileArchiverService fileArchiverService,
                                      @Value("${folders.tmp}") Path workingDirectory,
                                      @Value("${export-flow-files.paid.relative-file-folder}")String relativeFileFolder,
@@ -47,7 +45,7 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
                                      InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper
                                      ) {
 
-        super(csvService, csvRowDtoClass, exportFileErrorArchiverService, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix);
+        super(csvService, csvRowDtoClass, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix);
         this.pageSize = pageSize;
         this.exportFileService = exportFileService;
         this.dataExportService = dataExportService;
@@ -74,7 +72,7 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
     public List<InstallmentPaidViewDTO> retrievePage(PaidExportFile exportFile, PaidExportFileFilter filter, int pageNumber) {
         List<InstallmentPaidViewDTO> installmentPaidViewDTOList = Collections.emptyList();
 
-        PagedInstallmentsPaidView pagedInstallmentsPaidView = dataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("paymentDateTime"));
+        PagedInstallmentsPaidView pagedInstallmentsPaidView = dataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("installmentId"));
 
         if (pagedInstallmentsPaidView != null){
             installmentPaidViewDTOList= pagedInstallmentsPaidView.getContent();
@@ -84,13 +82,8 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
     }
 
     @Override
-    protected boolean checkStatusExportFileRecord(PaidExportFile exportFile) {
-        if (exportFile.getStatus().equals(ExportFileStatus.PROCESSING)){
-            return true;
-        }else {
-            log.error("Paid export file status wrong during the export process for file ID %s, attempted status %s, actual %s".formatted(exportFile.getExportFileId(), ExportFileStatus.PROCESSING, ExportFileStatus.REQUESTED));
-            return false;
-        }
+    protected ExportFileStatus getExportStatus(PaidExportFile exportFile) {
+        return exportFile.getStatus();
     }
 
     @Override

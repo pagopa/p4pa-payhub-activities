@@ -1,8 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi161;
 
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi161.TreasuryValidatorOpi161Service;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorFileDTO;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +59,7 @@ class TreasuryValidatorOpi161ServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
+        List<TreasuryErrorFileDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
@@ -77,7 +76,7 @@ class TreasuryValidatorOpi161ServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoIufNoIuv;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
+        List<TreasuryErrorFileDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
@@ -96,7 +95,7 @@ class TreasuryValidatorOpi161ServiceTest {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa= mockFlussoV161NoEsercizio;
 
         // When
-        List<TreasuryErrorDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
+        List<TreasuryErrorFileDTO> result = treasuryValidatorService161.validateData(flussoGiornaleDiCassa, mockFile.getName());
 
         // Then
         assertNotNull(result);
