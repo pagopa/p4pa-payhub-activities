@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NewNotificationRequestStatusResponseV24DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
 class SendServiceTest {
@@ -73,14 +73,14 @@ class SendServiceTest {
     void givenSendNotificationIdWhenNotificationStatusThenOk() {
         // Given
         String sendNotificationId = "sendNotificationId";
-        NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
+        SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
         // When
         Mockito.when(sendClientMock.notificationStatus(null, sendNotificationId)).thenReturn(expectedResponse);
 
-        NewNotificationRequestStatusResponseV24DTO result = sendService.notificationStatus(sendNotificationId);
+        SendNotificationDTO result = sendService.notificationStatus(sendNotificationId);
 
         // Then
-        assertEquals(expectedResponse, result);
+        assertSame(expectedResponse, result);
     }
 }

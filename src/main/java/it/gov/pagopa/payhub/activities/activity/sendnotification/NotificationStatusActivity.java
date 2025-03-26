@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NewNotificationRequestStatusResponseV24DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 
 /**
  * Interface to retrieve notification status from send notification.
@@ -16,6 +16,6 @@ public interface NotificationStatusActivity {
      * @param sendNotificationId the ID of send notification
      */
     @ActivityMethod
-    NewNotificationRequestStatusResponseV24DTO getSendNotificationStatus(String sendNotificationId);
+    SendNotificationDTO getSendNotificationStatus(String sendNotificationId);
 
 }
