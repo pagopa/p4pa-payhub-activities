@@ -28,4 +28,14 @@ public class DebtPositionSearchClient {
         }
     }
 
+    public DebtPosition findByInstallmentId(Long installmentId, String accessToken) {
+        try{
+            return debtPositionApisHolder.getDebtPositionSearchControllerApi(accessToken)
+                    .crudDebtPositionsFindByInstallmentId(installmentId);
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find DebtPosition having installmentId {}", installmentId);
+            return null;
+        }
+    }
+
 }
