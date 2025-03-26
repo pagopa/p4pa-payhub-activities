@@ -111,9 +111,10 @@ class ExportFileExpirationHandlerActivityTest {
   }
 
   @Test
-  void givenEmptyFileName_whenGetFilePath_thenThrowException() {
+  void givenEmptyFileName_whenGetFilePath_thenUpdateStatusWithoutDeleting() {
     // given
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
+    exportFile.setStatus(ExportFileStatus.COMPLETED);
     exportFile.setFilePathName("");
     Long exportFileId = exportFile.getExportFileId();
     when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
