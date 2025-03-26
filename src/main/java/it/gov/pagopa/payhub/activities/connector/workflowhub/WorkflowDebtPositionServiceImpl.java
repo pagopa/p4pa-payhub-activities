@@ -22,8 +22,8 @@ public class WorkflowDebtPositionServiceImpl implements WorkflowDebtPositionServ
     }
 
     @Override
-    public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters, PaymentEventType paymentEventType) {
+    public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters, PaymentEventType paymentEventType, String eventDescription) {
         String accessToken = authnService.getAccessToken();
-        return workflowDebtPositionClient.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, accessToken);
+        return workflowDebtPositionClient.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, eventDescription, accessToken);
     }
 }

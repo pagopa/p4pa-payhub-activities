@@ -47,13 +47,15 @@ class WorkflowDebtPositionServiceTest {
                 .build();
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
+        PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+        String eventDescription = "EVENDESCRIPTION";
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(token);
 
-        Mockito.when(workflowDebtPositionClientMock.syncDebtPosition(debtPositionDTO, wfExecutionParameters, PaymentEventType.DP_CREATED, token))
+        Mockito.when(workflowDebtPositionClientMock.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, eventDescription, token))
                 .thenReturn(workflowCreatedDTO);
 
-        WorkflowCreatedDTO result = service.syncDebtPosition(debtPositionDTO, wfExecutionParameters, PaymentEventType.DP_CREATED);
+        WorkflowCreatedDTO result = service.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, eventDescription);
 
         assertEquals(result, workflowCreatedDTO);
     }

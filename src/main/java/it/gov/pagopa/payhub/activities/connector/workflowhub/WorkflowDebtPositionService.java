@@ -17,5 +17,5 @@ public interface WorkflowDebtPositionService {
      * @param paymentEventType the event type for publication into Kafka queue
      * @return {@link WorkflowCreatedDTO} the workflow created for synchronization
      */
-    WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters, PaymentEventType paymentEventType);
+    WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters, PaymentEventType paymentEventType, String eventDescription);
 }
