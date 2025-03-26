@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14;
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorFileDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryValidatorService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
@@ -19,9 +19,9 @@ public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<F
 
 
     @Override
-    public List<TreasuryErrorFileDTO> validateData(FlussoGiornaleDiCassa fGC14, String fileName) {
+    public List<TreasuryErrorDTO> validateData(FlussoGiornaleDiCassa fGC14, String fileName) {
 
-        List<TreasuryErrorFileDTO> treasuryErrorDTOList = new ArrayList<>();
+        List<TreasuryErrorDTO> treasuryErrorDTOList = new ArrayList<>();
 
         fGC14.getInformazioniContoEvidenza().forEach(informazioniContoEvidenza ->
                 informazioniContoEvidenza.getMovimentoContoEvidenzas().forEach(movimentoContoEvidenza -> {
@@ -62,8 +62,8 @@ public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<F
         return treasuryErrorDTOList;
     }
 
-    private void addError(List<TreasuryErrorFileDTO> treasuryErrorDTOList, String fileName, String codEsercizio, String codBolletta, String errorCode, String errorMessage) {
-        treasuryErrorDTOList.add(TreasuryErrorFileDTO.builder()
+    private void addError(List<TreasuryErrorDTO> treasuryErrorDTOList, String fileName, String codEsercizio, String codBolletta, String errorCode, String errorMessage) {
+        treasuryErrorDTOList.add(TreasuryErrorDTO.builder()
                 .fileName(fileName)
                 .billYear(codEsercizio)
                 .billCode(codBolletta)

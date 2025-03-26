@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorFileDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -152,11 +152,11 @@ class TreasuryVersionBaseHandlerServiceTest {
         ingestionFlowFileDTO.setFileName("testFile");
 
         Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
-        List<TreasuryErrorFileDTO> expectedErrors = List.of(new TreasuryErrorFileDTO("file", "2023", "B123", "ERR01", "Invalid data"));
+        List<TreasuryErrorDTO> expectedErrors = List.of(new TreasuryErrorDTO("file", "2023", "B123", "ERR01", "Invalid data"));
         Mockito.when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(expectedErrors);
 
         // When
-        List<TreasuryErrorFileDTO> result = handlerService.validate(ingestionFlowFileDTO, 1, unmarshalledObject);
+        List<TreasuryErrorDTO> result = handlerService.validate(ingestionFlowFileDTO, 1, unmarshalledObject);
 
         // Then
         Assertions.assertEquals(expectedErrors, result);

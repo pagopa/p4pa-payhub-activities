@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorFileDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -37,7 +37,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
     public List<Treasury> handle(File input, IngestionFlowFile ingestionFlowFileDTO, int size) {
         try {
             T unmarshalled = unmarshall(input);
-            List<TreasuryErrorFileDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
+            List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, size, unmarshalled);
             Map<TreasuryOperationEnum, List<Treasury>> result = mapperService.apply(unmarshalled, ingestionFlowFileDTO);
             log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
             List<Treasury> deleteTreasuries = result.get(TreasuryOperationEnum.DELETE);
@@ -48,7 +48,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
                             treasuryDTO.getBillCode(),
                             treasuryDTO.getBillYear());
                     if (rowDeleted == 0L) {
-                        errorDTOList.add(TreasuryErrorFileDTO.builder()
+                        errorDTOList.add(TreasuryErrorDTO.builder()
                                 .errorMessage("The bill is not present in database so it is impossible to delete it")
                                 .errorCode(treasuryDTO.getOrganizationId() + "-" + treasuryDTO.getBillCode() + "-" + treasuryDTO.getBillYear())
                                 .billCode(treasuryDTO.getBillCode())
@@ -66,7 +66,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
         }
     }
 
-    List<TreasuryErrorFileDTO> validate(IngestionFlowFile ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
+    List<TreasuryErrorDTO> validate(IngestionFlowFile ingestionFlowFileDTO, int size, T fGCUnmarshalled) {
         if (!validatorService.validatePageSize(fGCUnmarshalled, size)) {
             throw new TreasuryOpiInvalidFileException("invalid total page number for ingestionFlowFile with name " + ingestionFlowFileDTO.getFileName());
         }

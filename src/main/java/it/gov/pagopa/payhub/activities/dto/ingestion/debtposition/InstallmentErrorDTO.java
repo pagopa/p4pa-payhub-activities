@@ -12,14 +12,14 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InstallmentErrorFileDTO extends ErrorFileDTO {
+public class InstallmentErrorDTO extends ErrorFileDTO {
 
     private String iupdOrg;
     private String iud;
     private String workflowStatus;
     private Long rowNumber;
 
-    public InstallmentErrorFileDTO(String fileName, String iupdOrg, String iud, String workflowStatus, Long rowNumber, String errorCode, String errorMessage) {
+    public InstallmentErrorDTO(String fileName, String iupdOrg, String iud, String workflowStatus, Long rowNumber, String errorCode, String errorMessage) {
         super(fileName, errorCode, errorMessage);
         this.iupdOrg = iupdOrg;
         this.iud = iud;

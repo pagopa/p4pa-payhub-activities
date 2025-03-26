@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Lazy
 @Service
-public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorFileDTO> {
+public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorDTO> {
 
     protected InstallmentErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                                @Value("${folders.process-target-sub-folders.errors}") String errorFolder,

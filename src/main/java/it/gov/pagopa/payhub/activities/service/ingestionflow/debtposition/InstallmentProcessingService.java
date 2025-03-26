@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
@@ -50,7 +50,7 @@ public class InstallmentProcessingService {
     public InstallmentIngestionFlowFileResult processInstallments(Iterator<InstallmentIngestionFlowFileDTO> iterator,
                                                                   IngestionFlowFile ingestionFlowFile,
                                                                   Path workingDirectory) {
-        List<InstallmentErrorFileDTO> errorList = new ArrayList<>();
+        List<InstallmentErrorDTO> errorList = new ArrayList<>();
         long processedRows = 0;
         long totalRows = 0;
 
@@ -77,7 +77,7 @@ public class InstallmentProcessingService {
 
             } catch (Exception e) {
                 log.error("Error processing installment {}: {}", installment.getIud(), e.getMessage());
-                InstallmentErrorFileDTO error = new InstallmentErrorFileDTO(
+                InstallmentErrorDTO error = new InstallmentErrorDTO(
                         ingestionFlowFile.getFileName(),
                         installment.getIupdOrg(), installment.getIud(), null,
                         totalRows, "PROCESS_EXCEPTION", e.getMessage());
@@ -95,7 +95,7 @@ public class InstallmentProcessingService {
         );
     }
 
-    private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<InstallmentErrorFileDTO> errorList) {
+    private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<InstallmentErrorDTO> errorList) {
         if (errorList.isEmpty()) {
             log.info("No errors to archive for file: {}", ingestionFlowFile.getFileName());
             return null;

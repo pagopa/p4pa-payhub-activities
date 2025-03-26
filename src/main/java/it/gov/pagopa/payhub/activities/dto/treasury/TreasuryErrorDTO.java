@@ -12,12 +12,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TreasuryErrorFileDTO extends ErrorFileDTO {
+public class TreasuryErrorDTO extends ErrorFileDTO {
 
   private String billYear;
   private String billCode;
 
-  public TreasuryErrorFileDTO(String fileName, String billYear, String billCode, String errorCode, String errorMessage) {
+  public TreasuryErrorDTO(String fileName, String billYear, String billCode, String errorCode, String errorMessage) {
     super(fileName, errorCode, errorMessage);
     this.billYear = billYear;
     this.billCode = billCode;

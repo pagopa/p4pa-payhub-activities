@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorFileDTO;
+import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
@@ -45,9 +45,9 @@ class TreasuryErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
         // Given
-        List<TreasuryErrorFileDTO> errorDTOList = List.of(
-                new TreasuryErrorFileDTO("file1", "2023", "B123", "ERR01", "Invalid data"),
-                new TreasuryErrorFileDTO("file2", "2023", "B124", "ERR02", "Missing field")
+        List<TreasuryErrorDTO> errorDTOList = List.of(
+                new TreasuryErrorDTO("file1", "2023", "B123", "ERR01", "Invalid data"),
+                new TreasuryErrorDTO("file2", "2023", "B124", "ERR02", "Missing field")
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -64,8 +64,8 @@ class TreasuryErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
         // Given
-        List<TreasuryErrorFileDTO> errorDTOList = List.of(
-                new TreasuryErrorFileDTO("file1", "2023", "B123", "ERR01", "Invalid data")
+        List<TreasuryErrorDTO> errorDTOList = List.of(
+                new TreasuryErrorDTO("file1", "2023", "B123", "ERR01", "Invalid data")
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();

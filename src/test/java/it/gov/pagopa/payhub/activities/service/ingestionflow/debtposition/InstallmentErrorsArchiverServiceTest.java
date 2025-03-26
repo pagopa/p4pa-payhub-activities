@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
@@ -48,9 +48,9 @@ class InstallmentErrorsArchiverServiceTest {
 
     @Test
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
-        List<InstallmentErrorFileDTO> errorDTOList = List.of(
-                new InstallmentErrorFileDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE),
-                new InstallmentErrorFileDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+        List<InstallmentErrorDTO> errorDTOList = List.of(
+                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE),
+                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -80,8 +80,8 @@ class InstallmentErrorsArchiverServiceTest {
 
     @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
-        List<InstallmentErrorFileDTO> errorDTOList = List.of(
-                new InstallmentErrorFileDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+        List<InstallmentErrorDTO> errorDTOList = List.of(
+                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
