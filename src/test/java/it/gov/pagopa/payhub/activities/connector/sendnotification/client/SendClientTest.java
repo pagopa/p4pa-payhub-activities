@@ -43,7 +43,7 @@ class SendClientTest {
                 .thenReturn(sendApiMock);
 
         // When
-        sendClient.preloadSendFile(accessToken, sendNotificationId);
+        sendClient.preloadSendFile(sendNotificationId, accessToken);
 
         // Then
         Mockito.verify(sendApiMock).preloadSendFile(sendNotificationId);
@@ -59,7 +59,7 @@ class SendClientTest {
                 .thenReturn(sendApiMock);
 
         // When
-        sendClient.uploadSendFile(accessToken, sendNotificationId);
+        sendClient.uploadSendFile(sendNotificationId, accessToken);
 
         // Then
         Mockito.verify(sendApiMock).uploadSendFile(sendNotificationId);
@@ -75,7 +75,7 @@ class SendClientTest {
                 .thenReturn(sendApiMock);
 
         // When
-        sendClient.deliveryNotification(accessToken, sendNotificationId);
+        sendClient.deliveryNotification(sendNotificationId, accessToken);
 
         // Then
         Mockito.verify(sendApiMock).deliveryNotification(sendNotificationId);
@@ -94,7 +94,7 @@ class SendClientTest {
                 .thenReturn(expectedResponse);
 
         // When
-        SendNotificationDTO result = sendClient.notificationStatus(accessToken, sendNotificationId);
+        SendNotificationDTO result = sendClient.notificationStatus(sendNotificationId, accessToken);
 
         // Then
         assertSame(expectedResponse, result);
