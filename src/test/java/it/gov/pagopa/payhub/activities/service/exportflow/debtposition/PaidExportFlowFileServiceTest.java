@@ -77,7 +77,7 @@ class PaidExportFlowFileServiceTest {
         //given
         Long exportFileId = 1L;
 
-        Mockito.when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenThrow(ExportFlowFileNotFoundException.class);
+        Mockito.when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.empty());
         //when
         ExportFlowFileNotFoundException ex = assertThrows(ExportFlowFileNotFoundException.class,
                 () -> paidExportFlowFileService.findExportFileRecord(exportFileId));
