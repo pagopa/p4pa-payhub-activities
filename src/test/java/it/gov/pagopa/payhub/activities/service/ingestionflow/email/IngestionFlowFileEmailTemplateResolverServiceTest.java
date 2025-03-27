@@ -39,20 +39,20 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
     void givenUnexpectedIngestionFlowFileTypeWhenResolveThenIngestionFlowTypeNotSupportedException() {
         // Given
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_CSV);
+        ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV);
 
         // When, Then
         Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> emailTemplateResolverService.resolve(ingestionFlowFileDTO, true));
     }
 
     void test(
-            IngestionFlowFile.FlowFileTypeEnum flowType,
+            IngestionFlowFile.IngestionFlowFileTypeEnum flowType,
             Function<EmailTemplatesConfiguration, EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates> getFlowTypeOutcomeTemplate,
             boolean success
     ) {
         // Given
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        ingestionFlowFileDTO.setFlowFileType(flowType);
+        ingestionFlowFileDTO.setIngestionFlowFileType(flowType);
         EmailTemplate expectedResult = new EmailTemplate();
 
         EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates mockedFlowTypeOutcomeTemplate = getFlowTypeOutcomeTemplate.apply(emailTemplatesConfigurationMock);
@@ -72,36 +72,36 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
     //region PAYMENTS_REPORTING
     @Test
     void givenSuccessfulPaymentsReportingTypeWhenResolveThenOk() {
-        test(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, EmailTemplatesConfiguration::getPaymentsReportingFlow, true);
+        test(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, EmailTemplatesConfiguration::getPaymentsReportingFlow, true);
     }
 
     @Test
     void givenNotSuccessfulPaymentsReportingTypeWhenResolveThenOk() {
-        test(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, EmailTemplatesConfiguration::getPaymentsReportingFlow, false);
+        test(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, EmailTemplatesConfiguration::getPaymentsReportingFlow, false);
     }
 //endregion
 
     //region TREASURY_OPI
     @Test
     void givenSuccessfulTreasuryOpiTypeWhenResolveThenOk() {
-        test(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, EmailTemplatesConfiguration::getTreasuryOpiFlow, true);
+        test(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, EmailTemplatesConfiguration::getTreasuryOpiFlow, true);
     }
 
     @Test
     void givenNotSuccessfulTreasuryOpiTypeWhenResolveThenOk() {
-        test(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, EmailTemplatesConfiguration::getTreasuryOpiFlow, false);
+        test(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, EmailTemplatesConfiguration::getTreasuryOpiFlow, false);
     }
 //endregion
 
     //region DP_INSTALLMENTS
     @Test
     void givenSuccessfulDpInstallmentsTypeWhenResolveThenOk() {
-        test(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, EmailTemplatesConfiguration::getDpInstallmentsFlow, true);
+        test(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, EmailTemplatesConfiguration::getDpInstallmentsFlow, true);
     }
 
     @Test
     void givenNotSuccessfulDpInstallmentsTypeWhenResolveThenOk() {
-        test(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, EmailTemplatesConfiguration::getDpInstallmentsFlow, false);
+        test(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, EmailTemplatesConfiguration::getDpInstallmentsFlow, false);
     }
 //endregion
 }

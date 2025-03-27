@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlow
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +61,7 @@ class OrganizationPaymentsReportingPagoPaListRetrieverActivityImplTest {
 		doReturn(List.of(theDayBeforeYesterdayPaymentsReportingId, yesterdayPaymentsReportingId))
 			.when(paymentsReportingPagoPaServiceMock).getPaymentsReportingList(organizationId);
 		lenient().doReturn(List.of(ingestionFlowFile)).when(ingestionFlowFileServiceMock)
-			.findByOrganizationIdFlowTypeCreateDate(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, theDayBeforeYesterday);
+			.findByOrganizationIdFlowTypeCreateDate(organizationId, IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, theDayBeforeYesterday);
 
 		// When
 		List<PaymentsReportingIdDTO> result = activity.retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);

@@ -177,7 +177,7 @@ class ReceiptPagopaIngestionActivityTest {
   private IngestionFlowFile buildIngestionFlowFile(Long ingestionFlowFileId) {
     return IngestionFlowFileFaker.buildIngestionFlowFile()
       .ingestionFlowFileId(ingestionFlowFileId)
-      .flowFileType(IngestionFlowFile.FlowFileTypeEnum.RECEIPT_PAGOPA)
+      .ingestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA)
       .filePathName(workingDir.toString())
       .fileName("RT_12345678901234567.xml")
       .organizationId(0L);
