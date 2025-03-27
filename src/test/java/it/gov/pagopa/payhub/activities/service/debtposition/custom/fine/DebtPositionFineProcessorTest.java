@@ -144,4 +144,33 @@ class DebtPositionFineProcessorTest {
         assertEquals(PaymentOptionStatus.TO_SYNC, result.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
         assertEquals(InstallmentStatus.TO_SYNC, result.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
     }
+
+    @Test
+    void givenProcessFineWhenReductionDateNullThenOk(){
+        // Given
+        PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setStatus(PaymentOptionStatus.TO_SYNC);
+
+        InstallmentDTO installmentDTO1 = buildInstallmentDTO();
+        installmentDTO1.setStatus(InstallmentStatus.TO_SYNC);
+        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID));
+        paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
+
+        DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
+        debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1));
+        FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
+
+        HandleFineDebtPositionResult handleFineDebtPositionResult = new HandleFineDebtPositionResult(debtPositionDTO, null, true);
+
+        Mockito.when(dateProcessor.processNotificationDate(debtPositionDTO, fineWfExecutionConfig))
+                .thenReturn(handleFineDebtPositionResult);
+
+        // When
+        HandleFineDebtPositionResult result = processor.processFine(debtPositionDTO, fineWfExecutionConfig);
+
+        //Then
+        assertEquals(PaymentOptionStatus.UNPAYABLE, result.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
+        assertEquals(InstallmentStatus.UNPAYABLE, result.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+    }
 }
