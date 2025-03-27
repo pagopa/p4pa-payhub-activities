@@ -37,7 +37,7 @@ class ExportFlowFileActivityImplTest {
 
         Mockito.when(paidExportFlowFileService.executeExport(1L)).thenReturn(exportFlowFileResult);
         //when
-        ExportFlowFileResult result = exportFlowFileActivity.executeExport(1L, ExportFile.FlowFileTypeEnum.PAID);
+        ExportFlowFileResult result = exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.PAID);
         //then
         assertNotNull(result);
         assertEquals(exportFlowFileResult, result);
@@ -47,7 +47,7 @@ class ExportFlowFileActivityImplTest {
     void givenInvalidFlowIdAndPaidType_whenExecuteExport_thenReturnExportFlowFileTypeNotSupported(){
 
         ExportFlowFileTypeNotSupported ex = assertThrows(ExportFlowFileTypeNotSupported.class, () ->
-                exportFlowFileActivity.executeExport(1L, ExportFile.FlowFileTypeEnum.PAYMENTS_REPORTING));
+                exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.PAYMENTS_REPORTING));
 
         assertEquals("Invalid export flow file type: PAYMENTS_REPORTING", ex.getMessage());
 

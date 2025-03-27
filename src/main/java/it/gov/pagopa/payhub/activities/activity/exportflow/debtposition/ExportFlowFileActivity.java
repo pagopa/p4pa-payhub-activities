@@ -20,5 +20,5 @@ public interface ExportFlowFileActivity {
      * @return {@link ExportFlowFileResult} containing the return file path, name, number of exported lines.
      */
     @ActivityMethod
-    ExportFlowFileResult executeExport(Long exportFileId, ExportFile.FlowFileTypeEnum flowFileTypeEnum);
+    ExportFlowFileResult executeExport(Long exportFileId, ExportFile.ExportFileTypeEnum flowFileTypeEnum);
 }

@@ -66,7 +66,7 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
 
     @Override
     protected String getFlowFileVersion(PaidExportFile exportFile) {
-        return exportFile.getFlowFileVersion();
+        return exportFile.getFileVersion();
     }
 
     @Override

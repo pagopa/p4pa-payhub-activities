@@ -20,7 +20,7 @@ public class ExportFlowFileActivityImpl implements ExportFlowFileActivity {
     }
 
     @Override
-    public ExportFlowFileResult executeExport(Long exportFileId, ExportFile.FlowFileTypeEnum flowFileTypeEnum) {
+    public ExportFlowFileResult executeExport(Long exportFileId, ExportFile.ExportFileTypeEnum flowFileTypeEnum) {
         ExportFlowFileResult exportFlowFileResult;
         log.info("Processing exportFlowFile {} of flowFileType {} using class {}", exportFileId, flowFileTypeEnum, getClass());
 
