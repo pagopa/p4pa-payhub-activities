@@ -49,8 +49,8 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
     }
 
     @Override
-    protected IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType() {
-        return IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS;
+    protected IngestionFlowFile.IngestionFlowFileTypeEnum getHandledIngestionFlowFileType() {
+        return IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS;
     }
 
     @Override

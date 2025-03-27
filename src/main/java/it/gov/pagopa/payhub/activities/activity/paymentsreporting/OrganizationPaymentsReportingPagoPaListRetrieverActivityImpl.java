@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.pagopapayments.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class OrganizationPaymentsReportingPagoPaListRetrieverActivityImpl implem
 			return Collections.emptyList();
 		}
 		OffsetDateTime oldestDate = findOldestDate(paymentsReportingIds);
-		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, oldestDate);
+		List<IngestionFlowFile> ingestionFlowFiles = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, oldestDate);
 
 		return getNotImportedFilteredByFileName(ingestionFlowFiles, paymentsReportingIds);
 	}

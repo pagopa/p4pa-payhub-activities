@@ -52,8 +52,8 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
     }
 
     @Override
-    protected IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType() {
-        return IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI;
+    protected IngestionFlowFile.IngestionFlowFileTypeEnum getHandledIngestionFlowFileType() {
+        return IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI;
     }
 
     @Override

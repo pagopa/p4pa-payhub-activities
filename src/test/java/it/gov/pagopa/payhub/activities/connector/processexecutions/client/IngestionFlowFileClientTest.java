@@ -20,7 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.time.*;
 import java.util.List;
 
-import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
@@ -143,7 +143,7 @@ class IngestionFlowFileClientTest {
     void whenFindByOrganizationIDFlowTypeCreateDateThenOk() {
         // Given
         Long organizationId = 1L;
-        FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
+        IngestionFlowFileTypeEnum flowFileType = IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
         OffsetDateTime creationDate = OffsetDateTime.of(LocalDateTime.of(LocalDate.of(2025,1,1), LocalTime.MIDNIGHT), ZoneOffset.UTC);
         LocalDateTime exptectedCreationDateFrom = LocalDateTime.of(LocalDate.of(2025,1,1), LocalTime.of(1,0));
         String accessToken = "accessToken";
@@ -165,7 +165,7 @@ class IngestionFlowFileClientTest {
     void whenFindByOrganizationIDFlowTypeFilenameThenOk() {
         // Given
         Long organizationId = 1L;
-        FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
+        IngestionFlowFileTypeEnum flowFileType = IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
         String fileName = "fileName";
         String accessToken = "accessToken";
 

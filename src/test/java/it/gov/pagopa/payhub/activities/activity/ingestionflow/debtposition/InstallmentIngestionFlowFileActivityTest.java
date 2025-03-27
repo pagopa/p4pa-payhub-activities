@@ -82,7 +82,7 @@ class InstallmentIngestionFlowFileActivityTest {
         Long ingestionFlowFileId = 1L;
         IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
-        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS);
+        ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS);
         Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
@@ -118,7 +118,7 @@ class InstallmentIngestionFlowFileActivityTest {
         Long ingestionFlowFileId = 1L;
         IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
-        ingestionFlowFileDTO.setFlowFileType(IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS);
+        ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS);
         Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));

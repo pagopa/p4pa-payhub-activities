@@ -25,7 +25,7 @@ public class IngestionFlowFileFaker {
                 .pspIdentifier("PspId")
                 .flowDateTime(OFFSETDATETIME)
                 .discardFileName("DiscardFileName")
-                .flowFileType(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING)
+                .ingestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING)
                 .fileSize(100L)
                 .fileOrigin("PAGOPA");
     }

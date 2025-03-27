@@ -57,7 +57,7 @@ public class ExportFileExpirationHandlerActivityImpl implements
       }
     } else {
       log.info("Export File path name of file having id {}, status {} and type {} was null",
-          file.getExportFileId(), file.getStatus(), file.getFlowFileType());
+          file.getExportFileId(), file.getStatus(), file.getExportFileType());
     }
 
     if (file.getStatus() != ExportFileStatus.EXPIRED &&
