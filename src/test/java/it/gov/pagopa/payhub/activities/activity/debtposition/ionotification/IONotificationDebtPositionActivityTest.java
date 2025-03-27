@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IONotificationService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,11 +14,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,17 +42,17 @@ class IONotificationDebtPositionActivityTest {
         // Given
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
-        MessageResponseDTO expectedResult = new MessageResponseDTO("id");
+        DebtPositionIoNotificationDTO expectedResult = new DebtPositionIoNotificationDTO();
         GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages = new GenericWfExecutionConfig.IONotificationBaseOpsMessages();
         Map<String, IupdSyncStatusUpdateDTO> iudMap = Map.of("IUD", iupdSyncStatusUpdateDTO);
 
         when(ioNotificationServiceMock.sendMessage(Mockito.same(debtPosition), Mockito.same(iudMap), Mockito.same(ioMessages)))
-                .thenReturn(List.of(expectedResult));
+                .thenReturn(expectedResult);
 
         // When
-        List<MessageResponseDTO> result = activity.sendIoNotification(debtPosition, iudMap, ioMessages);
+        DebtPositionIoNotificationDTO result = activity.sendIoNotification(debtPosition, iudMap, ioMessages);
 
         // Then
-        assertEquals(List.of(expectedResult), result);
+        assertSame(expectedResult, result);
     }
 }
