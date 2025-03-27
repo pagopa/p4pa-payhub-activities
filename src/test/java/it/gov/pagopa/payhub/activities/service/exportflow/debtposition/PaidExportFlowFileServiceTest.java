@@ -216,7 +216,7 @@ class PaidExportFlowFileServiceTest {
         // Then
         assertNotNull(result);
         assertEquals("EXPORT_1.zip", result.getFileName());
-        assertEquals("build\\tmp\\690213787104100\\export\\paid", result.getFilePath());
+        assertEquals(Path.of("build", "tmp", "690213787104100", "export", "paid").toString(), result.getFilePath());
         assertEquals(5, result.getExportedRows());
     }
 
