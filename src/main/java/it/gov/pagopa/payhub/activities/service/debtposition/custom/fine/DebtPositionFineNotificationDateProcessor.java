@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
 
@@ -30,7 +32,8 @@ public class DebtPositionFineNotificationDateProcessor {
     private boolean processPaymentOptions(DebtPositionDTO debtPositionDTO, FineWfExecutionConfig executionParams, HandleFineDebtPositionResult response) {
         boolean[] notified = {false};
 
-        debtPositionDTO.getPaymentOptions().forEach(po -> po.getInstallments()
+        debtPositionDTO.getPaymentOptions().forEach(po -> po.getInstallments().stream()
+                .filter(installment -> installment.getNotificationDate() != null)
                 .forEach(installment -> {
                     boolean processed = false;
                     if (PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT.equals(po.getPaymentOptionType())) {
@@ -57,13 +60,12 @@ public class DebtPositionFineNotificationDateProcessor {
     }
 
     private boolean processDueDate(InstallmentDTO installment, long days2add) {
-        if (installment.getNotificationDate() != null) {
-            LocalDate nextDueDate = installment.getNotificationDate().plusDays(days2add).toLocalDate();
-            if (!nextDueDate.equals(installment.getDueDate())) {
+        LocalDate nextDueDate = Objects.requireNonNull(installment.getNotificationDate()).plusDays(days2add).toInstant().atZone(Utilities.ZONEID).toLocalDate();
+        if (!nextDueDate.equals(installment.getDueDate())) {
                 installment.setDueDate(ObjectUtils.max(nextDueDate, LocalDate.now()));
                 return true;
             }
-        }
+
         return false;
     }
 }
