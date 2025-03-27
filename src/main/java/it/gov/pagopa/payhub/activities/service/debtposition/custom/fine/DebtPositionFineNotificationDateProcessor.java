@@ -48,20 +48,20 @@ public class DebtPositionFineNotificationDateProcessor {
         return notified[0];
     }
 
-
-    private boolean processNotifiedSingleInstallment(FineWfExecutionConfig executionParams, InstallmentDTO installment) {
-        return processDueDate(installment, executionParams.getDiscountDays());
-    }
-
     private boolean processNotifiedReducedSingleInstallment(FineWfExecutionConfig executionParams, InstallmentDTO installment, HandleFineDebtPositionResult response) {
         boolean notified = processDueDate(installment, executionParams.getDiscountDays());
         response.setReductionEndDate(toOffsetDateTimeEndOfTheDay(installment.getDueDate()));
         return notified;
     }
 
+    private boolean processNotifiedSingleInstallment(FineWfExecutionConfig executionParams, InstallmentDTO installment) {
+        return processDueDate(installment, executionParams.getExpirationDays());
+    }
+
     private boolean processDueDate(InstallmentDTO installment, long days2add) {
-        LocalDate nextDueDate = Objects.requireNonNull(installment.getNotificationDate()).plusDays(days2add).toInstant().atZone(Utilities.ZONEID).toLocalDate();
+        LocalDate nextDueDate = Objects.requireNonNull(installment.getNotificationDate()).plusDays(days2add).atZoneSameInstant(Utilities.ZONEID).toLocalDate();
         if (!nextDueDate.equals(installment.getDueDate())) {
+            // TODO save the debt position updated
                 installment.setDueDate(ObjectUtils.max(nextDueDate, LocalDate.now()));
                 return true;
             }
