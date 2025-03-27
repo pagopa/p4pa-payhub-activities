@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.pagopapayments.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 	private Set<String> getFilenamesFilteredByStatus(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		return paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName)
 			.flatMap(fileName -> ingestionFlowFileService
-				.findByOrganizationIdFlowTypeFilename(organizationId, FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, fileName)
+				.findByOrganizationIdFlowTypeFilename(organizationId, IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, fileName)
 				.stream())
 			.map(IngestionFlowFile::getFileName)
 			.collect(Collectors.toSet());

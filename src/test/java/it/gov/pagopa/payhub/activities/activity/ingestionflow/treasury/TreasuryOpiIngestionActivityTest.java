@@ -128,7 +128,7 @@ class TreasuryOpiIngestionActivityTest {
         long ingestionFlowFileId = 1L;
         IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile()
                 .ingestionFlowFileId(ingestionFlowFileId)
-                .flowFileType(IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING);
+                .ingestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING);
 
         when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFile));
 
@@ -213,7 +213,7 @@ class TreasuryOpiIngestionActivityTest {
     private IngestionFlowFile buildIngestionFlowFile(Long ingestionFlowFileId) {
         return IngestionFlowFileFaker.buildIngestionFlowFile()
                 .ingestionFlowFileId(ingestionFlowFileId)
-                .flowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI)
+                .ingestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI)
                 .filePathName(workingDir.toString())
                 .fileName("testFile.zip")
                 .organizationId(0L);

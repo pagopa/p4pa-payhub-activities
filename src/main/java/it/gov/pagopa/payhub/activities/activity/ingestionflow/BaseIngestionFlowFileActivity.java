@@ -60,8 +60,8 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 		IngestionFlowFile ingestionFlowFileDTO = ingestionFlowFileService.findById(ingestionFlowFileId)
 			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
 
-		if (!(getHandledIngestionFlowFileType()).equals(ingestionFlowFileDTO.getFlowFileType())) {
-			throw new IngestionFlowTypeNotSupportedException("invalid ingestionFlow file type: " + ingestionFlowFileDTO.getFlowFileType() + " expected " + getHandledIngestionFlowFileType());
+		if (!(getHandledIngestionFlowFileType()).equals(ingestionFlowFileDTO.getIngestionFlowFileType())) {
+			throw new IngestionFlowTypeNotSupportedException("invalid ingestionFlow file type: " + ingestionFlowFileDTO.getIngestionFlowFileType() + " expected " + getHandledIngestionFlowFileType());
 		}
 
 		return ingestionFlowFileDTO;
@@ -96,8 +96,8 @@ public abstract class BaseIngestionFlowFileActivity<T> {
 		}
 	}
 
-	/** The {@link IngestionFlowFile.FlowFileTypeEnum} supported */
-	protected abstract IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType();
+	/** The {@link IngestionFlowFile.IngestionFlowFileTypeEnum} supported */
+	protected abstract IngestionFlowFile.IngestionFlowFileTypeEnum getHandledIngestionFlowFileType();
 
 	/** It will process retrieve files */
 	protected abstract T handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO);

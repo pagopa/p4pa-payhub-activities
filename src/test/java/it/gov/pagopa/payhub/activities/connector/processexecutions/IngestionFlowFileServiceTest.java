@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.IngestionFlowFileClient;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFileEmbedded;
@@ -87,7 +87,7 @@ class IngestionFlowFileServiceTest {
         OffsetDateTime creationDate = OffsetDateTime.now().minusDays(1);
         String accessToken = "accessToken";
         Long organizationId = 1L;
-        FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
+        IngestionFlowFileTypeEnum flowFileType = IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
         PagedModelIngestionFlowFileEmbedded embedded = mock(PagedModelIngestionFlowFileEmbedded.class);
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = new PagedModelIngestionFlowFile(embedded, null, null);
         List<IngestionFlowFile> expectedResponse = pagedModelIngestionFlowFile.getEmbedded().getIngestionFlowFiles();
@@ -107,7 +107,7 @@ class IngestionFlowFileServiceTest {
         // Given
         String accessToken = "accessToken";
         Long organizationId = 1L;
-        FlowFileTypeEnum flowFileType = FlowFileTypeEnum.PAYMENTS_REPORTING;
+        IngestionFlowFileTypeEnum flowFileType = IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
         String fileName = "fileName";
         PagedModelIngestionFlowFileEmbedded embedded = mock(PagedModelIngestionFlowFileEmbedded.class);
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = new PagedModelIngestionFlowFile(embedded, null, null);

@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentsReportingIngestionFlowFileActivityImplTest {
-	private static final IngestionFlowFile.FlowFileTypeEnum FLOW_FILE_TYPE = IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING;
+	private static final IngestionFlowFile.IngestionFlowFileTypeEnum FLOW_FILE_TYPE = IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
 	@Mock
 	private IngestionFlowFileService ingestionFlowFileServiceMock;
 	@Mock
@@ -104,7 +103,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
 			.filePathName(workingDir.toString())
-			.flowFileType(FLOW_FILE_TYPE)
+			.ingestionFlowFileType(FLOW_FILE_TYPE)
 			.organizationId(0L);
 
 		Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
@@ -156,7 +155,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		long ingestionFlowFileId = 123L;
 		IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile()
 			.ingestionFlowFileId(ingestionFlowFileId)
-			.flowFileType(IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI);
+			.ingestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI);
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFile));
 
