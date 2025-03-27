@@ -176,4 +176,26 @@ class DebtPositionFineNotificationDateProcessorTest {
         assertFalse(result.isNotified());
     }
 
+    @Test
+    void givenPOWithUnknownTypeThenSkipProcessing() {
+        // Given
+        PaymentOptionDTO po = new PaymentOptionDTO();
+        po.setPaymentOptionType(PaymentOptionTypeEnum.DOWN_PAYMENT);
+
+        InstallmentDTO installment = buildInstallmentDTO();
+        installment.setNotificationDate(OffsetDateTime.now().minusDays(2));
+
+        po.setInstallments(List.of(installment));
+
+        DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
+        debtPositionDTO.setPaymentOptions(List.of(po));
+
+        FineWfExecutionConfig config = new FineWfExecutionConfig();
+
+        // When
+        HandleFineDebtPositionResult result = processor.processNotificationDate(debtPositionDTO, config);
+
+        // Then
+        assertFalse(result.isNotified());
+    }
 }
