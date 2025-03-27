@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 
-import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class UpdateExportFileStatusActivityTest {
     Mockito.when(
         exportFileServiceMock.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, null)).thenReturn(0);
     //when
-    Assertions.assertThrows(ExportFileNotFoundException.class, () -> updateExportFileStatusActivity.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS));
+    Assertions.assertThrows(ExportFlowFileNotFoundException.class, () -> updateExportFileStatusActivity.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS));
   }
 
 }

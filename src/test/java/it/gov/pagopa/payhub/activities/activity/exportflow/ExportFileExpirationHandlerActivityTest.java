@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
@@ -82,7 +82,7 @@ class ExportFileExpirationHandlerActivityTest {
     // given
     when(exportFileServiceMock.findById(anyLong())).thenReturn(Optional.empty());
     // when
-    Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(1L));
+    Assertions.assertThrows(ExportFlowFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(1L));
     // then
     Mockito.verifyNoMoreInteractions(exportFileServiceMock);
   }
@@ -102,7 +102,7 @@ class ExportFileExpirationHandlerActivityTest {
       mockedFiles.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
 
       // when
-      Assertions.assertThrows(ExportFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(
+      Assertions.assertThrows(ExportFlowFileNotFoundException.class, () -> exportFileExpirationHandlerActivity.handleExpiration(
           exportFileId));
 
       // then

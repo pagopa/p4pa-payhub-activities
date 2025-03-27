@@ -239,6 +239,24 @@ class PaidExportFlowFileServiceTest {
     }
 
     @Test
+    void givenProcessingStatus_whenCompressAndArchive_thenThrowIllegalStateException() throws IOException {
+        Long exportFileId = 1L;
+        PaidExportFile paidExportFile = new PaidExportFile();
+        paidExportFile.setStatus(ExportFileStatus.PROCESSING);
+        paidExportFile.setOrganizationId(690213787104100L);
+        paidExportFile.setFileVersion("v1");
+
+        when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.of(paidExportFile));
+
+        doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
+
+        // When
+        IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> paidExportFlowFileService.executeExport(exportFileId));
+        assertTrue(illegalStateException.getMessage().contains("Error during compression and archiving"));
+
+    }
+
+    @Test
     void givenInvalidStatus_whenExecuteExport_thenThrowInvalidExportStatusException() {
         Long exportFileId = 1L;
         PaidExportFile paidExportFile = new PaidExportFile();
