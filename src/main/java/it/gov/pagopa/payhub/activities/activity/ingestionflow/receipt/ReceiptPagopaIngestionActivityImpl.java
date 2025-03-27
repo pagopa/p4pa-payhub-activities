@@ -51,8 +51,8 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
   }
 
   @Override
-  protected IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType() {
-    return IngestionFlowFile.FlowFileTypeEnum.RECEIPT_PAGOPA;
+  protected IngestionFlowFile.IngestionFlowFileTypeEnum getHandledIngestionFlowFileType() {
+    return IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA;
   }
 
   @Override

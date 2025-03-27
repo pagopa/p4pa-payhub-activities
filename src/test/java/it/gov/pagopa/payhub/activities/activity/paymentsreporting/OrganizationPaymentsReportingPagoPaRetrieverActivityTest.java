@@ -15,7 +15,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA;
+import static it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 
