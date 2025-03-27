@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.csv;
 
+import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidCsvRowException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import org.junit.jupiter.api.Test;
 import uk.co.jemos.podam.api.PodamFactory;
@@ -219,6 +220,24 @@ class CsvServiceTest {
         assertTrue(file.exists(), "The file should exist.");
         assertTrue(file.length() > 0, "The file should not be empty.");
         assertEquals("Export process reached error threshold page request count: 11", ex.getMessage());
+    }
+
+    @Test
+    void testCreateCsv_whenCsvRequiredFieldEmptyException_thenThrowInvalidCsvRowException(){
+        // Given
+        Path filePath = Path.of("build", "tmp", "test", "EXPORT.csv");
+
+        TestCsv testCsv = podamFactory.manufacturePojo(TestCsv.class);
+        testCsv.setColumn1(null);
+        List<TestCsv> testCsvList = List.of(testCsv);
+
+        // When / Then
+        InvalidCsvRowException ex = assertThrows(InvalidCsvRowException.class, () -> {
+            csvService.createCsv(filePath, TestCsv.class, () -> testCsvList, "v1");
+        });
+
+        assertEquals("Invalid CSV row: Field 'column1' is mandatory but no value was provided.", ex.getMessage());
+
     }
 
 }

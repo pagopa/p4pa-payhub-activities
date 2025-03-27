@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
-import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFileNotFoundException;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
