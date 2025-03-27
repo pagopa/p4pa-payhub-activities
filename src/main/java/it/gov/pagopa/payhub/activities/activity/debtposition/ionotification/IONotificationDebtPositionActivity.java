@@ -6,9 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificati
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 
-import java.util.List;
 import java.util.Map;
 
 
