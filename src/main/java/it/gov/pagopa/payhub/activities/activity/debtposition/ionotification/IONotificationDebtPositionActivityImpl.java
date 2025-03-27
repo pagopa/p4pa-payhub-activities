@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.ionotification;
 
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IONotificationService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
@@ -24,7 +25,7 @@ public class IONotificationDebtPositionActivityImpl implements IONotificationDeb
     }
 
     @Override
-    public List<MessageResponseDTO> sendIoNotification(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
+    public DebtPositionIoNotificationDTO sendIoNotification(DebtPositionDTO debtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
         log.info("Sending message to IONotification for debt position type org id {}", debtPosition.getDebtPositionTypeOrgId());
         return ioNotificationService.sendMessage(debtPosition, iupdSyncStatusUpdateDTOMap, ioMessages);
     }
