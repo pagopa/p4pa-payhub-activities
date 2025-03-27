@@ -30,53 +30,71 @@ class SendServiceTest {
 
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(sendClientMock);
+        Mockito.verifyNoMoreInteractions(
+                sendClientMock, authnServiceMock);
     }
 
     @Test
     void givenSendNotificationIdWhenPreloadSendFileThenOk() {
         // Given
+        String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
 
         // When
         sendService.preloadSendFile(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).preloadSendFile(null, sendNotificationId);
+        Mockito.verify(sendClientMock).preloadSendFile(sendNotificationId, accessToken);
     }
 
     @Test
     void givenSendNotificationIdWhenUploadSendFileThenOk() {
         // Given
+        String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
 
         // When
         sendService.uploadSendFile(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).uploadSendFile(null, sendNotificationId);
+        Mockito.verify(sendClientMock).uploadSendFile(sendNotificationId, accessToken);
     }
 
     @Test
     void givenSendNotificationIdWhenDeliveryNotificationThenOk() {
         // Given
+        String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
 
         // When
         sendService.deliveryNotification(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).deliveryNotification(null, sendNotificationId);
+        Mockito.verify(sendClientMock).deliveryNotification(sendNotificationId, accessToken);
     }
 
     @Test
     void givenSendNotificationIdWhenNotificationStatusThenOk() {
         // Given
+        String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
         SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
         // When
-        Mockito.when(sendClientMock.notificationStatus(null, sendNotificationId)).thenReturn(expectedResponse);
+        Mockito.when(sendClientMock.notificationStatus(sendNotificationId, accessToken))
+                .thenReturn(expectedResponse);
 
         SendNotificationDTO result = sendService.notificationStatus(sendNotificationId);
 
