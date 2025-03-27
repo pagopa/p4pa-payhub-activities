@@ -6,7 +6,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,8 +21,12 @@ class InstallmentServiceTest {
 	@Mock
 	private InstallmentClient installmentClientMock;
 
-	@InjectMocks
 	private InstallmentService installmentService;
+
+	@BeforeEach
+	void setUp() {
+		installmentService = new InstallmentServiceImpl(authnServiceMock, installmentClientMock);
+	}
 
 	@Test
 	void whenGetInstallmentByIdThenInvokeClient() {
