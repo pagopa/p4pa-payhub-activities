@@ -2,7 +2,10 @@ package it.gov.pagopa.payhub.activities.service.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
@@ -12,8 +15,11 @@ import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,12 +47,24 @@ class TransferClassificationStoreServiceTest {
 	private ReceiptService receiptServiceMock;
 	@Mock
 	private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
+	@Mock
+	private OrganizationService organizationServiceMock;
+	@Mock
+	private IngestionFlowFileService ingestionFlowFileServiceMock;
+	@Mock
+	private InstallmentService installmentServiceMock;
 
 	private TransferClassificationStoreService service;
 
 	@BeforeEach
 	void setUp() {
-		service = new TransferClassificationStoreService(classificationServiceMock, receiptServiceMock, debtPositionTypeOrgServiceMock);
+		service = new TransferClassificationStoreService(
+			classificationServiceMock, 
+			receiptServiceMock, 
+			debtPositionTypeOrgServiceMock,
+			organizationServiceMock,
+			ingestionFlowFileServiceMock,
+			installmentServiceMock);
 	}
 
 	@Test
@@ -60,9 +79,17 @@ class TransferClassificationStoreServiceTest {
 			.build();
 		ReceiptNoPII receiptNoPII = mock(ReceiptNoPII.class);
 		DebtPositionTypeOrg debtPositionTypeOrg = mock(DebtPositionTypeOrg.class);
-
+		InstallmentNoPII installmentNoPII = mock(InstallmentNoPII.class);
+		Organization organization = mock(Organization.class);
+		IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+		
+		when(organizationServiceMock.getOrganizationById(transferSemanticKeyDTO.getOrgId())).thenReturn(Optional.ofNullable(organization));
 		when(receiptServiceMock.getByTransferId(transferDTO.getTransferId())).thenReturn(receiptNoPII);
 		when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(transferDTO.getInstallmentId())).thenReturn(debtPositionTypeOrg);
+		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.ofNullable(installmentNoPII));
+		when(organizationServiceMock.getOrganizationById(transferSemanticKeyDTO.getOrgId())).thenReturn(Optional.ofNullable(organization));
+		when(ingestionFlowFileServiceMock.findById(transferDTO.getTransferId())).thenReturn(Optional.ofNullable(ingestionFlowFile));
+		
 
 		List<Classification> dtoList = List.of(
 			Classification.builder()
@@ -88,6 +115,23 @@ class TransferClassificationStoreServiceTest {
 				.billAmountCents(treasuryDTO.getBillAmountCents())
 				.remittanceInformation(transferDTO.getRemittanceInformation())
 				.debtPositionTypeOrgCode(debtPositionTypeOrg.getCode())
+				.receiptFileName(ingestionFlowFile.getFileName())
+				.receiptOrgFiscalCode(receiptNoPII.getOrgFiscalCode())
+				.receiptPaymentReceiptId(receiptNoPII.getPaymentReceiptId())
+				.receiptPaymentDateTime(receiptNoPII.getPaymentDateTime())
+				.receiptPaymentRequestId(String.valueOf(receiptNoPII.getReceiptId()))
+				.receiptIdPsp(receiptNoPII.getIdPsp())
+				.receiptPspCompanyName(receiptNoPII.getPspCompanyName())
+				.receiptOrgEntityType(organization.getOrgTypeCode())
+				.receiptBeneficiaryOrgName(organization.getOrgName())
+				.receiptPersonalDataId(receiptNoPII.getPersonalDataId())
+				.receiptPaymentOutcomeCode(receiptNoPII.getOutcome())
+				.receiptPaymentAmount(receiptNoPII.getPaymentAmountCents())
+				.receiptCreditorReferenceId(receiptNoPII.getCreditorReferenceId())
+				.receiptTransferAmount(transferDTO.getAmountCents())
+				.receiptTransferCategory(transferDTO.getCategory())
+				.receiptCreationDate(ingestionFlowFile.getCreationDate())
+				.receiptInstallmentBalance(installmentNoPII.getBalance())
 				.build());
 
 		when(classificationServiceMock.saveAll(dtoList)).thenReturn(dtoList.size());
