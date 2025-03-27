@@ -39,13 +39,14 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
                                      @Value("${folders.tmp}") Path workingDirectory,
                                      @Value("${export-flow-files.paid.relative-file-folder}")String relativeFileFolder,
                                      @Value("${export-flow-files.paid.filename-prefix}")String filenamePrefix,
+                                     @Value("${folders.shared}")String sharedFolder,
                                      @Value("${export-flow-files.paid.page-size}") int pageSize,
                                      ExportFileService exportFileService,
                                      DataExportService dataExportService,
                                      InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper
                                      ) {
 
-        super(csvService, csvRowDtoClass, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix);
+        super(csvService, csvRowDtoClass, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix, Path.of(sharedFolder));
         this.pageSize = pageSize;
         this.exportFileService = exportFileService;
         this.dataExportService = dataExportService;

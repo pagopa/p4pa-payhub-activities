@@ -22,14 +22,16 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
     private final Path workingDirectory;
     private final String relativeFileFolder;
     private final String fileNamePrefix;
+    private final Path sharedDirectoryPath;
 
-    protected BaseExportFlowFileService(CsvService csvService, Class<C> csvRowDtoClass, FileArchiverService fileArchiverService, Path workingDirectory, String relativeFileFolder, String fileNamePrefix) {
+    protected BaseExportFlowFileService(CsvService csvService, Class<C> csvRowDtoClass, FileArchiverService fileArchiverService, Path workingDirectory, String relativeFileFolder, String fileNamePrefix, Path sharedDirectoryPath) {
         this.csvService = csvService;
         this.csvRowDtoClass = csvRowDtoClass;
         this.fileArchiverService = fileArchiverService;
         this.workingDirectory = workingDirectory;
         this.relativeFileFolder = relativeFileFolder;
         this.fileNamePrefix = fileNamePrefix;
+        this.sharedDirectoryPath = sharedDirectoryPath;
     }
 
     public ExportFlowFileResult executeExport(Long exportFileId) {
@@ -56,11 +58,13 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
                 throw new IllegalStateException("Error writing to CSV file: " + e.getMessage(), e);
             }
 
-            Path zipFilePath = createZipArchive(csvFilePath);
+            Path sharedTargetPath = sharedDirectoryPath.resolve(String.valueOf(organizationId)).resolve(relativeFileFolder);
+            Path zipFilePath = createZipArchive(csvFilePath, sharedTargetPath);
+
 
             return ExportFlowFileResult.builder()
                     .fileName(zipFilePath.getFileName().toString())
-                    .filePath(zipFilePath.toString())
+                    .filePath(zipFilePath.getParent().toString())
                     .exportedRows(exportedRows[0])
                     .build();
 
@@ -77,11 +81,11 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
      * @return The path to the created ZIP archive.
      * @throws IllegalStateException If an error occurs during compression and archiving due to filesystem or permission issues.
      */
-    private Path createZipArchive(Path csvFilePath) {
+    private Path createZipArchive(Path csvFilePath, Path sharedTargetPath) {
         try {
             Path tmpZipFilePath = csvFilePath.getParent()
                     .resolve(Utilities.replaceFileExtension(csvFilePath.getFileName().toString(), ".zip"));
-            fileArchiverService.compressAndArchive(List.of(csvFilePath), tmpZipFilePath, workingDirectory);
+            fileArchiverService.compressAndArchive(List.of(csvFilePath), tmpZipFilePath, sharedTargetPath);
             return tmpZipFilePath;
         } catch (IOException e) {
             throw new IllegalStateException("Error during compression and archiving: " + e.getMessage(), e);

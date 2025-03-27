@@ -2,19 +2,25 @@ package it.gov.pagopa.payhub.activities.util.csv;
 
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import org.junit.jupiter.api.Test;
+import uk.co.jemos.podam.api.PodamFactory;
+import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CsvServiceTest {
 
-    private final CsvService csvService = new CsvService(';', '\"', "legacies", 100, 1000);
+    private final PodamFactory podamFactory = new PodamFactoryImpl();
+    private final CsvService csvService = new CsvService(';', '\"', "legacies", 5, 10);
 
     @Test
     void testCreateCsv_success() throws IOException {
@@ -161,6 +167,58 @@ class CsvServiceTest {
                     return list;
                 })
         );
+    }
+
+    @Test
+    void testCreateCsvFromBean_success() throws IOException {
+        // Give
+        Path filePath = Path.of("build", "tmp", "test", "EXPORT.csv");
+
+        TestCsv testCsv = podamFactory.manufacturePojo(TestCsv.class);
+        TestCsv testCsv1 = podamFactory.manufacturePojo(TestCsv.class);
+        TestCsv testCsv2 = podamFactory.manufacturePojo(TestCsv.class);
+
+        List<TestCsv> testCsvList = List.of(testCsv, testCsv1, testCsv2);
+        AtomicBoolean supplierCalled = new AtomicBoolean(false);
+
+        Supplier<List<TestCsv>> csvRowsSupplier = () -> {
+            if (supplierCalled.get()) {
+                return Collections.emptyList();
+            } else {
+                supplierCalled.set(true);
+                return testCsvList;
+            }
+        };
+        // When
+        csvService.createCsv(filePath,TestCsv.class, csvRowsSupplier, "v1");
+
+        // Then
+        File file = filePath.toFile();
+        assertTrue(file.exists(), "The file should exist.");
+        assertTrue(file.length() > 0, "The file should not be empty.");
+    }
+
+
+    @Test
+    void testCreateCsvFromBean_whenPageRequestCountBiggerThenThreshold_thenThrowIllegalException() {
+        // Given
+        Path filePath = Path.of("build", "tmp", "test", "EXPORT.csv");
+
+        TestCsv testCsv = podamFactory.manufacturePojo(TestCsv.class);
+        TestCsv testCsv1 = podamFactory.manufacturePojo(TestCsv.class);
+        TestCsv testCsv2 = podamFactory.manufacturePojo(TestCsv.class);
+
+        List<TestCsv> testCsvList = List.of(testCsv, testCsv1, testCsv2);
+
+        // When
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+                csvService.createCsv(filePath,TestCsv.class,() -> testCsvList, "v1"));
+
+        // Then
+        File file = filePath.toFile();
+        assertTrue(file.exists(), "The file should exist.");
+        assertTrue(file.length() > 0, "The file should not be empty.");
+        assertEquals("Export process reached error threshold page request count: 11", ex.getMessage());
     }
 
 }
