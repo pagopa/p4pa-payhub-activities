@@ -2,8 +2,10 @@ package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidExportStatusException;
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.InstallmentExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
@@ -21,13 +23,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaidExportFlowFileServiceTest {
@@ -170,5 +176,79 @@ class PaidExportFlowFileServiceTest {
         //then
         assertNotNull(result);
         assertEquals(paidExportFile.getFilterFields(), result);
+    }
+
+    @Test
+    void givenProcessingStatus_whenExecuteExport_thenReturnsExportFlowFileResult() throws IOException {
+        Long exportFileId = 1L;
+        PaidExportFile paidExportFile = new PaidExportFile();
+        paidExportFile.setStatus(ExportFileStatus.PROCESSING);
+        paidExportFile.setOrganizationId(690213787104100L);
+        paidExportFile.setFileVersion("v1");
+
+        PagedInstallmentsPaidView pagedInstallmentsPaidView = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
+        List<InstallmentPaidViewDTO> installmentPaidViewDTOList = pagedInstallmentsPaidView.getContent();
+
+        PaidInstallmentExportFlowFileDTO paidInstallmentExportFlowFileDTO = podamFactory.manufacturePojo(PaidInstallmentExportFlowFileDTO.class);
+
+        when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.of(paidExportFile));
+        when(dataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("installmentId"))).thenReturn(pagedInstallmentsPaidView);
+
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(0))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(1))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(2))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(3))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(4))).thenReturn(paidInstallmentExportFlowFileDTO);
+
+        int[] exportedRows = {0};
+        doAnswer(invocation -> {
+            Supplier<List<PaidInstallmentExportFlowFileDTO>> supplier = invocation.getArgument(2);
+            List<PaidInstallmentExportFlowFileDTO> rows = supplier.get();
+            exportedRows[0] += rows.size();
+            return null;
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(PaidInstallmentExportFlowFileDTO.class), any(), eq("v1"));
+
+        doNothing().when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
+
+        // When
+        ExportFlowFileResult result = paidExportFlowFileService.executeExport(exportFileId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("EXPORT_1.zip", result.getFileName());
+        assertEquals("build\\tmp\\690213787104100\\export\\paid", result.getFilePath());
+        assertEquals(5, result.getExportedRows());
+    }
+
+    @Test
+    void givenProcessingStatus_whenExecuteExport_thenThrowIllegalStateException() throws IOException {
+        Long exportFileId = 1L;
+        PaidExportFile paidExportFile = new PaidExportFile();
+        paidExportFile.setStatus(ExportFileStatus.PROCESSING);
+        paidExportFile.setOrganizationId(690213787104100L);
+        paidExportFile.setFileVersion("v1");
+
+        when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.of(paidExportFile));
+
+        doThrow(IOException.class).when(csvServiceMock).createCsv(any(Path.class), eq(PaidInstallmentExportFlowFileDTO.class), any(), eq("v1"));
+
+        // When
+        IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> paidExportFlowFileService.executeExport(exportFileId));
+        assertTrue(illegalStateException.getMessage().contains("Error writing to CSV file"));
+
+    }
+
+    @Test
+    void givenInvalidStatus_whenExecuteExport_thenThrowInvalidExportStatusException() {
+        Long exportFileId = 1L;
+        PaidExportFile paidExportFile = new PaidExportFile();
+        paidExportFile.setStatus(ExportFileStatus.COMPLETED);
+        paidExportFile.setFileVersion("v1");
+
+        when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.of(paidExportFile));
+
+        // When & Then
+        InvalidExportStatusException invalidExportStatusException = assertThrows(InvalidExportStatusException.class, () -> paidExportFlowFileService.executeExport(exportFileId));
+        assertEquals("The requested ExportFile (1) has an invalid status COMPLETED", invalidExportStatusException.getMessage());
     }
 }
