@@ -30,10 +30,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
+import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransferClassificationStoreServiceTest {
@@ -72,25 +73,32 @@ class TransferClassificationStoreServiceTest {
 		// Arrange
 		List<ClassificationsEnum> classifications = List.of(ClassificationsEnum.RT_IUF_TES);
 		TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
-			.orgId(123L)
+			.orgId(1L)
 			.iuv("01011112222333345")
 			.iur("IUR")
 			.transferIndex(1)
 			.build();
-		ReceiptNoPII receiptNoPII = mock(ReceiptNoPII.class);
-		DebtPositionTypeOrg debtPositionTypeOrg = mock(DebtPositionTypeOrg.class);
-		InstallmentNoPII installmentNoPII = mock(InstallmentNoPII.class);
-		Organization organization = mock(Organization.class);
-		IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+		ReceiptNoPII receiptNoPII = new ReceiptNoPII()
+			.orgFiscalCode("orgFiscalCode")
+			.paymentReceiptId("paymentReceiptId")
+			.paymentDateTime(OFFSETDATETIME)
+			.receiptId(1L)
+			.idPsp("idPsp")
+			.pspCompanyName("pspCompanyName")
+			.personalDataId(1L)
+			.outcome("outcome")
+			.paymentAmountCents(100L)
+			.creditorReferenceId("referenceId");
+		DebtPositionTypeOrg debtPositionTypeOrg = buildDebtPositionTypeOrgDTO();
+		InstallmentNoPII installmentNoPII = new InstallmentNoPII().balance("balance");
+		Organization organization = new Organization().orgName("orgName").orgTypeCode("orgTypeCode");
+		IngestionFlowFile ingestionFlowFile = new IngestionFlowFile().creationDate(OFFSETDATETIME).fileName("fileName");
 		
-		when(organizationServiceMock.getOrganizationById(transferSemanticKeyDTO.getOrgId())).thenReturn(Optional.ofNullable(organization));
+		when(organizationServiceMock.getOrganizationByFiscalCode(transferDTO.getOrgFiscalCode())).thenReturn(Optional.of(organization));
 		when(receiptServiceMock.getByTransferId(transferDTO.getTransferId())).thenReturn(receiptNoPII);
 		when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(transferDTO.getInstallmentId())).thenReturn(debtPositionTypeOrg);
-		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.ofNullable(installmentNoPII));
-		when(organizationServiceMock.getOrganizationById(transferSemanticKeyDTO.getOrgId())).thenReturn(Optional.ofNullable(organization));
-		when(ingestionFlowFileServiceMock.findById(transferDTO.getTransferId())).thenReturn(Optional.ofNullable(ingestionFlowFile));
-		
-
+		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.of(installmentNoPII));
+		when(ingestionFlowFileServiceMock.findById(receiptNoPII.getIngestionFlowFileId())).thenReturn(Optional.of(ingestionFlowFile));
 		List<Classification> dtoList = List.of(
 			Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
