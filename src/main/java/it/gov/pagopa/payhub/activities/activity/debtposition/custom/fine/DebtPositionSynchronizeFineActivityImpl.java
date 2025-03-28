@@ -27,10 +27,14 @@ public class DebtPositionSynchronizeFineActivityImpl implements DebtPositionSync
 
     @Override
     public HandleFineDebtPositionResult handleFineDebtPosition(DebtPositionDTO debtPositionDTO, boolean massive, FineWfExecutionConfig executionParams) {
+        log.info("Validate debt position fine with id: {}", debtPositionDTO.getDebtPositionId());
         debtPositionFineValidation.validateFine(debtPositionDTO);
+
+        log.info("Process notification date of debt position fine with id: {}", debtPositionDTO.getDebtPositionId());
         HandleFineDebtPositionResult handleFineDebtPositionResult = notificationDateProcessor.processNotificationDate(debtPositionDTO, executionParams);
+
+        log.info("Handle reduction period of debt position fine with id: {}", debtPositionDTO.getDebtPositionId());
         debtPositionFineProcessor.processFine(handleFineDebtPositionResult);
-        // TODO to be fully implemented with the task https://pagopa.atlassian.net/browse/P4ADEV-2442
         return handleFineDebtPositionResult;
     }
 }
