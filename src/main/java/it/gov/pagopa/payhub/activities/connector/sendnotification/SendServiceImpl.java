@@ -32,22 +32,22 @@ public class SendServiceImpl implements SendService {
 
     @Override
     public void preloadSendFile(String sendNotificationId) {
-        sendClient.preloadSendFile(authnService.getAccessToken(), sendNotificationId);
+        sendClient.preloadSendFile(sendNotificationId, authnService.getAccessToken());
     }
 
     @Override
     public void uploadSendFile(String sendNotificationId) {
-        sendClient.uploadSendFile(authnService.getAccessToken(), sendNotificationId);
+        sendClient.uploadSendFile(sendNotificationId, authnService.getAccessToken());
     }
 
     @Override
     public void deliveryNotification(String sendNotificationId) {
-        sendClient.deliveryNotification(authnService.getAccessToken(), sendNotificationId);
+        sendClient.deliveryNotification(sendNotificationId, authnService.getAccessToken());
     }
 
     @Override
     public SendNotificationDTO notificationStatus(String sendNotificationId) {
-        return sendClient.notificationStatus(authnService.getAccessToken(), sendNotificationId);
+        return sendClient.notificationStatus(sendNotificationId, authnService.getAccessToken());
     }
 
     @Override

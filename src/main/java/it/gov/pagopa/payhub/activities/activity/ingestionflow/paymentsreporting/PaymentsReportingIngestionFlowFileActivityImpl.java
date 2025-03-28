@@ -47,8 +47,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	}
 
 	@Override
-	protected IngestionFlowFile.FlowFileTypeEnum getHandledIngestionFlowFileType() {
-		return IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING;
+	protected IngestionFlowFile.IngestionFlowFileTypeEnum getHandledIngestionFlowFileType() {
+		return IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
 	}
 
 	@Override

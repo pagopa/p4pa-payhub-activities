@@ -16,15 +16,15 @@ public class ExportFlowFileVersions {
     public static final String EXPORT_PAID_VERSION_V1_2 = "v1.2";
     public static final String EXPORT_PAID_VERSION_V1_3 = "v1.3";
 
-    private static final Map<ExportFile.FlowFileTypeEnum, Set<String>> availableVersions;
+    private static final Map<ExportFile.ExportFileTypeEnum, Set<String>> availableVersions;
 
     static {
         availableVersions = Map.of(
-                ExportFile.FlowFileTypeEnum.PAID, Arrays.stream(PaidExportFileVersion.values()).map(PaidExportFileVersion::getValue).collect(Collectors.toSet())
+                ExportFile.ExportFileTypeEnum.PAID, Arrays.stream(PaidExportFileVersion.values()).map(PaidExportFileVersion::getValue).collect(Collectors.toSet())
         );
     }
 
-    public static Set<String> getAvailableVersions(ExportFile.FlowFileTypeEnum fileType) {
+    public static Set<String> getAvailableVersions(ExportFile.ExportFileTypeEnum fileType) {
         return availableVersions.get(fileType);
     }
 }

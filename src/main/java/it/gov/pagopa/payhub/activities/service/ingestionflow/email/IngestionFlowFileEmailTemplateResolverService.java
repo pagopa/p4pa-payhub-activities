@@ -18,12 +18,12 @@ public class IngestionFlowFileEmailTemplateResolverService {
     }
 
     public EmailTemplate resolve(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
-        EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates ingestionFlowOutcomeTemplates = switch (ingestionFlowFileDTO.getFlowFileType()) {
-            case IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING -> emailTemplatesConfiguration.getPaymentsReportingFlow();
-            case IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI -> emailTemplatesConfiguration.getTreasuryOpiFlow();
-            case IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS -> emailTemplatesConfiguration.getDpInstallmentsFlow();
+        EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates ingestionFlowOutcomeTemplates = switch (ingestionFlowFileDTO.getIngestionFlowFileType()) {
+            case IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING -> emailTemplatesConfiguration.getPaymentsReportingFlow();
+            case IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI -> emailTemplatesConfiguration.getTreasuryOpiFlow();
+            case IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS -> emailTemplatesConfiguration.getDpInstallmentsFlow();
             default ->
-                    throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type " + ingestionFlowFileDTO.getFlowFileType());
+                    throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type " + ingestionFlowFileDTO.getIngestionFlowFileType());
         };
 
         return success

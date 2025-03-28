@@ -17,19 +17,19 @@ public class SendClient {
     this.sendApisHolder = sendApisHolder;
   }
 
-  public void preloadSendFile(String accessToken, String sendNotificationId) {
+  public void preloadSendFile(String sendNotificationId, String accessToken) {
     sendApisHolder.getSendApi(accessToken).preloadSendFile(sendNotificationId);
   }
 
-  public void uploadSendFile(String accessToken, String sendNotificationId) {
+  public void uploadSendFile(String sendNotificationId, String accessToken) {
     sendApisHolder.getSendApi(accessToken).uploadSendFile(sendNotificationId);
   }
 
-  public void deliveryNotification(String accessToken, String sendNotificationId) {
+  public void deliveryNotification(String sendNotificationId, String accessToken) {
     sendApisHolder.getSendApi(accessToken).deliveryNotification(sendNotificationId);
   }
 
-  public SendNotificationDTO notificationStatus(String accessToken, String sendNotificationId) {
+  public SendNotificationDTO notificationStatus(String sendNotificationId, String accessToken) {
     return sendApisHolder.getSendApi(accessToken).notificationStatus(sendNotificationId);
   }
 

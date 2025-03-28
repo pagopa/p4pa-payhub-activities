@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,7 @@ public class IngestionFlowFileClient {
         }
     }
 
-    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, FlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, String accessToken) {
+    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeCreateDate(Long organizationId, IngestionFlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom, String accessToken) {
         LocalDateTime creationDateFromLocalDateTime = null;
         if (creationDateFrom != null) {
             creationDateFromLocalDateTime = creationDateFrom.atZoneSameInstant(Utilities.ZONEID).toLocalDateTime();
@@ -54,7 +54,7 @@ public class IngestionFlowFileClient {
                 .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), creationDateFromLocalDateTime, null, null, null, null, null, null, null);
     }
 
-    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeFilename(Long organizationId, FlowFileTypeEnum flowFileType, String fileName, String accessToken) {
+    public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeFilename(Long organizationId, IngestionFlowFileTypeEnum flowFileType, String fileName, String accessToken) {
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
                 .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null);
     }

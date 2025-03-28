@@ -1,16 +1,24 @@
 package it.gov.pagopa.payhub.activities.service.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -26,13 +34,21 @@ public class TransferClassificationStoreService {
 	private final ClassificationService classificationService;
 	private final ReceiptService receiptService;
 	private final DebtPositionTypeOrgService debtPositionTypeOrgService;
+	private final OrganizationService organizationService;
+	private final IngestionFlowFileService ingestionFlowFileService;
+	private final InstallmentService installmentService;
 
 	public TransferClassificationStoreService(ClassificationService classificationService,
 	                                          ReceiptService receiptService,
-	                                          DebtPositionTypeOrgService debtPositionTypeOrgService) {
+	                                          DebtPositionTypeOrgService debtPositionTypeOrgService,
+	                                          OrganizationService organizationService, IngestionFlowFileService ingestionFlowFileService,
+	                                          InstallmentService installmentService) {
 		this.classificationService = classificationService;
 		this.receiptService = receiptService;
 		this.debtPositionTypeOrgService = debtPositionTypeOrgService;
+		this.organizationService = organizationService;
+		this.ingestionFlowFileService = ingestionFlowFileService;
+		this.installmentService = installmentService;
 	}
 
 	/**
@@ -68,6 +84,21 @@ public class TransferClassificationStoreService {
 		        log.debug("retrieving DebtPositionTypeOrg with installmentId {}", transfer.getInstallmentId());
 				return debtPositionTypeOrgService.getDebtPositionTypeOrgByInstallmentId(transfer.getInstallmentId());
 		    });
+		Optional<InstallmentNoPII> optionalInstallment = optionalTransfer
+			.flatMap(transfer -> {
+		        log.debug("retrieving Installment with installmentId {}", transfer.getInstallmentId());
+				return installmentService.getInstallmentById(transfer.getInstallmentId());
+		    });
+		Optional<Organization> optionalOrganization = optionalTransfer
+			.flatMap(transfer -> {
+				log.debug("retrieving Organization with fiscalCode {}", transfer.getOrgFiscalCode());
+				return organizationService.getOrganizationByFiscalCode(transfer.getOrgFiscalCode());
+			});
+		Optional<IngestionFlowFile> optionalIngestionFlowFile = optionalReceipt
+			.flatMap(receiptNoPII -> {
+				log.debug("retrieving IngestionFlowFile with id {}", receiptNoPII.getIngestionFlowFileId());
+				return ingestionFlowFileService.findById(receiptNoPII.getIngestionFlowFileId());
+			});
 
 		log.info("Saving classifications {} for semantic key organization id: {} and iuv: {} and iur {} and transfer index: {}",
 			String.join(", ", classifications.stream().map(String::valueOf).toList()),
@@ -97,6 +128,23 @@ public class TransferClassificationStoreService {
 				.billAmountCents(optionalTreasury.map(Treasury::getBillAmountCents).orElse(null))
 				.remittanceInformation(optionalTransfer.map(Transfer::getRemittanceInformation).orElse(null))
 				.debtPositionTypeOrgCode(optionalDebtPositionTypeOrg.map(DebtPositionTypeOrg::getCode).orElse(null))
+				.receiptFileName(optionalIngestionFlowFile.map(IngestionFlowFile::getFileName).orElse(null))
+				.receiptOrgFiscalCode(optionalReceipt.map(ReceiptNoPII::getOrgFiscalCode).orElse(null))
+				.receiptPaymentReceiptId(optionalReceipt.map(ReceiptNoPII::getPaymentReceiptId).orElse(null))
+				.receiptPaymentDateTime(optionalReceipt.map(ReceiptNoPII::getPaymentDateTime).orElse(null))
+				.receiptPaymentRequestId(optionalReceipt.map(ReceiptNoPII::getReceiptId).map(String::valueOf).orElse(null))
+				.receiptIdPsp(optionalReceipt.map(ReceiptNoPII::getIdPsp).orElse(null))
+				.receiptPspCompanyName(optionalReceipt.map(ReceiptNoPII::getPspCompanyName).orElse(null))
+				.receiptOrgEntityType(optionalOrganization.map(Organization::getOrgTypeCode).orElse(null))
+				.receiptBeneficiaryOrgName(optionalOrganization.map(Organization::getOrgName).orElse(null))
+				.receiptPersonalDataId(optionalReceipt.map(ReceiptNoPII::getPersonalDataId).orElse(null))
+				.receiptPaymentOutcomeCode(optionalReceipt.map(ReceiptNoPII::getOutcome).orElse(null))
+				.receiptPaymentAmount(optionalReceipt.map(ReceiptNoPII::getPaymentAmountCents).orElse(null))
+				.receiptCreditorReferenceId(optionalReceipt.map(ReceiptNoPII::getCreditorReferenceId).orElse(null))
+				.receiptTransferAmount(optionalTransfer.map(Transfer::getAmountCents).orElse(null))
+				.receiptTransferCategory(optionalTransfer.map(Transfer::getCategory).orElse(null))
+				.receiptCreationDate(optionalIngestionFlowFile.map(IngestionFlowFile::getCreationDate).orElse(null))
+				.receiptInstallmentBalance(optionalInstallment.map(InstallmentNoPII::getBalance).orElse(null))
 				.build())
 			.toList();
 
