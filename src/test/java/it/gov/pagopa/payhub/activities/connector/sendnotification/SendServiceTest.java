@@ -1,10 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionClient;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionSearchClient;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +26,13 @@ class SendServiceTest {
     @Mock
     private InstallmentClient installmentClient;
     @Mock
-    private DebtPositionClient debtPositionClient;
+    private DebtPositionSearchClient debtPositionSearchClient;
 
     private SendService sendService;
 
     @BeforeEach
     void setUp() {
-        sendService = new SendServiceImpl(sendClientMock, authnServiceMock, installmentClient, debtPositionClient);
+        sendService = new SendServiceImpl(sendClientMock, authnServiceMock, installmentClient, debtPositionSearchClient);
     }
 
     @AfterEach
@@ -99,7 +98,7 @@ class SendServiceTest {
         Long organizationId = 1L;
 
         // When
-        Mockito.when(sendClientMock.retrieveNotificationDate(null, sendNotificationId, organizationId)).thenReturn(null);
+        Mockito.when(sendClientMock.retrieveNotificationDate(null, sendNotificationId)).thenReturn(null);
 
         SendNotificationDTO result = sendService.retrieveNotificationDate(null, sendNotificationId, organizationId);
 

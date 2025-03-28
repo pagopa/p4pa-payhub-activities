@@ -105,16 +105,15 @@ class SendClientTest {
         // Given
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "notificationId";
-        Long organizationId = 3L;
 
         Mockito.when(sendApisHolderMock.getSendApi(accessToken))
                 .thenReturn(sendApiMock);
 
         // When
-        sendClient.retrieveNotificationDate(accessToken, sendNotificationId, organizationId);
+        sendClient.retrieveNotificationDate(accessToken, sendNotificationId);
 
         // Then
-        Mockito.verify(sendApiMock).retrieveNotificationDate(sendNotificationId, organizationId);
+        Mockito.verify(sendApiMock).retrieveNotificationDate(sendNotificationId);
     }
 
 }
