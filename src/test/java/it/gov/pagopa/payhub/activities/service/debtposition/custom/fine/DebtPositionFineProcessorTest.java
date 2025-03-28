@@ -1,13 +1,10 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
-import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
@@ -19,14 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class DebtPositionFineProcessorTest {
 
-    @Mock
-    private DebtPositionFineNotificationDateProcessor dateProcessor;
-
     private DebtPositionFineProcessor processor;
 
     @BeforeEach
     void setUp(){
-        processor = new DebtPositionFineProcessor(dateProcessor);
+        processor = new DebtPositionFineProcessor();
     }
 
     @Test
@@ -43,19 +37,15 @@ class DebtPositionFineProcessorTest {
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1));
-        FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
 
         HandleFineDebtPositionResult handleFineDebtPositionResult = new HandleFineDebtPositionResult(debtPositionDTO, OffsetDateTime.now().plusDays(2), true);
 
-        Mockito.when(dateProcessor.processNotificationDate(debtPositionDTO, fineWfExecutionConfig))
-                .thenReturn(handleFineDebtPositionResult);
-
         // When
-        HandleFineDebtPositionResult result = processor.processFine(debtPositionDTO, fineWfExecutionConfig);
+        processor.processFine(handleFineDebtPositionResult);
 
         //Then
-        assertEquals(PaymentOptionStatus.UNPAYABLE, result.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
-        assertEquals(InstallmentStatus.UNPAYABLE, result.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+        assertEquals(PaymentOptionStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
+        assertEquals(InstallmentStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
     }
 
     @Test
@@ -72,19 +62,15 @@ class DebtPositionFineProcessorTest {
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1));
-        FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
 
         HandleFineDebtPositionResult handleFineDebtPositionResult = new HandleFineDebtPositionResult(debtPositionDTO, OffsetDateTime.now().plusDays(2), true);
 
-        Mockito.when(dateProcessor.processNotificationDate(debtPositionDTO, fineWfExecutionConfig))
-                .thenReturn(handleFineDebtPositionResult);
-
         // When
-        HandleFineDebtPositionResult result = processor.processFine(debtPositionDTO, fineWfExecutionConfig);
+        processor.processFine(handleFineDebtPositionResult);
 
         //Then
-        assertEquals(PaymentOptionStatus.PAID, result.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
-        assertEquals(InstallmentStatus.TO_SYNC, result.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+        assertEquals(PaymentOptionStatus.PAID, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
+        assertEquals(InstallmentStatus.TO_SYNC, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
     }
 
     @Test
@@ -101,19 +87,15 @@ class DebtPositionFineProcessorTest {
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1));
-        FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
 
         HandleFineDebtPositionResult handleFineDebtPositionResult = new HandleFineDebtPositionResult(debtPositionDTO, OffsetDateTime.now().plusDays(2), true);
-
-        Mockito.when(dateProcessor.processNotificationDate(debtPositionDTO, fineWfExecutionConfig))
-                .thenReturn(handleFineDebtPositionResult);
-
+        
         // When
-        HandleFineDebtPositionResult result = processor.processFine(debtPositionDTO, fineWfExecutionConfig);
+        processor.processFine(handleFineDebtPositionResult);
 
         //Then
-        assertEquals(PaymentOptionStatus.TO_SYNC, result.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
-        assertEquals(InstallmentStatus.PAID, result.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+        assertEquals(PaymentOptionStatus.TO_SYNC, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
+        assertEquals(InstallmentStatus.PAID, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
     }
 
     @Test
@@ -130,19 +112,15 @@ class DebtPositionFineProcessorTest {
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1));
-        FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
 
         HandleFineDebtPositionResult handleFineDebtPositionResult = new HandleFineDebtPositionResult(debtPositionDTO, OffsetDateTime.now().minusDays(1), true);
 
-        Mockito.when(dateProcessor.processNotificationDate(debtPositionDTO, fineWfExecutionConfig))
-                .thenReturn(handleFineDebtPositionResult);
-
         // When
-        HandleFineDebtPositionResult result = processor.processFine(debtPositionDTO, fineWfExecutionConfig);
+        processor.processFine(handleFineDebtPositionResult);
 
         //Then
-        assertEquals(PaymentOptionStatus.TO_SYNC, result.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
-        assertEquals(InstallmentStatus.TO_SYNC, result.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+        assertEquals(PaymentOptionStatus.TO_SYNC, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
+        assertEquals(InstallmentStatus.TO_SYNC, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
     }
 
     @Test
@@ -159,18 +137,14 @@ class DebtPositionFineProcessorTest {
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1));
-        FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
 
         HandleFineDebtPositionResult handleFineDebtPositionResult = new HandleFineDebtPositionResult(debtPositionDTO, null, true);
 
-        Mockito.when(dateProcessor.processNotificationDate(debtPositionDTO, fineWfExecutionConfig))
-                .thenReturn(handleFineDebtPositionResult);
-
         // When
-        HandleFineDebtPositionResult result = processor.processFine(debtPositionDTO, fineWfExecutionConfig);
+        processor.processFine(handleFineDebtPositionResult);
 
         //Then
-        assertEquals(PaymentOptionStatus.UNPAYABLE, result.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
-        assertEquals(InstallmentStatus.UNPAYABLE, result.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+        assertEquals(PaymentOptionStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
+        assertEquals(InstallmentStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
     }
 }

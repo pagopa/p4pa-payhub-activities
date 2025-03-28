@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
-import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -14,23 +13,15 @@ import java.util.Objects;
 @Service
 public class DebtPositionFineProcessor {
 
-    private final DebtPositionFineNotificationDateProcessor notificationDateProcessor;
+    public void processFine(HandleFineDebtPositionResult handleFineDebtPositionResult) {
 
-    public DebtPositionFineProcessor(DebtPositionFineNotificationDateProcessor notificationDateProcessor) {
-        this.notificationDateProcessor = notificationDateProcessor;
-    }
-
-    public HandleFineDebtPositionResult processFine(DebtPositionDTO debtPositionDTO, FineWfExecutionConfig executionParams) {
-        HandleFineDebtPositionResult handleFineDebtPositionResult = notificationDateProcessor.processNotificationDate(debtPositionDTO, executionParams);
-
+        // If we are currently on the reduction period
         if (handleFineDebtPositionResult.getReductionEndDate() == null || handleFineDebtPositionResult.getReductionEndDate().isAfter(OffsetDateTime.now())) {
-            updatePOAndInstallmentsIfNotPayable(debtPositionDTO, handleFineDebtPositionResult);
+            updateFullPOAndInstallmentsIfToSync(handleFineDebtPositionResult.getDebtPositionDTO());
         }
-
-        return handleFineDebtPositionResult;
     }
 
-    private void updatePOAndInstallmentsIfNotPayable(DebtPositionDTO debtPositionDTO, HandleFineDebtPositionResult handleFineDebtPositionResult) {
+    private void updateFullPOAndInstallmentsIfToSync(DebtPositionDTO debtPositionDTO) {
         debtPositionDTO.getPaymentOptions().stream()
                 .filter(po ->
                         PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()) &&
@@ -46,8 +37,10 @@ public class DebtPositionFineProcessor {
                     if (!unpaidInstallments.isEmpty()) {
                         // TODO save to db
                         po.setStatus(PaymentOptionStatus.UNPAYABLE);
-                        unpaidInstallments.forEach(inst -> inst.setStatus(InstallmentStatus.UNPAYABLE));
-                        handleFineDebtPositionResult.setDebtPositionDTO(debtPositionDTO);
+                        unpaidInstallments.forEach(installmentDTO -> {
+                            installmentDTO.setStatus(InstallmentStatus.UNPAYABLE);
+                            installmentDTO.setSyncStatus(null);
+                        });
                     }
                 });
     }
