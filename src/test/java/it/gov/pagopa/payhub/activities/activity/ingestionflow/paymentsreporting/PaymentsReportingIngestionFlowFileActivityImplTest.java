@@ -9,7 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTran
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting.FlussoRiversamentoUnmarshallerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileValidatorService;
@@ -53,7 +53,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	@Mock
 	private PaymentsReportingService paymentsReportingServiceMock;
 	@Mock
-	private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+	private FileArchiverService fileArchiverServiceMock;
 
 	private PaymentsReportingIngestionFlowFileActivityImpl ingestionActivity;
 
@@ -71,7 +71,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			paymentsReportingIngestionFlowFileValidatorServiceMock,
 			paymentsReportingMapperServiceMock,
 			paymentsReportingServiceMock,
-			ingestionFlowFileArchiverServiceMock
+			fileArchiverServiceMock
 		);
 
 		CtIdentificativoUnivocoPersonaG ctIdentificativoUnivocoPersonaG = new CtIdentificativoUnivocoPersonaG();
@@ -91,7 +91,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 				paymentsReportingIngestionFlowFileValidatorServiceMock,
 				paymentsReportingMapperServiceMock,
 				paymentsReportingServiceMock,
-				ingestionFlowFileArchiverServiceMock
+				fileArchiverServiceMock
 		);
 	}
 
@@ -127,7 +127,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		when(paymentsReportingMapperServiceMock.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO)).thenReturn(dtoList);
 		doReturn(1).when(paymentsReportingServiceMock).saveAll(dtoList);
 		when(paymentsReportingMapperServiceMock.map(paymentsReportingDTO)).thenReturn(paymentsReportingTransferDTO);
-		doNothing().when(ingestionFlowFileArchiverServiceMock)
+		doNothing().when(fileArchiverServiceMock)
 			.archive(ingestionFlowFileDTO);
 
 		// When

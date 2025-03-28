@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InstallmentErrorDTO extends IngestionFlowFileErrorDTO {
+public class InstallmentErrorDTO extends ErrorFileDTO {
 
     private String iupdOrg;
     private String iud;

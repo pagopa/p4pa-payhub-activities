@@ -49,7 +49,7 @@ class ExportFileServiceImplTest {
     }
 
     @Test
-    void givenWhenFindPaidExportFileByIdThen() {
+    void givenExportFileId_WhenFindPaidExportFileById_ThenReturnPaidExportFile() {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";

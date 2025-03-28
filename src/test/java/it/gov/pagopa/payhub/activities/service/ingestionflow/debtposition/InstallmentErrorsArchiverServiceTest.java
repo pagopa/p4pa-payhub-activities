@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +33,7 @@ class InstallmentErrorsArchiverServiceTest {
     public static final String ERROR_MESSAGE = "errorMessage";
     private final String errorFolder = "error";
     @Mock
-    private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+    private FileArchiverService fileArchiverServiceMock;
     @Mock
     private CsvService csvServiceMock;
 
@@ -43,7 +43,7 @@ class InstallmentErrorsArchiverServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new InstallmentErrorsArchiverService(sharedDirectory, errorFolder, ingestionFlowFileArchiverServiceMock, csvServiceMock);
+        service = new InstallmentErrorsArchiverService(sharedDirectory, errorFolder, fileArchiverServiceMock, csvServiceMock);
     }
 
     @Test
@@ -125,7 +125,7 @@ class InstallmentErrorsArchiverServiceTest {
             // Then
             Assertions.assertEquals(expectedZipErrorFileName, result);
 
-            Mockito.verify(ingestionFlowFileArchiverServiceMock)
+            Mockito.verify(fileArchiverServiceMock)
                     .compressAndArchive(List.of(errorFile), Path.of("build/test/" + expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId() + "", ingestionFlowFileDTO.getFilePathName(), errorFolder));
         } finally {
             Files.delete(errorFile);
@@ -142,7 +142,7 @@ class InstallmentErrorsArchiverServiceTest {
             IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
             String expectedZipErrorFileName = "ERROR-fileName.zip";
 
-            Mockito.doThrow(new IOException("Error")).when(ingestionFlowFileArchiverServiceMock)
+            Mockito.doThrow(new IOException("Error")).when(fileArchiverServiceMock)
                     .compressAndArchive(List.of(errorFile), Path.of("build/test/" + expectedZipErrorFileName), Path.of(sharedDirectory, ingestionFlowFileDTO.getOrganizationId() + "", ingestionFlowFileDTO.getFilePathName(), errorFolder));
 
             // When

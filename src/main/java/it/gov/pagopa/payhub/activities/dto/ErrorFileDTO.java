@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.ingestion;
+package it.gov.pagopa.payhub.activities.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public abstract class IngestionFlowFileErrorDTO implements Serializable {
+public abstract class ErrorFileDTO implements Serializable {
 
     private String fileName;
     private String errorCode;

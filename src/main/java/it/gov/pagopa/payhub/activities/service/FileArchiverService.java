@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.service.ingestionflow;
+package it.gov.pagopa.payhub.activities.service;
 
-import it.gov.pagopa.payhub.activities.service.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +20,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  */
 @Lazy
 @Service
-public class IngestionFlowFileArchiverService {
+public class FileArchiverService {
 
     private final Path sharedDirectoryPath;
     private final String archiveFolder;
@@ -32,7 +31,7 @@ public class IngestionFlowFileArchiverService {
 
     private final ZipFileService zipFileService;
 
-    public IngestionFlowFileArchiverService(
+    public FileArchiverService(
             @Value("${folders.shared}") String sharedFolder,
             @Value("${folders.process-target-sub-folders.archive}") String archiveFolder,
             @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
