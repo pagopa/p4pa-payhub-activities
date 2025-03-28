@@ -28,6 +28,7 @@ public interface DebtPositionService {
      * @return the minimum due date ({@link LocalDate}) among all unpaid installments.
      */
     LocalDate checkAndUpdateInstallmentExpiration(Long debtPositionId);
+
     /**
      * Synchronizes an installment from a file.
      *
@@ -38,4 +39,12 @@ public interface DebtPositionService {
     String installmentSynchronize(DebtPositionOrigin origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId);
 
     PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, Integer page, Integer size, List<String> sort);
+
+    /**
+     * Update the notification date for the installment that matches the given nav input and is not in a CANCELLED state.
+     *
+     * @param updateInstallmentNotificationDateRequest the DTO containing installment data to be synchronized.
+     * @return the workflow ID if a workflow is triggered, otherwise null.
+     */
+    String updateInstallmentNotificationDateRequest(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest);
 }

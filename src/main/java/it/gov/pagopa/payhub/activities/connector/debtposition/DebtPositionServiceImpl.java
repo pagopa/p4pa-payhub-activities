@@ -49,4 +49,10 @@ public class DebtPositionServiceImpl implements DebtPositionService {
         String accessToken = authnService.getAccessToken();
         return debtPositionClient.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, page, size, sort);
     }
+
+    @Override
+    public String updateInstallmentNotificationDateRequest(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest) {
+        String accessToken = authnService.getAccessToken();
+        return debtPositionClient.updateInstallmentNotificationDate(accessToken, updateInstallmentNotificationDateRequest);
+    }
 }

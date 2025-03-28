@@ -1,8 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionSearchClient;
-import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionClient;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -24,15 +23,13 @@ class SendServiceTest {
     @Mock
     private AuthnService authnServiceMock;
     @Mock
-    private InstallmentClient installmentClient;
-    @Mock
-    private DebtPositionSearchClient debtPositionSearchClient;
+    private DebtPositionClient debtPositionClient;
 
     private SendService sendService;
 
     @BeforeEach
     void setUp() {
-        sendService = new SendServiceImpl(sendClientMock, authnServiceMock, installmentClient, debtPositionSearchClient);
+        sendService = new SendServiceImpl(sendClientMock, authnServiceMock, debtPositionClient);
     }
 
     @AfterEach
