@@ -30,7 +30,7 @@ public class DebtPositionSynchronizeFineActivityImpl implements DebtPositionSync
         log.info("Validate debt position fine with id: {}", debtPositionDTO.getDebtPositionId());
         debtPositionFineValidation.validateFine(debtPositionDTO);
 
-        log.info("Processes notification date of debt position fine with id: {}", debtPositionDTO.getDebtPositionId());
+        log.info("Process notification date of debt position fine with id: {}", debtPositionDTO.getDebtPositionId());
         HandleFineDebtPositionResult handleFineDebtPositionResult = notificationDateProcessor.processNotificationDate(debtPositionDTO, executionParams);
 
         log.info("Handle reduction period of debt position fine with id: {}", debtPositionDTO.getDebtPositionId());
