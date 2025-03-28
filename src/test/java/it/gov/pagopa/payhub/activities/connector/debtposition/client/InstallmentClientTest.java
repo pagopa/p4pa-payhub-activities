@@ -2,7 +2,9 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiEntityControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -20,6 +24,8 @@ class InstallmentClientTest {
 	private DebtPositionApisHolder debtPositionApisHolderMock;
 	@Mock
 	private InstallmentNoPiiEntityControllerApi installmentNoPiiEntityControllerApiMock;
+	@Mock
+	InstallmentNoPiiSearchControllerApi installmentNoPiiSearchControllerApiMock;
 
 	@InjectMocks
 	private InstallmentClient installmentClient;
@@ -46,7 +52,7 @@ class InstallmentClientTest {
 	}
 
 	@Test
-	void givenNotExistentInstallmentWhenfindByIdThenNull() {
+	void givenNotExistentInstallmentWhenFindByIdThenNull() {
 		// Given
 		String accessToken = "ACCESSTOKEN";
 		Long installmentId = 0L;
@@ -61,5 +67,39 @@ class InstallmentClientTest {
 
 		// Then
 		Assertions.assertNull(result);
+	}
+
+	@Test
+	void whenUpdateDueDateThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long installmentId = 1L;
+
+		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken))
+				.thenReturn(installmentNoPiiSearchControllerApiMock);
+
+		// When
+		installmentClient.updateDueDate(installmentId, LocalDate.now(), accessToken);
+
+		// Then
+		verify(debtPositionApisHolderMock, times(1)).getInstallmentNoPiiSearchControllerApi(accessToken);
+		verify(installmentNoPiiSearchControllerApiMock, times(1)).crudInstallmentsUpdateDueDate(installmentId, LocalDate.now());
+	}
+
+	@Test
+	void whenUpdateStatusAndStatusSyncThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long installmentId = 1L;
+
+		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken))
+				.thenReturn(installmentNoPiiSearchControllerApiMock);
+
+		// When
+		installmentClient.updateStatusAndStatusSync(installmentId, InstallmentStatus.UNPAID, null, accessToken);
+
+		// Then
+		verify(debtPositionApisHolderMock, times(1)).getInstallmentNoPiiSearchControllerApi(accessToken);
+		verify(installmentNoPiiSearchControllerApiMock, times(1)).crudInstallmentsUpdateStatusAndToSyncStatus(installmentId, InstallmentStatus.UNPAID, null);
 	}
 }

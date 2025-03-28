@@ -3,9 +3,12 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Lazy
@@ -24,5 +27,15 @@ public class InstallmentServiceImpl implements InstallmentService {
 		return  Optional.ofNullable(
 			installmentClient.findById(installmentId, authnService.getAccessToken())
 		);
+	}
+
+	@Override
+	public void updateDueDate(Long installmentId, LocalDate dueDate) {
+		installmentClient.updateDueDate(installmentId, dueDate, authnService.getAccessToken());
+	}
+
+	@Override
+	public void updateStatusAndSyncStatus(Long installmentId, InstallmentStatus status, InstallmentSyncStatus syncStatus) {
+		installmentClient.updateStatusAndStatusSync(installmentId, status, syncStatus, authnService.getAccessToken());
 	}
 }
