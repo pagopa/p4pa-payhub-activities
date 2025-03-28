@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFileResult;
+import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupported;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.PaidExportFileService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;

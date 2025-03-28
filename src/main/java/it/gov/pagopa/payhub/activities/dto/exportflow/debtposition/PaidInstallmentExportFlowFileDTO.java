@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.export.debtposition;
+package it.gov.pagopa.payhub.activities.dto.exportflow.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvIgnore;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import static it.gov.pagopa.payhub.activities.dto.export.ExportFlowFileVersions.*;
+import static it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileVersions.*;
 
 @Data
 @NoArgsConstructor

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.exportflow.debtposition;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFileResult;
+import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 
 /**
