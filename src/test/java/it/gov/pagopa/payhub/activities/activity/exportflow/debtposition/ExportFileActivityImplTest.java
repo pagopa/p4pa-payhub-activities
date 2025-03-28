@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFlowFileResult;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileTypeNotSupported;
-import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.PaidExportFlowFileService;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFileResult;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupported;
+import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.PaidExportFileService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,28 +16,28 @@ import uk.co.jemos.podam.api.PodamFactoryImpl;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class ExportFlowFileActivityImplTest {
+class ExportFileActivityImplTest {
 
     @Mock
-    private PaidExportFlowFileService paidExportFlowFileService;
+    private PaidExportFileService paidExportFlowFileService;
 
     private PodamFactory podamFactory;
-    ExportFlowFileActivityImpl exportFlowFileActivity;
+    ExportFileActivityImpl exportFlowFileActivity;
 
     @BeforeEach
     void setUp() {
-        exportFlowFileActivity = new ExportFlowFileActivityImpl(paidExportFlowFileService);
+        exportFlowFileActivity = new ExportFileActivityImpl(paidExportFlowFileService);
         podamFactory = new PodamFactoryImpl();
     }
 
     @Test
     void givenValidFlowIdAndPaidType_whenExecuteExport_thenReturnsExpectedExportFlowFileResult() {
         //given
-        ExportFlowFileResult exportFlowFileResult = podamFactory.manufacturePojo(ExportFlowFileResult.class);
+        ExportFileResult exportFlowFileResult = podamFactory.manufacturePojo(ExportFileResult.class);
 
         Mockito.when(paidExportFlowFileService.executeExport(1L)).thenReturn(exportFlowFileResult);
         //when
-        ExportFlowFileResult result = exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.PAID);
+        ExportFileResult result = exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.PAID);
         //then
         assertNotNull(result);
         assertEquals(exportFlowFileResult, result);
@@ -46,10 +46,10 @@ class ExportFlowFileActivityImplTest {
     @Test
     void givenInvalidFlowIdAndPaidType_whenExecuteExport_thenReturnExportFlowFileTypeNotSupported(){
 
-        ExportFlowFileTypeNotSupported ex = assertThrows(ExportFlowFileTypeNotSupported.class, () ->
+        ExportFileTypeNotSupported ex = assertThrows(ExportFileTypeNotSupported.class, () ->
                 exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.PAYMENTS_REPORTING));
 
-        assertEquals("Invalid export flow file type: PAYMENTS_REPORTING", ex.getMessage());
+        assertEquals("Invalid export file type: PAYMENTS_REPORTING", ex.getMessage());
 
     }
 }

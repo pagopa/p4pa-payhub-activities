@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.exception.exportFlow;
+package it.gov.pagopa.payhub.activities.exception.exportflow;
 
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 
@@ -7,13 +7,13 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
  * in the application's processing logic.
  *
  */
-public class ExportFlowFileNotFoundException extends NotRetryableActivityException {
+public class ExportFileNotFoundException extends NotRetryableActivityException {
     /**
      * Constructs a new {@code IngestionFlowFileNotFoundException} with the specified detail message.
      *
      * @param message the detail message explaining the cause of the exception.
      */
-    public ExportFlowFileNotFoundException(String message) {
+    public ExportFileNotFoundException(String message) {
         super(message);
     }
 }

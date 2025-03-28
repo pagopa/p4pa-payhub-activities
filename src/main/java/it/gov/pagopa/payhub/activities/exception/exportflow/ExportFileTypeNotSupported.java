@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.exception.exportFlow;
+package it.gov.pagopa.payhub.activities.exception.exportflow;
 
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 
@@ -7,14 +7,14 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
  * in the application's processing logic.
  *
  */
-public class ExportFlowFileTypeNotSupported extends NotRetryableActivityException {
+public class ExportFileTypeNotSupported extends NotRetryableActivityException {
 
     /**
      * Constructs a new {@code ExportFlowFileTypeNotSupported} with the specified detail message.
      *
      * @param message the detail message explaining the cause of the exception.
      */
-    public ExportFlowFileTypeNotSupported(String message) {
+    public ExportFileTypeNotSupported(String message) {
         super(message);
     }
 }

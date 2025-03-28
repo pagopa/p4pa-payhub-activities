@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
@@ -42,7 +42,7 @@ public class ExportFileExpirationHandlerActivityImpl implements
   public void handleExpiration(Long exportFileId) {
     log.info("Handling expiration of Export File having exportFileId {}", exportFileId);
     ExportFile file = exportFileService.findById(exportFileId)
-        .orElseThrow(() -> new ExportFlowFileNotFoundException(
+        .orElseThrow(() -> new ExportFileNotFoundException(
             "Export file having exportFileId %s not found.".formatted(exportFileId)));
 
     Path exportFilePath = getFilePath(file);
@@ -63,7 +63,7 @@ public class ExportFileExpirationHandlerActivityImpl implements
     if (file.getStatus() != ExportFileStatus.EXPIRED &&
         exportFileService.updateStatus(file.getExportFileId(), file.getStatus(),
             ExportFileStatus.EXPIRED, null) != 1) {
-      throw new ExportFlowFileNotFoundException (
+      throw new ExportFileNotFoundException(
           "Cannot update exportFile having exportFileId " + file.getExportFileId()
               + " from status " + file.getStatus() + " to status "
               + ExportFileStatus.EXPIRED);

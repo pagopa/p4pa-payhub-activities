@@ -2,10 +2,10 @@ package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentExportFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidExportStatusException;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidExportStatusException;
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.InstallmentExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
@@ -53,15 +53,15 @@ class PaidExportFlowFileServiceTest {
     private final int pageSize = 20;
     private final Class<PaidInstallmentExportFlowFileDTO> csvRowDtoClass = PaidInstallmentExportFlowFileDTO.class ;
     private final String sharedFolder = "shared";
+    private final String relativeFileFolder = Path.of("export", "paid").toString();
     private PodamFactory podamFactory;
 
-    PaidExportFlowFileService paidExportFlowFileService;
+    PaidExportFileService paidExportFlowFileService;
 
     @BeforeEach
     void setUp() {
         String filenamePrefix = "EXPORT";
-        String relativeFileFolder = "export/paid";
-        paidExportFlowFileService = new PaidExportFlowFileService(csvServiceMock, csvRowDtoClass, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, installmentExportFlowFileDTOMapperMock);
+        paidExportFlowFileService = new PaidExportFileService(csvServiceMock, csvRowDtoClass, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, installmentExportFlowFileDTOMapperMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -85,7 +85,7 @@ class PaidExportFlowFileServiceTest {
 
         Mockito.when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.empty());
         //when
-        ExportFlowFileNotFoundException ex = assertThrows(ExportFlowFileNotFoundException.class,
+        ExportFileNotFoundException ex = assertThrows(ExportFileNotFoundException.class,
                 () -> paidExportFlowFileService.findExportFileRecord(exportFileId));
         assertEquals( "Cannot found paidExportFile having id: 1", ex.getMessage());
     }
@@ -211,12 +211,12 @@ class PaidExportFlowFileServiceTest {
         doNothing().when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
 
         // When
-        ExportFlowFileResult result = paidExportFlowFileService.executeExport(exportFileId);
+        ExportFileResult result = paidExportFlowFileService.executeExport(exportFileId);
 
         // Then
         assertNotNull(result);
         assertEquals("EXPORT_1.zip", result.getFileName());
-        assertEquals(Path.of("build", "tmp", "690213787104100", "export", "paid").toString(), result.getFilePath());
+        assertEquals(relativeFileFolder, result.getFilePath());
         assertEquals(5, result.getExportedRows());
     }
 

@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFlowFileResult;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidExportStatusException;
+import it.gov.pagopa.payhub.activities.dto.export.debtposition.ExportFileResult;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidExportStatusException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
-public abstract class BaseExportFlowFileService<E,F,D,C> {
+public abstract class BaseExportFileService<E,F,D,C> {
 
     private final CsvService csvService;
     private final Class<C> csvRowDtoClass;
@@ -24,7 +24,7 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
     private final String fileNamePrefix;
     private final Path sharedDirectoryPath;
 
-    protected BaseExportFlowFileService(CsvService csvService, Class<C> csvRowDtoClass, FileArchiverService fileArchiverService, Path workingDirectory, String relativeFileFolder, String fileNamePrefix, Path sharedDirectoryPath) {
+    protected BaseExportFileService(CsvService csvService, Class<C> csvRowDtoClass, FileArchiverService fileArchiverService, Path workingDirectory, String relativeFileFolder, String fileNamePrefix, Path sharedDirectoryPath) {
         this.csvService = csvService;
         this.csvRowDtoClass = csvRowDtoClass;
         this.fileArchiverService = fileArchiverService;
@@ -34,7 +34,7 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
         this.sharedDirectoryPath = sharedDirectoryPath;
     }
 
-    public ExportFlowFileResult executeExport(Long exportFileId) {
+    public ExportFileResult executeExport(Long exportFileId) {
         int[] pageNumber = {0};
         long[] exportedRows = {0};
 
@@ -62,9 +62,9 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
             Path zipFilePath = createZipArchive(csvFilePath, sharedTargetPath);
 
 
-            return ExportFlowFileResult.builder()
+            return ExportFileResult.builder()
                     .fileName(zipFilePath.getFileName().toString())
-                    .filePath(zipFilePath.getParent().toString())
+                    .filePath(relativeFileFolder)
                     .exportedRows(exportedRows[0])
                     .build();
 
@@ -122,7 +122,7 @@ public abstract class BaseExportFlowFileService<E,F,D,C> {
      *
      * @param exportFileId the ID of the export file to be found
      * @return the export file record
-     * @throws ExportFlowFileNotFoundException if the export file is not found
+     * @throws ExportFileNotFoundException if the export file is not found
      */
     protected abstract E findExportFileRecord(Long exportFileId);
 

@@ -5,7 +5,7 @@ import com.opencsv.ICSVWriter;
 import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.InvalidCsvRowException;
+import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;

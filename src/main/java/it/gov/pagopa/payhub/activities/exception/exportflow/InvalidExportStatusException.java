@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.exception.exportFlow;
+package it.gov.pagopa.payhub.activities.exception.exportflow;
 
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 

@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.export.debtposition.PaidInstallmentExportFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.exportFlow.ExportFlowFileNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.InstallmentExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.CsvService;
 import it.gov.pagopa.payhub.activities.service.FileArchiverService;
@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 @Lazy
 @Slf4j
-public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExportFile, PaidExportFileFilter,InstallmentPaidViewDTO, PaidInstallmentExportFlowFileDTO>{
+public class PaidExportFileService extends BaseExportFileService<PaidExportFile, PaidExportFileFilter,InstallmentPaidViewDTO, PaidInstallmentExportFlowFileDTO> {
 
     private final int pageSize;
     private final ExportFileService exportFileService;
@@ -33,17 +33,17 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
 
 
 
-    public PaidExportFlowFileService(CsvService csvService,
-                                     Class<PaidInstallmentExportFlowFileDTO> csvRowDtoClass,
-                                     FileArchiverService fileArchiverService,
-                                     @Value("${folders.tmp}") Path workingDirectory,
-                                     @Value("${export-flow-files.paid.relative-file-folder}")String relativeFileFolder,
-                                     @Value("${export-flow-files.paid.filename-prefix}")String filenamePrefix,
-                                     @Value("${folders.shared}")String sharedFolder,
-                                     @Value("${export-flow-files.paid.page-size}") int pageSize,
-                                     ExportFileService exportFileService,
-                                     DataExportService dataExportService,
-                                     InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper
+    public PaidExportFileService(CsvService csvService,
+                                 Class<PaidInstallmentExportFlowFileDTO> csvRowDtoClass,
+                                 FileArchiverService fileArchiverService,
+                                 @Value("${folders.tmp}") Path workingDirectory,
+                                 @Value("${export-flow-files.paid.relative-file-folder}")String relativeFileFolder,
+                                 @Value("${export-flow-files.paid.filename-prefix}")String filenamePrefix,
+                                 @Value("${folders.shared}")String sharedFolder,
+                                 @Value("${export-flow-files.paid.page-size}") int pageSize,
+                                 ExportFileService exportFileService,
+                                 DataExportService dataExportService,
+                                 InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper
                                      ) {
 
         super(csvService, csvRowDtoClass, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix, Path.of(sharedFolder));
@@ -56,7 +56,7 @@ public class PaidExportFlowFileService extends BaseExportFlowFileService<PaidExp
     @Override
     public PaidExportFile findExportFileRecord(Long exportFileId) {
         return exportFileService.findPaidExportFileById(exportFileId)
-                .orElseThrow(() -> new ExportFlowFileNotFoundException("Cannot found paidExportFile having id: %d".formatted(exportFileId)));
+                .orElseThrow(() -> new ExportFileNotFoundException("Cannot found paidExportFile having id: %d".formatted(exportFileId)));
     }
 
     @Override
