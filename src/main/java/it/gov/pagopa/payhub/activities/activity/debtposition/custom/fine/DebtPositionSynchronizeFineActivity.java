@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
@@ -19,9 +20,9 @@ public interface DebtPositionSynchronizeFineActivity {
      * @param debtPositionDTO the debt position to process
      * @param massive true if executed in a massive import context
      * @param executionParams workflow execution parameters (discounts, expiration, IO messages)
-     * @return the updated debt position
+     * @return the updated debt position, the reductionEndDate and the boolean notified
      */
     @ActivityMethod
-    DebtPositionDTO handleFineDebtPosition(DebtPositionDTO debtPositionDTO, boolean massive, FineWfExecutionConfig executionParams);
+    HandleFineDebtPositionResult handleFineDebtPosition(DebtPositionDTO debtPositionDTO, boolean massive, FineWfExecutionConfig executionParams);
 }
 
