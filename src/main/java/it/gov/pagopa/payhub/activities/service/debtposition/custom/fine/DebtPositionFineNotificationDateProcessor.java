@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 
+import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,15 @@ import java.util.Objects;
 import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
 
 @Lazy
+@Slf4j
 @Service
 public class DebtPositionFineNotificationDateProcessor {
+
+    private final InstallmentService installmentService;
+
+    public DebtPositionFineNotificationDateProcessor(InstallmentService installmentService) {
+        this.installmentService = installmentService;
+    }
 
     public HandleFineDebtPositionResult processNotificationDate(DebtPositionDTO debtPositionDTO, FineWfExecutionConfig executionParams) {
         HandleFineDebtPositionResult response = new HandleFineDebtPositionResult();
@@ -61,10 +70,12 @@ public class DebtPositionFineNotificationDateProcessor {
     private boolean processDueDate(InstallmentDTO installment, long days2add) {
         LocalDate nextDueDate = Objects.requireNonNull(installment.getNotificationDate()).plusDays(days2add).atZoneSameInstant(Utilities.ZONEID).toLocalDate();
         if (!nextDueDate.equals(installment.getDueDate())) {
-            // TODO save the debt position updated
-                installment.setDueDate(ObjectUtils.max(nextDueDate, LocalDate.now()));
-                return true;
-            }
+            installment.setDueDate(ObjectUtils.max(nextDueDate, LocalDate.now()));
+
+            log.info("Updating installment with id: {} to new dueDate: {}", installment.getInstallmentId(), installment.getDueDate());
+            installmentService.updateDueDate(installment.getInstallmentId(), installment.getDueDate());
+            return true;
+        }
 
         return false;
     }

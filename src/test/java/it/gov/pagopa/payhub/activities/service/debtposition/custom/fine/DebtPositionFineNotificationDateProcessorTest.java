@@ -1,15 +1,14 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 
+import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
@@ -19,15 +18,19 @@ import java.util.Objects;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO2;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionFineNotificationDateProcessorTest {
+
+    @Mock
+    private InstallmentService installmentServiceMock;
 
     private DebtPositionFineNotificationDateProcessor processor;
 
     @BeforeEach
     void setUp(){
-        processor = new DebtPositionFineNotificationDateProcessor();
+        processor = new DebtPositionFineNotificationDateProcessor(installmentServiceMock);
     }
 
     @Test
@@ -70,7 +73,7 @@ class DebtPositionFineNotificationDateProcessorTest {
     }
 
     @Test
-    void givenProcessNotificationDateWhenDueDateOfReducedPONotEqualThenReturnTrue() {
+    void givenProcessNotificationDateWhenDueDateOfSinglePONotEqualToDueDateThenReturnTrue() {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
@@ -106,10 +109,11 @@ class DebtPositionFineNotificationDateProcessorTest {
         // Then
         assertEquals(installmentDTO1.getDueDate(), result.getReductionEndDate().atZoneSameInstant(Utilities.ZONEID).toLocalDate());
         assertTrue(result.isNotified());
+        verify(installmentServiceMock).updateDueDate(installmentDTO2.getInstallmentId(), installmentDTO2.getDueDate());
     }
 
     @Test
-    void givenProcessNotificationDateWhenDueDateOfSinglePONotEqualThenReturnTrue() {
+    void givenProcessNotificationDateWhenDueDateOfReducedPONotEqualToDueDateThenReturnTrue() {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
@@ -146,6 +150,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         // Then
         assertEquals(installmentDTO1.getDueDate(), result.getReductionEndDate().atZoneSameInstant(Utilities.ZONEID).toLocalDate());
         assertTrue(result.isNotified());
+        verify(installmentServiceMock).updateDueDate(installmentDTO1.getInstallmentId(), installmentDTO1.getDueDate());
     }
 
     @Test

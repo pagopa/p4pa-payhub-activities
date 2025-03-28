@@ -1,10 +1,13 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 
+import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.PaymentOptionService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
@@ -12,15 +15,21 @@ import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionFineProcessorTest {
+
+    @Mock
+    private InstallmentService installmentServiceMock;
+    @Mock
+    private PaymentOptionService paymentOptionServiceMock;
 
     private DebtPositionFineProcessor processor;
 
     @BeforeEach
     void setUp(){
-        processor = new DebtPositionFineProcessor();
+        processor = new DebtPositionFineProcessor(installmentServiceMock, paymentOptionServiceMock);
     }
 
     @Test
@@ -46,6 +55,9 @@ class DebtPositionFineProcessorTest {
         //Then
         assertEquals(PaymentOptionStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
         assertEquals(InstallmentStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+        verify(installmentServiceMock).updateStatusAndSyncStatus(installmentDTO1.getInstallmentId(), InstallmentStatus.UNPAYABLE, null);
+        verify(paymentOptionServiceMock).updateStatus(paymentOptionDTO1.getPaymentOptionId(), PaymentOptionStatus.UNPAYABLE);
+
     }
 
     @Test
@@ -89,7 +101,7 @@ class DebtPositionFineProcessorTest {
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1));
 
         HandleFineDebtPositionResult handleFineDebtPositionResult = new HandleFineDebtPositionResult(debtPositionDTO, OffsetDateTime.now().plusDays(2), true);
-        
+
         // When
         processor.processFine(handleFineDebtPositionResult);
 
@@ -144,6 +156,8 @@ class DebtPositionFineProcessorTest {
         processor.processFine(handleFineDebtPositionResult);
 
         //Then
+        verify(installmentServiceMock).updateStatusAndSyncStatus(installmentDTO1.getInstallmentId(), InstallmentStatus.UNPAYABLE, null);
+        verify(paymentOptionServiceMock).updateStatus(paymentOptionDTO1.getPaymentOptionId(), PaymentOptionStatus.UNPAYABLE);
         assertEquals(PaymentOptionStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getStatus());
         assertEquals(InstallmentStatus.UNPAYABLE, handleFineDebtPositionResult.getDebtPositionDTO().getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
     }
