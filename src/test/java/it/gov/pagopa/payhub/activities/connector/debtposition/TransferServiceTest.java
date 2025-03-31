@@ -7,11 +7,13 @@ import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDT
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferReportedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Set;
@@ -62,13 +64,16 @@ class TransferServiceTest {
 	void whenNotifyReportedTransferIdThenInvokeClient() {
 		// Given
 		String accessToken = "ACCESSTOKEN";
-		DebtPositionDTO expected = mock(DebtPositionDTO.class);
+		long transferId = 1L;
+		TransferReportedRequest request = new TransferReportedRequest();
+		DebtPositionDTO expected = new DebtPositionDTO();
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(transferClientMock.notifyReportedTransferId(accessToken, 1L)).thenReturn(expected);
+		when(transferClientMock.notifyReportedTransferId(Mockito.same(accessToken), Mockito.same(transferId), Mockito.same(request)))
+				.thenReturn(expected);
 
 		// When
-		DebtPositionDTO result = transferService.notifyReportedTransferId(1L);
+		DebtPositionDTO result = transferService.notifyReportedTransferId(transferId, request);
 
 		// Then
 		assertSame(expected, result);
