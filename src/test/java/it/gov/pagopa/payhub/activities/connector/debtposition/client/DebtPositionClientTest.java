@@ -138,4 +138,23 @@ class DebtPositionClientTest {
         Assertions.assertEquals(new PagedDebtPositions(), result);
     }
 
+    @Test
+    void whenGetDebtPositionThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long debtPositionId = 1L;
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+                .thenReturn(debtPositionApiMock);
+
+        Mockito.when(debtPositionApiMock.getDebtPosition(debtPositionId))
+                .thenReturn(debtPositionDTO);
+
+        // When
+        DebtPositionDTO result = debtPositionClient.getDebtPosition(accessToken, debtPositionId);
+
+        // Then
+        Assertions.assertEquals(debtPositionDTO, result);
+    }
 }

@@ -38,4 +38,6 @@ public interface DebtPositionService {
     String installmentSynchronize(DebtPositionOrigin origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId);
 
     PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, Integer page, Integer size, List<String> sort);
+
+    DebtPositionDTO getDebtPosition(Long debtPositionId);
 }

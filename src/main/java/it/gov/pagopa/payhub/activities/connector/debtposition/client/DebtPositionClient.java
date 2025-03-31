@@ -39,4 +39,7 @@ public class DebtPositionClient {
         return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, page, size, sort);
     }
 
+    public DebtPositionDTO getDebtPosition(String accessToken, Long debtPositionId){
+        return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPosition(debtPositionId);
+    }
 }
