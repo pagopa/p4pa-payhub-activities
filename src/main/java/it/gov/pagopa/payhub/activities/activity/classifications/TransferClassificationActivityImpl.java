@@ -12,6 +12,7 @@ import it.gov.pagopa.payhub.activities.service.classifications.TransferClassific
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferReportedRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -102,7 +103,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 */
 	private void notifyReportedTransferId(Transfer transferDTO, PaymentsReporting paymentsReportingDTO) {
 		if(transferDTO != null && paymentsReportingDTO != null) {
-			transferService.notifyReportedTransferId(transferDTO.getTransferId());
+			transferService.notifyReportedTransferId(transferDTO.getTransferId(), new TransferReportedRequest(paymentsReportingDTO.getIuf()));
 		}
 	}
 }

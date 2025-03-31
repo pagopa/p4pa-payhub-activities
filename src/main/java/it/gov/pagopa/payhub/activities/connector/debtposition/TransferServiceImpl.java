@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDT
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferReportedRequest;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public DebtPositionDTO notifyReportedTransferId(Long transferId) {
-        return transferClient.notifyReportedTransferId(authnService.getAccessToken(), transferId);
+    public DebtPositionDTO notifyReportedTransferId(Long transferId, TransferReportedRequest request) {
+        return transferClient.notifyReportedTransferId(authnService.getAccessToken(), transferId, request);
     }
 }
