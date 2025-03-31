@@ -14,7 +14,7 @@ public interface DebtPositionFineReductionOptionExpirationActivity {
     /**
      * Processes the fine debt position for reduction expiration.
      *
-     * @param debtPositionId ID of the debt position
+     * @param debtPositionId the ID of the debt position
      * @return updated debt position ({@link DebtPositionDTO})
      */
     @ActivityMethod

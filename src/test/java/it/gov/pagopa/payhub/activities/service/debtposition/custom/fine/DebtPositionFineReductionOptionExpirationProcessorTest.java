@@ -3,10 +3,7 @@ package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.PaymentOptionService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO2;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,16 +43,86 @@ class DebtPositionFineReductionOptionExpirationProcessorTest {
         // Given
         Long debtPositionId = 1L;
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
-        PaymentOptionDTO paymentOptionDTO2 = new PaymentOptionDTO();
-        InstallmentDTO installmentDTO2 = buildInstallmentDTO2();
-        paymentOptionDTO2.setInstallments(List.of(installmentDTO2));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
-        debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO2));
+        debtPositionDTO.setStatus(DebtPositionStatus.UNPAID);
+        PaymentOptionDTO paymentOptionDTO = new PaymentOptionDTO();
+        paymentOptionDTO.setPaymentOptionId(1L);
+        InstallmentDTO installmentDTO = buildInstallmentDTO2();
+        installmentDTO.setInstallmentId(1L);
+        paymentOptionDTO.setInstallments(List.of(installmentDTO));
+        paymentOptionDTO.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO));
+        InstallmentSyncStatus syncStatus = new InstallmentSyncStatus();
+        syncStatus.setSyncStatusFrom(InstallmentStatus.UNPAYABLE);
+        syncStatus.setSyncStatusTo(InstallmentStatus.UNPAID);
 
         when(debtPositionServiceMock.getDebtPosition(debtPositionId))
                 .thenReturn(debtPositionDTO);
 
         // When
         DebtPositionDTO result = processor.handleFineReductionExpiration(debtPositionId);
+
+        // The
+        assertEquals(PaymentOptionStatus.TO_SYNC, result.getPaymentOptions().getFirst().getStatus());
+        assertEquals(InstallmentStatus.TO_SYNC, result.getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+        verify(paymentOptionServiceMock).updateStatus(paymentOptionDTO.getPaymentOptionId(), PaymentOptionStatus.TO_SYNC);
+        verify(installmentServiceMock).updateStatusAndSyncStatus(installmentDTO.getInstallmentId(), InstallmentStatus.TO_SYNC, syncStatus);
+    }
+
+    @Test
+    void givenDPNotPaidOrReportedWithPONotSingleWhenHandleFineReductionExpirationThenReturnUpdatedDP(){
+        // Given
+        Long debtPositionId = 1L;
+        DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
+        debtPositionDTO.setStatus(DebtPositionStatus.UNPAID);
+        PaymentOptionDTO paymentOptionDTO = new PaymentOptionDTO();
+        paymentOptionDTO.setPaymentOptionId(1L);
+        InstallmentDTO installmentDTO = buildInstallmentDTO2();
+        installmentDTO.setInstallmentId(1L);
+        paymentOptionDTO.setInstallments(List.of(installmentDTO));
+        paymentOptionDTO.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO));
+
+        when(debtPositionServiceMock.getDebtPosition(debtPositionId))
+                .thenReturn(debtPositionDTO);
+
+        // When
+        DebtPositionDTO result = processor.handleFineReductionExpiration(debtPositionId);
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void givenDPPaidWhenHandleFineReductionExpirationThenReturnNull(){
+        // Given
+        Long debtPositionId = 1L;
+        DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
+        debtPositionDTO.setStatus(DebtPositionStatus.PAID);
+
+        when(debtPositionServiceMock.getDebtPosition(debtPositionId))
+                .thenReturn(debtPositionDTO);
+
+        // When
+        DebtPositionDTO result = processor.handleFineReductionExpiration(debtPositionId);
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void givenDPReportedWhenHandleFineReductionExpirationThenReturnNull(){
+        // Given
+        Long debtPositionId = 1L;
+        DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
+        debtPositionDTO.setStatus(DebtPositionStatus.REPORTED);
+
+        when(debtPositionServiceMock.getDebtPosition(debtPositionId))
+                .thenReturn(debtPositionDTO);
+
+        // When
+        DebtPositionDTO result = processor.handleFineReductionExpiration(debtPositionId);
+
+        // Then
+        assertNull(result);
     }
 }

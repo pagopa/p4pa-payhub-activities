@@ -26,6 +26,7 @@ public class DebtPositionFineReductionOptionExpirationProcessor {
     public DebtPositionDTO handleFineReductionExpiration(Long debtPositionId) {
         DebtPositionDTO debtPositionDTO = debtPositionService.getDebtPosition(debtPositionId);
 
+        // If debt position status is not paid or reported update payment option status and it's installment
         if (!DebtPositionStatus.PAID.equals(debtPositionDTO.getStatus()) || !DebtPositionStatus.REPORTED.equals(debtPositionDTO.getStatus())) {
             debtPositionDTO.getPaymentOptions().stream()
                     .filter(po -> PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()))
@@ -37,18 +38,20 @@ public class DebtPositionFineReductionOptionExpirationProcessor {
 
                         paymentOptionDTO.getInstallments().forEach(installmentDTO -> {
                             installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
-                            InstallmentSyncStatus syncStatus = new InstallmentSyncStatus()
-                                    .syncStatusFrom(InstallmentStatus.UNPAYABLE)
-                                    .syncStatusTo(InstallmentStatus.UNPAID);
+                            InstallmentSyncStatus syncStatus = new InstallmentSyncStatus();
+                            syncStatus.setSyncStatusFrom(InstallmentStatus.UNPAYABLE);
+                            syncStatus.setSyncStatusTo(InstallmentStatus.UNPAID);
                             installmentDTO.setSyncStatus(syncStatus);
 
                             log.info("Setting Installment with id: {} to status: {} and syncStatus: {}", installmentDTO.getInstallmentId(), installmentDTO.getStatus(), syncStatus);
                             installmentService.updateStatusAndSyncStatus(installmentDTO.getInstallmentId(), InstallmentStatus.TO_SYNC, syncStatus);
                         });
                     });
-            return debtPositionDTO;
-        }
 
-        return null;
+            return debtPositionDTO;
+
+        } else {
+            return null;
+        }
     }
 }
