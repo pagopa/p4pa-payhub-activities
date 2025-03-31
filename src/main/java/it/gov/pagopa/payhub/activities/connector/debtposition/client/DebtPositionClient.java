@@ -39,4 +39,11 @@ public class DebtPositionClient {
         return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, page, size, sort);
     }
 
+    public String updateInstallmentNotificationDate(String accessToken, UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest) {
+        ResponseEntity<Void> response = debtPositionApisHolder.getDebtPositionApi(accessToken)
+                .updateInstallmentNotificationDateWithHttpInfo(updateInstallmentNotificationDateRequest);
+
+        return response.getHeaders().getFirst("x-workflow-id");
+    }
+
 }

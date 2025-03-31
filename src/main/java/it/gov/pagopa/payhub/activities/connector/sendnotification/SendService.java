@@ -7,4 +7,5 @@ public interface SendService {
   void uploadSendFile(String sendNotificationId);
   void deliveryNotification(String sendNotificationId);
   SendNotificationDTO notificationStatus(String sendNotificationId);
+  SendNotificationDTO retrieveNotificationDate(String sendNotificationId);
 }

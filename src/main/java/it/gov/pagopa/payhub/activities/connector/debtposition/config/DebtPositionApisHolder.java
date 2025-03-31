@@ -24,6 +24,7 @@ public class DebtPositionApisHolder {
     private final ReceiptNoPiiSearchControllerApi receiptNoPiiSearchControllerApi;
     private final DataExportsApi dataExportsApi;
     private final InstallmentNoPiiEntityControllerApi installmentNoPiiEntityControllerApi;
+    private final InstallmentApi installmentApi;
     private final InstallmentNoPiiSearchControllerApi installmentNoPiiSearchControllerApi;
     private final PaymentOptionSearchControllerApi paymentOptionSearchControllerApi;
 
@@ -56,6 +57,7 @@ public class DebtPositionApisHolder {
 	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
         this.dataExportsApi = new DataExportsApi(apiClient);
         this.installmentNoPiiEntityControllerApi = new InstallmentNoPiiEntityControllerApi(apiClient);
+        this.installmentApi = new InstallmentApi(apiClient);
         this.installmentNoPiiSearchControllerApi = new InstallmentNoPiiSearchControllerApi(apiClient);
         this.paymentOptionSearchControllerApi = new PaymentOptionSearchControllerApi(apiClient);
     }
@@ -79,6 +81,10 @@ public class DebtPositionApisHolder {
 
     public TransferSearchControllerApi getTransferSearchControllerApi(String accessToken) {
         return getApi(accessToken, null, transferSearchControllerApi);
+    }
+
+    public InstallmentApi getInstallmentApi(String accessToken){
+        return getApi(accessToken, null, installmentApi);
     }
 
     public TransferApi getTransferApi(String accessToken){

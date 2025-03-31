@@ -33,4 +33,7 @@ public class SendClient {
     return sendApisHolder.getSendApi(accessToken).notificationStatus(sendNotificationId);
   }
 
+  public SendNotificationDTO retrieveNotificationDate(String sendNotificationId, String accessToken) {
+    return sendApisHolder.getSendApi(accessToken).retrieveNotificationDate(sendNotificationId);
+  }
 }
