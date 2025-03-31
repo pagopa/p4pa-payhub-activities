@@ -49,6 +49,7 @@ class DebtPositionFineReductionOptionExpirationProcessorTest {
         installmentDTO.setInstallmentId(1L);
         paymentOptionDTO.setInstallments(List.of(installmentDTO));
         paymentOptionDTO.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO.setStatus(PaymentOptionStatus.UNPAYABLE);
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO));
         InstallmentSyncStatus syncStatus = new InstallmentSyncStatus();
         syncStatus.setSyncStatusFrom(InstallmentStatus.UNPAYABLE);
@@ -65,6 +66,21 @@ class DebtPositionFineReductionOptionExpirationProcessorTest {
         assertEquals(InstallmentStatus.TO_SYNC, result.getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
         verify(paymentOptionServiceMock).updateStatus(paymentOptionDTO.getPaymentOptionId(), PaymentOptionStatus.TO_SYNC);
         verify(installmentServiceMock).updateStatusAndSyncStatus(installmentDTO.getInstallmentId(), InstallmentStatus.TO_SYNC, syncStatus);
+    }
+
+    @Test
+    void givenDPNullWhenHandleFineReductionExpirationThenReturnNull(){
+        // Given
+        Long debtPositionId = 1L;
+
+        when(debtPositionServiceMock.getDebtPosition(debtPositionId))
+                .thenReturn(null);
+
+        // When
+        DebtPositionDTO result = processor.handleFineReductionExpiration(debtPositionId);
+
+        // Then
+        assertNull(result);
     }
 
     @Test

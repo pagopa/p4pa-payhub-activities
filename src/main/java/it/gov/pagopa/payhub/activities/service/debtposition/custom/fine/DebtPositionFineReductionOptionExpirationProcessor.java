@@ -26,10 +26,16 @@ public class DebtPositionFineReductionOptionExpirationProcessor {
     public DebtPositionDTO handleFineReductionExpiration(Long debtPositionId) {
         DebtPositionDTO debtPositionDTO = debtPositionService.getDebtPosition(debtPositionId);
 
+        if (debtPositionDTO == null) {
+            return null;
+        }
+
         // If debt position status is neither PAID nor REPORTED, update the payment option status and its installment
         if (!DebtPositionStatus.PAID.equals(debtPositionDTO.getStatus()) && !DebtPositionStatus.REPORTED.equals(debtPositionDTO.getStatus())) {
             debtPositionDTO.getPaymentOptions().stream()
-                    .filter(po -> PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()))
+                    .filter(po ->
+                            PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()) &&
+                            PaymentOptionStatus.UNPAYABLE.equals(po.getStatus()))
                     .forEach(paymentOptionDTO -> {
                         paymentOptionDTO.setStatus(PaymentOptionStatus.TO_SYNC);
 
