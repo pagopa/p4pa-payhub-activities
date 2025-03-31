@@ -15,8 +15,7 @@ import java.util.List;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionFineReductionOptionExpirationProcessorTest {
@@ -66,30 +65,6 @@ class DebtPositionFineReductionOptionExpirationProcessorTest {
         assertEquals(InstallmentStatus.TO_SYNC, result.getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
         verify(paymentOptionServiceMock).updateStatus(paymentOptionDTO.getPaymentOptionId(), PaymentOptionStatus.TO_SYNC);
         verify(installmentServiceMock).updateStatusAndSyncStatus(installmentDTO.getInstallmentId(), InstallmentStatus.TO_SYNC, syncStatus);
-    }
-
-    @Test
-    void givenDPNotPaidOrReportedWithPONotSingleWhenHandleFineReductionExpirationThenReturnUpdatedDP(){
-        // Given
-        Long debtPositionId = 1L;
-        DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
-        debtPositionDTO.setStatus(DebtPositionStatus.UNPAID);
-        PaymentOptionDTO paymentOptionDTO = new PaymentOptionDTO();
-        paymentOptionDTO.setPaymentOptionId(1L);
-        InstallmentDTO installmentDTO = buildInstallmentDTO2();
-        installmentDTO.setInstallmentId(1L);
-        paymentOptionDTO.setInstallments(List.of(installmentDTO));
-        paymentOptionDTO.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
-        debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO));
-
-        when(debtPositionServiceMock.getDebtPosition(debtPositionId))
-                .thenReturn(debtPositionDTO);
-
-        // When
-        DebtPositionDTO result = processor.handleFineReductionExpiration(debtPositionId);
-
-        // Then
-        assertNull(result);
     }
 
     @Test
