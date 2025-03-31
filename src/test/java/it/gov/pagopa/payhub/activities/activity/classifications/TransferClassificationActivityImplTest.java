@@ -16,6 +16,7 @@ import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferReportedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,7 +92,7 @@ class TransferClassificationActivityImplTest {
 		when(transferClassificationServiceMock.defineLabels(transferDTO, paymentsReportingDTO, treasuryIuf, null)).thenReturn(List.of(ClassificationsEnum.RT_IUF_TES));
 		doReturn(1).when(transferClassificationStoreServiceMock)
 			.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryIuf, List.of(ClassificationsEnum.RT_IUF_TES));
-		when(transferServiceMock.notifyReportedTransferId(transferDTO.getTransferId())).thenReturn(new DebtPositionDTO());
+		when(transferServiceMock.notifyReportedTransferId(transferDTO.getTransferId(), new TransferReportedRequest(paymentsReportingDTO.getIuf()))).thenReturn(new DebtPositionDTO());
 
 		assertDoesNotThrow(() -> activity.classify(transferSemanticKeyDTO));
 
