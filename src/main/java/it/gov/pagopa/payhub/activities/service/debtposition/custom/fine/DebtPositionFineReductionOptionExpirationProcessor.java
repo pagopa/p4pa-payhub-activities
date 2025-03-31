@@ -35,23 +35,25 @@ public class DebtPositionFineReductionOptionExpirationProcessor {
             debtPositionDTO.getPaymentOptions().stream()
                     .filter(po ->
                             PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()) &&
-                            PaymentOptionStatus.UNPAYABLE.equals(po.getStatus()))
+                                    PaymentOptionStatus.UNPAYABLE.equals(po.getStatus()))
                     .forEach(paymentOptionDTO -> {
                         paymentOptionDTO.setStatus(PaymentOptionStatus.TO_SYNC);
 
                         log.info("Updating PaymentOption with id: {} to status: {}", paymentOptionDTO.getPaymentOptionId(), paymentOptionDTO.getStatus());
                         paymentOptionService.updateStatus(paymentOptionDTO.getPaymentOptionId(), PaymentOptionStatus.TO_SYNC);
 
-                        paymentOptionDTO.getInstallments().forEach(installmentDTO -> {
-                            installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
-                            InstallmentSyncStatus syncStatus = new InstallmentSyncStatus();
-                            syncStatus.setSyncStatusFrom(InstallmentStatus.UNPAYABLE);
-                            syncStatus.setSyncStatusTo(InstallmentStatus.UNPAID);
-                            installmentDTO.setSyncStatus(syncStatus);
+                        paymentOptionDTO.getInstallments().stream()
+                                .filter(installmentDTO -> InstallmentStatus.UNPAYABLE.equals(installmentDTO.getStatus()))
+                                .forEach(installmentDTO -> {
+                                    installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
+                                    InstallmentSyncStatus syncStatus = new InstallmentSyncStatus();
+                                    syncStatus.setSyncStatusFrom(InstallmentStatus.UNPAYABLE);
+                                    syncStatus.setSyncStatusTo(InstallmentStatus.UNPAID);
+                                    installmentDTO.setSyncStatus(syncStatus);
 
-                            log.info("Setting Installment with id: {} to status: {} and syncStatus: {}", installmentDTO.getInstallmentId(), installmentDTO.getStatus(), syncStatus);
-                            installmentService.updateStatusAndSyncStatus(installmentDTO.getInstallmentId(), InstallmentStatus.TO_SYNC, syncStatus);
-                        });
+                                    log.info("Setting Installment with id: {} to status: {} and syncStatus: {}", installmentDTO.getInstallmentId(), installmentDTO.getStatus(), syncStatus);
+                                    installmentService.updateStatusAndSyncStatus(installmentDTO.getInstallmentId(), InstallmentStatus.TO_SYNC, syncStatus);
+                                });
                     });
 
             return debtPositionDTO;

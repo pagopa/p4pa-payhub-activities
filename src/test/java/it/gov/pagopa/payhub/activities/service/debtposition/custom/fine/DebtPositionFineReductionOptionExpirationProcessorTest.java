@@ -47,6 +47,7 @@ class DebtPositionFineReductionOptionExpirationProcessorTest {
         paymentOptionDTO.setPaymentOptionId(1L);
         InstallmentDTO installmentDTO = buildInstallmentDTO2();
         installmentDTO.setInstallmentId(1L);
+        installmentDTO.setStatus(InstallmentStatus.UNPAYABLE);
         paymentOptionDTO.setInstallments(List.of(installmentDTO));
         paymentOptionDTO.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
         paymentOptionDTO.setStatus(PaymentOptionStatus.UNPAYABLE);
