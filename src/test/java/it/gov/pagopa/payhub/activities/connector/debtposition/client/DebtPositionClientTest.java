@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -169,4 +170,41 @@ class DebtPositionClientTest {
         verify(debtPositionApiMock).updateInstallmentNotificationDateWithHttpInfo(request);
     }
 
+    @Test
+    void whenGetDebtPositionThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long debtPositionId = 1L;
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+                .thenReturn(debtPositionApiMock);
+
+        Mockito.when(debtPositionApiMock.getDebtPosition(debtPositionId))
+                .thenReturn(debtPositionDTO);
+
+        // When
+        DebtPositionDTO result = debtPositionClient.getDebtPosition(accessToken, debtPositionId);
+
+        // Then
+        Assertions.assertEquals(debtPositionDTO, result);
+    }
+
+    @Test
+    void givenNotExistentDebtPositionWhenGetDebtPositionThenNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long debtPositionId = 0L;
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+                .thenReturn(debtPositionApiMock);
+        Mockito.when(debtPositionApiMock.getDebtPosition(debtPositionId))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        DebtPositionDTO result = debtPositionClient.getDebtPosition(accessToken, debtPositionId);
+
+        // Then
+        Assertions.assertNull(result);
+    }
 }

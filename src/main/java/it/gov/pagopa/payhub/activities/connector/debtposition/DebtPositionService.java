@@ -46,4 +46,12 @@ public interface DebtPositionService {
      * @param updateInstallmentNotificationDateRequest the DTO containing installment data to be synchronized.
      */
     void updateInstallmentNotificationDate(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest);
+
+    /**
+     * Get a complete Debt Position by ID
+     *
+     * @param debtPositionId the ID of the debt position
+     * @return {@link DebtPositionDTO} object.
+     */
+    DebtPositionDTO getDebtPosition(Long debtPositionId);
 }
