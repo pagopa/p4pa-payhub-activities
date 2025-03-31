@@ -29,17 +29,15 @@ public class RetrieveNotificationDateActivityImpl implements RetrieveNotificatio
             OffsetDateTime notificationDate = sendNotificationDTO.getNotificationDate();
 
             sendNotificationDTO.getPayments()
-                    .forEach(sendNotificationPayments ->
-                            sendNotificationPayments.getNavList()
-                                    .forEach(nav -> {
-                                        UpdateInstallmentNotificationDateRequest request = UpdateInstallmentNotificationDateRequest.builder()
-                                                .debtPositionId(sendNotificationPayments.getDebtPositionId())
-                                                .nav(nav)
-                                                .notificationDate(notificationDate)
-                                                .build();
+                    .forEach(sendNotificationPayments -> {
+                        UpdateInstallmentNotificationDateRequest request = UpdateInstallmentNotificationDateRequest.builder()
+                                .debtPositionId(sendNotificationPayments.getDebtPositionId())
+                                .nav(sendNotificationPayments.getNavList())
+                                .notificationDate(notificationDate)
+                                .build();
 
-                                        debtPositionService.updateInstallmentNotificationDate(request);
-                                    }));
+                        debtPositionService.updateInstallmentNotificationDate(request);
+                    });
 
             return sendNotificationDTO;
         }

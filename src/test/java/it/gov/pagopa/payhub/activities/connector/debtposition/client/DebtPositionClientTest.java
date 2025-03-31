@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
@@ -148,7 +149,7 @@ class DebtPositionClientTest {
         OffsetDateTime dateTime = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
         UpdateInstallmentNotificationDateRequest request = UpdateInstallmentNotificationDateRequest.builder()
                 .debtPositionId(1L)
-                .nav("nav")
+                .nav(Collections.singletonList("nav"))
                 .notificationDate(dateTime)
                 .build();
 
