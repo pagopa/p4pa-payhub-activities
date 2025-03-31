@@ -36,4 +36,10 @@ public class SendServiceImpl implements SendService {
     public SendNotificationDTO notificationStatus(String sendNotificationId) {
         return sendClient.notificationStatus(sendNotificationId, authnService.getAccessToken());
     }
+
+    @Override
+    public SendNotificationDTO retrieveNotificationDate(String sendNotificationId) {
+        return sendClient.retrieveNotificationDate(sendNotificationId, authnService.getAccessToken());
+    }
+
 }

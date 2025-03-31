@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
@@ -137,6 +140,34 @@ class DebtPositionClientTest {
 
         // Then
         Assertions.assertEquals(new PagedDebtPositions(), result);
+    }
+
+    @Test
+    void whenUpdateInstallmentNotificationDateThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String expectedWorkflowId = "workflow-123";
+        OffsetDateTime dateTime = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
+        UpdateInstallmentNotificationDateRequest request = UpdateInstallmentNotificationDateRequest.builder()
+                .debtPositionId(1L)
+                .nav(Collections.singletonList("nav"))
+                .notificationDate(dateTime)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("x-workflow-id", expectedWorkflowId);
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
+                .thenReturn(debtPositionApiMock);
+        Mockito.when(debtPositionApiMock.updateInstallmentNotificationDateWithHttpInfo(request))
+                .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
+
+        // When
+        String result = debtPositionClient.updateInstallmentNotificationDate(accessToken, request);
+
+        // Then
+        Assertions.assertEquals(expectedWorkflowId, result);
+        verify(debtPositionApiMock).updateInstallmentNotificationDateWithHttpInfo(request);
     }
 
     @Test

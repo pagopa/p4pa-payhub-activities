@@ -13,9 +13,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
@@ -153,6 +155,29 @@ class DebtPositionServiceTest {
 
         // Then
         assertEquals(new PagedDebtPositions(), result);
+    }
+
+    @Test
+    void givenUpdateInstallmentNotificationDateRequestWhenUpdateNotificationDateThenSuccess() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String expectedWorkflowId = "workflow-123";
+        UpdateInstallmentNotificationDateRequest request = UpdateInstallmentNotificationDateRequest.builder()
+                .debtPositionId(1L)
+                .nav(Collections.singletonList("nav"))
+                .notificationDate(OFFSETDATETIME)
+                .build();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(debtPositionClientMock.updateInstallmentNotificationDate(accessToken, request))
+                .thenReturn(expectedWorkflowId);
+
+        // When
+        debtPositionService.updateInstallmentNotificationDate(request);
+
+        // Then
+        Mockito.verify(debtPositionClientMock).updateInstallmentNotificationDate(accessToken, request);
     }
 
     @Test

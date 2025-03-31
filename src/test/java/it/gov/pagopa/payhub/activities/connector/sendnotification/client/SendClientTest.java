@@ -100,4 +100,20 @@ class SendClientTest {
         assertSame(expectedResponse, result);
     }
 
+    @Test
+    void whenRetrieveNotificationDateThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "notificationId";
+
+        Mockito.when(sendApisHolderMock.getSendApi(accessToken))
+                .thenReturn(sendApiMock);
+
+        // When
+        sendClient.retrieveNotificationDate(sendNotificationId, accessToken);
+
+        // Then
+        Mockito.verify(sendApiMock).retrieveNotificationDate(sendNotificationId);
+    }
+
 }

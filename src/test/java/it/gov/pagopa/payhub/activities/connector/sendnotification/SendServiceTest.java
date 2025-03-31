@@ -91,12 +91,30 @@ class SendServiceTest {
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-
-        // When
         Mockito.when(sendClientMock.notificationStatus(sendNotificationId, accessToken))
                 .thenReturn(expectedResponse);
 
+        // When
         SendNotificationDTO result = sendService.notificationStatus(sendNotificationId);
+
+        // Then
+        assertSame(expectedResponse, result);
+    }
+
+    @Test
+    void givenSendNotificationIdWhenRetrieveNotificationDateThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+        SendNotificationDTO expectedResponse = new SendNotificationDTO();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(sendClientMock.retrieveNotificationDate(sendNotificationId, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        SendNotificationDTO result = sendService.retrieveNotificationDate(sendNotificationId);
 
         // Then
         assertSame(expectedResponse, result);

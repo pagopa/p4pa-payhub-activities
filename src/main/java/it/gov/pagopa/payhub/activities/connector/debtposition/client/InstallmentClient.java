@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
+
+import java.util.List;
 
 @Lazy
 @Slf4j
@@ -39,4 +43,7 @@ public class InstallmentClient {
 		log.info("Update status and syncStatus for installmentId: {}", installmentId);
 		debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken).crudInstallmentsUpdateStatusAndToSyncStatus(installmentId, status, syncStatus);
 	}
+    public List<InstallmentDTO> getInstallmentsByOrganizationIdAndNav(String accessToken, Long organizationId, String nav, List<DebtPositionOrigin> debtPositionOrigins) {
+        return debtPositionApisHolder.getInstallmentApi(accessToken).getInstallmentsByOrganizationIdAndNav(organizationId, nav, debtPositionOrigins);
+    }
 }

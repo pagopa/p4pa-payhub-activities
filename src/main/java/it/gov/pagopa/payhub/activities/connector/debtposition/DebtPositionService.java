@@ -28,6 +28,7 @@ public interface DebtPositionService {
      * @return the minimum due date ({@link LocalDate}) among all unpaid installments.
      */
     LocalDate checkAndUpdateInstallmentExpiration(Long debtPositionId);
+
     /**
      * Synchronizes an installment from a file.
      *
@@ -39,5 +40,18 @@ public interface DebtPositionService {
 
     PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, Integer page, Integer size, List<String> sort);
 
+    /**
+     * Update the notification date for the installment that matches the given nav input and is not in a CANCELLED state.
+     *
+     * @param updateInstallmentNotificationDateRequest the DTO containing installment data to be synchronized.
+     */
+    void updateInstallmentNotificationDate(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest);
+
+    /**
+     * Get a complete Debt Position by ID
+     *
+     * @param debtPositionId the ID of the debt position
+     * @return {@link DebtPositionDTO} object.
+     */
     DebtPositionDTO getDebtPosition(Long debtPositionId);
 }
