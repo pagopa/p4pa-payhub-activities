@@ -36,7 +36,7 @@ class DebtPositionOperationTypeResolverTest {
 
 
     @Test
-    void givenCalculateDebtPositionOperationTypeWhenMapEmpty_ThenOk(){
+    void givenMapEmptyWhenCalculateDebtPositionOperationTypeThenOk(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
@@ -51,7 +51,7 @@ class DebtPositionOperationTypeResolverTest {
     }
 
     @Test
-    void givenCalculateDebtPositionOperationTypeWhenStatusNotEvenOne_TOSYNC_INVALID_CANCELLED_ThenOk(){
+    void givenStatusNotEvenOne_TOSYNC_INVALID_CANCELLED_WhenCalculateDebtPositionOperationTypeThenOk(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
@@ -69,7 +69,7 @@ class DebtPositionOperationTypeResolverTest {
     }
 
     @Test
-    void givenCalculateDebtPositionOperationTypeWhenNotEvenOneTOSYNCThenReturnNull(){
+    void givenNotEvenOneTOSYNCWhenCalculateDebtPositionOperationTypeThenReturnNull(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
@@ -84,7 +84,7 @@ class DebtPositionOperationTypeResolverTest {
     }
 
     @Test
-    void givenCalculateDebtPositionOperationTypeWhenDoNotContainsIUDThenReturnNull(){
+    void givenDoNotContainsIUDWhenCalculateDebtPositionOperationTypeThenReturnNull(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         InstallmentDTO installmentDTO = new InstallmentDTO();
@@ -104,7 +104,7 @@ class DebtPositionOperationTypeResolverTest {
     }
 
     @Test
-    void givenCalculateDebtPositionPaymentEventTypeCreateDPThenOk(){
+    void whenCalculateDebtPositionPaymentEventTypeCreateDPThenOk(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(buildInstallment());
@@ -123,7 +123,7 @@ class DebtPositionOperationTypeResolverTest {
     }
 
     @Test
-    void givenCalculateDebtPositionOperationTypeUpdateDPThenOk(){
+    void whenCalculateDebtPositionOperationTypeUpdateDPThenOk(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(buildInstallment());
@@ -142,7 +142,7 @@ class DebtPositionOperationTypeResolverTest {
     }
 
     @Test
-    void givenCalculateDebtPositionOperationTypeDeleteDPThenOk(){
+    void whenCalculateDebtPositionOperationTypeDeleteDPThenOk(){
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(buildInstallment());

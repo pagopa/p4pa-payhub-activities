@@ -45,7 +45,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionThenSuccess() throws TooManyAttemptsException {
+    void whenWaitForWorkflowCompletionThenSuccess() throws TooManyAttemptsException {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
@@ -62,7 +62,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionWhenWorkflowIdNullThenReturnTrue() {
+    void givenWorkflowIdNullWhenWaitForWorkflowCompletionThenReturnTrue() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
@@ -76,7 +76,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionWhenStatusFailedThenAddErrorList() throws TooManyAttemptsException {
+    void givenStatusFailedWhenWaitForWorkflowCompletionThenAddErrorList() throws TooManyAttemptsException {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
@@ -96,7 +96,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenWaitForWorkflowCompletionWhenRetryReachedLimitThenCatchTooManyAttemptsExceptionAndAddError() throws TooManyAttemptsException {
+    void givenRetryReachedLimitWhenWaitForWorkflowCompletionThenCatchTooManyAttemptsExceptionAndAddError() throws TooManyAttemptsException {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();

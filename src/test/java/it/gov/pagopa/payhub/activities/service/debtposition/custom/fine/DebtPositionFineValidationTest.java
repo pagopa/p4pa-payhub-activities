@@ -42,7 +42,7 @@ class DebtPositionFineValidationTest {
     }
 
     @Test
-    void givenValidateFineWhenPOMoreThanTwoWithOneCancelledThenOk(){
+    void givenPOMoreThanTwoWithOneCancelledWhenValidateFineThenOk(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));
@@ -63,7 +63,7 @@ class DebtPositionFineValidationTest {
     }
 
     @Test
-    void givenValidateFineWhenOnePOHasMoreThenOneInstallmentThenThrowInvalidDebtPositionException(){
+    void givenOnePOHasMoreThenOneInstallmentWhenValidateFineThenThrowInvalidDebtPositionException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
 
         InvalidDebtPositionException result =
@@ -73,7 +73,7 @@ class DebtPositionFineValidationTest {
     }
 
     @Test
-    void givenValidateFineWhenPOIsOnlyOneThenThrowInvalidDebtPositionException(){
+    void givenPOIsOnlyOneWhenValidateFineThenThrowInvalidDebtPositionException(){
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
         InvalidDebtPositionException result =
@@ -83,7 +83,7 @@ class DebtPositionFineValidationTest {
     }
 
     @Test
-    void givenValidateFineWhen2POAnd2InstallmentsButTypeNotReducedOrSingleThenThrowInvalidDebtPositionException(){
+    void given2POAnd2InstallmentsButTypeNotReducedOrSingleWhenValidateFineThenThrowInvalidDebtPositionException(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.INSTALLMENTS);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));

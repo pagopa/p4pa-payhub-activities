@@ -56,7 +56,7 @@ class InstallmentProcessingServiceTest {
     }
 
     @Test
-    void givenProcessInstallmentsThenSuccess(){
+    void whenProcessInstallmentsThenSuccess(){
         // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
@@ -91,7 +91,7 @@ class InstallmentProcessingServiceTest {
     }
 
     @Test
-    void givenProcessInstallmentsWhenWorkflowNotCompletedThenSuccess(){
+    void givenWorkflowNotCompletedWhenProcessInstallmentsThenSuccess(){
         // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
@@ -124,7 +124,7 @@ class InstallmentProcessingServiceTest {
     }
 
     @Test
-    void givenProcessInstallmentsWhenWorkflowIdNullThenSuccess(){
+    void givenWorkflowIdNullWhenProcessInstallmentsThenSuccess(){
         // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
@@ -158,7 +158,7 @@ class InstallmentProcessingServiceTest {
     }
 
     @Test
-    void givenProcessInstallmentsWhenThrowExceptionThenAddError() throws URISyntaxException {
+    void givenThrowExceptionWhenProcessInstallmentsThenAddError() throws URISyntaxException {
         // Given
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
