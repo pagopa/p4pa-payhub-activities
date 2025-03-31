@@ -33,7 +33,7 @@ class DebtPositionFineProcessorTest {
     }
 
     @Test
-    void givenProcessFineThenOk(){
+    void whenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
@@ -61,7 +61,7 @@ class DebtPositionFineProcessorTest {
     }
 
     @Test
-    void givenProcessFineWhenPOIsNotToSyncThenOk(){
+    void givenPOIsNotToSyncWhenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
@@ -86,7 +86,7 @@ class DebtPositionFineProcessorTest {
     }
 
     @Test
-    void givenProcessFineWhenInstallmentIsNotToSyncThenOk(){
+    void givenInstallmentIsNotToSyncWhenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
@@ -111,7 +111,7 @@ class DebtPositionFineProcessorTest {
     }
 
     @Test
-    void givenProcessFineWhenReductionDateNotBeforeThenNowThenOk(){
+    void givenReductionDateNotBeforeWhenProcessFineThenNowThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
@@ -136,7 +136,7 @@ class DebtPositionFineProcessorTest {
     }
 
     @Test
-    void givenProcessFineWhenReductionDateNullThenOk(){
+    void givenReductionDateNullWhenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);

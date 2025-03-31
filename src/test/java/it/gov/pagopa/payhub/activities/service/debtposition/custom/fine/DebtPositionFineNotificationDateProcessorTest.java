@@ -34,7 +34,7 @@ class DebtPositionFineNotificationDateProcessorTest {
     }
 
     @Test
-    void givenProcessNotificationDateWhenDueDateEqualToEndDatesThenReturnFalse() {
+    void givenDueDateEqualToEndDatesWhenProcessNotificationDateThenReturnFalse() {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
@@ -73,7 +73,7 @@ class DebtPositionFineNotificationDateProcessorTest {
     }
 
     @Test
-    void givenProcessNotificationDateWhenDueDateOfSinglePONotEqualToDueDateThenReturnTrue() {
+    void givenDueDateOfSinglePONotEqualToDueDateWhenProcessNotificationDateThenReturnTrue() {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
@@ -113,7 +113,7 @@ class DebtPositionFineNotificationDateProcessorTest {
     }
 
     @Test
-    void givenProcessNotificationDateWhenDueDateOfReducedPONotEqualToDueDateThenReturnTrue() {
+    void givenDueDateOfReducedPONotEqualToDueDateWhenProcessNotificationDateThenReturnTrue() {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
@@ -154,7 +154,7 @@ class DebtPositionFineNotificationDateProcessorTest {
     }
 
     @Test
-    void givenProcessNotificationDateWhenNotificationIdNullThenReturnFalse() {
+    void givenNotificationIdNullWhenProcessNotificationDateThenReturnFalse() {
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
         paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
