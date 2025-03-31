@@ -32,6 +32,7 @@ class InstallmentClientTest {
 	private DebtPositionApisHolder debtPositionApisHolderMock;
 	@Mock
 	private InstallmentApi installmentApiMock;
+	@Mock
 	private InstallmentNoPiiEntityControllerApi installmentNoPiiEntityControllerApiMock;
 	@Mock
 	InstallmentNoPiiSearchControllerApi installmentNoPiiSearchControllerApiMock;
