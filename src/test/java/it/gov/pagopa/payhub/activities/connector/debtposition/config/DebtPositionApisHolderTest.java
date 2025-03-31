@@ -1,10 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +13,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -166,5 +164,31 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                         .crudGetInstallmentnopii("1"),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetInstallmentNoPiiSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken)
+                            .crudInstallmentsUpdateDueDate(1L, LocalDate.now());
+                    return voidMock;
+                },
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload
+        );
+    }
+
+    @Test
+    void whenGetPaymentOptionSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    debtPositionApisHolder.getPaymentOptionSearchControllerApi(accessToken)
+                            .crudPaymentOptionsUpdateStatus(1L, PaymentOptionStatus.UNPAYABLE);
+                    return voidMock;
+                },
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload
+        );
     }
 }
