@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionClient;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -13,7 +12,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class SendServiceTest {
@@ -22,14 +20,12 @@ class SendServiceTest {
     private SendClient sendClientMock;
     @Mock
     private AuthnService authnServiceMock;
-    @Mock
-    private DebtPositionClient debtPositionClient;
 
     private SendService sendService;
 
     @BeforeEach
     void setUp() {
-        sendService = new SendServiceImpl(sendClientMock, authnServiceMock, debtPositionClient);
+        sendService = new SendServiceImpl(sendClientMock, authnServiceMock);
     }
 
     @AfterEach
@@ -95,11 +91,10 @@ class SendServiceTest {
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-
-        // When
         Mockito.when(sendClientMock.notificationStatus(sendNotificationId, accessToken))
                 .thenReturn(expectedResponse);
 
+        // When
         SendNotificationDTO result = sendService.notificationStatus(sendNotificationId);
 
         // Then
@@ -107,17 +102,21 @@ class SendServiceTest {
     }
 
     @Test
-    void givenSendNotificationIdAndOrganizationIdWhenRetrieveNotificationDateThenOk() {
+    void givenSendNotificationIdWhenRetrieveNotificationDateThenOk() {
         // Given
+        String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
-        Long organizationId = 1L;
+        SendNotificationDTO expectedResponse = new SendNotificationDTO();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(sendClientMock.retrieveNotificationDate(sendNotificationId, accessToken))
+                .thenReturn(expectedResponse);
 
         // When
-        Mockito.when(sendClientMock.retrieveNotificationDate(null, sendNotificationId)).thenReturn(null);
-
-        SendNotificationDTO result = sendService.retrieveNotificationDate(null, sendNotificationId, organizationId);
+        SendNotificationDTO result = sendService.retrieveNotificationDate(sendNotificationId);
 
         // Then
-        assertNull(result);
+        assertSame(expectedResponse, result);
     }
 }

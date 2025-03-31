@@ -44,7 +44,6 @@ public interface DebtPositionService {
      * Update the notification date for the installment that matches the given nav input and is not in a CANCELLED state.
      *
      * @param updateInstallmentNotificationDateRequest the DTO containing installment data to be synchronized.
-     * @return the workflow ID if a workflow is triggered, otherwise null.
      */
-    String updateInstallmentNotificationDateRequest(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest);
+    void updateInstallmentNotificationDate(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest);
 }

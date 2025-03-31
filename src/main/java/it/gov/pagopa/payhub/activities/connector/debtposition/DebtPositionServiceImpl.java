@@ -51,8 +51,8 @@ public class DebtPositionServiceImpl implements DebtPositionService {
     }
 
     @Override
-    public String updateInstallmentNotificationDateRequest(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest) {
+    public void updateInstallmentNotificationDate(UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest) {
         String accessToken = authnService.getAccessToken();
-        return debtPositionClient.updateInstallmentNotificationDate(accessToken, updateInstallmentNotificationDateRequest);
+        debtPositionClient.updateInstallmentNotificationDate(accessToken, updateInstallmentNotificationDateRequest);
     }
 }

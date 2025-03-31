@@ -110,7 +110,7 @@ class SendClientTest {
                 .thenReturn(sendApiMock);
 
         // When
-        sendClient.retrieveNotificationDate(accessToken, sendNotificationId);
+        sendClient.retrieveNotificationDate(sendNotificationId, accessToken);
 
         // Then
         Mockito.verify(sendApiMock).retrieveNotificationDate(sendNotificationId);
