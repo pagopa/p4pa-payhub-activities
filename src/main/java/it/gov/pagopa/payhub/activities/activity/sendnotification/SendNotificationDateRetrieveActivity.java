@@ -8,7 +8,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
  * Interface to retrieve notification date.
  */
 @ActivityInterface
-public interface RetrieveNotificationDateActivity {
+public interface SendNotificationDateRetrieveActivity {
 
     /**
      * Retrieve notification date process.
@@ -16,6 +16,6 @@ public interface RetrieveNotificationDateActivity {
      * @param sendNotificationId the ID of send notification
      */
     @ActivityMethod
-    SendNotificationDTO retrieveNotificationDate(String sendNotificationId);
+    SendNotificationDTO sendNotificationDateRetrieve(String sendNotificationId);
 
 }

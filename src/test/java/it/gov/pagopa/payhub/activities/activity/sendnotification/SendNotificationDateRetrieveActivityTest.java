@@ -19,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
-class RetrieveNotificationDateActivityTest {
+class SendNotificationDateRetrieveActivityTest {
 
     @Mock
     private SendService sendServiceMock;
     @Mock
     private DebtPositionService debtPositionServiceMock;
 
-    private RetrieveNotificationDateActivityImpl retrieveNotificationDateActivity;
+    private SendNotificationDateRetrieveActivityImpl sendNotificationDateRetrieve;
 
     @BeforeEach
     void init() {
-        retrieveNotificationDateActivity = new RetrieveNotificationDateActivityImpl(sendServiceMock, debtPositionServiceMock);
+        sendNotificationDateRetrieve = new SendNotificationDateRetrieveActivityImpl(sendServiceMock, debtPositionServiceMock);
     }
 
     @Test
@@ -48,7 +48,7 @@ class RetrieveNotificationDateActivityTest {
                 .thenReturn(sendNotification);
 
         // When
-        SendNotificationDTO result = retrieveNotificationDateActivity.retrieveNotificationDate(sendNotificationId);
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId);
 
         // Then
         assertEquals(sendNotification, result);
@@ -64,7 +64,7 @@ class RetrieveNotificationDateActivityTest {
                 .thenReturn(null);
 
         // When
-        SendNotificationDTO result = retrieveNotificationDateActivity.retrieveNotificationDate(sendNotificationId);
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId);
 
         // Then
         assertNull(result);
@@ -81,7 +81,7 @@ class RetrieveNotificationDateActivityTest {
                 .thenReturn(sendNotification);
 
         // When
-        SendNotificationDTO result = retrieveNotificationDateActivity.retrieveNotificationDate(sendNotificationId);
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId);
 
         // Then
         assertNull(result);

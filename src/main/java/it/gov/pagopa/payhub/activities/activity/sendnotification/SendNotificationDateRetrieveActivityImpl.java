@@ -13,17 +13,17 @@ import java.time.OffsetDateTime;
 @Slf4j
 @Component
 @Lazy
-public class RetrieveNotificationDateActivityImpl implements RetrieveNotificationDateActivity {
+public class SendNotificationDateRetrieveActivityImpl implements SendNotificationDateRetrieveActivity {
     private final SendService sendService;
     private final DebtPositionService debtPositionService;
 
-    public RetrieveNotificationDateActivityImpl(SendService sendService, DebtPositionService debtPositionService) {
+    public SendNotificationDateRetrieveActivityImpl(SendService sendService, DebtPositionService debtPositionService) {
         this.sendService = sendService;
         this.debtPositionService = debtPositionService;
     }
 
     @Override
-    public SendNotificationDTO retrieveNotificationDate(String sendNotificationId) {
+    public SendNotificationDTO sendNotificationDateRetrieve(String sendNotificationId) {
         SendNotificationDTO sendNotificationDTO = sendService.retrieveNotificationDate(sendNotificationId);
         if (sendNotificationDTO != null && sendNotificationDTO.getNotificationDate() != null) {
             OffsetDateTime notificationDate = sendNotificationDTO.getNotificationDate();
