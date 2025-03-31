@@ -3,15 +3,18 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,5 +50,37 @@ class InstallmentServiceTest {
 
 		verify(authnServiceMock, times(1)).getAccessToken();
 		verify(installmentClientMock, times(1)).findById(installmentId, accessToken);
+	}
+
+	@Test
+	void whenUpdateDueDateThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long installmentId = 1L;
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+		// When
+		installmentService.updateDueDate(installmentId, LocalDate.now());
+
+		// Then
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(installmentClientMock, times(1)).updateDueDate(installmentId, LocalDate.now(), accessToken);
+	}
+
+	@Test
+	void whenUpdateStatusAndSyncStatusThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long installmentId = 1L;
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+		// When
+		installmentService.updateStatusAndSyncStatus(installmentId, InstallmentStatus.UNPAID, null);
+
+		// Then
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(installmentClientMock, times(1)).updateStatusAndStatusSync(installmentId, InstallmentStatus.UNPAID, null, accessToken);
 	}
 }

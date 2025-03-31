@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFile
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryOpiParserService;
@@ -45,7 +45,7 @@ class TreasuryOpiIngestionActivityTest {
     @Mock
     private TreasuryOpiParserService treasuryOpiParserServiceMock;
     @Mock
-    private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+    private FileArchiverService fileArchiverServiceMock;
     @Mock
     private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
 
@@ -60,7 +60,7 @@ class TreasuryOpiIngestionActivityTest {
                 ingestionFlowFileServiceMock,
                 ingestionFlowFileRetrieverServiceMock,
                 treasuryOpiParserServiceMock,
-                ingestionFlowFileArchiverServiceMock,
+                fileArchiverServiceMock,
                 treasuryErrorsArchiverServiceMock
         );
     }
@@ -71,7 +71,7 @@ class TreasuryOpiIngestionActivityTest {
                 ingestionFlowFileServiceMock,
                 ingestionFlowFileRetrieverServiceMock,
                 treasuryOpiParserServiceMock,
-                ingestionFlowFileArchiverServiceMock,
+                fileArchiverServiceMock,
                 treasuryErrorsArchiverServiceMock
         );
     }
@@ -106,7 +106,7 @@ class TreasuryOpiIngestionActivityTest {
         Assertions.assertEquals("treasury123", result.getIuf2TreasuryIdMap().get("IUF123"));
         Assertions.assertEquals("DISCARDFILENAME", result.getDiscardedFileName());
 
-        Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1))
+        Mockito.verify(fileArchiverServiceMock, Mockito.times(1))
                 .archive(ingestionFlowFileDTO);
 
         Assertions.assertFalse(filePath.toFile().exists());
@@ -204,7 +204,7 @@ class TreasuryOpiIngestionActivityTest {
         Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(workingDir, ingestionFlowFileDTO))
                 .thenReturn(discardFileName);
 
-        Mockito.doNothing().when(ingestionFlowFileArchiverServiceMock)
+        Mockito.doNothing().when(fileArchiverServiceMock)
                 .archive(ingestionFlowFileDTO);
 
         return Pair.of(files, expectedParseResult);

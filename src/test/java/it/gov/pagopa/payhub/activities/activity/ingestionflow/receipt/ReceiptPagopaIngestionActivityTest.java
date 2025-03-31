@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlow
 import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptParserService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
@@ -39,7 +39,7 @@ class ReceiptPagopaIngestionActivityTest {
   @Mock
   private ReceiptParserService receiptParserServiceMock;
   @Mock
-  private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+  private FileArchiverService fileArchiverServiceMock;
   @Mock
   private ReceiptService receiptServiceMock;
   @Mock
@@ -58,7 +58,7 @@ class ReceiptPagopaIngestionActivityTest {
       ingestionFlowFileServiceMock,
       ingestionFlowFileRetrieverServiceMock,
       receiptParserServiceMock,
-      ingestionFlowFileArchiverServiceMock,
+            fileArchiverServiceMock,
       receiptServiceMock,
       receiptMapperMock
     );
@@ -80,7 +80,7 @@ class ReceiptPagopaIngestionActivityTest {
         ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName()))
       .thenReturn(mockedListPath);
 
-    Mockito.doNothing().when(ingestionFlowFileArchiverServiceMock).archive(ingestionFlowFileDTO);
+    Mockito.doNothing().when(fileArchiverServiceMock).archive(ingestionFlowFileDTO);
 
     PaSendRTV2Request paSendRTV2Request = new PaSendRTV2Request();
 
@@ -110,7 +110,7 @@ class ReceiptPagopaIngestionActivityTest {
     Mockito.verify(receiptParserServiceMock, Mockito.times(1)).parseReceiptPagopaFile(filePath, ingestionFlowFileDTO);
     Mockito.verify(receiptMapperMock, Mockito.times(1)).map(paSendRTV2Request);
     Mockito.verify(receiptServiceMock, Mockito.times(1)).createReceipt(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
+    Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
 
     Assertions.assertFalse(filePath.toFile().exists());
   }

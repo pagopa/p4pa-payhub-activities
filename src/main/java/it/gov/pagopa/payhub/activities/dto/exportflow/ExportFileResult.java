@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.export.debtposition;
+package it.gov.pagopa.payhub.activities.dto.exportflow;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO for the InstallmentExportFlowFileResult, representing the result of paid installment export file processing.
+ * DTO for the ExportFileResult, representing the result of export file processing.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InstallmentExportFlowFileResult {
+public class ExportFileResult {
     /** File path */
     private String filePath;
     /** File name */

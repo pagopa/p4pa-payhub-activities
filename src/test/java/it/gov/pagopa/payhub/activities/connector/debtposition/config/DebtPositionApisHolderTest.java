@@ -13,6 +13,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
@@ -164,6 +165,32 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                         .crudGetInstallmentnopii("1"),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetInstallmentNoPiiSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken)
+                            .crudInstallmentsUpdateDueDate(1L, LocalDate.now());
+                    return voidMock;
+                },
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload
+        );
+    }
+
+    @Test
+    void whenGetPaymentOptionSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> {
+                    debtPositionApisHolder.getPaymentOptionSearchControllerApi(accessToken)
+                            .crudPaymentOptionsUpdateStatus(1L, PaymentOptionStatus.UNPAYABLE);
+                    return voidMock;
+                },
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload
+        );
     }
 
     @Test
