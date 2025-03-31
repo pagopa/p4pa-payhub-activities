@@ -2,22 +2,23 @@ package it.gov.pagopa.payhub.activities.service;
 
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.opencsv.bean.*;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static com.opencsv.enums.CSVReaderNullFieldIndicator.EMPTY_SEPARATORS;
 
@@ -29,14 +30,21 @@ public class CsvService {
     private final char separator;
     private final char quoteChar;
     private final String profile;
+    private final int warnThreshold;
+    private final int errorThreshold;
+
 
     public CsvService(
             @Value("${csv.separator}") char separator,
             @Value("${csv.quote-char}") char quoteChar,
-            @Value("${csv.profile}") String profile) {
+            @Value("${csv.profile}") String profile,
+            @Value("${export-flow-files.page-request-thresholds.warn}")int warnThreshold,
+            @Value("${export-flow-files.page-request-thresholds.error}")int errorThreshold) {
         this.separator = separator;
         this.quoteChar = quoteChar;
         this.profile = profile;
+        this.warnThreshold = warnThreshold;
+        this.errorThreshold = errorThreshold;
     }
 
     /**
@@ -68,6 +76,64 @@ public class CsvService {
             }
         }
         log.info("CSV file created successfully: {}", csvFilePath);
+    }
+
+    /**
+     * Creates a CSV file from the provided supplier of beans.
+     *
+     * <p>This method ensures that the file is properly closed after processing
+     * by using a try-with-resources statement.</p>
+     *
+     * <p>This method uses {@code StatefulBeanToCsv.write()}
+     * to write each bean individually, reducing memory consumption at the cost of lower performance.</p>
+     *
+     * <p>The supplier is called repeatedly until it returns an empty list or null,
+     * indicating that there are no more beans to write.</p>
+     *
+     * @param <C> the generic type of the beans to be written to the CSV
+     * @param csvFilePath the path to the CSV file to write
+     * @param typeClass the class type of the beans to be written to the CSV
+     * @param csvRowsSupplier a supplier of beans to be written to the CSV (called multiple times until data are returned)
+     * @param csvProfile the profile to be used for writing the CSV
+     * @throws IOException if an error occurs while writing the file
+     */
+    public <C> void createCsv(Path csvFilePath, Class<C> typeClass, Supplier<List<C>> csvRowsSupplier, String csvProfile) throws IOException {
+
+        File file = csvFilePath.toFile();
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists() && !parentDir.mkdirs()) {
+            throw new IOException("Unable to create directory: " + parentDir.getAbsolutePath());
+        }
+
+        try (Writer writer = Files.newBufferedWriter(csvFilePath)) {
+            HeaderColumnNameMappingStrategy<C> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
+            mappingStrategy.setType(typeClass);
+            mappingStrategy.setProfile(csvProfile);
+
+            StatefulBeanToCsv<C> beanToCsv = new StatefulBeanToCsvBuilder<C>(writer)
+                    .withProfile(csvProfile)
+                    .withSeparator(separator)
+                    .withQuotechar(quoteChar)
+                    .withMappingStrategy(mappingStrategy)
+                    .withThrowExceptions(true)
+                    .build();
+
+            List<C> rows;
+            int pageRequestCount = 0;
+            while (!CollectionUtils.isEmpty(rows = csvRowsSupplier.get())) {
+                beanToCsv.write(rows);
+                pageRequestCount++;
+
+                if (pageRequestCount > warnThreshold && pageRequestCount <= errorThreshold) {
+                    log.warn("Export process reached warn threshold page request count: {}", pageRequestCount);
+                } else if (pageRequestCount > errorThreshold) {
+                    throw new IllegalStateException("Export process reached error threshold page request count: " + pageRequestCount);
+                }
+            }
+
+        } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
+            throw new InvalidCsvRowException("Invalid CSV row: " + e.getMessage());
+        }
     }
 
     private ICSVWriter buildCsvWriter(File file) throws IOException {

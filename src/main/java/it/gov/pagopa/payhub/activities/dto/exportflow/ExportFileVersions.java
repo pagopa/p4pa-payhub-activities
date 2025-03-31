@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.export;
+package it.gov.pagopa.payhub.activities.dto.exportflow;
 
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileVersion;
@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ExportFlowFileVersions {
-    private ExportFlowFileVersions() {}
+public class ExportFileVersions {
+    private ExportFileVersions() {}
 
     public static final String EXPORT_PAID_VERSION_V1 = "v1.0";
     public static final String EXPORT_PAID_VERSION_V1_1 = "v1.1";

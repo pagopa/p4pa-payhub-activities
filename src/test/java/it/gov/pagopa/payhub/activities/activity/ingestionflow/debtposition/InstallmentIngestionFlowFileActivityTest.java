@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIng
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.CsvService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileArchiverService;
+import it.gov.pagopa.payhub.activities.service.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -47,7 +47,7 @@ class InstallmentIngestionFlowFileActivityTest {
     @Mock
     private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverServiceMock;
     @Mock
-    private IngestionFlowFileArchiverService ingestionFlowFileArchiverServiceMock;
+    private FileArchiverService fileArchiverServiceMock;
 
     private InstallmentIngestionFlowFileActivity activity;
 
@@ -56,7 +56,7 @@ class InstallmentIngestionFlowFileActivityTest {
         activity = new InstallmentIngestionFlowFileActivityImpl(
                 ingestionFlowFileServiceMock,
                 ingestionFlowFileRetrieverServiceMock,
-                ingestionFlowFileArchiverServiceMock,
+                fileArchiverServiceMock,
                 csvServiceMock,
                 installmentProcessingServiceMock
         );
@@ -67,7 +67,7 @@ class InstallmentIngestionFlowFileActivityTest {
         Mockito.verifyNoMoreInteractions(
                 ingestionFlowFileServiceMock,
                 ingestionFlowFileRetrieverServiceMock,
-                ingestionFlowFileArchiverServiceMock,
+                fileArchiverServiceMock,
                 csvServiceMock,
                 installmentProcessingServiceMock
         );
@@ -108,7 +108,7 @@ class InstallmentIngestionFlowFileActivityTest {
 
         // Then
         Assertions.assertNotNull(result);
-        Mockito.verify(ingestionFlowFileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
+        Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
         Assertions.assertFalse(filePath.toFile().exists());
     }
 
