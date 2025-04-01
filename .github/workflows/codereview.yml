@@ -29,7 +29,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew clean build jacocoTestReport
+        run: ./gradlew clean build jacocoTestReport -DtargetBranch=${{ github.event.pull_request.base.ref }}
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
