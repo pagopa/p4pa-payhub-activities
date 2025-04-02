@@ -15,7 +15,6 @@ import org.mockito.stubbing.OngoingStubbing;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -64,13 +63,13 @@ class IngestionFlowFileEmailContentConfigurerServiceTest {
         Map<String, String> result = contentConfigurerService.configureParams(ingestionFlowFileDTO, success);
 
         // Then
-        Assertions.assertEquals(new HashMap<>(Map.of(
+        Assertions.assertEquals(Map.of(
                         "actualDate", result.get("actualDate"),
-                        "totalRowsNumber", Objects.requireNonNull(ingestionFlowFileDTO.getNumTotalRows()),
+                        "totalRowsNumber", String.valueOf(Objects.requireNonNull(ingestionFlowFileDTO.getNumTotalRows())),
                         "fileName", ingestionFlowFileDTO.getFileName(),
                         "mailText", mailText
-                )),
-                new HashMap<>(result));
+                ),
+                result);
         String expectedStartsWithActualDate = DateTimeFormatter.ofPattern("EEE, MMM dd yyyy, hh:").format(LocalDateTime.now());
         Assertions.assertEquals(
                 result.get("actualDate").substring(0, expectedStartsWithActualDate.length()),

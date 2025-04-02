@@ -12,7 +12,7 @@ public class IngestionFlowFileEmailTemplateResolverService {
 
     public EmailTemplateName resolve(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
         try{
-            return EmailTemplateName.valueOf("INGESTION_" + ingestionFlowFileDTO.getIngestionFlowFileType() + (success? "_OK" : "KO"));
+            return EmailTemplateName.valueOf("INGESTION_" + ingestionFlowFileDTO.getIngestionFlowFileType() + (success? "_OK" : "_KO"));
         } catch (Exception e){
             throw new IngestionFlowTypeNotSupportedException("Sending e-mail not supported for flow type " + ingestionFlowFileDTO.getIngestionFlowFileType() + ": " + e.getMessage());
         }
