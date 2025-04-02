@@ -63,7 +63,7 @@ public class ExportFileExpirationHandlerActivityImpl implements
 
     if (file.getStatus() != ExportFileStatus.EXPIRED &&
         exportFileService.updateStatus(new UpdateStatusRequest(file.getExportFileId(), file.getStatus(),
-            ExportFileStatus.EXPIRED, null, null, null,null,null)) != 1) {
+            ExportFileStatus.EXPIRED, file.getFilePathName(), file.getFileName(), file.getFileSize(), file.getNumTotalRows(), file.getErrorDescription())) != 1) {
       throw new ExportFileNotFoundException(
           "Cannot update exportFile having exportFileId " + file.getExportFileId()
               + " from status " + file.getStatus() + " to status "
