@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.payhub.activities.enums.EmailTemplateNames;
+import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -32,10 +32,10 @@ class EmailTemplateResolverServiceTest {
     );
 
     private final EmailTemplateResolverService service = new EmailTemplateResolverService(configMock);
-    
+
     @ParameterizedTest
-    @EnumSource(EmailTemplateNames.class)
-    void givenEnumWhenResolveThenReturnExpectedTemplate(EmailTemplateNames templateName){
+    @EnumSource(EmailTemplateName.class)
+    void givenEnumWhenResolveThenReturnExpectedTemplate(EmailTemplateName templateName){
         EmailTemplate template = service.resolve(templateName);
 
         Assertions.assertEquals(templateName + "_SUBJECT", template.getSubject());

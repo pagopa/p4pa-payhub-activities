@@ -2,13 +2,13 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthzService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
-import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.UserInfoFaker;
 import it.gov.pagopa.pu.auth.dto.generated.UserInfo;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,9 +45,8 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
     }
 
     @Test
-    void givenNoOrganizationWhenConfigureThenOk() {
+    void givenNoOrganizationWhenRetrieveEmailDestinationsThenOk() {
         // Given
-        EmailDTO emailDTO = new EmailDTO();
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         ingestionFlowFileDTO.setOrganizationId(0L);
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
@@ -58,23 +58,25 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
                 .thenReturn(Optional.empty());
 
         // When
-        service.configure(ingestionFlowFileDTO, emailDTO);
+        Pair<String[], String[]> result = service.retrieveEmailDestinations(ingestionFlowFileDTO);
 
         // Then
-        Assertions.assertEquals(1, emailDTO.getTo().length);
-        Assertions.assertNull(emailDTO.getTo()[0]);
-        Assertions.assertNull(emailDTO.getCc());
+        String[] to = result.getLeft();
+        String[] cc = result.getRight();
+
+        Assertions.assertEquals(1, to.length);
+        Assertions.assertNull(to[0]);
+        Assertions.assertNull(cc);
     }
 
     @Test
-    void givenOrganizationWithSameEmailWhenConfigureThenOk() {
+    void givenOrganizationWithSameEmailWhenRetrieveEmailDestinationsThenOk() {
         // Given
-        EmailDTO emailDTO = new EmailDTO();
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
         organizationDTO.setOrgEmail("user@email.it");
-        ingestionFlowFileDTO.setOrganizationId(organizationDTO.getOrganizationId());
+        ingestionFlowFileDTO.setOrganizationId(Objects.requireNonNull(organizationDTO.getOrganizationId()));
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
@@ -83,22 +85,24 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
                 .thenReturn(Optional.of(organizationDTO));
 
         // When
-        service.configure(ingestionFlowFileDTO, emailDTO);
+        Pair<String[], String[]> result = service.retrieveEmailDestinations(ingestionFlowFileDTO);
 
         // Then
-        Assertions.assertEquals(1, emailDTO.getTo().length);
-        Assertions.assertEquals("user@email.it", emailDTO.getTo()[0]);
-        Assertions.assertNull(emailDTO.getCc());
+        String[] to = result.getLeft();
+        String[] cc = result.getRight();
+
+        Assertions.assertEquals(1, to.length);
+        Assertions.assertEquals("user@email.it", to[0]);
+        Assertions.assertNull(cc);
     }
 
     @Test
-    void givenOrganizationWithDifferentEmailWhenConfigureThenOk() {
+    void givenOrganizationWithDifferentEmailWhenRetrieveEmailDestinationsThenOk() {
         // Given
-        EmailDTO emailDTO = new EmailDTO();
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         UserInfo userInfo = UserInfoFaker.buildUserInfo();
         Organization organizationDTO = OrganizationFaker.buildOrganizationDTO();
-        ingestionFlowFileDTO.setOrganizationId(organizationDTO.getOrganizationId());
+        ingestionFlowFileDTO.setOrganizationId(Objects.requireNonNull(organizationDTO.getOrganizationId()));
 
         Mockito.when(authzServiceMock.getOperatorInfo(ingestionFlowFileDTO.getOperatorExternalId()))
                 .thenReturn(userInfo);
@@ -107,12 +111,15 @@ class IngestionFlowFileEmailDestinationRetrieverServiceTest {
                 .thenReturn(Optional.of(organizationDTO));
 
         // When
-        service.configure(ingestionFlowFileDTO, emailDTO);
+        Pair<String[], String[]> result = service.retrieveEmailDestinations(ingestionFlowFileDTO);
 
         // Then
-        Assertions.assertEquals(1, emailDTO.getTo().length);
-        Assertions.assertEquals("user@email.it", emailDTO.getTo()[0]);
-        Assertions.assertEquals(1, emailDTO.getCc().length);
-        Assertions.assertEquals(organizationDTO.getOrgEmail(), emailDTO.getCc()[0]);
+        String[] to = result.getLeft();
+        String[] cc = result.getRight();
+
+        Assertions.assertEquals(1, to.length);
+        Assertions.assertEquals("user@email.it", to[0]);
+        Assertions.assertEquals(1, cc.length);
+        Assertions.assertEquals(organizationDTO.getOrgEmail(), cc[0]);
     }
 }

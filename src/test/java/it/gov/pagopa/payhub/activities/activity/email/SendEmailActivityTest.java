@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.email;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
-import it.gov.pagopa.payhub.activities.enums.EmailTemplateNames;
+import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
@@ -96,7 +96,7 @@ class SendEmailActivityTest {
     @Test
     void whenSendTemplatedEmailThenOk(){
         // Given
-        EmailTemplateNames templateName = EmailTemplateNames.INGESTION_PAGOPA_RT;
+        EmailTemplateName templateName = EmailTemplateName.INGESTION_PAGOPA_RT;
         Map<String, String> params = Map.of(
                 "var1", "VALUE1",
                 "var2", "VALUE2",

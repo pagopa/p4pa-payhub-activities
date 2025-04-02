@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.enums;
 
-public enum EmailTemplateNames {
+public enum EmailTemplateName {
     INGESTION_PAYMENTS_REPORTING_OK,
     INGESTION_PAYMENTS_REPORTING_KO,
 

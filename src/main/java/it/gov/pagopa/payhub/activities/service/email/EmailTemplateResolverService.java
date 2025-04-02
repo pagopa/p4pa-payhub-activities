@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.payhub.activities.enums.EmailTemplateNames;
+import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class EmailTemplateResolverService {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
     }
 
-    public EmailTemplate resolve(EmailTemplateNames templateName) {
+    public EmailTemplate resolve(EmailTemplateName templateName) {
         return switch (templateName){
             case INGESTION_PAYMENTS_REPORTING_OK -> emailTemplatesConfiguration.getPaymentsReportingFlow().getOk();
             case INGESTION_PAYMENTS_REPORTING_KO -> emailTemplatesConfiguration.getPaymentsReportingFlow().getKo();

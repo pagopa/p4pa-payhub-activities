@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
-import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
-import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
@@ -13,15 +11,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.OngoingStubbing;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @ExtendWith(MockitoExtension.class)
 class IngestionFlowFileEmailContentConfigurerServiceTest {
 
-    @Mock
-    private IngestionFlowFileEmailTemplateResolverService emailTemplateResolverServiceMock;
     @Mock
     private EmailTemplatesConfiguration emailTemplatesConfigurationMock;
 
@@ -29,62 +29,52 @@ class IngestionFlowFileEmailContentConfigurerServiceTest {
 
     @BeforeEach
     void init() {
-        contentConfigurerService = new IngestionFlowFileEmailContentConfigurerService(
-                emailTemplateResolverServiceMock,
-                emailTemplatesConfigurationMock);
+        contentConfigurerService = new IngestionFlowFileEmailContentConfigurerService(emailTemplatesConfigurationMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(
-                emailTemplateResolverServiceMock,
-                emailTemplatesConfigurationMock);
+        Mockito.verifyNoMoreInteractions(emailTemplatesConfigurationMock);
     }
 
     @Test
-    void givenPaymentsReportingTypeAndSuccessWhenConfigureThenOk() {
-        // Given
-        IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        boolean success = true;
-
-        Mockito.when(emailTemplatesConfigurationMock.getMailTextLoadOk())
-                        .thenReturn("TEXTOK");
-
-        Mockito.when(emailTemplateResolverServiceMock.resolve(ingestionFlowFileDTO, success))
-                .thenReturn(EmailTemplate.builder()
-                        .subject("SUBJECTOK_{fileName}_{totalRowsNumber}_{mailText}_{actualDate}")
-                        .body("BODYOK_{fileName}_{totalRowsNumber}_{mailText}_{actualDate}")
-                        .build());
-
-        // When
-        EmailDTO result = contentConfigurerService.configure(ingestionFlowFileDTO, success);
-
-        // Then
-        Assertions.assertTrue(result.getMailSubject().startsWith("SUBJECTOK_fileName.csv_3_TEXTOK_"), "Unexpected mail subject: " + result.getMailSubject());
-        Assertions.assertTrue(result.getHtmlText().startsWith("BODYOK_fileName.csv_3_TEXTOK_"), "Unexpected html text: " + result.getHtmlText());
+    void givenSuccessTrueWhenConfigureParamsThenOk() {
+        whenConfigureParamsThenOk(true);
     }
 
     @Test
-    void givenPaymentsReportingTypeAndNotSuccessWhenConfigureThenOk() {
+    void givenSuccessFalseWhenConfigureParamsThenOk() {
+        whenConfigureParamsThenOk(false);
+    }
+    void whenConfigureParamsThenOk(boolean success) {
         // Given
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
-        boolean success = false;
 
-        Mockito.when(emailTemplatesConfigurationMock.getMailTextLoadKo())
-                .thenReturn("TEXTKO");
+        String mailText;
+        OngoingStubbing<String> whenGetMailText;
+        if(success) {
+            mailText = "TEXTOK";
+            whenGetMailText = Mockito.when(emailTemplatesConfigurationMock.getMailTextLoadOk());
+        } else {
+            mailText = "TEXTKO";
+            whenGetMailText = Mockito.when(emailTemplatesConfigurationMock.getMailTextLoadKo());
+        }
+        whenGetMailText.thenReturn(mailText);
 
-        Mockito.when(emailTemplateResolverServiceMock.resolve(ingestionFlowFileDTO, success))
-                .thenReturn(EmailTemplate.builder()
-                        .subject("SUBJECTKO_{fileName}_{totalRowsNumber}_{mailText}_{actualDate}")
-                        .body("BODYKO_{fileName}_{totalRowsNumber}_{mailText}_{actualDate}")
-                        .build());
-
-        // When
-        EmailDTO result = contentConfigurerService.configure(ingestionFlowFileDTO, success);
+        Map<String, String> result = contentConfigurerService.configureParams(ingestionFlowFileDTO, success);
 
         // Then
-        String localDate = LocalDate.now().format(DateTimeFormatter.ofPattern("EEE, MMM dd yyyy, "));
-        Assertions.assertTrue(result.getMailSubject().startsWith("SUBJECTKO_fileName.csv_3_TEXTKO_"+localDate), "Unexpected mail subject: " + result.getMailSubject());
-        Assertions.assertTrue(result.getHtmlText().startsWith("BODYKO_fileName.csv_3_TEXTKO_"+localDate), "Unexpected html text: " + result.getHtmlText());
+        Assertions.assertEquals(new HashMap<>(Map.of(
+                        "actualDate", result.get("actualDate"),
+                        "totalRowsNumber", Objects.requireNonNull(ingestionFlowFileDTO.getNumTotalRows()),
+                        "fileName", ingestionFlowFileDTO.getFileName(),
+                        "mailText", mailText
+                )),
+                new HashMap<>(result));
+        String expectedStartsWithActualDate = DateTimeFormatter.ofPattern("EEE, MMM dd yyyy, hh:").format(LocalDateTime.now());
+        Assertions.assertEquals(
+                result.get("actualDate").substring(0, expectedStartsWithActualDate.length()),
+                expectedStartsWithActualDate);
     }
+
 }
