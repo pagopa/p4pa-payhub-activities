@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
-
+import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import org.junit.jupiter.api.Assertions;
@@ -25,25 +25,33 @@ class UpdateExportFileStatusActivityTest {
   private static final Long INVALID_ID=9L;
   private static final ExportFileStatus OLD_STATUS = ExportFileStatus.PROCESSING;
   private static final ExportFileStatus NEW_STATUS = ExportFileStatus.COMPLETED;
+  private static final String FILE_PATH = "filePath";
+  private static final String FILE_NAME = "fileName";
+  private static final Long FILE_SIZE = 20L;
+  private static final Long EXPORTED_ROWS = 2L;
+  private static final String ERROR_DESCRIPTION = "errorDescription";
 
   @Test
   void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
+    UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(VALID_ID, OLD_STATUS,
+        NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION);
     //given
     Mockito.when(
-        exportFileServiceMock.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, null)).thenReturn(1);
+        exportFileServiceMock.updateStatus(updateStatusRequest)).thenReturn(1);
     //when
-    updateExportFileStatusActivity.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS);
+    updateExportFileStatusActivity.updateStatus(updateStatusRequest);
     //verify
-    Mockito.verify(exportFileServiceMock, Mockito.times(1)).updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, null);
+    Mockito.verify(exportFileServiceMock, Mockito.times(1)).updateStatus(updateStatusRequest);
   }
 
   @Test
   void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
+    UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(INVALID_ID, OLD_STATUS, NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION);
     //given
     Mockito.when(
-        exportFileServiceMock.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, null)).thenReturn(0);
+        exportFileServiceMock.updateStatus(updateStatusRequest)).thenReturn(0);
     //when
-    Assertions.assertThrows(ExportFileNotFoundException.class, () -> updateExportFileStatusActivity.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS));
+    Assertions.assertThrows(ExportFileNotFoundException.class, () -> updateExportFileStatusActivity.updateStatus(updateStatusRequest));
   }
 
 }

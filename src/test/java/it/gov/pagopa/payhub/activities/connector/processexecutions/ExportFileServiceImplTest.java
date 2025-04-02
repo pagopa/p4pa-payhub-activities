@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.ExportFileClient;
+import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
@@ -90,15 +91,21 @@ class ExportFileServiceImplTest {
         Long exportFileId = 1L;
         ExportFileStatus oldStatus = ExportFileStatus.COMPLETED;
         ExportFileStatus newStatus = ExportFileStatus.EXPIRED;
+        String filePath = "filePath";
+        String fileName = "fileName";
+        Long fileSize = 20L;
+        Long numTotalRows = 2L;
         String errorDescription = "errorDescription";
         Integer expectedResponse = 1;
-        when(exportFileClientMock.updateStatus(exportFileId, oldStatus, newStatus, errorDescription, accessToken)).thenReturn(expectedResponse);
+        UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFileId,
+            oldStatus, newStatus, filePath, fileName, fileSize, numTotalRows, errorDescription);
+        when(exportFileClientMock.updateStatus(updateStatusRequest, accessToken)).thenReturn(expectedResponse);
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
         // When
-        Integer result = exportFileService.updateStatus(exportFileId, oldStatus, newStatus, errorDescription);
+        Integer result = exportFileService.updateStatus(updateStatusRequest);
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(exportFileClientMock, times(1)).updateStatus(exportFileId, oldStatus, newStatus, errorDescription,accessToken);
+        verify(exportFileClientMock, times(1)).updateStatus(updateStatusRequest,accessToken);
     }
 }

@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
+import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -38,12 +38,20 @@ public class ExportFileClient {
         }
     }
 
-    public Integer updateStatus(Long exportFileId, ExportFileStatus oldStatus, ExportFileStatus newStatus, String codError, String accessToken) {
+    public Integer updateStatus(UpdateStatusRequest updateStatusRequest, String accessToken) {
         try{
             return processExecutionsApisHolder.getExportFileEntityExtendedControllerApi(accessToken)
-                .updateExportFileStatus(exportFileId, oldStatus, newStatus, codError);
+                .updateExportFileStatus(
+                    updateStatusRequest.getExportFileId(),
+                    updateStatusRequest.getOldStatus(),
+                    updateStatusRequest.getNewStatus(),
+                    updateStatusRequest.getFilePathName(),
+                    updateStatusRequest.getFileName(),
+                    updateStatusRequest.getFileSize(),
+                    updateStatusRequest.getExportedRows(),
+                    updateStatusRequest.getErrorDescription());
         } catch (HttpClientErrorException.NotFound e){
-            log.info("Cannot find ExportFile having id {} and status {}", exportFileId, oldStatus);
+            log.info("Cannot find ExportFile having id {} and status {}", updateStatusRequest.getExportFileId(), updateStatusRequest.getOldStatus());
             return null;
         }
     }

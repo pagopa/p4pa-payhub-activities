@@ -3,14 +3,13 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.ExportFileClient;
+import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Lazy
 @Service
@@ -37,7 +36,7 @@ public class ExportFileServiceImpl implements ExportFileService{
     }
 
     @Override
-    public Integer updateStatus(Long exportFileId, ExportFileStatus oldStatus, ExportFileStatus newStatus, String codError) {
-        return exportFileClient.updateStatus(exportFileId, oldStatus, newStatus, codError, authnService.getAccessToken());
+    public Integer updateStatus(UpdateStatusRequest updateStatusRequest) {
+        return exportFileClient.updateStatus(updateStatusRequest, authnService.getAccessToken());
     }
 }
