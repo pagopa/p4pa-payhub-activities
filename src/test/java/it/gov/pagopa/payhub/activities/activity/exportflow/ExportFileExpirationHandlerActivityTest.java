@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
+import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
@@ -44,9 +45,14 @@ class ExportFileExpirationHandlerActivityTest {
     // given
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setStatus(ExportFileStatus.COMPLETED);
+    UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED, null, null, null, null,null);
+
     when(exportFileServiceMock.findById(exportFile.getExportFileId())).thenReturn(Optional.of(exportFile));
 
-    when(exportFileServiceMock.updateStatus(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED, null))
+    when(exportFileServiceMock.updateStatus(Mockito.argThat(u-> {
+      TestUtils.reflectionEqualsByName(updateStatusRequest, u);
+      return true;
+    })))
         .thenReturn(1);
 
     try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
@@ -92,10 +98,14 @@ class ExportFileExpirationHandlerActivityTest {
     // given
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setStatus(ExportFileStatus.COMPLETED);
+    UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED, null, null, null, null,null);
     Long exportFileId = exportFile.getExportFileId();
     when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 
-    when(exportFileServiceMock.updateStatus(exportFileId, exportFile.getStatus(), ExportFileStatus.EXPIRED, null))
+    when(exportFileServiceMock.updateStatus(Mockito.argThat(u-> {
+        TestUtils.reflectionEqualsByName(updateStatusRequest, u);
+        return true;
+      })))
         .thenReturn(0);
 
     try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
@@ -116,10 +126,14 @@ class ExportFileExpirationHandlerActivityTest {
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setStatus(ExportFileStatus.COMPLETED);
     exportFile.setFilePathName("");
+    UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED, null, null, null, null,null);
     Long exportFileId = exportFile.getExportFileId();
     when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 
-    when(exportFileServiceMock.updateStatus(exportFileId, exportFile.getStatus(), ExportFileStatus.EXPIRED, null))
+    when(exportFileServiceMock.updateStatus(Mockito.argThat(u-> {
+      TestUtils.reflectionEqualsByName(updateStatusRequest, u);
+      return true;
+    })))
         .thenReturn(1);
 
     // when
