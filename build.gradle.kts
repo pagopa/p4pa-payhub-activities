@@ -290,7 +290,8 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 	typeMappings.set(mapOf(
 		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
 		"IngestionFlowFileType" to "String",
-		"WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig"
+		"WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
+		"ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
 	))
 	configOptions.set(
 		mapOf(

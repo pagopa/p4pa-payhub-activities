@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
-import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
+import it.gov.pagopa.payhub.activities.service.files.XMLUnmarshallerService;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

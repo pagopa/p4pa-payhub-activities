@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service;
+package it.gov.pagopa.payhub.activities.service.files;
 
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;

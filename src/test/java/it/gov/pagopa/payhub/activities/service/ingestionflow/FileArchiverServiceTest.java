@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
-import it.gov.pagopa.payhub.activities.service.FileArchiverService;
-import it.gov.pagopa.payhub.activities.service.ZipFileService;
+import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
+import it.gov.pagopa.payhub.activities.service.files.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;

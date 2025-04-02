@@ -1,26 +1,27 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
-import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagopaEmailConfigurerService;
+import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
+import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPaEmailConfigurerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Lazy
 @Slf4j
 @Component
 public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmailActivity {
 
-  private final ReceiptPagopaEmailConfigurerService receiptPagopaEmailConfigurerService;
+  private final ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService;
   private final SendEmailActivity sendEmailActivity;
 
-  public ReceiptPagopaSendEmailActivityImpl(ReceiptPagopaEmailConfigurerService receiptPagopaEmailConfigurerService, SendEmailActivity sendEmailActivity) {
+  public ReceiptPagopaSendEmailActivityImpl(ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService, SendEmailActivity sendEmailActivity) {
     this.receiptPagopaEmailConfigurerService = receiptPagopaEmailConfigurerService;
     this.sendEmailActivity = sendEmailActivity;
   }
@@ -46,13 +47,12 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
       return;
     }
 
-    //configure email
-    EmailDTO emailDTO = receiptPagopaEmailConfigurerService.configure(receiptDTO);
-    //set recipients
-    emailDTO.setTo(recipients.toArray(new String[0]));
+    Map<String, String> params = receiptPagopaEmailConfigurerService.buildTemplateParams(receiptDTO);
 
-    //send email
-    sendEmailActivity.send(emailDTO);
+    sendEmailActivity.sendTemplatedEmail(new TemplatedEmailDTO(
+            EmailTemplateName.INGESTION_PAGOPA_RT, recipients.toArray(new String[0]), null, params
+    ));
+    //configure email
   }
 
 }

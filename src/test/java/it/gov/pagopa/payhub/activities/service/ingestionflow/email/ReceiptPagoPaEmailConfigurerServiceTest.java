@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
-import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
@@ -17,25 +16,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
-class ReceiptPagopaEmailConfigurerServiceTest {
+class ReceiptPagoPaEmailConfigurerServiceTest {
 
-  private ReceiptPagopaEmailConfigurerService receiptPagopaEmailConfigurerService;
+  private ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService;
 
   @BeforeEach
   void init(TestInfo info) {
     EmailTemplatesConfiguration emailTemplatesConfigurationMock = Mockito.mock(EmailTemplatesConfiguration.class);
     if(info.getTags().contains("needEmailTemplate")) {
-      Mockito.when(emailTemplatesConfigurationMock.getReceivedPagopaReceipt()).thenReturn(
+      Mockito.lenient().when(emailTemplatesConfigurationMock.getReceivedPagopaReceipt()).thenReturn(
         EmailTemplate.builder()
           .subject("subject")
-          .body("body {noticeNumber}")
+          .body("body %noticeNumber%")
           .build()
       );
     }
-    receiptPagopaEmailConfigurerService = new ReceiptPagopaEmailConfigurerService(emailTemplatesConfigurationMock);
+    receiptPagopaEmailConfigurerService = new ReceiptPagoPaEmailConfigurerService();
   }
 
   //region retrieveRecipients
@@ -93,7 +93,7 @@ class ReceiptPagopaEmailConfigurerServiceTest {
     //then
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.size());
-    Assertions.assertEquals("installmentDebtor@mail.it", result.get(0));
+    Assertions.assertEquals("installmentDebtor@mail.it", result.getFirst());
   }
 
   @Test
@@ -114,30 +114,29 @@ class ReceiptPagopaEmailConfigurerServiceTest {
 
   @Test
   @Tag("needEmailTemplate")
-  void givenValidTemplateWhenConfigureThenOk() {
+  void givenValidTemplateWhenBuildTemplateParamsThenOk() {
     //given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
-      .companyName("companyName")
-      .orgFiscalCode("orgFiscalCode")
-      .noticeNumber("noticeNumber")
+      .companyName("NAME")
+      .orgFiscalCode("ORGFC")
+      .noticeNumber("NAV")
       .paymentAmountCents(123456L)
       .paymentDateTime(OffsetDateTime.of(2025, 2, 21, 10, 30, 23, 0, ZoneOffset.UTC));
 
     //when
-    EmailDTO response = receiptPagopaEmailConfigurerService.configure(receiptWithAdditionalNodeDataDTO);
+    Map<String, String> result = receiptPagopaEmailConfigurerService.buildTemplateParams(receiptWithAdditionalNodeDataDTO);
 
     //verify
-    Assertions.assertNotNull(response);
-    Assertions.assertNotNull(response.getParams());
-    Assertions.assertNotNull(response.getMailSubject());
-    Assertions.assertNotNull(response.getHtmlText());
-    Assertions.assertEquals("subject", response.getMailSubject());
-    Assertions.assertEquals("body noticeNumber", response.getHtmlText());
-    Assertions.assertEquals("companyName", response.getParams().get("companyName"));
-    Assertions.assertEquals("orgFiscalCode", response.getParams().get("orgFiscalCode"));
-    Assertions.assertEquals("noticeNumber", response.getParams().get("noticeNumber"));
-    Assertions.assertEquals("1.234,56 €", response.getParams().get("amount"));
-    Assertions.assertEquals("21/02/2025 10:30:23", response.getParams().get("paymentDate"));
+    Assertions.assertEquals(
+            Map.of(
+                    "companyName", "NAME",
+                    "orgFiscalCode", "ORGFC",
+                    "noticeNumber", "NAV",
+                    "amount", "1.234,56 €",
+                    "paymentDate", "21/02/2025 10:30:23"
+            ),
+            result
+    );
   }
 
 }

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
-import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
+import it.gov.pagopa.payhub.activities.service.files.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
