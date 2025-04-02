@@ -1,24 +1,53 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
+import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
+import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Slf4j
 @Lazy
 @Service
 public class SendEmailActivityImpl implements SendEmailActivity {
 
+    private final EmailTemplateResolverService templateResolverService;
     private final EmailSenderService emailSenderService;
 
-    public SendEmailActivityImpl(EmailSenderService emailSenderService) {
+    public SendEmailActivityImpl(EmailTemplateResolverService templateResolverService, EmailSenderService emailSenderService) {
+        this.templateResolverService = templateResolverService;
         this.emailSenderService = emailSenderService;
+    }
+
+    @Override
+    public void sendTemplatedEmail(TemplatedEmailDTO templatedEmail) {
+        EmailTemplate template = templateResolverService.resolve(templatedEmail.getTemplateName());
+
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setTo(templatedEmail.getTo());
+        emailDTO.setCc(templatedEmail.getCc());
+
+        emailDTO.setMailSubject(resolvePlaceholders(template.getSubject(), templatedEmail.getParams()));
+        String mailBody = resolvePlaceholders(template.getBody(), templatedEmail.getParams());
+        emailDTO.setHtmlText(Jsoup.clean(mailBody, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false)));
+
+        sendEmail(emailDTO);
+    }
+
+    private static String resolvePlaceholders(String text, Map<String, String> params) {
+        return StringSubstitutor.replace(text, params, "%", "%");
     }
 
     @Override
@@ -38,10 +67,5 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         if(StringUtils.isEmpty(email.getHtmlText())){
             throw new InvalidEmailConfigurationException("Cannot send an email without a body");
         }
-    }
-
-    @Override
-    public void sendTemplatedEmail(TemplatedEmailDTO email) {
-
     }
 }

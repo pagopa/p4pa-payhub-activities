@@ -1,8 +1,12 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
+import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
+import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
+import it.gov.pagopa.payhub.activities.enums.EmailTemplateNames;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
+import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
 import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -13,9 +17,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Map;
+
 @ExtendWith(MockitoExtension.class)
 class SendEmailActivityTest {
 
+    @Mock
+    private EmailTemplateResolverService templateResolverServiceMock;
     @Mock
     private EmailSenderService emailSenderServiceMock;
 
@@ -23,12 +31,12 @@ class SendEmailActivityTest {
 
     @BeforeEach
     void init(){
-        activity = new SendEmailActivityImpl(emailSenderServiceMock);
+        activity = new SendEmailActivityImpl(templateResolverServiceMock, emailSenderServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(emailSenderServiceMock);
+        Mockito.verifyNoMoreInteractions(templateResolverServiceMock, emailSenderServiceMock);
     }
 
     @Test
@@ -83,5 +91,36 @@ class SendEmailActivityTest {
 
         // Then
         Mockito.verify(emailSenderServiceMock).send(emailDTO);
+    }
+
+    @Test
+    void whenSendTemplatedEmailThenOk(){
+        // Given
+        EmailTemplateNames templateName = EmailTemplateNames.INGESTION_PAGOPA_RT;
+        Map<String, String> params = Map.of(
+                "var1", "VALUE1",
+                "var2", "VALUE2",
+                "var3", "VALUE3",
+                "var4", "VALUE4",
+                "var5", "VALUE5"
+        );
+        TemplatedEmailDTO templatedEmailDTO = new TemplatedEmailDTO(templateName, new String[]{"TO"}, new String[]{"CC"}, params);
+
+        EmailTemplate template = new EmailTemplate("SUBJECT %var1% %var2%", "BODY %var3% %var4%");
+        Mockito.when(templateResolverServiceMock.resolve(templateName))
+                .thenReturn(template);
+
+        // When
+        activity.sendTemplatedEmail(templatedEmailDTO);
+
+        // Then
+        Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
+            Assertions.assertSame(templatedEmailDTO.getTo(), e.getTo());
+            Assertions.assertSame(templatedEmailDTO.getCc(), e.getCc());
+            Assertions.assertEquals("SUBJECT VALUE1 VALUE2", e.getMailSubject());
+            Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
+
+            return true;
+        }));
     }
 }

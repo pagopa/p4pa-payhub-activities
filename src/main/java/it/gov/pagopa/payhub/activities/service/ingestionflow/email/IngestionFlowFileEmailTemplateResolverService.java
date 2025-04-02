@@ -18,7 +18,7 @@ public class IngestionFlowFileEmailTemplateResolverService {
     }
 
     public EmailTemplate resolve(IngestionFlowFile ingestionFlowFileDTO, boolean success) {
-        EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates ingestionFlowOutcomeTemplates = switch (ingestionFlowFileDTO.getIngestionFlowFileType()) {
+        EmailTemplatesConfiguration.EmailOutcomeBasedTemplates ingestionFlowOutcomeTemplates = switch (ingestionFlowFileDTO.getIngestionFlowFileType()) {
             case IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING -> emailTemplatesConfiguration.getPaymentsReportingFlow();
             case IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI -> emailTemplatesConfiguration.getTreasuryOpiFlow();
             case IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS -> emailTemplatesConfiguration.getDpInstallmentsFlow();

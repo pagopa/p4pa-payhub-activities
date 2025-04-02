@@ -47,7 +47,7 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
 
     void test(
             IngestionFlowFile.IngestionFlowFileTypeEnum flowType,
-            Function<EmailTemplatesConfiguration, EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates> getFlowTypeOutcomeTemplate,
+            Function<EmailTemplatesConfiguration, EmailTemplatesConfiguration.EmailOutcomeBasedTemplates> getFlowTypeOutcomeTemplate,
             boolean success
     ) {
         // Given
@@ -55,7 +55,7 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
         ingestionFlowFileDTO.setIngestionFlowFileType(flowType);
         EmailTemplate expectedResult = new EmailTemplate();
 
-        EmailTemplatesConfiguration.IngestionFlowEmailOutcomeTemplates mockedFlowTypeOutcomeTemplate = getFlowTypeOutcomeTemplate.apply(emailTemplatesConfigurationMock);
+        EmailTemplatesConfiguration.EmailOutcomeBasedTemplates mockedFlowTypeOutcomeTemplate = getFlowTypeOutcomeTemplate.apply(emailTemplatesConfigurationMock);
         Mockito.when(success
                         ? mockedFlowTypeOutcomeTemplate.getOk()
                         : mockedFlowTypeOutcomeTemplate.getKo())
