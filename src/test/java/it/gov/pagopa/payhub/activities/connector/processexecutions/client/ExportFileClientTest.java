@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
+import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.PaidExportFileEntityControllerApi;
@@ -123,13 +124,17 @@ class ExportFileClientTest {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
+        String filePath = "filePath";
+        String fileName = "fileName";
+        Long fileSize = 20L;
+        Long numTotalRows = 2L;
 
         Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(exportFileEntityExtendedControllerApiMock);
-        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, ""))
+        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, ""))
                 .thenReturn(1);
         //when
-        Integer result = exportFileClient.updateStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "", accessToken);
+        Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows,""),accessToken);
         //then
         Assertions.assertEquals(1, result);
     }
@@ -139,13 +144,17 @@ class ExportFileClientTest {
         //given
         Long exportFileId = 1L;
         String accessToken = "accessToken";
+        String filePath = "filePath";
+        String fileName = "fileName";
+        Long fileSize = 20L;
+        Long numTotalRows = 2L;
 
         Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(exportFileEntityExtendedControllerApiMock);
-        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, ""))
+        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, ""))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
         //when
-        Integer result = exportFileClient.updateStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "", accessToken);
+        Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, ""), accessToken);
         //then
         Assertions.assertNull(result);
     }

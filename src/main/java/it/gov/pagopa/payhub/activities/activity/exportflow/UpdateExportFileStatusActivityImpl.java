@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
+import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -22,11 +22,11 @@ public class UpdateExportFileStatusActivityImpl implements UpdateExportFileStatu
     }
 
     @Override
-    public void updateStatus(Long exportFileId, ExportFileStatus oldStatus, ExportFileStatus newStatus) {
-        log.info("Updating ExportFile {} to new status {} from {}", exportFileId, newStatus, oldStatus);
-        if(exportFileService.updateStatus(exportFileId, oldStatus, newStatus, null) != 1){
-            throw new ExportFileNotFoundException("Cannot update ExportFile having id " + exportFileId
-                + " to status " + newStatus + " from status " + oldStatus);
+    public void updateStatus(UpdateStatusRequest updateStatusRequest) {
+        log.info("Updating ExportFile {} to new status {} from {}", updateStatusRequest.getExportFileId(), updateStatusRequest.getNewStatus(), updateStatusRequest.getOldStatus());
+        if(exportFileService.updateStatus(updateStatusRequest) != 1){
+            throw new ExportFileNotFoundException("Cannot update ExportFile having id " + updateStatusRequest.getExportFileId()
+                + " to status " + updateStatusRequest.getNewStatus() + " from status " + updateStatusRequest.getOldStatus());
         }
     }
 }

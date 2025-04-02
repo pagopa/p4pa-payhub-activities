@@ -94,7 +94,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     void whenGetExportFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> processExecutionsApisHolder.getExportFileEntityExtendedControllerApi(accessToken)
-                        .updateExportFileStatus(1L, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, ""),
+                        .updateExportFileStatus(1L, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "filePath", "fileName", 20L,2L, ""),
                 new ParameterizedTypeReference<>() {},
                 processExecutionsApisHolder::unload);
     }
