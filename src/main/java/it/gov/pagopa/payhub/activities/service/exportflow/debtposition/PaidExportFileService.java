@@ -5,8 +5,8 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileSer
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallmentExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.InstallmentExportFlowFileDTOMapper;
-import it.gov.pagopa.payhub.activities.service.CsvService;
-import it.gov.pagopa.payhub.activities.service.FileArchiverService;
+import it.gov.pagopa.payhub.activities.service.files.CsvService;
+import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;

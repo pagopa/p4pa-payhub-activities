@@ -93,7 +93,7 @@ class ReceiptPagopaEmailConfigurerServiceTest {
     //then
     Assertions.assertNotNull(result);
     Assertions.assertEquals(1, result.size());
-    Assertions.assertEquals("installmentDebtor@mail.it", result.get(0));
+    Assertions.assertEquals("installmentDebtor@mail.it", result.getFirst());
   }
 
   @Test
@@ -128,16 +128,10 @@ class ReceiptPagopaEmailConfigurerServiceTest {
 
     //verify
     Assertions.assertNotNull(response);
-    Assertions.assertNotNull(response.getParams());
     Assertions.assertNotNull(response.getMailSubject());
     Assertions.assertNotNull(response.getHtmlText());
     Assertions.assertEquals("subject", response.getMailSubject());
     Assertions.assertEquals("body noticeNumber", response.getHtmlText());
-    Assertions.assertEquals("companyName", response.getParams().get("companyName"));
-    Assertions.assertEquals("orgFiscalCode", response.getParams().get("orgFiscalCode"));
-    Assertions.assertEquals("noticeNumber", response.getParams().get("noticeNumber"));
-    Assertions.assertEquals("1.234,56 €", response.getParams().get("amount"));
-    Assertions.assertEquals("21/02/2025 10:30:23", response.getParams().get("paymentDate"));
   }
 
 }

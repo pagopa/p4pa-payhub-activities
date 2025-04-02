@@ -2,8 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
-import it.gov.pagopa.payhub.activities.service.XMLUnmarshallerService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting.FlussoRiversamentoUnmarshallerService;
+import it.gov.pagopa.payhub.activities.service.files.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.BeforeEach;

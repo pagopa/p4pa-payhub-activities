@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.email;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
-import it.gov.pagopa.payhub.activities.service.EmailSenderService;
+import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -32,15 +32,15 @@ class SendEmailActivityTest {
     }
 
     @Test
-    void givenNoDestinationWhenSendThenInvalidEmailConfigurationException() {
+    void givenNoDestinationWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setTo(null);
 
         // When
-        InvalidEmailConfigurationException exNullArray = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.send(emailDTO));
+        InvalidEmailConfigurationException exNullArray = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
         emailDTO.setTo(new String[]{""});
-        InvalidEmailConfigurationException exEmptyDestination = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.send(emailDTO));
+        InvalidEmailConfigurationException exEmptyDestination = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a recipient", exNullArray.getMessage());
@@ -48,38 +48,38 @@ class SendEmailActivityTest {
     }
 
     @Test
-    void givenNoSubjectWhenSendThenInvalidEmailConfigurationException() {
+    void givenNoSubjectWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setMailSubject(null);
 
         // When
-        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.send(emailDTO));
+        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a subject", ex.getMessage());
     }
 
     @Test
-    void givenNoBodyWhenSendThenInvalidEmailConfigurationException() {
+    void givenNoBodyWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setHtmlText(null);
 
         // When
-        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.send(emailDTO));
+        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a body", ex.getMessage());
     }
 
     @Test
-    void givenCompleteConfigurationWhenSendThenOk() {
+    void givenCompleteConfigurationWhenSendEmailThenOk() {
         // Given
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
 
         // When
-        activity.send(emailDTO);
+        activity.sendEmail(emailDTO);
 
         // Then
         Mockito.verify(emailSenderServiceMock).send(emailDTO);

@@ -34,7 +34,6 @@ public class IngestionFlowFileEmailContentConfigurerService {
 
         Map<String, String> mailParams = getMailParameters(ingestionFlowFileDTO, success);
         EmailDTO emailDTO = new EmailDTO();
-        emailDTO.setParams(mailParams);
         emailDTO.setMailSubject(StringSubstitutor.replace(template.getSubject(), mailParams, "{", "}"));
         String plainText = Jsoup.clean(
                 StringSubstitutor.replace(template.getBody(), mailParams, "{", "}"),

@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.csv;
 
 import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
-import it.gov.pagopa.payhub.activities.service.CsvService;
+import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import org.junit.jupiter.api.Test;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;

@@ -60,7 +60,6 @@ class IngestionFlowFileEmailContentConfigurerServiceTest {
         EmailDTO result = contentConfigurerService.configure(ingestionFlowFileDTO, success);
 
         // Then
-        result.setParams(null);
         Assertions.assertTrue(result.getMailSubject().startsWith("SUBJECTOK_fileName.csv_3_TEXTOK_"), "Unexpected mail subject: " + result.getMailSubject());
         Assertions.assertTrue(result.getHtmlText().startsWith("BODYOK_fileName.csv_3_TEXTOK_"), "Unexpected html text: " + result.getHtmlText());
     }
@@ -84,7 +83,6 @@ class IngestionFlowFileEmailContentConfigurerServiceTest {
         EmailDTO result = contentConfigurerService.configure(ingestionFlowFileDTO, success);
 
         // Then
-        result.setParams(null);
         String localDate = LocalDate.now().format(DateTimeFormatter.ofPattern("EEE, MMM dd yyyy, "));
         Assertions.assertTrue(result.getMailSubject().startsWith("SUBJECTKO_fileName.csv_3_TEXTKO_"+localDate), "Unexpected mail subject: " + result.getMailSubject());
         Assertions.assertTrue(result.getHtmlText().startsWith("BODYKO_fileName.csv_3_TEXTKO_"+localDate), "Unexpected html text: " + result.getHtmlText());

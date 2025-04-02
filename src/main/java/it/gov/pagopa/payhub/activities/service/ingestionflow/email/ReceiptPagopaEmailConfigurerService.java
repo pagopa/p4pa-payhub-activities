@@ -50,7 +50,6 @@ public class ReceiptPagopaEmailConfigurerService {
   public EmailDTO configure(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     Map<String, String> mailParams = getMailParameters(receiptDTO);
     return EmailDTO.builder()
-      .params(getMailParameters(receiptDTO))
       .mailSubject(StringSubstitutor.replace(receivedReceiptEmailTemplate.getSubject(), mailParams, "{", "}"))
       .htmlText(Jsoup.clean(
         StringSubstitutor.replace(receivedReceiptEmailTemplate.getBody(), mailParams, "{", "}"),

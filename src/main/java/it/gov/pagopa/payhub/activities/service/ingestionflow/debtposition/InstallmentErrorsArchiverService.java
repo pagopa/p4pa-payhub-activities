@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
-import it.gov.pagopa.payhub.activities.service.CsvService;
-import it.gov.pagopa.payhub.activities.service.ErrorArchiverService;
-import it.gov.pagopa.payhub.activities.service.FileArchiverService;
+import it.gov.pagopa.payhub.activities.service.files.CsvService;
+import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
+import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

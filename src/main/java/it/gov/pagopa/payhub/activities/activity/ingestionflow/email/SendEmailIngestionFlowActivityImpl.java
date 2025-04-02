@@ -37,7 +37,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         EmailDTO emailDTO = contentConfigurerService.configure(ingestionFlowFileDTO, success);
         destinationRetrieverService.configure(ingestionFlowFileDTO, emailDTO);
 
-        sendEmailActivity.send(emailDTO);
+        sendEmailActivity.sendEmail(emailDTO);
     }
 
     private IngestionFlowFile retrieveIngestionFlowFileRecord(Long ingestionFlowFileId) {

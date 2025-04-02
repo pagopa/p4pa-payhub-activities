@@ -80,7 +80,7 @@ class SendEmailIngestionFlowActivityTest {
 
         // Then
         Mockito.verify(destinationRetrieverServiceMock).configure(ingestionFlowFileDTO, emailDTO);
-        Mockito.verify(sendEmailActivityMock).send(emailDTO);
+        Mockito.verify(sendEmailActivityMock).sendEmail(emailDTO);
 
     }
 

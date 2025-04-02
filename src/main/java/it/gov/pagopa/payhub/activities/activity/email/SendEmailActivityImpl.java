@@ -1,8 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
+import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
-import it.gov.pagopa.payhub.activities.service.EmailSenderService;
+import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,7 @@ public class SendEmailActivityImpl implements SendEmailActivity {
     }
 
     @Override
-    public void send(EmailDTO email) {
+    public void sendEmail(EmailDTO email) {
         log.info("Sending email");
         validate(email);
         emailSenderService.send(email);
@@ -37,5 +38,10 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         if(StringUtils.isEmpty(email.getHtmlText())){
             throw new InvalidEmailConfigurationException("Cannot send an email without a body");
         }
+    }
+
+    @Override
+    public void sendTemplatedEmail(TemplatedEmailDTO email) {
+
     }
 }

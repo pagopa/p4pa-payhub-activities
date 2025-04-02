@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFile
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
-import it.gov.pagopa.payhub.activities.service.FileArchiverService;
+import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryOpiParserService;

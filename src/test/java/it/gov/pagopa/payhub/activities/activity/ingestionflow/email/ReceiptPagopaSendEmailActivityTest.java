@@ -31,7 +31,7 @@ class ReceiptPagopaSendEmailActivityTest {
 
 
   @Test
-  void givenValidReceiptAndInstallmentWhenSendMailThenOk() {
+  void givenValidReceiptAndInstallmentWhenSendEmailMailThenOk() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
@@ -47,12 +47,12 @@ class ReceiptPagopaSendEmailActivityTest {
     // Then
     Mockito.verify(receiptPagopaEmailConfigurerServiceMock, Mockito.times(1)).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     Mockito.verify(receiptPagopaEmailConfigurerServiceMock, Mockito.times(1)).configure(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock, Mockito.times(1)).send(
+    Mockito.verify(sendEmailActivityMock, Mockito.times(1)).sendEmail(
       Mockito.argThat(e -> Arrays.equals(e.getTo(), recipients.toArray(new String[0]))));
   }
 
   @Test
-  void givenNoInstallmentWhenSendMailThenNotSent() {
+  void givenNoInstallmentWhenSendEmailMailThenNotSent() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
 
@@ -64,7 +64,7 @@ class ReceiptPagopaSendEmailActivityTest {
   }
 
   @Test
-  void givenNoRecipientsWhenSendMailThenNotSent() {
+  void givenNoRecipientsWhenSendEmailMailThenNotSent() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
