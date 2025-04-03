@@ -1,5 +1,16 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
@@ -14,6 +25,13 @@ import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,18 +40,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaidExportFlowFileServiceTest {
@@ -51,7 +57,6 @@ class PaidExportFlowFileServiceTest {
 
     private final Path workingDirectory = Path.of("build","tmp");
     private final int pageSize = 20;
-    private final Class<PaidInstallmentExportFlowFileDTO> csvRowDtoClass = PaidInstallmentExportFlowFileDTO.class ;
     private final String sharedFolder = "shared";
     private final String relativeFileFolder = Path.of("export", "paid").toString();
     private PodamFactory podamFactory;
@@ -61,7 +66,7 @@ class PaidExportFlowFileServiceTest {
     @BeforeEach
     void setUp() {
         String filenamePrefix = "EXPORT";
-        paidExportFlowFileService = new PaidExportFileService(csvServiceMock, csvRowDtoClass, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, installmentExportFlowFileDTOMapperMock);
+        paidExportFlowFileService = new PaidExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, installmentExportFlowFileDTOMapperMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -218,6 +223,7 @@ class PaidExportFlowFileServiceTest {
         assertEquals("EXPORT_1.zip", result.getFileName());
         assertEquals(relativeFileFolder, result.getFilePath());
         assertEquals(5, result.getExportedRows());
+        assertEquals(LocalDate.now(), result.getExportDate());
     }
 
     @Test
