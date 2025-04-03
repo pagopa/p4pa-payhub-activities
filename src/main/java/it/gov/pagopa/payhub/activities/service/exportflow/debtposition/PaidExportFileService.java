@@ -12,14 +12,13 @@ import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 @Lazy
@@ -34,7 +33,6 @@ public class PaidExportFileService extends BaseExportFileService<PaidExportFile,
 
 
     public PaidExportFileService(CsvService csvService,
-                                 Class<PaidInstallmentExportFlowFileDTO> csvRowDtoClass,
                                  FileArchiverService fileArchiverService,
                                  @Value("${folders.tmp}") Path workingDirectory,
                                  @Value("${export-flow-files.paid.relative-file-folder}")String relativeFileFolder,
@@ -46,7 +44,7 @@ public class PaidExportFileService extends BaseExportFileService<PaidExportFile,
                                  InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper
                                      ) {
 
-        super(csvService, csvRowDtoClass, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix, Path.of(sharedFolder));
+        super(csvService, PaidInstallmentExportFlowFileDTO.class, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix, Path.of(sharedFolder));
         this.pageSize = pageSize;
         this.exportFileService = exportFileService;
         this.dataExportService = dataExportService;

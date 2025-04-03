@@ -7,11 +7,11 @@ import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class BaseExportFileService<E,F,D,C> {
@@ -66,6 +66,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
                     .fileName(zipFilePath.getFileName().toString())
                     .filePath(relativeFileFolder)
                     .exportedRows(exportedRows[0])
+                    .exportDate(LocalDate.now())
                     .build();
 
         }else {
