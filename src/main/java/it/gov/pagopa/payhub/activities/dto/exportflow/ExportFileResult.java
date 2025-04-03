@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.exportflow;
 
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +20,6 @@ public class ExportFileResult {
     private String fileName;
     /** The number of exported rows correctly handled */
     private Long exportedRows;
-
+    /** The export date */
+    private LocalDate exportDate;
 }
