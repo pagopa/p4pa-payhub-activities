@@ -83,7 +83,9 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
     PaSendRTV2Request paSendRTV2Request = receiptParserService.parseReceiptPagopaFile(fileToProcess, ingestionFlowFileDTO);
 
     //map to DTO
-    return receiptMapper.map(paSendRTV2Request);
+    ReceiptWithAdditionalNodeDataDTO dto = receiptMapper.map(paSendRTV2Request);
+    dto.setIngestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId());
+    return dto;
   }
 
 }
