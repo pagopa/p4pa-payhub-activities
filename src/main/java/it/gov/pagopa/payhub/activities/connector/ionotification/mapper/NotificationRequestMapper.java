@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationPlaceholderResolverService;
+import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationGenericPlaceholderResolverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
@@ -19,10 +19,10 @@ import static java.util.stream.Collectors.groupingBy;
 @Lazy
 public class NotificationRequestMapper {
 
-    private final IoNotificationPlaceholderResolverService ioNotificationPlaceholderResolverService;
+    private final IoNotificationGenericPlaceholderResolverService ioNotificationGenericPlaceholderResolverService;
 
-    public NotificationRequestMapper(IoNotificationPlaceholderResolverService ioNotificationPlaceholderResolverService) {
-        this.ioNotificationPlaceholderResolverService = ioNotificationPlaceholderResolverService;
+    public NotificationRequestMapper(IoNotificationGenericPlaceholderResolverService ioNotificationGenericPlaceholderResolverService) {
+        this.ioNotificationGenericPlaceholderResolverService = ioNotificationGenericPlaceholderResolverService;
     }
 
     public List<NotificationRequestDTO> map(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO) {
@@ -71,8 +71,8 @@ public class NotificationRequestMapper {
         notificationRequestDTO.setOrgId(debtPositionDTO.getOrganizationId());
         notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionDTO.getDebtPositionTypeOrgId());
         if (ioNotificationDTO.getIoTemplateSubject() != null && ioNotificationDTO.getIoTemplateMessage() != null && ioNotificationDTO.getServiceId() != null) {
-            notificationRequestDTO.setSubject(ioNotificationPlaceholderResolverService.applyDefaultPlaceholder(ioNotificationDTO.getIoTemplateSubject(), debtPositionDTO, installmentDTO));
-            notificationRequestDTO.setMarkdown(ioNotificationPlaceholderResolverService.applyDefaultPlaceholder(ioNotificationDTO.getIoTemplateMessage(), debtPositionDTO, installmentDTO));
+            notificationRequestDTO.setSubject(ioNotificationGenericPlaceholderResolverService.applyDefaultPlaceholder(ioNotificationDTO.getIoTemplateSubject(), debtPositionDTO, installmentDTO));
+            notificationRequestDTO.setMarkdown(ioNotificationGenericPlaceholderResolverService.applyDefaultPlaceholder(ioNotificationDTO.getIoTemplateMessage(), debtPositionDTO, installmentDTO));
             notificationRequestDTO.setServiceId(ioNotificationDTO.getServiceId());
         }
         notificationRequestDTO.setAmount(installmentDTO.getAmountCents());

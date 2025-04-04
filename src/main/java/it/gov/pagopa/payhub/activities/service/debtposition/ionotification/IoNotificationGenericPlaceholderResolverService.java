@@ -5,18 +5,17 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static it.gov.pagopa.payhub.activities.util.IoNotificationPlaceholderUtils.ITALIAN_DATE_FORMAT;
+import static it.gov.pagopa.payhub.activities.util.IoNotificationPlaceholderUtils.applyPlaceholder;
 import static it.gov.pagopa.payhub.activities.util.Utilities.centsAmountToEuroString;
 
 @Service
 @Lazy
-public class IoNotificationPlaceholderResolverService {
-
-    private static final DateTimeFormatter ITALIAN_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+public class IoNotificationGenericPlaceholderResolverService {
 
     public String applyDefaultPlaceholder(String markdown, DebtPositionDTO debtPositionDTO, InstallmentDTO installment) {
         Map<String, String> placeholders = new HashMap<>();
@@ -33,12 +32,5 @@ public class IoNotificationPlaceholderResolverService {
         placeholders.put("%dataScadenza%", formattedDueDate);
 
         return applyPlaceholder(markdown, placeholders);
-    }
-
-    public String applyPlaceholder(String markdown, Map<String, String> placeholders) {
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            markdown = markdown.replace(entry.getKey(), entry.getValue());
-        }
-        return markdown.replaceAll("\\s{2,}", " ").trim();
     }
 }
