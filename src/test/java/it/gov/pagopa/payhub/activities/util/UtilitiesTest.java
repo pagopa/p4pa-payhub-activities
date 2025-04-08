@@ -135,4 +135,11 @@ class UtilitiesTest {
     void givenNullUriWhenRemovePiiFromURIThenOk(){
         Assertions.assertNull(Utilities.removePiiFromURI(null));
     }
+
+    @Test
+    void iuv2navShouldPrependAuxDigit() {
+        String iuv = "12345";
+        String result = Utilities.iuv2nav(iuv);
+        assertEquals("312345", result);
+    }
 }

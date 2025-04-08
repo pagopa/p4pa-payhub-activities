@@ -13,7 +13,6 @@ import java.util.List;
  */
 @Service
 public class PaymentsReporting2ReceiptMapper {
-	public static final String NOTICE_NUMBER_PREFIX = "3";
 	public static final String ANONYMOUS_PERSON = "ANONIMO";
 	public static final String ALIAS_TEMPLATE = "CODE_%s_" + ReceiptOriginType.PAYMENTS_REPORTING.getValue();
 	public static final String CHANNEL = "BATCH";
@@ -28,7 +27,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.creditorReferenceId(paymentsReporting.getIuv())
 			.orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
 			.outcome(paymentsReporting.getPaymentOutcomeCode())
-			.noticeNumber(NOTICE_NUMBER_PREFIX + paymentsReporting.getIuv())
+			.noticeNumber(Utilities.iuv2nav(paymentsReporting.getIuv()))
 			.paymentAmountCents(paymentsReporting.getAmountPaidCents())
 			.description(paymentsReporting.getIuf())
 			.companyName(organization.getOrgName())
