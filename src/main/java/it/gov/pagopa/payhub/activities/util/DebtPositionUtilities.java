@@ -12,6 +12,7 @@ import java.util.Set;
 public class DebtPositionUtilities {
     private DebtPositionUtilities(){}
 
+    private static final String AUX_DIGIT = "3";
     private static final Set<InstallmentStatus> expirableStatuses = Set.of(
             InstallmentStatus.UNPAID,
             InstallmentStatus.UNPAYABLE
@@ -27,4 +28,6 @@ public class DebtPositionUtilities {
                 .min(Comparator.naturalOrder())
                 .orElse(null);
     }
+
+    public static String iuv2nav(String iuv) { return AUX_DIGIT + iuv;    }
 }
