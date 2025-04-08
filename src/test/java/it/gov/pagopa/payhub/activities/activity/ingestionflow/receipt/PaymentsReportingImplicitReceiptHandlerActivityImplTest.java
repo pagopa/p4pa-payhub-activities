@@ -58,7 +58,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 
 		when(paymentsReportingServiceMock.getBySemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId())).thenReturn(Optional.of(organizationFake));
-		when(paymentsReporting2ReceiptMapperMock.map2DummyReceipt(paymentsReportingFake, organizationFake.getOrgFiscalCode())).thenReturn(dummyReceiptMocked);
+		when(paymentsReporting2ReceiptMapperMock.map2DummyReceipt(paymentsReportingFake, organizationFake)).thenReturn(dummyReceiptMocked);
 		when(receiptServiceMock.createReceipt(dummyReceiptMocked)).thenReturn(dummyReceiptCreated);
 
 		// When
@@ -67,7 +67,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		// Then
 		verify(paymentsReportingServiceMock, times(1)).getBySemanticKey(paymentsReportingTransferDTO);
 		verify(organizationServiceMock, times(1)).getOrganizationById(paymentsReportingFake.getOrganizationId());
-		verify(paymentsReporting2ReceiptMapperMock, times(1)).map2DummyReceipt(paymentsReportingFake, organizationFake.getOrgFiscalCode());
+		verify(paymentsReporting2ReceiptMapperMock, times(1)).map2DummyReceipt(paymentsReportingFake, organizationFake);
 		verify(receiptServiceMock, times(1)).createReceipt(dummyReceiptMocked);
 	}
 

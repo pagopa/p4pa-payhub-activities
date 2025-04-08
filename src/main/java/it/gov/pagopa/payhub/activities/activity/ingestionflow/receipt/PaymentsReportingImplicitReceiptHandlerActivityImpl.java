@@ -44,10 +44,10 @@ public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements Paym
 				paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());
 			PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(paymentsReportingTransferDTO);
 
-			String organizationFiscalCode = organizationService.getOrganizationById(paymentsReporting.getOrganizationId()).map(Organization::getOrgFiscalCode)
+			Organization organization = organizationService.getOrganizationById(paymentsReporting.getOrganizationId())
 				.orElseThrow(() -> new InvalidValueException("Organization not found: " + paymentsReporting.getOrganizationId()));
 
-			ReceiptWithAdditionalNodeDataDTO dummyReceipt = paymentsReporting2ReceiptMapper.map2DummyReceipt(paymentsReporting, organizationFiscalCode);
+			ReceiptWithAdditionalNodeDataDTO dummyReceipt = paymentsReporting2ReceiptMapper.map2DummyReceipt(paymentsReporting, organization);
 
 			ReceiptDTO dummyReceiptCreated = receiptService.createReceipt(dummyReceipt);
 			log.info("Dummy Receipt has been created with id: {}", dummyReceiptCreated.getReceiptId());
