@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,25 +13,25 @@ import java.util.List;
  */
 @Service
 public class PaymentsReporting2ReceiptMapper {
-	public static final String CREDITOR_REFERENCE_ID_PREFIX = "3";
+	public static final String NOTICE_NUMBER_PREFIX = "3";
 	public static final String ANONYMOUS_PERSON = "ANONIMO";
 	public static final String ALIAS_TEMPLATE = "CODE_%s_" + ReceiptOriginType.PAYMENTS_REPORTING.getValue();
 	public static final String CHANNEL = "BATCH";
 	/** Taxonomy for general incomes */
 	public static final String DEFAULT_TRANSFER_CATEGORY = "9/0801100AP/";
 
-	public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, String fiscalCodePA) {
+	public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, Organization organization) {
 		return new ReceiptWithAdditionalNodeDataDTO()
 			.ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
 			.receiptOrigin(ReceiptOriginType.PAYMENTS_REPORTING)
 			.paymentReceiptId(paymentsReporting.getIur())
-			.noticeNumber(paymentsReporting.getIuv())
+			.creditorReferenceId(paymentsReporting.getIuv())
 			.orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
 			.outcome(paymentsReporting.getPaymentOutcomeCode())
-			.creditorReferenceId(CREDITOR_REFERENCE_ID_PREFIX + paymentsReporting.getIuv())
+			.noticeNumber(NOTICE_NUMBER_PREFIX + paymentsReporting.getIuv())
 			.paymentAmountCents(paymentsReporting.getAmountPaidCents())
 			.description(paymentsReporting.getIuf())
-			.companyName(String.format(ALIAS_TEMPLATE, paymentsReporting.getPaymentOutcomeCode()))
+			.companyName(organization.getOrgName())
 			.idPsp(paymentsReporting.getPspIdentifier())
 			.pspFiscalCode(paymentsReporting.getSenderPspCode())
 			.pspCompanyName(paymentsReporting.getSenderPspName())
@@ -42,7 +43,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.standin(false)
 			.debtor(buildAnonymousPerson())
 			.payer(buildAnonymousPerson())
-			.transfers(List.of(buildDummyTransfer(paymentsReporting, fiscalCodePA)));
+			.transfers(List.of(buildDummyTransfer(paymentsReporting, organization.getOrgFiscalCode())));
 	}
 
 	private PersonDTO buildAnonymousPerson() {
@@ -57,7 +58,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.idTransfer(1)
 			.transferAmountCents(paymentsReporting.getAmountPaidCents())
 			.fiscalCodePA(fiscalCodePA)
-			.remittanceInformation(String.format(ALIAS_TEMPLATE, paymentsReporting.getPaymentOutcomeCode()))
+			.remittanceInformation(ALIAS_TEMPLATE.formatted(paymentsReporting.getPaymentOutcomeCode()))
 			.transferCategory(DEFAULT_TRANSFER_CATEGORY);
 	}
 }
