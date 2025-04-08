@@ -38,10 +38,10 @@ class QueryParamsPlusEncoderInterceptorTest {
     }
 
     @Test
-    void givenWhenInterceptThen() throws IOException {
+    void givenRequestWhenInterceptThenUpdateQuery() throws IOException {
         //given
         ClientHttpResponse mockResponse = mock(ClientHttpResponse.class);
-        OffsetDateTime offsetDateTime = OffsetDateTime.now();
+        OffsetDateTime offsetDateTime = OffsetDateTime.parse("2025-04-08T11:57:03.375275400+02:00");
         String formattedDateTime = offsetDateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         URI uri = URI.create("http://example/api/resource?datetime=" + formattedDateTime);
 
