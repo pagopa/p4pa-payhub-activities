@@ -98,7 +98,7 @@ class TransferClassificationStoreServiceTest {
 		when(receiptServiceMock.getByTransferId(transferDTO.getTransferId())).thenReturn(receiptNoPII);
 		when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(transferDTO.getInstallmentId())).thenReturn(debtPositionTypeOrg);
 		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.of(installmentNoPII));
-		when(ingestionFlowFileServiceMock.findById(receiptNoPII.getIngestionFlowFileId())).thenReturn(Optional.of(ingestionFlowFile));
+		when(ingestionFlowFileServiceMock.findById(installmentNoPII.getIngestionFlowFileId())).thenReturn(Optional.of(ingestionFlowFile));
 		List<Classification> dtoList = List.of(
 			Classification.builder()
 				.organizationId(transferSemanticKeyDTO.getOrgId())
@@ -123,23 +123,23 @@ class TransferClassificationStoreServiceTest {
 				.billAmountCents(treasuryDTO.getBillAmountCents())
 				.remittanceInformation(transferDTO.getRemittanceInformation())
 				.debtPositionTypeOrgCode(debtPositionTypeOrg.getCode())
-				.receiptFileName(ingestionFlowFile.getFileName())
+				.installmentIngestionFlowFileName(ingestionFlowFile.getFileName())
 				.receiptOrgFiscalCode(receiptNoPII.getOrgFiscalCode())
 				.receiptPaymentReceiptId(receiptNoPII.getPaymentReceiptId())
 				.receiptPaymentDateTime(receiptNoPII.getPaymentDateTime())
 				.receiptPaymentRequestId(String.valueOf(receiptNoPII.getReceiptId()))
 				.receiptIdPsp(receiptNoPII.getIdPsp())
 				.receiptPspCompanyName(receiptNoPII.getPspCompanyName())
-				.receiptOrgEntityType(organization.getOrgTypeCode())
-				.receiptBeneficiaryOrgName(organization.getOrgName())
+				.organizationEntityType(organization.getOrgTypeCode())
+				.organizationName(organization.getOrgName())
 				.receiptPersonalDataId(receiptNoPII.getPersonalDataId())
 				.receiptPaymentOutcomeCode(receiptNoPII.getOutcome())
 				.receiptPaymentAmount(receiptNoPII.getPaymentAmountCents())
 				.receiptCreditorReferenceId(receiptNoPII.getCreditorReferenceId())
-				.receiptTransferAmount(transferDTO.getAmountCents())
-				.receiptTransferCategory(transferDTO.getCategory())
-				.receiptCreationDate(ingestionFlowFile.getCreationDate())
-				.receiptInstallmentBalance(installmentNoPII.getBalance())
+				.transferAmount(transferDTO.getAmountCents())
+				.transferCategory(transferDTO.getCategory())
+				.receiptCreationDate(receiptNoPII.getCreationDate())
+				.installmentBalance(installmentNoPII.getBalance())
 				.build());
 
 		when(classificationServiceMock.saveAll(dtoList)).thenReturn(dtoList.size());
