@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.sendnotification.controller.ApiClient;
 import it.gov.pagopa.pu.sendnotification.controller.BaseApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;

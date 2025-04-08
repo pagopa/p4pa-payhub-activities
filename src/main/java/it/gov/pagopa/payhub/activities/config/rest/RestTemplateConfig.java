@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.config;
+package it.gov.pagopa.payhub.activities.config.rest;
 
-import it.gov.pagopa.payhub.activities.config.interceptor.QueryParamsPlusEncoderInterceptor;
 import it.gov.pagopa.payhub.activities.performancelogger.RestInvokePerformanceLogger;
 import it.gov.pagopa.payhub.activities.util.HttpUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;

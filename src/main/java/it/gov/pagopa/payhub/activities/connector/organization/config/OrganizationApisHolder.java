@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.organization.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.organization.client.generated.*;
 import it.gov.pagopa.pu.organization.generated.ApiClient;
 import it.gov.pagopa.pu.organization.generated.BaseApi;

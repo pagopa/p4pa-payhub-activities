@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;

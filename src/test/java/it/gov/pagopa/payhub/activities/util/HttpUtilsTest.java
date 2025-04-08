@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import it.gov.pagopa.payhub.activities.config.HttpClientConfig;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientConfig;
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;

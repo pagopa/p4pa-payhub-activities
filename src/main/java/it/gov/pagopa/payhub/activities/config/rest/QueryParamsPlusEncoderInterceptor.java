@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.config.interceptor;
+package it.gov.pagopa.payhub.activities.config.rest;
 
 import jakarta.annotation.Nonnull;
 import org.springframework.http.HttpRequest;

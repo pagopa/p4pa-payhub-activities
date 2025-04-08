@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.config;
+package it.gov.pagopa.payhub.activities.config.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

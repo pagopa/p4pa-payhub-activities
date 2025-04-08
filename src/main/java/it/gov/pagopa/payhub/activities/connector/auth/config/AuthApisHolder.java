@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.auth.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.auth.controller.generated.AuthnApi;
 import it.gov.pagopa.pu.auth.controller.generated.AuthzApi;
 import it.gov.pagopa.pu.auth.generated.ApiClient;
