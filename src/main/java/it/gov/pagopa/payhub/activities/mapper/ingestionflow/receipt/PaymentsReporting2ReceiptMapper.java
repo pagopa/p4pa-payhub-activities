@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
+import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
@@ -27,7 +28,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.creditorReferenceId(paymentsReporting.getIuv())
 			.orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
 			.outcome(paymentsReporting.getPaymentOutcomeCode())
-			.noticeNumber(Utilities.iuv2nav(paymentsReporting.getIuv()))
+			.noticeNumber(DebtPositionUtilities.iuv2nav(paymentsReporting.getIuv()))
 			.paymentAmountCents(paymentsReporting.getAmountPaidCents())
 			.description(paymentsReporting.getIuf())
 			.companyName(organization.getOrgName())

@@ -22,7 +22,6 @@ public class Utilities {
     public static final int IBAN_LENGTH = 27;
     public static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
     private static final DatatypeFactory DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR;
-    public static final String AUX_DIGIT = "3";
 
     static {
         try {
@@ -147,6 +146,4 @@ public class Utilities {
     public static String centsAmountToEuroString(Long centsAmount){
         return parseBigDecimalToString(longCentsToBigDecimalEuro(centsAmount));
     }
-
-    public static String iuv2nav(String iuv) { return AUX_DIGIT + iuv;    }
 }
