@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.debtposition.client.generated.*;
 import it.gov.pagopa.pu.debtposition.generated.BaseApi;
 import jakarta.annotation.PreDestroy;

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.classification.client.generated.*;
 import it.gov.pagopa.pu.classification.generated.ApiClient;
 import it.gov.pagopa.pu.classification.generated.BaseApi;

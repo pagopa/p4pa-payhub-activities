@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.ionotification.client.generated.IoNotificationApi;
 import it.gov.pagopa.pu.ionotification.generated.ApiClient;
 import it.gov.pagopa.pu.ionotification.generated.BaseApi;
