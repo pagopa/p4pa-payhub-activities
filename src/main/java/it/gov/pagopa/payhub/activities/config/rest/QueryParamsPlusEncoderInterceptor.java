@@ -24,10 +24,16 @@ public class QueryParamsPlusEncoderInterceptor implements ClientHttpRequestInter
       @Nonnull
       public URI getURI() {
         URI uri = super.getURI();
-        String escapedQuery = uri.getRawQuery().replace(PLUS_RAW, PLUS_ENCODED);
-        return UriComponentsBuilder.fromUri(uri)
-                .replaceQuery(escapedQuery)
-                .build(true).toUri();
+        String escapedQuery = uri.getRawQuery();
+
+        if(escapedQuery != null){
+          escapedQuery = escapedQuery.replace(PLUS_RAW, PLUS_ENCODED);
+          return UriComponentsBuilder.fromUri(uri)
+                  .replaceQuery(escapedQuery)
+                  .build(true).toUri();
+        }else {
+          return uri;
+        }
       }
     };
     return execution.execute(encodedRequest, body);
