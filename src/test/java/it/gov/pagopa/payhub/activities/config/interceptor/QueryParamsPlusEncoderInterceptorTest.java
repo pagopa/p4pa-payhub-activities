@@ -63,4 +63,28 @@ class QueryParamsPlusEncoderInterceptorTest {
         assertEquals("http://example/api/resource?datetime=2025-04-08T11:57:03.3752754%2B02:00", interceptedUri.toString());
     }
 
+    @Test
+    void givenNullQueryWhenInterceptThenReturnUri() throws IOException {
+        //given
+        ClientHttpResponse mockResponse = mock(ClientHttpResponse.class);
+
+        URI uri = URI.create("http://example/api/resource");
+
+        when(mockRequest.getURI()).thenReturn(uri);
+        when(mockExecution.execute(Mockito.any(), Mockito.eq(mockBody))).thenReturn(mockResponse);
+
+        //when
+        ClientHttpResponse actualResponse = queryParamsPlusEncoderInterceptor.intercept(mockRequest, mockBody, mockExecution);
+
+        //then
+        assertEquals(mockResponse, actualResponse);
+
+        ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
+        Mockito.verify(mockExecution).execute(requestCaptor.capture(), Mockito.eq(mockBody));
+        HttpRequest interceptedRequest = requestCaptor.getValue();
+
+        URI interceptedUri = interceptedRequest.getURI();
+        assertEquals("http://example/api/resource", interceptedUri.toString());
+    }
+
 }
