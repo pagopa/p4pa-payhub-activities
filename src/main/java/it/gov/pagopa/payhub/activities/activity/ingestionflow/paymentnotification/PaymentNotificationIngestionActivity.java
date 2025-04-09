@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentnotificati
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileActivityResult;
+
 /**
  * Interface for the PaymentNotificationIngestionActivity.
  * Defines methods for processing payment notification files based on an IngestionFlowFile ID.
