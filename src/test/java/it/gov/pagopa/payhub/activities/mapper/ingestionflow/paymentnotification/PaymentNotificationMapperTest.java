@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification;
 
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Person;
 import it.gov.pagopa.pu.classification.dto.generated.PersonEntityType;
@@ -66,6 +67,7 @@ class PaymentNotificationMapperTest {
     Assertions.assertEquals("testLocation", result.getDebtor().getLocation());
     Assertions.assertEquals("testProvince", result.getDebtor().getProvince());
     Assertions.assertEquals("testNation", result.getDebtor().getNation());
+    TestUtils.checkNotNullFields(result,"paymentNotificationId","creationDate","updateDate","updateOperatorExternalId");
   }
 
   @Test
@@ -92,6 +94,7 @@ class PaymentNotificationMapperTest {
     Assertions.assertEquals("testLocation", result.getLocation());
     Assertions.assertEquals("testProvince", result.getProvince());
     Assertions.assertEquals("testNation", result.getNation());
+    TestUtils.checkNotNullFields(result,"email");
   }
 
 }
