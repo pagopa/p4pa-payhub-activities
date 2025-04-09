@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperatio
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Lazy
 @Service
@@ -43,7 +45,7 @@ public class IONotificationService {
         if (paymentEventType != null) {
             IONotificationDTO ioNotificationDTO = baseOpsMessagesResolverService.resolveIoMessages(debtPositionDTO, paymentEventType, ioMessages);
 
-            if(ioNotificationDTO==null) {
+            if (ioNotificationDTO == null) {
                 ioNotificationDTO = debtPositionTypeOrgService
                         .getDefaultIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), paymentEventType);
             }
@@ -64,7 +66,7 @@ public class IONotificationService {
                 debtPositionDTO, ioNotificationDTO
         );
 
-        if(notifications.isEmpty()){
+        if (notifications.isEmpty()) {
             return null;
         }
 
@@ -75,13 +77,27 @@ public class IONotificationService {
                 .build();
 
         out.setMessages(notifications.stream()
-                .map(r -> (DebtPositionIoNotificationDTO.IoMessage)DebtPositionIoNotificationDTO.IoMessage.builder()
-                        .notificationId(ioNotificationFacadeService.sendMessage(r).getNotificationId())
-                        .nav(r.getNav())
-                        .serviceId(r.getServiceId())
-                        .build())
+                .map(r -> {
+                    MessageResponseDTO messageResponseDTO = ioNotificationFacadeService.sendMessage(r);
+                    if (messageResponseDTO != null) {
+                        return (DebtPositionIoNotificationDTO.IoMessage) DebtPositionIoNotificationDTO.IoMessage.builder()
+                                .notificationId(messageResponseDTO.getNotificationId())
+                                .nav(r.getNav())
+                                .serviceId(r.getServiceId())
+                                .build();
+                    } else {
+                        log.info("No notification has been send from io-notification application for NAV {} (serviceId: {}) of organization {} and debtPositionTypeOrgId {}",
+                                r.getNav(), r.getServiceId(), r.getOrgId(), r.getDebtPositionTypeOrgId());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
                 .toList()
         );
+
+        if(out.getMessages().isEmpty()){
+            return null;
+        }
 
         return out;
     }

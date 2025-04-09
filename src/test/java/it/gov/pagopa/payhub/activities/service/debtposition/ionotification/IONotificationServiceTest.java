@@ -73,7 +73,7 @@ class IONotificationServiceTest {
     }
 
     @Test
-    void givenNoIoMessagesWhenSendMessageThenOk() {
+    void givenNoIoMessagesParameterWhenSendMessageThenOk() {
         // Given
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
         NotificationRequestDTO notificationRequestDTO1 = buildNotificationRequestDTO();
@@ -122,7 +122,7 @@ class IONotificationServiceTest {
     }
 
     @Test
-    void givenIoMessagesBaseOpsWhenSendMessageThenSendThem() {
+    void givenIoMessagesBaseOpsParameterWhenSendMessageThenSendThem() {
         // Given
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
         NotificationRequestDTO notificationRequestDTO1 = buildNotificationRequestDTO();
@@ -179,7 +179,7 @@ class IONotificationServiceTest {
     }
 
     @Test
-    void givenSendMessageWhenPaymentEventTypeNullThenReturnMessageResponseEmpty() {
+    void givenPaymentEventTypeNullWhenSendMessageThenReturnMessageResponseEmpty() {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
@@ -202,7 +202,7 @@ class IONotificationServiceTest {
     }
 
     @Test
-    void givenSendMessageWhenNotificationDetailsNullThenReturnMessageResponseEmpty() {
+    void givenNotificationDetailsNullWhenSendMessageThenReturnMessageResponseEmpty() {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
         IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
@@ -221,6 +221,45 @@ class IONotificationServiceTest {
                 .thenReturn(null);
 
         when(debtPositionTypeOrgServiceMock.getDefaultIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
+                .thenReturn(null);
+
+        // When
+        DebtPositionIoNotificationDTO result = service.sendMessage(debtPositionDTO, iupdSyncStatusUpdateDTOMap, ioMessages);
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void givenNoMessageSendWhenSendMessageThenReturnMessageResponseEmpty() {
+        // Given
+        IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
+        NotificationRequestDTO notificationRequestDTO1 = buildNotificationRequestDTO();
+        NotificationRequestDTO notificationRequestDTO2 = buildNotificationRequestDTO();
+        NotificationRequestDTO notificationRequestDTO3 = buildNotificationRequestDTO();
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
+                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
+
+        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
+        iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
+        iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
+
+        GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages = new GenericWfExecutionConfig.IONotificationBaseOpsMessages();
+
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPositionDTO, iupdSyncStatusUpdateDTOMap))
+                .thenReturn(DP_CREATED);
+
+        when(baseOpsMessagesResolverServiceMock.resolveIoMessages(debtPositionDTO, DP_CREATED, ioMessages))
+                .thenReturn(null);
+
+        when(debtPositionTypeOrgServiceMock.getDefaultIONotificationDetails(debtPositionDTO.getDebtPositionTypeOrgId(), DP_CREATED))
+                .thenReturn(ioNotificationDTO);
+
+        when(notificationRequestMapperMock.map(debtPositionDTO, ioNotificationDTO))
+                .thenReturn(List.of(notificationRequestDTO1, notificationRequestDTO2, notificationRequestDTO3));
+
+        when(ioNotificationFacadeServiceMock.sendMessage(any()))
                 .thenReturn(null);
 
         // When
