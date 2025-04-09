@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification.PaymentNotificationMapper;
@@ -45,11 +46,14 @@ class PaymentNotificationProcessingServiceTest {
   @Mock
   private PaymentNotificationMapper mapperMock;
 
+  @Mock
+  private PaymentNotificationService paymentNotificationServiceMock;
+
   private PaymentNotificationProcessingService service;
 
   @BeforeEach
   void setUp() {
-    service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock);
+    service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock, paymentNotificationServiceMock);
   }
 
   @Test
@@ -57,6 +61,7 @@ class PaymentNotificationProcessingServiceTest {
     PaymentNotificationIngestionFlowFileDTO dto = mock(PaymentNotificationIngestionFlowFileDTO.class);
     PaymentNotificationDTO mappedNotification = mock(PaymentNotificationDTO.class);
     Mockito.when(mapperMock.map(dto, ingestionFlowFileMock)).thenReturn(mappedNotification);
+    Mockito.when(paymentNotificationServiceMock.createPaymentNotification(mappedNotification)).thenReturn(mappedNotification);
 
     PaymentNotificationIngestionFlowFileResult result = service.processPaymentNotification(
         Stream.of(dto).iterator(),
@@ -67,9 +72,10 @@ class PaymentNotificationProcessingServiceTest {
     Assertions.assertNotNull(result.getPaymentNotificationList());
     Assertions.assertEquals(1, result.getPaymentNotificationList().size());
     Mockito.verify(mapperMock).map(dto, ingestionFlowFileMock);
+    Mockito.verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
     Mockito.verifyNoInteractions(errorsArchiverServiceMock);
   }
-
+  
   @Test
   void givenThrowExceptionWhenProcessPaymentNotificationThenAddError() throws URISyntaxException {
     // Given
@@ -80,8 +86,10 @@ class PaymentNotificationProcessingServiceTest {
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     workingDirectory = Path.of(new URI("file:///tmp"));
 
-    Mockito.when(mapperMock.map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile))
-        .thenThrow(new RuntimeException("Mapping error"));
+    PaymentNotificationDTO mappedNotification = mock(PaymentNotificationDTO.class);
+    Mockito.when(mapperMock.map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile)).thenReturn(mappedNotification);
+    Mockito.when(paymentNotificationServiceMock.createPaymentNotification(mappedNotification))
+        .thenThrow(new RuntimeException("Processing error"));
 
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
         .thenReturn("zipFileName.csv");
@@ -100,6 +108,7 @@ class PaymentNotificationProcessingServiceTest {
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
     verify(mapperMock).map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile);
+    verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
     verify(errorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), any());
     verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
   }

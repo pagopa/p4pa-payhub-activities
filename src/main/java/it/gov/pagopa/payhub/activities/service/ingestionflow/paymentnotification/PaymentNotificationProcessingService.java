@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentnotification;
 
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileResult;
@@ -21,12 +22,15 @@ public class PaymentNotificationProcessingService {
 
   private final PaymentNotificationMapper paymentNotificationMapper;
   private final PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService;
+  private final PaymentNotificationService paymentNotificationService;
 
   public PaymentNotificationProcessingService(
       PaymentNotificationMapper paymentNotificationMapper,
-      PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService) {
+      PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService,
+      PaymentNotificationService paymentNotificationService) {
     this.paymentNotificationMapper = paymentNotificationMapper;
     this.paymentNotificationErrorsArchiverService = paymentNotificationErrorsArchiverService;
+    this.paymentNotificationService = paymentNotificationService;
   }
 
 
@@ -44,12 +48,17 @@ public class PaymentNotificationProcessingService {
       PaymentNotificationIngestionFlowFileDTO paymentNotificationDTO = iterator.next();
 
       try {
-        paymentNotificationList.add(paymentNotificationMapper.map(paymentNotificationDTO, ingestionFlowFile));
+
+        PaymentNotificationDTO paymentNotificationCreated = paymentNotificationService.createPaymentNotification(
+            paymentNotificationMapper.map(paymentNotificationDTO, ingestionFlowFile));
+
+        paymentNotificationList.add(paymentNotificationCreated);
 
         processedRows++;
 
       } catch (Exception e) {
-        log.error("Error processing payment notice with iud {} and iuv {}: {}", paymentNotificationDTO.getIud(),paymentNotificationDTO.getIuv(),
+        log.error("Error processing payment notice with iud {} and iuv {}: {}",
+            paymentNotificationDTO.getIud(), paymentNotificationDTO.getIuv(),
             e.getMessage());
         PaymentNotificationErrorDTO error = new PaymentNotificationErrorDTO(
             ingestionFlowFile.getFileName(), paymentNotificationDTO.getIuv(),
@@ -61,7 +70,8 @@ public class PaymentNotificationProcessingService {
 
     String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
     return new PaymentNotificationIngestionFlowFileResult(totalRows, processedRows,
-        errorsZipFileName != null ? "Some rows have failed" : null, errorsZipFileName,paymentNotificationList);
+        errorsZipFileName != null ? "Some rows have failed" : null, errorsZipFileName,
+        paymentNotificationList);
   }
 
   private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory,

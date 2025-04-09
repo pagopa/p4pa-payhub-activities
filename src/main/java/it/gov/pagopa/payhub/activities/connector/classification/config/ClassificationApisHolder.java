@@ -27,6 +27,8 @@ public class ClassificationApisHolder {
 
     private final AssessmentsControllerApi assessmentsControllerApi;
 
+    private final PaymentNotificationApi paymentNotificationApi;
+
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
     public ClassificationApisHolder(
@@ -55,6 +57,8 @@ public class ClassificationApisHolder {
         this.treasuryEntityExtendedControllerApi = new TreasuryEntityExtendedControllerApi(apiClient);
 
         this.assessmentsControllerApi = new AssessmentsControllerApi(apiClient);
+
+        this.paymentNotificationApi = new PaymentNotificationApi(apiClient);
     }
 
     @PreDestroy
@@ -93,6 +97,10 @@ public class ClassificationApisHolder {
 
     public AssessmentsControllerApi getAssessmentsControllerApi(String accessToken){
         return getApi(accessToken, assessmentsControllerApi);
+    }
+
+    public PaymentNotificationApi getPaymentNotificationApi(String accessToken){
+        return getApi(accessToken, paymentNotificationApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
