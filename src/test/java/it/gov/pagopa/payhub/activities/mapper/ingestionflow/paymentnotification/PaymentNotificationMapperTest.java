@@ -82,6 +82,7 @@ class PaymentNotificationMapperTest {
     dto.setDebtorLocation("testLocation");
     dto.setDebtorProvince("testProvince");
     dto.setDebtorNation("testNation");
+    dto.setDebtorEmail("email@email.com");
 
     Person result = PaymentNotificationMapper.mapPersonalDataFromPaymentNotification(dto);
 
@@ -94,7 +95,7 @@ class PaymentNotificationMapperTest {
     Assertions.assertEquals("testLocation", result.getLocation());
     Assertions.assertEquals("testProvince", result.getProvince());
     Assertions.assertEquals("testNation", result.getNation());
-    TestUtils.checkNotNullFields(result,"email");
+    TestUtils.checkNotNullFields(result);
   }
 
 }

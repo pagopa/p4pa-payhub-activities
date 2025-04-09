@@ -41,6 +41,7 @@ public class PaymentNotificationMapper {
         .location(dto.getDebtorLocation())
         .province(dto.getDebtorProvince())
         .nation(dto.getDebtorNation())
+        .email(dto.getDebtorEmail())
         .build();
   }
 
