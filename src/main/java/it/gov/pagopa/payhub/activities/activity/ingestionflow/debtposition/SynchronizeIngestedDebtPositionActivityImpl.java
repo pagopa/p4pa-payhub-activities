@@ -42,8 +42,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
     public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowCompletionService workflowCompletionService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
                                                        @Value("${query-limits.debt-positions.size}") Integer pageSize,
-                                                       @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes:5}") int maxWaitingMinutes,
-                                                       @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms:1000}") int retryDelayMs) {
+                                                       @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes}") int maxWaitingMinutes,
+                                                       @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs) {
         this.debtPositionService = debtPositionService;
         this.workflowDebtPositionService = workflowDebtPositionService;
         this.workflowCompletionService = workflowCompletionService;
