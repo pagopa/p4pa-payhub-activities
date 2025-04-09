@@ -10,11 +10,13 @@ import static org.mockito.Mockito.eq;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentnotification.PaymentNotificationProcessingService;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import java.io.IOException;
@@ -147,10 +149,15 @@ class PaymentNotificationIngestionActivityImplTest {
 
 
 
-  private PaymentNotificationIngestionFlowFileActivityResult buildPaymentNotificationIngestionFlowFileResult() {
-    return PaymentNotificationIngestionFlowFileActivityResult.builder()
-        .iudList(List.of("iud1", "iud2"))
-        .organizationId(1L)
+  private PaymentNotificationIngestionFlowFileResult buildPaymentNotificationIngestionFlowFileResult() {
+    return PaymentNotificationIngestionFlowFileResult.builder()
+        .processedRows(20L)
+        .totalRows(30L)
+        .discardedFileName("dicardedFileName")
+        .errorDescription("errorDescription")
+        .paymentNotificationList(List.of(
+            buildPaymentNotificationDTO("1"),
+            buildPaymentNotificationDTO("2")))
         .build();
   }
 
@@ -190,6 +197,14 @@ class PaymentNotificationIngestionActivityImplTest {
   }
 
 
+
+  public static PaymentNotificationDTO buildPaymentNotificationDTO(String suffix) {
+    return PaymentNotificationDTO.builder()
+        .iud("iud" + suffix)
+        .iuv("iuv" + suffix)
+        .organizationId(Long.valueOf(suffix))
+        .build();
+  }
 
 
 }
