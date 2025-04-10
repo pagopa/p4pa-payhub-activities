@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -14,7 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
-public abstract class BaseIngestionFlowFileActivity<T> {
+public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileResult> {
 
 	private final IngestionFlowFileService ingestionFlowFileService;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;

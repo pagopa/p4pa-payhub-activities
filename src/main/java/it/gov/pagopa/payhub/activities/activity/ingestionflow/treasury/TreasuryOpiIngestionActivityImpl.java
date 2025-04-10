@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryErrorsArchiverService;
@@ -78,12 +78,12 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
         String discardsFileName = errorsArchiverService.archiveErrorFiles(retrievedFiles.getFirst().getParent(), ingestionFlowFileDTO);
         String errorDescription = buildErrorDescription(unsuccessfulParsedFiles, discardsFileName);
 
-        return new TreasuryIufIngestionFlowFileResult(
-                iuf2TreasuryIdMap,
-                ingestionFlowFileDTO.getOrganizationId(),
-                errorDescription,
-                discardsFileName
-        );
+        return TreasuryIufIngestionFlowFileResult.builder() // TODO fill totals
+                .iuf2TreasuryIdMap(iuf2TreasuryIdMap)
+                .organizationId(ingestionFlowFileDTO.getOrganizationId())
+                .errorDescription(errorDescription)
+                .discardedFileName(discardsFileName)
+                .build();
     }
 
     private static String buildErrorDescription(List<String> unsuccessfulParsedFiles, String discardsFileName) {

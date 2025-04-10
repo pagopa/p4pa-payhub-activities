@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 
 /**
@@ -19,5 +20,5 @@ public interface UpdateIngestionFlowStatusActivity {
      * @param newStatus the new status to set.
      */
     @ActivityMethod
-    void updateStatus(Long id, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, String codError, String discardFileName);
+    void updateStatus(Long id, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, IngestionFlowFileResult ingestionFlowFileResult);
 }

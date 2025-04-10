@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowF
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting.FlussoRiversamentoUnmarshallerService;
@@ -62,7 +62,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		PaymentsReporting first = paymentsReportings.getFirst();
 		String iuf = first.getIuf(); // The iuf is the same for entire file
 		Long organizationId = first.getOrganizationId(); // The organizationId is the same for entire file
-		return new PaymentsReportingIngestionFlowFileActivityResult(iuf, organizationId, transferSemanticKeys);
+		return new PaymentsReportingIngestionFlowFileActivityResult(iuf, organizationId, transferSemanticKeys); // TODO fill totals
 	}
 
 	/**

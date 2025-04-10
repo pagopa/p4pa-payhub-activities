@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +23,9 @@ public class UpdateIngestionFlowStatusActivityImpl implements UpdateIngestionFlo
     }
 
     @Override
-    public void updateStatus(Long id, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, String codError, String discardFileName) {
+    public void updateStatus(Long id, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, IngestionFlowFileResult ingestionFlowFileResult) {
         log.info("Updating IngestionFlowFile {} to new status {} from {}", id, newStatus, oldStatus);
-        if(ingestionFlowFileService.updateStatus(id, oldStatus, newStatus, codError, discardFileName) != 1){
+        if(ingestionFlowFileService.updateStatus(id, oldStatus, newStatus, ingestionFlowFileResult) != 1){
             throw new IngestionFlowFileNotFoundException("Cannot update ingestionFlowFile having id " + ingestionFlowFileService + " to status " + newStatus);
         }
     }
