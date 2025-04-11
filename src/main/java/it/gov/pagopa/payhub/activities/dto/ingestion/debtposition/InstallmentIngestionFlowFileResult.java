@@ -11,5 +11,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @SuperBuilder
+@ToString(callSuper = true)
 public class InstallmentIngestionFlowFileResult extends IngestionFlowFileResult {
 }
