@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification;
 
-import io.nexusrpc.Service;
-import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Person;
 import it.gov.pagopa.pu.classification.dto.generated.PersonEntityType;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentNotificationMapper {
