@@ -11,5 +11,6 @@ public interface ClassificationService {
     Classification save(Classification classificationDTO);
     Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, String classification);
     Long deleteBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
+    Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, String classification);
 
 }
