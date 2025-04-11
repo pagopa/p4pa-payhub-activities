@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,9 +30,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentNotificationProcessingServiceTest {
-
-  @Mock
-  private Iterator<PaymentNotificationIngestionFlowFileDTO> iteratorMock;
 
   @Mock
   private PaymentNotificationErrorsArchiverService errorsArchiverServiceMock;
