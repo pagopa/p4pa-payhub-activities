@@ -14,9 +14,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class IngestionFlowFileResult {
     /** The total number of rows in the file */
-    private Long totalRows;
+    private long totalRows;
     /** The number of rows correctly handled */
-    private Long processedRows;
+    private long processedRows;
     /** Error description */
     private String errorDescription;
     /** Discarded file name */

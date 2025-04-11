@@ -62,7 +62,13 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		PaymentsReporting first = paymentsReportings.getFirst();
 		String iuf = first.getIuf(); // The iuf is the same for entire file
 		Long organizationId = first.getOrganizationId(); // The organizationId is the same for entire file
-		return new PaymentsReportingIngestionFlowFileActivityResult(iuf, organizationId, transferSemanticKeys); // TODO fill totals
+		return PaymentsReportingIngestionFlowFileActivityResult.builder()
+				.iuf(iuf)
+				.organizationId(organizationId)
+				.transfers(transferSemanticKeys)
+				.totalRows(paymentsReportings.size())
+				.processedRows(paymentsReportings.size())
+				.build();
 	}
 
 	/**

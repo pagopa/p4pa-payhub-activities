@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSearchControllerApi;
@@ -97,21 +98,33 @@ class IngestionFlowFileClientTest {
     @Test
     void whenUpdateStatusThenOk() {
         // Given
+        String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
         IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.PROCESSING;
         IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.COMPLETED;
+
         String discardFileName = "discardFileName";
-        String codError = "codError";
-        String accessToken = "accessToken";
+        String errorDescription = "errorDescription";
+        long processedRows = 1L;
+        long totalRows = 10L;
+        IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
+                .processedRows(processedRows)
+                .totalRows(totalRows)
+                .errorDescription(errorDescription)
+                .discardedFileName(discardFileName)
+                .build();
+
         Integer expectedResponse = 1;
 
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
-        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName))
+        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus,
+                processedRows, totalRows,
+                errorDescription, discardFileName))
                 .thenReturn(expectedResponse);
 
         // When
-        Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName, accessToken);
+        Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, ingestionFlowFileResult, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
@@ -120,20 +133,31 @@ class IngestionFlowFileClientTest {
     @Test
     void givenNotFoundWhenUpdateStatusThenOk() {
         // Given
+        String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
         IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.PROCESSING;
         IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.COMPLETED;
+
         String discardFileName = "discardFileName";
-        String codError = "codError";
-        String accessToken = "accessToken";
+        String errorDescription = "errorDescription";
+        long processedRows = 1L;
+        long totalRows = 10L;
+        IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
+                .processedRows(processedRows)
+                .totalRows(totalRows)
+                .errorDescription(errorDescription)
+                .discardedFileName(discardFileName)
+                .build();
 
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
-        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName))
+        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus,
+                processedRows, totalRows,
+                errorDescription, discardFileName))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
-        Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName, accessToken);
+        Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, ingestionFlowFileResult, accessToken);
 
         // Then
         assertEquals(0, result);

@@ -94,15 +94,19 @@ class ReceiptPagopaIngestionActivityTest {
     ReceiptDTO receiptDTO = new ReceiptDTO();
     receiptDTO.setReceiptId(1L);
 
+    ReceiptPagopaIngestionFlowFileResult expectedResult = ReceiptPagopaIngestionFlowFileResult.builder()
+            .receiptDTO(receiptWithAdditionalNodeDataDTO)
+            .totalRows(1L)
+            .processedRows(1L)
+            .build();
+
     Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(receiptDTO);
 
     // When
     ReceiptPagopaIngestionFlowFileResult result = receiptPagopaIngestionActivity.processFile(ingestionFlowFileId);
 
     // Then
-    Assertions.assertNotNull(result);
-    Assertions.assertEquals(receiptWithAdditionalNodeDataDTO, result.getReceiptDTO(), "receiptId");
-    Assertions.assertEquals(1L, result.getReceiptDTO().getReceiptId());
+    Assertions.assertEquals(expectedResult, result);
 
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(ingestionFlowFileId);
     Mockito.verify(ingestionFlowFileRetrieverServiceMock, Mockito.times(1)).retrieveAndUnzipFile(

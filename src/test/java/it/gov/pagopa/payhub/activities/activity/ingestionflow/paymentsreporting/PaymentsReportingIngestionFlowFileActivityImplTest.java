@@ -99,24 +99,31 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 	void givenSuccessfulConditionsWhenProcessFileThenOk() throws IOException {
 		// Given
 		long ingestionFlowFileId = 123L;
+		long organizationId = 456L;
 		IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile()
 			.ingestionFlowFileId(ingestionFlowFileId)
 			.fileName("valid-file.zip")
 			.filePathName(workingDir.toString())
 			.ingestionFlowFileType(FLOW_FILE_TYPE)
-			.organizationId(0L);
+			.organizationId(organizationId);
 
 		Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);
 		ctFlussoRiversamento.setIdentificativoFlusso("idFlow");
 		PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting()
-				.iuf("idFlow").organizationId(1L).iuv("iuv").iur("iur").transferIndex(1);
+				.iuf("idFlow").organizationId(organizationId).iuv("iuv").iur("iur").transferIndex(1);
 		List<PaymentsReporting> dtoList = List.of(paymentsReportingDTO);
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = PaymentsReportingTransferDTO.builder()
-			.orgId(1L).iuv("iuv").iur("iur").transferIndex(1).paymentOutcomeCode("0").build();
+			.orgId(organizationId).iuv("iuv").iur("iur").transferIndex(1).paymentOutcomeCode("0").build();
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
-			new PaymentsReportingIngestionFlowFileActivityResult("idFlow", 1L, List.of(paymentsReportingTransferDTO));
+			PaymentsReportingIngestionFlowFileActivityResult.builder()
+					.iuf("idFlow")
+					.organizationId(organizationId)
+					.transfers(List.of(paymentsReportingTransferDTO))
+					.totalRows(1L)
+					.processedRows(1L)
+					.build();
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)

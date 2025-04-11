@@ -38,10 +38,13 @@ public class IngestionFlowFileClient {
     }
 
     public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, IngestionFlowFileResult ingestionFlowFileResult, String accessToken) {
+        if(ingestionFlowFileResult==null){
+            ingestionFlowFileResult = new IngestionFlowFileResult();
+        }
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
                     .updateStatus(ingestionFlowFileId, oldStatus, newStatus,
-                            //ingestionFlowFileResult.getProcessedRows(), ingestionFlowFileResult.getTotalRows(), TODO
+                            ingestionFlowFileResult.getProcessedRows(), ingestionFlowFileResult.getTotalRows(),
                             ingestionFlowFileResult.getErrorDescription(), ingestionFlowFileResult.getDiscardedFileName());
         } catch (HttpClientErrorException.NotFound e) {
             return 0;
