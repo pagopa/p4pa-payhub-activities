@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.paymentnotification;
+package it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 /**
  * Interface for the PaymentsReportingIngestionFlowFileActivity.
  * Defines methods for processing payments reporting files based on an IngestionFlowFile ID.

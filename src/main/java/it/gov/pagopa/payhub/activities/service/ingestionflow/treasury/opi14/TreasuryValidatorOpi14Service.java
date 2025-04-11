@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14;
 
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryValidatorService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;

@@ -4,6 +4,7 @@ import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import org.junit.jupiter.api.Assertions;
@@ -47,11 +48,11 @@ class NotRetryableActivityExceptionHandlerAspectTest {
         IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.UPLOADED;
         IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.PROCESSING;
         NotRetryableActivityException expectedNestedException = new NotRetryableActivityException("DUMMY"){};
-        Mockito.when(ingestionFlowFileServiceMock.updateStatus(1L, oldStatus, newStatus,"ERROR_DESCRIPTION", null))
+        Mockito.when(ingestionFlowFileServiceMock.updateStatus(1L, oldStatus, newStatus, new IngestionFlowFileResult()))
                 .thenThrow(expectedNestedException);
 
         // When
-        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateStatus(1L, oldStatus, newStatus, "ERROR_DESCRIPTION", null));
+        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateStatus(1L, oldStatus, newStatus, new IngestionFlowFileResult()));
 
         // Then
         Assertions.assertTrue(result.isNonRetryable());

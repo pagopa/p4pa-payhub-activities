@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.treasury;
+package it.gov.pagopa.payhub.activities.dto.ingestion.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import lombok.AllArgsConstructor;
