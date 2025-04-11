@@ -40,8 +40,7 @@ public class ClassificationClient {
     }
 
     public Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, String classification, String accessToken) {
-        return 0L;
-//        return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
-//                .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
+        return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
+                .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
     }
 }

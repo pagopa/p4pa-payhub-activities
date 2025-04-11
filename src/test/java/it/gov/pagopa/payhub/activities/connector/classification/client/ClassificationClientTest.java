@@ -121,25 +121,25 @@ class ClassificationClientTest {
         verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
     }
-//
-//	@Test
-//	void testDeleteByOrganizationIdAndIudAndLabel() {
-//        // Given
-//        Long organizationId = 1L;
-//        String iud = "IUD123";
-//        String classification = "classification";
-//        String accessToken = "accessToken";
-//        Long expectedResponse = 1L;
-//        ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
-//        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
-//        when(mockApi.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification)).thenReturn(expectedResponse);
-//
-//        // When
-//        Long result = classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken);
-//
-//        // Then
-//        assertEquals(expectedResponse, result);
-//        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
-//            .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
-//	}
+
+	@Test
+	void testDeleteByOrganizationIdAndIudAndLabel() {
+        // Given
+        Long organizationId = 1L;
+        String iud = "IUD123";
+        String classification = "classification";
+        String accessToken = "accessToken";
+        Long expectedResponse = 1L;
+        ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification)).thenReturn(expectedResponse);
+
+        // When
+        Long result = classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+            .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
+	}
 }
