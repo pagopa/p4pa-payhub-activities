@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityCont
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationRequestBody;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ class ClassificationClientTest {
         // Given
         Long organizationId = 1L;
         String iuf = "IUF123";
-        String classification = "classification";
+        ClassificationsEnum classification = ClassificationsEnum.RT_IUF;
         String accessToken = "accessToken";
         Long expectedResponse = 1L;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
@@ -127,7 +128,7 @@ class ClassificationClientTest {
         // Given
         Long organizationId = 1L;
         String iud = "IUD123";
-        String classification = "classification";
+        ClassificationsEnum classification = ClassificationsEnum.RT_IUF;
         String accessToken = "accessToken";
         Long expectedResponse = 1L;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);

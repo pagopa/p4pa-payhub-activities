@@ -5,8 +5,8 @@ import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -72,7 +72,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
             .organizationId(organizationId)
             .treasuryId(treasuryId)
             .iuf(iuf)
-            .label(ClassificationsEnum.TES_NO_MATCH.name())
+            .label(ClassificationsEnum.TES_NO_MATCH)
             .lastClassificationDate(LocalDate.now())
             .billDate(treasury.getBillDate())
             .regionValueDate(treasury.getRegionValueDate())

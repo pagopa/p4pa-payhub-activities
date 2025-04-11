@@ -8,9 +8,9 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
-import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
@@ -109,7 +109,7 @@ class TransferClassificationStoreServiceTest {
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())
 				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
-				.label(classifications.getFirst().name())
+				.label(classifications.getFirst())
 				.lastClassificationDate(LocalDate.now())
 				.payDate(paymentsReportingDTO.getPayDate())
 				.paymentDateTime(receiptNoPII.getPaymentDateTime())
@@ -171,7 +171,7 @@ class TransferClassificationStoreServiceTest {
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())
 				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
-				.label(classifications.getFirst().name())
+				.label(classifications.getFirst())
 				.lastClassificationDate(LocalDate.now())
 				.payDate(paymentsReportingDTO.getPayDate())
 				.paymentDateTime(null)

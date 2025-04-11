@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
-import it.gov.pagopa.payhub.activities.enums.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +33,7 @@ class ClearClassifyIudActivityTest {
 
 	@Test
 	void whenDeleteClassificationFailedThenReturnZero() {
-		when(classificationServiceMock.deleteByOrganizationIdAndIudAndLabel(ORGANIZATION_ID, IUD, ClassificationsEnum.IUD_NO_RT.name()))
+		when(classificationServiceMock.deleteByOrganizationIdAndIudAndLabel(ORGANIZATION_ID, IUD, ClassificationsEnum.IUD_NO_RT))
 			.thenReturn(0L);
 		assertEquals(0L, activity.deleteClassificationByIud(ORGANIZATION_ID, IUD));
 	}
