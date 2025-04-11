@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
@@ -36,10 +37,15 @@ public class IngestionFlowFileClient {
         }
     }
 
-    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, String codError, String discardFileName, String accessToken) {
+    public Integer updateStatus(Long ingestionFlowFileId, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, IngestionFlowFileResult ingestionFlowFileResult, String accessToken) {
+        if(ingestionFlowFileResult==null){
+            ingestionFlowFileResult = new IngestionFlowFileResult();
+        }
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                    .updateStatus(ingestionFlowFileId, oldStatus, newStatus, codError, discardFileName);
+                    .updateStatus(ingestionFlowFileId, oldStatus, newStatus,
+                            ingestionFlowFileResult.getProcessedRows(), ingestionFlowFileResult.getTotalRows(),
+                            ingestionFlowFileResult.getErrorDescription(), ingestionFlowFileResult.getDiscardedFileName());
         } catch (HttpClientErrorException.NotFound e) {
             return 0;
         }

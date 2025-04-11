@@ -1,24 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentnotification;
 
 
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
-import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentnotification.PaymentNotificationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification.PaymentNotificationMapper;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.Iterator;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,14 +15,21 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class PaymentNotificationProcessingServiceTest {
-
-  @Mock
-  private Iterator<PaymentNotificationIngestionFlowFileDTO> iteratorMock;
-
-  @Mock
-  private IngestionFlowFile ingestionFlowFileMock;
 
   @Mock
   private PaymentNotificationErrorsArchiverService errorsArchiverServiceMock;
@@ -58,20 +53,25 @@ class PaymentNotificationProcessingServiceTest {
 
   @Test
   void processPaymentNotificationWithNoErrors() {
+    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     PaymentNotificationIngestionFlowFileDTO dto = mock(PaymentNotificationIngestionFlowFileDTO.class);
-    PaymentNotificationDTO mappedNotification = mock(PaymentNotificationDTO.class);
-    Mockito.when(mapperMock.map(dto, ingestionFlowFileMock)).thenReturn(mappedNotification);
+    PaymentNotificationDTO mappedNotification = PaymentNotificationDTO.builder()
+            .iud("IUD")
+            .build();
+    Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
     Mockito.when(paymentNotificationServiceMock.createPaymentNotification(mappedNotification)).thenReturn(mappedNotification);
 
     PaymentNotificationIngestionFlowFileResult result = service.processPaymentNotification(
         Stream.of(dto).iterator(),
-        ingestionFlowFileMock, workingDirectory);
+            ingestionFlowFile, workingDirectory);
 
+    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
     Assertions.assertEquals(1L, result.getProcessedRows());
     Assertions.assertEquals(1L, result.getTotalRows());
-    Assertions.assertNotNull(result.getPaymentNotificationList());
-    Assertions.assertEquals(1, result.getPaymentNotificationList().size());
-    Mockito.verify(mapperMock).map(dto, ingestionFlowFileMock);
+    Assertions.assertNotNull(result.getIudList());
+    Assertions.assertEquals(1, result.getIudList().size());
+    Assertions.assertEquals(List.of("IUD"), result.getIudList());
+    Mockito.verify(mapperMock).map(dto, ingestionFlowFile);
     Mockito.verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
     Mockito.verifyNoInteractions(errorsArchiverServiceMock);
   }
@@ -102,10 +102,13 @@ class PaymentNotificationProcessingServiceTest {
     );
 
     // Then
+    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
     assertEquals(1, result.getTotalRows());
     assertEquals(0, result.getProcessedRows());
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
+    Assertions.assertNotNull(result.getIudList());
+    Assertions.assertEquals(0, result.getIudList().size());
 
     verify(mapperMock).map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile);
     verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);

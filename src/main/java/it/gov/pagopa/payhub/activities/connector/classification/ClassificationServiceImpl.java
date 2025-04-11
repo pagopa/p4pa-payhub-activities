@@ -46,4 +46,9 @@ public class ClassificationServiceImpl implements ClassificationService {
         int transferIndex = transferSemanticKeyDTO.getTransferIndex();
         return classificationClient.deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex, authnService.getAccessToken());
     }
+
+    @Override
+    public Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, String classification) {
+        return classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, authnService.getAccessToken());
+    }
 }

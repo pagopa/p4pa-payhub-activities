@@ -1,8 +1,10 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,25 +26,34 @@ class UpdateIngestionFlowStatusActivityTest {
   private static final Long INVALID_ID=9L;
   private static final IngestionFlowFileStatus OLD_STATUS = IngestionFlowFileStatus.UPLOADED;
   private static final IngestionFlowFileStatus NEW_STATUS = IngestionFlowFileStatus.PROCESSING;
-  private static final String ERROR_DESCRIPTION ="ERROR_DESCRIPTION";
-  private static final String DISCARD_FILE_NAME="DISCARD_FILENAME";
+
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(ingestionFlowFileServiceMock);
+  }
 
   @Test
   void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
-    //given
-    Mockito.when(ingestionFlowFileServiceMock.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME)).thenReturn(1);
-    //when
-    updateIngestionFlowStatusActivity.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME);
-    //verify
-    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME);
+    // Given
+    IngestionFlowFileResult ingestionFlowFileResult = new IngestionFlowFileResult();
+
+    Mockito.when(ingestionFlowFileServiceMock.updateStatus(Mockito.same(VALID_ID), Mockito.same(OLD_STATUS), Mockito.same(NEW_STATUS), Mockito.same(ingestionFlowFileResult)))
+            .thenReturn(1);
+
+    // When, Then
+    Assertions.assertDoesNotThrow(() -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ingestionFlowFileResult));
   }
 
   @Test
   void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
-    //given
-    Mockito.when(ingestionFlowFileServiceMock.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME)).thenReturn(0);
-    //when
-    Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, ERROR_DESCRIPTION, DISCARD_FILE_NAME));
+    // Given
+    IngestionFlowFileResult ingestionFlowFileResult = new IngestionFlowFileResult();
+
+    Mockito.when(ingestionFlowFileServiceMock.updateStatus(Mockito.same(INVALID_ID), Mockito.same(OLD_STATUS), Mockito.same(NEW_STATUS), Mockito.same(ingestionFlowFileResult)))
+            .thenReturn(0);
+
+    // When, Then
+    Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, ingestionFlowFileResult));
   }
 
 }

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 
 /**
  * Interface for the TreasuryOpiIngestionActivity.
