@@ -87,12 +87,12 @@ public class InstallmentProcessingService {
         }
 
         String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
-        return new InstallmentIngestionFlowFileResult(
-                totalRows,
-                processedRows,
-                errorsZipFileName != null ? "Some rows have failed" : null,
-                errorsZipFileName
-        );
+        return InstallmentIngestionFlowFileResult.builder()
+                .totalRows(totalRows)
+                .processedRows(processedRows)
+                .errorDescription(errorsZipFileName != null ? "Some rows have failed" : null)
+                .discardedFileName(errorsZipFileName)
+                .build();
     }
 
     private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<InstallmentErrorDTO> errorList) {

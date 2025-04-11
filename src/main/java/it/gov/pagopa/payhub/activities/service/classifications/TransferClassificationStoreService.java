@@ -94,10 +94,10 @@ public class TransferClassificationStoreService {
 				log.debug("retrieving Organization with fiscalCode {}", transfer.getOrgFiscalCode());
 				return organizationService.getOrganizationByFiscalCode(transfer.getOrgFiscalCode());
 			});
-		Optional<IngestionFlowFile> optionalIngestionFlowFile = optionalReceipt
-			.flatMap(receiptNoPII -> {
-				log.debug("retrieving IngestionFlowFile with id {}", receiptNoPII.getIngestionFlowFileId());
-				return ingestionFlowFileService.findById(receiptNoPII.getIngestionFlowFileId());
+		Optional<IngestionFlowFile> optionalIngestionFlowFile = optionalInstallment
+			.flatMap(installmentNoPII -> {
+				log.debug("retrieving IngestionFlowFile with installmentId {}", installmentNoPII.getIngestionFlowFileId());
+				return ingestionFlowFileService.findById(installmentNoPII.getIngestionFlowFileId());
 			});
 
 		log.info("Saving classifications {} for semantic key organization id: {} and iuv: {} and iur {} and transfer index: {}",
@@ -128,23 +128,23 @@ public class TransferClassificationStoreService {
 				.billAmountCents(optionalTreasury.map(Treasury::getBillAmountCents).orElse(null))
 				.remittanceInformation(optionalTransfer.map(Transfer::getRemittanceInformation).orElse(null))
 				.debtPositionTypeOrgCode(optionalDebtPositionTypeOrg.map(DebtPositionTypeOrg::getCode).orElse(null))
-				.receiptFileName(optionalIngestionFlowFile.map(IngestionFlowFile::getFileName).orElse(null))
+				.installmentIngestionFlowFileName(optionalIngestionFlowFile.map(IngestionFlowFile::getFileName).orElse(null))
 				.receiptOrgFiscalCode(optionalReceipt.map(ReceiptNoPII::getOrgFiscalCode).orElse(null))
 				.receiptPaymentReceiptId(optionalReceipt.map(ReceiptNoPII::getPaymentReceiptId).orElse(null))
 				.receiptPaymentDateTime(optionalReceipt.map(ReceiptNoPII::getPaymentDateTime).orElse(null))
 				.receiptPaymentRequestId(optionalReceipt.map(ReceiptNoPII::getReceiptId).map(String::valueOf).orElse(null))
 				.receiptIdPsp(optionalReceipt.map(ReceiptNoPII::getIdPsp).orElse(null))
 				.receiptPspCompanyName(optionalReceipt.map(ReceiptNoPII::getPspCompanyName).orElse(null))
-				.receiptOrgEntityType(optionalOrganization.map(Organization::getOrgTypeCode).orElse(null))
-				.receiptBeneficiaryOrgName(optionalOrganization.map(Organization::getOrgName).orElse(null))
+				.organizationEntityType(optionalOrganization.map(Organization::getOrgTypeCode).orElse(null))
+				.organizationName(optionalOrganization.map(Organization::getOrgName).orElse(null))
 				.receiptPersonalDataId(optionalReceipt.map(ReceiptNoPII::getPersonalDataId).orElse(null))
 				.receiptPaymentOutcomeCode(optionalReceipt.map(ReceiptNoPII::getOutcome).orElse(null))
 				.receiptPaymentAmount(optionalReceipt.map(ReceiptNoPII::getPaymentAmountCents).orElse(null))
 				.receiptCreditorReferenceId(optionalReceipt.map(ReceiptNoPII::getCreditorReferenceId).orElse(null))
-				.receiptTransferAmount(optionalTransfer.map(Transfer::getAmountCents).orElse(null))
-				.receiptTransferCategory(optionalTransfer.map(Transfer::getCategory).orElse(null))
-				.receiptCreationDate(optionalIngestionFlowFile.map(IngestionFlowFile::getCreationDate).orElse(null))
-				.receiptInstallmentBalance(optionalInstallment.map(InstallmentNoPII::getBalance).orElse(null))
+				.transferAmount(optionalTransfer.map(Transfer::getAmountCents).orElse(null))
+				.transferCategory(optionalTransfer.map(Transfer::getCategory).orElse(null))
+				.receiptCreationDate(optionalReceipt.map(ReceiptNoPII::getCreationDate).orElse(null))
+				.installmentBalance(optionalInstallment.map(InstallmentNoPII::getBalance).orElse(null))
 				.build())
 			.toList();
 

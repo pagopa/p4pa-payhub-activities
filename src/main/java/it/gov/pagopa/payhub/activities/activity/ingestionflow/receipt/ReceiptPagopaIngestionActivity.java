@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
 
 /**
  * Interface for the ReceiptPagopaIngestionActivity.

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.config;
 
-import it.gov.pagopa.payhub.activities.config.ApiClientConfig;
+import it.gov.pagopa.payhub.activities.config.rest.ApiClientConfig;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;

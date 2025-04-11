@@ -34,7 +34,7 @@ public class FileArchiverService {
     public FileArchiverService(
             @Value("${folders.shared}") String sharedFolder,
             @Value("${folders.process-target-sub-folders.archive}") String archiveFolder,
-            @Value("${data-cipher.encrypt-psw:psw}") String dataCipherPsw,
+            @Value("${cipher.file-encrypt-psw}") String dataCipherPsw,
 
             ZipFileService zipFileService
     ) {

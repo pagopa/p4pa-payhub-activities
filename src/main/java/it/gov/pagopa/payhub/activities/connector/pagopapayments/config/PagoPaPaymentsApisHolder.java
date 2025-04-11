@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
 import it.gov.pagopa.pu.pagopapayments.client.generated.GpdApi;
 import it.gov.pagopa.pu.pagopapayments.client.generated.PaymentsReportingApi;

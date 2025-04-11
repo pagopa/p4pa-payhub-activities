@@ -24,8 +24,8 @@ public class DPInstallmentsWorkflowCompletionService {
     private final int retryDelayMs;
 
     public DPInstallmentsWorkflowCompletionService(WorkflowCompletionService workflowCompletionService,
-                                                   @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes:5}") int maxWaitingMinutes,
-                                                   @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms:1000}") int retryDelayMs) {
+                                                   @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes}") int maxWaitingMinutes,
+                                                   @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs) {
         this.workflowCompletionService = workflowCompletionService;
         this.retryDelayMs = retryDelayMs;
         this.maxAttempts = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);

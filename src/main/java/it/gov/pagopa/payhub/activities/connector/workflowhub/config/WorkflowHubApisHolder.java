@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub.config;
 
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.workflowhub.controller.generated.DebtPositionApi;
 import it.gov.pagopa.pu.workflowhub.controller.generated.WorkflowApi;
 import it.gov.pagopa.pu.workflowhub.generated.ApiClient;

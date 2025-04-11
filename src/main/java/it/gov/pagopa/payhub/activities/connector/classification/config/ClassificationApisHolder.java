@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.classification.client.generated.*;
 import it.gov.pagopa.pu.classification.generated.ApiClient;
 import it.gov.pagopa.pu.classification.generated.BaseApi;
@@ -26,6 +26,8 @@ public class ClassificationApisHolder {
     private final TreasuryEntityExtendedControllerApi treasuryEntityExtendedControllerApi;
 
     private final AssessmentsControllerApi assessmentsControllerApi;
+
+    private final PaymentNotificationApi paymentNotificationApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -55,6 +57,8 @@ public class ClassificationApisHolder {
         this.treasuryEntityExtendedControllerApi = new TreasuryEntityExtendedControllerApi(apiClient);
 
         this.assessmentsControllerApi = new AssessmentsControllerApi(apiClient);
+
+        this.paymentNotificationApi = new PaymentNotificationApi(apiClient);
     }
 
     @PreDestroy
@@ -93,6 +97,10 @@ public class ClassificationApisHolder {
 
     public AssessmentsControllerApi getAssessmentsControllerApi(String accessToken){
         return getApi(accessToken, assessmentsControllerApi);
+    }
+
+    public PaymentNotificationApi getPaymentNotificationApi(String accessToken){
+        return getApi(accessToken, paymentNotificationApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {

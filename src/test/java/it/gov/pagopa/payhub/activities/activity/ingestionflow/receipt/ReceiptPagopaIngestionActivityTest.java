@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -94,15 +94,19 @@ class ReceiptPagopaIngestionActivityTest {
     ReceiptDTO receiptDTO = new ReceiptDTO();
     receiptDTO.setReceiptId(1L);
 
+    ReceiptPagopaIngestionFlowFileResult expectedResult = ReceiptPagopaIngestionFlowFileResult.builder()
+            .receiptDTO(receiptWithAdditionalNodeDataDTO)
+            .totalRows(1L)
+            .processedRows(1L)
+            .build();
+
     Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(receiptDTO);
 
     // When
     ReceiptPagopaIngestionFlowFileResult result = receiptPagopaIngestionActivity.processFile(ingestionFlowFileId);
 
     // Then
-    Assertions.assertNotNull(result);
-    Assertions.assertEquals(receiptWithAdditionalNodeDataDTO, result.getReceiptDTO(), "receiptId");
-    Assertions.assertEquals(1L, result.getReceiptDTO().getReceiptId());
+    Assertions.assertEquals(expectedResult, result);
 
     Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(ingestionFlowFileId);
     Mockito.verify(ingestionFlowFileRetrieverServiceMock, Mockito.times(1)).retrieveAndUnzipFile(

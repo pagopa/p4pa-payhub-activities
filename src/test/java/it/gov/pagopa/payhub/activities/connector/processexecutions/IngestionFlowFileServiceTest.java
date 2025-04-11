@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.IngestionFlowFileClient;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
@@ -19,8 +20,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,10 +32,12 @@ class IngestionFlowFileServiceTest {
     private AuthnService authnServiceMock;
 
     private IngestionFlowFileServiceImpl ingestionFlowFileService;
+
     @BeforeEach
     void setUp() {
         ingestionFlowFileService = new IngestionFlowFileServiceImpl(ingestionFlowFileClientMock, authnServiceMock);
     }
+
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
@@ -68,17 +70,19 @@ class IngestionFlowFileServiceTest {
         Long ingestionFlowFileId = 1L;
         IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.UPLOADED;
         IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.PROCESSING;
-        String errorDescription = "errorDescription";
-        String discardFileName = "discardFileName";
+        IngestionFlowFileResult ingestionFlowFileResult = new IngestionFlowFileResult();
         Integer expectedResponse = 1;
-        when(ingestionFlowFileClientMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus, errorDescription, discardFileName, accessToken)).thenReturn(expectedResponse);
-        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+        when(ingestionFlowFileClientMock.updateStatus(Mockito.same(ingestionFlowFileId), Mockito.same(oldStatus), Mockito.same(newStatus), Mockito.same(ingestionFlowFileResult), Mockito.same(accessToken)))
+                .thenReturn(expectedResponse);
+        when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
         // When
-        Integer result = ingestionFlowFileService.updateStatus(ingestionFlowFileId, oldStatus, newStatus, errorDescription, discardFileName);
+        Integer result = ingestionFlowFileService.updateStatus(ingestionFlowFileId, oldStatus, newStatus, ingestionFlowFileResult);
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileClientMock, times(1)).updateStatus(ingestionFlowFileId, oldStatus, newStatus, errorDescription, discardFileName,accessToken);
     }
 
     @Test
@@ -88,18 +92,20 @@ class IngestionFlowFileServiceTest {
         String accessToken = "accessToken";
         Long organizationId = 1L;
         IngestionFlowFileTypeEnum flowFileType = IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
-        PagedModelIngestionFlowFileEmbedded embedded = mock(PagedModelIngestionFlowFileEmbedded.class);
+        List<IngestionFlowFile> expectedResult = List.of();
+        PagedModelIngestionFlowFileEmbedded embedded = new PagedModelIngestionFlowFileEmbedded(expectedResult);
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = new PagedModelIngestionFlowFile(embedded, null, null);
-        List<IngestionFlowFile> expectedResponse = pagedModelIngestionFlowFile.getEmbedded().getIngestionFlowFiles();
-        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        when(ingestionFlowFileClientMock.findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, accessToken)).thenReturn(pagedModelIngestionFlowFile);
+
+        when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(ingestionFlowFileClientMock.findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, accessToken))
+                .thenReturn(pagedModelIngestionFlowFile);
 
         // When
         List<IngestionFlowFile> result = ingestionFlowFileService.findByOrganizationIdFlowTypeCreateDate(organizationId, flowFileType, creationDate);
 
         // Then
-        assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileClientMock, times(1)).findByOrganizationIDFlowTypeCreateDate(organizationId, flowFileType, creationDate, accessToken);
+        assertSame(expectedResult, result);
     }
 
     @Test
@@ -109,18 +115,20 @@ class IngestionFlowFileServiceTest {
         Long organizationId = 1L;
         IngestionFlowFileTypeEnum flowFileType = IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
         String fileName = "fileName";
-        PagedModelIngestionFlowFileEmbedded embedded = mock(PagedModelIngestionFlowFileEmbedded.class);
+        List<IngestionFlowFile> expectedResult = List.of();
+        PagedModelIngestionFlowFileEmbedded embedded = new PagedModelIngestionFlowFileEmbedded(expectedResult);
         PagedModelIngestionFlowFile pagedModelIngestionFlowFile = new PagedModelIngestionFlowFile(embedded, null, null);
-        List<IngestionFlowFile> expectedResponse = pagedModelIngestionFlowFile.getEmbedded().getIngestionFlowFiles();
-        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        when(ingestionFlowFileClientMock.findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken)).thenReturn(pagedModelIngestionFlowFile);
+
+        when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(ingestionFlowFileClientMock.findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken))
+                .thenReturn(pagedModelIngestionFlowFile);
 
         // When
         List<IngestionFlowFile> result = ingestionFlowFileService.findByOrganizationIdFlowTypeFilename(organizationId, flowFileType, fileName);
 
         // Then
-        assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileClientMock, times(1)).findByOrganizationIDFlowTypeFilename(organizationId, flowFileType, fileName, accessToken);
+        assertSame(expectedResult, result);
     }
 
     @Test
@@ -129,13 +137,16 @@ class IngestionFlowFileServiceTest {
         String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
         Integer expectedResponse = 1;
-        when(ingestionFlowFileClientMock.updateProcessingIfNoOtherProcessing(ingestionFlowFileId, accessToken)).thenReturn(expectedResponse);
-        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+        when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(ingestionFlowFileClientMock.updateProcessingIfNoOtherProcessing(ingestionFlowFileId, accessToken))
+                .thenReturn(expectedResponse);
+
         // When
         Integer result = ingestionFlowFileService.updateProcessingIfNoOtherProcessing(ingestionFlowFileId);
 
         // Then
-        assertEquals(expectedResponse, result);
-        verify(ingestionFlowFileClientMock, times(1)).updateProcessingIfNoOtherProcessing(ingestionFlowFileId, accessToken);
+        assertSame(expectedResponse, result);
     }
 }
