@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.classification.client;
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.payhub.activities.connector.classification.mapper.ClassificationRequestMapper;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class ClassificationClient {
                 .crudCreateClassification(mapper.map(classificationDTO));
     }
 
-    public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, String classification, String accessToken) {
+    public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification);
     }
@@ -39,7 +40,7 @@ public class ClassificationClient {
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
     }
 
-    public Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, String classification, String accessToken) {
+    public Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
     }

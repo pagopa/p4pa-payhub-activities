@@ -97,7 +97,7 @@ class IufClassificationActivityTest {
             .organizationId(ORGANIZATIONID)
             .treasuryId(TREASURYID)
             .iuf(IUF)
-            .label("TES_NO_MATCH")
+            .label(ClassificationsEnum.TES_NO_MATCH)
             .lastClassificationDate(LocalDate.now())
             .billDate(treasury.getBillDate())
             .regionValueDate(treasury.getRegionValueDate())
