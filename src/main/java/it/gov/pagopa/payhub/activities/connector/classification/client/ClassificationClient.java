@@ -33,9 +33,15 @@ public class ClassificationClient {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification);
     }
- public Long deleteByOrganizationIdAndIuvAndIurAndTransferIndex(Long organizationId, String iuv,String iur,  int transferIndex, String accessToken) {
+
+    public Long deleteByOrganizationIdAndIuvAndIurAndTransferIndex(Long organizationId, String iuv,String iur,  int transferIndex, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
     }
 
+    public Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, String classification, String accessToken) {
+        return 0L;
+//        return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
+//                .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
+    }
 }
