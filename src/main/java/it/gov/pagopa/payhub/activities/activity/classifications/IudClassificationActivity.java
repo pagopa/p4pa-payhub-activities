@@ -14,5 +14,5 @@ public interface IudClassificationActivity {
      * @param iud            the unique identifier of the payment (IUD)
      * @return an {@link IudClassificationActivityResult} object containing the classification results
      */
-    IudClassificationActivityResult classify(String organizationId, String iud);
+    IudClassificationActivityResult classify(Long organizationId, String iud);
 }
