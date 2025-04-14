@@ -1,4 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
+
+import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
+
 /**
  * Interface for defining an activity to process payment classifications based on IUD.
  */
@@ -9,7 +12,7 @@ public interface IudClassificationActivity {
      *
      * @param organizationId the unique identifier of the organization
      * @param iud            the unique identifier of the payment (IUD)
-     * @return true if the classification is successful, false otherwise
+     * @return an {@link IudClassificationActivityResult} object containing the classification results
      */
-    boolean classify(String organizationId, String iud);
+    IudClassificationActivityResult classify(Long organizationId, String iud);
 }
