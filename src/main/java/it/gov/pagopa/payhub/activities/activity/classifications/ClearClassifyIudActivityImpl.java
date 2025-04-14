@@ -9,15 +9,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Lazy
 @Component
-public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
+public class ClearClassifyIudActivityImpl implements ClearClassifyIudActivity {
     private final ClassificationService classificationService;
 
-    public ClearClassifyIufActivityImpl(ClassificationService classificationService) {
+    public ClearClassifyIudActivityImpl(ClassificationService classificationService) {
         this.classificationService = classificationService;
     }
 
-    public Long deleteClassificationByIuf(Long organizationId, String iuf) {
-        log.info("Deleting classification TES_NO_MATCH for organization id: {} and iuf: {}", organizationId,iuf);
-        return classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, ClassificationsEnum.TES_NO_MATCH);
+    public Long deleteClassificationByIud(Long organizationId, String iud) {
+        log.info("Deleting classification IUD_NO_RT for organization id: {} and iud: {}", organizationId, iud);
+        return classificationService.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, ClassificationsEnum.IUD_NO_RT);
     }
 }

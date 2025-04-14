@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.ClassificationClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ class ClassificationServiceTest {
         // Given
         Long organizationId = 1L;
         String iuf = "IUF123";
-        String classification = "classification";
+        ClassificationsEnum classification = ClassificationsEnum.RT_NO_IUF;
         Long expectedResponse = 1L;
         String accessToken = "accessToken";
 
@@ -122,5 +123,26 @@ class ClassificationServiceTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(classificationClientMock, times(1)).deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId,iuv,iur,transferIndex,accessToken);
+    }
+
+	@Test
+	void testDeleteByOrganizationIdAndIudAndLabel() {
+        // Given
+        Long organizationId = 1L;
+        String iud = "IUD123";
+        ClassificationsEnum classification = ClassificationsEnum.RT_NO_IUF;
+        Long expectedResponse = 1L;
+        String accessToken = "accessToken";
+
+        when(classificationClientMock.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken)).thenReturn(expectedResponse);
+        Mockito.when(authnServiceMock.getAccessToken())
+            .thenReturn(accessToken);
+
+        // When
+        Long result = classificationService.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationClientMock, times(1)).deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken);
     }
 }

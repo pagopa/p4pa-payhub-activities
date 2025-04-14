@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityCont
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationRequestBody;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ class ClassificationClientTest {
         // Given
         Long organizationId = 1L;
         String iuf = "IUF123";
-        String classification = "classification";
+        ClassificationsEnum classification = ClassificationsEnum.RT_IUF;
         String accessToken = "accessToken";
         Long expectedResponse = 1L;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
@@ -121,4 +122,25 @@ class ClassificationClientTest {
         verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
     }
+
+	@Test
+	void testDeleteByOrganizationIdAndIudAndLabel() {
+        // Given
+        Long organizationId = 1L;
+        String iud = "IUD123";
+        ClassificationsEnum classification = ClassificationsEnum.RT_IUF;
+        String accessToken = "accessToken";
+        Long expectedResponse = 1L;
+        ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification)).thenReturn(expectedResponse);
+
+        // When
+        Long result = classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+            .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
+	}
 }

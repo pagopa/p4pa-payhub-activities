@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.config.interceptor;
+package it.gov.pagopa.payhub.activities.config.rest;
 
-import it.gov.pagopa.payhub.activities.config.rest.QueryParamsPlusEncoderInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

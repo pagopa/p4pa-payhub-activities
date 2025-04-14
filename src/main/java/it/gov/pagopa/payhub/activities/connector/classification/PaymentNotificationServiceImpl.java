@@ -3,7 +3,13 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.PaymentNotificationClient;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
+@Lazy
+@Service
+@Slf4j
 public class PaymentNotificationServiceImpl implements PaymentNotificationService{
 
   private final PaymentNotificationClient paymentNotificationClient;
