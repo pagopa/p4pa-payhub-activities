@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
-import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationPlaceholderResolverService;
+import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationGenericPlaceholderResolverService;
 import it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
@@ -24,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NotificationRequestMapperTest {
 
     @Mock
-    private IoNotificationPlaceholderResolverService ioNotificationPlaceholderResolverServiceMock;
+    private IoNotificationGenericPlaceholderResolverService ioNotificationGenericPlaceholderResolverServiceMock;
 
     private NotificationRequestMapper mapper;
 
     @BeforeEach
     void init() {
-        mapper = new NotificationRequestMapper(ioNotificationPlaceholderResolverServiceMock);
+        mapper = new NotificationRequestMapper(ioNotificationGenericPlaceholderResolverServiceMock);
     }
 
     @Test
@@ -42,13 +42,13 @@ class NotificationRequestMapperTest {
         String expectedMarkdown = "expectedMarkdown";
         String expectedSubject = "expectedSubject";
 
-        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
 
-        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateSubject(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
@@ -77,14 +77,14 @@ class NotificationRequestMapperTest {
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
         String expectedMarkdown = "expectedMarkdown";
-        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
 
         String expectedSubject = "expectedSubject";
-        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateSubject(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
@@ -111,14 +111,14 @@ class NotificationRequestMapperTest {
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
         String expectedMarkdown = "expectedMarkdown";
-        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
 
         String expectedSubject = "expectedSubject";
-        Mockito.when(ioNotificationPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateSubject(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()

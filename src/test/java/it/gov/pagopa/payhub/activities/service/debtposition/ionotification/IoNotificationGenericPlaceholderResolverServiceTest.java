@@ -9,16 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Map;
-
 @ExtendWith(MockitoExtension.class)
-class IoNotificationPlaceholderResolverServiceTest {
+class IoNotificationGenericPlaceholderResolverServiceTest {
 
-    private IoNotificationPlaceholderResolverService placeholderResolver;
+    private IoNotificationGenericPlaceholderResolverService placeholderResolver;
 
     @BeforeEach
     void setUp() {
-        placeholderResolver = new IoNotificationPlaceholderResolverService();
+        placeholderResolver = new IoNotificationGenericPlaceholderResolverService();
     }
 
     @Test
@@ -42,22 +40,6 @@ class IoNotificationPlaceholderResolverServiceTest {
         Assertions.assertFalse(result.contains("%ente_nome%"));
         Assertions.assertFalse(result.contains("%importoTotale%"));
         Assertions.assertFalse(result.contains("%dataScadenza%"));
-    }
-
-    @Test
-    void whenApplyPlaceholderWithCustomMapThenReplaceCorrectly() {
-        // Given
-        String markdownTemplate = "Ciao %name%, il tuo codice è %code%.";
-        Map<String, String> placeholders = Map.of(
-                "%name%", "Test",
-                "%code%", "12345"
-        );
-
-        // When
-        String result = placeholderResolver.applyPlaceholder(markdownTemplate, placeholders);
-
-        // Then
-        Assertions.assertEquals("Ciao Test, il tuo codice è 12345.", result);
     }
 }
 
