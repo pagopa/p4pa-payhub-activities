@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 @Lazy
 @Component
 public class IudClassificationActivityImpl implements IudClassificationActivity{
-  private static final List<InstallmentStatus> INSTALLMENT_STATUS_SET = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
   private final InstallmentService installmentService;
   private final TransferService transferService;
@@ -34,7 +34,8 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
   public IudClassificationActivityResult classify(Long organizationId, String iud) {
     log.info("Starting IUD Classification for organization id {} and iud {}", organizationId,iud);
 
-    CollectionModelInstallmentNoPII installment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organizationId, iud, INSTALLMENT_STATUS_SET);
+    CollectionModelInstallmentNoPII installment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organizationId, iud,
+        Utilities.getInstallmentPayedSet());
     List<InstallmentNoPIIResponse> installmentsList = installment.getEmbedded().getInstallmentNoPIIs();
     if (installmentsList == null || installmentsList.isEmpty()) {
       log.info("No installments found for organization id {} and iud {}", organizationId,iud);

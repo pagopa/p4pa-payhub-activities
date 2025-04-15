@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import java.util.Set;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -22,6 +24,7 @@ public class Utilities {
     public static final int IBAN_LENGTH = 27;
     public static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
     private static final DatatypeFactory DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR;
+    private static final Set<InstallmentStatus> INSTALLMENT_PAYED_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
     static {
         try {
@@ -38,6 +41,10 @@ public class Utilities {
 
     public static boolean isValidIban(String iban) {
         return iban != null && iban.length() == IBAN_LENGTH;
+    }
+
+    public static Set<InstallmentStatus> getInstallmentPayedSet() {
+        return INSTALLMENT_PAYED_SET;
     }
 
     public static boolean isValidPIVA(String pi) {

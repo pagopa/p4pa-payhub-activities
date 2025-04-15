@@ -1,14 +1,26 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
+import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildCollectionModelInstallmentNoPII;
+import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import org.junit.jupiter.api.AfterEach;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiEntityControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,15 +30,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.Collections;
-import java.util.List;
-
-import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildCollectionModelInstallmentNoPII;
-import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
-import java.time.LocalDate;
-
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InstallmentClientTest {
@@ -152,40 +155,19 @@ class InstallmentClientTest {
 		String accessToken = "ACCESSTOKEN";
 		Long organizationId = 0L;
 		String iud = "iud";
-		List<InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+		Set<InstallmentStatus> statuses = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 		CollectionModelInstallmentNoPII expectedResult = buildCollectionModelInstallmentNoPII();
 
 		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken)).thenReturn(installmentNoPiiSearchControllerApiMock);
-		when(installmentNoPiiSearchControllerApiMock.crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses)).thenReturn(expectedResult);
+		when(installmentNoPiiSearchControllerApiMock.crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses.stream().toList())).thenReturn(expectedResult);
 
 		// When
-		CollectionModelInstallmentNoPII result = installmentClient.findCollectionByOrganizationIdAndIud(organizationId, iud, statuses, accessToken);
+		CollectionModelInstallmentNoPII result = installmentClient.findCollectionByOrganizationIdAndIudAndStatus(organizationId, iud, statuses, accessToken);
 
 		// Then
 		Assertions.assertSame(expectedResult, result);
 
 		verify(debtPositionApisHolderMock).getInstallmentNoPiiSearchControllerApi(accessToken);
-		verify(installmentNoPiiSearchControllerApiMock).crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses);
+		verify(installmentNoPiiSearchControllerApiMock).crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses.stream().toList());
 	}
-
-	@Test
-	void givenNotExistentInstallmentWhenGetByOrganizationIdAndIudAndStatusThenNull() {
-		// Given
-		String accessToken = "ACCESSTOKEN";
-		Long organizationId = 0L;
-		String iud = "iud";
-		List<InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
-
-		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken))
-				.thenReturn(installmentNoPiiSearchControllerApiMock);
-		when(installmentNoPiiSearchControllerApiMock.crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses))
-				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
-
-		// When
-		CollectionModelInstallmentNoPII result = installmentClient.findCollectionByOrganizationIdAndIud(organizationId, iud, statuses,accessToken);
-
-		// Then
-		Assertions.assertNull(result);
-	}
-
 }

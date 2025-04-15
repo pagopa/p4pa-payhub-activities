@@ -14,6 +14,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferResponse;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,8 @@ class IudClassificationActivityTest {
 
   private static final Long ORGANIZATIONID = 1L;
   private static final String IUD = "IUD";
-  private static final List<InstallmentStatus> INSTALLMENT_STATUS_LIST =
-      List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+  private static final Set<InstallmentStatus> INSTALLMENT_STATUS_LIST =
+      Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
 
   @BeforeEach

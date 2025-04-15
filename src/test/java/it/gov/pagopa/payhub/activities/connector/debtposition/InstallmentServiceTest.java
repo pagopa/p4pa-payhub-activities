@@ -1,22 +1,24 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InstallmentServiceTest {
@@ -91,7 +93,7 @@ class InstallmentServiceTest {
 		String accessToken = "ACCESSTOKEN";
 		Long orgId = 1L;
 		String iud = "IUD";
-		List <InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+		Set<InstallmentStatus> statuses = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
 
@@ -100,7 +102,7 @@ class InstallmentServiceTest {
 
 		// Then
 		verify(authnServiceMock, times(1)).getAccessToken();
-		verify(installmentClientMock, times(1)).findCollectionByOrganizationIdAndIud(orgId, iud, statuses, accessToken);
+		verify(installmentClientMock, times(1)).findCollectionByOrganizationIdAndIudAndStatus(orgId, iud, statuses, accessToken);
 	}
 
 }
