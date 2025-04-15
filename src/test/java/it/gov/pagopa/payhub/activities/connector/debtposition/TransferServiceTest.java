@@ -1,13 +1,20 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferClient;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferSearchClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferReportedRequest;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,11 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransferServiceTest {
@@ -78,4 +80,21 @@ class TransferServiceTest {
 		// Then
 		assertSame(expected, result);
 	}
+
+	@Test
+	void whenFindByInstallmentIdThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		CollectionModelTransfer expected = mock(CollectionModelTransfer.class);
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+		when(transferSearchClientMock.findByInstallmentId(1L, accessToken)).thenReturn(expected);
+
+		// When
+		CollectionModelTransfer result = transferService.findByInstallmentId(1L);
+
+		// Then
+		assertSame(expected, result);
+	}
+
 }

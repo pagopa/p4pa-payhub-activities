@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,4 +84,23 @@ class InstallmentServiceTest {
 		verify(authnServiceMock, times(1)).getAccessToken();
 		verify(installmentClientMock, times(1)).updateStatusAndStatusSync(installmentId, InstallmentStatus.UNPAID, null, accessToken);
 	}
+
+	@Test
+	void whenGetInstallmentsByOrgIdAndIudAndStatusThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long orgId = 1L;
+		String iud = "IUD";
+		List <InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+		// When
+		installmentService.getInstallmentsByOrgIdAndIudAndStatus(orgId,iud, statuses);
+
+		// Then
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(installmentClientMock, times(1)).findCollectionByOrganizationIdAndIud(orgId, iud, statuses, accessToken);
+	}
+
 }

@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.pu.debtposition.client.generated.TransferSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.AfterEach;
@@ -100,4 +101,24 @@ class TransferSearchClientTest {
 		// Then
 		Assertions.assertNull(result);
 	}
+
+	@Test
+	void whenFindByInstallmentIdThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long installmentId = 0L;
+		CollectionModelTransfer expectedResult = TransferFaker.buildCollectionModelTransfer();
+
+		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
+		when(transferSearchControllerApiMock.crudTransfersFindByInstallmentId(installmentId.toString())
+		).thenReturn(expectedResult);
+
+		// When
+		CollectionModelTransfer result = transferSearchClient.findByInstallmentId(installmentId,accessToken);
+
+		// Then
+		assertSame(expectedResult, result);
+	}
+
+
 }

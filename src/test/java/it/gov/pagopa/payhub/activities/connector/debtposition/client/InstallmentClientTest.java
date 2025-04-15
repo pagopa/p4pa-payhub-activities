@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentApi;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import org.junit.jupiter.api.AfterEach;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiEntityControllerApi;
@@ -21,6 +22,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.util.Collections;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildCollectionModelInstallmentNoPII;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
 import java.time.LocalDate;
 
@@ -143,4 +145,27 @@ class InstallmentClientTest {
         verify(debtPositionApisHolderMock).getInstallmentApi(accessToken);
         verify(installmentApiMock).getInstallmentsByOrganizationIdAndNav(organizationId, nav, null);
     }
+
+	@Test
+	void whenInstallmentsGetByOrganizationIdAndIudThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long organizationId = 0L;
+		String iud = "iud";
+		List<InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+		CollectionModelInstallmentNoPII expectedResult = buildCollectionModelInstallmentNoPII();
+
+		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken)).thenReturn(installmentNoPiiSearchControllerApiMock);
+		when(installmentNoPiiSearchControllerApiMock.crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud,statuses)).thenReturn(expectedResult);
+
+		// When
+		CollectionModelInstallmentNoPII result = installmentClient.findCollectionByOrganizationIdAndIud(organizationId, iud, statuses,accessToken);
+
+		// Then
+		Assertions.assertSame(expectedResult, result);
+
+		verify(debtPositionApisHolderMock).getInstallmentNoPiiSearchControllerApi(accessToken);
+		verify(installmentNoPiiSearchControllerApiMock).crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses);
+	}
+
 }
