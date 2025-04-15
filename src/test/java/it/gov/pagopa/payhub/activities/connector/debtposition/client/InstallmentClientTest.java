@@ -147,7 +147,7 @@ class InstallmentClientTest {
     }
 
 	@Test
-	void whenInstallmentsGetByOrganizationIdAndIudThenInvokeWithAccessToken() {
+	void whenInstallmentsGetByOrganizationIdAndIudAndStatusThenInvokeWithAccessToken() {
 		// Given
 		String accessToken = "ACCESSTOKEN";
 		Long organizationId = 0L;
@@ -156,16 +156,36 @@ class InstallmentClientTest {
 		CollectionModelInstallmentNoPII expectedResult = buildCollectionModelInstallmentNoPII();
 
 		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken)).thenReturn(installmentNoPiiSearchControllerApiMock);
-		when(installmentNoPiiSearchControllerApiMock.crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud,statuses)).thenReturn(expectedResult);
+		when(installmentNoPiiSearchControllerApiMock.crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses)).thenReturn(expectedResult);
 
 		// When
-		CollectionModelInstallmentNoPII result = installmentClient.findCollectionByOrganizationIdAndIud(organizationId, iud, statuses,accessToken);
+		CollectionModelInstallmentNoPII result = installmentClient.findCollectionByOrganizationIdAndIud(organizationId, iud, statuses, accessToken);
 
 		// Then
 		Assertions.assertSame(expectedResult, result);
 
 		verify(debtPositionApisHolderMock).getInstallmentNoPiiSearchControllerApi(accessToken);
 		verify(installmentNoPiiSearchControllerApiMock).crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses);
+	}
+
+	@Test
+	void givenNotExistentInstallmentWhenGetByOrganizationIdAndIudAndStatusThenNull() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long organizationId = 0L;
+		String iud = "iud";
+		List<InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+
+		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken))
+				.thenReturn(installmentNoPiiSearchControllerApiMock);
+		when(installmentNoPiiSearchControllerApiMock.crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses))
+				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+		// When
+		CollectionModelInstallmentNoPII result = installmentClient.findCollectionByOrganizationIdAndIud(organizationId, iud, statuses,accessToken);
+
+		// Then
+		Assertions.assertNull(result);
 	}
 
 }
