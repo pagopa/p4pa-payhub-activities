@@ -52,11 +52,11 @@ public class PaymentNotificationIngestionActivityImpl extends BaseIngestionFlowF
 
     try {
       return csvService.readCsv(filePath,
-          PaymentNotificationIngestionFlowFileDTO.class, csvIterator ->
-              paymentNotificationProcessingService.processPaymentNotification(csvIterator,
+          PaymentNotificationIngestionFlowFileDTO.class, (csvIterator, readerException) ->
+              paymentNotificationProcessingService.processPaymentNotification(csvIterator, readerException,
                   ingestionFlowFileDTO, workingDirectory));
     } catch (Exception e) {
-      log.error("Error processing file {}: {}", filePath, e.getMessage());
+      log.error("Error processing file {}: {}", filePath, e.getMessage(), e);
       throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
     }
 

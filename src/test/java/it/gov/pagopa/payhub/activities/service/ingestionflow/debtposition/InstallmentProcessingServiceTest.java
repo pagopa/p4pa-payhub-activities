@@ -1,12 +1,15 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
+import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +30,6 @@ import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeD
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -55,6 +57,15 @@ class InstallmentProcessingServiceTest {
                 );
     }
 
+    @AfterEach
+    void verifyNoMoreInteractions(){
+        Mockito.verifyNoMoreInteractions(
+                debtPositionServiceMock,
+                installmentSynchronizeMapperMock,
+                installmentErrorsArchiverServiceMock,
+                dpInstallmentsWorkflowCompletionServiceMock);
+    }
+
     @Test
     void whenProcessInstallmentsThenSuccess(){
         // Given
@@ -78,7 +89,7 @@ class InstallmentProcessingServiceTest {
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(),
                 ingestionFlowFile,
                 Path.of("/tmp")
         );
@@ -113,7 +124,7 @@ class InstallmentProcessingServiceTest {
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(),
                 ingestionFlowFile,
                 Path.of("/tmp")
         );
@@ -145,7 +156,7 @@ class InstallmentProcessingServiceTest {
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(),
                 ingestionFlowFile,
                 Path.of("/tmp")
         );
@@ -169,7 +180,7 @@ class InstallmentProcessingServiceTest {
                 .build();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
+                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 2L, 1L))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
@@ -180,17 +191,20 @@ class InstallmentProcessingServiceTest {
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
 
         // Then
         assertEquals(0, result.getProcessedRows());
-        assertEquals(1, result.getTotalRows());
+        assertEquals(2, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-        verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), any());
+        verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), eq(List.of(
+                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
+                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(), installmentSynchronizeDTO.getIud(), null, 2L, "PROCESS_EXCEPTION", "Error synchronizing the installment")
+        )));
     }
 }

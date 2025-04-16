@@ -4,6 +4,7 @@ import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;
 import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import static com.opencsv.enums.CSVReaderNullFieldIndicator.EMPTY_SEPARATORS;
@@ -161,7 +162,7 @@ public class CsvService {
      * @return The result produced by the row processor.
      * @throws IOException If an error occurs while reading the file.
      */
-    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, Function<Iterator<T>, R> rowProcessor) throws IOException {
+    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor) throws IOException {
         try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
 
             HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
@@ -175,10 +176,10 @@ public class CsvService {
                     .withQuoteChar(quoteChar)
                     .withIgnoreLeadingWhiteSpace(true)
                     .withFieldAsNull(EMPTY_SEPARATORS)
-                    .withThrowExceptions(true)
+                    .withThrowExceptions(false)
                     .build();
 
-            return rowProcessor.apply(csvToBean.iterator());
+            return rowProcessor.apply(csvToBean.iterator(), csvToBean.getCapturedExceptions());
 
         } catch (Exception e) {
             throw new IOException("Error while reading csv file: " + e.getMessage(), e);

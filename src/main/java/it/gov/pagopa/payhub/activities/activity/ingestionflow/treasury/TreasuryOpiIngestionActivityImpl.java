@@ -66,7 +66,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                     try {
                         return treasuryOpiParserService.parseData(path, ingestionFlowFileDTO, ingestionFlowFilesRetrievedSize);
                     } catch (Exception e) {
-                        log.error("Error processing file {}: {}", path, e.getMessage());
+                        log.error("Error processing file {}: {}", path, e.getMessage(), e);
                         unsuccessfulParsedFiles.add(path.getFileName() + ":" + e.getMessage());
                         return null;
                     }

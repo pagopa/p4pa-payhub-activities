@@ -1,10 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @EqualsAndHashCode(callSuper = true)
@@ -12,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class TreasuryErrorDTO extends ErrorFileDTO {
 
   private String billYear;
