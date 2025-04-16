@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.pu.classification.client.generated.PaymentNotificationApi;
+import it.gov.pagopa.pu.classification.client.generated.PaymentNotificationNoPiiSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +24,10 @@ class PaymentNotificationClientTest {
 
     @Mock
     private PaymentNotificationApi paymentNotificationApiMock;
+
+    @Mock
+    private PaymentNotificationNoPiiSearchControllerApi paymentNotificationNoPiiSearchControllerApi;
+
 
     private PaymentNotificationClient paymentNotificationClient;
 
@@ -52,5 +58,28 @@ class PaymentNotificationClientTest {
         assertEquals(expectedResponse, result);
         verify(paymentNotificationApiMock, times(1)).createPaymentNotification(dto);
     }
+
+    @Test
+    void givenValidOrgIdAndIudWhenGetByOrgIdAndIudThenReturnPaymentNotificationNoPII() {
+        // Given
+        Long organizationId = 1L;
+        String iud = "IUD";
+        String accessToken = "accessToken";
+        PaymentNotificationNoPII expectedResponse = new PaymentNotificationNoPII();
+
+        when(classificationApisHolderMock.getPaymentNotificationNoPiiSearchControllerApi(accessToken))
+            .thenReturn(paymentNotificationNoPiiSearchControllerApi);
+        when(paymentNotificationNoPiiSearchControllerApi.crudPaymentNotificationGetByOrganizationIdAndIud(organizationId, iud))
+            .thenReturn(expectedResponse);
+
+        // When
+        PaymentNotificationNoPII result = paymentNotificationClient.getByOrgIdAndIud(organizationId, iud, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(paymentNotificationNoPiiSearchControllerApi, times(1))
+            .crudPaymentNotificationGetByOrganizationIdAndIud(organizationId, iud);
+    }
+
 
 }

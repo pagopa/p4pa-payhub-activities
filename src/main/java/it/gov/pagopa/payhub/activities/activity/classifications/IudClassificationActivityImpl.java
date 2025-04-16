@@ -2,13 +2,18 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAYED_STATUSES_LIST;
 
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
+import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferResponse;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,11 +28,16 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
   private final InstallmentService installmentService;
   private final TransferService transferService;
+  private final ClassificationService classificationService;
+  private final PaymentNotificationService paymentNotificationService;
 
   public IudClassificationActivityImpl(InstallmentService installmentService,
-      TransferService transferService) {
+      TransferService transferService, ClassificationService classificationService,
+      PaymentNotificationService paymentNotificationService) {
     this.installmentService = installmentService;
     this.transferService = transferService;
+    this.classificationService = classificationService;
+    this.paymentNotificationService = paymentNotificationService;
   }
 
   @Override
@@ -41,11 +51,12 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
       log.info("No installments found for organization id {} and iud {}", organizationId,iud);
       return IudClassificationActivityResult.builder()
           .organizationId(organizationId)
-          .transfers2classify(Collections.emptyList())
+          .iud(iud)
+          .transferIndexes(Collections.emptyList())
           .build();
     }
 
-    List<Transfer2ClassifyDTO> transfers2classify = new ArrayList<>();
+    List<Integer> transferIndex = new ArrayList<>();
 
 
     installmentsList.forEach(installmentNoPII -> {
@@ -54,18 +65,44 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
       transferList.forEach(transferResponse -> {
         log.info("TransferResponse: {}", transferResponse);
-
-        transfers2classify.add(Transfer2ClassifyDTO.builder()
-            .iuv(installmentNoPII.getIuv())
-            .iur(installmentNoPII.getIur())
-            .transferIndex(transferResponse.getTransferIndex())
-            .build());
+        transferIndex.add(transferResponse.getTransferIndex());
       });
     });
 
+    if (transferIndex.isEmpty()) {
+      log.debug("Saving installments found for organization id {} and iud: {}", organizationId, iud);
+      saveClassification(organizationId, iud);
+    }
+
+    InstallmentNoPIIResponse firstInstallment = installmentsList.getFirst();
+
     return IudClassificationActivityResult.builder()
         .organizationId(organizationId)
-        .transfers2classify(transfers2classify)
+        .iud(iud)
+        .iuv(firstInstallment.getIuv())
+        .iur(firstInstallment.getIur())
+        .transferIndexes(transferIndex)
         .build();
+  }
+  /**
+   * save classification data
+   *
+   * @param organizationId organization id
+   * @param iud  flow unique identifier
+   */
+  private void saveClassification(Long organizationId, String iud) {
+    log.debug("retrieving payment notification from organizationId {} and iud", organizationId, iud);
+    PaymentNotificationNoPII paymentNotificationNoPII = paymentNotificationService.getByOrgIdAndIud(organizationId, iud);
+
+    log.debug("Saving classification IUD_NO_RT for organizationId: {} - iud: {}", organizationId, iud);
+    classificationService.save(Classification.builder()
+        .organizationId(organizationId)
+        .iud(iud)
+        .label(ClassificationsEnum.IUD_NO_RT)
+        .lastClassificationDate(LocalDate.now())
+        .debtPositionTypeOrgCode(paymentNotificationNoPII.getDebtPositionTypeOrgCode())
+        .iuv(paymentNotificationNoPII.getIuv())
+        .payDate(paymentNotificationNoPII.getPaymentExecutionDate())
+        .build());
   }
 }

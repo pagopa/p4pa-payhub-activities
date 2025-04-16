@@ -138,4 +138,14 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
             classificationApisHolder::unload);
     }
     //endregion
+
+    @Test
+    void whenGetPaymentNotificationNoPiiSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> classificationApisHolder.getPaymentNotificationNoPiiSearchControllerApi(accessToken)
+                .crudPaymentNotificationGetByOrganizationIdAndIud(0L, "IUD"),
+            new ParameterizedTypeReference<>() {},
+            classificationApisHolder::unload);
+    }
+
 }

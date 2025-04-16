@@ -4,16 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
+import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferResponse;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,23 +29,26 @@ class IudClassificationActivityTest {
 
   @Mock
   private InstallmentService installmentServiceMock;
-
   @Mock
   private TransferService transferServiceMock;
+  @Mock
+  private ClassificationService classificationServiceMock;
+  @Mock
+  private PaymentNotificationService paymentNotificationServiceMock;
 
 
   private IudClassificationActivity iudClassificationActivity;
 
   private static final Long ORGANIZATIONID = 1L;
   private static final String IUD = "IUD";
-  private static final List<InstallmentStatus> INSTALLMENT_STATUS_LIST =
+  private static final List<InstallmentStatus> INSTALLMENT_PAYED_STATUSES_LIST =
       List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
 
   @BeforeEach
   void init() {
     iudClassificationActivity = new IudClassificationActivityImpl(installmentServiceMock,
-        transferServiceMock);
+        transferServiceMock, classificationServiceMock, paymentNotificationServiceMock);
   }
 
   @AfterEach
@@ -63,32 +67,20 @@ class IudClassificationActivityTest {
     when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(
         Mockito.eq(ORGANIZATIONID),
         Mockito.eq(IUD),
-        argThat(list -> list.containsAll(INSTALLMENT_STATUS_LIST) && INSTALLMENT_STATUS_LIST.containsAll(list))))
+        argThat(list -> list.containsAll(
+            INSTALLMENT_PAYED_STATUSES_LIST) && INSTALLMENT_PAYED_STATUSES_LIST.containsAll(list))))
         .thenReturn(expectedCollectionModelInstallmentNoPII);
     when(transferServiceMock.findByInstallmentId(Mockito.anyLong()))
         .thenReturn(TransferFaker.buildCollectionModelTransfer());
-
-    List<Transfer2ClassifyDTO> expectedTransfer2ClassifyDTOS =
-        expectedInstallmentNoPIIs
-            .stream()
-            .map(installmentNoPIIResponse -> {
-              TransferResponse transferResponse = TransferFaker.buildCollectionModelTransfer()
-                  .getEmbedded()
-                  .getTransfers()
-                  .get(0);
-              return Transfer2ClassifyDTO.builder()
-                  .iuv(installmentNoPIIResponse.getIuv())
-                  .iur(installmentNoPIIResponse.getIur())
-                  .transferIndex(transferResponse.getTransferIndex())
-                  .build();
-            })
-            .toList();
 
     IudClassificationActivityResult expectedIudClassificationActivityResult =
         IudClassificationActivityResult
             .builder()
             .organizationId(1L)
-            .transfers2classify(expectedTransfer2ClassifyDTOS)
+            .iud("IUD")
+            .iur("iur")
+            .iuv("iuv")
+            .transferIndexes(List.of(1))
             .build();
 
     IudClassificationActivityResult iudClassificationActivityResult =
@@ -100,10 +92,57 @@ class IudClassificationActivityTest {
         .getInstallmentsByOrgIdAndIudAndStatus(
                 Mockito.eq(ORGANIZATIONID),
             Mockito.eq(IUD),
-            argThat(list -> list.containsAll(INSTALLMENT_STATUS_LIST) && INSTALLMENT_STATUS_LIST.containsAll(list)));
+            argThat(list -> list.containsAll(
+                INSTALLMENT_PAYED_STATUSES_LIST) && INSTALLMENT_PAYED_STATUSES_LIST.containsAll(list)));
     Mockito.verify(transferServiceMock, Mockito.times(expectedInstallmentNoPIIs.size()))
         .findByInstallmentId(Mockito.anyLong());
   }
+
+  @Test
+  void givenInstallmentsWithTransfersWhenClassifyThenReturnTransferIndexes() {
+    CollectionModelInstallmentNoPII installmentNoPII = InstallmentFaker.buildCollectionModelInstallmentNoPII();
+    installmentNoPII.getEmbedded().getInstallmentNoPIIs().forEach(installment -> {
+      installment.setInstallmentId(1L);
+    });
+
+    CollectionModelTransfer transferModel = TransferFaker.buildCollectionModelTransfer();
+    transferModel.getEmbedded().getTransfers().forEach(transfer -> {
+      transfer.setTransferIndex(1);
+    });
+
+    when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(
+        Mockito.eq(1L),
+        Mockito.eq("IUD"),
+        argThat(list -> list.containsAll(INSTALLMENT_PAYED_STATUSES_LIST) && INSTALLMENT_PAYED_STATUSES_LIST.containsAll(list))))
+        .thenReturn(installmentNoPII);
+    when(transferServiceMock.findByInstallmentId(Mockito.anyLong()))
+        .thenReturn(transferModel);
+
+    IudClassificationActivityResult result = iudClassificationActivity.classify(1L, "IUD");
+
+    assertEquals(1L, result.getOrganizationId());
+    assertEquals("IUD", result.getIud());
+    assertEquals(List.of(1), result.getTransferIndexes());
+    Mockito.verify(installmentServiceMock, Mockito.times(1))
+        .getInstallmentsByOrgIdAndIudAndStatus(
+            Mockito.eq(1L),
+            Mockito.eq("IUD"),
+            argThat(list -> list.containsAll(INSTALLMENT_PAYED_STATUSES_LIST) && INSTALLMENT_PAYED_STATUSES_LIST.containsAll(list)));
+    Mockito.verify(transferServiceMock, Mockito.times(installmentNoPII.getEmbedded().getInstallmentNoPIIs().size()))
+        .findByInstallmentId(Mockito.anyLong());
+    Mockito.verifyNoInteractions(paymentNotificationServiceMock);
+    Mockito.verifyNoInteractions(classificationServiceMock);
+  }
+
+
+
+
+
+
+
+
+
+
 
 }
 
