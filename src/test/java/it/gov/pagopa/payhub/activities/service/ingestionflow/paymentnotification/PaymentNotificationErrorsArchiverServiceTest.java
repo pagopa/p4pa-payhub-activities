@@ -35,7 +35,6 @@ class PaymentNotificationErrorsArchiverServiceTest {
   private PaymentNotificationErrorsArchiverService service;
 
   public static final String FILE_NAME = "fileName";
-  public static final String WORKFLOW_STATUS = "workflowStatus";
   public static final String ERROR_CODE = "errorCode";
   public static final String ERROR_MESSAGE = "errorMessage";
   private final String errorFolder = "error";
@@ -49,8 +48,8 @@ class PaymentNotificationErrorsArchiverServiceTest {
   @Test
   void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
     List<PaymentNotificationErrorDTO> errorDTOList = List.of(
-        new PaymentNotificationErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE),
-        new PaymentNotificationErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+        new PaymentNotificationErrorDTO(FILE_NAME, "iupdOrg", "iud", 1L, ERROR_CODE, ERROR_MESSAGE),
+        new PaymentNotificationErrorDTO(FILE_NAME, "iupdOrg", "iud", 1L, ERROR_CODE, ERROR_MESSAGE)
     );
     Path workingDirectory = Path.of("build", "test");
     IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -81,7 +80,7 @@ class PaymentNotificationErrorsArchiverServiceTest {
   @Test
   void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
     List<PaymentNotificationErrorDTO> errorDTOList = List.of(
-        new PaymentNotificationErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+        new PaymentNotificationErrorDTO(FILE_NAME, "iupdOrg", "iud", 1L, ERROR_CODE, ERROR_MESSAGE)
     );
     Path workingDirectory = Path.of("build", "test");
     IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();

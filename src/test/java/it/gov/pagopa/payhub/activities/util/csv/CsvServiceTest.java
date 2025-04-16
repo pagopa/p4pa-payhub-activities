@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.csv;
 
+import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import org.junit.jupiter.api.Test;
@@ -80,20 +81,26 @@ class CsvServiceTest {
     void testReadCsv_success() throws IOException {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "input.csv");
+        String[] row1 = {"Data1", "Data2", "2025-02-20"};
+        String[] row2 = {"Data4", "Data5", "2025-02-20"};
         List<String[]> data = Arrays.asList(
-                new String[]{"Data1", "Data2", "2025-02-20"},
-                new String[]{"Data4", "Data5", "2025-02-20"}
+                row1,
+                new String[]{"Data2", "Data5", "WRONGDATA"},
+                row2
         );
         List<String> headers = List.of("Column1", "Column2", "Column3");
         List<String[]> headerList = new ArrayList<>();
         headerList.add(headers.toArray(new String[0]));
 
         csvService.createCsv(filePath, headerList, data);
+        List<CsvException> totalReaderExceptions = new ArrayList<>();
 
         // When
-        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, iterator -> {
+        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, (iterator, readerException) -> {
             List<TestCsv> list = new ArrayList<>();
             iterator.forEachRemaining(list::add);
+            totalReaderExceptions.clear();
+            totalReaderExceptions.addAll(readerException);
             return list;
         });
 
@@ -107,8 +114,10 @@ class CsvServiceTest {
                 .toList();
 
         assertEquals(2, resultList.size());
-        assertEquals(data.size(), actualData.size());
-        assertArrayEquals(data.toArray(new String[0][]), actualData.toArray(new String[0][]));
+        assertEquals(2, actualData.size());
+        assertArrayEquals(new String[][]{row1, row2}, actualData.toArray(new String[0][]));
+        assertEquals(1, totalReaderExceptions.size());
+        assertEquals("Text 'WRONGDATA' could not be parsed at index 0", totalReaderExceptions.getFirst().getCause().getMessage());
     }
 
     @Test
@@ -123,7 +132,7 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, iterator -> {
+        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, (iterator, readerExceptions) -> {
             List<TestCsv> list = new ArrayList<>();
             iterator.forEachRemaining(list::add);
             return list;
@@ -146,7 +155,7 @@ class CsvServiceTest {
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsv(filePath, TestCsv.class, iterator -> {
+                csvService.readCsv(filePath, TestCsv.class, (iterator, readerExceptions) -> {
                     List<TestCsv> list = new ArrayList<>();
                     iterator.forEachRemaining(list::add);
                     return list;
@@ -162,7 +171,7 @@ class CsvServiceTest {
 
         // When & Then
         assertThrows(IOException.class, () ->
-                csvService.readCsv(filePath, TestCsv.class, iterator -> {
+                csvService.readCsv(filePath, TestCsv.class, (iterator, readerExceptions) -> {
                     List<TestCsv> list = new ArrayList<>();
                     iterator.forEachRemaining(list::add);
                     return list;

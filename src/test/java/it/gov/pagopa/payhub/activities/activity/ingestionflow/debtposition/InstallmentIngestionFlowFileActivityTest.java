@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
+import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
@@ -27,12 +28,11 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,6 +84,7 @@ class InstallmentIngestionFlowFileActivityTest {
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS);
         Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
+        List<CsvException> readerExceptions = List.of();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -96,11 +97,11 @@ class InstallmentIngestionFlowFileActivityTest {
 
         Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
                 .thenAnswer(invocation -> {
-                    Function<Iterator<InstallmentIngestionFlowFileDTO>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
-                    return rowProcessor.apply(iterator);
+                    BiFunction<Iterator<InstallmentIngestionFlowFileDTO>, List<CsvException>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+                    return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(installmentProcessingServiceMock.processInstallments(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenReturn(buildInstallmentIngestionFlowFileResult());
 
         // When
@@ -120,6 +121,7 @@ class InstallmentIngestionFlowFileActivityTest {
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS);
         Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
+        List<CsvException> readerExceptions = List.of();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -132,11 +134,11 @@ class InstallmentIngestionFlowFileActivityTest {
 
         Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any()))
                 .thenAnswer(invocation -> {
-                    Function<Iterator<InstallmentIngestionFlowFileDTO>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
-                    return rowProcessor.apply(iterator);
+                    BiFunction<Iterator<InstallmentIngestionFlowFileDTO>, List<CsvException>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+                    return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(installmentProcessingServiceMock.processInstallments(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(installmentProcessingServiceMock.processInstallments(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenThrow(new RestClientException("Error"));
 
         // When & Then

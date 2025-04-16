@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentnotification;
 
 
+import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
@@ -30,7 +31,7 @@ import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -86,6 +87,7 @@ class PaymentNotificationIngestionActivityImplTest {
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION);
         Iterator<PaymentNotificationIngestionFlowFileDTO> iterator = buildPaymentNotificationIngestionFlowFileDTO();
+        List<CsvException> readerExceptions = List.of();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -98,11 +100,11 @@ class PaymentNotificationIngestionActivityImplTest {
 
         Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(PaymentNotificationIngestionFlowFileDTO.class), any()))
                 .thenAnswer(invocation -> {
-                    Function<Iterator<PaymentNotificationIngestionFlowFileDTO>, PaymentNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
-                    return rowProcessor.apply(iterator);
+                    BiFunction<Iterator<PaymentNotificationIngestionFlowFileDTO>, List<CsvException>, PaymentNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+                    return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(paymentNotificationProcessingServiceMock.processPaymentNotification(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(paymentNotificationProcessingServiceMock.processPaymentNotification(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenReturn(buildPaymentNotificationIngestionFlowFileResult());
 
         // When
@@ -127,6 +129,7 @@ class PaymentNotificationIngestionActivityImplTest {
         ingestionFlowFileDTO.setOrganizationId(organizationId);
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION);
         Iterator<PaymentNotificationIngestionFlowFileDTO> iterator = buildPaymentNotificationIngestionFlowFileDTO();
+        List<CsvException> readerExceptions = List.of();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -139,11 +142,11 @@ class PaymentNotificationIngestionActivityImplTest {
 
         Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(PaymentNotificationIngestionFlowFileDTO.class), any()))
                 .thenAnswer(invocation -> {
-                    Function<Iterator<PaymentNotificationIngestionFlowFileDTO>, PaymentNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
-                    return rowProcessor.apply(iterator);
+                    BiFunction<Iterator<PaymentNotificationIngestionFlowFileDTO>, List<CsvException>, PaymentNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+                    return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(paymentNotificationProcessingServiceMock.processPaymentNotification(any(), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(paymentNotificationProcessingServiceMock.processPaymentNotification(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenThrow(new RestClientException("Error"));
 
         // When & Then
