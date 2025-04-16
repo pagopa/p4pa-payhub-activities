@@ -6,10 +6,12 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.client.Export
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
-import java.util.Optional;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Lazy
 @Service
@@ -27,6 +29,12 @@ public class ExportFileServiceImpl implements ExportFileService{
     public Optional<PaidExportFile> findPaidExportFileById(Long exportFileId) {
         log.info("Finding a PaidExportFile with id {}", exportFileId);
         return  Optional.ofNullable(exportFileClient.findPaidExportFileById(exportFileId, authnService.getAccessToken()));
+    }
+
+    @Override
+    public Optional<ReceiptsArchivingExportFile> findReceiptsArchivingExportFileById(Long exportFileId) {
+        log.info("Finding a ReceiptsArchivingExportFile with id {}", exportFileId);
+        return Optional.ofNullable(exportFileClient.findReceiptsArchivingExportFileById(exportFileId, authnService.getAccessToken()));
     }
 
     @Override

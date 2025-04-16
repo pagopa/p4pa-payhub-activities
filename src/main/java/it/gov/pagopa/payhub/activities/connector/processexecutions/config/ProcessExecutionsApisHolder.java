@@ -1,12 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
 import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
-import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityExtendedControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityExtendedControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSearchControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.PaidExportFileEntityControllerApi;
+import it.gov.pagopa.pu.processexecutions.client.generated.*;
 import it.gov.pagopa.pu.processexecutions.generated.ApiClient;
 import it.gov.pagopa.pu.processexecutions.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -23,6 +18,7 @@ public class ProcessExecutionsApisHolder {
     private final IngestionFlowFileEntityExtendedControllerApi ingestionFlowFileEntityExtendedControllerApi;
     private final IngestionFlowFileSearchControllerApi ingestionFlowFileSearchControllerApi;
     private final PaidExportFileEntityControllerApi paidExportFileEntityControllerApi;
+    private final ReceiptsArchivingExportFileEntityControllerApi receiptsArchivingExportFileEntityControllerApi;
     private final ExportFileEntityControllerApi exportFileEntityControllerApi;
     private final ExportFileEntityExtendedControllerApi exportFileEntityExtendedControllerApi;
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
@@ -45,6 +41,7 @@ public class ProcessExecutionsApisHolder {
         this.ingestionFlowFileEntityExtendedControllerApi = new IngestionFlowFileEntityExtendedControllerApi(apiClient);
         this.ingestionFlowFileSearchControllerApi = new IngestionFlowFileSearchControllerApi(apiClient);
         this.paidExportFileEntityControllerApi = new PaidExportFileEntityControllerApi(apiClient);
+        this.receiptsArchivingExportFileEntityControllerApi = new ReceiptsArchivingExportFileEntityControllerApi(apiClient);
         this.exportFileEntityControllerApi = new ExportFileEntityControllerApi(apiClient);
         this.exportFileEntityExtendedControllerApi = new ExportFileEntityExtendedControllerApi(apiClient);
     }
@@ -68,6 +65,10 @@ public class ProcessExecutionsApisHolder {
 
     public PaidExportFileEntityControllerApi getPaidExportFileEntityControllerApi(String accessToken){
         return getApi(accessToken, paidExportFileEntityControllerApi);
+    }
+
+    public ReceiptsArchivingExportFileEntityControllerApi getReceiptsArchivingExportFileEntityControllerApi(String accessToken){
+        return getApi(accessToken, receiptsArchivingExportFileEntityControllerApi);
     }
 
     public ExportFileEntityControllerApi getExportFileEntityControllerApi(String accessToken){
