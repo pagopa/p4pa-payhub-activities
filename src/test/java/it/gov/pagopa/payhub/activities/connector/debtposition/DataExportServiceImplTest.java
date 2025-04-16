@@ -3,7 +3,9 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DataExportClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
+import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFileFilter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,6 +58,25 @@ class DataExportServiceImplTest {
         Mockito.when(dataExportClientMock.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId ,paidExportFileFilter, 0, 10, null)).thenReturn(expected);
         //when
         PagedInstallmentsPaidView result = dataExportService.exportPaidInstallments(organizationId, operatorExternalUserId,paidExportFileFilter, 0, 10, null);
+        //then
+        assertNotNull(result);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void givenParameters_WhenGetExportReceiptsArchiving_ThenReturnPagedReceiptsArchivingView() {
+        //given
+        String accessToken = "accessToken";
+        Long organizationId = 1L;
+        String operatorExternalUserId = "operatorExternalUserId";
+
+        ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter = podamFactory.manufacturePojo(ReceiptsArchivingExportFileFilter.class);
+        PagedReceiptsArchivingView expected = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(dataExportClientMock.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null)).thenReturn(expected);
+        //when
+        PagedReceiptsArchivingView result = dataExportService.exportReceiptsArchivingView(organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);
