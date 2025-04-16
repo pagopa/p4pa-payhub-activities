@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.config.Proces
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,15 @@ public class ExportFileClient {
             return processExecutionsApisHolder.getPaidExportFileEntityControllerApi(accessToken).crudGetPaidexportfile(String.valueOf(exportFileId));
         } catch (HttpClientErrorException.NotFound e){
             log.info("Cannot find PaidExportFile having id {}", exportFileId);
+            return null;
+        }
+    }
+
+    public ReceiptsArchivingExportFile findReceiptsArchivingExportFileById(Long exportFileId, String accessToken){
+        try{
+            return processExecutionsApisHolder.getReceiptsArchivingExportFileEntityControllerApi(accessToken).crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId));
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find ReceiptsArchivingExportFile having id {}", exportFileId);
             return null;
         }
     }

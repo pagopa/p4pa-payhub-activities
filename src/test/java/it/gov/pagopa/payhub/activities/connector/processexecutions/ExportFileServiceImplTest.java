@@ -14,6 +14,8 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import java.util.Optional;
+
+import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -107,5 +109,22 @@ class ExportFileServiceImplTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(exportFileClientMock, times(1)).updateStatus(updateStatusRequest,accessToken);
+    }
+
+    @Test
+    void givenExportFileId_WhenFindReceiptsArchivingFileById_ThenReturnReceiptsArchivingExportFile() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ReceiptsArchivingExportFile receiptsArchivingExportFile = podamFactory.manufacturePojo(ReceiptsArchivingExportFile.class);
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(exportFileClientMock.findReceiptsArchivingExportFileById(exportFileId, accessToken)).thenReturn(receiptsArchivingExportFile);
+        //when
+        Optional<ReceiptsArchivingExportFile> result = exportFileService.findReceiptsArchivingExportFileById(exportFileId);
+        //then
+        assertNotNull(result);
+        assertTrue(result.isPresent());
+        assertEquals(receiptsArchivingExportFile, result.get());
     }
 }
