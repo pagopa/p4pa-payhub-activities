@@ -60,7 +60,7 @@ class ReceiptsArchivingExportFileServiceTest {
     @BeforeEach
     void setUp() {
         String filenamePrefix = "EXPORT";
-        receiptsArchivingExportFileService =  new ReceiptsArchivingExportFileService(csvServiceMock, ReceiptsArchivingExportFlowFileDTO.class, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, receiptsArchivingExportFlowFileDTOMapperMock);
+        receiptsArchivingExportFileService =  new ReceiptsArchivingExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, receiptsArchivingExportFlowFileDTOMapperMock);
         podamFactory = new PodamFactoryImpl();
     }
 

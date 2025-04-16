@@ -30,7 +30,6 @@ public class ReceiptsArchivingExportFileService extends BaseExportFileService<Re
     private final ReceiptsArchivingExportFlowFileDTOMapper receiptsArchivingExportFlowFileDTOMapper;
 
     protected ReceiptsArchivingExportFileService(CsvService csvService,
-                                                 Class<ReceiptsArchivingExportFlowFileDTO> csvRowDtoClass,
                                                  FileArchiverService fileArchiverService,
                                                  @Value("${folders.tmp}") Path workingDirectory,
                                                  @Value("${export-flow-files.receipts-archiving.relative-file-folder}") String relativeFileFolder,
@@ -40,7 +39,7 @@ public class ReceiptsArchivingExportFileService extends BaseExportFileService<Re
                                                  ExportFileService exportFileService,
                                                  DataExportService dataExportService,
                                                  ReceiptsArchivingExportFlowFileDTOMapper receiptsArchivingExportFlowFileDTOMapper) {
-        super(csvService, csvRowDtoClass, fileArchiverService, workingDirectory, relativeFileFolder, fileNamePrefix, Path.of(sharedFolder));
+        super(csvService, ReceiptsArchivingExportFlowFileDTO.class, fileArchiverService, workingDirectory, relativeFileFolder, fileNamePrefix, Path.of(sharedFolder));
         this.pageSize = pageSize;
         this.exportFileService = exportFileService;
         this.dataExportService = dataExportService;
