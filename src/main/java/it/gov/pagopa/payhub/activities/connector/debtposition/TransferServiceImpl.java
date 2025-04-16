@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferClient;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.TransferSearchClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
@@ -41,5 +42,10 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public DebtPositionDTO notifyReportedTransferId(Long transferId, TransferReportedRequest request) {
         return transferClient.notifyReportedTransferId(authnService.getAccessToken(), transferId, request);
+    }
+
+    @Override
+    public CollectionModelTransfer findByInstallmentId(Long installmentId) {
+        return transferSearchClient.findByInstallmentId(installmentId, authnService.getAccessToken());
     }
 }
