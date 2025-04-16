@@ -9,12 +9,25 @@ import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificat
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
+import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker;
+import it.gov.pagopa.payhub.activities.util.faker.PaymentNotificationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
+import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
+import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelPaymentsReportingEmbedded;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPIIEmbedded;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +48,6 @@ class IudClassificationActivityTest {
   private ClassificationService classificationServiceMock;
   @Mock
   private PaymentNotificationService paymentNotificationServiceMock;
-
 
   private IudClassificationActivity iudClassificationActivity;
 
@@ -58,7 +70,7 @@ class IudClassificationActivityTest {
 
 
   @Test
-  void givenReportedTransferWhenClassifyThenOk() {
+  void givenNotificatedTransferWhenClassifyThenOk() {
     CollectionModelInstallmentNoPII expectedCollectionModelInstallmentNoPII = InstallmentFaker.buildCollectionModelInstallmentNoPII();
 
     List<InstallmentNoPIIResponse> expectedInstallmentNoPIIs = expectedCollectionModelInstallmentNoPII.getEmbedded()
@@ -136,13 +148,38 @@ class IudClassificationActivityTest {
 
 
 
+  @Test
+  void givenNoReportedTransferWhenClassifyThenNoInteractionWithPaymentNotificationService() {
+    CollectionModelInstallmentNoPII installmentNoPII = new CollectionModelInstallmentNoPII();
+    installmentNoPII.setEmbedded(new CollectionModelInstallmentNoPIIEmbedded(Collections.emptyList()));
 
+    when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(
+        Mockito.eq(ORGANIZATIONID),
+        Mockito.eq(IUD),
+        argThat(list -> list.containsAll(INSTALLMENT_PAYED_STATUSES_LIST) && INSTALLMENT_PAYED_STATUSES_LIST.containsAll(list))))
+        .thenReturn(installmentNoPII);
 
+    IudClassificationActivityResult iudClassificationActivityResult =
+        iudClassificationActivity.classify(ORGANIZATIONID, IUD);
 
+    IudClassificationActivityResult expectedIudClassificationActivityResult =
+        IudClassificationActivityResult
+            .builder()
+            .organizationId(ORGANIZATIONID)
+            .iud(IUD)
+            .transferIndexes(Collections.emptyList())
+            .build();
 
+    assertEquals(expectedIudClassificationActivityResult, iudClassificationActivityResult);
 
-
-
+    Mockito.verify(installmentServiceMock, Mockito.times(1))
+        .getInstallmentsByOrgIdAndIudAndStatus(
+            Mockito.eq(ORGANIZATIONID),
+            Mockito.eq(IUD),
+            argThat(list -> list.containsAll(INSTALLMENT_PAYED_STATUSES_LIST) && INSTALLMENT_PAYED_STATUSES_LIST.containsAll(list)));
+    Mockito.verifyNoInteractions(paymentNotificationServiceMock);
+    Mockito.verifyNoInteractions(classificationServiceMock);
+  }
 
 }
 
