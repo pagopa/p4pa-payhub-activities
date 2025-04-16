@@ -1,10 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentnotification;
 
+import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification.PaymentNotificationMapper;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -19,82 +21,63 @@ import java.util.List;
 @Service
 @Lazy
 @Slf4j
-public class PaymentNotificationProcessingService {
+public class PaymentNotificationProcessingService extends IngestionFlowProcessingService<PaymentNotificationIngestionFlowFileDTO, PaymentNotificationIngestionFlowFileResult, PaymentNotificationErrorDTO> {
 
-  private final PaymentNotificationMapper paymentNotificationMapper;
-  private final PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService;
-  private final PaymentNotificationService paymentNotificationService;
+    private final PaymentNotificationMapper paymentNotificationMapper;
+    private final PaymentNotificationService paymentNotificationService;
 
-  public PaymentNotificationProcessingService(
-      PaymentNotificationMapper paymentNotificationMapper,
-      PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService,
-      PaymentNotificationService paymentNotificationService) {
-    this.paymentNotificationMapper = paymentNotificationMapper;
-    this.paymentNotificationErrorsArchiverService = paymentNotificationErrorsArchiverService;
-    this.paymentNotificationService = paymentNotificationService;
-  }
-
-
-  public PaymentNotificationIngestionFlowFileResult processPaymentNotification(
-      Iterator<PaymentNotificationIngestionFlowFileDTO> iterator,
-      IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-    List<PaymentNotificationErrorDTO> errorList = new ArrayList<>();
-    List<PaymentNotificationDTO> paymentNotificationList = new ArrayList<>();
-    long processedRows = 0;
-    long totalRows = 0;
-
-    while (iterator.hasNext()) {
-      totalRows++;
-
-      PaymentNotificationIngestionFlowFileDTO paymentNotificationDTO = iterator.next();
-
-      try {
-
-        PaymentNotificationDTO paymentNotificationCreated = paymentNotificationService.createPaymentNotification(
-            paymentNotificationMapper.map(paymentNotificationDTO, ingestionFlowFile));
-
-        paymentNotificationList.add(paymentNotificationCreated);
-
-        processedRows++;
-
-      } catch (Exception e) {
-        log.error("Error processing payment notice with iud {} and iuv {}: {}",
-            paymentNotificationDTO.getIud(), paymentNotificationDTO.getIuv(),
-            e.getMessage());
-        PaymentNotificationErrorDTO error = new PaymentNotificationErrorDTO(
-            ingestionFlowFile.getFileName(), paymentNotificationDTO.getIuv(),
-            paymentNotificationDTO.getIud(), null, totalRows, "PROCESS_EXCEPTION", e.getMessage());
-        errorList.add(error);
-        log.info("Current error list size after handleProcessingError: {}", errorList.size());
-      }
+    public PaymentNotificationProcessingService(
+            PaymentNotificationMapper paymentNotificationMapper,
+            PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService,
+            PaymentNotificationService paymentNotificationService) {
+        super(paymentNotificationErrorsArchiverService);
+        this.paymentNotificationMapper = paymentNotificationMapper;
+        this.paymentNotificationService = paymentNotificationService;
     }
 
-    String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
-    return PaymentNotificationIngestionFlowFileResult.builder()
-            .iudList(paymentNotificationList.stream().map(
-                    PaymentNotificationDTO::getIud).toList())
-            .organizationId(ingestionFlowFile.getOrganizationId())
-            .totalRows(totalRows)
-            .processedRows(processedRows)
-            .errorDescription(errorsZipFileName != null ? "Some rows have failed" : null)
-            .discardedFileName(errorsZipFileName)
-            .build();
-  }
 
-  private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory,
-      List<PaymentNotificationErrorDTO> errorList) {
-    if (errorList.isEmpty()) {
-      log.info("No errors to archive for file: {}", ingestionFlowFile.getFileName());
-      return null;
+    public PaymentNotificationIngestionFlowFileResult processPaymentNotification(
+            Iterator<PaymentNotificationIngestionFlowFileDTO> iterator,
+            List<CsvException> readerException,
+            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+        List<PaymentNotificationErrorDTO> errorList = new ArrayList<>();
+        PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult = new PaymentNotificationIngestionFlowFileResult();
+        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
+        ingestionFlowFileResult.setIudList(new ArrayList<>());
+
+        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
+        return ingestionFlowFileResult;
     }
 
-    paymentNotificationErrorsArchiverService.writeErrors(workingDirectory, ingestionFlowFile,
-        errorList);
-    String errorsZipFileName = paymentNotificationErrorsArchiverService.archiveErrorFiles(
-        workingDirectory, ingestionFlowFile);
-    log.info("Error file archived at: {}", errorsZipFileName);
+    @Override
+    protected boolean consumeRow(long lineNumber, PaymentNotificationIngestionFlowFileDTO paymentNotificationDTO, PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult, List<PaymentNotificationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+        try {
+            PaymentNotificationDTO paymentNotificationCreated = paymentNotificationService.createPaymentNotification(
+                    paymentNotificationMapper.map(paymentNotificationDTO, ingestionFlowFile));
 
-    return errorsZipFileName;
-  }
+            ingestionFlowFileResult.getIudList().add(paymentNotificationCreated.getIud());
+            return true;
+        } catch (Exception e) {
+            log.error("Error processing payment notice with iud {} and iuv {}: {}",
+                    paymentNotificationDTO.getIud(), paymentNotificationDTO.getIuv(),
+                    e.getMessage());
+            PaymentNotificationErrorDTO error = new PaymentNotificationErrorDTO(
+                    ingestionFlowFile.getFileName(), paymentNotificationDTO.getIuv(),
+                    paymentNotificationDTO.getIud(), lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+            errorList.add(error);
+            log.info("Current error list size after handleProcessingError: {}", errorList.size());
+            return false;
+        }
+    }
+
+    @Override
+    protected PaymentNotificationErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
+        return PaymentNotificationErrorDTO.builder()
+                .fileName(fileName)
+                .rowNumber(lineNumber)
+                .errorCode(errorCode)
+                .errorMessage(message)
+                .build();
+    }
 }
 

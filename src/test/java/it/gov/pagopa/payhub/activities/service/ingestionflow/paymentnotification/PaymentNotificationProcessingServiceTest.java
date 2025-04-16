@@ -1,12 +1,16 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentnotification;
 
 
+import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification.PaymentNotificationMapper;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +27,8 @@ import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -33,7 +37,6 @@ class PaymentNotificationProcessingServiceTest {
 
   @Mock
   private PaymentNotificationErrorsArchiverService errorsArchiverServiceMock;
-
 
   @Mock
   private Path workingDirectory;
@@ -51,6 +54,14 @@ class PaymentNotificationProcessingServiceTest {
     service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock, paymentNotificationServiceMock);
   }
 
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(
+            mapperMock,
+            errorsArchiverServiceMock,
+            paymentNotificationServiceMock);
+  }
+
   @Test
   void processPaymentNotificationWithNoErrors() {
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
@@ -62,7 +73,7 @@ class PaymentNotificationProcessingServiceTest {
     Mockito.when(paymentNotificationServiceMock.createPaymentNotification(mappedNotification)).thenReturn(mappedNotification);
 
     PaymentNotificationIngestionFlowFileResult result = service.processPaymentNotification(
-        Stream.of(dto).iterator(),
+        Stream.of(dto).iterator(), List.of(),
             ingestionFlowFile, workingDirectory);
 
     Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
@@ -79,9 +90,7 @@ class PaymentNotificationProcessingServiceTest {
   @Test
   void givenThrowExceptionWhenProcessPaymentNotificationThenAddError() throws URISyntaxException {
     // Given
-    PaymentNotificationIngestionFlowFileDTO paymentNotificationIngestionFlowFileDTO = mock(PaymentNotificationIngestionFlowFileDTO.class);
-    Mockito.when(paymentNotificationIngestionFlowFileDTO.getIud()).thenReturn("testIud");
-    Mockito.when(paymentNotificationIngestionFlowFileDTO.getIuv()).thenReturn("testIuv");
+    PaymentNotificationIngestionFlowFileDTO paymentNotificationIngestionFlowFileDTO = TestUtils.getPodamFactory().manufacturePojo(PaymentNotificationIngestionFlowFileDTO.class);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     workingDirectory = Path.of(new URI("file:///tmp"));
@@ -96,14 +105,14 @@ class PaymentNotificationProcessingServiceTest {
 
     // When
     PaymentNotificationIngestionFlowFileResult result = service.processPaymentNotification(
-        Stream.of(paymentNotificationIngestionFlowFileDTO).iterator(),
+        Stream.of(paymentNotificationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
         ingestionFlowFile,
         workingDirectory
     );
 
     // Then
     Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    assertEquals(1, result.getTotalRows());
+    assertEquals(2, result.getTotalRows());
     assertEquals(0, result.getProcessedRows());
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
@@ -112,7 +121,9 @@ class PaymentNotificationProcessingServiceTest {
 
     verify(mapperMock).map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile);
     verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
-    verify(errorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), any());
-    verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
+    verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
+            new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
+            new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), paymentNotificationIngestionFlowFileDTO.getIuv(), paymentNotificationIngestionFlowFileDTO.getIud(), 2L, "PROCESS_EXCEPTION", "Processing error")
+    )));
   }
 }
