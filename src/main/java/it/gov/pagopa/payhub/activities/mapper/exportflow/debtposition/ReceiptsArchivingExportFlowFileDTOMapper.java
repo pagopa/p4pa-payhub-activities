@@ -26,7 +26,7 @@ public class ReceiptsArchivingExportFlowFileDTOMapper {
 
         if (debtor != null){
             receiptsArchivingExportFlowFileDTOBuilder
-                    .debtorEntityType(debtor.getEntityType() != null ? EntityIdentifierType.valueOf(debtor.getEntityType().getValue()) : null)
+                    .debtorEntityType(EntityIdentifierType.valueOf(debtor.getEntityType().getValue()))
                     .debtorFullName(debtor.getFullName())
                     .debtorUniqueIdentifierCode(debtor.getFiscalCode())
                     .debtorEmail(debtor.getEmail());

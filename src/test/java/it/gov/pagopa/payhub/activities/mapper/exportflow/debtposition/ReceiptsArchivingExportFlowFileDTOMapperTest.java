@@ -56,18 +56,4 @@ class ReceiptsArchivingExportFlowFileDTOMapperTest {
         assertEquals("OK", result.getPaymentOutcome());
     }
 
-    @Test
-    void givenValidReceiptArchivingViewWhenDebtorEntityIsNull_whenMap_thenReturnReceiptsArchivingViewDTO() {
-        //given
-        ReceiptArchivingView receiptArchivingView = podamFactory.manufacturePojo(ReceiptArchivingView.class);
-        receiptArchivingView.getDebtor().setEntityType(null);
-        //when
-        ReceiptsArchivingExportFlowFileDTO result = receiptsArchivingExportFlowFileDTOMapper.map(receiptArchivingView);
-        //then
-        assertNotNull(result);
-        TestUtils.reflectionEqualsByName(receiptArchivingView,result);
-        TestUtils.checkNotNullFields(result, "receiptXml", "debtorEntityType");
-        assertNull(result.getDebtorEntityType());
-        assertEquals("OK", result.getPaymentOutcome());
-    }
 }
