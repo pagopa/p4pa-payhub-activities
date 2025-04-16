@@ -84,7 +84,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
     }
 
     @Test
-    void  givenValidInstallmentPaidWithNullFieldViewAndVersionTrack_whenMap_thenReturnInstallmentPaidViewDTO() {
+    void  givenValidInstallmentPaidWithNullFieldView_whenMap_thenReturnInstallmentPaidViewDTO() {
         //given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
         installmentPaidViewDTO.getDebtor().setEntityType(null);
@@ -107,7 +107,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
     }
 
     @Test
-    void  givenValidInstallmentPaidWithNullPayerViewAndVersionTrack_whenMap_thenReturnInstallmentPaidViewDTO() {
+    void  givenValidInstallmentPaidWithNullPayerView_whenMap_thenReturnInstallmentPaidViewDTO() {
         //given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
         installmentPaidViewDTO.setPayer(null);

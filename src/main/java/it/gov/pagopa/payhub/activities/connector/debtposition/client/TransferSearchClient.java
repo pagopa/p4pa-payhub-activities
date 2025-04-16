@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import lombok.extern.slf4j.Slf4j;
@@ -28,5 +29,10 @@ public class TransferSearchClient {
             log.info("Transfer not found: organizationId: {}, iuv: {}, iur: {}, transferIndex: {}", orgId, iuv, iur, transferIndex);
             return null;
         }
+    }
+
+    public CollectionModelTransfer findByInstallmentId(Long installmentId, String accessToken) {
+        return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
+                .crudTransfersFindByInstallmentId(installmentId.toString());
     }
 }
