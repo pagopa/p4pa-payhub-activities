@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
@@ -59,8 +60,10 @@ class IudClassificationActivityTest {
     List<InstallmentNoPIIResponse> expectedInstallmentNoPIIs = expectedCollectionModelInstallmentNoPII.getEmbedded()
         .getInstallmentNoPIIs();
 
-    when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(ORGANIZATIONID, IUD,
-        INSTALLMENT_STATUS_LIST))
+    when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(
+        Mockito.eq(ORGANIZATIONID),
+        Mockito.eq(IUD),
+        argThat(list -> list.containsAll(INSTALLMENT_STATUS_LIST) && INSTALLMENT_STATUS_LIST.containsAll(list))))
         .thenReturn(expectedCollectionModelInstallmentNoPII);
     when(transferServiceMock.findByInstallmentId(Mockito.anyLong()))
         .thenReturn(TransferFaker.buildCollectionModelTransfer());
@@ -94,7 +97,10 @@ class IudClassificationActivityTest {
     assertEquals(iudClassificationActivityResult, expectedIudClassificationActivityResult);
 
     Mockito.verify(installmentServiceMock, Mockito.times(1))
-        .getInstallmentsByOrgIdAndIudAndStatus(ORGANIZATIONID, IUD, INSTALLMENT_STATUS_LIST);
+        .getInstallmentsByOrgIdAndIudAndStatus(
+                Mockito.eq(ORGANIZATIONID),
+            Mockito.eq(IUD),
+            argThat(list -> list.containsAll(INSTALLMENT_STATUS_LIST) && INSTALLMENT_STATUS_LIST.containsAll(list)));
     Mockito.verify(transferServiceMock, Mockito.times(expectedInstallmentNoPIIs.size()))
         .findByInstallmentId(Mockito.anyLong());
   }
