@@ -7,9 +7,11 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.PaidExportFileEntityControllerApi;
+import it.gov.pagopa.pu.processexecutions.client.generated.ReceiptsArchivingExportFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,8 @@ class ExportFileClientTest {
     private ExportFileEntityControllerApi exportFileEntityControllerApiMock;
     @Mock
     private ExportFileEntityExtendedControllerApi exportFileEntityExtendedControllerApiMock;
+    @Mock
+    private ReceiptsArchivingExportFileEntityControllerApi receiptsArchivingExportFileEntityControllerApiMock;
 
     ExportFileClient exportFileClient;
     PodamFactory podamFactory;
@@ -49,7 +53,8 @@ class ExportFileClientTest {
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
                 processExecutionsApisHolderMock,
-                paidExportFileEntityControllerApiMock
+                paidExportFileEntityControllerApiMock,
+                receiptsArchivingExportFileEntityControllerApiMock
         );
     }
 
@@ -157,5 +162,38 @@ class ExportFileClientTest {
         Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, ""), accessToken);
         //then
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void givenExportFileId_WhenFindReceiptsArchivingExportFileById_ThenReturnReceiptsArchivingExportFile() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ReceiptsArchivingExportFile receiptsArchivingExportFile = podamFactory.manufacturePojo(ReceiptsArchivingExportFile.class);
+
+        Mockito.when(receiptsArchivingExportFileEntityControllerApiMock.crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId)))
+                .thenReturn(receiptsArchivingExportFile);
+        Mockito.when(processExecutionsApisHolderMock.getReceiptsArchivingExportFileEntityControllerApi(accessToken))
+                .thenReturn(receiptsArchivingExportFileEntityControllerApiMock);
+        //when
+        ReceiptsArchivingExportFile result = exportFileClient.findReceiptsArchivingExportFileById(exportFileId, accessToken);
+        //then
+        Assertions.assertEquals(receiptsArchivingExportFile, result);
+    }
+
+    @Test
+    void givenNotExistentReceiptsArchivingExportFile_WhenFindReceiptsArchivingExportFileById_ThenReturnNull() {
+        // Given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+
+        Mockito.when(receiptsArchivingExportFileEntityControllerApiMock.crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId)))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        Mockito.when(processExecutionsApisHolderMock.getReceiptsArchivingExportFileEntityControllerApi(accessToken))
+                .thenReturn(receiptsArchivingExportFileEntityControllerApiMock);
+        // When
+        ReceiptsArchivingExportFile result = exportFileClient.findReceiptsArchivingExportFileById(exportFileId, accessToken);
+        // Then
+        assertNull(result);
     }
 }
