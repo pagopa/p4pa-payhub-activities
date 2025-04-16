@@ -1,21 +1,23 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import java.util.List;
-import java.util.Set;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class Utilities {
     private Utilities(){}
@@ -25,8 +27,6 @@ public class Utilities {
     public static final int IBAN_LENGTH = 27;
     public static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
     private static final DatatypeFactory DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR;
-    public static final Set<InstallmentStatus> INSTALLMENT_PAYED_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
-    public static final List<InstallmentStatus> INSTALLMENT_PAYED_LIST = List.copyOf(INSTALLMENT_PAYED_SET);
 
     static {
         try {

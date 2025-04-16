@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import static it.gov.pagopa.payhub.activities.util.Utilities.INSTALLMENT_PAYED_SET;
+import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAYED_STATUSES_SET;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
@@ -56,7 +56,8 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Retrieve Transfer 2 classify
-		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_PAYED_SET);
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey,
+				INSTALLMENT_PAYED_STATUSES_SET);
 
 		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
