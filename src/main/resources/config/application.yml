@@ -25,6 +25,10 @@ export-flow-files:
     filename-prefix: "\${EXPORT_PAID_FLOW_FILE_FILENAME_PREFIX:EXPORT_PAID}"
     page-size: "\${PAID_EXPORT_FLOW_FILE_SIZE_PAGE:10000}"
     relative-file-folder: "\${PAID_EXPORT_RELATIVE_FILE_FOLDER:export/paid}"
+  receipts-archiving:
+    filename-prefix: "\${EXPORT_RECEIPTS_ARCHIVING_FLOW_FILE_FILENAME_PREFIX:EXPORT_RECEIPTS_ARCHIVING}"
+    page-size: "\${RECEIPTS_ARCHIVING_EXPORT_FLOW_FILE_SIZE_PAGE:10000}"
+    relative-file-folder: "\${RECEIPTS_ARCHIVING_EXPORT_RELATIVE_FILE_FOLDER:export/receipts-archiving}"
 
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"

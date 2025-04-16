@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.exportflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupported;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.PaidExportFileService;
+import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.ReceiptsArchivingExportFileService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,13 +21,15 @@ class ExportFileActivityImplTest {
 
     @Mock
     private PaidExportFileService paidExportFlowFileService;
+    @Mock
+    private ReceiptsArchivingExportFileService receiptsArchivingExportFileServiceMock;
 
     private PodamFactory podamFactory;
     ExportFileActivityImpl exportFlowFileActivity;
 
     @BeforeEach
     void setUp() {
-        exportFlowFileActivity = new ExportFileActivityImpl(paidExportFlowFileService);
+        exportFlowFileActivity = new ExportFileActivityImpl(paidExportFlowFileService, receiptsArchivingExportFileServiceMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -38,6 +41,19 @@ class ExportFileActivityImplTest {
         Mockito.when(paidExportFlowFileService.executeExport(1L)).thenReturn(exportFlowFileResult);
         //when
         ExportFileResult result = exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.PAID);
+        //then
+        assertNotNull(result);
+        assertEquals(exportFlowFileResult, result);
+    }
+
+    @Test
+    void givenValidFlowIdAndReceiptsArchivingType_whenExecuteExport_thenReturnsExpectedExportFlowFileResult() {
+        //given
+        ExportFileResult exportFlowFileResult = podamFactory.manufacturePojo(ExportFileResult.class);
+
+        Mockito.when(receiptsArchivingExportFileServiceMock.executeExport(1L)).thenReturn(exportFlowFileResult);
+        //when
+        ExportFileResult result = exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.RECEIPTS_ARCHIVING);
         //then
         assertNotNull(result);
         assertEquals(exportFlowFileResult, result);
