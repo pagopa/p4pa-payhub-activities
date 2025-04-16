@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import static it.gov.pagopa.payhub.activities.util.Utilities.INSTALLMENT_PAYED_SET;
+
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
@@ -8,7 +10,6 @@ import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDT
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationService;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
-import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
@@ -55,7 +56,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Retrieve Transfer 2 classify
-		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, Utilities.getInstallmentPayedSet());
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_PAYED_SET);
 
 		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",

@@ -7,8 +7,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +41,7 @@ public class InstallmentServiceImpl implements InstallmentService {
 	}
 
 	@Override
-	public CollectionModelInstallmentNoPII getInstallmentsByOrgIdAndIudAndStatus(Long orgId, String iud, Set<InstallmentStatus> installmentStatuses) {
+	public CollectionModelInstallmentNoPII getInstallmentsByOrgIdAndIudAndStatus(Long orgId, String iud, List<InstallmentStatus> installmentStatuses) {
 		return installmentClient.findCollectionByOrganizationIdAndIudAndStatus(orgId, iud, installmentStatuses, authnService.getAccessToken());
 	}
 }

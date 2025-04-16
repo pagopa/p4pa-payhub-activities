@@ -9,7 +9,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -47,8 +46,8 @@ public class InstallmentClient {
         return debtPositionApisHolder.getInstallmentApi(accessToken).getInstallmentsByOrganizationIdAndNav(organizationId, nav, debtPositionOrigins);
     }
 
-	public CollectionModelInstallmentNoPII findCollectionByOrganizationIdAndIudAndStatus(Long orgId, String iud, Set<InstallmentStatus> installmentStatuses,String accessToken) {
-			return debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken).crudInstallmentsGetByOrganizationIdAndIudAndStatus(orgId, iud, installmentStatuses.stream().toList());
+	public CollectionModelInstallmentNoPII findCollectionByOrganizationIdAndIudAndStatus(Long orgId, String iud, List<InstallmentStatus> installmentStatuses,String accessToken) {
+			return debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken).crudInstallmentsGetByOrganizationIdAndIudAndStatus(orgId, iud, installmentStatuses);
 	}
 
 }

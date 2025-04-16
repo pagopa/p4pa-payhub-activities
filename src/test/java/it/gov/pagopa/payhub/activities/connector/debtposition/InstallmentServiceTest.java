@@ -12,8 +12,8 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.client.Installment
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -93,7 +93,7 @@ class InstallmentServiceTest {
 		String accessToken = "ACCESSTOKEN";
 		Long orgId = 1L;
 		String iud = "IUD";
-		Set<InstallmentStatus> statuses = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+		List<InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
 

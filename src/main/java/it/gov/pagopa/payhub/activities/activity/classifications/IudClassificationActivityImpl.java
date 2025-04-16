@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import static it.gov.pagopa.payhub.activities.util.Utilities.INSTALLMENT_PAYED_LIST;
+
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
@@ -35,7 +37,7 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
     log.info("Starting IUD Classification for organization id {} and iud {}", organizationId,iud);
 
     CollectionModelInstallmentNoPII installment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organizationId, iud,
-        Utilities.getInstallmentPayedSet());
+        INSTALLMENT_PAYED_LIST);
     List<InstallmentNoPIIResponse> installmentsList = installment.getEmbedded().getInstallmentNoPIIs();
     if (installmentsList == null || installmentsList.isEmpty()) {
       log.info("No installments found for organization id {} and iud {}", organizationId,iud);

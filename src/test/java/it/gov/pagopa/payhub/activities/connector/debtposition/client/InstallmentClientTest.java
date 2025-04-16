@@ -19,7 +19,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -155,7 +154,7 @@ class InstallmentClientTest {
 		String accessToken = "ACCESSTOKEN";
 		Long organizationId = 0L;
 		String iud = "iud";
-		Set<InstallmentStatus> statuses = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+		List<InstallmentStatus> statuses = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 		CollectionModelInstallmentNoPII expectedResult = buildCollectionModelInstallmentNoPII();
 
 		when(debtPositionApisHolderMock.getInstallmentNoPiiSearchControllerApi(accessToken)).thenReturn(installmentNoPiiSearchControllerApiMock);
