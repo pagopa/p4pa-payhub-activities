@@ -27,7 +27,7 @@ public class TreasuryVersionOpi14HandlerService extends TreasuryVersionBaseHandl
     }
 
     @Override
-    public FlussoGiornaleDiCassa unmarshall(File file) {
+    protected FlussoGiornaleDiCassa unmarshall(File file) {
         return treasuryUnmarshallerService.unmarshalOpi14(file);
     }
 }

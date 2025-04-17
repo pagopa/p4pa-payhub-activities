@@ -1,13 +1,13 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryOpiParserService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionHandlerService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,18 +49,19 @@ class TreasuryOpiParserServiceTest {
         Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO()
             .treasuryId("treasury123")
             .iuf("Flow123");
-        List<Treasury> handlerResult = List.of(treasuryDTO);
+        Pair<IngestionFlowFileResult, List<Treasury>> handlerResult = Pair.of(new IngestionFlowFileResult(), List.of(treasuryDTO));
 
         when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
         when(treasuryService.insert(treasuryDTO)).thenReturn(treasuryDTO);
 
         // When
-        Map<String, String> result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, Map<String, String>> result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("treasury123", result.get("Flow123"));
+        assertSame(handlerResult.getLeft(), result.getLeft());
+        assertEquals(1, result.getRight().size());
+        assertEquals("treasury123", result.getRight().get("Flow123"));
         verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 
@@ -77,8 +78,8 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
-        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Pair.of(new IngestionFlowFileResult(), null));
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Pair.of(new IngestionFlowFileResult(), null));
 
         // When & Then
         assertThrows(TreasuryOpiInvalidFileException.class, () ->
@@ -99,23 +100,24 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Collections.emptyList());
-
         Treasury treasuryDTO = TreasuryFaker.buildTreasuryDTO()
-            .treasuryId("treasury123")
-            .iuf("Flow456");
-        List<Treasury> handlerResult = List.of(treasuryDTO);
+                .treasuryId("treasury123")
+                .iuf("Flow456");
 
-        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
+        Pair<IngestionFlowFileResult, List<Treasury>> handler1Result = Pair.of(new IngestionFlowFileResult(), List.of(treasuryDTO));
+        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handler1Result);
+
+        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Pair.of(new IngestionFlowFileResult(), Collections.emptyList()));
         when(treasuryService.insert(treasuryDTO)).thenReturn(treasuryDTO);
 
         // When
-        Map<String, String> result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, Map<String, String>> result = treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("treasury123", result.get("Flow456"));
+        assertSame(handler1Result.getLeft(), result.getLeft());
+        assertEquals(1, result.getRight().size());
+        assertEquals("treasury123", result.getRight().get("Flow456"));
         verify(treasuryService, times(1)).insert(treasuryDTO);
     }
 }

@@ -1,12 +1,14 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
-import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
-import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.OngoingStubbing;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,112 +28,111 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TreasuryVersionBaseHandlerServiceTest {
+public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
 
     @Mock
-    private TreasuryMapperService<Object> mapperServiceMock;
+    protected TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
     @Mock
-    private TreasuryValidatorService<Object> validatorServiceMock;
+    protected TreasuryService treasuryServiceMock;
     @Mock
-    private TreasuryErrorsArchiverService treasuryErrorsArchiverServiceMock;
-    @Mock
-    private TreasuryService treasuryServiceMock;
+    protected TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
 
-    private FlussoGiornaleDiCassa unmarshalledObject;
+    private T unmarshalledObject;
 
-    private TreasuryVersionBaseHandlerService<Object> handlerService;
+    private TreasuryVersionBaseHandlerService<T> handlerService;
 
     @BeforeEach
     void setUp() {
-        unmarshalledObject = mock(FlussoGiornaleDiCassa.class);
+        unmarshalledObject = mockFlussoGiornaleDiCassa();
 
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock) {
-            @Override
-            protected Object unmarshall(File file) {
-                return unmarshalledObject;
-            }
-        };
+        handlerService = buildVersionHandlerService();
     }
+
+    @AfterEach
+    void verifyNoMoreInteractions(){
+        Mockito.verifyNoMoreInteractions(
+                treasuryErrorsArchiverServiceMock,
+                treasuryServiceMock,
+                treasuryUnmarshallerServiceMock,
+                getMapperServiceMock(),
+                getValidatorServiceMock()
+        );
+    }
+
+    protected abstract T mockFlussoGiornaleDiCassa();
+
+    protected abstract TreasuryVersionBaseHandlerService<T> buildVersionHandlerService();
+    protected abstract OngoingStubbing<T> getUnmarshallerMockitOngoingStubbing(File xmlFile);
+    protected abstract TreasuryValidatorService<T> getValidatorServiceMock();
+
+    protected abstract TreasuryMapperService<T> getMapperServiceMock();
 
     @Test
     void testHandle_whenValidFile_thenReturnsResult() {
         // Given
-        File file = mock(File.class);
+        Path fileFolder = Path.of("build");
+        File file = fileFolder.resolve("prova.txt").toFile();
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
+        ArrayList<TreasuryErrorDTO> errorDTOS = new ArrayList<>();
 
-        Map<TreasuryOperationEnum, List<Treasury>> expectedMap = Map.of();
-        List<Treasury> expectedResult = List.of();
+        Treasury newTreasury = new Treasury();
+        newTreasury.setTreasuryId("TRID");
+        Map<TreasuryOperationEnum, List<Treasury>> expectedMap = Map.of(TreasuryOperationEnum.INSERT, List.of(newTreasury));
+        Pair<IngestionFlowFileResult, List<Treasury>> expectedResult = Pair.of(
+                IngestionFlowFileResult.builder()
+                        .totalRows(1)
+                        .processedRows(1)
+                        .build(),
+                List.of(newTreasury));
 
-
-        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
-        Mockito.when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        Mockito.when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedMap);
+        getUnmarshallerMockitOngoingStubbing(file).thenReturn(unmarshalledObject);
+        Mockito.when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        Mockito.when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(errorDTOS);
+        Mockito.when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedMap);
 
         // When
-        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
         Assertions.assertEquals(expectedResult, result);
+        Mockito.verify(treasuryErrorsArchiverServiceMock)
+                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
     }
 
     @Test
-    void testHandle_whenValidationFails_thenReturnsEmptyMap() {
+    void testHandle_whenValidationFails_thenThrowError() {
+        // Given
+        Path fileFolder = Path.of("build");
+        File file = fileFolder.resolve("prova.txt").toFile();
+        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
+        ingestionFlowFileDTO.setFileName("testFile");
+
+        getUnmarshallerMockitOngoingStubbing(file).thenReturn(unmarshalledObject);
+        Mockito.when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(false);
+
+        // When
+        Assertions.assertThrows(TreasuryOpiInvalidFileException.class, () -> handlerService.handle(file, ingestionFlowFileDTO, 1));
+    }
+
+    @Test
+    void testHandle_whenUnmarshallFails_thenReturnsNull() {
         // Given
         File file = mock(File.class);
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
-        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        getUnmarshallerMockitOngoingStubbing(file).thenThrow(new RuntimeException("Unmarshall failed"));
 
         // When
-        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
-        Assertions.assertTrue(result.isEmpty());
-        Mockito.verify(mapperServiceMock, never()).apply(new Object(), new IngestionFlowFile());
-    }
-
-    @Test
-    void testHandle_whenUnmarshallFails_thenReturnsEmptyMap() {
-        // Given
-        handlerService = new TreasuryVersionBaseHandlerService<>(mapperServiceMock, validatorServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock) {
-            @Override
-            protected Object unmarshall(File file) {
-                throw new RuntimeException("Unmarshall failed");
-            }
-        };
-        File file = mock(File.class);
-        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
-        ingestionFlowFileDTO.setFileName("testFile");
-
-        // When
-        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
-
-        // Then
-        assertNotNull(result);
-        Assertions.assertTrue(result.isEmpty());
-        Mockito.verify(mapperServiceMock, never()).apply(any(), any());
-    }
-
-    @Test
-    void testHandle_whenMapperFails_thenReturnsEmptyMap() {
-        // Given
-        File file = mock(File.class);
-        IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
-        ingestionFlowFileDTO.setFileName("testFile");
-
-
-        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(false);
-
-        // When
-        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
-
-        // Then
-        assertNotNull(result);
-        Assertions.assertTrue(result.isEmpty());
+        Assertions.assertEquals(new IngestionFlowFileResult(), result.getLeft());
+        Assertions.assertNull(result.getRight());
+        Mockito.verify(getMapperServiceMock(), never()).apply(any(), any());
     }
 
     @Test
@@ -138,7 +141,7 @@ class TreasuryVersionBaseHandlerServiceTest {
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
-        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(false);
+        Mockito.when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(false);
 
         // When & Then
         Assertions.assertThrows(TreasuryOpiInvalidFileException.class, () ->
@@ -150,10 +153,10 @@ class TreasuryVersionBaseHandlerServiceTest {
         // Given
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
-
-        Mockito.when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         List<TreasuryErrorDTO> expectedErrors = List.of(new TreasuryErrorDTO("file", "2023", "B123", "ERR01", "Invalid data"));
-        Mockito.when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(expectedErrors);
+
+        Mockito.when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        Mockito.when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(expectedErrors);
 
         // When
         List<TreasuryErrorDTO> result = handlerService.validate(ingestionFlowFileDTO, 1, unmarshalledObject);
@@ -166,9 +169,11 @@ class TreasuryVersionBaseHandlerServiceTest {
     @Test
     void testHandle_whenDeleteTreasury_thenCallsDeleteByOrganizationIdAndBillCodeAndBillYear() {
         // Given
-        File file = mock(File.class);
+        Path fileFolder = Path.of("build");
+        File file = fileFolder.resolve("prova.txt").toFile();
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
+        ArrayList<TreasuryErrorDTO> errorDTOS = new ArrayList<>();
 
         Treasury treasuryDTO = new Treasury();
         treasuryDTO.setOrganizationId(98765L);
@@ -179,25 +184,37 @@ class TreasuryVersionBaseHandlerServiceTest {
                 TreasuryOperationEnum.DELETE, List.of(treasuryDTO)
         );
 
-        when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
-        when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
+        getUnmarshallerMockitOngoingStubbing(file).thenReturn(unmarshalledObject);
+        when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(errorDTOS);
+        when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
         when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear())).thenReturn(1L);
 
         // When
-        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
+        Assertions.assertEquals(
+                IngestionFlowFileResult.builder()
+                        .totalRows(1)
+                        .processedRows(1)
+                        .build(),
+                result.getLeft());
+        Assertions.assertTrue(result.getRight().isEmpty());
         verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear());
+        Mockito.verify(treasuryErrorsArchiverServiceMock)
+                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
     }
 
     @Test
     void testHandle_whenDeleteTreasury_thenCallsDeleteByOrganizationIdAndBillCodeAndBillYearAndWriteError() {
         // Given
-        File file = mock(File.class);
+        Path fileFolder = Path.of("build");
+        File file = fileFolder.resolve("prova.txt").toFile();
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
+        ArrayList<TreasuryErrorDTO> errorDTOS = new ArrayList<>();
 
         Treasury treasuryDTO = new Treasury();
         treasuryDTO.setOrganizationId(98765L);
@@ -208,16 +225,27 @@ class TreasuryVersionBaseHandlerServiceTest {
                 TreasuryOperationEnum.DELETE, List.of(treasuryDTO)
         );
 
-        when(validatorServiceMock.validatePageSize(unmarshalledObject, 1)).thenReturn(true);
-        when(validatorServiceMock.validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(new ArrayList<>());
-        when(mapperServiceMock.apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
+        getUnmarshallerMockitOngoingStubbing(file).thenReturn(unmarshalledObject);
+        when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
+        when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(errorDTOS);
+        when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
         when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear())).thenReturn(0L);
 
         // When
-        List<Treasury> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
+        Assertions.assertEquals(
+                IngestionFlowFileResult.builder()
+                        .totalRows(1)
+                        .processedRows(1)
+                        .build(),
+                result.getLeft());
+        Assertions.assertTrue(result.getRight().isEmpty());
         verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear());
+
+        Mockito.verify(treasuryErrorsArchiverServiceMock)
+                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
     }
 }
