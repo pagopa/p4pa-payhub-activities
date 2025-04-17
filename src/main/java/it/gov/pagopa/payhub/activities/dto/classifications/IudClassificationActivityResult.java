@@ -12,5 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class IudClassificationActivityResult {
     private Long organizationId;
-    private List<Transfer2ClassifyDTO> transfers2classify;
+    private String iud;
+    private String iuv;
+    private String iur;
+    private List<Integer> transferIndexes;
 }
