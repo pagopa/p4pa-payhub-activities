@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperatio
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +51,16 @@ class SynchronizeIngestedDebtPositionActivityTest {
         activity = new SynchronizeIngestedDebtPositionActivityImpl(
                 debtPositionServiceMock, workflowDebtPositionServiceMock, workflowCompletionServiceMock,
                 debtPositionOperationTypeResolverMock, PAGE_SIZE, MAX_WAITING_MINUTES, RETRY_DELAY
+        );
+    }
+
+    @AfterEach
+    void verifyNoMoreInteractions(){
+        Mockito.verifyNoMoreInteractions(
+                debtPositionServiceMock,
+                workflowDebtPositionServiceMock,
+                workflowCompletionServiceMock,
+                debtPositionOperationTypeResolverMock
         );
     }
 
@@ -175,7 +186,83 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         String result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        assertEquals("\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": Error" +
-                "\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.", result);
+        assertEquals(
+                "\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": Error" +
+                "\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.",
+                result);
+    }
+
+    @Test
+    void testSynchronizeIngestedDebtPositionWithErrorsOnSyncAPI() throws TooManyAttemptsException {
+        Long ingestionFlowFileId = 1L;
+        WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
+        DebtPositionDTO debtPosition1 = buildDebtPositionDTO();
+        DebtPositionDTO debtPosition2 = buildDebtPositionDTO();
+        DebtPositionDTO debtPosition3 = buildDebtPositionDTO();
+        DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
+
+        debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
+        debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
+        debtPosition2.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
+        debtPosition2.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.UNPAID).build());
+        debtPosition3.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
+        debtPosition3.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.INVALID).build());
+        debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
+        debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.DRAFT).syncStatusTo(InstallmentStatus.UNPAID).build());
+
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO1 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.CANCELLED).build();
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO2 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.UNPAID).build();
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO3 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.INVALID).build();
+        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO4 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.UNPAID).build();
+
+        WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
+
+        PagedDebtPositions pagedDebtPositionsFirstPage = PagedDebtPositions.builder()
+                .content(List.of(debtPosition1, debtPosition2))
+                .size(2L)
+                .totalPages(2L)
+                .totalElements(4L)
+                .number(0L)
+                .build();
+
+        PagedDebtPositions pagedDebtPositionsSecondPage = PagedDebtPositions.builder()
+                .content(List.of(debtPosition3, debtPosition4))
+                .size(2L)
+                .totalPages(2L)
+                .totalElements(4L)
+                .number(1L)
+                .build();
+
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
+                .thenReturn(pagedDebtPositionsFirstPage);
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 1, PAGE_SIZE, DEFAULT_ORDERING))
+                .thenReturn(pagedDebtPositionsSecondPage);
+
+        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition1, Map.of("iud", iupdSyncStatusUpdateDTO1)))
+                .thenReturn(PaymentEventType.DP_CANCELLED);
+        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition2, Map.of("iud", iupdSyncStatusUpdateDTO2)))
+                .thenReturn(PaymentEventType.DP_UPDATED);
+        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition3, Map.of("iud", iupdSyncStatusUpdateDTO3)))
+                .thenReturn(PaymentEventType.DP_UPDATED);
+        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition4, Map.of("iud", iupdSyncStatusUpdateDTO4)))
+                .thenReturn(PaymentEventType.DP_CREATED);
+
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, PaymentEventType.DP_CANCELLED,"ingestionFlowFileId:1"))
+                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_1").build());
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
+                .thenThrow(new RuntimeException("DUMMYEXCEPTION DP2"));
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
+                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_3").build());
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
+                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_4").build());
+
+        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPS), eq(RETRY_DELAY)))
+                .thenReturn(workflowExecutionStatus);
+
+        String result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
+
+        assertEquals(
+                "\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": DUMMYEXCEPTION DP2",
+                result);
     }
 }

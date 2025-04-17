@@ -71,27 +71,43 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             log.info("Synchronizing page {} of {} retrieved searching debt positions related to ingestionFlowFileId {} (totalElements {})",
                     currentPage, pagedDebtPositions.getTotalPages(), pagedDebtPositions.getTotalElements(), ingestionFlowFileId);
 
-            pagedDebtPositions.getContent().forEach(debtPosition -> {
+            List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> wfIds = pagedDebtPositions.getContent().stream()
+                    .map(debtPosition -> {
+                        try {
+                            Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = createIupdSyncStatusMap(debtPosition);
+                            PaymentEventType paymentEventType = debtPositionOperationTypeResolver.calculateDebtPositionOperationType(debtPosition, iupdSyncStatusUpdateDTOMap);
+
+                            WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType, "ingestionFlowFileId:" + ingestionFlowFileId);
+
+                            if (workflowCreatedDTO == null || workflowCreatedDTO.getWorkflowId() == null) {
+                                return null;
+                            }
+                            return Pair.of(debtPosition, workflowCreatedDTO);
+
+                        } catch (Exception e) {
+                            log.error("Error synchronizing debt position with id {} and iupdOrg {}: {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e.getMessage());
+                            errors.append("\nError on debt position with iupdOrg ")
+                                    .append(debtPosition.getIupdOrg()).append(": ")
+                                    .append(e.getMessage());
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            wfIds.forEach(p -> {
+                WorkflowCreatedDTO workflow = p.getRight();
+                DebtPositionDTO debtPosition = p.getLeft();
                 try {
-                    Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = createIupdSyncStatusMap(debtPosition);
-                    PaymentEventType paymentEventType = debtPositionOperationTypeResolver.calculateDebtPositionOperationType(debtPosition, iupdSyncStatusUpdateDTOMap);
-
-                    WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType, "ingestionFlowFileId:" + ingestionFlowFileId);
-
-                    if (workflowCreatedDTO == null || workflowCreatedDTO.getWorkflowId() == null) {
-                        return;
-                    }
-
-                    WorkflowExecutionStatus workflowExecutionStatus = workflowCompletionService.waitTerminationStatus(workflowCreatedDTO.getWorkflowId(), maxAttempts, retryDelayMs);
+                    WorkflowExecutionStatus workflowExecutionStatus = workflowCompletionService.waitTerminationStatus(workflow.getWorkflowId(), maxAttempts, retryDelayMs);
 
                     if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowExecutionStatus)) {
                         errors.append("\nSynchronization workflow for debt position with iupdOrg ")
                                 .append(debtPosition.getIupdOrg())
                                 .append(" terminated with error status.");
                     }
-
                 } catch (Exception e) {
-                    log.error("Error synchronizing debt position with id {} and iupdOrg {}: {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e.getMessage());
+                    log.error("Error waiting for debt position sync workflowId with id {} and iupdOrg {}: {}", workflow.getWorkflowId(), debtPosition.getIupdOrg(), e.getMessage());
                     errors.append("\nError on debt position with iupdOrg ")
                             .append(debtPosition.getIupdOrg()).append(": ")
                             .append(e.getMessage());
