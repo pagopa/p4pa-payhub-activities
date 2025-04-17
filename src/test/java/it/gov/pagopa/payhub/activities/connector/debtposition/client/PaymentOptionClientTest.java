@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.client.generated.PaymentOptionSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.PaymentOptionEntityExtendedControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@ class PaymentOptionClientTest {
     @Mock
     private DebtPositionApisHolder debtPositionApisHolderMock;
     @Mock
-    PaymentOptionSearchControllerApi paymentOptionSearchControllerApiMock;
+    PaymentOptionEntityExtendedControllerApi paymentOptionEntityExtendedControllerApiMock;
 
     @InjectMocks
     private PaymentOptionClient paymentOptionClient;
@@ -28,14 +28,14 @@ class PaymentOptionClientTest {
         String accessToken = "ACCESSTOKEN";
         Long paymentOptionId = 1L;
 
-        when(debtPositionApisHolderMock.getPaymentOptionSearchControllerApi(accessToken))
-                .thenReturn(paymentOptionSearchControllerApiMock);
+        when(debtPositionApisHolderMock.getPaymentOptionEntityExtendedControllerApi(accessToken))
+                .thenReturn(paymentOptionEntityExtendedControllerApiMock);
 
         // When
         paymentOptionClient.updateStatus(paymentOptionId, PaymentOptionStatus.UNPAID, accessToken);
 
         // Then
-        verify(debtPositionApisHolderMock, times(1)).getPaymentOptionSearchControllerApi(accessToken);
-        verify(paymentOptionSearchControllerApiMock, times(1)).crudPaymentOptionsUpdateStatus(paymentOptionId, PaymentOptionStatus.UNPAID);
+        verify(debtPositionApisHolderMock, times(1)).getPaymentOptionEntityExtendedControllerApi(accessToken);
+        verify(paymentOptionEntityExtendedControllerApiMock, times(1)).updateStatus(paymentOptionId, PaymentOptionStatus.UNPAID);
     }
 }

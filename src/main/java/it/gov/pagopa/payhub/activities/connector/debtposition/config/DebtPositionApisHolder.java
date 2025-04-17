@@ -28,6 +28,7 @@ public class DebtPositionApisHolder {
     private final InstallmentNoPiiSearchControllerApi installmentNoPiiSearchControllerApi;
     private final InstallmentsEntityExtendedControllerApi installmentsEntityExtendedControllerApi;
     private final PaymentOptionSearchControllerApi paymentOptionSearchControllerApi;
+    private final PaymentOptionEntityExtendedControllerApi paymentOptionEntityExtendedControllerApi;
 
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
@@ -62,6 +63,7 @@ public class DebtPositionApisHolder {
         this.installmentNoPiiSearchControllerApi = new InstallmentNoPiiSearchControllerApi(apiClient);
         this.installmentsEntityExtendedControllerApi = new InstallmentsEntityExtendedControllerApi(apiClient);
         this.paymentOptionSearchControllerApi = new PaymentOptionSearchControllerApi(apiClient);
+        this.paymentOptionEntityExtendedControllerApi = new PaymentOptionEntityExtendedControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -131,6 +133,10 @@ public class DebtPositionApisHolder {
 
     public PaymentOptionSearchControllerApi getPaymentOptionSearchControllerApi(String accessToken) {
         return getApi(accessToken, null, paymentOptionSearchControllerApi);
+    }
+
+    public PaymentOptionEntityExtendedControllerApi getPaymentOptionEntityExtendedControllerApi(String accessToken) {
+        return getApi(accessToken, null, paymentOptionEntityExtendedControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, String mappedExternalUserId, T api) {
