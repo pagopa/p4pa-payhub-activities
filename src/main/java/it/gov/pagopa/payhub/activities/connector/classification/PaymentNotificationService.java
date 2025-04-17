@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 
 
 /**
@@ -15,4 +16,6 @@ public interface PaymentNotificationService {
      * @return the created {@link PaymentNotificationDTO} object
      */
     PaymentNotificationDTO createPaymentNotification(PaymentNotificationDTO dto);
+
+    PaymentNotificationNoPII getByOrgIdAndIud(Long organizationId, String iud);
 }

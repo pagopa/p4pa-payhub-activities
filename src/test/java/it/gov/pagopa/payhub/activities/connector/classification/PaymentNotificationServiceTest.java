@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.PaymentNotificationClient;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,5 +57,24 @@ class PaymentNotificationServiceTest {
         assertEquals(expectedResponse, result);
         verify(paymentNotificationClientMock, times(1)).createPaymentNotification(dto, accessToken);
     }
+
+    @Test
+    void givenValidOrgIdAndIudWhenGetByOrgIdAndIudThenReturnPaymentNotificationNoPII() {
+        Long organizationId = 1L;
+        String iud = "IUD";
+        String accessToken = "accessToken";
+        PaymentNotificationNoPII expectedResponse = new PaymentNotificationNoPII();
+
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(paymentNotificationClientMock.getByOrgIdAndIud(organizationId, iud, accessToken))
+            .thenReturn(expectedResponse);
+
+        PaymentNotificationNoPII result = paymentNotificationService.getByOrgIdAndIud(organizationId, iud);
+
+        assertEquals(expectedResponse, result);
+        verify(authnServiceMock, times(1)).getAccessToken();
+        verify(paymentNotificationClientMock, times(1)).getByOrgIdAndIud(organizationId, iud, accessToken);
+    }
+
 
 }
