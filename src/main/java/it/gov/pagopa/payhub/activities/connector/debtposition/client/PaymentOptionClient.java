@@ -19,6 +19,6 @@ public class PaymentOptionClient {
 
     public void updateStatus(Long paymentOptionId, PaymentOptionStatus status, String accessToken){
         log.info("Update status for paymentOptionId: {}", paymentOptionId);
-        debtPositionApisHolder.getPaymentOptionSearchControllerApi(accessToken).crudPaymentOptionsUpdateStatus(paymentOptionId, status);
+        debtPositionApisHolder.getPaymentOptionEntityExtendedControllerApi(accessToken).updateStatus(paymentOptionId, status);
     }
 }

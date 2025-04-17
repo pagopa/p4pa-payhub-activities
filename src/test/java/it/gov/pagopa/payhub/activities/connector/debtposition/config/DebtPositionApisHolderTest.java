@@ -191,11 +191,11 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     }
 
     @Test
-    void whenGetPaymentOptionSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+    void whenGetPaymentOptionEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> {
-                    debtPositionApisHolder.getPaymentOptionSearchControllerApi(accessToken)
-                            .crudPaymentOptionsUpdateStatus(1L, PaymentOptionStatus.UNPAYABLE);
+                    debtPositionApisHolder.getPaymentOptionEntityExtendedControllerApi(accessToken)
+                            .updateStatus(1L, PaymentOptionStatus.PAID);
                     return voidMock;
                 },
                 new ParameterizedTypeReference<>() {},
