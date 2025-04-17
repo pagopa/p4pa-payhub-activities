@@ -10,11 +10,14 @@ import it.gov.pagopa.pu.classification.client.generated.PaymentNotificationApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentNotificationNoPiiSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentNotificationClientTest {
@@ -81,5 +84,23 @@ class PaymentNotificationClientTest {
             .crudPaymentNotificationGetByOrganizationIdAndIud(organizationId, iud);
     }
 
+    @Test
+    void givenNotExistentPaymentNotificationWhenGetByOrgIdAndIudThenNull() {
+        // Given
+        Long organizationId = 1L;
+        String iud = "IUD";
+        String accessToken = "accessToken";
 
+        when(classificationApisHolderMock.getPaymentNotificationNoPiiSearchControllerApi(accessToken))
+            .thenReturn(paymentNotificationNoPiiSearchControllerApi);
+        when(paymentNotificationNoPiiSearchControllerApi.crudPaymentNotificationGetByOrganizationIdAndIud(organizationId, iud))
+            .thenThrow(
+                HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        PaymentNotificationNoPII result = paymentNotificationClient.getByOrgIdAndIud(organizationId, iud, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
 }

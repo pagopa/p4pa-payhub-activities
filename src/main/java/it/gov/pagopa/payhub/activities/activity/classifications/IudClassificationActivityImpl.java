@@ -60,11 +60,11 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
 
     installmentsList.forEach(installmentNoPII -> {
-      log.info("InstallmentNoPII: {}", installmentNoPII);
+      log.debug("InstallmentNoPII: {}", installmentNoPII);
       List<TransferResponse> transferList = transferService.findByInstallmentId(installmentNoPII.getInstallmentId()).getEmbedded().getTransfers();
 
       transferList.forEach(transferResponse -> {
-        log.info("TransferResponse: {}", transferResponse);
+        log.debug("TransferResponse: {}", transferResponse);
         transferIndex.add(transferResponse.getTransferIndex());
       });
     });
