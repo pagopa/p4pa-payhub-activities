@@ -1,10 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -31,19 +33,21 @@ public class TreasuryOpiParserService {
         this.treasuryService = treasuryService;
     }
 
-    public Map<String, String> parseData(Path treasuryOpiFilePath, IngestionFlowFile ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
+    public Pair<IngestionFlowFileResult, Map<String, String>> parseData(Path treasuryOpiFilePath, IngestionFlowFile ingestionFlowFileDTO, int totalNumberOfTreasuryOpiFiles) {
         File ingestionFlowFile = treasuryOpiFilePath.toFile();
 
-        List<Treasury> newTreasuries = versionHandlerServices.stream()
+        Pair<IngestionFlowFileResult, List<Treasury>> newTreasuries = versionHandlerServices.stream()
                 .map(m -> m.handle(ingestionFlowFile, ingestionFlowFileDTO, totalNumberOfTreasuryOpiFiles))
-                .filter(map -> !map.isEmpty())
+                .filter(r -> r.getRight() != null)
                 .findFirst()
                 .orElseThrow(() -> new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile));
 
-        return newTreasuries.stream()
-            .collect(Collectors.toMap(
-                Treasury::getIuf,
-                treasury -> Objects.requireNonNull(treasuryService.insert(treasury).getTreasuryId())
-            ));
+        return Pair.of(
+                newTreasuries.getLeft(),
+                newTreasuries.getRight().stream()
+                        .collect(Collectors.toMap(
+                                Treasury::getIuf,
+                                treasury -> Objects.requireNonNull(treasuryService.insert(treasury).getTreasuryId())
+                        )));
     }
 }

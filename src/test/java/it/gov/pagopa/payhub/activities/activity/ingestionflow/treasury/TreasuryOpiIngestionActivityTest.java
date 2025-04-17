@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
@@ -85,6 +86,15 @@ class TreasuryOpiIngestionActivityTest {
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
 
+        TreasuryIufIngestionFlowFileResult expectedResult = TreasuryIufIngestionFlowFileResult.builder()
+                .organizationId(ingestionFlowFileDTO.getOrganizationId())
+                .iuf2TreasuryIdMap(Map.of("IUF123", "treasury123"))
+                .discardedFileName("DISCARDFILENAME")
+                .errorDescription("There were some errors during TreasuryOPI file ingestion. Please check error file.")
+                .processedRows(10L)
+                .totalRows(100L)
+                .build();
+
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFileDTO));
 
@@ -92,7 +102,12 @@ class TreasuryOpiIngestionActivityTest {
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
         Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO, mockedListPath.size()))
-                .thenReturn(Collections.singletonMap("IUF123", "treasury123"));
+                .thenReturn(Pair.of(
+                        IngestionFlowFileResult.builder()
+                                .processedRows(10L)
+                                .totalRows(100L)
+                                .build(),
+                        Collections.singletonMap("IUF123", "treasury123")));
 
         Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(mockedListPath.getFirst().getParent(), ingestionFlowFileDTO))
                 .thenReturn("DISCARDFILENAME");
@@ -102,9 +117,7 @@ class TreasuryOpiIngestionActivityTest {
 
         // Then
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(1, result.getIuf2TreasuryIdMap().size());
-        Assertions.assertEquals("treasury123", result.getIuf2TreasuryIdMap().get("IUF123"));
-        Assertions.assertEquals("DISCARDFILENAME", result.getDiscardedFileName());
+        Assertions.assertEquals(expectedResult, result);
 
         Mockito.verify(fileArchiverServiceMock, Mockito.times(1))
                 .archive(ingestionFlowFileDTO);
@@ -199,7 +212,12 @@ class TreasuryOpiIngestionActivityTest {
                 "IUF_FILE2", "TREASURYID_1",
                 "IUF2_FILE2", "TREASURYID_2");
         Mockito.when(treasuryOpiParserServiceMock.parseData(filePath2, ingestionFlowFileDTO, files.size()))
-                .thenReturn(expectedParseResult);
+                .thenReturn(Pair.of(
+                        IngestionFlowFileResult.builder()
+                                .processedRows(1L)
+                                .totalRows(5L)
+                                .build(),
+                        expectedParseResult));
 
         Mockito.when(treasuryErrorsArchiverServiceMock.archiveErrorFiles(workingDir, ingestionFlowFileDTO))
                 .thenReturn(discardFileName);

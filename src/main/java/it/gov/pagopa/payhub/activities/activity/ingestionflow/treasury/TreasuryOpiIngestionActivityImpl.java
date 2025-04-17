@@ -61,6 +61,9 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
         int ingestionFlowFilesRetrievedSize = retrievedFiles.size();
         final List<String> unsuccessfulParsedFiles = new ArrayList<>();
 
+        long[] totalRows = {0L};
+        long[] processedRows = {0L};
+
         Map<String, String> iuf2TreasuryIdMap = retrievedFiles.stream()
                 .map(path -> {
                     try {
@@ -72,14 +75,20 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                     }
                 })
                 .filter(Objects::nonNull)
-                .flatMap(m -> m.entrySet().stream())
+                .flatMap(r -> {
+                    totalRows[0] += r.getLeft().getTotalRows();
+                    processedRows[0] += r.getLeft().getProcessedRows();
+                    return r.getRight().entrySet().stream();
+                })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         String discardsFileName = errorsArchiverService.archiveErrorFiles(retrievedFiles.getFirst().getParent(), ingestionFlowFileDTO);
         String errorDescription = buildErrorDescription(unsuccessfulParsedFiles, discardsFileName);
 
-        return TreasuryIufIngestionFlowFileResult.builder() // TODO fill totals
+        return TreasuryIufIngestionFlowFileResult.builder()
                 .iuf2TreasuryIdMap(iuf2TreasuryIdMap)
+                .totalRows(totalRows[0])
+                .processedRows(processedRows[0])
                 .organizationId(ingestionFlowFileDTO.getOrganizationId())
                 .errorDescription(errorDescription)
                 .discardedFileName(discardsFileName)
