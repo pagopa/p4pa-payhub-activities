@@ -35,12 +35,12 @@ public class InstallmentClient {
 
 	public void updateDueDate(Long installmentId, LocalDate dueDate, String accessToken){
 		log.info("Update due date for installmentId: {}", installmentId);
-		debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken).crudInstallmentsUpdateDueDate(installmentId, dueDate);
+		debtPositionApisHolder.getInstallmentsEntityExtendedControllerApi(accessToken).updateDueDate(installmentId, dueDate);
 	}
 
 	public void updateStatusAndStatusSync(Long installmentId, InstallmentStatus status, InstallmentSyncStatus syncStatus, String accessToken){
 		log.info("Update status and syncStatus for installmentId: {}", installmentId);
-		debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken).crudInstallmentsUpdateStatusAndToSyncStatus(installmentId, status, syncStatus);
+		debtPositionApisHolder.getInstallmentsEntityExtendedControllerApi(accessToken).updateStatusAndToSyncStatus(installmentId, status, syncStatus);
 	}
     public List<InstallmentDTO> getInstallmentsByOrganizationIdAndNav(String accessToken, Long organizationId, String nav, List<DebtPositionOrigin> debtPositionOrigins) {
         return debtPositionApisHolder.getInstallmentApi(accessToken).getInstallmentsByOrganizationIdAndNav(organizationId, nav, debtPositionOrigins);
