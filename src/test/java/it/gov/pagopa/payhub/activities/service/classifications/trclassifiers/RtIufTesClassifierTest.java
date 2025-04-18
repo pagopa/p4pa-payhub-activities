@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuv;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
@@ -19,7 +18,6 @@ class RtIufTesClassifierTest {
 	private final PaymentsReporting paymentsReportingDTO = PaymentsReportingFaker.buildPaymentsReporting();
 	private final Transfer transferDTO = TransferFaker.buildTransfer();
 	private final TreasuryIuf treasuryIUF = TreasuryFaker.buildTreasuryIuf();
-	private final TreasuryIuv treasuryIUV = TreasuryFaker.buildTreasuryIuv();
 
 	private final TransferClassifier classifier = new RtIufTesClassifier();
 
@@ -29,10 +27,9 @@ class RtIufTesClassifierTest {
 		transferDTO.setAmountCents(10_00L);
 		paymentsReportingDTO.setAmountPaidCents(10_00L);
 		paymentsReportingDTO.setTotalAmountCents(100_00L);
-		treasuryIUV.setBillAmountCents(10_00L);
 		treasuryIUF.setBillAmountCents(100_00L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryIUF, treasuryIUV);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertEquals(ClassificationsEnum.RT_IUF_TES, result);
 	}
@@ -40,7 +37,7 @@ class RtIufTesClassifierTest {
 	@Test
 	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, null);
 		// Assert
 		assertNull(result);
 	}
@@ -57,7 +54,7 @@ class RtIufTesClassifierTest {
 		paymentsReportingDTO.setAmountPaidCents(paymentsReportingAmount);
 		treasuryIUF.setBillAmountCents(treasuryAmount);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, treasuryIUF, null);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}
@@ -68,13 +65,12 @@ class RtIufTesClassifierTest {
 			"100, 10000",
 			"1000, 100"
 	})
-	void givenUnmatchedIUVAmountsWhenDefineThenReturnNull(Long transferAmount, Long treasuryAmount) {
+	void givenUnmatchedIUVAmountsWhenDefineThenReturnNull(Long transferAmount, Long paymentsReportingAmount) {
 		// Arrange
 		transferDTO.setAmountCents(transferAmount);
-		paymentsReportingDTO.setAmountPaidCents(100L);
-		treasuryIUV.setBillAmountCents(treasuryAmount);
+		paymentsReportingDTO.setAmountPaidCents(paymentsReportingAmount);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, paymentsReportingDTO, null, treasuryIUV);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, null);
 		// Assert
 		assertNull(result);
 	}
@@ -82,7 +78,7 @@ class RtIufTesClassifierTest {
 	@Test
 	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, treasuryIUF, treasuryIUV);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, null, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}
@@ -90,7 +86,7 @@ class RtIufTesClassifierTest {
 	@Test
 	void givenUnmatchedTransferWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, paymentsReportingDTO, treasuryIUF, treasuryIUV);
+		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}
