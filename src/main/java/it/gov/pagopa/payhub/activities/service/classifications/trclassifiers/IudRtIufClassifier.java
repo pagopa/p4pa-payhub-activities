@@ -5,7 +5,11 @@ import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
+@Lazy
+@Component
 public class IudRtIufClassifier implements TransferClassifier {
 
 	@Override
