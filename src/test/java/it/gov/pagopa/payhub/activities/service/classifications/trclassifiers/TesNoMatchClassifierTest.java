@@ -27,15 +27,15 @@ class TesNoMatchClassifierTest {
 
 	private static Stream<Arguments> provideClassifierScenarios() {
 		TreasuryIuf treasury = buildTreasuryIuf();
-		TreasuryIuf treasuryWithIuf = treasury.toBuilder().iuf("iuf").build();
-		TreasuryIuf treasuryWithIuv = treasury.toBuilder().iuv("iuv").build();
-		TreasuryIuf treasuryWithIufIuv = treasury.toBuilder().iuf("iuf").iuv("iuv").build();
+		TreasuryIuf treasuryNoIuf = treasury.toBuilder().iuf(null).build();
+		TreasuryIuf treasuryNoIuv = treasury.toBuilder().iuv(null).build();
+		TreasuryIuf treasuryNoIufNoIuv = treasury.toBuilder().iuv(null).iuf(null).build();
 		return Stream.of(
 			Arguments.of(null, null),
-			Arguments.of(treasuryWithIuf, null),
-			Arguments.of(treasuryWithIuv, null),
-			Arguments.of(treasuryWithIufIuv, null),
-			Arguments.of(treasury, ClassificationsEnum.TES_NO_MATCH)
+			Arguments.of(treasury, null),
+			Arguments.of(treasuryNoIuf, null),
+			Arguments.of(treasuryNoIuv, null),
+			Arguments.of(treasuryNoIufNoIuv, ClassificationsEnum.TES_NO_MATCH)
 		);
 	}
 }
