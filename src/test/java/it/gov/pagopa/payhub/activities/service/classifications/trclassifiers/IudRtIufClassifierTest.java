@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class IudRtIufClassifierTest {
 
-	private IudNoRtClassifier classifier = new IudNoRtClassifier();
+	private IudRtIufClassifier classifier = new IudRtIufClassifier();
 
 	@ParameterizedTest
 	@MethodSource("provideClassifierScenarios")
@@ -25,7 +25,6 @@ class IudRtIufClassifierTest {
 	                                         PaymentNotificationNoPII notification,
 	                                         PaymentsReporting reporting,
 	                                         ClassificationsEnum expected) {
-	    IudRtIufClassifier classifier = new IudRtIufClassifier();
 	    ClassificationsEnum result = classifier.classify(transfer, notification, reporting, null);
 	    assertEquals(expected, result);
 	}
