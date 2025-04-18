@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
+import static it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker.buildTreasuryIuf;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +35,8 @@ class IudRtIufTesClassifierTest {
 		Transfer matchingTransfer = new Transfer().amountCents(100L);
 		PaymentNotificationNoPII matchingNotification = new PaymentNotificationNoPII().amountPaidCents(100L);
 		PaymentsReporting matchingReporting = new PaymentsReporting().amountPaidCents(100L);
-		TreasuryIuf matchingTreasury = TreasuryIuf.builder().billAmountCents(100L).build();
+		TreasuryIuf matchingTreasury = buildTreasuryIuf();
+		matchingTreasury.setBillAmountCents(100L);
 
 		return Stream.of(
 			Arguments.of(null, null, null, null, null),
@@ -42,7 +44,7 @@ class IudRtIufTesClassifierTest {
 			Arguments.of(null, matchingNotification, null, null, null),
 			Arguments.of(null, null, matchingReporting, null, null),
 			Arguments.of(null, null, null, matchingTreasury, null),
-			Arguments.of(matchingTransfer, matchingNotification, matchingReporting, matchingTreasury, ClassificationsEnum.IUD_RT_IUF),
+			Arguments.of(matchingTransfer, matchingNotification, matchingReporting, matchingTreasury, ClassificationsEnum.IUD_RT_IUF_TES),
 			Arguments.of(new Transfer().amountCents(99L), matchingNotification, matchingReporting, matchingTreasury, null),
 			Arguments.of(matchingTransfer, new PaymentNotificationNoPII().amountPaidCents(99L), matchingReporting, matchingTreasury, null),
 			Arguments.of(matchingTransfer, matchingNotification, new PaymentsReporting().amountPaidCents(99L), matchingTreasury, null),

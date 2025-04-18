@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
+import static it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker.buildTreasuryIuf;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,9 +25,10 @@ class TesNoIufOrIuvClassifierTest {
 	}
 
 	private static Stream<Arguments> provideClassifierScenarios() {
-		TreasuryIuf treasuryWithIuf = TreasuryIuf.builder().iuf("iuf").build();
-		TreasuryIuf treasuryWithIuv = TreasuryIuf.builder().iuv("iuv").build();
-		TreasuryIuf treasuryWithIufIuv = TreasuryIuf.builder().iuf("iuf").iuv("iuv").build();
+		TreasuryIuf matchingTreasury = buildTreasuryIuf();
+		TreasuryIuf treasuryWithIuf = matchingTreasury.toBuilder().iuf("iuf").build();
+		TreasuryIuf treasuryWithIuv = matchingTreasury.toBuilder().iuv("iuv").build();
+		TreasuryIuf treasuryWithIufIuv = matchingTreasury.toBuilder().iuf("iuf").iuv("iuv").build();
 		return Stream.of(
 			Arguments.of(null, null),
 			Arguments.of(treasuryWithIuf, ClassificationsEnum.TES_NO_IUF_OR_IUV),
