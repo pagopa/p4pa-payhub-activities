@@ -26,14 +26,13 @@ class TesNoIufOrIuvClassifierTest {
 
 	private static Stream<Arguments> provideClassifierScenarios() {
 		TreasuryIuf matchingTreasury = buildTreasuryIuf();
-		TreasuryIuf treasuryWithIuf = matchingTreasury.toBuilder().iuf("iuf").build();
-		TreasuryIuf treasuryWithIuv = matchingTreasury.toBuilder().iuv("iuv").build();
-		TreasuryIuf treasuryWithIufIuv = matchingTreasury.toBuilder().iuf("iuf").iuv("iuv").build();
+		TreasuryIuf treasuryNoIuf = matchingTreasury.toBuilder().iuf(null).build();
+		TreasuryIuf treasuryNoIuv = matchingTreasury.toBuilder().iuv(null).build();
 		return Stream.of(
 			Arguments.of(null, null),
-			Arguments.of(treasuryWithIuf, ClassificationsEnum.TES_NO_IUF_OR_IUV),
-			Arguments.of(treasuryWithIuv, ClassificationsEnum.TES_NO_IUF_OR_IUV),
-			Arguments.of(treasuryWithIufIuv, null)
+			Arguments.of(treasuryNoIuf, ClassificationsEnum.TES_NO_IUF_OR_IUV),
+			Arguments.of(treasuryNoIuv, ClassificationsEnum.TES_NO_IUF_OR_IUV),
+			Arguments.of(matchingTreasury, null)
 		);
 	}
 }
