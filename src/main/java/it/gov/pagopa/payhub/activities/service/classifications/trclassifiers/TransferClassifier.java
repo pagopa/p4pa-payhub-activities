@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuv;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
@@ -22,12 +22,12 @@ public interface TransferClassifier {
 	 * Defines a classification label ({@link ClassificationsEnum}) based on the given data.
 	 *
 	 * @param transferDTO the transfer data.
+	 * @param paymentNotificationDTO the payment notification data.    
 	 * @param paymentsReportingDTO the payment reporting data.
 	 * @param treasuryIuf the treasury IUF data.
-	 * @param treasuryIuv the treasury IUV data.
 	 * @return the classification label if conditions are met, or {@code null} if no label is applicable.
 	 */
-	ClassificationsEnum classify(Transfer transferDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, TreasuryIuv treasuryIuv);
+	ClassificationsEnum classify(Transfer transferDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf);
 
 	/**
 	 * Extracts the amount in cents from the transfer data.
@@ -70,13 +70,13 @@ public interface TransferClassifier {
 	}
 
 	/**
-	 * Extracts the amount in cents from the treasury data.
+	 * Extracts the amount in cents from the payment notification data.
 	 *
-	 * @param treasuryIuf the treasury data.
+	 * @param paymentNotificationNoPII the payment notification data.
 	 * @return the amount in cents, or {@code null} if the amount is not available.
 	 */
-	default Long getTransferAmountCents(TreasuryIuv treasuryIuf) {
-		return Optional.ofNullable(treasuryIuf).map(Treasury::getBillAmountCents).orElse(0L);
+	default Long getIudAmountCents(PaymentNotificationNoPII paymentNotificationNoPII) {
+		return Optional.ofNullable(paymentNotificationNoPII).map(PaymentNotificationNoPII::getAmountPaidCents).orElse(0L);
 	}
 }
 

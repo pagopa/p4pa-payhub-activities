@@ -68,7 +68,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		TreasuryIuf treasuryIUF = retrieveTreasuryIuf(transferSemanticKey.getOrgId(), paymentsReporting);
 
 		// Classify
-		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentsReporting, treasuryIUF, null);
+		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, null, paymentsReporting, treasuryIUF);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex(),
 			String.join(", ", classifications.stream().map(String::valueOf).toList()));
