@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.PaymentsReportingPagoPaClient;
+import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,16 +56,16 @@ class PaymentsReportingPagoPaServiceTest {
 	void testFetchPaymentReporting() {
 		// Given
 		String accessToken = "accessToken";
-		Long organizationId = 1L;
+		Organization organization = OrganizationFaker.buildOrganizationDTO();
 		String flowId = "flowId";
 		String fileName = "fileName";
 		Long expectedResponse = 123L;
 
-		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organizationId, flowId, fileName, accessToken)).thenReturn(expectedResponse);
+		when(authnServiceMock.getAccessToken(organization.getIpaCode())).thenReturn(accessToken);
+		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organization.getOrganizationId(), flowId, fileName, accessToken)).thenReturn(expectedResponse);
 
 		// When
-		Long result = service.fetchPaymentReporting(organizationId, flowId, fileName);
+		Long result = service.fetchPaymentReporting(organization, flowId, fileName);
 
 		// Then
 		assertEquals(expectedResponse, result);

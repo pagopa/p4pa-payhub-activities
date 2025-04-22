@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 
 import java.util.List;
@@ -19,9 +20,9 @@ public interface PaymentsReportingPagoPaService {
 	/**
 	 * Fetch the payment reporting for the organization
 	 *
-	 * @param organizationId the organization id
+	 * @param organization the organization
 	 * @param pagopaPaymentsReportingId the flow id
 	 * @return the payment reporting data to download
 	 */
-	Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName);
+	Long fetchPaymentReporting(Organization organization, String pagopaPaymentsReportingId, String fileName);
 }
