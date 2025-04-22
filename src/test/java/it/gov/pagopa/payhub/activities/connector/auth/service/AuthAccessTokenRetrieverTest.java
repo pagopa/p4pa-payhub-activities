@@ -69,12 +69,13 @@ class AuthAccessTokenRetrieverTest {
 
     private void configureAndInvoke(AccessToken expectedResult) {
         // Given
-        Mockito.when(authnClientMock.postToken("piattaforma-unitaria_", "client_credentials", "openid", null, null, null, CLIENTSECRET))
+        String orgIpaCode = "ORGIPACODE";
+        Mockito.when(authnClientMock.postToken("piattaforma-unitaria_" + orgIpaCode, "client_credentials", "openid", null, null, null, CLIENTSECRET))
                 .thenReturn(expectedResult);
 
         // When
-        AccessToken result1 = accessTokenRetriever.getAccessToken();
-        AccessToken result2 = accessTokenRetriever.getAccessToken();
+        AccessToken result1 = accessTokenRetriever.getAccessToken(orgIpaCode);
+        AccessToken result2 = accessTokenRetriever.getAccessToken(orgIpaCode);
 
         // Then
         Assertions.assertSame(expectedResult, result1);
