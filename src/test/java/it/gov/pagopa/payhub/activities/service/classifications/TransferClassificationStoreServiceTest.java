@@ -90,7 +90,7 @@ class TransferClassificationStoreServiceTest {
 			.paymentAmountCents(100L)
 			.creditorReferenceId("referenceId");
 		DebtPositionTypeOrg debtPositionTypeOrg = buildDebtPositionTypeOrgDTO();
-		InstallmentNoPII installmentNoPII = new InstallmentNoPII().balance("balance");
+		InstallmentNoPII installmentNoPII = new InstallmentNoPII().balance("balance").ingestionFlowFileId(1L);
 		Organization organization = new Organization().orgName("orgName").orgTypeCode("orgTypeCode");
 		IngestionFlowFile ingestionFlowFile = new IngestionFlowFile().creationDate(OFFSETDATETIME).fileName("fileName");
 		
