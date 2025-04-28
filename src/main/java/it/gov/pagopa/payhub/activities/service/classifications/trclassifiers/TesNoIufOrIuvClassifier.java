@@ -14,9 +14,10 @@ public class TesNoIufOrIuvClassifier implements TransferClassifier {
 
 	@Override
 	public ClassificationsEnum classify(Transfer transferDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf) {
-		if (transferDTO == null && paymentNotificationDTO == null && paymentsReportingDTO == null && treasuryIuf != null &&
-			(treasuryIuf.getIuf() == null || treasuryIuf.getIuv() == null)
-		) {
+		if (treasuryIuf == null || paymentNotificationDTO != null) {
+			return null;
+		}
+		if (transferDTO == null || paymentsReportingDTO == null) {
 			return ClassificationsEnum.TES_NO_IUF_OR_IUV;
 		}
 		return null;
