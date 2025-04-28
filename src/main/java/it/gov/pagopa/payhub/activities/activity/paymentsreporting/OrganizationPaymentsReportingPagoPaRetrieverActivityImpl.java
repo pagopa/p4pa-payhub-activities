@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.paymentsreporting;
 
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PaymentsReportingPagoPaService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
@@ -18,12 +20,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements OrganizationPaymentsReportingPagoPaRetrieverActivity {
+
+	private final OrganizationService organizationService;
 	private final PaymentsReportingPagoPaService paymentsReportingPagoPaService;
 	private final IngestionFlowFileService ingestionFlowFileService;
 
-	public OrganizationPaymentsReportingPagoPaRetrieverActivityImpl(PaymentsReportingPagoPaService paymentsReportingPagoPaService,
-	                                                                IngestionFlowFileService ingestionFlowFileService) {
-		this.paymentsReportingPagoPaService = paymentsReportingPagoPaService;
+	public OrganizationPaymentsReportingPagoPaRetrieverActivityImpl(OrganizationService organizationService, PaymentsReportingPagoPaService paymentsReportingPagoPaService,
+                                                                    IngestionFlowFileService ingestionFlowFileService) {
+        this.organizationService = organizationService;
+        this.paymentsReportingPagoPaService = paymentsReportingPagoPaService;
 		this.ingestionFlowFileService = ingestionFlowFileService;
 	}
 
@@ -37,7 +42,10 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 
 		return paymentsReportingIds.stream()
 			.filter(idDTO -> !alreadyProcessedFileNames.contains(idDTO.getPaymentsReportingFileName()))
-			.map(idDTO -> paymentsReportingPagoPaService.fetchPaymentReporting(organizationId, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName()))
+			.map(idDTO -> {
+				Organization organization = organizationService.getOrganizationById(organizationId).orElseThrow(() -> new IllegalArgumentException("Organization doesn't exists: " + organizationId));
+				return paymentsReportingPagoPaService.fetchPaymentReporting(organization, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName());
+            })
 			.toList();
 	}
 

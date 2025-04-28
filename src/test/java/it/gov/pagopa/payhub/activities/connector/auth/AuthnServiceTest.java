@@ -32,14 +32,29 @@ class AuthnServiceTest {
     }
 
     @Test
-    void whenGetAccessTokenThenInvokeAccessTokenRetriever(){
+    void givenNoOrgIpaCodewhenGetAccessTokenThenInvokeAccessTokenRetriever(){
         // Given
         String expectedResult = "TOKEN";
-        Mockito.when(accessTokenRetrieverMock.getAccessToken())
+        Mockito.when(accessTokenRetrieverMock.getAccessToken(null))
                 .thenReturn(AccessToken.builder().accessToken(expectedResult).tokenType("TOKENTYPE").expiresIn(0).build());
 
         // When
         String result = authnService.getAccessToken();
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenOrgIpaCodewhenGetAccessTokenThenInvokeAccessTokenRetriever(){
+        // Given
+        String expectedResult = "TOKEN";
+        String orgIpaCode = "ORGIPACODE";
+        Mockito.when(accessTokenRetrieverMock.getAccessToken(orgIpaCode))
+                .thenReturn(AccessToken.builder().accessToken(expectedResult).tokenType("TOKENTYPE").expiresIn(0).build());
+
+        // When
+        String result = authnService.getAccessToken(orgIpaCode);
 
         // Then
         Assertions.assertSame(expectedResult, result);

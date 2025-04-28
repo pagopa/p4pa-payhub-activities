@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.PaymentsReportingPagoPaClient;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -28,8 +29,8 @@ public class PaymentsReportingPagoPaServiceImpl implements PaymentsReportingPago
 	}
 
 	@Override
-	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName) {
-		log.info("Fetching payment reporting for organizationId: {} and pagopaPaymentsReportingId: {} asking to store it with name: {}", organizationId, pagopaPaymentsReportingId, fileName);
-		return paymentsReportingPagoPaClient.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, authnService.getAccessToken());
+	public Long fetchPaymentReporting(Organization organization, String pagopaPaymentsReportingId, String fileName) {
+		log.info("Fetching payment reporting for organizationId: {} and pagopaPaymentsReportingId: {} asking to store it with name: {}", organization.getOrganizationId(), pagopaPaymentsReportingId, fileName);
+		return paymentsReportingPagoPaClient.fetchPaymentReporting(organization.getOrganizationId(), pagopaPaymentsReportingId, fileName, authnService.getAccessToken(organization.getIpaCode()));
 	}
 }

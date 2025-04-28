@@ -93,9 +93,10 @@ public class TransferClassificationStoreService {
 				return organizationService.getOrganizationByFiscalCode(transfer.getOrgFiscalCode());
 			});
 		Optional<IngestionFlowFile> optionalIngestionFlowFile = optionalInstallment
-			.flatMap(installmentNoPII -> {
-				log.debug("retrieving IngestionFlowFile with installmentId {}", installmentNoPII.getIngestionFlowFileId());
-				return ingestionFlowFileService.findById(installmentNoPII.getIngestionFlowFileId());
+			.map(InstallmentNoPII::getIngestionFlowFileId)
+			.flatMap(ingestionFlowFileId -> {
+				log.debug("retrieving IngestionFlowFile with installmentId {}", ingestionFlowFileId);
+				return ingestionFlowFileService.findById(ingestionFlowFileId);
 			});
 
 		log.info("Saving classifications {} for semantic key organization id: {} and iuv: {} and iur {} and transfer index: {}",
