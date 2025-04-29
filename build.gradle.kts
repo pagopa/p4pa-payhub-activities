@@ -180,6 +180,13 @@ jaxb {
 			schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd")
 			bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xjb")
 		}
+		register("Opi171TreasuryFlow") {
+			extension = true
+			args = listOf("-xmlschema","-Xsimplify")
+			outputDir = file("$projectDir/build/generated/jaxb/java")
+			schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xsd")
+			bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xjb")
+		}
 		register("ReceiptPagopa") {
 			extension = true
 			args = listOf("-xmlschema","-Xsimplify")
@@ -458,6 +465,7 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 	modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
 	typeMappings.set(mapOf(
 		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+		"NoticeGenerationMassiveResourceDTO" to "String"
 	))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
