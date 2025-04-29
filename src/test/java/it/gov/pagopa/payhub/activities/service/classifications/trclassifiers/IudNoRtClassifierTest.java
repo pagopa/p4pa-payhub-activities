@@ -29,19 +29,21 @@ class IudNoRtClassifierTest {
     }
 
     private static Stream<Arguments> provideClassifierScenarios() {
-        Transfer transfer100 = new Transfer().installmentId(1L).amountCents(100L);
-        PaymentNotificationNoPII notif100 = new PaymentNotificationNoPII().amountPaidCents(100L);
-        PaymentNotificationNoPII notifMismatch = new PaymentNotificationNoPII().amountPaidCents(110L);
-        InstallmentNoPII installment100 = new InstallmentNoPII().amountCents(100L);
-        InstallmentNoPII installmentMismatch = new InstallmentNoPII().amountCents(90L);
+        Transfer validTransfer = new Transfer().installmentId(1L).amountCents(100L);
+        PaymentNotificationNoPII validNotif = new PaymentNotificationNoPII().amountPaidCents(100L);
+        PaymentNotificationNoPII diffNotif = new PaymentNotificationNoPII().amountPaidCents(110L);
+        InstallmentNoPII matchingInstallment = new InstallmentNoPII().amountCents(100L);
+        InstallmentNoPII diffInstallment = new InstallmentNoPII().amountCents(90L);
 
         return Stream.of(
             Arguments.of(null, null, null, null),
-            Arguments.of(transfer100, null, installment100, null),
-            Arguments.of(transfer100, notif100, null, null),
-            Arguments.of(null, notif100, installment100, null),
-            Arguments.of(transfer100, notif100, installment100, null),
-            Arguments.of(transfer100, notifMismatch, installmentMismatch, ClassificationsEnum.IUD_NO_RT)
-        );
+            Arguments.of(validTransfer, null, null, null),
+            Arguments.of(null, validNotif, null, null),
+            Arguments.of(null, null, matchingInstallment, null),
+            Arguments.of(validTransfer, validNotif, null, null),
+            Arguments.of(validTransfer, null, matchingInstallment, null),
+            Arguments.of(null, validNotif, matchingInstallment, null),
+            Arguments.of(validTransfer, validNotif, matchingInstallment, null),
+            Arguments.of(validTransfer, diffNotif, diffInstallment, ClassificationsEnum.IUD_NO_RT));
     }
 }
