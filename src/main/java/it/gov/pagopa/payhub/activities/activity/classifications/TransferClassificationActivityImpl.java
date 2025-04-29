@@ -71,10 +71,10 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_PAYED_STATUSES_SET);
 
 		// find Installment related to the transfer
-		Optional<InstallmentNoPII> installmentDTO = findInstallment(transferDTO);
+		Optional<InstallmentNoPII> optionalInstallmentNoPII = findInstallment(transferDTO);
 
 		// Retrieve related PaymentNotification
-		PaymentNotificationNoPII paymentNotificationDTO = retrievePaymentNotification(transferSemanticKey.getOrgId(), installmentDTO);
+		PaymentNotificationNoPII paymentNotificationDTO = retrievePaymentNotification(transferSemanticKey.getOrgId(), optionalInstallmentNoPII);
 
 		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
@@ -84,14 +84,15 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		// Retrieve related Treasury
 		TreasuryIuf treasuryIUF = retrieveTreasuryIuf(transferSemanticKey.getOrgId(), paymentsReporting);
 
+		InstallmentNoPII installmentDTO = optionalInstallmentNoPII.orElse(null);
 		// Classify
-		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, paymentNotificationDTO, paymentsReporting, treasuryIUF, installmentDTO);
+		List<ClassificationsEnum> classifications = transferClassificationService.defineLabels(transferDTO, installmentDTO, paymentNotificationDTO, paymentsReporting, treasuryIUF);
 		log.info("Labels defined for organization id: {} and iuv: {} and iur {} and transfer index: {} are: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex(),
 			String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
 		// Store results
-		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, paymentsReporting, treasuryIUF, classifications);
+		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, installmentDTO, paymentsReporting, treasuryIUF, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
 	}
 

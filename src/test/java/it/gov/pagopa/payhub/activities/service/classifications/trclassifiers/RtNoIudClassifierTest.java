@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +22,7 @@ class RtNoIudClassifierTest {
 	void classificationCoversAllCombinations(Transfer transfer,
 	                                         PaymentNotificationNoPII notification,
 	                                         ClassificationsEnum expected) {
-		ClassificationsEnum result = classifier.classify(transfer, notification, null, null, Optional.empty());
+		ClassificationsEnum result = classifier.classify(transfer, null, notification, null, null);
 		assertEquals(expected, result);
 	}
 

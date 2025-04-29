@@ -9,14 +9,12 @@ import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Lazy
 @Component
 public class IufNoTesClassifier implements TransferClassifier {
 
 	@Override
-	public ClassificationsEnum classify(Transfer transferDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, Optional<InstallmentNoPII> installmentDTO) {
+	public ClassificationsEnum classify(Transfer transferDTO, InstallmentNoPII installmentDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf) {
 		if(paymentsReportingDTO != null && treasuryIuf == null) {
 			return ClassificationsEnum.IUF_NO_TES;
 		}

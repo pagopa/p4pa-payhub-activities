@@ -7,8 +7,6 @@ import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -21,7 +19,7 @@ class IuvNoRtClassifierTest {
 	@Test
 	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, null, Optional.empty());
+		ClassificationsEnum result = classifier.classify(null, null,null, paymentsReportingDTO, null);
 		// Assert
 		assertEquals(ClassificationsEnum.IUV_NO_RT, result);
 	}
@@ -29,7 +27,7 @@ class IuvNoRtClassifierTest {
 	@Test
 	void givenUnmatchedTransferDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, null, Optional.empty());
+		ClassificationsEnum result = classifier.classify(transferDTO, null,null, paymentsReportingDTO, null);
 		// Assert
 		assertNull(result);
 	}
@@ -37,7 +35,7 @@ class IuvNoRtClassifierTest {
 	@Test
 	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, null, null, Optional.empty());
+		ClassificationsEnum result = classifier.classify(null, null,null, null, null);
 		// Assert
 		assertNull(result);
 	}

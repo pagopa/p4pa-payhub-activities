@@ -7,8 +7,6 @@ import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -24,7 +22,7 @@ class IufTesDivImpClassifierTest {
 		paymentsReportingDTO.setAmountPaidCents(100L);
 		treasuryIUF.setBillAmountCents(10000L);
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, treasuryIUF, Optional.empty());
+		ClassificationsEnum result = classifier.classify(null, null,null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertEquals(ClassificationsEnum.IUF_TES_DIV_IMP, result);
 	}
@@ -32,7 +30,7 @@ class IufTesDivImpClassifierTest {
 	@Test
 	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, null, Optional.empty());
+		ClassificationsEnum result = classifier.classify(null, null,null, paymentsReportingDTO, null);
 		// Assert
 		assertNull(result);
 	}
@@ -43,7 +41,7 @@ class IufTesDivImpClassifierTest {
 		paymentsReportingDTO.setAmountPaidCents(100L);
 		treasuryIUF.setBillAmountCents(100L);
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, treasuryIUF, Optional.empty());
+		ClassificationsEnum result = classifier.classify(null,null, null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}
@@ -51,7 +49,7 @@ class IufTesDivImpClassifierTest {
 	@Test
 	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, null, treasuryIUF, Optional.empty());
+		ClassificationsEnum result = classifier.classify(null, null,null, null, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}

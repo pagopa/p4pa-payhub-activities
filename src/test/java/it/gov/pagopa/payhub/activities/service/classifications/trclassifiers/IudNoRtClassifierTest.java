@@ -10,7 +10,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +24,7 @@ class IudNoRtClassifierTest {
                                                  PaymentNotificationNoPII notification,
                                                  InstallmentNoPII mockInstallment,
                                                  ClassificationsEnum expected) {
-        ClassificationsEnum result = classifier.classify(transfer, notification, null, null, Optional.ofNullable(mockInstallment));
+        ClassificationsEnum result = classifier.classify(transfer, mockInstallment, notification, null, null);
         assertEquals(expected, result);
     }
 
@@ -39,7 +38,7 @@ class IudNoRtClassifierTest {
             Arguments.of(null, null, null, null),
             Arguments.of(transfer100, null, installment100, null),
             Arguments.of(null, notif100, null, null),
-            Arguments.of(transfer100, notif100, null, ClassificationsEnum.IUD_NO_RT),
+            Arguments.of(transfer100, notif100, installment100, null),
             Arguments.of(transfer100, notif100, installment99, ClassificationsEnum.IUD_NO_RT)
         );
     }

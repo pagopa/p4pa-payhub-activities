@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.service.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
@@ -34,19 +33,17 @@ public class TransferClassificationStoreService {
 	private final DebtPositionTypeOrgService debtPositionTypeOrgService;
 	private final OrganizationService organizationService;
 	private final IngestionFlowFileService ingestionFlowFileService;
-	private final InstallmentService installmentService;
 
 	public TransferClassificationStoreService(ClassificationService classificationService,
 	                                          ReceiptService receiptService,
 	                                          DebtPositionTypeOrgService debtPositionTypeOrgService,
-	                                          OrganizationService organizationService, IngestionFlowFileService ingestionFlowFileService,
-	                                          InstallmentService installmentService) {
+	                                          OrganizationService organizationService,
+	                                          IngestionFlowFileService ingestionFlowFileService) {
 		this.classificationService = classificationService;
 		this.receiptService = receiptService;
 		this.debtPositionTypeOrgService = debtPositionTypeOrgService;
 		this.organizationService = organizationService;
 		this.ingestionFlowFileService = ingestionFlowFileService;
-		this.installmentService = installmentService;
 	}
 
 	/**
@@ -66,12 +63,14 @@ public class TransferClassificationStoreService {
 	public Integer saveClassifications(
 		TransferSemanticKeyDTO transferSemanticKeyDTO,
 		Transfer transferDTO,
+		InstallmentNoPII installmentDTO,
 		PaymentsReporting paymentsReportingDTO,
 		Treasury treasuryDTO,
 		List<ClassificationsEnum> classifications) {
 		Optional<PaymentsReporting> optionalPaymentsReporting = Optional.ofNullable(paymentsReportingDTO);
 		Optional<Treasury> optionalTreasury = Optional.ofNullable(treasuryDTO);
 		Optional<Transfer> optionalTransfer = Optional.ofNullable(transferDTO);
+		Optional<InstallmentNoPII> optionalInstallment = Optional.ofNullable(installmentDTO);
 		Optional<ReceiptNoPII> optionalReceipt = optionalTransfer
 			.map(transfer -> {
 		        log.debug("retrieving Receipt from Transfer ID {}", transfer.getTransferId());
@@ -81,11 +80,6 @@ public class TransferClassificationStoreService {
 			.map(transfer -> {
 		        log.debug("retrieving DebtPositionTypeOrg with installmentId {}", transfer.getInstallmentId());
 				return debtPositionTypeOrgService.getDebtPositionTypeOrgByInstallmentId(transfer.getInstallmentId());
-		    });
-		Optional<InstallmentNoPII> optionalInstallment = optionalTransfer
-			.flatMap(transfer -> {
-		        log.debug("retrieving Installment with installmentId {}", transfer.getInstallmentId());
-				return installmentService.getInstallmentById(transfer.getInstallmentId());
 		    });
 		Optional<Organization> optionalOrganization = optionalTransfer
 			.flatMap(transfer -> {

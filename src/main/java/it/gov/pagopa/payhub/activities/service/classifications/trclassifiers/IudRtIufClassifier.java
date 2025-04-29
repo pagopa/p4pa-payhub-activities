@@ -9,19 +9,15 @@ import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Lazy
 @Component
 public class IudRtIufClassifier implements TransferClassifier {
 
 	@Override
-	public ClassificationsEnum classify(Transfer transferDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, Optional<InstallmentNoPII> installmentDTO) {
-		if (transferDTO != null && paymentNotificationDTO != null && paymentsReportingDTO != null &&
+	public ClassificationsEnum classify(Transfer transferDTO, InstallmentNoPII installmentDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf) {
+		if (transferDTO != null && installmentDTO != null && paymentNotificationDTO != null && paymentsReportingDTO != null &&
 			getAmountCents(transferDTO).equals(getTransferAmountCents(paymentsReportingDTO)) &&
-			installmentDTO.map(InstallmentNoPII::getAmountCents)
-				.filter(getIudAmountCents(paymentNotificationDTO)::equals)
-				.isPresent()) {
+			installmentDTO.getAmountCents().equals(getIudAmountCents(paymentNotificationDTO))) {
 			return ClassificationsEnum.IUD_NO_RT;
 		}
 		return null;

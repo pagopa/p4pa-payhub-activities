@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker.buildTreasuryIuf;
@@ -31,27 +30,27 @@ class IudRtIufTesClassifierTest {
 	                                         InstallmentNoPII mockInstallment,
 	                                         ClassificationsEnum expected) {
 
-		ClassificationsEnum result = classifier.classify(transfer, notification, reporting, treasury, Optional.ofNullable(mockInstallment));
+		ClassificationsEnum result = classifier.classify(transfer, mockInstallment, notification, reporting, treasury);
 		assertEquals(expected, result);
 	}
 
 	private static Stream<Arguments> provideClassifierScenarios() {
-		Transfer validTransfer1 = new Transfer().installmentId(1L).amountCents(100L);
-		PaymentNotificationNoPII validNotif1 = new PaymentNotificationNoPII().amountPaidCents(100L);
-		PaymentsReporting validReporting1 = new PaymentsReporting().amountPaidCents(100L);
-		TreasuryIuf validTreasury1 = buildTreasuryIuf();
-		validTreasury1.setBillAmountCents(100L);
-		InstallmentNoPII validInstallment1 = new InstallmentNoPII().amountCents(100L);
-		InstallmentNoPII mismatchInstallment1 = new InstallmentNoPII().amountCents(99L);
+		Transfer validTransfer = new Transfer().installmentId(1L).amountCents(100L);
+		PaymentNotificationNoPII validNotif = new PaymentNotificationNoPII().amountPaidCents(100L);
+		PaymentsReporting validReporting = new PaymentsReporting().amountPaidCents(100L);
+		TreasuryIuf validTreasury = buildTreasuryIuf();
+		validTreasury.setBillAmountCents(100L);
+		InstallmentNoPII validInstallment = new InstallmentNoPII().amountCents(100L);
+		InstallmentNoPII mismatchInstallment = new InstallmentNoPII().amountCents(99L);
 
 		return Stream.of(
 			Arguments.of(null, null, null, null, null, null),
-			Arguments.of(validTransfer1, null, validReporting1, validTreasury1, validInstallment1, null),
-			Arguments.of(validTransfer1, validNotif1, null, validTreasury1, validInstallment1, null),
-			Arguments.of(validTransfer1, validNotif1, validReporting1, null, validInstallment1, null),
-			Arguments.of(validTransfer1, validNotif1, validReporting1, validTreasury1, null, null),
-			Arguments.of(validTransfer1, validNotif1, validReporting1, validTreasury1, mismatchInstallment1, null),
-			Arguments.of(validTransfer1, validNotif1, validReporting1, validTreasury1, validInstallment1, ClassificationsEnum.IUD_RT_IUF_TES)
+			Arguments.of(validTransfer, null, validReporting, validTreasury, validInstallment, null),
+			Arguments.of(validTransfer, validNotif, null, validTreasury, validInstallment, null),
+			Arguments.of(validTransfer, validNotif, validReporting, null, validInstallment, null),
+			Arguments.of(validTransfer, validNotif, validReporting, validTreasury, null, null),
+			Arguments.of(validTransfer, validNotif, validReporting, validTreasury, mismatchInstallment, null),
+			Arguments.of(validTransfer, validNotif, validReporting, validTreasury, validInstallment, ClassificationsEnum.IUD_RT_IUF_TES)
 		);
 	}
 }

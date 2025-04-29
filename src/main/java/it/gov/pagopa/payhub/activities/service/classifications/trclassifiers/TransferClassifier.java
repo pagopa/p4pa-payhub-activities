@@ -23,13 +23,13 @@ public interface TransferClassifier {
 	 * Defines a classification label ({@link ClassificationsEnum}) based on the given data.
 	 *
 	 * @param transferDTO            the transfer data.
+	 * @param installmentDTO         the installment data.
 	 * @param paymentNotificationDTO the payment notification data.
 	 * @param paymentsReportingDTO   the payment reporting data.
 	 * @param treasuryIuf            the treasury IUF data.
-	 * @param installmentDTO         the installment data.
 	 * @return the classification label if conditions are met, or {@code null} if no label is applicable.
 	 */
-	ClassificationsEnum classify(Transfer transferDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, Optional<InstallmentNoPII> installmentDTO);
+	ClassificationsEnum classify(Transfer transferDTO, InstallmentNoPII installmentDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf);
 
 	/**
 	 * Extracts the amount in cents from the transfer data.

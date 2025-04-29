@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +27,7 @@ class IudRtIufClassifierTest {
 	                                         InstallmentNoPII mockInstallment,
 	                                         ClassificationsEnum expected) {
 
-	    ClassificationsEnum result = classifier.classify(transfer, notification, reporting, null, Optional.ofNullable(mockInstallment));
+	    ClassificationsEnum result = classifier.classify(transfer, mockInstallment, notification, reporting, null);
 	    assertEquals(expected, result);
 	}
 
