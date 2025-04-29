@@ -9,6 +9,8 @@ import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -22,7 +24,7 @@ class RtNoIufClassifierTest {
 	@Test
 	void givenOnlyTransferWhenDefineThenSuccess() {
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, null, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, null, treasuryIUF, Optional.empty());
 		// Assert
 		assertEquals(ClassificationsEnum.RT_NO_IUF, result);
 	}
@@ -33,7 +35,7 @@ class RtNoIufClassifierTest {
 		transferDTO.setAmountCents(100L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF, Optional.empty());
 		// Assert
 		assertEquals(ClassificationsEnum.RT_NO_IUF, result);
 	}
@@ -43,7 +45,7 @@ class RtNoIufClassifierTest {
 		// Arrange
 		transferDTO.setAmountCents(100L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, null, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, null, treasuryIUF, Optional.empty());
 		// Assert
 		assertEquals(ClassificationsEnum.RT_NO_IUF, result);
 	}
@@ -55,7 +57,7 @@ class RtNoIufClassifierTest {
 		transferDTO.setAmountCents(1000L);
 		paymentsReportingDTO.setAmountPaidCents(1000L);
 		// Act
-		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF, Optional.empty());
 		// Assert
 		assertNull(result);
 	}
@@ -63,7 +65,7 @@ class RtNoIufClassifierTest {
 	@Test
 	void givenUnmatchedTransferWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, null, null);
+		ClassificationsEnum result = classifier.classify(null, null, null, null, Optional.empty());
 		// Assert
 		assertNull(result);
 	}

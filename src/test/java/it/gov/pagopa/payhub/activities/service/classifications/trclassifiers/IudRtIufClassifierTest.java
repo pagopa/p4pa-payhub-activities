@@ -1,36 +1,24 @@
 package it.gov.pagopa.payhub.activities.service.classifications.trclassifiers;
 
-import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class IudRtIufClassifierTest {
-	@Mock
-	private InstallmentService installmentServiceMock;
-
-	private IudRtIufClassifier classifier;
-
-	@BeforeEach
-	void setUp() {
-		classifier = new IudRtIufClassifier(installmentServiceMock);
-	}
+	IudRtIufClassifier classifier = new IudRtIufClassifier();
 
 	@ParameterizedTest
 	@MethodSource("provideClassifierScenarios")
@@ -39,11 +27,8 @@ class IudRtIufClassifierTest {
 	                                         PaymentsReporting reporting,
 	                                         InstallmentNoPII mockInstallment,
 	                                         ClassificationsEnum expected) {
-		if (transfer != null) {
-			lenient().when(installmentServiceMock.getInstallmentById(transfer.getInstallmentId()))
-				.thenReturn(Optional.ofNullable(mockInstallment));
-		}
-	    ClassificationsEnum result = classifier.classify(transfer, notification, reporting, null);
+
+	    ClassificationsEnum result = classifier.classify(transfer, notification, reporting, null, Optional.ofNullable(mockInstallment));
 	    assertEquals(expected, result);
 	}
 

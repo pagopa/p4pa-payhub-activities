@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker.buildTreasuryIuf;
@@ -27,7 +28,7 @@ class TesNoIufOrIuvClassifierTest {
                                                              PaymentsReporting reporting,
                                                              TreasuryIuf treasury,
                                                              ClassificationsEnum expected) {
-        ClassificationsEnum result = classifier.classify(transfer, notification, reporting, treasury);
+        ClassificationsEnum result = classifier.classify(transfer, notification, reporting, treasury, Optional.empty());
         assertEquals(expected, result);
     }
 

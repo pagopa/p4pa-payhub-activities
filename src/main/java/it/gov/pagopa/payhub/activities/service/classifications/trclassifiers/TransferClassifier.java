@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 
 import java.util.Optional;
@@ -21,13 +22,14 @@ public interface TransferClassifier {
 	/**
 	 * Defines a classification label ({@link ClassificationsEnum}) based on the given data.
 	 *
-	 * @param transferDTO the transfer data.
-	 * @param paymentNotificationDTO the payment notification data.    
-	 * @param paymentsReportingDTO the payment reporting data.
-	 * @param treasuryIuf the treasury IUF data.
+	 * @param transferDTO            the transfer data.
+	 * @param paymentNotificationDTO the payment notification data.
+	 * @param paymentsReportingDTO   the payment reporting data.
+	 * @param treasuryIuf            the treasury IUF data.
+	 * @param installmentDTO         the installment data.
 	 * @return the classification label if conditions are met, or {@code null} if no label is applicable.
 	 */
-	ClassificationsEnum classify(Transfer transferDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf);
+	ClassificationsEnum classify(Transfer transferDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf, Optional<InstallmentNoPII> installmentDTO);
 
 	/**
 	 * Extracts the amount in cents from the transfer data.
