@@ -31,15 +31,17 @@ class IudNoRtClassifierTest {
     private static Stream<Arguments> provideClassifierScenarios() {
         Transfer transfer100 = new Transfer().installmentId(1L).amountCents(100L);
         PaymentNotificationNoPII notif100 = new PaymentNotificationNoPII().amountPaidCents(100L);
+        PaymentNotificationNoPII notifMismatch = new PaymentNotificationNoPII().amountPaidCents(110L);
         InstallmentNoPII installment100 = new InstallmentNoPII().amountCents(100L);
-        InstallmentNoPII installment99 = new InstallmentNoPII().amountCents(99L);
+        InstallmentNoPII installmentMismatch = new InstallmentNoPII().amountCents(90L);
 
         return Stream.of(
             Arguments.of(null, null, null, null),
             Arguments.of(transfer100, null, installment100, null),
-            Arguments.of(null, notif100, null, null),
+            Arguments.of(transfer100, notif100, null, null),
+            Arguments.of(null, notif100, installment100, null),
             Arguments.of(transfer100, notif100, installment100, null),
-            Arguments.of(transfer100, notif100, installment99, ClassificationsEnum.IUD_NO_RT)
+            Arguments.of(transfer100, notifMismatch, installmentMismatch, ClassificationsEnum.IUD_NO_RT)
         );
     }
 }
