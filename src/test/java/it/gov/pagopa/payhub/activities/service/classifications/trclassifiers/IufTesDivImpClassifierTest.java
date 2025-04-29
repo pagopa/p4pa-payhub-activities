@@ -22,7 +22,7 @@ class IufTesDivImpClassifierTest {
 		paymentsReportingDTO.setAmountPaidCents(100L);
 		treasuryIUF.setBillAmountCents(10000L);
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(null, null,null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertEquals(ClassificationsEnum.IUF_TES_DIV_IMP, result);
 	}
@@ -30,7 +30,7 @@ class IufTesDivImpClassifierTest {
 	@Test
 	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(null, null,null, paymentsReportingDTO, null);
 		// Assert
 		assertNull(result);
 	}
@@ -41,7 +41,7 @@ class IufTesDivImpClassifierTest {
 		paymentsReportingDTO.setAmountPaidCents(100L);
 		treasuryIUF.setBillAmountCents(100L);
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(null,null, null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}
@@ -49,7 +49,7 @@ class IufTesDivImpClassifierTest {
 	@Test
 	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, null, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(null, null,null, null, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}

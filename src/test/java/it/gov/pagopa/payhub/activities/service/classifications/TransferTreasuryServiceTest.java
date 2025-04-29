@@ -40,11 +40,11 @@ class TransferTreasuryServiceTest {
 		// Arrange
 		service = new TransferClassificationService(List.of(rtIufClassifierMock, rtIufTesClassifierMock));
 
-		when(rtIufTesClassifierMock.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF)).thenReturn(ClassificationsEnum.RT_IUF_TES);
-		when(rtIufClassifierMock.classify(transferDTO, null, paymentsReportingDTO, treasuryIUF)).thenReturn(ClassificationsEnum.RT_IUF);
+		when(rtIufTesClassifierMock.classify(transferDTO, null, null, paymentsReportingDTO, treasuryIUF)).thenReturn(ClassificationsEnum.RT_IUF_TES);
+		when(rtIufClassifierMock.classify(transferDTO, null, null, paymentsReportingDTO, treasuryIUF)).thenReturn(ClassificationsEnum.RT_IUF);
 
 		// Act
-		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, null, paymentsReportingDTO, treasuryIUF);
+		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, null, null, paymentsReportingDTO, treasuryIUF);
 
 		// Assert
 		assertEquals(2, labels.size());
@@ -57,7 +57,7 @@ class TransferTreasuryServiceTest {
 		// Arrange
 		service = new TransferClassificationService(List.of());
 		// Act
-		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, null, paymentsReportingDTO, treasuryIUF);
+		List<ClassificationsEnum> labels = service.defineLabels(transferDTO, null, null, paymentsReportingDTO, treasuryIUF);
 
 		// Assert
 		assertEquals(1, labels.size());

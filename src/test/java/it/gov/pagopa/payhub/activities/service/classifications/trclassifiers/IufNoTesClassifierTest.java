@@ -19,7 +19,7 @@ class IufNoTesClassifierTest {
 	@Test
 	void givenMatchedConditionWhenDefineThenSuccess() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, null);
+		ClassificationsEnum result = classifier.classify(null, null,null, paymentsReportingDTO, null);
 		// Assert
 		assertEquals(ClassificationsEnum.IUF_NO_TES, result);
 	}
@@ -27,7 +27,7 @@ class IufNoTesClassifierTest {
 	@Test
 	void givenUnmatchedTreasuryDTOWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, paymentsReportingDTO, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(null, null,null, paymentsReportingDTO, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}
@@ -35,7 +35,7 @@ class IufNoTesClassifierTest {
 	@Test
 	void givenUnmatchedPaymentsReportingWhenDefineThenReturnNull() {
 		// Act
-		ClassificationsEnum result = classifier.classify(null, null, null, treasuryIUF);
+		ClassificationsEnum result = classifier.classify(null,null,null, null, treasuryIUF);
 		// Assert
 		assertNull(result);
 	}

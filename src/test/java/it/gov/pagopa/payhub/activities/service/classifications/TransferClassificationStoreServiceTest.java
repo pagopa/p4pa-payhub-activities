@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.service.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
@@ -52,8 +51,6 @@ class TransferClassificationStoreServiceTest {
 	private OrganizationService organizationServiceMock;
 	@Mock
 	private IngestionFlowFileService ingestionFlowFileServiceMock;
-	@Mock
-	private InstallmentService installmentServiceMock;
 
 	private TransferClassificationStoreService service;
 
@@ -64,8 +61,7 @@ class TransferClassificationStoreServiceTest {
 			receiptServiceMock, 
 			debtPositionTypeOrgServiceMock,
 			organizationServiceMock,
-			ingestionFlowFileServiceMock,
-			installmentServiceMock);
+			ingestionFlowFileServiceMock);
 	}
 
 	@Test
@@ -97,7 +93,6 @@ class TransferClassificationStoreServiceTest {
 		when(organizationServiceMock.getOrganizationByFiscalCode(transferDTO.getOrgFiscalCode())).thenReturn(Optional.of(organization));
 		when(receiptServiceMock.getByTransferId(transferDTO.getTransferId())).thenReturn(receiptNoPII);
 		when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(transferDTO.getInstallmentId())).thenReturn(debtPositionTypeOrg);
-		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.of(installmentNoPII));
 		when(ingestionFlowFileServiceMock.findById(installmentNoPII.getIngestionFlowFileId())).thenReturn(Optional.of(ingestionFlowFile));
 		List<Classification> dtoList = List.of(
 			Classification.builder()
@@ -147,7 +142,7 @@ class TransferClassificationStoreServiceTest {
 		// Act & Assert
 		assertEquals(classifications.size(), dtoList.size());
 		assertDoesNotThrow(() ->
-			service.saveClassifications(transferSemanticKeyDTO, transferDTO, paymentsReportingDTO, treasuryDTO, classifications));
+			service.saveClassifications(transferSemanticKeyDTO, transferDTO, installmentNoPII, paymentsReportingDTO, treasuryDTO, classifications));
 	}
 
 	@Test
@@ -192,6 +187,6 @@ class TransferClassificationStoreServiceTest {
 		// Act & Assert
 		assertEquals(classifications.size(), dtoList.size());
 		assertDoesNotThrow(() ->
-			service.saveClassifications(transferSemanticKeyDTO, null, paymentsReportingDTO, treasuryDTO, classifications));
+			service.saveClassifications(transferSemanticKeyDTO, null, null, paymentsReportingDTO, treasuryDTO, classifications));
 	}
 }

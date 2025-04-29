@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component;
 
 @Lazy
 @Component
-public class IufNoTesClassifier implements TransferClassifier {
+public class IudRtIufClassifier implements TransferClassifier {
 
 	@Override
 	public ClassificationsEnum classify(Transfer transferDTO, InstallmentNoPII installmentDTO, PaymentNotificationNoPII paymentNotificationDTO, PaymentsReporting paymentsReportingDTO, TreasuryIuf treasuryIuf) {
-		if(paymentsReportingDTO != null && treasuryIuf == null) {
-			return ClassificationsEnum.IUF_NO_TES;
+		if (transferDTO != null && installmentDTO != null && paymentNotificationDTO != null && paymentsReportingDTO != null &&
+			getAmountCents(transferDTO).equals(getTransferAmountCents(paymentsReportingDTO)) &&
+			installmentDTO.getAmountCents().equals(getIudAmountCents(paymentNotificationDTO))) {
+			return ClassificationsEnum.IUD_NO_RT;
 		}
 		return null;
 	}
