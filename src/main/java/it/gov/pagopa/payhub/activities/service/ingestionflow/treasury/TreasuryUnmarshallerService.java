@@ -70,4 +70,14 @@ public class TreasuryUnmarshallerService {
     return xmlUnmarshallerService.unmarshal(file, it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class, jaxbContextOpi161, schemaOpi161);
   }
 
+  /**
+   * Unmarshals a OPI v1.7.1 file into a FlussoGiornaleDiCassa object.
+   *
+   * @param file the XML file to parse
+   * @return the unmarshalled FlussoGiornaleDiCassa object
+   */
+  public it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa unmarshalOpi171(File file) {
+    return xmlUnmarshallerService.unmarshal(file, it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa.class, jaxbContextOpi161, schemaOpi161);
+  }
+
 }
