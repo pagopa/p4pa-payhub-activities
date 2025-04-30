@@ -5,10 +5,7 @@ import it.gov.pagopa.pu.debtposition.client.generated.InstallmentApi;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiEntityControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentsEntityExtendedControllerApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +48,12 @@ class InstallmentClientTest {
 
 	@AfterEach
 	void tearDown() {
-		verifyNoMoreInteractions(debtPositionApisHolderMock);
+		verifyNoMoreInteractions(
+				debtPositionApisHolderMock,
+				installmentApiMock,
+				installmentNoPiiEntityControllerApiMock,
+				installmentNoPiiSearchControllerApiMock,
+				installmentsEntityExtendedControllerApiMock);
 	}
 
 	@Test
@@ -70,9 +72,6 @@ class InstallmentClientTest {
 		InstallmentNoPII result = installmentClient.findById(installmentId, accessToken);
 		// Then
 		Assertions.assertSame(expectedResult, result);
-
-		verify(debtPositionApisHolderMock, times(1)).getInstallmentNoPiiEntityControllerApi(accessToken);
-		verify(installmentNoPiiEntityControllerApiMock, times(1)).crudGetInstallmentnopii(String.valueOf(installmentId));
 	}
 
 	@Test
@@ -106,12 +105,29 @@ class InstallmentClientTest {
 		installmentClient.updateDueDate(installmentId, LocalDate.now(), accessToken);
 
 		// Then
-		verify(debtPositionApisHolderMock, times(1)).getInstallmentsEntityExtendedControllerApi(accessToken);
 		verify(installmentsEntityExtendedControllerApiMock, times(1)).updateDueDate(installmentId, LocalDate.now());
 	}
 
 	@Test
 	void whenUpdateStatusAndStatusSyncThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long installmentId = 1L;
+		InstallmentStatus status = InstallmentStatus.TO_SYNC;
+		InstallmentSyncStatus syncStatus = new InstallmentSyncStatus(InstallmentStatus.UNPAID, InstallmentStatus.UNPAYABLE);
+
+		when(debtPositionApisHolderMock.getInstallmentsEntityExtendedControllerApi(accessToken))
+				.thenReturn(installmentsEntityExtendedControllerApiMock);
+
+		// When
+		installmentClient.updateStatusAndStatusSync(installmentId, status, syncStatus, accessToken);
+
+		// Then
+		verify(installmentsEntityExtendedControllerApiMock, times(1)).updateStatusAndToSyncStatus(installmentId, status, syncStatus.getSyncStatusFrom(), syncStatus.getSyncStatusTo());
+	}
+
+	@Test
+	void givenNoSyncStatusWhenUpdateStatusAndStatusSyncThenInvokeWithAccessToken() {
 		// Given
 		String accessToken = "ACCESSTOKEN";
 		Long installmentId = 1L;
@@ -123,8 +139,7 @@ class InstallmentClientTest {
 		installmentClient.updateStatusAndStatusSync(installmentId, InstallmentStatus.UNPAID, null, accessToken);
 
 		// Then
-		verify(debtPositionApisHolderMock, times(1)).getInstallmentsEntityExtendedControllerApi(accessToken);
-		verify(installmentsEntityExtendedControllerApiMock, times(1)).updateStatusAndToSyncStatus(installmentId, InstallmentStatus.UNPAID, null);
+		verify(installmentsEntityExtendedControllerApiMock, times(1)).updateStatusAndToSyncStatus(installmentId, InstallmentStatus.UNPAID, null, null);
 	}
 
     @Test
@@ -143,9 +158,6 @@ class InstallmentClientTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
-
-        verify(debtPositionApisHolderMock).getInstallmentApi(accessToken);
-        verify(installmentApiMock).getInstallmentsByOrganizationIdAndNav(organizationId, nav, null);
     }
 
 	@Test
@@ -165,8 +177,5 @@ class InstallmentClientTest {
 
 		// Then
 		Assertions.assertSame(expectedResult, result);
-
-		verify(debtPositionApisHolderMock).getInstallmentNoPiiSearchControllerApi(accessToken);
-		verify(installmentNoPiiSearchControllerApiMock).crudInstallmentsGetByOrganizationIdAndIudAndStatus(organizationId, iud, statuses.stream().toList());
 	}
 }
