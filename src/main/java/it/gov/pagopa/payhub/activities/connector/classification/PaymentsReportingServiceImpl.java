@@ -41,7 +41,7 @@ public class PaymentsReportingServiceImpl implements PaymentsReportingService {
         CollectionModelPaymentsReporting collectionModelPaymentsReporting = paymentsReportingClient.getByTransferSemanticKey(tSKDTO.getOrgId(), tSKDTO.getIuv(), tSKDTO.getIur(), tSKDTO.getTransferIndex(), authnService.getAccessToken());
         return collectionModelPaymentsReporting.getEmbedded().getPaymentsReportings()
             .stream()
-            .max(Comparator.comparing(PaymentsReporting::getCreationDate))
+            .max(Comparator.comparing(PaymentsReporting::getUpdateDate))
             .orElse(null);
     }
 
