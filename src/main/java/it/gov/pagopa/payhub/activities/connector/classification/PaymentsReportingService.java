@@ -13,5 +13,5 @@ import java.util.List;
 public interface PaymentsReportingService {
     Integer saveAll(List<PaymentsReporting> dtos);
     CollectionModelPaymentsReporting getByOrganizationIdAndIuf(Long organizationId, String iuf);
-    PaymentsReporting getBySemanticKey(TransferSemanticKeyDTO tSKDTO);
+    PaymentsReporting getByTransferSemanticKey(TransferSemanticKeyDTO tSKDTO);
 }

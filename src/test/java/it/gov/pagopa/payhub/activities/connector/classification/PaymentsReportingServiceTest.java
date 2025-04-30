@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.PaymentsReportingClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelPaymentsReportingEmbedded;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,25 +80,31 @@ class PaymentsReportingServiceTest {
     }
 
     @Test
-    void testGetBySemanticKey() {
+    void testGetByTransferSemanticKey() {
         // Given
         Long orgId = 1L;
         String iuv = "IUV123";
         String iur = "IUR123";
         int transferIndex = 0;
         String accessToken = "accessToken";
-        PaymentsReporting expectedResponse = new PaymentsReporting();
+        CollectionModelPaymentsReporting expectedResponse = CollectionModelPaymentsReporting.builder()
+            .embedded(
+                PagedModelPaymentsReportingEmbedded.builder()
+                    .paymentsReportings(List.of(new PaymentsReporting()))
+                    .build()
+            )
+                .build();
         TransferSemanticKeyDTO tSKDTO = new TransferSemanticKeyDTO(orgId, iuv, iur, transferIndex);
 
-        when(paymentsReportingClientMock.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken)).thenReturn(expectedResponse);
+        when(paymentsReportingClientMock.getByTransferSemanticKey(orgId, iuv, iur, transferIndex, accessToken)).thenReturn(expectedResponse);
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
-        PaymentsReporting result = paymentsReportingService.getBySemanticKey(tSKDTO);
+        PaymentsReporting result = paymentsReportingService.getByTransferSemanticKey(tSKDTO);
 
         // Then
-        assertEquals(expectedResponse, result);
-        verify(paymentsReportingClientMock, times(1)).getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken);
+        assertEquals(expectedResponse.getEmbedded().getPaymentsReportings().getFirst(), result);
+        verify(paymentsReportingClientMock, times(1)).getByTransferSemanticKey(orgId, iuv, iur, transferIndex, accessToken);
     }
 }

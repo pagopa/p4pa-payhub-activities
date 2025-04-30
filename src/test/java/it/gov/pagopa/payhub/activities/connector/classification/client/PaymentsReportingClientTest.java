@@ -1,23 +1,21 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import org.junit.jupiter.api.Assertions;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentsReportingClientTest {
@@ -80,47 +78,26 @@ class PaymentsReportingClientTest {
     }
 
     @Test
-    void whenGetBySemanticKeyThenOk() {
+    void whenGetByTransferSemanticKeyThenOk() {
         // Given
         Long orgId = 1L;
         String iuv = "IUV123";
         String iur = "IUR123";
         int transferIndex = 0;
         String accessToken = "accessToken";
-        PaymentsReporting expectedResponse = new PaymentsReporting();
+        CollectionModelPaymentsReporting expectedResponse = new CollectionModelPaymentsReporting();
 
         when(classificationApisHolderMock.getPaymentsReportingSearchApi(accessToken))
                 .thenReturn(paymentsReportingSearchControllerApiMock);
-        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
+        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindByTransferSemanticKey(orgId, iuv, iur, transferIndex))
                 .thenReturn(expectedResponse);
 
         // When
-        PaymentsReporting result = paymentsReportingClient.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken);
+        CollectionModelPaymentsReporting result = paymentsReportingClient.getByTransferSemanticKey(orgId, iuv, iur, transferIndex, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
         verify(paymentsReportingSearchControllerApiMock, times(1))
-                .crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex);
-    }
-
-    @Test
-    void givenNotExistentPaymentsReportingWhenGetBySemanticKeyThenNull() {
-        // Given
-        Long orgId = 1L;
-        String iuv = "IUV123";
-        String iur = "IUR123";
-        int transferIndex = 0;
-        String accessToken = "accessToken";
-
-        when(classificationApisHolderMock.getPaymentsReportingSearchApi(accessToken))
-                .thenReturn(paymentsReportingSearchControllerApiMock);
-        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindBySemanticKey(orgId, iuv, iur, transferIndex))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
-
-        // When
-        PaymentsReporting result = paymentsReportingClient.getBySemanticKey(orgId, iuv, iur, transferIndex, accessToken);
-
-        // Then
-        Assertions.assertNull(result);
+                .crudPaymentsReportingFindByTransferSemanticKey(orgId, iuv, iur, transferIndex);
     }
 }
