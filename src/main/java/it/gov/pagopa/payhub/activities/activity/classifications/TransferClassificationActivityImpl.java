@@ -79,7 +79,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		// Retrieve related PaymentsReporting
 		log.info("Retrieve payment reporting for organization id: {} and iuv: {} and iur {} and transfer index: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv(), transferSemanticKey.getIur(), transferSemanticKey.getTransferIndex());
-		PaymentsReporting paymentsReporting = paymentsReportingService.getBySemanticKey(transferSemanticKey);
+		PaymentsReporting paymentsReporting = paymentsReportingService.getByTransferSemanticKey(transferSemanticKey);
 
 		// Retrieve related Treasury
 		TreasuryIuf treasuryIUF = retrieveTreasuryIuf(transferSemanticKey.getOrgId(), paymentsReporting);

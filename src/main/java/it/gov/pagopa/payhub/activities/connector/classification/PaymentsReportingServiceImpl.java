@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.classification.client.PaymentsR
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import java.util.Comparator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,12 @@ public class PaymentsReportingServiceImpl implements PaymentsReportingService {
     }
 
     @Override
-    public PaymentsReporting getBySemanticKey(TransferSemanticKeyDTO tSKDTO) {
-        return paymentsReportingClient.getBySemanticKey(tSKDTO.getOrgId(), tSKDTO.getIuv(), tSKDTO.getIur(), tSKDTO.getTransferIndex(), authnService.getAccessToken());
+    public PaymentsReporting getByTransferSemanticKey(TransferSemanticKeyDTO tSKDTO) {
+        CollectionModelPaymentsReporting collectionModelPaymentsReporting = paymentsReportingClient.getByTransferSemanticKey(tSKDTO.getOrgId(), tSKDTO.getIuv(), tSKDTO.getIur(), tSKDTO.getTransferIndex(), authnService.getAccessToken());
+        return collectionModelPaymentsReporting.getEmbedded().getPaymentsReportings()
+            .stream()
+            .max(Comparator.comparing(PaymentsReporting::getUpdateDate))
+            .orElse(null);
     }
 
 }

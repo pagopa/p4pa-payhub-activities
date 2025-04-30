@@ -56,7 +56,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		ReceiptWithAdditionalNodeDataDTO dummyReceiptMocked = mock(ReceiptWithAdditionalNodeDataDTO.class);
 		ReceiptDTO dummyReceiptCreated = mock(ReceiptDTO.class);
 
-		when(paymentsReportingServiceMock.getBySemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
+		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId())).thenReturn(Optional.of(organizationFake));
 		when(paymentsReporting2ReceiptMapperMock.map2DummyReceipt(paymentsReportingFake, organizationFake)).thenReturn(dummyReceiptMocked);
 		when(receiptServiceMock.createReceipt(dummyReceiptMocked)).thenReturn(dummyReceiptCreated);
@@ -65,7 +65,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
 
 		// Then
-		verify(paymentsReportingServiceMock, times(1)).getBySemanticKey(paymentsReportingTransferDTO);
+		verify(paymentsReportingServiceMock, times(1)).getByTransferSemanticKey(paymentsReportingTransferDTO);
 		verify(organizationServiceMock, times(1)).getOrganizationById(paymentsReportingFake.getOrganizationId());
 		verify(paymentsReporting2ReceiptMapperMock, times(1)).map2DummyReceipt(paymentsReportingFake, organizationFake);
 		verify(receiptServiceMock, times(1)).createReceipt(dummyReceiptMocked);
@@ -78,7 +78,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		when(paymentsReportingTransferDTO.getPaymentOutcomeCode()).thenReturn("8");
 		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
 
-		when(paymentsReportingServiceMock.getBySemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
+		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId()))
 			.thenThrow(InvalidValueException.class);
 
@@ -96,7 +96,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
 
 		// Then
-		verify(paymentsReportingServiceMock, never()).getBySemanticKey(paymentsReportingTransferDTO);
+		verify(paymentsReportingServiceMock, never()).getByTransferSemanticKey(paymentsReportingTransferDTO);
 		verify(organizationServiceMock, never()).getOrganizationById(any());
 		verify(paymentsReporting2ReceiptMapperMock, never()).map2DummyReceipt(any(), any());
 		verify(receiptServiceMock, never()).createReceipt(any());
