@@ -29,10 +29,9 @@ public class NotRetryableActivityExceptionHandlerAspect {
     @Around("activityBean()")
     public Object aroundActivity(ProceedingJoinPoint jp) {
         try {
-            ActivityInfo info = Activity.getExecutionContext().getInfo();
             return PerformanceLogger.execute(
                     "ACTIVITY",
-                    info.getWorkflowId() + "][" + jp.getTarget().getClass().getSimpleName() + "][" + info.getActivityType() + "][" + info.getRunId() + "][" + info.getActivityTaskQueue(),
+                    buildContextData(jp),
                     () -> {
                         try {
                             return jp.proceed();
@@ -50,6 +49,15 @@ public class NotRetryableActivityExceptionHandlerAspect {
         } catch (NotRetryableActivityException error) {
             log.debug("Activity thrown NotRetryableException {} in method {}", error.getClass().getName(), jp.getSignature());
             throw ApplicationFailure.newNonRetryableFailureWithCause(error.getMessage(), error.getClass().getName(), error);
+        }
+    }
+
+    private String buildContextData(ProceedingJoinPoint jp) {
+        try {
+            ActivityInfo info = Activity.getExecutionContext().getInfo();
+            return info.getWorkflowId() + "][" + jp.getTarget().getClass().getSimpleName() + "][" + info.getActivityType() + "][" + info.getRunId() + "][" + info.getActivityTaskQueue();
+        } catch (Exception e){
+            return "UNKNOWN][" + jp.getTarget().getClass().getSimpleName() + "][" + jp.getSignature().getName();
         }
     }
 
