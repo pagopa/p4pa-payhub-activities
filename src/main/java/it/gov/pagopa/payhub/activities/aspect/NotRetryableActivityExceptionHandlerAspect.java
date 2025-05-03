@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.aspect;
 
+import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityInfo;
 import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.performancelogger.PerformanceLogger;
@@ -19,7 +21,7 @@ public class NotRetryableActivityExceptionHandlerAspect {
     private static final PerformanceLoggerThresholdLevels defaultPerformanceThresholdLevels =
             new PerformanceLoggerThresholdLevels(300, 1200);
 
-    @Pointcut("within(it.gov.pagopa.payhub.activities.activity..*)")
+    @Pointcut("within(it.gov.pagopa..activity..*)")
     public void activityBean() {
         // Do nothing
     }
@@ -27,9 +29,10 @@ public class NotRetryableActivityExceptionHandlerAspect {
     @Around("activityBean()")
     public Object aroundActivity(ProceedingJoinPoint jp) {
         try {
+            ActivityInfo info = Activity.getExecutionContext().getInfo();
             return PerformanceLogger.execute(
                     "ACTIVITY",
-                    jp.getSignature().getDeclaringType().getSimpleName() + "." + jp.getSignature().getName(),
+                    info.getWorkflowId() + "][" + jp.getTarget().getClass().getSimpleName() + "][" + info.getActivityType() + "][" + info.getRunId() + "][" + info.getActivityTaskQueue(),
                     () -> {
                         try {
                             return jp.proceed();
