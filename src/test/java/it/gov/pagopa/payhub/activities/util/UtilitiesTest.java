@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
+import it.gov.pagopa.pu.processexecutions.dto.generated.LocalDateIntervalFilter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -134,5 +136,18 @@ class UtilitiesTest {
     @Test
     void givenNullUriWhenRemovePiiFromURIThenOk(){
         Assertions.assertNull(Utilities.removePiiFromURI(null));
+    }
+
+    @Test
+    void givenLocalDateIntervalFilterWhenToOffsetDateTimeIntervalFilterForDayBoundsThenReturnOffsetDateTimeInterval(){
+        OffsetDateTime now = OffsetDateTime.now().withHour(0).withMinute(0).withSecond(0);
+        OffsetDateTime endOfTheDay = OffsetDateTime.now().withHour(23).withMinute(59).withSecond(59);
+        LocalDate dateFrom = now.toLocalDate();
+        LocalDate dateTo = now.toLocalDate();
+        LocalDateIntervalFilter localDateIntervalFilter = LocalDateIntervalFilter.builder().from(dateFrom).to(dateTo).build();
+
+        OffsetDateTimeIntervalFilter result = Utilities.toOffsetDateTimeIntervalFilterForDayBounds(localDateIntervalFilter);
+        assertConversion(now, result.getFrom());
+        assertConversion(endOfTheDay, result.getTo());
     }
 }
