@@ -20,7 +20,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
-import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
@@ -54,18 +53,16 @@ class DebtPositionClientTest {
         // Given
         String accessToken = "ACCESSTOKEN";
         Long debtPositionId = 0L;
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .newStatus(InstallmentStatus.TO_SYNC)
-                .build();
+        SyncStatusUpdateRequestDTO requestDTO = new SyncStatusUpdateRequestDTO();
         DebtPositionDTO expectedResult = buildDebtPositionDTO();
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
                 .thenReturn(debtPositionApiMock);
-        Mockito.when(debtPositionApiMock.finalizeSyncStatus(debtPositionId, Map.of("iud", iupdSyncStatusUpdateDTO) ))
+        Mockito.when(debtPositionApiMock.finalizeSyncStatus(Mockito.same(debtPositionId), Mockito.same(requestDTO)))
                 .thenReturn(expectedResult);
 
         // When
-        DebtPositionDTO result = debtPositionClient.finalizeSyncStatus(accessToken, debtPositionId, Map.of("iud", iupdSyncStatusUpdateDTO) );
+        DebtPositionDTO result = debtPositionClient.finalizeSyncStatus(accessToken, debtPositionId, requestDTO);
 
         // Then
         Assertions.assertSame(expectedResult, result);

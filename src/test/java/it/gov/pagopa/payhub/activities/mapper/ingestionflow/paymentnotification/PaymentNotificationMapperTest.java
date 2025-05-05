@@ -67,7 +67,7 @@ class PaymentNotificationMapperTest {
     Assertions.assertEquals("testLocation", result.getDebtor().getLocation());
     Assertions.assertEquals("testProvince", result.getDebtor().getProvince());
     Assertions.assertEquals("testNation", result.getDebtor().getNation());
-    TestUtils.checkNotNullFields(result,"paymentNotificationId","creationDate","updateDate","updateOperatorExternalId");
+    TestUtils.checkNotNullFields(result,"paymentNotificationId","creationDate","updateDate","updateOperatorExternalId", "updateTraceId");
   }
 
   @Test

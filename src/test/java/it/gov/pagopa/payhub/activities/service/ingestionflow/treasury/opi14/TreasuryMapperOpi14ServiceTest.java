@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14;
 
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14.TreasuryMapperOpi14Service;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi14.InformazioniContoEvidenza;
@@ -93,7 +92,7 @@ class TreasuryMapperOpi14ServiceTest {
         assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
         assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
         TestUtils.checkNotNullFields(treasuryDTO,
-                "treasuryId","updateOperatorExternalId", "iuv","accountCode","domainIdCode",
+                "treasuryId","updateOperatorExternalId","updateTraceId","iuv","accountCode","domainIdCode",
                 "transactionTypeCode","remittanceCode","documentYear","sealCode",
                 "pspFirstName","abiCode","cabCode","ibanCode","accountRegistryCode",
                 "provisionalAe","provisionalCode","accountTypeCode","processCode",

@@ -94,7 +94,7 @@ class TreasuryMapperOpi171ServiceTest {
         assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
         assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
         TestUtils.checkNotNullFields(treasuryDTO,
-                "treasuryId","updateOperatorExternalId", "iuv","accountCode","domainIdCode",
+                "treasuryId","updateOperatorExternalId","updateTraceId","iuv","accountCode","domainIdCode",
                 "transactionTypeCode","remittanceCode","documentYear","sealCode",
                 "pspFirstName","abiCode","cabCode","ibanCode","accountRegistryCode",
                 "provisionalAe","provisionalCode","accountTypeCode","processCode",

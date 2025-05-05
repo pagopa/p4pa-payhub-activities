@@ -16,7 +16,6 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Map;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,24 +54,20 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
 
     @Test
     void whenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .newStatus(InstallmentStatus.TO_SYNC)
-                .build();
+        SyncStatusUpdateRequestDTO iupdSyncStatusUpdateDTO = new SyncStatusUpdateRequestDTO();
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDebtPositionApi(accessToken)
-                        .finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO)),
+                        .finalizeSyncStatus(0L, iupdSyncStatusUpdateDTO),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
 
     @Test
     void givenExternalUserIdWhenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .newStatus(InstallmentStatus.TO_SYNC)
-                .build();
+        SyncStatusUpdateRequestDTO iupdSyncStatusUpdateDTO = new SyncStatusUpdateRequestDTO();
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 (accessToken, userId) -> debtPositionApisHolder.getDebtPositionApi(accessToken, userId)
-                        .finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO)),
+                        .finalizeSyncStatus(0L, iupdSyncStatusUpdateDTO),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload,
                 true);

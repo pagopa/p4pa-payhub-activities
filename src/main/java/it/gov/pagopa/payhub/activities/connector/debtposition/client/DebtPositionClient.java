@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
-import java.util.Map;
 
 @Lazy
 @Slf4j
@@ -23,8 +22,8 @@ public class DebtPositionClient {
         this.debtPositionApisHolder = debtPositionApisHolder;
     }
 
-    public DebtPositionDTO finalizeSyncStatus(String accessToken, Long debtPositionId, Map<String, IupdSyncStatusUpdateDTO> syncStatusUpdateDTO){
-        return debtPositionApisHolder.getDebtPositionApi(accessToken).finalizeSyncStatus(debtPositionId, syncStatusUpdateDTO);
+    public DebtPositionDTO finalizeSyncStatus(String accessToken, Long debtPositionId, SyncStatusUpdateRequestDTO requestDTO){
+        return debtPositionApisHolder.getDebtPositionApi(accessToken).finalizeSyncStatus(debtPositionId, requestDTO);
     }
 
     public DebtPositionDTO checkAndUpdateInstallmentExpiration(String accessToken, Long debtPositionId){

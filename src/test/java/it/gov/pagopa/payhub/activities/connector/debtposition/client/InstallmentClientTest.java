@@ -114,7 +114,7 @@ class InstallmentClientTest {
 		String accessToken = "ACCESSTOKEN";
 		Long installmentId = 1L;
 		InstallmentStatus status = InstallmentStatus.TO_SYNC;
-		InstallmentSyncStatus syncStatus = new InstallmentSyncStatus(InstallmentStatus.UNPAID, InstallmentStatus.UNPAYABLE);
+		InstallmentSyncStatus syncStatus = new InstallmentSyncStatus(InstallmentStatus.UNPAID, InstallmentStatus.UNPAYABLE, null);
 
 		when(debtPositionApisHolderMock.getInstallmentsEntityExtendedControllerApi(accessToken))
 				.thenReturn(installmentsEntityExtendedControllerApiMock);

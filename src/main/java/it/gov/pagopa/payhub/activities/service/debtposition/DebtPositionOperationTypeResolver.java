@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.debtposition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class DebtPositionOperationTypeResolver {
         this.installmentOperationTypeResolver = installmentOperationTypeResolver;
     }
 
-    public PaymentEventType calculateDebtPositionOperationType(DebtPositionDTO debtPositionDTO, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+    public PaymentEventType calculateDebtPositionOperationType(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap) {
 
         if (iupdSyncStatusUpdateDTOMap.isEmpty()){
             return null;

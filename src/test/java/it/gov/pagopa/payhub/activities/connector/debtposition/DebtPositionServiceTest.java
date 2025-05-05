@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
@@ -48,19 +47,18 @@ class DebtPositionServiceTest {
     @Test
     void whenFinalizeSyncStatusThenInvokeClient() {
         // Given
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-                .newStatus(InstallmentStatus.TO_SYNC)
-                .build();
+        Long debtPositionId = 0L;
+        SyncStatusUpdateRequestDTO iupdSyncStatusUpdateDTO = new SyncStatusUpdateRequestDTO();
         String accessToken = "ACCESSTOKEN";
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
-        debtPositionService.finalizeSyncStatus(0L, Map.of("iud", iupdSyncStatusUpdateDTO));
+        debtPositionService.finalizeSyncStatus(debtPositionId, iupdSyncStatusUpdateDTO);
 
         // Then
-        Mockito.verify(debtPositionClientMock).finalizeSyncStatus(accessToken, 0L, Map.of("iud", iupdSyncStatusUpdateDTO));
+        Mockito.verify(debtPositionClientMock).finalizeSyncStatus(Mockito.same(accessToken), Mockito.same(debtPositionId), Mockito.same(iupdSyncStatusUpdateDTO));
     }
 
     @Test
