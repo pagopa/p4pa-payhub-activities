@@ -4,6 +4,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.ExportFileClient;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ClassificationsExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
@@ -35,6 +36,12 @@ public class ExportFileServiceImpl implements ExportFileService{
     public Optional<ReceiptsArchivingExportFile> findReceiptsArchivingExportFileById(Long exportFileId) {
         log.info("Finding a ReceiptsArchivingExportFile with id {}", exportFileId);
         return Optional.ofNullable(exportFileClient.findReceiptsArchivingExportFileById(exportFileId, authnService.getAccessToken()));
+    }
+
+    @Override
+    public Optional<ClassificationsExportFile> findClassificationsExportFileById(Long exportFileId) {
+        log.info("Finding a ClassificationsExportFile with id {}", exportFileId);
+        return Optional.ofNullable(exportFileClient.findClassificationsExportFileById(exportFileId, authnService.getAccessToken()));
     }
 
     @Override

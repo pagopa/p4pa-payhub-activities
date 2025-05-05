@@ -29,6 +29,7 @@ public class ClassificationApisHolder {
 
     private final PaymentNotificationApi paymentNotificationApi;
     private final PaymentNotificationNoPiiSearchControllerApi paymentNotificationNoPiiSearchControllerApi;
+    private final DataExportsApi dataExportsApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -61,6 +62,8 @@ public class ClassificationApisHolder {
 
         this.paymentNotificationApi = new PaymentNotificationApi(apiClient);
         this.paymentNotificationNoPiiSearchControllerApi = new PaymentNotificationNoPiiSearchControllerApi(apiClient);
+
+        this.dataExportsApi = new DataExportsApi(apiClient);
     }
 
     @PreDestroy
@@ -107,6 +110,10 @@ public class ClassificationApisHolder {
 
     public PaymentNotificationNoPiiSearchControllerApi getPaymentNotificationNoPiiSearchControllerApi(String accessToken){
         return getApi(accessToken, paymentNotificationNoPiiSearchControllerApi);
+    }
+
+    public DataExportsApi getDataExportsApi(String accessToken){
+        return getApi(accessToken, dataExportsApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
