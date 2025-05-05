@@ -82,10 +82,10 @@ class SynchronizeIngestedDebtPositionActivityTest {
         debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.DRAFT).syncStatusTo(InstallmentStatus.UNPAID).build());
 
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO1 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.CANCELLED).build();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO2 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.UNPAID).build();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO3 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.INVALID).build();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO4 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.UNPAID).build();
+        SyncCompleteDTO iupdSyncStatusUpdateDTO1 = new SyncCompleteDTO(InstallmentStatus.CANCELLED);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO2 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.INVALID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO4 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
         WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
 
@@ -120,13 +120,13 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(PaymentEventType.DP_CREATED);
 
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, PaymentEventType.DP_CANCELLED,"ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_1").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_1", "runId"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_2").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_2", "runId"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_3").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_3", "runId"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_4").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
         Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
@@ -171,11 +171,11 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(paymentEventType);
 
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().build());
+                .thenReturn(null);
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_2").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_2", "runId"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_3").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_3", "runId"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(null);
 
@@ -210,10 +210,10 @@ class SynchronizeIngestedDebtPositionActivityTest {
         debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.DRAFT).syncStatusTo(InstallmentStatus.UNPAID).build());
 
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO1 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.CANCELLED).build();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO2 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.UNPAID).build();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO3 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.INVALID).build();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO4 = IupdSyncStatusUpdateDTO.builder().newStatus(InstallmentStatus.UNPAID).build();
+        SyncCompleteDTO iupdSyncStatusUpdateDTO1 = new SyncCompleteDTO(InstallmentStatus.CANCELLED);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO2 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.INVALID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO4 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
         WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
 
@@ -248,13 +248,13 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(PaymentEventType.DP_CREATED);
 
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, PaymentEventType.DP_CANCELLED,"ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_1").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_1", "runId"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
                 .thenThrow(new RuntimeException("DUMMYEXCEPTION DP2"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_3").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_3", "runId"));
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
-                .thenReturn(WorkflowCreatedDTO.builder().workflowId("workflowId_4").build());
+                .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
         Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);

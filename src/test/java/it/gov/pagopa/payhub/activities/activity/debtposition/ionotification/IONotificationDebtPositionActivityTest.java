@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IONotificationService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,10 +41,10 @@ class IONotificationDebtPositionActivityTest {
     void givenSendIoNotificationThenSuccess(){
         // Given
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO syncStatusCompleteDTO = new SyncCompleteDTO(InstallmentStatus.UNPAID);
         DebtPositionIoNotificationDTO expectedResult = new DebtPositionIoNotificationDTO();
         GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages = new GenericWfExecutionConfig.IONotificationBaseOpsMessages();
-        Map<String, IupdSyncStatusUpdateDTO> iudMap = Map.of("IUD", iupdSyncStatusUpdateDTO);
+        Map<String, SyncCompleteDTO> iudMap = Map.of("IUD", syncStatusCompleteDTO);
 
         when(ioNotificationServiceMock.sendMessage(Mockito.same(debtPosition), Mockito.same(iudMap), Mockito.same(ioMessages)))
                 .thenReturn(expectedResult);

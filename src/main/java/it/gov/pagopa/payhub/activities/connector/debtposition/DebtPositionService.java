@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This interface provides methods that manage debt positions within the related microservice.
@@ -16,10 +15,10 @@ public interface DebtPositionService {
      * Finalizes the update of the debt position status from the installments.
      *
      * @param debtPositionId the identifier of the debt position to be updated.
-     * @param syncStatusUpdateDTO the map of IUD and {@link IupdSyncStatusUpdateDTO} containing new status and IUPD PagoPa of installment.
+     * @param syncStatusUpdateDTO the map of IUD and {@link SyncStatusUpdateRequestDTO} containing new status and IUPD PagoPa of installment.
      * @return the updated {@link DebtPositionDTO} object.
      */
-    DebtPositionDTO finalizeSyncStatus(Long debtPositionId, Map<String, IupdSyncStatusUpdateDTO> syncStatusUpdateDTO);
+    DebtPositionDTO finalizeSyncStatus(Long debtPositionId, SyncStatusUpdateRequestDTO syncStatusUpdateDTO);
 
     /**
      * Checks and updates the expiration date of the installments associated with a debt position.

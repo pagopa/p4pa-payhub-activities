@@ -41,7 +41,7 @@ class DebtPositionFineProcessorTest {
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
         installmentDTO1.setStatus(InstallmentStatus.TO_SYNC);
-        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID));
+        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID, null));
         paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
@@ -69,7 +69,7 @@ class DebtPositionFineProcessorTest {
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
         installmentDTO1.setStatus(InstallmentStatus.TO_SYNC);
-        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID));
+        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID, null));
         paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
@@ -94,7 +94,7 @@ class DebtPositionFineProcessorTest {
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
         installmentDTO1.setStatus(InstallmentStatus.PAID);
-        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.PAID));
+        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.PAID, null));
         paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
@@ -119,7 +119,7 @@ class DebtPositionFineProcessorTest {
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
         installmentDTO1.setStatus(InstallmentStatus.TO_SYNC);
-        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID));
+        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID, null));
         paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
@@ -144,7 +144,7 @@ class DebtPositionFineProcessorTest {
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
         installmentDTO1.setStatus(InstallmentStatus.TO_SYNC);
-        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID));
+        installmentDTO1.setSyncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID, null));
         paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();

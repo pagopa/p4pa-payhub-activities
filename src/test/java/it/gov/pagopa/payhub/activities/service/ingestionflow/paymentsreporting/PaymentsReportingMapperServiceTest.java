@@ -90,7 +90,7 @@ class PaymentsReportingMapperServiceTest {
 		assertEquals("OK", firstDTO.getPaymentOutcomeCode());
 		assertNotNull(firstDTO.getPayDate());
 
-		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId", "updateOperatorExternalId", "links");
+		TestUtils.checkNotNullFields(firstDTO, "paymentsReportingId", "updateOperatorExternalId", "updateTraceId", "links");
 	}
 
 	@Test

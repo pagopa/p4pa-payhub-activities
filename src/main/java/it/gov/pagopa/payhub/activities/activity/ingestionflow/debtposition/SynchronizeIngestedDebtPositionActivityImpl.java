@@ -8,8 +8,8 @@ import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -74,12 +74,12 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> wfIds = pagedDebtPositions.getContent().stream()
                     .map(debtPosition -> {
                         try {
-                            Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = createIupdSyncStatusMap(debtPosition);
+                            Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = createIupdSyncStatusMap(debtPosition);
                             PaymentEventType paymentEventType = debtPositionOperationTypeResolver.calculateDebtPositionOperationType(debtPosition, iupdSyncStatusUpdateDTOMap);
 
                             WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType, "ingestionFlowFileId:" + ingestionFlowFileId);
 
-                            if (workflowCreatedDTO == null || workflowCreatedDTO.getWorkflowId() == null) {
+                            if (workflowCreatedDTO == null) {
                                 return null;
                             }
                             return Pair.of(debtPosition, workflowCreatedDTO);
@@ -122,14 +122,16 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         return errors.toString();
     }
 
-    private Map<String, IupdSyncStatusUpdateDTO> createIupdSyncStatusMap(DebtPositionDTO debtPosition) {
+    private Map<String, SyncCompleteDTO> createIupdSyncStatusMap(DebtPositionDTO debtPosition) {
         return debtPosition.getPaymentOptions().stream()
                 .flatMap(paymentOption -> paymentOption.getInstallments().stream())
-                .filter(installment -> InstallmentStatus.TO_SYNC.equals(installment.getStatus()))
+                .filter(installment -> InstallmentStatus.TO_SYNC.equals(installment.getStatus()) &&
+                        installment.getSyncStatus() != null &&
+                        installment.getSyncStatus().getSyncError() == null)
                 .map(installment ->
                         Pair.of(installment.getIud(),
-                                IupdSyncStatusUpdateDTO.builder()
-                                        .newStatus(Objects.requireNonNull(installment.getSyncStatus()).getSyncStatusTo())
+                                SyncCompleteDTO.builder()
+                                        .newStatus(installment.getSyncStatus().getSyncStatusTo())
                                         .build())
                 )
                 .filter(Objects::nonNull)

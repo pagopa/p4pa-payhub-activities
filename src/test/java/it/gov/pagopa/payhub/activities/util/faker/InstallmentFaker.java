@@ -1,13 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPIIEmbedded;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +20,7 @@ public class InstallmentFaker {
                 .installmentId(1L)
                 .paymentOptionId(1L)
                 .status(InstallmentStatus.PAID)
+                .syncStatus(null)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")
@@ -35,7 +30,6 @@ public class InstallmentFaker {
                 .creationDate(OFFSETDATETIME)
                 .updateDate(OFFSETDATETIME)
                 .dueDate(LOCALDATE)
-                .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.DRAFT).syncStatusTo(InstallmentStatus.UNPAID).build())
                 .notificationFeeCents(1000L)
                 .amountCents(100L)
                 .remittanceInformation("remittanceInformation")
@@ -52,6 +46,7 @@ public class InstallmentFaker {
                 .installmentId(2L)
                 .paymentOptionId(2L)
                 .status(InstallmentStatus.UNPAID)
+                .syncStatus(null)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud2")
                 .iuv("iuv")
@@ -84,6 +79,7 @@ public class InstallmentFaker {
             .installmentId(1L)
             .paymentOptionId(1L)
             .status(InstallmentStatus.PAID)
+            .syncStatus(null)
             .iupdPagopa("iupdPagopa")
             .iud("iud")
             .iuv("iuv")
@@ -93,7 +89,6 @@ public class InstallmentFaker {
             .creationDate(OFFSETDATETIME)
             .updateDate(OFFSETDATETIME)
             .dueDate(LOCALDATE)
-            .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.DRAFT).syncStatusTo(InstallmentStatus.UNPAID).build())
             .notificationFeeCents(1000L)
             .amountCents(100L)
             .remittanceInformation("remittanceInformation")

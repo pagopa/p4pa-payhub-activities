@@ -5,7 +5,7 @@ import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 
 import java.util.Map;
 
@@ -26,7 +26,7 @@ public interface IONotificationDebtPositionActivity {
      * @return {@link DebtPositionIoNotificationDTO} containing the notification IDs
      */
     @ActivityMethod
-    DebtPositionIoNotificationDTO sendIoNotification(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages);
+    DebtPositionIoNotificationDTO sendIoNotification(DebtPositionDTO requestedDebtPosition, Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages);
 }
 
 

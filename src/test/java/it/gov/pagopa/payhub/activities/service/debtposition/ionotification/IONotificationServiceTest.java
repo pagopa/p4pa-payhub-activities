@@ -10,7 +10,7 @@ import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -83,10 +83,9 @@ class IONotificationServiceTest {
         MessageResponseDTO messageResult2 = new MessageResponseDTO(UUID.randomUUID().toString());
         MessageResponseDTO messageResult3 = new MessageResponseDTO(UUID.randomUUID().toString());
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
+        Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
@@ -132,10 +131,9 @@ class IONotificationServiceTest {
         MessageResponseDTO messageResult2 = new MessageResponseDTO(UUID.randomUUID().toString());
         MessageResponseDTO messageResult3 = new MessageResponseDTO(UUID.randomUUID().toString());
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
+        Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
@@ -182,10 +180,9 @@ class IONotificationServiceTest {
     void givenPaymentEventTypeNullWhenSendMessageThenReturnMessageResponseEmpty() {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
+        Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
@@ -205,10 +202,9 @@ class IONotificationServiceTest {
     void givenNotificationDetailsNullWhenSendMessageThenReturnMessageResponseEmpty() {
         // Given
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
+        Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 
@@ -238,10 +234,9 @@ class IONotificationServiceTest {
         NotificationRequestDTO notificationRequestDTO2 = buildNotificationRequestDTO();
         NotificationRequestDTO notificationRequestDTO3 = buildNotificationRequestDTO();
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTOWithMultiplePO();
-        IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO =
-                new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
+        Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = new HashMap<>();
         iupdSyncStatusUpdateDTOMap.put("iud", iupdSyncStatusUpdateDTO);
         iupdSyncStatusUpdateDTOMap.put("iud2", iupdSyncStatusUpdateDTO);
 

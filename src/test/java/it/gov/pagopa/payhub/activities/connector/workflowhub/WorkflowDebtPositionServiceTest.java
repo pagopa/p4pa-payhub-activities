@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
 class WorkflowDebtPositionServiceTest {
@@ -44,6 +44,7 @@ class WorkflowDebtPositionServiceTest {
         String token = "token";
         WorkflowCreatedDTO workflowCreatedDTO = WorkflowCreatedDTO.builder()
                 .workflowId("workflowId")
+                .runId("runId")
                 .build();
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
@@ -57,6 +58,6 @@ class WorkflowDebtPositionServiceTest {
 
         WorkflowCreatedDTO result = service.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, eventDescription);
 
-        assertEquals(result, workflowCreatedDTO);
+        assertSame(result, workflowCreatedDTO);
     }
 }
