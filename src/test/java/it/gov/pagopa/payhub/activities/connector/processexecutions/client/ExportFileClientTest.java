@@ -4,14 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
-import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.ExportFileEntityExtendedControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.PaidExportFileEntityControllerApi;
-import it.gov.pagopa.pu.processexecutions.client.generated.ReceiptsArchivingExportFileEntityControllerApi;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
+import it.gov.pagopa.pu.processexecutions.client.generated.*;
+import it.gov.pagopa.pu.processexecutions.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +32,8 @@ class ExportFileClientTest {
     private ExportFileEntityExtendedControllerApi exportFileEntityExtendedControllerApiMock;
     @Mock
     private ReceiptsArchivingExportFileEntityControllerApi receiptsArchivingExportFileEntityControllerApiMock;
+    @Mock
+    private ClassificationsExportFileEntityControllerApi classificationsExportFileEntityControllerApiMock;
 
     ExportFileClient exportFileClient;
     PodamFactory podamFactory;
@@ -54,7 +50,8 @@ class ExportFileClientTest {
         Mockito.verifyNoMoreInteractions(
                 processExecutionsApisHolderMock,
                 paidExportFileEntityControllerApiMock,
-                receiptsArchivingExportFileEntityControllerApiMock
+                receiptsArchivingExportFileEntityControllerApiMock,
+                classificationsExportFileEntityControllerApiMock
         );
     }
 
@@ -193,6 +190,39 @@ class ExportFileClientTest {
                 .thenReturn(receiptsArchivingExportFileEntityControllerApiMock);
         // When
         ReceiptsArchivingExportFile result = exportFileClient.findReceiptsArchivingExportFileById(exportFileId, accessToken);
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void givenExportFileId_WhenFindClassificationsExportFileById_ThenReturnClassificationExportFile() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ClassificationsExportFile classificationsExportFile = podamFactory.manufacturePojo(ClassificationsExportFile.class);
+
+        Mockito.when(classificationsExportFileEntityControllerApiMock.crudGetClassificationsexportfile(String.valueOf(exportFileId)))
+                .thenReturn(classificationsExportFile);
+        Mockito.when(processExecutionsApisHolderMock.getClassificationsExportFileEntityControllerApi(accessToken))
+                .thenReturn(classificationsExportFileEntityControllerApiMock);
+        //when
+        ClassificationsExportFile result = exportFileClient.findClassificationsExportFileById(exportFileId, accessToken);
+        //then
+        Assertions.assertEquals(classificationsExportFile, result);
+    }
+
+    @Test
+    void givenNotExistentClassificationsExportFile_WhenFindClassificationsExportFileById_ThenReturnNull() {
+        // Given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+
+        Mockito.when(classificationsExportFileEntityControllerApiMock.crudGetClassificationsexportfile(String.valueOf(exportFileId)))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        Mockito.when(processExecutionsApisHolderMock.getClassificationsExportFileEntityControllerApi(accessToken))
+                .thenReturn(classificationsExportFileEntityControllerApiMock);
+        // When
+        ClassificationsExportFile result = exportFileClient.findClassificationsExportFileById(exportFileId, accessToken);
         // Then
         assertNull(result);
     }
