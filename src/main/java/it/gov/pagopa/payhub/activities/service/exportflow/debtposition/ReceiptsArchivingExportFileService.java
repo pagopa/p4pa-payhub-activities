@@ -5,11 +5,14 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileSer
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTOMapper;
+import it.gov.pagopa.payhub.activities.service.exportflow.BaseExportFileService;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptArchivingView;
-import it.gov.pagopa.pu.processexecutions.dto.generated.*;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFileFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -22,7 +25,7 @@ import java.util.List;
 @Service
 @Lazy
 @Slf4j
-public class ReceiptsArchivingExportFileService extends BaseExportFileService<ReceiptsArchivingExportFile, ReceiptsArchivingExportFileFilter, ReceiptArchivingView, ReceiptsArchivingExportFlowFileDTO>{
+public class ReceiptsArchivingExportFileService extends BaseExportFileService<ReceiptsArchivingExportFile, ReceiptsArchivingExportFileFilter, ReceiptArchivingView, ReceiptsArchivingExportFlowFileDTO> {
 
     private final int pageSize;
     private final ExportFileService exportFileService;

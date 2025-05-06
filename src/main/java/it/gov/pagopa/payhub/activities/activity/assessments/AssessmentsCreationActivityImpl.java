@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.classifications;
+package it.gov.pagopa.payhub.activities.activity.assessments;
 
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentService;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;

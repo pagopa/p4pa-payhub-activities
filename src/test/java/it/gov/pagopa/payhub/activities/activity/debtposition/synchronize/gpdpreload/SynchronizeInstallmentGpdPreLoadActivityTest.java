@@ -1,6 +1,6 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
+package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpdpreload;
 
-import it.gov.pagopa.payhub.activities.connector.pagopapayments.AcaService;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.GpdPreLoadService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,16 +12,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
-class SynchronizeInstallmentAcaActivityTest {
+class SynchronizeInstallmentGpdPreLoadActivityTest {
 
     @Mock
-    private AcaService acaServiceMock;
+    private GpdPreLoadService gpdPreLoadServiceMock;
 
-    private SynchronizeInstallmentAcaActivity activity;
+    private SynchronizeInstallmentGpdPreLoadActivity activity;
 
     @BeforeEach
     void init() {
-        activity = new SynchronizeInstallmentAcaActivityImpl(acaServiceMock);
+        activity = new SynchronizeInstallmentGpdPreLoadActivityImpl(gpdPreLoadServiceMock);
     }
 
     @Test
@@ -29,8 +29,8 @@ class SynchronizeInstallmentAcaActivityTest {
         String iud = "IUD";
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-        activity.synchronizeInstallmentAca(debtPositionDTO, iud);
+        activity.synchronizeInstallmentGpdPreLoad(debtPositionDTO, iud);
 
-        Mockito.verify(acaServiceMock).syncInstallmentAca(iud, debtPositionDTO);
+        Mockito.verify(gpdPreLoadServiceMock).syncInstallmentGpdPreLoad(iud, debtPositionDTO);
     }
 }
