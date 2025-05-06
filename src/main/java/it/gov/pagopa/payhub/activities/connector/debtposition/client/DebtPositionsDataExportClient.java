@@ -17,17 +17,17 @@ import java.util.List;
 @Lazy
 @Slf4j
 @Service
-public class DataExportClient {
+public class DebtPositionsDataExportClient {
 
    private final DebtPositionApisHolder debtPositionApisHolder;
 
-    public DataExportClient(DebtPositionApisHolder debtPositionApisHolder) {
+    public DebtPositionsDataExportClient(DebtPositionApisHolder debtPositionApisHolder) {
         this.debtPositionApisHolder = debtPositionApisHolder;
     }
 
     public PagedInstallmentsPaidView getExportPaidInstallments(String accessToken, Long organizationId, String operatorExternalUserId, PaidExportFileFilter paidExportFileFilter, Integer page, Integer size, List<String> sort) {
         LocalDateIntervalFilter paymentDate = paidExportFileFilter.getPaymentDate();
-        OffsetDateTime from = paymentDate != null ? Utilities.toOffsetDateTime(paymentDate.getFrom()): null;
+        OffsetDateTime from = paymentDate != null ? Utilities.toOffsetDateTimeStartOfTheDay(paymentDate.getFrom()): null;
         OffsetDateTime to = paymentDate != null ? Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()): null;
 
         return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(organizationId, operatorExternalUserId, from, to, paidExportFileFilter.getDebtPositionTypeOrgId(), page, size, sort);
@@ -35,7 +35,7 @@ public class DataExportClient {
 
     public PagedReceiptsArchivingView getExportReceiptsArchivingView(String accessToken, Long organizationId, String operatorExternalUserId, ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter, Integer page, Integer size, List<String> sort) {
         LocalDateIntervalFilter paymentDate = receiptsArchivingExportFileFilter.getPaymentDate();
-        OffsetDateTime from = paymentDate != null ? Utilities.toOffsetDateTime(paymentDate.getFrom()): null;
+        OffsetDateTime from = paymentDate != null ? Utilities.toOffsetDateTimeStartOfTheDay(paymentDate.getFrom()): null;
         OffsetDateTime to = paymentDate != null ? Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()): null;
 
         return debtPositionApisHolder.getDataExportsApi(accessToken).exportArchivingReceipts(organizationId, operatorExternalUserId, from, to, page, size, sort);

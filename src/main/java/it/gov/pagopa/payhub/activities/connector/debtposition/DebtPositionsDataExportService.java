@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * This interface provides methods that manage Data export of debt positions within the related microservice
  */
-public interface DataExportService {
+public interface DebtPositionsDataExportService {
     /**
      * Export paid installments based on the provided request parameters.
      *

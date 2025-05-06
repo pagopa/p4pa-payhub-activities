@@ -1,5 +1,8 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
+import it.gov.pagopa.pu.processexecutions.dto.generated.LocalDateIntervalFilter;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
@@ -110,7 +113,7 @@ public class Utilities {
 	    return localDateTime.atZone(ZONEID).toOffsetDateTime();
     }
 
-    public static OffsetDateTime toOffsetDateTime(LocalDate localDate) {
+    public static OffsetDateTime toOffsetDateTimeStartOfTheDay(LocalDate localDate) {
 	    if (localDate == null) {
 		    return null;
 	    }
@@ -123,6 +126,15 @@ public class Utilities {
         }
         LocalDateTime endOfDay = LocalDateTime.of(localDate, LocalTime.MAX.truncatedTo(java.time.temporal.ChronoUnit.MILLIS));
         return endOfDay.atZone(ZONEID).toOffsetDateTime();
+    }
+
+    /** It will convert a {@link LocalDateIntervalFilter} into an {@link OffsetDateTimeIntervalFilter} configured from the start of the <i>from</i> day to the end of the <i>to</i> day */
+    public static OffsetDateTimeIntervalFilter toRangeClosedOffsetDateTimeIntervalFilter(LocalDateIntervalFilter localDateIntervalFilter){
+
+       return OffsetDateTimeIntervalFilter.builder()
+                .from(localDateIntervalFilter != null ? toOffsetDateTimeStartOfTheDay(localDateIntervalFilter.getFrom()): null)
+                .to(localDateIntervalFilter != null ? toOffsetDateTimeEndOfTheDay(localDateIntervalFilter.getTo()): null)
+                .build();
     }
 
     public static String removePiiFromURI(URI uri){

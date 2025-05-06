@@ -10,12 +10,10 @@ import static org.mockito.Mockito.when;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.client.ExportFileClient;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
-import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.*;
+
 import java.util.Optional;
 
-import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,5 +124,22 @@ class ExportFileServiceImplTest {
         assertNotNull(result);
         assertTrue(result.isPresent());
         assertEquals(receiptsArchivingExportFile, result.get());
+    }
+
+    @Test
+    void givenExportFileId_WhenFindClassificationsFileById_ThenReturnClassificationsExportFile() {
+        //given
+        Long exportFileId = 1L;
+        String accessToken = "accessToken";
+        ClassificationsExportFile classificationsExportFile = podamFactory.manufacturePojo(ClassificationsExportFile.class);
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(exportFileClientMock.findClassificationsExportFileById(exportFileId, accessToken)).thenReturn(classificationsExportFile);
+        //when
+        Optional<ClassificationsExportFile> result = exportFileService.findClassificationsExportFileById(exportFileId);
+        //then
+        assertNotNull(result);
+        assertTrue(result.isPresent());
+        assertEquals(classificationsExportFile, result.get());
     }
 }

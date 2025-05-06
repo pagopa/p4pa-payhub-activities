@@ -19,6 +19,7 @@ public class ProcessExecutionsApisHolder {
     private final IngestionFlowFileSearchControllerApi ingestionFlowFileSearchControllerApi;
     private final PaidExportFileEntityControllerApi paidExportFileEntityControllerApi;
     private final ReceiptsArchivingExportFileEntityControllerApi receiptsArchivingExportFileEntityControllerApi;
+    private final ClassificationsExportFileEntityControllerApi classificationsExportFileEntityControllerApi;
     private final ExportFileEntityControllerApi exportFileEntityControllerApi;
     private final ExportFileEntityExtendedControllerApi exportFileEntityExtendedControllerApi;
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
@@ -42,6 +43,7 @@ public class ProcessExecutionsApisHolder {
         this.ingestionFlowFileSearchControllerApi = new IngestionFlowFileSearchControllerApi(apiClient);
         this.paidExportFileEntityControllerApi = new PaidExportFileEntityControllerApi(apiClient);
         this.receiptsArchivingExportFileEntityControllerApi = new ReceiptsArchivingExportFileEntityControllerApi(apiClient);
+        this.classificationsExportFileEntityControllerApi = new ClassificationsExportFileEntityControllerApi(apiClient);
         this.exportFileEntityControllerApi = new ExportFileEntityControllerApi(apiClient);
         this.exportFileEntityExtendedControllerApi = new ExportFileEntityExtendedControllerApi(apiClient);
     }
@@ -69,6 +71,10 @@ public class ProcessExecutionsApisHolder {
 
     public ReceiptsArchivingExportFileEntityControllerApi getReceiptsArchivingExportFileEntityControllerApi(String accessToken){
         return getApi(accessToken, receiptsArchivingExportFileEntityControllerApi);
+    }
+
+    public ClassificationsExportFileEntityControllerApi getClassificationsExportFileEntityControllerApi(String accessToken){
+        return getApi(accessToken, classificationsExportFileEntityControllerApi);
     }
 
     public ExportFileEntityControllerApi getExportFileEntityControllerApi(String accessToken){

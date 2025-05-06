@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionsDataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
@@ -29,7 +29,7 @@ public class ReceiptsArchivingExportFileService extends BaseExportFileService<Re
 
     private final int pageSize;
     private final ExportFileService exportFileService;
-    private final DataExportService dataExportService;
+    private final DebtPositionsDataExportService debtPositionsDataExportService;
     private final ReceiptsArchivingExportFlowFileDTOMapper receiptsArchivingExportFlowFileDTOMapper;
 
     protected ReceiptsArchivingExportFileService(CsvService csvService,
@@ -40,12 +40,12 @@ public class ReceiptsArchivingExportFileService extends BaseExportFileService<Re
                                                  @Value("${folders.shared}")String sharedFolder,
                                                  @Value("${export-flow-files.receipts-archiving.page-size}") int pageSize,
                                                  ExportFileService exportFileService,
-                                                 DataExportService dataExportService,
+                                                 DebtPositionsDataExportService debtPositionsDataExportService,
                                                  ReceiptsArchivingExportFlowFileDTOMapper receiptsArchivingExportFlowFileDTOMapper) {
         super(csvService, ReceiptsArchivingExportFlowFileDTO.class, fileArchiverService, workingDirectory, relativeFileFolder, fileNamePrefix, Path.of(sharedFolder));
         this.pageSize = pageSize;
         this.exportFileService = exportFileService;
-        this.dataExportService = dataExportService;
+        this.debtPositionsDataExportService = debtPositionsDataExportService;
         this.receiptsArchivingExportFlowFileDTOMapper = receiptsArchivingExportFlowFileDTOMapper;
     }
 
@@ -65,7 +65,7 @@ public class ReceiptsArchivingExportFileService extends BaseExportFileService<Re
 
     @Override
     protected List<ReceiptArchivingView> retrievePage(ReceiptsArchivingExportFile exportFile, ReceiptsArchivingExportFileFilter filter, int pageNumber) {
-        PagedReceiptsArchivingView pagedReceiptsArchivingView = dataExportService.exportReceiptsArchivingView(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("receiptId"));
+        PagedReceiptsArchivingView pagedReceiptsArchivingView = debtPositionsDataExportService.exportReceiptsArchivingView(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("receiptId"));
         if (pagedReceiptsArchivingView != null){
             return pagedReceiptsArchivingView.getContent();
         } else {

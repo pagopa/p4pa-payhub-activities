@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ClassificationsExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
@@ -35,6 +36,15 @@ public class ExportFileClient {
             return processExecutionsApisHolder.getReceiptsArchivingExportFileEntityControllerApi(accessToken).crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId));
         } catch (HttpClientErrorException.NotFound e){
             log.info("Cannot find ReceiptsArchivingExportFile having id {}", exportFileId);
+            return null;
+        }
+    }
+
+    public ClassificationsExportFile findClassificationsExportFileById(Long exportFileId, String accessToken){
+        try{
+            return processExecutionsApisHolder.getClassificationsExportFileEntityControllerApi(accessToken).crudGetClassificationsexportfile(String.valueOf(exportFileId));
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find ClassificationsExportFile having id {}", exportFileId);
             return null;
         }
     }

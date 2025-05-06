@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.client.DataExportClient;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionsDataExportClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
@@ -20,26 +20,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class DataExportServiceImplTest {
+class DebtPositionsDataExportServiceImplTest {
 
     @Mock
-    private DataExportClient dataExportClientMock;
+    private DebtPositionsDataExportClient debtPositionsDataExportClientMock;
     @Mock
     private AuthnService authnServiceMock;
 
     private PodamFactory podamFactory;
-    DataExportService dataExportService;
+    DebtPositionsDataExportService dataExportService;
 
     @BeforeEach
     void setUp() {
-        dataExportService = new DataExportServiceImpl(dataExportClientMock, authnServiceMock);
+        dataExportService = new DebtPositionsDataExportServiceImpl(debtPositionsDataExportClientMock, authnServiceMock);
         podamFactory = new PodamFactoryImpl();
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
-                dataExportClientMock,
+                debtPositionsDataExportClientMock,
                 authnServiceMock
         );
     }
@@ -55,7 +55,7 @@ class DataExportServiceImplTest {
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(dataExportClientMock.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId ,paidExportFileFilter, 0, 10, null)).thenReturn(expected);
+        Mockito.when(debtPositionsDataExportClientMock.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId ,paidExportFileFilter, 0, 10, null)).thenReturn(expected);
         //when
         PagedInstallmentsPaidView result = dataExportService.exportPaidInstallments(organizationId, operatorExternalUserId,paidExportFileFilter, 0, 10, null);
         //then
@@ -74,7 +74,7 @@ class DataExportServiceImplTest {
         PagedReceiptsArchivingView expected = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(dataExportClientMock.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null)).thenReturn(expected);
+        Mockito.when(debtPositionsDataExportClientMock.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null)).thenReturn(expected);
         //when
         PagedReceiptsArchivingView result = dataExportService.exportReceiptsArchivingView(organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
         //then

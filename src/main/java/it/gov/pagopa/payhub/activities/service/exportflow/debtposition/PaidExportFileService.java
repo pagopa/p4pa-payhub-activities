@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionsDataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallmentExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
@@ -29,7 +29,7 @@ public class PaidExportFileService extends BaseExportFileService<PaidExportFile,
 
     private final int pageSize;
     private final ExportFileService exportFileService;
-    private final DataExportService dataExportService;
+    private final DebtPositionsDataExportService debtPositionsDataExportService;
     private final InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper;
 
 
@@ -42,14 +42,14 @@ public class PaidExportFileService extends BaseExportFileService<PaidExportFile,
                                  @Value("${folders.shared}")String sharedFolder,
                                  @Value("${export-flow-files.paid.page-size}") int pageSize,
                                  ExportFileService exportFileService,
-                                 DataExportService dataExportService,
+                                 DebtPositionsDataExportService debtPositionsDataExportService,
                                  InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper
                                      ) {
 
         super(csvService, PaidInstallmentExportFlowFileDTO.class, fileArchiverService, workingDirectory, relativeFileFolder, filenamePrefix, Path.of(sharedFolder));
         this.pageSize = pageSize;
         this.exportFileService = exportFileService;
-        this.dataExportService = dataExportService;
+        this.debtPositionsDataExportService = debtPositionsDataExportService;
         this.installmentExportFlowFileDTOMapper = installmentExportFlowFileDTOMapper;
     }
 
@@ -71,7 +71,7 @@ public class PaidExportFileService extends BaseExportFileService<PaidExportFile,
 
     @Override
     public List<InstallmentPaidViewDTO> retrievePage(PaidExportFile exportFile, PaidExportFileFilter filter, int pageNumber) {
-        PagedInstallmentsPaidView pagedInstallmentsPaidView = dataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("installmentId"));
+        PagedInstallmentsPaidView pagedInstallmentsPaidView = debtPositionsDataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("installmentId"));
         if (pagedInstallmentsPaidView != null){
             return pagedInstallmentsPaidView.getContent();
         } else {

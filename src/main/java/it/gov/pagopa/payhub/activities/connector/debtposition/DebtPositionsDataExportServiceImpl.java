@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.client.DataExportClient;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionsDataExportClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
@@ -14,24 +14,24 @@ import java.util.List;
 
 @Lazy
 @Service
-public class DataExportServiceImpl implements DataExportService{
+public class DebtPositionsDataExportServiceImpl implements DebtPositionsDataExportService {
 
-    private final DataExportClient dataExportClient;
+    private final DebtPositionsDataExportClient debtPositionsDataExportClient;
     private final AuthnService authnService;
 
-    public DataExportServiceImpl(DataExportClient dataExportClient, AuthnService authnService) {
-        this.dataExportClient = dataExportClient;
+    public DebtPositionsDataExportServiceImpl(DebtPositionsDataExportClient debtPositionsDataExportClient, AuthnService authnService) {
+        this.debtPositionsDataExportClient = debtPositionsDataExportClient;
         this.authnService = authnService;
     }
 
     @Override
     public PagedInstallmentsPaidView exportPaidInstallments(Long organizationId, String operatorExternalUserId, PaidExportFileFilter paidExportFileFilter, Integer page, Integer size, List<String> sort) {
-        return dataExportClient.getExportPaidInstallments(authnService.getAccessToken(),organizationId, operatorExternalUserId, paidExportFileFilter, page, size, sort);
+        return debtPositionsDataExportClient.getExportPaidInstallments(authnService.getAccessToken(),organizationId, operatorExternalUserId, paidExportFileFilter, page, size, sort);
     }
 
     @Override
     public PagedReceiptsArchivingView exportReceiptsArchivingView(Long organizationId, String operatorExternalUserId, ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter, Integer page, Integer size, List<String> sort) {
-        return dataExportClient.getExportReceiptsArchivingView(authnService.getAccessToken(), organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, page, size, sort);
+        return debtPositionsDataExportClient.getExportReceiptsArchivingView(authnService.getAccessToken(), organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, page, size, sort);
     }
 
 }

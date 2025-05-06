@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
-import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionsDataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
@@ -46,7 +46,7 @@ class ReceiptsArchivingExportFileServiceTest {
     @Mock
     private ExportFileService exportFileServiceMock;
     @Mock
-    private DataExportService dataExportServiceMock;
+    private DebtPositionsDataExportService debtPositionsDataExportServiceMock;
     @Mock
     private ReceiptsArchivingExportFlowFileDTOMapper receiptsArchivingExportFlowFileDTOMapperMock;
 
@@ -60,7 +60,7 @@ class ReceiptsArchivingExportFileServiceTest {
     @BeforeEach
     void setUp() {
         String filenamePrefix = "EXPORT";
-        receiptsArchivingExportFileService =  new ReceiptsArchivingExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, receiptsArchivingExportFlowFileDTOMapperMock);
+        receiptsArchivingExportFileService =  new ReceiptsArchivingExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, debtPositionsDataExportServiceMock, receiptsArchivingExportFlowFileDTOMapperMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -119,7 +119,7 @@ class ReceiptsArchivingExportFileServiceTest {
         ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter = podamFactory.manufacturePojo(ReceiptsArchivingExportFileFilter.class);
         PagedReceiptsArchivingView pagedReceiptsArchivingView = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
 
-        when(dataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(),receiptsArchivingExportFile.getOperatorExternalId(),receiptsArchivingExportFileFilter, 0, pageSize, List.of("receiptId"))).thenReturn(pagedReceiptsArchivingView);
+        when(debtPositionsDataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(),receiptsArchivingExportFile.getOperatorExternalId(),receiptsArchivingExportFileFilter, 0, pageSize, List.of("receiptId"))).thenReturn(pagedReceiptsArchivingView);
         //when
         List<ReceiptArchivingView> result = receiptsArchivingExportFileService.retrievePage(receiptsArchivingExportFile, receiptsArchivingExportFileFilter, 0);
         //then
@@ -134,7 +134,7 @@ class ReceiptsArchivingExportFileServiceTest {
         ReceiptsArchivingExportFile receiptsArchivingExportFile = podamFactory.manufacturePojo(ReceiptsArchivingExportFile.class);
         ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter = podamFactory.manufacturePojo(ReceiptsArchivingExportFileFilter.class);
 
-        when(dataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(), receiptsArchivingExportFile.getOperatorExternalId(), receiptsArchivingExportFileFilter, 0, pageSize, List.of("receiptId"))).thenReturn(null);
+        when(debtPositionsDataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(), receiptsArchivingExportFile.getOperatorExternalId(), receiptsArchivingExportFileFilter, 0, pageSize, List.of("receiptId"))).thenReturn(null);
         //when
         List<ReceiptArchivingView> result = receiptsArchivingExportFileService.retrievePage(receiptsArchivingExportFile, receiptsArchivingExportFileFilter, 0);
         //then
@@ -191,7 +191,7 @@ class ReceiptsArchivingExportFileServiceTest {
         ReceiptsArchivingExportFlowFileDTO receiptsArchivingExportFlowFileDTO = podamFactory.manufacturePojo(ReceiptsArchivingExportFlowFileDTO.class);
 
             when(exportFileServiceMock.findReceiptsArchivingExportFileById(exportFileId)).thenReturn(Optional.of(receiptsArchivingExportFile));
-        when(dataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(), receiptsArchivingExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("receiptId"))).thenReturn(pagedReceiptsArchivingView);
+        when(debtPositionsDataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(), receiptsArchivingExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("receiptId"))).thenReturn(pagedReceiptsArchivingView);
 
         when(receiptsArchivingExportFlowFileDTOMapperMock.map(content.getFirst())).thenReturn(receiptsArchivingExportFlowFileDTO);
         when(receiptsArchivingExportFlowFileDTOMapperMock.map(content.get(1))).thenReturn(receiptsArchivingExportFlowFileDTO);

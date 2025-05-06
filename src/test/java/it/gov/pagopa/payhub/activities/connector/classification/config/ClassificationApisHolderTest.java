@@ -13,6 +13,9 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -146,6 +149,58 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                 .crudPaymentNotificationGetByOrganizationIdAndIud(0L, "IUD"),
             new ParameterizedTypeReference<>() {},
             classificationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetDataExportControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        String operatorExternalUserId = "operatorExternalUserId";
+        String iuf = "IUF";
+        String iud = "IUD";
+        String iuv = "IUV";
+        String iur = "IUR";
+        OffsetDateTime offsetDateTimeFrom = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
+        OffsetDateTime offsetDateTimeTo = OffsetDateTime.now().plusMonths(1).withOffsetSameInstant(ZoneOffset.UTC);
+        LocalDate localDateFrom = LocalDate.now();
+        LocalDate localDateTo = LocalDate.now().plusMonths(1);
+        String regulationUniqueIdentifier = "regulationUniqueIdentifier";
+        String accountRegistryCode = "accountRegistryCode";
+        String remittanceInformation = "remittanceInformation";
+        Long billAmountCents = 100L;
+        String pspCompanyName= "PSP_NAME";
+        String pspLastName= "PSP_LAST_NAME";
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> classificationApisHolder.getDataExportsApi(accessToken)
+                        .exportClassifications(0L,
+                                operatorExternalUserId,
+                                ClassificationsEnum.DOPPI,
+                                localDateFrom,
+                                localDateTo,
+                                iuf,
+                                iud,
+                                iuv,
+                                iur,
+                                offsetDateTimeFrom,
+                                offsetDateTimeTo,
+                                offsetDateTimeFrom,
+                                offsetDateTimeTo,
+                                localDateFrom,
+                                localDateTo,
+                                localDateFrom,
+                                localDateTo,
+                                localDateFrom,
+                                localDateTo,
+                                regulationUniqueIdentifier,
+                                accountRegistryCode,
+                                billAmountCents,
+                                remittanceInformation,
+                                pspCompanyName,
+                                pspLastName,
+                                0,
+                                0,
+                                List.of("classificationId")
+                                ),
+                new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
     }
 
 }

@@ -11,7 +11,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.payhub.activities.connector.debtposition.DataExportService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionsDataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallmentExportFlowFileDTO;
@@ -51,7 +51,7 @@ class PaidExportFlowFileServiceTest {
     @Mock
     private ExportFileService exportFileServiceMock;
     @Mock
-    private DataExportService dataExportServiceMock;
+    private DebtPositionsDataExportService debtPositionsDataExportServiceMock;
     @Mock
     private InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapperMock;
 
@@ -66,7 +66,7 @@ class PaidExportFlowFileServiceTest {
     @BeforeEach
     void setUp() {
         String filenamePrefix = "EXPORT";
-        paidExportFlowFileService = new PaidExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, dataExportServiceMock, installmentExportFlowFileDTOMapperMock);
+        paidExportFlowFileService = new PaidExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, debtPositionsDataExportServiceMock, installmentExportFlowFileDTOMapperMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -125,7 +125,7 @@ class PaidExportFlowFileServiceTest {
         PaidExportFileFilter paidExportFileFilter = podamFactory.manufacturePojo(PaidExportFileFilter.class);
         PagedInstallmentsPaidView pagedInstallmentsPaidView = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
-        when(dataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), paidExportFileFilter, 0, pageSize, List.of("installmentId"))).thenReturn(pagedInstallmentsPaidView);
+        when(debtPositionsDataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), paidExportFileFilter, 0, pageSize, List.of("installmentId"))).thenReturn(pagedInstallmentsPaidView);
         //when
         List<InstallmentPaidViewDTO> result = paidExportFlowFileService.retrievePage(paidExportFile, paidExportFileFilter, 0);
         //then
@@ -140,7 +140,7 @@ class PaidExportFlowFileServiceTest {
         PaidExportFile paidExportFile = podamFactory.manufacturePojo(PaidExportFile.class);
         PaidExportFileFilter paidExportFileFilter = podamFactory.manufacturePojo(PaidExportFileFilter.class);
 
-        when(dataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), paidExportFileFilter, 0, pageSize, List.of("installmentId"))).thenReturn(null);
+        when(debtPositionsDataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), paidExportFileFilter, 0, pageSize, List.of("installmentId"))).thenReturn(null);
         //when
         List<InstallmentPaidViewDTO> result = paidExportFlowFileService.retrievePage(paidExportFile, paidExportFileFilter, 0);
         //then
@@ -197,7 +197,7 @@ class PaidExportFlowFileServiceTest {
         PaidInstallmentExportFlowFileDTO paidInstallmentExportFlowFileDTO = podamFactory.manufacturePojo(PaidInstallmentExportFlowFileDTO.class);
 
         when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.of(paidExportFile));
-        when(dataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("installmentId"))).thenReturn(pagedInstallmentsPaidView);
+        when(debtPositionsDataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("installmentId"))).thenReturn(pagedInstallmentsPaidView);
 
         when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(0))).thenReturn(paidInstallmentExportFlowFileDTO);
         when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(1))).thenReturn(paidInstallmentExportFlowFileDTO);

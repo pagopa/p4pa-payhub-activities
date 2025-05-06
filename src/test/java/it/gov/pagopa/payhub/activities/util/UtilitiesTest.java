@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
+import it.gov.pagopa.pu.processexecutions.dto.generated.LocalDateIntervalFilter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -98,7 +100,7 @@ class UtilitiesTest {
         // Given
         OffsetDateTime now = OffsetDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDate date = now.toLocalDate();
-        OffsetDateTime result = Utilities.toOffsetDateTime(date);
+        OffsetDateTime result = Utilities.toOffsetDateTimeStartOfTheDay(date);
         assertConversion(now, result);
     }
 
@@ -109,7 +111,7 @@ class UtilitiesTest {
         LocalDateTime localDateTime = null;
         XMLGregorianCalendar xmlGregorianCalendar = null;
         // When Then
-        assertNull(Utilities.toOffsetDateTime(localDate));
+        assertNull(Utilities.toOffsetDateTimeStartOfTheDay(localDate));
         assertNull(Utilities.toOffsetDateTime(localDateTime));
         assertNull(Utilities.toOffsetDateTime(xmlGregorianCalendar));
     }
@@ -134,5 +136,28 @@ class UtilitiesTest {
     @Test
     void givenNullUriWhenRemovePiiFromURIThenOk(){
         Assertions.assertNull(Utilities.removePiiFromURI(null));
+    }
+
+    @Test
+    void givenLocalDateIntervalFilterWhenToRangeClosedOffsetDateTimeIntervalFilterThenReturnOffsetDateTimeInterval(){
+        OffsetDateTime now = OffsetDateTime.now().withHour(0).withMinute(0).withSecond(0);
+        OffsetDateTime endOfTheDay = OffsetDateTime.now().withHour(23).withMinute(59).withSecond(59);
+        LocalDate dateFrom = now.toLocalDate();
+        LocalDate dateTo = now.toLocalDate();
+        LocalDateIntervalFilter localDateIntervalFilter = LocalDateIntervalFilter.builder().from(dateFrom).to(dateTo).build();
+
+        OffsetDateTimeIntervalFilter result = Utilities.toRangeClosedOffsetDateTimeIntervalFilter(localDateIntervalFilter);
+        assertConversion(now, result.getFrom());
+        assertConversion(endOfTheDay, result.getTo());
+    }
+
+    @Test
+    void givenNullLocalDateIntervalFilterWhenToRangeClosedOffsetDateTimeIntervalFilterThenReturnOffsetDateTimeInterval(){
+        LocalDateIntervalFilter localDateIntervalFilter = LocalDateIntervalFilter.builder().from(null).to(null).build();
+
+        OffsetDateTimeIntervalFilter result = Utilities.toRangeClosedOffsetDateTimeIntervalFilter(localDateIntervalFilter);
+        assertNotNull(result);
+        assertNull(result.getFrom());
+        assertNull(result.getTo());
     }
 }
