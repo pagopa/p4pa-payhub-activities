@@ -140,4 +140,55 @@ class DataExportClientTest {
         assertNotNull(result);
         assertEquals(pagedFullClassificationView, result);
     }
+
+    @Test
+    void givenSomeNullParameters_WhenGetPagedClassificationView_ThenReturnPagedClassificationView() {
+        //given
+        Long organizationId = 1L;
+        String operatorExternalUserId = "operatorExternalUserId";
+        String accessToken = "accessToken";
+        ClassificationsExportFileFilter classificationsExportFileFilter = podamFactory.manufacturePojo(ClassificationsExportFileFilter.class);
+        classificationsExportFileFilter.setLabel(null);
+        classificationsExportFileFilter.setLastClassificationDate(null);
+        classificationsExportFileFilter.setRegulationDate(null);
+        classificationsExportFileFilter.setBillDate(null);
+        classificationsExportFileFilter.setRegionValueDate(null);
+        PagedClassificationView pagedClassificationView = podamFactory.manufacturePojo(PagedClassificationView.class);
+
+        Mockito.when(classificationApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
+        Mockito.when(dataExportsApiMock.exportClassifications(
+                organizationId,
+                operatorExternalUserId,
+                null,
+                null,
+                null,
+                classificationsExportFileFilter.getIuf(),
+                classificationsExportFileFilter.getIud(),
+                classificationsExportFileFilter.getIuv(),
+                classificationsExportFileFilter.getIur(),
+                Utilities.toOffsetDateTime(classificationsExportFileFilter.getPayDate().getFrom()),
+                Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
+                Utilities.toOffsetDateTime(classificationsExportFileFilter.getPaymentDate().getFrom()),
+                Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                classificationsExportFileFilter.getRegulationUniqueIdentifier(),
+                classificationsExportFileFilter.getAccountRegistryCode(),
+                classificationsExportFileFilter.getBillAmountCents(),
+                classificationsExportFileFilter.getRemittanceInformation(),
+                classificationsExportFileFilter.getPspCompanyName(),
+                classificationsExportFileFilter.getPspLastName(),
+                0,
+                0,
+                List.of("classificationId"))).thenReturn(pagedClassificationView);
+        //when
+        PagedClassificationView result = dataExportClient.getPagedClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
+        //then
+        assertNotNull(result);
+        assertEquals(pagedClassificationView, result);
+    }
 }

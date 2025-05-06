@@ -150,4 +150,14 @@ class UtilitiesTest {
         assertConversion(now, result.getFrom());
         assertConversion(endOfTheDay, result.getTo());
     }
+
+    @Test
+    void givenNullLocalDateIntervalFilterWhenToOffsetDateTimeIntervalFilterForDayBoundsThenReturnOffsetDateTimeInterval(){
+        LocalDateIntervalFilter localDateIntervalFilter = LocalDateIntervalFilter.builder().from(null).to(null).build();
+
+        OffsetDateTimeIntervalFilter result = Utilities.toOffsetDateTimeIntervalFilterForDayBounds(localDateIntervalFilter);
+        assertNotNull(result);
+        assertNull(result.getFrom());
+        assertNull(result.getTo());
+    }
 }
