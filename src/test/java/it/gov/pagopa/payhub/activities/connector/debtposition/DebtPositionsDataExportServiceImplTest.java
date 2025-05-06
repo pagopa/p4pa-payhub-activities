@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class ClassificationsDataExportServiceImplTest {
+class DebtPositionsDataExportServiceImplTest {
 
     @Mock
     private DataExportClient dataExportClientMock;
