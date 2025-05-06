@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * This interface provides methods that manage Data export of classifications within the related microservice
  */
-public interface DataExportService {
+public interface ClassificationsDataExportService {
 
     PagedClassificationView exportClassificationView(Long organizationId, String operatorExternalUserId, ClassificationsExportFileFilter classificationsExportFileFilter, Integer page, Integer size, List<String> sort);
     PagedFullClassificationView exportFullClassificationView(Long organizationId, String operatorExternalUserId, ClassificationsExportFileFilter classificationsExportFileFilter, Integer page, Integer size, List<String> sort);

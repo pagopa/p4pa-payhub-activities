@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class DataExportServiceImplTest {
+class ClassificationsDataExportServiceImplTest {
 
     @Mock
     private DataExportClient dataExportClientMock;
@@ -28,11 +28,11 @@ class DataExportServiceImplTest {
     private AuthnService authnServiceMock;
 
     private PodamFactory podamFactory;
-    DataExportService dataExportService;
+    DebtPositionsDataExportService dataExportService;
 
     @BeforeEach
     void setUp() {
-        dataExportService = new DataExportServiceImpl(dataExportClientMock, authnServiceMock);
+        dataExportService = new DebtPositionsDataExportServiceImpl(dataExportClientMock, authnServiceMock);
         podamFactory = new PodamFactoryImpl();
     }
 

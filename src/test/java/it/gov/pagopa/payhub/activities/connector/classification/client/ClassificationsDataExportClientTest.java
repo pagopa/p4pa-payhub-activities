@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class DataExportClientTest {
+class ClassificationsDataExportClientTest {
 
     @Mock
     private ClassificationApisHolder classificationApisHolderMock;
@@ -31,11 +31,11 @@ class DataExportClientTest {
     private DataExportsApi dataExportsApiMock;
 
     private PodamFactory podamFactory;
-    private DataExportClient dataExportClient;
+    private ClassificationsDataExportClient classificationsDataExportClient;
 
     @BeforeEach
     void setUp() {
-        dataExportClient = new DataExportClient(classificationApisHolderMock);
+        classificationsDataExportClient = new ClassificationsDataExportClient(classificationApisHolderMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -88,7 +88,7 @@ class DataExportClientTest {
                 0,
                 List.of("classificationId"))).thenReturn(pagedClassificationView);
         //when
-        PagedClassificationView result = dataExportClient.getPagedClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
+        PagedClassificationView result = classificationsDataExportClient.getPagedClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
         //then
         assertNotNull(result);
         assertEquals(pagedClassificationView, result);
@@ -135,7 +135,7 @@ class DataExportClientTest {
                 0,
                 List.of("classificationId"))).thenReturn(pagedFullClassificationView);
         //when
-        PagedFullClassificationView result = dataExportClient.getPagedFullClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
+        PagedFullClassificationView result = classificationsDataExportClient.getPagedFullClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
         //then
         assertNotNull(result);
         assertEquals(pagedFullClassificationView, result);
@@ -186,7 +186,7 @@ class DataExportClientTest {
                 0,
                 List.of("classificationId"))).thenReturn(pagedClassificationView);
         //when
-        PagedClassificationView result = dataExportClient.getPagedClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
+        PagedClassificationView result = classificationsDataExportClient.getPagedClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
         //then
         assertNotNull(result);
         assertEquals(pagedClassificationView, result);

@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.classification.client.DataExportClient;
+import it.gov.pagopa.payhub.activities.connector.classification.client.ClassificationsDataExportClient;
 import it.gov.pagopa.pu.classification.dto.generated.PagedClassificationView;
 import it.gov.pagopa.pu.classification.dto.generated.PagedFullClassificationView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ClassificationsExportFileFilter;
@@ -21,19 +21,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class DataExportServiceImplTest {
+class ClassificationsDataExportServiceImplTest {
 
     @Mock
-    private DataExportClient dataExportClientMock;
+    private ClassificationsDataExportClient classificationsDataExportClientMock;
     @Mock
     private AuthnService authnServiceMock;
 
     private PodamFactory podamFactory;
-    private DataExportService dataExportService;
+    private ClassificationsDataExportService classificationsDataExportService;
 
     @BeforeEach
     void setUp() {
-        dataExportService = new DataExportServiceImpl(dataExportClientMock,authnServiceMock);
+        classificationsDataExportService = new ClassificationsDataExportServiceImpl(classificationsDataExportClientMock,authnServiceMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -41,7 +41,7 @@ class DataExportServiceImplTest {
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
-                dataExportClientMock,
+                classificationsDataExportClientMock,
                 authnServiceMock);
     }
 
@@ -55,9 +55,9 @@ class DataExportServiceImplTest {
         PagedClassificationView pagedClassificationView = podamFactory.manufacturePojo(PagedClassificationView.class);
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(dataExportClientMock.getPagedClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0,0, List.of("classificationId"))).thenReturn(pagedClassificationView);
+        Mockito.when(classificationsDataExportClientMock.getPagedClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0,0, List.of("classificationId"))).thenReturn(pagedClassificationView);
         //when
-        PagedClassificationView result = dataExportService.exportClassificationView(organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
+        PagedClassificationView result = classificationsDataExportService.exportClassificationView(organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
         //then
         assertNotNull(result);
         assertEquals(pagedClassificationView, result);
@@ -73,9 +73,9 @@ class DataExportServiceImplTest {
         PagedFullClassificationView pagedFullClassificationView = podamFactory.manufacturePojo(PagedFullClassificationView.class);
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(dataExportClientMock.getPagedFullClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0,0, List.of("classificationId"))).thenReturn(pagedFullClassificationView);
+        Mockito.when(classificationsDataExportClientMock.getPagedFullClassificationView(accessToken, organizationId, operatorExternalUserId, classificationsExportFileFilter, 0,0, List.of("classificationId"))).thenReturn(pagedFullClassificationView);
         //when
-        PagedFullClassificationView result = dataExportService.exportFullClassificationView(organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
+        PagedFullClassificationView result = classificationsDataExportService.exportFullClassificationView(organizationId, operatorExternalUserId, classificationsExportFileFilter, 0, 0, List.of("classificationId"));
         //then
         assertNotNull(result);
         assertEquals(pagedFullClassificationView, result);

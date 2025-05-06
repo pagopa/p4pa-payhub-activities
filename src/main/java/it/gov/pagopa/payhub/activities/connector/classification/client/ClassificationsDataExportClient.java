@@ -21,10 +21,10 @@ import java.util.List;
 @Lazy
 @Slf4j
 @Service
-public class DataExportClient {
+public class ClassificationsDataExportClient {
     private final ClassificationApisHolder classificationApisHolder;
 
-    public DataExportClient(ClassificationApisHolder classificationApisHolder) {
+    public ClassificationsDataExportClient(ClassificationApisHolder classificationApisHolder) {
         this.classificationApisHolder = classificationApisHolder;
     }
 

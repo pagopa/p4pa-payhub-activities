@@ -14,12 +14,12 @@ import java.util.List;
 
 @Lazy
 @Service
-public class DataExportServiceImpl implements DataExportService{
+public class DebtPositionsDataExportServiceImpl implements DebtPositionsDataExportService {
 
     private final DataExportClient dataExportClient;
     private final AuthnService authnService;
 
-    public DataExportServiceImpl(DataExportClient dataExportClient, AuthnService authnService) {
+    public DebtPositionsDataExportServiceImpl(DataExportClient dataExportClient, AuthnService authnService) {
         this.dataExportClient = dataExportClient;
         this.authnService = authnService;
     }
