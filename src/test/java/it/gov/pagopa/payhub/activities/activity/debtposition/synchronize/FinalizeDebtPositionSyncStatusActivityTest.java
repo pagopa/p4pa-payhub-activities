@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition;
+package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;

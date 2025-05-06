@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.classifications;
+package it.gov.pagopa.payhub.activities.activity.assessments;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

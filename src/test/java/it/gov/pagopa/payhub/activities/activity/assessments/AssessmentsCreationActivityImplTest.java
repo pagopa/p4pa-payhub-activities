@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.classifications;
+package it.gov.pagopa.payhub.activities.activity.assessments;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;

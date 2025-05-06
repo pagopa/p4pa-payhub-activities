@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.gpd;
+package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpd;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
