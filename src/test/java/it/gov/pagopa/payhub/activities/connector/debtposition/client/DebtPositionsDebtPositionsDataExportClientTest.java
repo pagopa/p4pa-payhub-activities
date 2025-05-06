@@ -24,19 +24,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class DebtPositionsDataExportClientTest {
+class DebtPositionsDebtPositionsDataExportClientTest {
 
     @Mock
     private DebtPositionApisHolder debtPositionApisHolderMock;
     @Mock
     private DataExportsApi dataExportsApiMock;
 
-    DataExportClient dataExportClient;
+    DebtPositionsDataExportClient debtPositionsDataExportClient;
     PodamFactory podamFactory;
 
     @BeforeEach
     void setUp() {
-        dataExportClient = new DataExportClient(debtPositionApisHolderMock);
+        debtPositionsDataExportClient = new DebtPositionsDataExportClient(debtPositionApisHolderMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -71,7 +71,7 @@ class DebtPositionsDataExportClientTest {
         Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId, Utilities.toOffsetDateTime(paymentDate.getFrom()), Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()), debtPositionTypeOrgId, 0, 10, null)). thenReturn(expected);
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
-        PagedInstallmentsPaidView result = dataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
+        PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);
@@ -95,7 +95,7 @@ class DebtPositionsDataExportClientTest {
         Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId,null,null, debtPositionTypeOrgId, 0, 10, null)). thenReturn(expected);
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
-        PagedInstallmentsPaidView result = dataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
+        PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);
@@ -121,7 +121,7 @@ class DebtPositionsDataExportClientTest {
         Mockito.when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId, Utilities.toOffsetDateTime(paymentDate.getFrom()), Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()),  0, 10, null)). thenReturn(expected);
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
-        PagedReceiptsArchivingView result = dataExportClient.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
+        PagedReceiptsArchivingView result = debtPositionsDataExportClient.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);
@@ -143,7 +143,7 @@ class DebtPositionsDataExportClientTest {
         Mockito.when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId,null,null, 0, 10, null)). thenReturn(expected);
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
-        PagedReceiptsArchivingView result = dataExportClient.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
+        PagedReceiptsArchivingView result = debtPositionsDataExportClient.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
         //then
         assertNotNull(result);
         assertEquals(expected, result);

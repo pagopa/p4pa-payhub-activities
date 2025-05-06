@@ -17,11 +17,11 @@ import java.util.List;
 @Lazy
 @Slf4j
 @Service
-public class DataExportClient {
+public class DebtPositionsDataExportClient {
 
    private final DebtPositionApisHolder debtPositionApisHolder;
 
-    public DataExportClient(DebtPositionApisHolder debtPositionApisHolder) {
+    public DebtPositionsDataExportClient(DebtPositionApisHolder debtPositionApisHolder) {
         this.debtPositionApisHolder = debtPositionApisHolder;
     }
 
