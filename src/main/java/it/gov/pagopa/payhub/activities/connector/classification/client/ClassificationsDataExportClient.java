@@ -109,8 +109,8 @@ public class ClassificationsDataExportClient {
     private FilterParams extractFilterParams(ClassificationsExportFileFilter filter) {
         LocalDate lastClassificationDateFrom = filter.getLastClassificationDate() != null ? filter.getLastClassificationDate().getFrom() : null;
         LocalDate lastClassificationDateTo = filter.getLastClassificationDate() != null ? filter.getLastClassificationDate().getTo() : null;
-        OffsetDateTimeIntervalFilter payDate = Utilities.toOffsetDateTimeIntervalFilterForDayBounds(filter.getPayDate());
-        OffsetDateTimeIntervalFilter paymentDate = Utilities.toOffsetDateTimeIntervalFilterForDayBounds(filter.getPaymentDate());
+        OffsetDateTimeIntervalFilter payDate = Utilities.toRangeClosedOffsetDateTimeIntervalFilter(filter.getPayDate());
+        OffsetDateTimeIntervalFilter paymentDate = Utilities.toRangeClosedOffsetDateTimeIntervalFilter(filter.getPaymentDate());
         LocalDate regulationDateFrom = filter.getRegulationDate() != null ? filter.getRegulationDate().getFrom() : null;
         LocalDate regulationDateTo = filter.getRegulationDate() != null ? filter.getRegulationDate().getTo() : null;
         LocalDate billDateFrom = filter.getBillDate() != null ? filter.getBillDate().getFrom() : null;

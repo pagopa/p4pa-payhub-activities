@@ -68,7 +68,7 @@ class DebtPositionsDebtPositionsDataExportClientTest {
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
 
-        Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId, Utilities.toOffsetDateTime(paymentDate.getFrom()), Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()), debtPositionTypeOrgId, 0, 10, null)). thenReturn(expected);
+        Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId, Utilities.toOffsetDateTimeStartOfTheDay(paymentDate.getFrom()), Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()), debtPositionTypeOrgId, 0, 10, null)). thenReturn(expected);
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
         PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
@@ -118,7 +118,7 @@ class DebtPositionsDebtPositionsDataExportClientTest {
 
         PagedReceiptsArchivingView expected = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
 
-        Mockito.when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId, Utilities.toOffsetDateTime(paymentDate.getFrom()), Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()),  0, 10, null)). thenReturn(expected);
+        Mockito.when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId, Utilities.toOffsetDateTimeStartOfTheDay(paymentDate.getFrom()), Utilities.toOffsetDateTimeEndOfTheDay(paymentDate.getTo()),  0, 10, null)). thenReturn(expected);
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
         PagedReceiptsArchivingView result = debtPositionsDataExportClient.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);

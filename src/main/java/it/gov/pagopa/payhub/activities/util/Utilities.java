@@ -113,7 +113,7 @@ public class Utilities {
 	    return localDateTime.atZone(ZONEID).toOffsetDateTime();
     }
 
-    public static OffsetDateTime toOffsetDateTime(LocalDate localDate) {
+    public static OffsetDateTime toOffsetDateTimeStartOfTheDay(LocalDate localDate) {
 	    if (localDate == null) {
 		    return null;
 	    }
@@ -128,11 +128,12 @@ public class Utilities {
         return endOfDay.atZone(ZONEID).toOffsetDateTime();
     }
 
-    public static OffsetDateTimeIntervalFilter toOffsetDateTimeIntervalFilterForDayBounds(LocalDateIntervalFilter localDateIntervalFilter){
+    /** It will convert a {@link LocalDateIntervalFilter} into an {@link OffsetDateTimeIntervalFilter} configured from the start of the <i>from</i> day to the end of the <i>to</i> day */
+    public static OffsetDateTimeIntervalFilter toRangeClosedOffsetDateTimeIntervalFilter(LocalDateIntervalFilter localDateIntervalFilter){
 
        return OffsetDateTimeIntervalFilter.builder()
-                .from(localDateIntervalFilter != null ? Utilities.toOffsetDateTime(localDateIntervalFilter.getFrom()): null)
-                .to(localDateIntervalFilter != null ? Utilities.toOffsetDateTimeEndOfTheDay(localDateIntervalFilter.getTo()): null)
+                .from(localDateIntervalFilter != null ? toOffsetDateTimeStartOfTheDay(localDateIntervalFilter.getFrom()): null)
+                .to(localDateIntervalFilter != null ? toOffsetDateTimeEndOfTheDay(localDateIntervalFilter.getTo()): null)
                 .build();
     }
 
