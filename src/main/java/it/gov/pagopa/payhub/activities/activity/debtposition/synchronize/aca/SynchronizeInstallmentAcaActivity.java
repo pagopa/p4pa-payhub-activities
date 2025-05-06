@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.aca;
+package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.aca;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.exportflow.debtposition;
+package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
