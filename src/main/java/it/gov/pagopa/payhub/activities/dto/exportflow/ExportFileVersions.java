@@ -16,11 +16,15 @@ public class ExportFileVersions {
     public static final String EXPORT_PAID_VERSION_V1_2 = "v1.2";
     public static final String EXPORT_PAID_VERSION_V1_3 = "v1.3";
 
+    public static final String CLASSIFICATIONS_VERSION_V1_3 = "v1.3";
+    public static final String CLASSIFICATIONS_VERSION_V1_4 = "v1.4";
+
     private static final Map<ExportFile.ExportFileTypeEnum, Set<String>> availableVersions;
 
     static {
         availableVersions = Map.of(
-                ExportFile.ExportFileTypeEnum.PAID, Arrays.stream(PaidExportFileVersion.values()).map(PaidExportFileVersion::getValue).collect(Collectors.toSet())
+                ExportFile.ExportFileTypeEnum.PAID, Arrays.stream(PaidExportFileVersion.values()).map(PaidExportFileVersion::getValue).collect(Collectors.toSet()),
+                ExportFile.ExportFileTypeEnum.CLASSIFICATIONS, Arrays.stream(PaidExportFileVersion.values()).map(PaidExportFileVersion::getValue).collect(Collectors.toSet())
         );
     }
 
