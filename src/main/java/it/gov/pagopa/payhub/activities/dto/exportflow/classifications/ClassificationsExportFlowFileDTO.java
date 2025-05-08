@@ -221,7 +221,7 @@ public class ClassificationsExportFlowFileDTO {
     private String objectVersionR;
 
     @CsvBindByName(column = "cod_identificativo_flusso_r")
-    private String payRepiuf;
+    private String payRepIuf;
 
     @CsvBindByName(column = "dt_data_ora_flusso_r")
     private OffsetDateTime payRepFlowDateTime;

@@ -176,7 +176,7 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertEquals("9/" + classificationViewDTO.getRecTransferCategory(), result.getRecTransferCategory());
         assertEquals(classificationViewDTO.getRecCreationDate(), result.getRecCreationDate());
         assertEquals(classificationViewDTO.getRecInstallmentBalance(), result.getRecInstallmentBalance());
-        assertEquals(classificationViewDTO.getPayRepIuf(), result.getPayRepiuf());
+        assertEquals(classificationViewDTO.getPayRepIuf(), result.getPayRepIuf());
         assertEquals(classificationViewDTO.getPayRepFlowDateTime(), result.getPayRepFlowDateTime());
         assertEquals(classificationViewDTO.getPayRepRegulationUniqueIdentifier(), result.getUniqueRegulationCodeR());
         assertEquals(classificationViewDTO.getPayRepRegulationDate(), result.getRegulationDateR());

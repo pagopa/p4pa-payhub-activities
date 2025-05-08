@@ -85,6 +85,7 @@ public class FullClassificationsExportFlowFileDTOMapper {
                 .recCreationDate(retrievedObject.getRecCreationDate())
                 .recInstallmentBalance(retrievedObject.getRecInstallmentBalance())
                 .payRepFlowDateTime(retrievedObject.getPayRepFlowDateTime())
+                .payRepIuf(retrievedObject.getPayRepIuf())
                 .uniqueRegulationCodeR(retrievedObject.getPayRepRegulationUniqueIdentifier())
                 .regulationDateR(retrievedObject.getPayRepRegulationDate())
                 .senderInstitutionUniqueIdType(retrievedObject.getPayRepSenderPspType())
@@ -136,6 +137,6 @@ public class FullClassificationsExportFlowFileDTOMapper {
                 .payNoticeDebtPositionTypeOrgCode(retrievedObject.getPayNoticeDebtPositionTypeOrgCode())
                 .payNoticeBalance(retrievedObject.getPayNoticeBalance());
 
-        return ClassificationsExportFlowFileDTO.builder().build();
+        return classificationsExportFlowFileDTOBuilder.build();
     }
 }
