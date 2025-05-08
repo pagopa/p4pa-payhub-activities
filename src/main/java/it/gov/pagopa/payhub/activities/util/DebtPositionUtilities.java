@@ -15,8 +15,7 @@ public class DebtPositionUtilities {
 
     private static final String AUX_DIGIT = "3";
     private static final Set<InstallmentStatus> expirableStatuses = Set.of(
-            InstallmentStatus.UNPAID,
-            InstallmentStatus.UNPAYABLE
+            InstallmentStatus.UNPAID
     );
     public static final Set<InstallmentStatus> INSTALLMENT_PAYED_STATUSES_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
     public static final List<InstallmentStatus> INSTALLMENT_PAYED_STATUSES_LIST = List.copyOf(INSTALLMENT_PAYED_STATUSES_SET);
