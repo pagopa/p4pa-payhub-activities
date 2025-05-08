@@ -20,8 +20,8 @@ public class ExportFileVersions {
     public static final String CLASSIFICATIONS_VERSION_V1_3 = "v1.3";
     public static final String CLASSIFICATIONS_VERSION_V1_3_WITH_NOTIFICATION = "WITH_NOTIFICATION_v1.3";
     public static final String CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION = "WITHOUT_NOTIFICATION_v1.3";
-    public static final String CLASSIFICATIONS_VERSION_V1_4_WITH_NOTIFICATION = "WITH_NOTIFICATION_v1.4";
     public static final String CLASSIFICATIONS_VERSION_V1_4 = "v1.4";
+    public static final String CLASSIFICATIONS_VERSION_V1_4_WITH_NOTIFICATION = "WITH_NOTIFICATION_v1.4";
     public static final String CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION = "WITHOUT_NOTIFICATION_v1.4";
 
     private static final Map<ExportFile.ExportFileTypeEnum, Set<String>> availableVersions;
