@@ -63,4 +63,10 @@ public class FullClassificationsExportFileService extends BaseClassificationsExp
     protected ClassificationsExportFlowFileDTO map2Csv(FullClassificationViewDTO retrievedPage) {
         return fullClassificationsExportFlowFileDTOMapper.map(retrievedPage);
     }
+
+    @Override
+    protected String getFlowFileVersion(ClassificationsExportFile exportFile) {
+        String flowFileVersion = super.getFlowFileVersion(exportFile);
+        return  "WITH_NOTIFICATION_" + flowFileVersion;
+    }
 }

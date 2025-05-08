@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.exportflow.classification;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.classifications.ClassificationsExportFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.OrganizationNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.exportflow.BaseExportFileService;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;

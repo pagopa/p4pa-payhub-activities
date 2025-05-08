@@ -46,7 +46,6 @@ public class ClassificationsExportFileService extends BaseClassificationsExportF
         this.pageSize = pageSize;
     }
 
-
     @Override
     protected List<ClassificationViewDTO> retrievePage(ClassificationsExportFile exportFile, ClassificationsExportFileFilter filter, int pageNumber) {
         PagedClassificationView pagedClassificationView = classificationsDataExportService.exportClassificationView(
@@ -63,5 +62,11 @@ public class ClassificationsExportFileService extends BaseClassificationsExportF
     @Override
     protected ClassificationsExportFlowFileDTO map2Csv(ClassificationViewDTO retrievedPage) {
         return classificationsExportFlowFileDTOMapper.map(retrievedPage);
+    }
+
+    @Override
+    protected String getFlowFileVersion(ClassificationsExportFile exportFile) {
+        String flowFileVersion = super.getFlowFileVersion(exportFile);
+        return "WITHOUT_NOTIFICATION_" + flowFileVersion;
     }
 }
