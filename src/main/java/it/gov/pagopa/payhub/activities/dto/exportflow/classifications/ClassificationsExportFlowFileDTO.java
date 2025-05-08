@@ -20,31 +20,31 @@ import java.time.OffsetDateTime;
 public class ClassificationsExportFlowFileDTO {
 
     @CsvBindByName(column = "de_nome_flusso_e")
-    private String flowName;
+    private String recFileName;
 
     @CsvBindByName(column = "num_riga_flusso_e")
     private Integer flowRowNumber;
 
     @CsvBindByName(column = "cod_iud_e")
-    private String iudE;
+    private String recIud;
 
     @CsvBindByName(column = "cod_rp_silinviarp_id_univoco_versamento_e")
-    private String iuvE;
+    private String recIuv;
 
     @CsvBindByName(column = "de_e_versione_oggetto_e")
     private String objectVersion;
 
     @CsvBindByName(column = "cod_e_dom_id_dominio_e")
-    private String orgFiscalCode;
+    private String recOrgFiscalCode;
 
     @CsvBindByName(column = "cod_e_dom_id_stazione_richiedente_e")
     private String requestingStationId;
 
     @CsvBindByName(column = "cod_e_id_messaggio_ricevuta_e")
-    private String paymentReceiptId;
+    private String recPaymentReceiptId;
 
     @CsvBindByName(column = "dt_e_data_ora_messaggio_ricevuta_e")
-    private OffsetDateTime paymentDateTime;
+    private OffsetDateTime recPaymentDateTime;
 
     @CsvBindByName(column = "cod_e_riferimento_messaggio_richiesta_e")
     private String requestMessageReferenceId;
@@ -56,10 +56,10 @@ public class ClassificationsExportFlowFileDTO {
     private String institutionAttTypeUniqueId;
 
     @CsvBindByName(column = "cod_e_istit_att_id_univ_att_codice_id_univoco_e")
-    private String pspId;
+    private String recPspId;
 
     @CsvBindByName(column = "de_e_istit_att_denominazione_attestante_e")
-    private String pspCompanyName;
+    private String recPspCompanyName;
 
     @CsvBindByName(column = "cod_e_istit_att_codice_unit_oper_attestante_e")
     private String institutionAttOperatingUnitCode;
@@ -92,7 +92,7 @@ public class ClassificationsExportFlowFileDTO {
     private String beneficiaryUniqueIdCode;
 
     @CsvBindByName(column = "de_e_ente_benef_denominazione_beneficiario_e")
-    private String beneficiaryName;
+    private String recBeneficiaryName;
 
     @CsvBindByName(column = "cod_e_ente_benef_codice_unit_oper_beneficiario_e")
     private String beneficiaryOperatingUnitCode;
@@ -143,7 +143,7 @@ public class ClassificationsExportFlowFileDTO {
     private String payerProvince;
 
     @CsvBindByName(column = "cod_e_sogg_vers_nazione_versante_e")
-    private String payerCountry;
+    private String payerNation;
 
     @CsvBindByName(column = "de_e_sogg_vers_email_versante_e")
     private String payerEmail;
@@ -173,7 +173,7 @@ public class ClassificationsExportFlowFileDTO {
     private String debtorProvince;
 
     @CsvBindByName(column = "cod_e_sogg_pag_nazione_pagatore_e")
-    private String debtorCountry;
+    private String debtorNation;
 
     @CsvBindByName(column = "de_e_sogg_pag_email_pagatore_e")
     private String debtorEmail;
@@ -182,7 +182,7 @@ public class ClassificationsExportFlowFileDTO {
     private String paymentOutcomeCode;
 
     @CsvBindByName(column = "num_e_dati_pag_importo_totale_pagato_e")
-    private BigDecimal totalPaidAmount;
+    private BigDecimal recPaymentAmount;
 
     @CsvBindByName(column = "cod_e_dati_pag_id_univoco_versamento_e")
     private String uniquePaymentId;
@@ -191,7 +191,7 @@ public class ClassificationsExportFlowFileDTO {
     private String paymentContextCode;
 
     @CsvBindByName(column = "num_e_dati_pag_dati_sing_pag_singolo_importo_pagato_e")
-    private BigDecimal singlePaymentAmountE;
+    private BigDecimal recTransferAmount;
 
     @CsvBindByName(column = "de_e_dati_pag_dati_sing_pag_esito_singolo_pagamento_e")
     private String singlePaymentOutcomeE;
@@ -203,28 +203,28 @@ public class ClassificationsExportFlowFileDTO {
     private String uniqueCollectionIdE;
 
     @CsvBindByName(column = "de_e_dati_pag_dati_sing_pag_causale_versamento_e")
-    private String remittanceInformation;
+    private String recTransferRemittanceInformation;
 
     @CsvBindByName(column = "de_e_dati_pag_dati_sing_pag_dati_specifici_riscossione_e")
-    private String category;
+    private String recTransferCategory;
 
     @CsvBindByName(column = "cod_tipo_dovuto_e")
     private String dueTypeCode;
 
     @CsvBindByName(column = "dt_acquisizione_e")
-    private OffsetDateTime acquisitionDateE;
+    private OffsetDateTime recCreationDate;
 
     @CsvBindByName(column = "bilancioE")
-    private String budget;
+    private String recInstallmentBalance;
 
     @CsvBindByName(column = "versione_oggetto_r")
     private String objectVersionR;
 
     @CsvBindByName(column = "cod_identificativo_flusso_r")
-    private String iuf;
+    private String payRepiuf;
 
     @CsvBindByName(column = "dt_data_ora_flusso_r")
-    private OffsetDateTime flowDateTimeR;
+    private OffsetDateTime payRepFlowDateTime;
 
     @CsvBindByName(column = "cod_identificativo_univoco_regolamento_r")
     private String uniqueRegulationCodeR;
@@ -257,10 +257,10 @@ public class ClassificationsExportFlowFileDTO {
     private BigDecimal totalPaymentsAmountR;
 
     @CsvBindByName(column = "cod_dati_sing_pagam_identificativo_univoco_versamento_r")
-    private String uniquePaymentIdentificationR;
+    private String payRepIuv;
 
     @CsvBindByName(column = "cod_dati_sing_pagam_identificativo_univoco_riscossione_r")
-    private String uniqueCollectionIdentificationR;
+    private String payRepIur;
 
     @CsvBindByName(column = "num_dati_sing_pagam_singolo_importo_pagato_r")
     private BigDecimal singlePaymentAmountR;
@@ -275,31 +275,31 @@ public class ClassificationsExportFlowFileDTO {
     private OffsetDateTime acquisitionDateR;
 
     @CsvBindByName(column = "cod_abi_t")
-    private String bankCode;
+    private String tresAbiCode;
 
     @CsvBindByName(column = "cod_cab_t")
-    private String branchCode;
+    private String tresCabCode;
 
     @CsvBindByName(column = "cod_conto_tesoreria")
-    private String treasuryAccountCode;
+    private String tresAccountRegistryCode;
 
     @CsvBindByName(column = "cod_divisa_t")
     private String currencyCode;
 
     @CsvBindByName(column = "dt_data_contabile_t")
-    private LocalDate accountingDate;
+    private LocalDate tresBillDate;
 
     @CsvBindByName(column = "dt_data_valuta_t")
-    private LocalDate valueDate;
+    private LocalDate tresRegionValueDate;
 
     @CsvBindByName(column = "num_importo_tesoreria")
-    private BigDecimal treasuryAmount;
+    private BigDecimal tresBillAmount;
 
     @CsvBindByName(column = "cod_segno_t")
     private String signCode;
 
     @CsvBindByName(column = "de_causale_t")
-    private String remittanceCodeT;
+    private String tresRemittanceCode;
 
     @CsvBindByName(column = "cod_numero_assegno_t")
     private String checkNumber;
@@ -314,139 +314,160 @@ public class ClassificationsExportFlowFileDTO {
     private OffsetDateTime orderDate;
 
     @CsvBindByName(column = "de_descrizione_ordinante_t")
-    private String orderingPartyDescription;
+    private String tresLastName;
 
     @CsvBindByName(column = "cod_or1_t")
-    private String or1Code;
+    private String tresOrCode;
 
     @CsvBindByName(column = "cod_id_univoco_flusso_t")
-    private String iufT;
+    private String tresIuf;
 
     @CsvBindByName(column = "cod_id_univoco_versamento_t")
-    private String iuvT;
+    private String tresIuv;
 
     @CsvBindByName(column = "dt_acquisizione_t")
-    private OffsetDateTime treasuryAcquisitionDateT;
+    private OffsetDateTime tresAcquisitionDateT;
 
     @CsvBindByName(column = "de_anno_bolletta_t")
-    private String billYear;
+    private String tresBillYear;
 
     @CsvBindByName(column = "cod_bolletta_t")
-    private String billCode;
+    private String tresBillCode;
 
     @CsvBindByName(column = "cod_id_dominio_t")
     private String domainUniqueId;
 
     @CsvBindByName(column = "dt_ricezione_t")
-    private OffsetDateTime receiptDate;
+    private OffsetDateTime tresReceiptDate;
 
     @CsvBindByName(column = "de_anno_documento_t")
-    private String documentYear;
+    private String tresDocumentYear;
 
     @CsvBindByName(column = "cod_documento_t")
-    private String documentCode;
+    private String tresDocumentCode;
 
     @CsvBindByName(column = "de_anno_provvisorio_t")
-    private String provisionalYear;
+    private String tresProvisionalAe;
 
     @CsvBindByName(column = "cod_provvisorio_t")
-    private String provisionalCode;
+    private String tresProvisionalCode;
 
     @CsvBindByName(column = "dt_effettiva_sospeso_t")
-    private LocalDate effectiveSuspensionDate;
+    private LocalDate tresActualSuspensionDate;
 
     @CsvBindByName(column = "codice_gestionale_provvisorio_t")
-    private String provisionalManagementCode;
+    private String tresManagementProvisionalCode;
 
     @CsvBindByName(column = "classificazione_completezza")
     private String completenessClassification;
 
     @CsvBindByName(column = "dt_data_ultimo_aggiornamento")
-    private LocalDate lastUpdateDate;
+    private LocalDate lastClassificationDate;
 
 
     @CsvBindByName(column = "cod_iud_i")
-    private String iudI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private String payNoticeIud;
 
     @CsvBindByName(column = "cod_rp_silinviarp_id_univoco_versamento_i")
-    private String iuvI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private String payNoticeIuv;
 
     @CsvBindByName(column = "cod_rp_sogg_pag_id_univ_pag_tipo_id_univoco_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private PersonEntityType payerUniqueIdTypeI;
 
     @CsvBindByName(column = "cod_rp_sogg_pag_id_univ_pag_codice_id_univoco_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private PersonEntityType payerUniqueIdCodeI;
 
     @CsvBindByName(column = "de_rp_sogg_pag_anagrafica_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerFullNameI;
 
     @CsvBindByName(column = "de_rp_sogg_pag_indirizzo_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerAddressI;
 
     @CsvBindByName(column = "de_rp_sogg_pag_civico_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerCivicNumberI;
 
     @CsvBindByName(column = "cod_rp_sogg_pag_cap_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerPostalCodeI;
 
     @CsvBindByName(column = "de_rp_sogg_pag_localita_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerLocationI;
 
     @CsvBindByName(column = "de_rp_sogg_pag_provincia_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerProvinceI;
 
     @CsvBindByName(column = "cod_rp_sogg_pag_nazione_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerCountryI;
 
     @CsvBindByName(column = "de_rp_sogg_pag_email_pagatore_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String payerEmailI;
 
     @CsvBindByName(column = "dt_rp_dati_vers_data_esecuzione_pagamento_i")
-    private LocalDate paymentExecutionDateI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private LocalDate payNoticePaymentExecutionDate;
 
     @CsvBindByName(column = "cod_rp_dati_vers_tipo_versamento_i")
-    private String paymentTypeI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private String payNoticePaymentType;
 
     @CsvBindByName(column = "num_rp_dati_vers_dati_sing_vers_importo_singolo_versamento_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private BigDecimal singlePaymentAmountI;
 
     @CsvBindByName(column = "num_rp_dati_vers_dati_sing_vers_commissione_carico_pa_i")
-    private BigDecimal commissionChargeI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private BigDecimal payNoticePaCommission;
 
     @CsvBindByName(column = "de_rp_dati_vers_dati_sing_vers_causale_versamento_i")
-    private String remittanceInformationI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private String payNoticeRemittanceInformation;
 
     @CsvBindByName(column = "de_rp_dati_vers_dati_sing_vers_dati_specifici_riscossione_i")
-    private String collectionSpecificDetailsI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private String payNoticeTransferCategory;
 
     @CsvBindByName(column = "cod_tipo_dovuto_i")
-    private String dueTypeCodeI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private String payNoticeDebtPositionTypeOrgCode;
 
     @CsvBindByName(column = "bilancio_i")
-    private String balanceI;
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
+    private String payNoticeBalance;
 
     @CsvBindByName(column = "dt_acquisizione_i")
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_4_WITHOUT_NOTIFICATION})
     private String acquisitionDateI;
 
 
     @CsvBindByName(column = "cod_tipo_dovuto_pa1")
-    @CsvIgnore(profiles = ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3)
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITH_NOTIFICATION})
     private String dueTypeCodePa1;
 
     @CsvBindByName(column = "de_tipo_dovuto_pa1")
-    @CsvIgnore(profiles = ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3)
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITH_NOTIFICATION})
     private String dueTypeDescriptionPa1;
 
     @CsvBindByName(column = "cod_tassonomico_dovuto_pa1")
-    @CsvIgnore(profiles = ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3)
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITH_NOTIFICATION})
     private String taxonomicCodePa1;
 
     @CsvBindByName(column = "cod_fiscale_pa1")
-    @CsvIgnore(profiles = ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3)
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITH_NOTIFICATION})
     private String fiscalCodePa1;
 
     @CsvBindByName(column = "de_nome_pa1")
-    @CsvIgnore(profiles = ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3)
+    @CsvIgnore(profiles = {ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITHOUT_NOTIFICATION, ExportFileVersions.CLASSIFICATIONS_VERSION_V1_3_WITH_NOTIFICATION})
     private String namePa1;
 
 }
