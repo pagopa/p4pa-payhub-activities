@@ -5,7 +5,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransferEmbedded;
 import it.gov.pagopa.pu.debtposition.dto.generated.Stamp;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferResponse;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,31 +50,10 @@ public class TransferFaker {
     }
 
     public static CollectionModelTransfer buildCollectionModelTransfer(){
-        List<TransferResponse> transferResponseList = new ArrayList<>();
-        transferResponseList.add(buildTransferResponse());
+        List<Transfer> transferList = new ArrayList<>();
+        transferList.add(buildTransfer());
         return TestUtils.getPodamFactory().manufacturePojo(CollectionModelTransfer.class)
-            .embedded(new CollectionModelTransferEmbedded(transferResponseList));
-    }
-
-    public static TransferResponse buildTransferResponse(){
-        return TestUtils.getPodamFactory().manufacturePojo(TransferResponse.class)
-            .transferId(1L)
-            .installmentId(1L)
-            .orgFiscalCode("orgFiscalCode")
-            .orgName("beneficiaryName")
-            .iban("iban")
-            .postalIban("postalIban")
-            .amountCents(100L)
-            .remittanceInformation("remittanceInformation")
-            .stamp(Stamp.builder()
-                .stampType("stampType")
-                .stampHashDocument("stampHashDocument")
-                .stampProvincialResidence("stampProvincialResidence")
-                .build()
-            )
-            .category("category")
-            .transferIndex(1);
-
+            .embedded(new CollectionModelTransferEmbedded(transferList));
     }
 
 }

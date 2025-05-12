@@ -66,16 +66,16 @@ public class InstallmentFaker {
     }
 
     public static CollectionModelInstallmentNoPII buildCollectionModelInstallmentNoPII() {
-        List<InstallmentNoPIIResponse> items = new ArrayList<>();
-        items.add(buildInstallmentNoPiiResponse());
+        List<InstallmentNoPII> items = new ArrayList<>();
+        items.add(buildInstallmentNoPII());
 
         return TestUtils.getPodamFactory().manufacturePojo(CollectionModelInstallmentNoPII.class)
             .embedded(new CollectionModelInstallmentNoPIIEmbedded(items));
 
     }
 
-    public static InstallmentNoPIIResponse buildInstallmentNoPiiResponse(){
-        return TestUtils.getPodamFactory().manufacturePojo(InstallmentNoPIIResponse.class)
+    public static InstallmentNoPII buildInstallmentNoPII(){
+        return TestUtils.getPodamFactory().manufacturePojo(InstallmentNoPII.class)
             .installmentId(1L)
             .paymentOptionId(1L)
             .status(InstallmentStatus.PAID)

@@ -11,8 +11,8 @@ import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferResponse;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +46,7 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
     CollectionModelInstallmentNoPII installment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organizationId, iud,
         INSTALLMENT_PAYED_STATUSES_LIST);
-    List<InstallmentNoPIIResponse> installmentsList = installment.getEmbedded().getInstallmentNoPIIs();
+    List<InstallmentNoPII> installmentsList = installment.getEmbedded().getInstallmentNoPIIs();
     if (installmentsList == null || installmentsList.isEmpty()) {
       log.info("No installments found for organization id {} and iud {}", organizationId,iud);
       return IudClassificationActivityResult.builder()
@@ -61,11 +61,11 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
     installmentsList.forEach(installmentNoPII -> {
       log.debug("InstallmentNoPII: {}", installmentNoPII);
-      List<TransferResponse> transferList = transferService.findByInstallmentId(installmentNoPII.getInstallmentId()).getEmbedded().getTransfers();
+      List<Transfer> transferList = transferService.findByInstallmentId(installmentNoPII.getInstallmentId()).getEmbedded().getTransfers();
 
-      transferList.forEach(transferResponse -> {
-        log.debug("TransferResponse: {}", transferResponse);
-        transferIndex.add(transferResponse.getTransferIndex());
+      transferList.forEach(transfer -> {
+        log.debug("Transfer: {}", transfer);
+        transferIndex.add(transfer.getTransferIndex());
       });
     });
 
@@ -74,7 +74,7 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
       saveClassification(organizationId, iud);
     }
 
-    InstallmentNoPIIResponse firstInstallment = installmentsList.getFirst();
+    InstallmentNoPII firstInstallment = installmentsList.getFirst();
 
     return IudClassificationActivityResult.builder()
         .organizationId(organizationId)
