@@ -50,10 +50,10 @@ public class TransferFaker {
     }
 
     public static CollectionModelTransfer buildCollectionModelTransfer(){
-        List<Transfer> transferResponseList = new ArrayList<>();
-        transferResponseList.add(buildTransfer());
+        List<Transfer> transferList = new ArrayList<>();
+        transferList.add(buildTransfer());
         return TestUtils.getPodamFactory().manufacturePojo(CollectionModelTransfer.class)
-            .embedded(new CollectionModelTransferEmbedded(transferResponseList));
+            .embedded(new CollectionModelTransferEmbedded(transferList));
     }
 
 }
