@@ -20,7 +20,7 @@ public class PaymentNotificationMapper {
         .paymentExecutionDate(dto.getPaymentExecutionDate())
         .paymentType(dto.getPaymentType())
         .amountPaidCents(dto.getAmountPaidCents().longValue())
-        .paCommission(dto.getPaCommissionCents().longValue())
+        .paCommissionCents(dto.getPaCommissionCents().longValue())
         .remittanceInformation(dto.getRemittanceInformation())
         .transferCategory(dto.getTransferCategory())
         .debtPositionTypeOrgCode(dto.getDebtPositionTypeOrgCode())

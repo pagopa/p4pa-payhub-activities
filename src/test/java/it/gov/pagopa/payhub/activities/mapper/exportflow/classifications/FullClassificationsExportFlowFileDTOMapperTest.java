@@ -226,7 +226,7 @@ class FullClassificationsExportFlowFileDTOMapperTest {
          assertEquals(fullClassificationViewDTO.getPayNoticePaymentExecutionDate(), result.getPayNoticePaymentExecutionDate());
          assertEquals(fullClassificationViewDTO.getPayNoticePaymentType(), result.getPayNoticePaymentType());
          assertEquals(Utilities.longCentsToBigDecimalEuro(fullClassificationViewDTO.getPayNoticeAmountPaidCents()), result.getSinglePaymentAmountI());
-         assertEquals(Utilities.longCentsToBigDecimalEuro(fullClassificationViewDTO.getPayNoticePaCommission()), result.getPayNoticePaCommission());
+         assertEquals(Utilities.longCentsToBigDecimalEuro(fullClassificationViewDTO.getPayNoticePaCommissionCents()), result.getPayNoticePaCommission());
          assertEquals(fullClassificationViewDTO.getPayNoticeRemittanceInformation(), result.getPayNoticeRemittanceInformation());
          assertEquals(fullClassificationViewDTO.getPayNoticeTransferCategory(), result.getPayNoticeTransferCategory());
          assertEquals(fullClassificationViewDTO.getPayNoticeDebtPositionTypeOrgCode(), result.getPayNoticeDebtPositionTypeOrgCode());
