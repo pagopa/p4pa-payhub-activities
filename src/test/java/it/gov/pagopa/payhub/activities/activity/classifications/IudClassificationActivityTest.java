@@ -1,9 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
@@ -15,15 +11,7 @@ import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPIIEmbedded;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransferEmbedded;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPIIResponse;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +19,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class IudClassificationActivityTest {
@@ -68,7 +64,7 @@ class IudClassificationActivityTest {
   void givenNotificatedTransferWhenClassifyThenOk() {
     CollectionModelInstallmentNoPII expectedCollectionModelInstallmentNoPII = InstallmentFaker.buildCollectionModelInstallmentNoPII();
 
-    List<InstallmentNoPIIResponse> expectedInstallmentNoPIIs = expectedCollectionModelInstallmentNoPII.getEmbedded()
+    List<InstallmentNoPII> expectedInstallmentNoPIIs = expectedCollectionModelInstallmentNoPII.getEmbedded()
         .getInstallmentNoPIIs();
 
     when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(
