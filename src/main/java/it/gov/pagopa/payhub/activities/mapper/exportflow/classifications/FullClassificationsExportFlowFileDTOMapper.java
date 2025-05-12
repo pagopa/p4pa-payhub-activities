@@ -131,7 +131,7 @@ public class FullClassificationsExportFlowFileDTOMapper {
                 .payNoticePaymentExecutionDate(retrievedObject.getPayNoticePaymentExecutionDate())
                 .payNoticePaymentType(retrievedObject.getPayNoticePaymentType())
                 .singlePaymentAmountI(Utilities.longCentsToBigDecimalEuro(retrievedObject.getPayNoticeAmountPaidCents()))
-                .payNoticePaCommission(Utilities.longCentsToBigDecimalEuro(retrievedObject.getPayNoticePaCommission()))
+                .payNoticePaCommission(Utilities.longCentsToBigDecimalEuro(retrievedObject.getPayNoticePaCommissionCents()))
                 .payNoticeRemittanceInformation(retrievedObject.getPayNoticeRemittanceInformation())
                 .payNoticeTransferCategory(retrievedObject.getPayNoticeTransferCategory())
                 .payNoticeDebtPositionTypeOrgCode(retrievedObject.getPayNoticeDebtPositionTypeOrgCode())
