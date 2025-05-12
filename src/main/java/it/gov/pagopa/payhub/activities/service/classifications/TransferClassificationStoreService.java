@@ -138,6 +138,14 @@ public class TransferClassificationStoreService {
 				.transferCategory(optionalTransfer.map(Transfer::getCategory).orElse(null))
 				.receiptCreationDate(optionalReceipt.map(ReceiptNoPII::getCreationDate).orElse(null))
 				.installmentBalance(optionalInstallment.map(InstallmentNoPII::getBalance).orElse(null))
+				.pspLastName(optionalTreasury.map(Treasury::getPspLastName).orElse(null))
+				.billCode(optionalTreasury.map(Treasury::getBillCode).orElse(null))
+				.billYear(optionalTreasury.map(Treasury::getBillYear).orElse(null))
+				.documentCode(optionalTreasury.map(Treasury::getDocumentCode).orElse(null))
+				.documentYear(optionalTreasury.map(Treasury::getDocumentYear).orElse(null))
+				.provisionalAe(optionalTreasury.map(Treasury::getProvisionalAe).orElse(null))
+				.provisionalCode(optionalTreasury.map(Treasury::getProvisionalCode).orElse(null))
+				.debtorFiscalCodeHash(optionalInstallment.map(InstallmentNoPII::getDebtorFiscalCodeHash).orElse(null))
 				.build())
 			.toList();
 

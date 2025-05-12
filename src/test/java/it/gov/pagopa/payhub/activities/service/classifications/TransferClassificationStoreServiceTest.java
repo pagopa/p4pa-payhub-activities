@@ -135,6 +135,14 @@ class TransferClassificationStoreServiceTest {
 				.transferCategory(transferDTO.getCategory())
 				.receiptCreationDate(receiptNoPII.getCreationDate())
 				.installmentBalance(installmentNoPII.getBalance())
+				.pspLastName(treasuryDTO.getPspLastName())
+				.billCode(treasuryDTO.getBillCode())
+				.billYear(treasuryDTO.getBillYear())
+				.documentCode(treasuryDTO.getDocumentCode())
+				.documentYear(treasuryDTO.getDocumentYear())
+				.provisionalAe(treasuryDTO.getProvisionalAe())
+				.provisionalCode(treasuryDTO.getProvisionalCode())
+				.debtorFiscalCodeHash(installmentNoPII.getDebtorFiscalCodeHash())
 				.build());
 
 		when(classificationServiceMock.saveAll(dtoList)).thenReturn(dtoList.size());
