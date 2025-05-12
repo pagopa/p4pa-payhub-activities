@@ -205,7 +205,6 @@ class TransferClassificationStoreServiceTest {
 				.transferCategory(null)
 				.receiptCreationDate(null)
 				.installmentBalance(null)
-				.pspLastName(treasuryDTO.getPspLastName())
 				.billCode(treasuryDTO.getBillCode())
 				.billYear(treasuryDTO.getBillYear())
 				.documentCode(treasuryDTO.getDocumentCode())

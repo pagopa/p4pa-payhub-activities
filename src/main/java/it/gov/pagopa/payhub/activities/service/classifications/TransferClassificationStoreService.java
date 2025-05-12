@@ -99,45 +99,31 @@ public class TransferClassificationStoreService {
 
 		List<Classification> dtoList = classifications.stream()
 			.map(classification -> (Classification) Classification.builder()
+				// TransferSemanticKeyDTO fields
 				.organizationId(transferSemanticKeyDTO.getOrgId())
-				.transferId(optionalTransfer.map(Transfer::getTransferId).orElse(null))
-				.paymentsReportingId(optionalPaymentsReporting.map(PaymentsReporting::getPaymentsReportingId).orElse(null))
-				.treasuryId(optionalTreasury.map(Treasury::getTreasuryId).orElse(null))
-				.iuf(optionalPaymentsReporting.map(PaymentsReporting::getIuf).orElse(null))
 				.iuv(transferSemanticKeyDTO.getIuv())
 				.iur(transferSemanticKeyDTO.getIur())
 				.transferIndex(transferSemanticKeyDTO.getTransferIndex())
-				.label(classification)
-				.lastClassificationDate(LocalDate.now())
-				.payDate(optionalPaymentsReporting.map(PaymentsReporting::getPayDate).orElse(null))
-				.paymentDateTime(optionalReceipt.map(ReceiptNoPII::getPaymentDateTime).orElse(null))
-				.regulationDate(optionalPaymentsReporting.map(PaymentsReporting::getRegulationDate).orElse(null))
-				.billDate(optionalTreasury.map(Treasury::getBillDate).orElse(null))
-				.regionValueDate(optionalTreasury.map(Treasury::getRegionValueDate).orElse(null))
-				.pspCompanyName(optionalReceipt.map(ReceiptNoPII::getPspCompanyName).orElse(null))
-				.pspLastName(optionalTreasury.map(Treasury::getPspLastName).orElse(null))
-				.regulationUniqueIdentifier(optionalPaymentsReporting.map(PaymentsReporting::getRegulationUniqueIdentifier).orElse(null))
-				.accountRegistryCode(optionalTreasury.map(Treasury::getAccountRegistryCode).orElse(null))
-				.billAmountCents(optionalTreasury.map(Treasury::getBillAmountCents).orElse(null))
+
+				// Transfer fields
+				.transferId(optionalTransfer.map(Transfer::getTransferId).orElse(null))
 				.remittanceInformation(optionalTransfer.map(Transfer::getRemittanceInformation).orElse(null))
-				.debtPositionTypeOrgCode(optionalDebtPositionTypeOrg.map(DebtPositionTypeOrg::getCode).orElse(null))
-				.installmentIngestionFlowFileName(optionalIngestionFlowFile.map(IngestionFlowFile::getFileName).orElse(null))
-				.receiptOrgFiscalCode(optionalReceipt.map(ReceiptNoPII::getOrgFiscalCode).orElse(null))
-				.receiptPaymentReceiptId(optionalReceipt.map(ReceiptNoPII::getPaymentReceiptId).orElse(null))
-				.receiptPaymentDateTime(optionalReceipt.map(ReceiptNoPII::getPaymentDateTime).orElse(null))
-				.receiptPaymentRequestId(optionalReceipt.map(ReceiptNoPII::getReceiptId).map(String::valueOf).orElse(null))
-				.receiptIdPsp(optionalReceipt.map(ReceiptNoPII::getIdPsp).orElse(null))
-				.receiptPspCompanyName(optionalReceipt.map(ReceiptNoPII::getPspCompanyName).orElse(null))
-				.organizationEntityType(optionalOrganization.map(Organization::getOrgTypeCode).orElse(null))
-				.organizationName(optionalOrganization.map(Organization::getOrgName).orElse(null))
-				.receiptPersonalDataId(optionalReceipt.map(ReceiptNoPII::getPersonalDataId).orElse(null))
-				.receiptPaymentOutcomeCode(optionalReceipt.map(ReceiptNoPII::getOutcome).orElse(null))
-				.receiptPaymentAmount(optionalReceipt.map(ReceiptNoPII::getPaymentAmountCents).orElse(null))
-				.receiptCreditorReferenceId(optionalReceipt.map(ReceiptNoPII::getCreditorReferenceId).orElse(null))
 				.transferAmount(optionalTransfer.map(Transfer::getAmountCents).orElse(null))
 				.transferCategory(optionalTransfer.map(Transfer::getCategory).orElse(null))
-				.receiptCreationDate(optionalReceipt.map(ReceiptNoPII::getCreationDate).orElse(null))
-				.installmentBalance(optionalInstallment.map(InstallmentNoPII::getBalance).orElse(null))
+
+				// PaymentsReporting fields
+				.paymentsReportingId(optionalPaymentsReporting.map(PaymentsReporting::getPaymentsReportingId).orElse(null))
+				.iuf(optionalPaymentsReporting.map(PaymentsReporting::getIuf).orElse(null))
+				.payDate(optionalPaymentsReporting.map(PaymentsReporting::getPayDate).orElse(null))
+				.regulationDate(optionalPaymentsReporting.map(PaymentsReporting::getRegulationDate).orElse(null))
+				.regulationUniqueIdentifier(optionalPaymentsReporting.map(PaymentsReporting::getRegulationUniqueIdentifier).orElse(null))
+
+				// Treasury fields
+				.treasuryId(optionalTreasury.map(Treasury::getTreasuryId).orElse(null))
+				.billDate(optionalTreasury.map(Treasury::getBillDate).orElse(null))
+				.regionValueDate(optionalTreasury.map(Treasury::getRegionValueDate).orElse(null))
+				.accountRegistryCode(optionalTreasury.map(Treasury::getAccountRegistryCode).orElse(null))
+				.billAmountCents(optionalTreasury.map(Treasury::getBillAmountCents).orElse(null))
 				.pspLastName(optionalTreasury.map(Treasury::getPspLastName).orElse(null))
 				.billCode(optionalTreasury.map(Treasury::getBillCode).orElse(null))
 				.billYear(optionalTreasury.map(Treasury::getBillYear).orElse(null))
@@ -145,7 +131,39 @@ public class TransferClassificationStoreService {
 				.documentYear(optionalTreasury.map(Treasury::getDocumentYear).orElse(null))
 				.provisionalAe(optionalTreasury.map(Treasury::getProvisionalAe).orElse(null))
 				.provisionalCode(optionalTreasury.map(Treasury::getProvisionalCode).orElse(null))
+
+				// Receipt fields
+				.paymentDateTime(optionalReceipt.map(ReceiptNoPII::getPaymentDateTime).orElse(null))
+				.pspCompanyName(optionalReceipt.map(ReceiptNoPII::getPspCompanyName).orElse(null))
+				.receiptOrgFiscalCode(optionalReceipt.map(ReceiptNoPII::getOrgFiscalCode).orElse(null))
+				.receiptPaymentReceiptId(optionalReceipt.map(ReceiptNoPII::getPaymentReceiptId).orElse(null))
+				.receiptPaymentRequestId(optionalReceipt.map(ReceiptNoPII::getReceiptId).map(String::valueOf).orElse(null))
+				.receiptIdPsp(optionalReceipt.map(ReceiptNoPII::getIdPsp).orElse(null))
+				.receiptPspCompanyName(optionalReceipt.map(ReceiptNoPII::getPspCompanyName).orElse(null))
+				.receiptPersonalDataId(optionalReceipt.map(ReceiptNoPII::getPersonalDataId).orElse(null))
+				.receiptPaymentOutcomeCode(optionalReceipt.map(ReceiptNoPII::getOutcome).orElse(null))
+				.receiptPaymentAmount(optionalReceipt.map(ReceiptNoPII::getPaymentAmountCents).orElse(null))
+				.receiptCreditorReferenceId(optionalReceipt.map(ReceiptNoPII::getCreditorReferenceId).orElse(null))
+				.receiptCreationDate(optionalReceipt.map(ReceiptNoPII::getCreationDate).orElse(null))
+				.receiptPaymentDateTime(optionalReceipt.map(ReceiptNoPII::getPaymentDateTime).orElse(null))
+
+				// Installment fields
+				.installmentBalance(optionalInstallment.map(InstallmentNoPII::getBalance).orElse(null))
 				.debtorFiscalCodeHash(optionalInstallment.map(InstallmentNoPII::getDebtorFiscalCodeHash).orElse(null))
+
+				// IngestionFlowFile fields
+				.installmentIngestionFlowFileName(optionalIngestionFlowFile.map(IngestionFlowFile::getFileName).orElse(null))
+
+				// DebtPositionTypeOrg fields
+				.debtPositionTypeOrgCode(optionalDebtPositionTypeOrg.map(DebtPositionTypeOrg::getCode).orElse(null))
+
+				// Organization fields
+				.organizationEntityType(optionalOrganization.map(Organization::getOrgTypeCode).orElse(null))
+				.organizationName(optionalOrganization.map(Organization::getOrgName).orElse(null))
+
+				// Classification-specific fields
+				.label(classification)
+				.lastClassificationDate(LocalDate.now())
 				.build())
 			.toList();
 
