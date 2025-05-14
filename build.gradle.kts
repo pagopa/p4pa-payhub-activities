@@ -3,14 +3,14 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.3"
+	id("org.springframework.boot") version "3.4.5"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.sonarqube") version "6.0.1.5171"
+	id("org.sonarqube") version "6.1.0.5360"
 	`java-library`
 	`maven-publish`
 	jacoco
 	id("com.intershop.gradle.jaxb") version "7.0.1"
-	id("org.openapi.generator") version "7.10.0"
+	id("org.openapi.generator") version "7.13.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -62,20 +62,19 @@ val janinoVersion = "3.1.12"
 val hibernateValidatorVersion = "8.0.2.Final"
 val commonsCompressVersion = "1.27.1"
 val commonsLang3Version = "3.17.0"
-val commonsTextVersion = "1.13.0"
-val jacksonModuleVersion = "2.18.2"
+val commonsTextVersion = "1.13.1"
 val activationVersion = "2.1.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
-val jsoupVersion = "1.18.3"
+val jsoupVersion = "1.20.1"
 val openApiToolsVersion = "0.2.6"
-val temporalVersion = "1.28.4"
+val temporalVersion = "1.29.0"
 val protobufJavaVersion = "4.30.2"
-val guavaVersion = "33.4.0-jre"
-val openCsvVersion = "5.9"
+val guavaVersion = "33.4.8-jre"
+val openCsvVersion = "5.11"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
-val httpClientVersion = "5.4.2"
+val httpClientVersion = "5.4.4"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -87,7 +86,6 @@ dependencies {
 	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
 	implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
-	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonModuleVersion")
 	implementation("org.mapstruct:mapstruct:$mapStructVersion")
 	implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
 	// openApi
