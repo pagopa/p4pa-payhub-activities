@@ -39,7 +39,7 @@ mail:
 
 folders:
   shared: "\${SHARED_FOLDER_ROOT:/shared}"
-  tmp: "\${TMP_FOLDER:/tmp}"
+  tmp: "\${TMP_FOLDER:\${java.io.tmpdir}}"
   process-target-sub-folders:
     archive: "\${PROCESS_TARGET_SUB_FOLDER_ARCHIVE:archive}"
     errors: "\${PROCESS_TARGET_SUB_FOLDER_ERRORS:errors}"
