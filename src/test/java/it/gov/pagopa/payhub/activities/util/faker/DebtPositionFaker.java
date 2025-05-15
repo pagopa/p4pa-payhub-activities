@@ -14,6 +14,7 @@ public class DebtPositionFaker {
     public static DebtPositionDTO buildDebtPositionDTO(){
         return TestUtils.getPodamFactory().manufacturePojo(DebtPositionDTO.class)
                 .status(DebtPositionStatus.PAID)
+                .flagPagoPaPayment(true)
                 .paymentOptions(List.of(buildPaymentOptionDTO()));
     }
 

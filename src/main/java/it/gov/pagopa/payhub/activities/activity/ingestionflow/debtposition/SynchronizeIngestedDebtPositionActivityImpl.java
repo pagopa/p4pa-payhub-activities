@@ -2,14 +2,16 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +36,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     private final DebtPositionService debtPositionService;
     private final WorkflowDebtPositionService workflowDebtPositionService;
     private final WorkflowCompletionService workflowCompletionService;
+    private final PrintPaymentNoticeService printPaymentNoticeService;
+    private final IngestionFlowFileService ingestionFlowFileService;
     private final DebtPositionOperationTypeResolver debtPositionOperationTypeResolver;
     private final Integer pageSize;
     private final int maxAttempts;
@@ -40,13 +45,15 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
 
-    public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowCompletionService workflowCompletionService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
+    public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowCompletionService workflowCompletionService, PrintPaymentNoticeService printPaymentNoticeService, IngestionFlowFileService ingestionFlowFileService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
                                                        @Value("${query-limits.debt-positions.size}") Integer pageSize,
                                                        @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes}") int maxWaitingMinutes,
                                                        @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs) {
         this.debtPositionService = debtPositionService;
         this.workflowDebtPositionService = workflowDebtPositionService;
         this.workflowCompletionService = workflowCompletionService;
+        this.printPaymentNoticeService = printPaymentNoticeService;
+        this.ingestionFlowFileService = ingestionFlowFileService;
         this.debtPositionOperationTypeResolver = debtPositionOperationTypeResolver;
         this.pageSize = pageSize;
         this.maxAttempts = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
@@ -54,13 +61,15 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     }
 
     @Override
-    public String synchronizeIngestedDebtPosition(Long ingestionFlowFileId) {
+    public SyncIngestedDebtPositionDTO synchronizeIngestedDebtPosition(Long ingestionFlowFileId) {
         log.info("Synchronizing all debt positions related to ingestion flow file id {}", ingestionFlowFileId);
 
         StringBuilder errors = new StringBuilder();
 
         int currentPage = 0;
         boolean hasMorePages = true;
+
+        List<DebtPositionDTO> debtPositionsGenerateNotices = new ArrayList<>();
 
         while (hasMorePages) {
             PagedDebtPositions pagedDebtPositions = debtPositionService.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId,
@@ -69,31 +78,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     DEFAULT_ORDERING);
 
             log.info("Synchronizing page {} of {} retrieved searching debt positions related to ingestionFlowFileId {} (totalElements {})",
-                    currentPage, pagedDebtPositions.getTotalPages(), pagedDebtPositions.getTotalElements(), ingestionFlowFileId);
-
-            List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> wfIds = pagedDebtPositions.getContent().stream()
-                    .map(debtPosition -> {
-                        try {
-                            Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = createIupdSyncStatusMap(debtPosition);
-                            PaymentEventType paymentEventType = debtPositionOperationTypeResolver.calculateDebtPositionOperationType(debtPosition, iupdSyncStatusUpdateDTOMap);
-
-                            WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType, "ingestionFlowFileId:" + ingestionFlowFileId);
-
-                            if (workflowCreatedDTO == null) {
-                                return null;
-                            }
-                            return Pair.of(debtPosition, workflowCreatedDTO);
-
-                        } catch (Exception e) {
-                            log.error("Error synchronizing debt position with id {} and iupdOrg {}: {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e.getMessage());
-                            errors.append("\nError on debt position with iupdOrg ")
-                                    .append(debtPosition.getIupdOrg()).append(": ")
-                                    .append(e.getMessage());
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
+                    currentPage, pagedDebtPositions.getTotalPages(), ingestionFlowFileId, pagedDebtPositions.getTotalElements());
+            List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> wfIds = getSyncDebtPositionAndWF(ingestionFlowFileId, pagedDebtPositions, errors);
 
             wfIds.forEach(p -> {
                 WorkflowCreatedDTO workflow = p.getRight();
@@ -105,6 +91,9 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                         errors.append("\nSynchronization workflow for debt position with iupdOrg ")
                                 .append(debtPosition.getIupdOrg())
                                 .append(" terminated with error status.");
+                    }
+                    if (WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowExecutionStatus) && debtPosition.getFlagPagoPaPayment()) {
+                        debtPositionsGenerateNotices.add(debtPosition);
                     }
                 } catch (Exception e) {
                     log.error("Error waiting for debt position sync workflowId with id {} and iupdOrg {}: {}", workflow.getWorkflowId(), debtPosition.getIupdOrg(), e.getMessage());
@@ -119,7 +108,60 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         }
 
         log.info("Synchronization of all debt positions related to ingestion flow file id {} completed", ingestionFlowFileId);
-        return errors.toString();
+
+        String folderId = "";
+        if (!debtPositionsGenerateNotices.isEmpty()) {
+            folderId = generateMassive(ingestionFlowFileId, debtPositionsGenerateNotices);
+        }
+
+        return SyncIngestedDebtPositionDTO.builder()
+                .errorsDescription(errors.toString())
+                .folderId(folderId)
+                .build();
+    }
+
+    private List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> getSyncDebtPositionAndWF(Long ingestionFlowFileId, PagedDebtPositions pagedDebtPositions, StringBuilder errors) {
+        return pagedDebtPositions.getContent().stream()
+                .map(debtPosition -> {
+                    try {
+                        Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap = createIupdSyncStatusMap(debtPosition);
+                        PaymentEventType paymentEventType = debtPositionOperationTypeResolver.calculateDebtPositionOperationType(debtPosition, iupdSyncStatusUpdateDTOMap);
+
+                        WorkflowCreatedDTO workflowCreatedDTO = workflowDebtPositionService.syncDebtPosition(debtPosition, new WfExecutionParameters(), paymentEventType, "ingestionFlowFileId:" + ingestionFlowFileId);
+
+                        if (workflowCreatedDTO == null) {
+                            return null;
+                        }
+                        return Pair.of(debtPosition, workflowCreatedDTO);
+
+                    } catch (Exception e) {
+                        log.error("Error synchronizing debt position with id {} and iupdOrg {}: {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e.getMessage());
+                        errors.append("\nError on debt position with iupdOrg ")
+                                .append(debtPosition.getIupdOrg()).append(": ")
+                                .append(e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    private String generateMassive(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices) {
+        String requestId = "PU_" + debtPositionsGenerateNotices.getFirst().getOrganizationId() + "_" + ingestionFlowFileId;
+        log.info("Triggering notice generateMassive for {} installments with requestId {}", debtPositionsGenerateNotices.size(), requestId);
+
+        NoticeRequestMassiveDTO request = NoticeRequestMassiveDTO.builder()
+                .debtPositions(debtPositionsGenerateNotices)
+                .requestId(requestId)
+                .build();
+        GeneratedNoticeMassiveFolderDTO folderDTO = printPaymentNoticeService.generateMassive(request);
+
+        ingestionFlowFileService.updatePdfGenerated(
+                ingestionFlowFileId,
+                (long) debtPositionsGenerateNotices.size(),
+                folderDTO.getFolderId()
+        );
+        return folderDTO.getFolderId();
     }
 
     private Map<String, SyncCompleteDTO> createIupdSyncStatusMap(DebtPositionDTO debtPosition) {

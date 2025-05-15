@@ -17,4 +17,5 @@ public interface IngestionFlowFileService {
     List<IngestionFlowFile> findByOrganizationIdFlowTypeCreateDate(Long organizationId, IngestionFlowFileTypeEnum flowFileType, OffsetDateTime creationDateFrom);
     List<IngestionFlowFile> findByOrganizationIdFlowTypeFilename(Long organizationId, IngestionFlowFileTypeEnum flowFileType, String fileName);
     Integer updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId);
+    Integer updatePdfGenerated(Long ingestionFlowFileId, Long pdfGenerated, String folderId);
 }
