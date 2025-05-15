@@ -44,4 +44,9 @@ public class InstallmentServiceImpl implements InstallmentService {
 	public CollectionModelInstallmentNoPII getInstallmentsByOrgIdAndIudAndStatus(Long orgId, String iud, List<InstallmentStatus> installmentStatuses) {
 		return installmentClient.findCollectionByOrganizationIdAndIudAndStatus(orgId, iud, installmentStatuses, authnService.getAccessToken());
 	}
+
+	@Override
+	public void updateIun(Long installmentId, String iun) {
+		installmentClient.updateIun(installmentId, iun, authnService.getAccessToken());
+	}
 }
