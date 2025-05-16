@@ -2,17 +2,15 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
-import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
 import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
+import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -40,9 +38,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     @Mock
     private WorkflowCompletionService workflowCompletionServiceMock;
     @Mock
-    private PrintPaymentNoticeService printPaymentNoticeServiceMock;
-    @Mock
-    private IngestionFlowFileService ingestionFlowFileServiceMock;
+    private GenerateNoticeService generateNoticeServiceMock;
     @Mock
     private DebtPositionOperationTypeResolver debtPositionOperationTypeResolverMock;
 
@@ -58,7 +54,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     @BeforeEach
     void setUp() {
         activity = new SynchronizeIngestedDebtPositionActivityImpl(
-                debtPositionServiceMock, workflowDebtPositionServiceMock, workflowCompletionServiceMock, printPaymentNoticeServiceMock, ingestionFlowFileServiceMock,
+                debtPositionServiceMock, workflowDebtPositionServiceMock, workflowCompletionServiceMock, generateNoticeServiceMock,
                 debtPositionOperationTypeResolverMock, PAGE_SIZE, MAX_WAITING_MINUTES, RETRY_DELAY
         );
     }
@@ -83,7 +79,6 @@ class SynchronizeIngestedDebtPositionActivityTest {
         DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
 
         List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition1, debtPosition2, debtPosition3, debtPosition4);
-        String requestId = "PU_" + debtPosition1.getOrganizationId() + "_" + ingestionFlowFileId;
 
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
@@ -117,16 +112,12 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .number(1L)
                 .build();
 
-        NoticeRequestMassiveDTO requestMassive = NoticeRequestMassiveDTO.builder()
-                .debtPositions(debtPositionsGenerateNotices)
-                .requestId(requestId)
-                .build();
         GeneratedNoticeMassiveFolderDTO responseFolder = GeneratedNoticeMassiveFolderDTO.builder()
                 .folderId("folderId")
                 .build();
 
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
-                .folderId(responseFolder.getFolderId())
+                .pdfGeneratedId(responseFolder.getFolderId())
                 .errorsDescription("")
                 .build();
 
@@ -156,10 +147,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
-        Mockito.when(printPaymentNoticeServiceMock.generateMassive(requestMassive))
-                .thenReturn(responseFolder);
-        Mockito.when(ingestionFlowFileServiceMock.updatePdfGenerated(ingestionFlowFileId, (long) debtPositionsGenerateNotices.size(), responseFolder.getFolderId()))
-                .thenReturn(1);
+        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
+                .thenReturn("folderId");
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
@@ -195,7 +184,6 @@ class SynchronizeIngestedDebtPositionActivityTest {
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
                 .errorsDescription("\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": Error" +
                         "\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.")
-                .folderId("")
                 .build();
 
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
@@ -237,7 +225,6 @@ class SynchronizeIngestedDebtPositionActivityTest {
         List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition4);
         debtPosition3.setFlagPagoPaPayment(false);
         debtPosition1.setFlagPagoPaPayment(false);
-        String requestId = "PU_" + debtPosition4.getOrganizationId() + "_" + ingestionFlowFileId;
 
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
@@ -271,16 +258,12 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .number(1L)
                 .build();
 
-        NoticeRequestMassiveDTO requestMassive = NoticeRequestMassiveDTO.builder()
-                .debtPositions(debtPositionsGenerateNotices)
-                .requestId(requestId)
-                .build();
         GeneratedNoticeMassiveFolderDTO responseFolder = GeneratedNoticeMassiveFolderDTO.builder()
                 .folderId("folderId")
                 .build();
 
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
-                .folderId(responseFolder.getFolderId())
+                .pdfGeneratedId(responseFolder.getFolderId())
                 .errorsDescription("\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": DUMMYEXCEPTION DP2")
                 .build();
 
@@ -310,10 +293,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
-        Mockito.when(printPaymentNoticeServiceMock.generateMassive(requestMassive))
-                .thenReturn(responseFolder);
-        Mockito.when(ingestionFlowFileServiceMock.updatePdfGenerated(ingestionFlowFileId, (long) debtPositionsGenerateNotices.size(), responseFolder.getFolderId()))
-                .thenReturn(1);
+        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
+                .thenReturn("folderId");
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 

@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SyncIngestedDebtPositionDTO {
     private String errorsDescription;
-    private String folderId;
+    private String pdfGeneratedId;
 }

@@ -70,10 +70,10 @@ public class IngestionFlowFileClient {
                 .crudIngestionFlowFilesUpdateProcessingIfNoOtherProcessing(ingestionFlowFileId);
     }
 
-    public Integer updatePdfGenerated(Long ingestionFlowFileId, Long pdfGenerated, String folderId, String accessToken) {
+    public Integer updatePdfGenerated(Long ingestionFlowFileId, Long pdfGenerated, String pdfGeneratedId, String accessToken) {
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                    .updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId);
+                    .updatePdfGenerated(ingestionFlowFileId, pdfGenerated, pdfGeneratedId);
         } catch (HttpClientErrorException.NotFound e) {
             return 0;
         }

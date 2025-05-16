@@ -22,7 +22,7 @@ public class PrintPaymentNoticeServiceImpl implements PrintPaymentNoticeService 
 
 	@Override
 	public GeneratedNoticeMassiveFolderDTO generateMassive(NoticeRequestMassiveDTO noticeRequestMassiveDTO) {
-		log.info("Generate massive for requestId: {}", noticeRequestMassiveDTO.getRequestId());
+		log.info("Generate massive notices for requestId: {}", noticeRequestMassiveDTO.getRequestId());
 		return printPaymentNoticeClient.generateMassive(noticeRequestMassiveDTO, authnService.getAccessToken());
 	}
 }

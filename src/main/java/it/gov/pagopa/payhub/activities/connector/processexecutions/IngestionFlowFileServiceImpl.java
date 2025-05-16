@@ -63,7 +63,7 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
     }
 
     @Override
-    public Integer updatePdfGenerated(Long ingestionFlowFileId, Long pdfGenerated, String folderId) {
-        return ingestionFlowFileClient.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId, authnService.getAccessToken());
+    public Integer updatePdfGenerated(Long ingestionFlowFileId, Long pdfGenerated, String pdfGeneratedId) {
+        return ingestionFlowFileClient.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, pdfGeneratedId, authnService.getAccessToken());
     }
 }
