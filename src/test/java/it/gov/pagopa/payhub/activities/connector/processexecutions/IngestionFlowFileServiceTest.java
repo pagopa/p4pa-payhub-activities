@@ -132,7 +132,7 @@ class IngestionFlowFileServiceTest {
     }
 
     @Test
-    void testUpdateProcessingIfNoOtherProcessing() {
+    void whenUpdateProcessingIfNoOtherProcessingThenOk() {
         // Given
         String accessToken = "accessToken";
         Long ingestionFlowFileId = 1L;
@@ -145,6 +145,27 @@ class IngestionFlowFileServiceTest {
 
         // When
         Integer result = ingestionFlowFileService.updateProcessingIfNoOtherProcessing(ingestionFlowFileId);
+
+        // Then
+        assertSame(expectedResponse, result);
+    }
+
+    @Test
+    void whenUpdatePdfGeneratedThenOk() {
+        // Given
+        String accessToken = "accessToken";
+        Long ingestionFlowFileId = 1L;
+        long pdfGenerated = 10L;
+        String folderId = "100";
+        Integer expectedResponse = 1;
+
+        when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(ingestionFlowFileClientMock.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        Integer result = ingestionFlowFileService.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId);
 
         // Then
         assertSame(expectedResponse, result);
