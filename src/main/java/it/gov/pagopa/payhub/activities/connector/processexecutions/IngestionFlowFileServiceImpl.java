@@ -61,4 +61,9 @@ public class IngestionFlowFileServiceImpl implements IngestionFlowFileService {
     public Integer updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId) {
         return ingestionFlowFileClient.updateProcessingIfNoOtherProcessing(ingestionFlowFileId, authnService.getAccessToken());
     }
+
+    @Override
+    public Integer updatePdfGenerated(Long ingestionFlowFileId, Long pdfGenerated, String pdfGeneratedId) {
+        return ingestionFlowFileClient.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, pdfGeneratedId, authnService.getAccessToken());
+    }
 }

@@ -224,4 +224,48 @@ class IngestionFlowFileClientTest {
         // Then
         assertEquals(expectedResponse, result);
     }
+
+    @Test
+    void whenUpdatePdfGeneratedThenOk() {
+        // Given
+        String accessToken = "accessToken";
+        Long ingestionFlowFileId = 1L;
+        long pdfGenerated = 10L;
+        String folderId = "100";
+
+        Integer expectedResponse = 1;
+
+        when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
+                .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
+        when(ingestionFlowFileEntityExtendedControllerApiMock.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId))
+                .thenReturn(expectedResponse);
+
+        // When
+        Integer result = ingestionFlowFileClient.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+    }
+
+    @Test
+    void givenNotFoundWhenUpdatePdfGeneratedThenOk() {
+        // Given
+        String accessToken = "accessToken";
+        Long ingestionFlowFileId = 1L;
+        long pdfGenerated = 10L;
+        String folderId = "100";
+
+        Integer expectedResponse = 0;
+
+        when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
+                .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
+        when(ingestionFlowFileEntityExtendedControllerApiMock.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        Integer result = ingestionFlowFileClient.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+    }
 }

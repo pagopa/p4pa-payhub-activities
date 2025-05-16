@@ -69,4 +69,13 @@ public class IngestionFlowFileClient {
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
                 .crudIngestionFlowFilesUpdateProcessingIfNoOtherProcessing(ingestionFlowFileId);
     }
+
+    public Integer updatePdfGenerated(Long ingestionFlowFileId, Long pdfGenerated, String pdfGeneratedId, String accessToken) {
+        try {
+            return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
+                    .updatePdfGenerated(ingestionFlowFileId, pdfGenerated, pdfGeneratedId);
+        } catch (HttpClientErrorException.NotFound e) {
+            return 0;
+        }
+    }
 }

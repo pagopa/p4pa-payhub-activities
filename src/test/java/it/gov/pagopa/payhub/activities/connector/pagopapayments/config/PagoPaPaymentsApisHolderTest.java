@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,6 +70,16 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 							.syncGpd("IUD", buildDebtPositionDTO());
 					return voidMock;
 				},
+				new ParameterizedTypeReference<>() {},
+				pagoPaPaymentsApisHolder::unload);
+	}
+
+	@Test
+	void whenGenerateMassiveApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+		assertAuthenticationShouldBeSetInThreadSafeMode(
+				accessToken ->
+					pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken)
+							.generateMassive(new NoticeRequestMassiveDTO()),
 				new ParameterizedTypeReference<>() {},
 				pagoPaPaymentsApisHolder::unload);
 	}
