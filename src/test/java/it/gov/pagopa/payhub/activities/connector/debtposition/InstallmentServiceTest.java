@@ -105,4 +105,21 @@ class InstallmentServiceTest {
 		verify(installmentClientMock, times(1)).findCollectionByOrganizationIdAndIudAndStatus(orgId, iud, statuses, accessToken);
 	}
 
+	@Test
+	void whenUpdateIunByDebtPositionIdThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long debtPositionId = 1L;
+		String iun = "IUN";
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+		// When
+		installmentService.updateIunByDebtPositionId(debtPositionId, iun);
+
+		// Then
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(installmentClientMock, times(1)).updateIunByDebtPositionId(debtPositionId, iun, accessToken);
+	}
+
 }

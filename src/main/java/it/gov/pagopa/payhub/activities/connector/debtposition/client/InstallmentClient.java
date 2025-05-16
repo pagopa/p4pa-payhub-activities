@@ -53,4 +53,9 @@ public class InstallmentClient {
 			return debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken).crudInstallmentsGetByOrganizationIdAndIudAndStatus(orgId, iud, installmentStatuses);
 	}
 
+	public void updateIunByDebtPositionId(Long debptPositionId, String iun, String accessToken) {
+		log.debug("Update IUN for debtPositionId: {}", debptPositionId);
+		debtPositionApisHolder.getInstallmentsEntityExtendedControllerApi(accessToken).updateIunByDebtPositionId(debptPositionId, iun);
+	}
+
 }
