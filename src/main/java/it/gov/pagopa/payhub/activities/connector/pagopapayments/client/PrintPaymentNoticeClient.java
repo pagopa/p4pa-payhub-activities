@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.pagopapayments.client;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.config.PagoPaPaymentsApisHolder;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -17,5 +18,9 @@ public class PrintPaymentNoticeClient {
 
 	public GeneratedNoticeMassiveFolderDTO generateMassive(NoticeRequestMassiveDTO noticeRequestMassiveDTO, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).generateMassive(noticeRequestMassiveDTO);
+	}
+
+	public SignedUrlResultDTO getSignedUrl(Long organizationId, String folderId, String accessToken) {
+		return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).getSignedUrl(organizationId, folderId);
 	}
 }

@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.PrintPaymentNoticeClient;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,24 @@ class PrintPaymentNoticeServiceTest {
 
         // When
         GeneratedNoticeMassiveFolderDTO result = service.generateMassive(noticeRequestMassiveDTO);
+
+        // Then
+        assertEquals(response, result);
+    }
+
+    @Test
+    void whenGetSignedUrlThenInvokeClient() {
+        // Given
+        String accessToken = "accessToken";
+        Long orgId = 1L;
+        String folderId = "folderId";
+        SignedUrlResultDTO response = podamFactory.manufacturePojo(SignedUrlResultDTO.class);
+
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(printPaymentNoticeClientMock.getSignedUrl(orgId, folderId, accessToken)).thenReturn(response);
+
+        // When
+        SignedUrlResultDTO result = service.getSignedUrl(orgId, folderId);
 
         // Then
         assertEquals(response, result);

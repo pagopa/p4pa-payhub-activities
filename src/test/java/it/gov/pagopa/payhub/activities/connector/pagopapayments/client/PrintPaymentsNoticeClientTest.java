@@ -54,4 +54,22 @@ class PrintPaymentsNoticeClientTest {
         Mockito.verify(printPaymentNoticeApiMock)
                 .generateMassive(request);
     }
+
+    @Test
+    void whenGetSignedUrlThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long orgId = 1L;
+        String folderId = "folderId";
+
+        Mockito.when(pagoPaPaymentsApisHolderMock.getPrintPaymentNoticeApi(accessToken))
+                .thenReturn(printPaymentNoticeApiMock);
+
+        // When
+        printPaymentNoticeClient.getSignedUrl(orgId, folderId, accessToken);
+
+        // Then
+        Mockito.verify(printPaymentNoticeApiMock)
+                .getSignedUrl(orgId, folderId);
+    }
 }
