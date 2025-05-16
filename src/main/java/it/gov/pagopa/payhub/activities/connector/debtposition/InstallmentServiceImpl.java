@@ -46,7 +46,7 @@ public class InstallmentServiceImpl implements InstallmentService {
 	}
 
 	@Override
-	public void updateIun(Long installmentId, String iun) {
-		installmentClient.updateIun(installmentId, iun, authnService.getAccessToken());
+	public void updateIunByDebtPositionId(Long debtPositionId, String iun) {
+		installmentClient.updateIunByDebtPositionId(debtPositionId, iun, authnService.getAccessToken());
 	}
 }

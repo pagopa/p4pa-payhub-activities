@@ -13,5 +13,5 @@ public interface InstallmentService {
 	void updateDueDate(Long installmentId, LocalDate dueDate);
 	void updateStatusAndSyncStatus(Long installmentId, InstallmentStatus status, InstallmentSyncStatus syncStatus);
 	CollectionModelInstallmentNoPII getInstallmentsByOrgIdAndIudAndStatus(Long orgid, String iud, List<InstallmentStatus> installmentStatuses);
-	void updateIun(Long installmentId, String iun);
+	void updateIunByDebtPositionId(Long debtPositionId, String iun);
 }

@@ -106,20 +106,20 @@ class InstallmentServiceTest {
 	}
 
 	@Test
-	void whenUpdateIunThenInvokeClient() {
+	void whenUpdateIunByDebtPositionIdThenInvokeClient() {
 		// Given
 		String accessToken = "ACCESSTOKEN";
-		Long installmentId = 1L;
+		Long debtPositionId = 1L;
 		String iun = "IUN";
 
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
 
 		// When
-		installmentService.updateIun(installmentId, iun);
+		installmentService.updateIunByDebtPositionId(debtPositionId, iun);
 
 		// Then
 		verify(authnServiceMock, times(1)).getAccessToken();
-		verify(installmentClientMock, times(1)).updateIun(installmentId, iun, accessToken);
+		verify(installmentClientMock, times(1)).updateIunByDebtPositionId(debtPositionId, iun, accessToken);
 	}
 
 }

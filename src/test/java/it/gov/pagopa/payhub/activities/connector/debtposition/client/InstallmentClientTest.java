@@ -180,19 +180,19 @@ class InstallmentClientTest {
 	}
 
 	@Test
-	void whenUpdateIunThenInvokeWithAccessToken() {
+	void whenUpdateIunByDebtPositionIdThenInvokeWithAccessToken() {
 		// Given
 		String accessToken = "ACCESSTOKEN";
-		Long installmentId = 1L;
+		Long debtPositionId = 1L;
 		String iun = "IUN";
 
 		when(debtPositionApisHolderMock.getInstallmentsEntityExtendedControllerApi(accessToken))
 				.thenReturn(installmentsEntityExtendedControllerApiMock);
 
 		// When
-		installmentClient.updateIun(installmentId, iun, accessToken);
+		installmentClient.updateIunByDebtPositionId(debtPositionId, iun, accessToken);
 
 		// Then
-		verify(installmentsEntityExtendedControllerApiMock, times(1)).updateIun(installmentId, iun);
+		verify(installmentsEntityExtendedControllerApiMock, times(1)).updateIunByDebtPositionId(debtPositionId, iun);
 	}
 }
