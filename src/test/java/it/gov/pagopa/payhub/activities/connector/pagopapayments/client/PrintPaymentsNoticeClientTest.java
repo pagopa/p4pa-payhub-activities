@@ -60,16 +60,16 @@ class PrintPaymentsNoticeClientTest {
         // Given
         String accessToken = "ACCESSTOKEN";
         Long orgId = 1L;
-        String folderId = "folderId";
+        String pdfGeneratedId = "pdfGeneratedId";
 
         Mockito.when(pagoPaPaymentsApisHolderMock.getPrintPaymentNoticeApi(accessToken))
                 .thenReturn(printPaymentNoticeApiMock);
 
         // When
-        printPaymentNoticeClient.getSignedUrl(orgId, folderId, accessToken);
+        printPaymentNoticeClient.getSignedUrl(orgId, pdfGeneratedId, accessToken);
 
         // Then
         Mockito.verify(printPaymentNoticeApiMock)
-                .getSignedUrl(orgId, folderId);
+                .getSignedUrl(orgId, pdfGeneratedId);
     }
 }

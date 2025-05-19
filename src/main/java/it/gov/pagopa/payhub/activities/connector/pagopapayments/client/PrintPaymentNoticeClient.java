@@ -20,7 +20,7 @@ public class PrintPaymentNoticeClient {
 		return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).generateMassive(noticeRequestMassiveDTO);
 	}
 
-	public SignedUrlResultDTO getSignedUrl(Long organizationId, String folderId, String accessToken) {
-		return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).getSignedUrl(organizationId, folderId);
+	public SignedUrlResultDTO getSignedUrl(Long organizationId, String pdfGeneratedId, String accessToken) {
+		return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).getSignedUrl(organizationId, pdfGeneratedId);
 	}
 }

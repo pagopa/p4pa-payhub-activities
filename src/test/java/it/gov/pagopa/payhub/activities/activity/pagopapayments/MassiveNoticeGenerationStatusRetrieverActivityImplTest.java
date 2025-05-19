@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.pagopapayments;
 
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.MassiveNoticeGenerationStatusRetrieverActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.MassiveNoticeGenerationStatusRetrieverActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -14,15 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-class FolderStatusActivityImplTest {
+class MassiveNoticeGenerationStatusRetrieverActivityImplTest {
     @Mock
     private PrintPaymentNoticeService printPaymentNoticeServiceMock;
 
-    private FolderStatusActivity activity;
+    private MassiveNoticeGenerationStatusRetrieverActivity activity;
 
     @BeforeEach
     void setUp() {
-        activity = new FolderStatusActivityImpl(printPaymentNoticeServiceMock);
+        activity = new MassiveNoticeGenerationStatusRetrieverActivityImpl(printPaymentNoticeServiceMock);
     }
 
     @AfterEach
@@ -31,17 +33,17 @@ class FolderStatusActivityImplTest {
     }
 
     @Test
-    void givenValidOrgIdAndFolderIdWhenRetrieveFolderStatusThenOk() {
+    void givenValidOrgIdAndFolderIdWhenRetrieveNoticesGenerationStatusThenOk() {
         //given
         Long orgId = 1L;
-        String folderId = "folderId";
+        String pdfGeneratedId = "pdfGeneratedId";
         SignedUrlResultDTO signedUrlResultDTO = new SignedUrlResultDTO();
         signedUrlResultDTO.setSignedUrl("signedUrl");
 
-        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(orgId, folderId)).thenReturn(signedUrlResultDTO);
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(orgId, pdfGeneratedId)).thenReturn(signedUrlResultDTO);
 
         //when
-        SignedUrlResultDTO result = activity.retrieveFolderStatus(orgId, folderId);
+        SignedUrlResultDTO result = activity.retrieveNoticesGenerationStatus(orgId, pdfGeneratedId);
 
         //then
         assertEquals(result, signedUrlResultDTO);

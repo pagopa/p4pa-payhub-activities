@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.pagopapayments;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 @Lazy
 @Slf4j
 @Service
-public class FolderStatusActivityImpl implements FolderStatusActivity {
+public class MassiveNoticeGenerationStatusRetrieverActivityImpl implements MassiveNoticeGenerationStatusRetrieverActivity {
     private final PrintPaymentNoticeService printPaymentNoticeService;
 
-    public FolderStatusActivityImpl(PrintPaymentNoticeService printPaymentNoticeService) {
+    public MassiveNoticeGenerationStatusRetrieverActivityImpl(PrintPaymentNoticeService printPaymentNoticeService) {
         this.printPaymentNoticeService = printPaymentNoticeService;
     }
 
     @Override
-    public SignedUrlResultDTO retrieveFolderStatus(Long organizationId, String folderId) {
+    public SignedUrlResultDTO retrieveNoticesGenerationStatus(Long organizationId, String folderId) {
         return printPaymentNoticeService.getSignedUrl(organizationId, folderId);
     }
 }

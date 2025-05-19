@@ -62,14 +62,14 @@ class PrintPaymentNoticeServiceTest {
         // Given
         String accessToken = "accessToken";
         Long orgId = 1L;
-        String folderId = "folderId";
+        String pdfGeneratedId = "pdfGeneratedId";
         SignedUrlResultDTO response = podamFactory.manufacturePojo(SignedUrlResultDTO.class);
 
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        when(printPaymentNoticeClientMock.getSignedUrl(orgId, folderId, accessToken)).thenReturn(response);
+        when(printPaymentNoticeClientMock.getSignedUrl(orgId, pdfGeneratedId, accessToken)).thenReturn(response);
 
         // When
-        SignedUrlResultDTO result = service.getSignedUrl(orgId, folderId);
+        SignedUrlResultDTO result = service.getSignedUrl(orgId, pdfGeneratedId);
 
         // Then
         assertEquals(response, result);

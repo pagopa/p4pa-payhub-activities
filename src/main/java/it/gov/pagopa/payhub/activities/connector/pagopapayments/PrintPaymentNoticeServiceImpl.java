@@ -28,8 +28,8 @@ public class PrintPaymentNoticeServiceImpl implements PrintPaymentNoticeService 
 	}
 
 	@Override
-	public SignedUrlResultDTO getSignedUrl(Long organizationId, String folderId) {
-		log.info("Get signed url for organizationId: {} and folderId: {}", organizationId, folderId);
-		return printPaymentNoticeClient.getSignedUrl(organizationId, folderId, authnService.getAccessToken());
+	public SignedUrlResultDTO getSignedUrl(Long organizationId, String pdfGeneratedId) {
+		log.info("Get signed url for organizationId: {} and pdfGeneratedId: {}", organizationId, pdfGeneratedId);
+		return printPaymentNoticeClient.getSignedUrl(organizationId, pdfGeneratedId, authnService.getAccessToken());
 	}
 }

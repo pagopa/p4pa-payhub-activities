@@ -21,8 +21,8 @@ public interface PrintPaymentNoticeService {
 	 * Return SignedUrlResultDTO with signedUrl if folder status is ready and two lists containing all notices processed or in error
 	 *
 	 * @param organizationId the ID of the organization
-	 * @param folderId retrieved from generateMassive
+	 * @param pdfGeneratedId retrieved from generateMassive
 	 * @return SignedUrlResultDTO
 	 */
-	SignedUrlResultDTO getSignedUrl(Long organizationId, String folderId);
+	SignedUrlResultDTO getSignedUrl(Long organizationId, String pdfGeneratedId);
 }
