@@ -28,8 +28,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentIngestionFlowFileDTOFaker.buildInstallmentIngestionFlowFileDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -95,6 +94,7 @@ class InstallmentProcessingServiceTest {
         );
 
         // Then
+        assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
         assertEquals(1, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
         assertNull(result.getErrorDescription());

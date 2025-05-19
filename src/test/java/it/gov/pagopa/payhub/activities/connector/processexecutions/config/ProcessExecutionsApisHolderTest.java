@@ -58,7 +58,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     void whenGetIngestionFlowFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                            .updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, 0L, 0L, "message", "error"),
+                            .updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, 0L, 0L, "1.0", "message", "error"),
                 new ParameterizedTypeReference<>() {},
                 processExecutionsApisHolder::unload);
     }

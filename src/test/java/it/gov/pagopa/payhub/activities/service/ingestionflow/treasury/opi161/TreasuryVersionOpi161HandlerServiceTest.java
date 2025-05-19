@@ -34,6 +34,11 @@ class TreasuryVersionOpi161HandlerServiceTest extends TreasuryVersionBaseHandler
     }
 
     @Override
+    protected String getExpectedFileVersion() {
+        return "1.6.1";
+    }
+
+    @Override
     protected OngoingStubbing<FlussoGiornaleDiCassa> getUnmarshallerMockitOngoingStubbing(File xmlFile) {
         return Mockito.when(treasuryUnmarshallerServiceMock.unmarshalOpi161(xmlFile));
     }

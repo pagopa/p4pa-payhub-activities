@@ -85,6 +85,7 @@ class InstallmentIngestionFlowFileActivityTest {
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS);
         Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
+        InstallmentIngestionFlowFileResult expectedResult = buildInstallmentIngestionFlowFileResult();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -102,13 +103,13 @@ class InstallmentIngestionFlowFileActivityTest {
                 });
 
         Mockito.when(installmentProcessingServiceMock.processInstallments(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
-                .thenReturn(buildInstallmentIngestionFlowFileResult());
+                .thenReturn(expectedResult);
 
         // When
         InstallmentIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
         // Then
-        Assertions.assertNotNull(result);
+        Assertions.assertSame(expectedResult, result);
         Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
         Assertions.assertFalse(filePath.toFile().exists());
     }

@@ -30,4 +30,9 @@ public class TreasuryVersionOpi161HandlerService extends TreasuryVersionBaseHand
     protected FlussoGiornaleDiCassa unmarshall(File file) {
         return treasuryUnmarshallerService.unmarshalOpi161(file);
     }
+
+    @Override
+    protected String getFileVersion() {
+        return "1.6.1";
+    }
 }

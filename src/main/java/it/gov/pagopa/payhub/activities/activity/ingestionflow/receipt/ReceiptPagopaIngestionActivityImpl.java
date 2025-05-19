@@ -15,6 +15,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -64,7 +65,8 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
     Path fileToProcess = retrievedFiles.getFirst();
 
     //parse receipt file
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = parseData(ingestionFlowFileDTO, fileToProcess);
+    Pair<String, ReceiptWithAdditionalNodeDataDTO> version2receiptWithAdditionalNodeDataDTO = parseData(ingestionFlowFileDTO, fileToProcess);
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = version2receiptWithAdditionalNodeDataDTO.getValue();
 
     //invoke service to send receipt to debt-position for its persistence and processing
     ReceiptDTO receiptDTO = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
@@ -76,6 +78,7 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
 
 
     return ReceiptPagopaIngestionFlowFileResult.builder()
+            .fileVersion(version2receiptWithAdditionalNodeDataDTO.getKey())
             .totalRows(1L)
             .processedRows(1L)
             .receiptDTO(receiptWithAdditionalNodeDataDTO)
@@ -83,14 +86,14 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
             .build();
   }
 
-  private ReceiptWithAdditionalNodeDataDTO parseData(IngestionFlowFile ingestionFlowFileDTO, Path fileToProcess) {
+  private Pair<String, ReceiptWithAdditionalNodeDataDTO> parseData(IngestionFlowFile ingestionFlowFileDTO, Path fileToProcess) {
     //parse receipt file
     PaSendRTV2Request paSendRTV2Request = receiptParserService.parseReceiptPagopaFile(fileToProcess, ingestionFlowFileDTO);
 
     //map to DTO
     ReceiptWithAdditionalNodeDataDTO dto = receiptMapper.map(paSendRTV2Request);
     dto.setIngestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId());
-    return dto;
+    return Pair.of("1.0.0", dto);
   }
 
 }

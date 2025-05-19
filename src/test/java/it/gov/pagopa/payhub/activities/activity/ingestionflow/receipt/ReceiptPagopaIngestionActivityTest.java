@@ -96,6 +96,7 @@ class ReceiptPagopaIngestionActivityTest {
 
     ReceiptPagopaIngestionFlowFileResult expectedResult = ReceiptPagopaIngestionFlowFileResult.builder()
             .receiptDTO(receiptWithAdditionalNodeDataDTO)
+            .fileVersion("1.0.0")
             .totalRows(1L)
             .processedRows(1L)
             .build();

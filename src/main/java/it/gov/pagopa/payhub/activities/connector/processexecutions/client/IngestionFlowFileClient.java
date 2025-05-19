@@ -43,9 +43,10 @@ public class IngestionFlowFileClient {
         }
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                    .updateStatus(ingestionFlowFileId, oldStatus, newStatus,
+                    .updateStatus(ingestionFlowFileId,
+                            oldStatus, newStatus,
                             ingestionFlowFileResult.getProcessedRows(), ingestionFlowFileResult.getTotalRows(),
-                            ingestionFlowFileResult.getErrorDescription(), ingestionFlowFileResult.getDiscardedFileName());
+                            ingestionFlowFileResult.getFileVersion(), ingestionFlowFileResult.getErrorDescription(), ingestionFlowFileResult.getDiscardedFileName());
         } catch (HttpClientErrorException.NotFound e) {
             return 0;
         }

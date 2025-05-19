@@ -56,6 +56,7 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
         InstallmentIngestionFlowFileResult result = new InstallmentIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
+        result.setFileVersion(ingestionFlowFile.getFileVersion());
         return result;
     }
 
