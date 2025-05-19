@@ -18,7 +18,7 @@ public interface PrintPaymentNoticeService {
 	GeneratedNoticeMassiveFolderDTO generateMassive(NoticeRequestMassiveDTO noticeRequestMassiveDTO);
 
 	/**
-	 * Return SignedUrlResultDTO with signedUrl if folder status is ready and two lists containing all notices processed or in error
+	 * Return SignedUrlResultDTO with signedUrl if generation request status is ready and two lists containing all notices processed or in error
 	 *
 	 * @param organizationId the ID of the organization
 	 * @param pdfGeneratedId retrieved from generateMassive

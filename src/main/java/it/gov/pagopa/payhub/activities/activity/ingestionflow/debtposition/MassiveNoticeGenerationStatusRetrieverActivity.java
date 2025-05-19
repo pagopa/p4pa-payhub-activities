@@ -14,7 +14,7 @@ public interface MassiveNoticeGenerationStatusRetrieverActivity {
      * If the status is not complete, returns a 204 no content.
      *
      * @param organizationId the ID of the organization
-     * @param pdfGeneratedId the id of the folder
+     * @param pdfGeneratedId the id of the generation request
      */
     @ActivityMethod
     SignedUrlResultDTO retrieveNoticesGenerationStatus(Long organizationId, String pdfGeneratedId);

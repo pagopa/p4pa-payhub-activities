@@ -17,7 +17,7 @@ public class MassiveNoticeGenerationStatusRetrieverActivityImpl implements Massi
     }
 
     @Override
-    public SignedUrlResultDTO retrieveNoticesGenerationStatus(Long organizationId, String folderId) {
-        return printPaymentNoticeService.getSignedUrl(organizationId, folderId);
+    public SignedUrlResultDTO retrieveNoticesGenerationStatus(Long organizationId, String pdfGeneratedId) {
+        return printPaymentNoticeService.getSignedUrl(organizationId, pdfGeneratedId);
     }
 }
