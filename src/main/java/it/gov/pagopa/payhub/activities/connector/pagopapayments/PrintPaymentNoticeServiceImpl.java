@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.PrintPaymentNoticeClient;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,11 @@ public class PrintPaymentNoticeServiceImpl implements PrintPaymentNoticeService 
 	public GeneratedNoticeMassiveFolderDTO generateMassive(NoticeRequestMassiveDTO noticeRequestMassiveDTO) {
 		log.info("Generate massive notices for requestId: {}", noticeRequestMassiveDTO.getRequestId());
 		return printPaymentNoticeClient.generateMassive(noticeRequestMassiveDTO, authnService.getAccessToken());
+	}
+
+	@Override
+	public SignedUrlResultDTO getSignedUrl(Long organizationId, String pdfGeneratedId) {
+		log.info("Get signed url for organizationId: {} and pdfGeneratedId: {}", organizationId, pdfGeneratedId);
+		return printPaymentNoticeClient.getSignedUrl(organizationId, pdfGeneratedId, authnService.getAccessToken());
 	}
 }

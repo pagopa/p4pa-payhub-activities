@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub;
 
+import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.client.WorkflowHubClient;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,19 +39,29 @@ class WorkflowHubServiceTest {
     }
 
     @Test
-    void givenGetWorkflowStatusThenOk(){
+    void givenGetWorkflowStatusThenOk() {
         String token = "token";
         String workflowId = "workflowId";
-        String status = "status";
+        WorkflowStatusDTO wfStatus = WorkflowStatusDTO.builder()
+                .workflowId(workflowId)
+                .workflowType("WFTYPE")
+                .runId("RUNID")
+                .taskQueue("TASKQUEUE")
+                .startDateTime(OffsetDateTime.now())
+                .executionDateTime(OffsetDateTime.now().plusMinutes(1))
+                .endDateTime(OffsetDateTime.now().plusDays(1))
+                .duration("PT0S")
+                .status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED.name())
+                .build();
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(token);
 
         Mockito.when(debtPositionClientMock.getWorkflowStatus(token, workflowId))
-                .thenReturn(new WorkflowStatusDTO(workflowId, status));
+                .thenReturn(wfStatus);
 
         WorkflowStatusDTO workflowStatusDTO = service.getWorkflowStatus(workflowId);
 
         assertEquals(workflowId, workflowStatusDTO.getWorkflowId());
-        assertEquals(status, workflowStatusDTO.getStatus());
+        assertEquals(wfStatus.getStatus(), workflowStatusDTO.getStatus());
     }
 }
