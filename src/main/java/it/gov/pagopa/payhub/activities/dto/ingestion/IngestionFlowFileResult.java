@@ -13,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class IngestionFlowFileResult {
+    private String fileVersion;
     /** The total number of rows in the file */
     private long totalRows;
     /** The number of rows correctly handled */

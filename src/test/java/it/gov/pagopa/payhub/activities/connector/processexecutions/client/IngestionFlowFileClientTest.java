@@ -103,11 +103,13 @@ class IngestionFlowFileClientTest {
         IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.PROCESSING;
         IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.COMPLETED;
 
+        String fileVersion = "1.0";
         String discardFileName = "discardFileName";
         String errorDescription = "errorDescription";
         long processedRows = 1L;
         long totalRows = 10L;
         IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
+                .fileVersion(fileVersion)
                 .processedRows(processedRows)
                 .totalRows(totalRows)
                 .errorDescription(errorDescription)
@@ -120,7 +122,7 @@ class IngestionFlowFileClientTest {
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
         when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus,
                 processedRows, totalRows,
-                errorDescription, discardFileName))
+                fileVersion, errorDescription, discardFileName))
                 .thenReturn(expectedResponse);
 
         // When
@@ -138,11 +140,13 @@ class IngestionFlowFileClientTest {
         IngestionFlowFileStatus oldStatus = IngestionFlowFileStatus.PROCESSING;
         IngestionFlowFileStatus newStatus = IngestionFlowFileStatus.COMPLETED;
 
+        String fileVersion = "1.0";
         String discardFileName = "discardFileName";
         String errorDescription = "errorDescription";
         long processedRows = 1L;
         long totalRows = 10L;
         IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
+                .fileVersion(fileVersion)
                 .processedRows(processedRows)
                 .totalRows(totalRows)
                 .errorDescription(errorDescription)
@@ -153,7 +157,7 @@ class IngestionFlowFileClientTest {
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
         when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus,
                 processedRows, totalRows,
-                errorDescription, discardFileName))
+                fileVersion, errorDescription, discardFileName))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When

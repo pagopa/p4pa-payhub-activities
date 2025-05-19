@@ -62,6 +62,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
     protected abstract T mockFlussoGiornaleDiCassa();
 
     protected abstract TreasuryVersionBaseHandlerService<T> buildVersionHandlerService();
+    protected abstract String getExpectedFileVersion();
     protected abstract OngoingStubbing<T> getUnmarshallerMockitOngoingStubbing(File xmlFile);
     protected abstract TreasuryValidatorService<T> getValidatorServiceMock();
 
@@ -81,6 +82,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         Map<TreasuryOperationEnum, List<Treasury>> expectedMap = Map.of(TreasuryOperationEnum.INSERT, List.of(newTreasury));
         Pair<IngestionFlowFileResult, List<Treasury>> expectedResult = Pair.of(
                 IngestionFlowFileResult.builder()
+                        .fileVersion(getExpectedFileVersion())
                         .totalRows(1)
                         .processedRows(1)
                         .build(),
@@ -197,6 +199,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         assertNotNull(result);
         Assertions.assertEquals(
                 IngestionFlowFileResult.builder()
+                        .fileVersion(getExpectedFileVersion())
                         .totalRows(1)
                         .processedRows(1)
                         .build(),
@@ -238,6 +241,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         assertNotNull(result);
         Assertions.assertEquals(
                 IngestionFlowFileResult.builder()
+                        .fileVersion(getExpectedFileVersion())
                         .totalRows(1)
                         .processedRows(1)
                         .build(),

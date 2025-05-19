@@ -35,6 +35,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
     }
 
     protected abstract T unmarshall(File file);
+    protected abstract String getFileVersion();
 
     @Override
     public Pair<IngestionFlowFileResult, List<Treasury>> handle(File input, IngestionFlowFile ingestionFlowFileDTO, int inputFileNumber) {
@@ -62,6 +63,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
                         newTreasuries.size();
         return Pair.of(
                 IngestionFlowFileResult.builder()
+                        .fileVersion(getFileVersion())
                         .totalRows(result.values().stream().mapToLong(List::size).sum() + notValidTreasuries)
                         .processedRows(processedRows)
                         .build(),

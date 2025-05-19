@@ -14,6 +14,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting.P
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +54,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 
 	@Override
 	protected PaymentsReportingIngestionFlowFileActivityResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
-		List<PaymentsReporting> paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
+		Pair<String, List<PaymentsReporting>> version2paymentsReportings = parseData(retrievedFiles.getFirst().toFile(), ingestionFlowFileDTO);
+		List<PaymentsReporting> paymentsReportings = version2paymentsReportings.getValue();
 		paymentsReportingService.saveAll(paymentsReportings);
 
 		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
@@ -66,6 +68,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 				.iuf(iuf)
 				.organizationId(organizationId)
 				.transfers(transferSemanticKeys)
+				.fileVersion(version2paymentsReportings.getKey())
 				.totalRows(paymentsReportings.size())
 				.processedRows(paymentsReportings.size())
 				.build();
@@ -77,15 +80,17 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	 *
 	 * @param ingestionFlowFile the file to be parsed
 	 * @param ingestionFlowFileDTO the ingestion flow file DTO containing additional context
-	 * @return a list of {@link PaymentsReporting} objects
+	 * @return a pair having the xsd version used to parse the file and the list of {@link PaymentsReporting} objects
 	 * @throws IllegalArgumentException if the file content does not conform to the expected structure
 	 */
-	private List<PaymentsReporting> parseData(File ingestionFlowFile, IngestionFlowFile ingestionFlowFileDTO) {
+	private Pair<String, List<PaymentsReporting>> parseData(File ingestionFlowFile, IngestionFlowFile ingestionFlowFileDTO) {
 		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
 		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
 
 		paymentsReportingIngestionFlowFileValidatorService.validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		return paymentsReportingMapperService.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO);
+		return Pair.of("1.0.3",
+				paymentsReportingMapperService.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO)
+		);
 	}
 }

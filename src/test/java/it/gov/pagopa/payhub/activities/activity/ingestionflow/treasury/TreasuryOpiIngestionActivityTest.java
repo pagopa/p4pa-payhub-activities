@@ -88,6 +88,7 @@ class TreasuryOpiIngestionActivityTest {
 
         TreasuryIufIngestionFlowFileResult expectedResult = TreasuryIufIngestionFlowFileResult.builder()
                 .organizationId(ingestionFlowFileDTO.getOrganizationId())
+                .fileVersion("VXXX")
                 .iuf2TreasuryIdMap(Map.of("IUF123", "treasury123"))
                 .discardedFileName("DISCARDFILENAME")
                 .errorDescription("There were some errors during TreasuryOPI file ingestion. Please check error file.")
@@ -104,6 +105,7 @@ class TreasuryOpiIngestionActivityTest {
         Mockito.when(treasuryOpiParserServiceMock.parseData(filePath, ingestionFlowFileDTO, mockedListPath.size()))
                 .thenReturn(Pair.of(
                         IngestionFlowFileResult.builder()
+                                .fileVersion("VXXX")
                                 .processedRows(10L)
                                 .totalRows(100L)
                                 .build(),

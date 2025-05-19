@@ -63,6 +63,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
 
         long[] totalRows = {0L};
         long[] processedRows = {0L};
+        String[] fileVersion = {""};
 
         Map<String, String> iuf2TreasuryIdMap = retrievedFiles.stream()
                 .map(path -> {
@@ -76,6 +77,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
                 })
                 .filter(Objects::nonNull)
                 .flatMap(r -> {
+                    fileVersion[0] = r.getLeft().getFileVersion();
                     totalRows[0] += r.getLeft().getTotalRows();
                     processedRows[0] += r.getLeft().getProcessedRows();
                     return r.getRight().entrySet().stream();
@@ -87,6 +89,7 @@ public class TreasuryOpiIngestionActivityImpl extends BaseIngestionFlowFileActiv
 
         return TreasuryIufIngestionFlowFileResult.builder()
                 .iuf2TreasuryIdMap(iuf2TreasuryIdMap)
+                .fileVersion(fileVersion[0])
                 .totalRows(totalRows[0])
                 .processedRows(processedRows[0])
                 .organizationId(ingestionFlowFileDTO.getOrganizationId())
