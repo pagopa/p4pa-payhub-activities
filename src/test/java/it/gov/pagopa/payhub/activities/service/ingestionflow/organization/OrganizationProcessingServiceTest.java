@@ -106,7 +106,7 @@ class OrganizationProcessingServiceTest {
 
     Mockito.when(brokerServiceMock.getBrokerByFiscalCode(dto.getBrokerCf()))
         .thenReturn(broker);
-    Mockito.when(mapperMock.map(dto, ingestionFlowFile, broker.getBrokerId())).thenReturn(mappedOrg);
+    Mockito.when(mapperMock.map(dto, broker.getBrokerId())).thenReturn(mappedOrg);
     Mockito.when(organizationServiceMock.createOrganization(mappedOrg)).thenReturn(createdOrg);
 
     OrganizationIngestionFlowFileResult result = service.processOrganization(
@@ -117,7 +117,7 @@ class OrganizationProcessingServiceTest {
     Assertions.assertEquals(1L, result.getTotalRows());
     Assertions.assertNotNull(result.getOrganizationIpaCodeList());
     Assertions.assertEquals(1, result.getOrganizationIpaCodeList().size());
-    Mockito.verify(mapperMock).map(dto, ingestionFlowFile, broker.getBrokerId());
+    Mockito.verify(mapperMock).map(dto, broker.getBrokerId());
     Mockito.verify(organizationServiceMock).createOrganization(mappedOrg);
     Mockito.verifyNoInteractions(errorsArchiverServiceMock);
   }
@@ -142,7 +142,7 @@ class OrganizationProcessingServiceTest {
     Mockito.when(brokerServiceMock.getBrokerByFiscalCode(organizationIngestionFlowFileDTO.getBrokerCf()))
         .thenReturn(broker);
 
-    Mockito.when(mapperMock.map(organizationIngestionFlowFileDTO, ingestionFlowFile, broker.getBrokerId())).thenReturn(mappedOrg);
+    Mockito.when(mapperMock.map(organizationIngestionFlowFileDTO, broker.getBrokerId())).thenReturn(mappedOrg);
     Mockito.when(organizationServiceMock.createOrganization(mappedOrg))
         .thenThrow(new RuntimeException("Processing error"));
 
@@ -164,7 +164,7 @@ class OrganizationProcessingServiceTest {
     Assertions.assertNotNull(result.getOrganizationIpaCodeList());
     Assertions.assertEquals(0, result.getOrganizationIpaCodeList().size());
 
-    verify(mapperMock).map(organizationIngestionFlowFileDTO, ingestionFlowFile, broker.getBrokerId());
+    verify(mapperMock).map(organizationIngestionFlowFileDTO, broker.getBrokerId());
     verify(organizationServiceMock).createOrganization(mappedOrg);
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
         new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, "READER_EXCEPTION", "DUMMYERROR"),

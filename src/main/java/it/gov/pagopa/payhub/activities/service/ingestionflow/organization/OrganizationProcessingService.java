@@ -65,7 +65,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
                 return false;
             }
             Organization organizationCreated = organizationService.createOrganization(
-                    organizationMapper.map(organizationDTO, ingestionFlowFile, broker.getBrokerId()));
+                    organizationMapper.map(organizationDTO, broker.getBrokerId()));
             ingestionFlowFileResult.getOrganizationIpaCodeList().add(organizationCreated.getIpaCode());
             return true;
         } catch (Exception e) {
