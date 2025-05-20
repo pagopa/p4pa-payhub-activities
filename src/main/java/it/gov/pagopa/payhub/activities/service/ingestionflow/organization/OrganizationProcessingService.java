@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -26,17 +27,15 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
 
     private final OrganizationMapper organizationMapper;
     private final OrganizationService organizationService;
-    private final BrokerService brokerService;
 
 
     public OrganizationProcessingService(
             OrganizationMapper organizationMapper,
             OrganizationErrorsArchiverService organizationErrorsArchiverService,
-        OrganizationService organizationService, BrokerService brokerService) {
+        OrganizationService organizationService) {
         super(organizationErrorsArchiverService);
         this.organizationMapper = organizationMapper;
         this.organizationService = organizationService;
-        this.brokerService = brokerService;
     }
 
 
@@ -55,8 +54,10 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     @Override
     protected boolean consumeRow(long lineNumber, OrganizationIngestionFlowFileDTO organizationDTO, OrganizationIngestionFlowFileResult ingestionFlowFileResult, List<OrganizationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
         try {
-            Broker broker = brokerService.getBrokerByFiscalCode(organizationDTO.getBrokerCf());
-            if (broker == null) {
+            Optional<Organization> organizationBroker = organizationService.getOrganizationById(ingestionFlowFile.getOrganizationId());
+            Long brokerId = organizationBroker.map(Organization::getBrokerId).orElse(null);
+
+            if (brokerId == null) {
                 log.error("Broker with fiscal code {} not found", organizationDTO.getBrokerCf());
                 OrganizationErrorDTO error = new OrganizationErrorDTO(
                         ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
@@ -64,10 +65,21 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
                 errorList.add(error);
                 return false;
             }
+            if(organizationBroker.get().getOrgFiscalCode().equals(organizationDTO.getBrokerCf())){
+
             Organization organizationCreated = organizationService.createOrganization(
-                    organizationMapper.map(organizationDTO, broker.getBrokerId()));
+                    organizationMapper.map(organizationDTO, brokerId));
             ingestionFlowFileResult.getOrganizationIpaCodeList().add(organizationCreated.getIpaCode());
             return true;
+            }
+            else{
+                log.error("Broker with fiscal code {} not master for organization whit fiscal code {}", organizationDTO.getBrokerCf(), organizationDTO.getOrgFiscalCode());
+                OrganizationErrorDTO error = new OrganizationErrorDTO(
+                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
+                        lineNumber, "BROKER_NOT_MATCHED", "Broker not matched");
+                errorList.add(error);
+                return false;
+            }
         } catch (Exception e) {
             log.error("Error processing organization with ipa code {}: {}",
                     organizationDTO.getIpaCode(), e.getMessage());

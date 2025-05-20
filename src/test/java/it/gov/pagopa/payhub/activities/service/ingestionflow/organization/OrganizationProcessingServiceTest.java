@@ -8,24 +8,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.opencsv.exceptions.CsvException;
-import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization.OrganizationMapper;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
-import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
-import it.gov.pagopa.pu.organization.dto.generated.PersonalisationFe;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -53,14 +50,13 @@ class OrganizationProcessingServiceTest {
   private OrganizationService organizationServiceMock;
 
   @Mock
-  private BrokerService brokerServiceMock;
 
   private OrganizationProcessingService service;
 
   @BeforeEach
   void setUp() {
     service = new OrganizationProcessingService(mapperMock, errorsArchiverServiceMock,
-        organizationServiceMock, brokerServiceMock);
+        organizationServiceMock);
   }
 
   @AfterEach
@@ -68,14 +64,27 @@ class OrganizationProcessingServiceTest {
     Mockito.verifyNoMoreInteractions(
         mapperMock,
         errorsArchiverServiceMock,
-        organizationServiceMock,
-        brokerServiceMock);
+        organizationServiceMock);
   }
 
   @Test
   void processOrganizationWithNoErrors() {
+    // Given
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     OrganizationIngestionFlowFileDTO dto = mock(OrganizationIngestionFlowFileDTO.class);
+    Mockito.when(dto.getBrokerCf()).thenReturn("brokerFC");
+
+    Organization orgFromService = Organization.builder()
+        .brokerId(1L)
+        .orgFiscalCode("brokerFC")
+        .ipaCode("ipaCode")
+        .orgName("orgName")
+        .status(OrganizationStatus.ACTIVE)
+        .flagNotifyIo(true)
+        .flagPaymentNotification(true)
+        .flagNotifyOutcomePush(true)
+        .build();
+
     OrganizationRequestBody mappedOrg = OrganizationRequestBody.builder()
         .ipaCode("ipaCode")
         .orgFiscalCode("orgFiscalCode")
@@ -85,39 +94,34 @@ class OrganizationProcessingServiceTest {
         .flagNotifyOutcomePush(false)
         .flagPaymentNotification(false)
         .build();
+
     Organization createdOrg = Organization.builder()
-        .ipaCode("ipaCode")
-        .orgFiscalCode("orgFiscalCode")
-        .orgName("orgName")
+        .ipaCode("ipaCode1")
+        .orgFiscalCode("orgFiscalCode1")
+        .orgName("orgName1")
         .status(OrganizationStatus.ACTIVE)
         .flagNotifyIo(false)
         .flagNotifyOutcomePush(false)
         .flagPaymentNotification(false)
         .build();
 
-    Broker broker = Broker.builder()
-        .brokerId(1L)
-        .brokerFiscalCode("brokerFC")
-        .organizationId(1L)
-        .brokerName("brokerName")
-        .pagoPaInteractionModel(PagoPaInteractionModel.SYNC)
-        .personalisationFe(new PersonalisationFe())
-        .build();
-
-    Mockito.when(brokerServiceMock.getBrokerByFiscalCode(dto.getBrokerCf()))
-        .thenReturn(broker);
-    Mockito.when(mapperMock.map(dto, broker.getBrokerId())).thenReturn(mappedOrg);
+    Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+        .thenReturn(Optional.of(orgFromService));
+    Mockito.when(mapperMock.map(dto, orgFromService.getBrokerId())).thenReturn(mappedOrg);
     Mockito.when(organizationServiceMock.createOrganization(mappedOrg)).thenReturn(createdOrg);
 
+    // When
     OrganizationIngestionFlowFileResult result = service.processOrganization(
         Stream.of(dto).iterator(), List.of(),
         ingestionFlowFile, workingDirectory);
 
+    // Then
     Assertions.assertEquals(1L, result.getProcessedRows());
     Assertions.assertEquals(1L, result.getTotalRows());
     Assertions.assertNotNull(result.getOrganizationIpaCodeList());
     Assertions.assertEquals(1, result.getOrganizationIpaCodeList().size());
-    Mockito.verify(mapperMock).map(dto, broker.getBrokerId());
+    Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
+    Mockito.verify(mapperMock).map(dto, orgFromService.getBrokerId());
     Mockito.verify(organizationServiceMock).createOrganization(mappedOrg);
     Mockito.verifyNoInteractions(errorsArchiverServiceMock);
   }
@@ -130,19 +134,23 @@ class OrganizationProcessingServiceTest {
     workingDirectory = Path.of(new URI("file:///tmp"));
 
     OrganizationRequestBody mappedOrg = mock(OrganizationRequestBody.class);
-    Broker broker = Broker.builder()
+
+    Organization organization = Organization.builder()
         .brokerId(1L)
-        .brokerFiscalCode("brokerFC")
-        .organizationId(1L)
-        .brokerName("brokerName")
-        .pagoPaInteractionModel(PagoPaInteractionModel.SYNC)
-        .personalisationFe(new PersonalisationFe())
+        .orgFiscalCode(organizationIngestionFlowFileDTO.getBrokerCf())
+        .brokerId(1L)
+        .ipaCode("ipaCode")
+        .orgName("orgName")
+        .status(OrganizationStatus.ACTIVE)
+        .flagNotifyIo(true)
+        .flagPaymentNotification(true)
+        .flagNotifyOutcomePush(true)
         .build();
+    Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+        .thenReturn(Optional.of(organization));
+    Mockito.when(mapperMock.map(organizationIngestionFlowFileDTO, 1L)).thenReturn(mappedOrg);
 
-    Mockito.when(brokerServiceMock.getBrokerByFiscalCode(organizationIngestionFlowFileDTO.getBrokerCf()))
-        .thenReturn(broker);
 
-    Mockito.when(mapperMock.map(organizationIngestionFlowFileDTO, broker.getBrokerId())).thenReturn(mappedOrg);
     Mockito.when(organizationServiceMock.createOrganization(mappedOrg))
         .thenThrow(new RuntimeException("Processing error"));
 
@@ -164,7 +172,6 @@ class OrganizationProcessingServiceTest {
     Assertions.assertNotNull(result.getOrganizationIpaCodeList());
     Assertions.assertEquals(0, result.getOrganizationIpaCodeList().size());
 
-    verify(mapperMock).map(organizationIngestionFlowFileDTO, broker.getBrokerId());
     verify(organizationServiceMock).createOrganization(mappedOrg);
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
         new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
