@@ -15,16 +15,16 @@ import org.springframework.stereotype.Service;
 public class OrganizationErrorsArchiverService extends
     ErrorArchiverService<OrganizationErrorDTO> {
 
-    protected OrganizationErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
-                                               @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
-                                               FileArchiverService fileArchiverService,
-                                               CsvService csvService) {
-        super(sharedFolder, errorFolder, fileArchiverService, csvService);
-    }
+  protected OrganizationErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
+      @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
+      FileArchiverService fileArchiverService,
+      CsvService csvService) {
+    super(sharedFolder, errorFolder, fileArchiverService, csvService);
+  }
 
-    @Override
-    protected List<String[]> getHeaders() {
-        return Collections.singletonList(
-                new String[]{"File Name", "Ipa Code", "Workflow Status", "Row Number", "Error Code", "Error Message"});
-    }
+  @Override
+  protected List<String[]> getHeaders() {
+    return Collections.singletonList(
+        new String[]{"File Name", "Ipa Code", "Row Number", "Error Code", "Error Message"});
+  }
 }

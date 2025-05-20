@@ -3,16 +3,14 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrganizationMapper {
 
-  public OrganizationRequestBody map(OrganizationIngestionFlowFileDTO dto, IngestionFlowFile ingestionFlowFile, Long brokerId) {
+  public OrganizationRequestBody map(OrganizationIngestionFlowFileDTO dto,Long brokerId) {
 
     return OrganizationRequestBody.builder()
-        .organizationId(ingestionFlowFile.getOrganizationId())
         .ipaCode(dto.getIpaCode())
         .orgFiscalCode(dto.getOrgFiscalCode())
         .orgName(dto.getOrgName())

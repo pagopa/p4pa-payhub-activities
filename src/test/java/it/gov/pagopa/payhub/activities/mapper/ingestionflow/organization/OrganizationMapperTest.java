@@ -36,16 +36,12 @@ class OrganizationMapperTest {
     dto.setFlagNotifyIo(true);
     dto.setFlagNotifyOutcomePush(false);
 
-    IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
-    ingestionFlowFile.setOrganizationId(123L);
-
     Long brokerId = 456L;
 
     // Act
-    OrganizationRequestBody result = new OrganizationMapper().map(dto, ingestionFlowFile, brokerId);
+    OrganizationRequestBody result = new OrganizationMapper().map(dto, brokerId);
 
     // Assert
-    Assertions.assertEquals(123L, result.getOrganizationId());
     Assertions.assertEquals("IPA123", result.getIpaCode());
     Assertions.assertEquals("FISCAL123", result.getOrgFiscalCode());
     Assertions.assertEquals("Test Org", result.getOrgName());
