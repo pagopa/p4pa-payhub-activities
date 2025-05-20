@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.organization.client;
 
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApisHolder;
 import it.gov.pagopa.pu.organization.client.generated.BrokerEntityControllerApi;
+import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelBroker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,5 +49,25 @@ class BrokerClientTest {
 		assertEquals(expectedResponse, pagedModelBroker);
 		verify(organizationApisHolderMock.getBrokerEntityControllerApi(accessToken), times(1))
 			.crudGetBrokers(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, null);
+	}
+
+	@Test
+	void testGetByFiscalCode() {
+		// Given
+		String fiscalCode = "ABCDEF12G34H567I";
+		String accessToken = "accessToken";
+		Broker expectedBroker = mock(Broker.class);
+		var brokerSearchControllerApi = mock(it.gov.pagopa.pu.organization.client.generated.BrokerSearchControllerApi.class);
+
+		when(organizationApisHolderMock.getBrokerSearchControllerApi(accessToken)).thenReturn(brokerSearchControllerApi);
+		when(brokerSearchControllerApi.crudBrokersFindByBrokeredOrgFiscalCode(fiscalCode)).thenReturn(expectedBroker);
+
+		// When
+		Broker result = client.getByFiscalCode(fiscalCode, accessToken);
+
+		// Then
+		assertEquals(expectedBroker, result);
+		verify(organizationApisHolderMock).getBrokerSearchControllerApi(accessToken);
+		verify(brokerSearchControllerApi).crudBrokersFindByBrokeredOrgFiscalCode(fiscalCode);
 	}
 }
