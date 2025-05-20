@@ -51,10 +51,8 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
         Long brokerId = organizationBroker.map(Organization::getBrokerId).orElse(null);
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            OrganizationErrorDTO error = new OrganizationErrorDTO(
-                ingestionFlowFile.getFileName(), organizationBroker.get().getIpaCode(),
-                null, "BROKER_NOT_FOUND", "Broker not found");
-            errorList.add(error);
+            ingestionFlowFileResult.setErrorDescription("Broker not found");
+            return ingestionFlowFileResult;
         }
         ingestionFlowFileResult.setBrokerId(organizationBroker.get().getBrokerId());
         ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.get().getOrgFiscalCode());
