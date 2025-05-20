@@ -60,14 +60,15 @@ public abstract class BaseExportFileService<E,F,D,C> {
             }
 
             Path sharedTargetPath = sharedDirectoryPath.resolve(String.valueOf(organizationId)).resolve(relativeFileFolder);
-            Path zipFilePath = createZipArchive(csvFilePath, sharedTargetPath);
-
+            Path zipFilePath = resolveZipFilePath(csvFilePath);
+            Long zippedFileSize = createZipArchive(csvFilePath, zipFilePath, sharedTargetPath);
 
             return ExportFileResult.builder()
                     .fileName(zipFilePath.getFileName().toString())
                     .filePath(relativeFileFolder)
                     .exportedRows(exportedRows[0])
                     .exportDate(LocalDate.now())
+                    .fileSize(zippedFileSize)
                     .build();
 
         }else {
@@ -83,15 +84,27 @@ public abstract class BaseExportFileService<E,F,D,C> {
      * @return The path to the created ZIP archive.
      * @throws IllegalStateException If an error occurs during compression and archiving due to filesystem or permission issues.
      */
-    private Path createZipArchive(Path csvFilePath, Path sharedTargetPath) {
+    private Long createZipArchive(Path csvFilePath,Path tmpZipFilePath, Path sharedTargetPath) {
         try {
-            Path tmpZipFilePath = csvFilePath.getParent()
-                    .resolve(Utilities.replaceFileExtension(csvFilePath.getFileName().toString(), ".zip"));
-            fileArchiverService.compressAndArchive(List.of(csvFilePath), tmpZipFilePath, sharedTargetPath);
-            return tmpZipFilePath;
+            return fileArchiverService.compressAndArchive(List.of(csvFilePath), tmpZipFilePath, sharedTargetPath);
         } catch (IOException e) {
             throw new IllegalStateException("Error during compression and archiving: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Resolves the path for a ZIP file based on the given CSV file path.
+     * <p>
+     * This method takes the path of a CSV file and returns a new path in the same directory,
+     * replacing the file extension with ".zip".
+     * </p>
+     *
+     * @param csvFilePath the path to the original CSV file
+     * @return a {@link Path} object representing the ZIP file path in the same directory
+     */
+    private Path resolveZipFilePath(Path csvFilePath){
+        return csvFilePath.getParent()
+                .resolve(Utilities.replaceFileExtension(csvFilePath.getFileName().toString(), ".zip"));
     }
 
     /**

@@ -22,4 +22,6 @@ public class ExportFileResult {
     private Long exportedRows;
     /** The export date */
     private LocalDate exportDate;
+    /** The size of the file */
+    private Long fileSize;
 }
