@@ -47,6 +47,18 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
         OrganizationIngestionFlowFileResult ingestionFlowFileResult = new OrganizationIngestionFlowFileResult();
         ingestionFlowFileResult.setOrganizationIpaCodeList(new ArrayList<>());
 
+        Optional<Organization> organizationBroker = organizationService.getOrganizationById(ingestionFlowFile.getOrganizationId());
+        Long brokerId = organizationBroker.map(Organization::getBrokerId).orElse(null);
+        if (brokerId == null) {
+            log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
+            OrganizationErrorDTO error = new OrganizationErrorDTO(
+                ingestionFlowFile.getFileName(), organizationBroker.get().getIpaCode(),
+                null, "BROKER_NOT_FOUND", "Broker not found");
+            errorList.add(error);
+        }
+        ingestionFlowFileResult.setBrokerId(organizationBroker.get().getBrokerId());
+        ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.get().getOrgFiscalCode());
+
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
     }
@@ -54,21 +66,10 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     @Override
     protected boolean consumeRow(long lineNumber, OrganizationIngestionFlowFileDTO organizationDTO, OrganizationIngestionFlowFileResult ingestionFlowFileResult, List<OrganizationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
         try {
-            Optional<Organization> organizationBroker = organizationService.getOrganizationById(ingestionFlowFile.getOrganizationId());
-            Long brokerId = organizationBroker.map(Organization::getBrokerId).orElse(null);
-
-            if (brokerId == null) {
-                log.error("Broker with fiscal code {} not found", organizationDTO.getBrokerCf());
-                OrganizationErrorDTO error = new OrganizationErrorDTO(
-                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, "BROKER_NOT_FOUND", "Broker not found");
-                errorList.add(error);
-                return false;
-            }
-            if(organizationBroker.get().getOrgFiscalCode().equals(organizationDTO.getBrokerCf())){
+            if(ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())){
 
             Organization organizationCreated = organizationService.createOrganization(
-                    organizationMapper.map(organizationDTO, brokerId));
+                    organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
             ingestionFlowFileResult.getOrganizationIpaCodeList().add(organizationCreated.getIpaCode());
             return true;
             }
