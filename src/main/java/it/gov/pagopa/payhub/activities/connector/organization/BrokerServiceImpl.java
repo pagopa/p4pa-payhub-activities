@@ -29,4 +29,12 @@ public class BrokerServiceImpl implements BrokerService {
 		PagedModelBroker pagedModelBroker = brokerClient.fetchAll(authnService.getAccessToken());
 		return Objects.requireNonNull(pagedModelBroker.getEmbedded()).getBrokers();
 	}
+
+	@Override
+	public Broker getBrokerByFiscalCode(String fiscalCode) {
+		log.debug("Get Broker by fiscal code: {}", fiscalCode);
+		return brokerClient.getByFiscalCode(fiscalCode, authnService.getAccessToken());
+	}
+
+
 }

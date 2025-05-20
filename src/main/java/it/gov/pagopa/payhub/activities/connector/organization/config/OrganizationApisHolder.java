@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class OrganizationApisHolder {
     private final BrokerEntityControllerApi brokerEntityControllerApi;
+    private final BrokerSearchControllerApi brokerSearchControllerApi;
     private final OrganizationSearchControllerApi organizationSearchControllerApi;
     private final OrganizationEntityControllerApi organizationEntityControllerApi;
     private final OrganizationApi organizationApi;
@@ -36,6 +37,7 @@ public class OrganizationApisHolder {
         }
 
         this.brokerEntityControllerApi = new BrokerEntityControllerApi(apiClient);
+        this.brokerSearchControllerApi = new BrokerSearchControllerApi(apiClient);
         this.organizationSearchControllerApi = new OrganizationSearchControllerApi(apiClient);
         this.organizationEntityControllerApi = new OrganizationEntityControllerApi(apiClient);
         this.taxonomyApi = new TaxonomyApi(apiClient);
@@ -59,6 +61,11 @@ public class OrganizationApisHolder {
     /** It will return a {@link BrokerEntityControllerApi} instrumented with the provided accessToken. Use null if auth is not required */
     public BrokerEntityControllerApi getBrokerEntityControllerApi(String accessToken){
         return getApi(accessToken, brokerEntityControllerApi);
+    }
+
+    /** It will return a {@link BrokerSearchControllerApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public BrokerSearchControllerApi getBrokerSearchControllerApi(String accessToken){
+        return getApi(accessToken, brokerSearchControllerApi);
     }
 
     /**
