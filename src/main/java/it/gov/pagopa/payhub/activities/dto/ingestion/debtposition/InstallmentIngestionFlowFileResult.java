@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString(callSuper = true)
 public class InstallmentIngestionFlowFileResult extends IngestionFlowFileResult {
+    private long organizationId;
 }
