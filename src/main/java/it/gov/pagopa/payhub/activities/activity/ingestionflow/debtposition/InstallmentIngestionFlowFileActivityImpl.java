@@ -61,7 +61,8 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
 
         try {
             return csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
-                    installmentProcessingService.processInstallments(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory));
+                    installmentProcessingService.processInstallments(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory),
+                    ingestionFlowFileDTO.getFileVersion());
         } catch (Exception e) {
             log.error("Error processing file {}: {}", filePath, e.getMessage(), e);
             throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
