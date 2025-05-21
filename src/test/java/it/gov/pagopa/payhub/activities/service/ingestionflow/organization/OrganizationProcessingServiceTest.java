@@ -115,6 +115,7 @@ class OrganizationProcessingServiceTest {
         .thenReturn(Optional.of(orgFromService));
     Mockito.when(mapperMock.map(dto, orgFromService.getBrokerId())).thenReturn(mappedOrg);
     Mockito.when(organizationServiceMock.createOrganization(mappedOrg)).thenReturn(createdOrg);
+    Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
 
     // When
     OrganizationIngestionFlowFileResult result = service.processOrganization(
@@ -172,7 +173,7 @@ class OrganizationProcessingServiceTest {
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
     Assertions.assertNotNull(result.getOrganizationIpaCodeList());
     Assertions.assertEquals(0, result.getOrganizationIpaCodeList().size());
-
+    Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
         new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
         new OrganizationErrorDTO(ingestionFlowFile.getFileName(), organizationIngestionFlowFileDTO.getIpaCode(), 2L, "PROCESS_EXCEPTION", "Processing error")
