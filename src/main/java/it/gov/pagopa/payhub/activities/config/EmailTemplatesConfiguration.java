@@ -27,6 +27,18 @@ public class EmailTemplatesConfiguration {
     private EmailTemplate receivedPagopaReceipt;
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates dpInstallmentsFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates organizationsFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates organizationsSilServiceFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates debtPositionsTypeFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates debtPositionsTypeOrgFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates debtPositionsTypeOrgOperatorsFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates assessmentsFlow;
 
     @Data
     @NoArgsConstructor

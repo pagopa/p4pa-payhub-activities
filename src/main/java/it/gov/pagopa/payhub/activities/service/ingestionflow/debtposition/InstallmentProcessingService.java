@@ -58,6 +58,7 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         InstallmentIngestionFlowFileResult result = new InstallmentIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
         result.setFileVersion(ingestionFlowFile.getFileVersion());
+        result.setOrganizationId(ingestionFlowFile.getOrganizationId());
         return result;
     }
 

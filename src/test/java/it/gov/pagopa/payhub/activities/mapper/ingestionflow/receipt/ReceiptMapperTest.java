@@ -35,7 +35,7 @@ import uk.co.jemos.podam.api.PodamFactory;
     //when
     ReceiptWithAdditionalNodeDataDTO response = receiptMapper.map(request);
     //verify
-    TestUtils.checkNotNullFields(response, "receiptId", "ingestionFlowFileId", "creationDate", "updateDate", "payer");
+    TestUtils.checkNotNullFields(response, "receiptId", "ingestionFlowFileId", "creationDate", "updateDate", "payer", "rtFilePath"); // FIXME rtFilePath will be set with P4ADEV-2947
     TestUtils.checkNotNullFields(response.getDebtor());
     if(!isPayerNull) {
       Assertions.assertNotNull(response.getPayer());

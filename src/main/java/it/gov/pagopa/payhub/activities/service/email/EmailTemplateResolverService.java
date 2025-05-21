@@ -28,6 +28,25 @@ public class EmailTemplateResolverService {
             case INGESTION_DP_INSTALLMENTS_KO -> emailTemplatesConfiguration.getDpInstallmentsFlow().getKo();
 
             case INGESTION_PAGOPA_RT -> emailTemplatesConfiguration.getReceivedPagopaReceipt();
+
+            case INGESTION_ORGANIZATIONS_OK -> emailTemplatesConfiguration.getOrganizationsFlow().getOk();
+            case INGESTION_ORGANIZATIONS_KO -> emailTemplatesConfiguration.getOrganizationsFlow().getKo();
+
+            case INGESTION_ORGANIZATIONS_SIL_SERVICE_OK -> emailTemplatesConfiguration.getOrganizationsSilServiceFlow().getOk();
+            case INGESTION_ORGANIZATIONS_SIL_SERVICE_KO -> emailTemplatesConfiguration.getOrganizationsSilServiceFlow().getKo();
+
+            case INGESTION_DEBT_POSITIONS_TYPE_OK -> emailTemplatesConfiguration.getDebtPositionsTypeFlow().getOk();
+            case INGESTION_DEBT_POSITIONS_TYPE_KO -> emailTemplatesConfiguration.getDebtPositionsTypeFlow().getKo();
+
+            case INGESTION_DEBT_POSITIONS_TYPE_ORG_OK -> emailTemplatesConfiguration.getDebtPositionsTypeOrgFlow().getOk();
+            case INGESTION_DEBT_POSITIONS_TYPE_ORG_KO -> emailTemplatesConfiguration.getDebtPositionsTypeOrgFlow().getKo();
+
+            case INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK -> emailTemplatesConfiguration.getDebtPositionsTypeOrgOperatorsFlow().getOk();
+            case INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO -> emailTemplatesConfiguration.getDebtPositionsTypeOrgOperatorsFlow().getKo();
+
+            case INGESTION_ASSESSMENTS_OK -> emailTemplatesConfiguration.getAssessmentsFlow().getOk();
+            case INGESTION_ASSESSMENTS_KO -> emailTemplatesConfiguration.getAssessmentsFlow().getKo();
+
         };
     }
 }
