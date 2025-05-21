@@ -68,7 +68,8 @@ class OrganizationProcessingServiceTest {
     Mockito.verifyNoMoreInteractions(
         mapperMock,
         organizationServiceMock,
-        errorsArchiverServiceMock);
+        errorsArchiverServiceMock,
+        organizationApiServiceMock);
   }
 
   @Test
