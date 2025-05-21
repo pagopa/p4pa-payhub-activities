@@ -102,6 +102,7 @@ class OrganizationProcessingServiceTest {
         .build();
 
     Organization createdOrg = Organization.builder()
+        .organizationId(1L)
         .ipaCode("ipaCode1")
         .orgFiscalCode("orgFiscalCode1")
         .orgName("orgName1")
@@ -113,7 +114,7 @@ class OrganizationProcessingServiceTest {
 
     Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
         .thenReturn(Optional.of(orgFromService));
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(Mockito.anyString()))
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(Mockito.any()))
         .thenReturn(Optional.empty());
     Mockito.when(mapperMock.map(dto, orgFromService.getBrokerId())).thenReturn(mappedOrg);
     Mockito.when(organizationServiceMock.createOrganization(mappedOrg)).thenReturn(createdOrg);
@@ -128,7 +129,8 @@ class OrganizationProcessingServiceTest {
     Assertions.assertEquals(1L, result.getTotalRows());
     Assertions.assertNotNull(result.getOrganizationIpaCodeList());
     Assertions.assertEquals(1, result.getOrganizationIpaCodeList().size());
-    Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
+    Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.any());
+    Mockito.verify(organizationApiServiceMock).encryptAndSaveApiKey(Mockito.anyLong(), Mockito.any());
   }
 
   @Test
