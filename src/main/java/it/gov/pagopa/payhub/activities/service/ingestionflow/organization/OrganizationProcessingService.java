@@ -68,28 +68,35 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     @Override
     protected boolean consumeRow(long lineNumber, OrganizationIngestionFlowFileDTO organizationDTO, OrganizationIngestionFlowFileResult ingestionFlowFileResult, List<OrganizationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
         try {
-            if(ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())){
-
-            Organization organizationCreated = organizationService.createOrganization(
-                    organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
-            ingestionFlowFileResult.getOrganizationIpaCodeList().add(organizationCreated.getIpaCode());
-            saveApiKeys(organizationCreated.getOrganizationId(), organizationDTO);
-            return true;
-            }
-            else{
+            if (!ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())) {
                 log.error("Broker with fiscal code {} not master for organization whit fiscal code {}", organizationDTO.getBrokerCf(), organizationDTO.getOrgFiscalCode());
                 OrganizationErrorDTO error = new OrganizationErrorDTO(
-                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, "BROKER_NOT_MATCHED", "Broker not matched");
+                    ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
+                    lineNumber, "BROKER_NOT_MATCHED", "Broker not matched");
                 errorList.add(error);
                 return false;
             }
-        } catch (Exception e) {
-            log.error("Error processing organization with ipa code {}: {}",
-                    organizationDTO.getIpaCode(), e.getMessage());
-            OrganizationErrorDTO error = new OrganizationErrorDTO(
+
+            Optional<Organization> existingOrg = organizationService.getOrganizationByFiscalCode(organizationDTO.getOrgFiscalCode());
+            if (existingOrg.isPresent()) {
+                OrganizationErrorDTO error = new OrganizationErrorDTO(
                     ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                    lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    lineNumber, "ORGANIZATION_ALREADY_EXISTS", "Organization already exists");
+                errorList.add(error);
+                return false;
+            }
+
+            Organization organizationCreated = organizationService.createOrganization(
+                organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
+            ingestionFlowFileResult.getOrganizationIpaCodeList().add(organizationCreated.getIpaCode());
+            saveApiKeys(organizationCreated.getOrganizationId(), organizationDTO);
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error processing organization with ipa code {}: {}", organizationDTO.getIpaCode(), e.getMessage());
+            OrganizationErrorDTO error = new OrganizationErrorDTO(
+                ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
+                lineNumber, "PROCESS_EXCEPTION", e.getMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;

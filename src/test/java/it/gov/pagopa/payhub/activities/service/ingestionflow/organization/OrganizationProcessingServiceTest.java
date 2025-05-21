@@ -310,4 +310,63 @@ class OrganizationProcessingServiceTest {
     Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
     Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.anyList());
   }
+
+  @Test
+  void processOrganizationWhenOrganizationAlreadyExists() {
+    // Given
+    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    OrganizationIngestionFlowFileDTO dto = mock(OrganizationIngestionFlowFileDTO.class);
+    Mockito.when(dto.getBrokerCf()).thenReturn("brokerFC");
+    Mockito.when(dto.getOrgFiscalCode()).thenReturn("ORG_FISCAL_CODE");
+    Mockito.when(dto.getIpaCode()).thenReturn("IPA_CODE");
+
+    Organization orgFromService = Organization.builder()
+        .brokerId(1L)
+        .orgFiscalCode("brokerFC")
+        .ipaCode("ipaCode")
+        .orgName("orgName")
+        .status(OrganizationStatus.ACTIVE)
+        .flagNotifyIo(true)
+        .flagPaymentNotification(true)
+        .flagNotifyOutcomePush(true)
+        .build();
+
+    Organization existingOrg = Organization.builder()
+        .orgFiscalCode("ORG_FISCAL_CODE")
+        .ipaCode("IPA_CODE")
+        .brokerId(1L)
+        .orgName("orgName2")
+        .status(OrganizationStatus.ACTIVE)
+        .flagNotifyIo(true)
+        .flagPaymentNotification(true)
+        .flagNotifyOutcomePush(true)
+        .build();
+
+    Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+        .thenReturn(Optional.of(orgFromService));
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("ORG_FISCAL_CODE"))
+        .thenReturn(Optional.of(existingOrg));
+    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+        .thenReturn("zipFileName.csv");
+
+    // When
+    OrganizationIngestionFlowFileResult result = service.processOrganization(
+        Stream.of(dto).iterator(), List.of(),
+        ingestionFlowFile, workingDirectory);
+
+    // Then
+    Assertions.assertEquals(0, result.getProcessedRows());
+    Assertions.assertEquals(1, result.getTotalRows());
+    Assertions.assertTrue(result.getOrganizationIpaCodeList().isEmpty());
+    Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
+    Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
+    Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
+    Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode("ORG_FISCAL_CODE");
+    Mockito.verify(dto).getOrgFiscalCode();
+    Mockito.verify(dto).getIpaCode();
+    Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
+    Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.anyList());
+    Mockito.verifyNoInteractions(mapperMock);
+  }
+
 }
