@@ -113,9 +113,10 @@ class OrganizationProcessingServiceTest {
 
     Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
         .thenReturn(Optional.of(orgFromService));
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(Mockito.anyString()))
+        .thenReturn(Optional.empty());
     Mockito.when(mapperMock.map(dto, orgFromService.getBrokerId())).thenReturn(mappedOrg);
     Mockito.when(organizationServiceMock.createOrganization(mappedOrg)).thenReturn(createdOrg);
-    Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
 
     // When
     OrganizationIngestionFlowFileResult result = service.processOrganization(
@@ -127,6 +128,7 @@ class OrganizationProcessingServiceTest {
     Assertions.assertEquals(1L, result.getTotalRows());
     Assertions.assertNotNull(result.getOrganizationIpaCodeList());
     Assertions.assertEquals(1, result.getOrganizationIpaCodeList().size());
+    Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
   }
 
   @Test
