@@ -1,10 +1,12 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
+import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationEntityClient;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelOrganizationEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -27,6 +29,8 @@ class OrganizationServiceTest {
     private AuthnService authnServiceMock;
     @Mock
     private OrganizationSearchClient organizationSearchClientMock;
+    @Mock
+    private OrganizationEntityClient organizationEntityClientMock;
 
     private OrganizationService organizationService;
 
@@ -36,7 +40,8 @@ class OrganizationServiceTest {
     void init(){
         organizationService = new OrganizationServiceImpl(
                 authnServiceMock,
-                organizationSearchClientMock
+                organizationSearchClientMock,
+                organizationEntityClientMock
         );
 
         Mockito.when(authnServiceMock.getAccessToken())
@@ -182,4 +187,21 @@ class OrganizationServiceTest {
         Assertions.assertSame(embedded.getOrganizations(), result);
     }
 //endregion
+
+    @Test
+    void givenOrganizationRequestBodyWhenCreateOrganizationThenReturnOrganization() {
+        // Given
+        OrganizationRequestBody requestBody = new OrganizationRequestBody();
+        Organization expectedOrganization = new Organization();
+        Mockito.when(organizationEntityClientMock.createOrganization(requestBody, accessToken))
+            .thenReturn(expectedOrganization);
+
+        // When
+        Organization result = organizationService.createOrganization(requestBody);
+
+        // Then
+        Assertions.assertSame(expectedOrganization, result);
+        Mockito.verify(organizationEntityClientMock).createOrganization(requestBody, accessToken);
+    }
+
 }

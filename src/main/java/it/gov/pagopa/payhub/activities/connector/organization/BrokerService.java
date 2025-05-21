@@ -9,4 +9,6 @@ import java.util.List;
  */
 public interface BrokerService {
 	List<Broker> fetchAll();
+
+	Broker getBrokerByFiscalCode(String fiscalCode);
 }
