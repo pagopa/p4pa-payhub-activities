@@ -1,15 +1,16 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.organization;
 
 import com.opencsv.exceptions.CsvException;
-import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationApiService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization.OrganizationMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
-import it.gov.pagopa.pu.organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.KeyTypeEnum;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,15 +28,17 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
 
     private final OrganizationMapper organizationMapper;
     private final OrganizationService organizationService;
+    private final OrganizationApiService organizationApiService;
 
 
     public OrganizationProcessingService(
             OrganizationMapper organizationMapper,
             OrganizationErrorsArchiverService organizationErrorsArchiverService,
-        OrganizationService organizationService) {
+        OrganizationService organizationService, OrganizationApiService organizationApiService) {
         super(organizationErrorsArchiverService);
         this.organizationMapper = organizationMapper;
         this.organizationService = organizationService;
+      this.organizationApiService = organizationApiService;
     }
 
 
@@ -69,6 +72,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             Organization organizationCreated = organizationService.createOrganization(
                     organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
             ingestionFlowFileResult.getOrganizationIpaCodeList().add(organizationCreated.getIpaCode());
+            saveApiKeys(organizationCreated.getOrganizationId(), organizationDTO);
             return true;
             }
             else{
@@ -100,5 +104,21 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
                 .errorMessage(message)
                 .build();
     }
+
+    private void saveApiKeys(Long organizationId, OrganizationIngestionFlowFileDTO organizationDTO) {
+        saveApiKeyIfPresent(organizationId, KeyTypeEnum.IO, organizationDTO.getIoApiKey());
+        saveApiKeyIfPresent(organizationId, KeyTypeEnum.SEND, organizationDTO.getSendApiKey());
+    }
+
+     private void saveApiKeyIfPresent(Long organizationId, KeyTypeEnum keyType, String apiKey) {
+        if (apiKey != null && !apiKey.isBlank()) {
+            OrganizationApiKeys apiKeys = OrganizationApiKeys.builder()
+                .keyType(keyType)
+                .apiKey(apiKey)
+                .build();
+            organizationApiService.encryptAndSaveApiKey(organizationId, apiKeys);
+        }
+    }
+
 }
 

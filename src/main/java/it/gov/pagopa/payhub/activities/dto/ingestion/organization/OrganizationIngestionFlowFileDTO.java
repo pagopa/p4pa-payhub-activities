@@ -36,9 +36,6 @@ public class OrganizationIngestionFlowFileDTO {
   @CsvBindByName(column = "postal_iban")
   private String postalIban;
 
-  @CsvBindByName(column = "password")
-  private String password;
-
   @CsvBindByName(column = "segregation_code")
   private String segregationCode;
 

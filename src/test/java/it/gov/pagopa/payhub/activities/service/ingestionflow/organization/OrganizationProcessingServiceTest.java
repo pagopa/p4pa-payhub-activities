@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.opencsv.exceptions.CsvException;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationApiService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
@@ -50,13 +51,16 @@ class OrganizationProcessingServiceTest {
   private OrganizationService organizationServiceMock;
 
   @Mock
+  private OrganizationApiService organizationApiServiceMock;
+
+  @Mock
 
   private OrganizationProcessingService service;
 
   @BeforeEach
   void setUp() {
     service = new OrganizationProcessingService(mapperMock, errorsArchiverServiceMock,
-        organizationServiceMock);
+        organizationServiceMock, organizationApiServiceMock);
   }
 
   @AfterEach
@@ -73,6 +77,7 @@ class OrganizationProcessingServiceTest {
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     OrganizationIngestionFlowFileDTO dto = mock(OrganizationIngestionFlowFileDTO.class);
     Mockito.when(dto.getBrokerCf()).thenReturn("brokerFC");
+    Mockito.when(dto.getIoApiKey()).thenReturn("ioApiKey");
 
     Organization orgFromService = Organization.builder()
         .brokerId(1L)

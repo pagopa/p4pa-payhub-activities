@@ -22,5 +22,4 @@ public class OrganizationEntityClient {
             return organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
                     .crudCreateOrganization(organizationRequestBody);
     }
-
 }
