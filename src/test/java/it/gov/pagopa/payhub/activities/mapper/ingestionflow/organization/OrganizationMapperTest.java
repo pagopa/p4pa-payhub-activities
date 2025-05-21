@@ -24,15 +24,12 @@ class OrganizationMapperTest {
     dto.setOrgEmail("test@org.it");
     dto.setPostalIban("IT60X0542811101000000123456");
     dto.setIban("IT60X0542811101000000123456");
-    dto.setPassword("password");
     dto.setSegregationCode("SEGCODE");
     dto.setCbillInterBankCode("CBILL");
     dto.setOrgLogo("logo");
     dto.setStatus("ACTIVE");
     dto.setAdditionalLanguage("EN");
     dto.setStartDate(LocalDateTime.of(2024, 6, 1, 0, 0));
-    dto.setIoApiKey("ioApiKey");
-    dto.setSendApiKey("sendApiKey");
     dto.setFlagNotifyIo(true);
     dto.setFlagNotifyOutcomePush(false);
 
@@ -49,7 +46,6 @@ class OrganizationMapperTest {
     Assertions.assertEquals("test@org.it", result.getOrgEmail());
     Assertions.assertEquals("IT60X0542811101000000123456", result.getPostalIban());
     Assertions.assertEquals("IT60X0542811101000000123456", result.getIban());
-    Assertions.assertArrayEquals("password".getBytes(), result.getPassword());
     Assertions.assertEquals("SEGCODE", result.getSegregationCode());
     Assertions.assertEquals("CBILL", result.getCbillInterBankCode());
     Assertions.assertEquals("logo", result.getOrgLogo());
@@ -57,14 +53,10 @@ class OrganizationMapperTest {
     Assertions.assertEquals("EN", result.getAdditionalLanguage());
     Assertions.assertEquals(LocalDate.of(2024, 6, 1), result.getStartDate());
     Assertions.assertEquals(456L, result.getBrokerId());
-    Assertions.assertArrayEquals("ioApiKey".getBytes(), result.getIoApiKey());
-    Assertions.assertArrayEquals("sendApiKey".getBytes(), result.getSendApiKey());
     Assertions.assertTrue(result.getFlagNotifyIo());
     Assertions.assertFalse(result.getFlagNotifyOutcomePush());
     Assertions.assertFalse(result.getFlagPaymentNotification());
     TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "organizationId", "orgTypeCode", "orgEmail", "postalIban", "iban",
-        "password", "segregationCode", "cbillInterBankCode", "orgLogo", "additionalLanguage",
-        "startDate", "brokerId", "ioApiKey");
+        "updateTraceId", "organizationId","password", "brokerId", "ioApiKey");
   }
 }
