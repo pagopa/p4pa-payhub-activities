@@ -28,7 +28,37 @@ class EmailTemplateResolverServiceTest {
             new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_DP_INSTALLMENTS_OK_SUBJECT", "INGESTION_DP_INSTALLMENTS_OK_BODY"),
                     new EmailTemplate("INGESTION_DP_INSTALLMENTS_KO_SUBJECT", "INGESTION_DP_INSTALLMENTS_KO_BODY")
-            )
+            ),
+
+          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_ORGANIZATIONS_OK_SUBJECT", "INGESTION_ORGANIZATIONS_OK_BODY"),
+                    new EmailTemplate("INGESTION_ORGANIZATIONS_KO_SUBJECT", "INGESTION_ORGANIZATIONS_KO_BODY")
+        ),
+          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_ORGANIZATIONS_SIL_SERVICE_OK_SUBJECT", "INGESTION_ORGANIZATIONS_SIL_SERVICE_OK_BODY"),
+                    new EmailTemplate("INGESTION_ORGANIZATIONS_SIL_SERVICE_KO_SUBJECT", "INGESTION_ORGANIZATIONS_SIL_SERVICE_KO_BODY")
+        ),
+
+          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_OK_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_OK_BODY"),
+                    new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_KO_BODY")
+        ),
+
+          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OK_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OK_BODY"),
+                    new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_KO_BODY")
+        ),
+
+          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                   new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK_BODY"),
+                   new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_BODY")
+        ),
+
+          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                   new EmailTemplate("INGESTION_ASSESSMENTS_OK_SUBJECT", "INGESTION_ASSESSMENTS_OK_BODY"),
+                   new EmailTemplate("INGESTION_ASSESSMENTS_KO_SUBJECT", "INGESTION_ASSESSMENTS_KO_BODY")
+        )
+
     );
 
     private final EmailTemplateResolverService service = new EmailTemplateResolverService(configMock);
