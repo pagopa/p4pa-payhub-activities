@@ -111,7 +111,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     }
 
      private void saveApiKeyIfPresent(Long organizationId, KeyTypeEnum keyType, String apiKey) {
-        if (apiKey != null && !apiKey.isBlank()) {
+        if (!StringUtils.isEmpty(apiKey)) {
             OrganizationApiKeys apiKeys = OrganizationApiKeys.builder()
                 .keyType(keyType)
                 .apiKey(apiKey)
