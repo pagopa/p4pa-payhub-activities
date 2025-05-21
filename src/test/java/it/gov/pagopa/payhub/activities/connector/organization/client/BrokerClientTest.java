@@ -67,7 +67,5 @@ class BrokerClientTest {
 
 		// Then
 		assertEquals(expectedBroker, result);
-		verify(organizationApisHolderMock).getBrokerSearchControllerApi(accessToken);
-		verify(brokerSearchControllerApi).crudBrokersFindByBrokeredOrgFiscalCode(fiscalCode);
 	}
 }

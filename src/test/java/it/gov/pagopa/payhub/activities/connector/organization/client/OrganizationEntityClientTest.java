@@ -55,8 +55,6 @@ class OrganizationEntityClientTest {
 
         // Then
         Assertions.assertSame(expectedOrganization, result);
-        Mockito.verify(organizationApisHolderMock).getOrganizationEntityControllerApi(accessToken);
-        Mockito.verify(organizationEntityControllerApiMock).crudCreateOrganization(requestBody);
     }
 
 }

@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import java.time.LocalDate;
@@ -60,6 +61,10 @@ class OrganizationMapperTest {
     Assertions.assertArrayEquals("sendApiKey".getBytes(), result.getSendApiKey());
     Assertions.assertTrue(result.getFlagNotifyIo());
     Assertions.assertFalse(result.getFlagNotifyOutcomePush());
-    Assertions.assertFalse(result.getFlagPaymentNotification()); // Verifica la riga selezionata
+    Assertions.assertFalse(result.getFlagPaymentNotification());
+    TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
+        "updateTraceId", "organizationId", "orgTypeCode", "orgEmail", "postalIban", "iban",
+        "password", "segregationCode", "cbillInterBankCode", "orgLogo", "additionalLanguage",
+        "startDate", "brokerId", "ioApiKey");
   }
 }
