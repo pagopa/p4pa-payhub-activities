@@ -31,7 +31,7 @@ public class InstallmentIngestionFlowFileDefaultsSetter {
 
     private static void setDefaultIfNotLastVersion(InstallmentIngestionFlowFileDTO dto) {
         if (dto.getDescription() == null) {
-            dto.setDescription(dto.getDebtPositionTypeCode() + " " + CREATION_DATE_FORMAT);
+            dto.setDescription(String.format("DebtPosition with code %s was created on %s", dto.getDebtPositionTypeCode(), CREATION_DATE_FORMAT));
         }
         if (dto.getPaymentOptionIndex() == null) {
             dto.setPaymentOptionIndex(1);
