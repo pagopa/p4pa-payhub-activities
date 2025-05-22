@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.namespace.QName;
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * A reusable service for generic XML marshalling.
@@ -28,7 +29,8 @@ public class XMLMarshallerService {
 		try {
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			StringWriter stringWriter = new StringWriter();
-			marshaller.marshal(new JAXBElement<>(QName.valueOf(clazz.getAnnotation(XmlType.class).name()), clazz, value), stringWriter);
+			String xmlTagName = Objects.requireNonNull(clazz.getAnnotation(XmlType.class), "The provided class has not @XmlType annotation to retrieve tag name").name();
+			marshaller.marshal(new JAXBElement<>(QName.valueOf(xmlTagName), clazz, value), stringWriter);
 			return stringWriter.toString();
 		} catch (JAXBException e) {
 			String errorMessage = "Error while marshalling object of class: " + value.getClass();
