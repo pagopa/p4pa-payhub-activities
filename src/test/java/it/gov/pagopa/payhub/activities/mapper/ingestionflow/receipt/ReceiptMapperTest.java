@@ -1,49 +1,74 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
+import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
 @ExtendWith(MockitoExtension.class)
- class ReceiptMapperTest {
+class ReceiptMapperTest {
 
-  @InjectMocks
-  private ReceiptMapper receiptMapper;
+    @Mock
+    private RtFileHandlerService rtFileHandlerServiceMock;
 
-  private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+    @InjectMocks
+    private ReceiptMapper receiptMapper;
 
-  @ParameterizedTest
-  @ValueSource(booleans = {true, false})
-  void givenPaSendRTV2RequestWhenMapThenOk(boolean isPayerNull) {
-    //given
-    PaSendRTV2Request request = podamFactory.manufacturePojo(PaSendRTV2Request.class);
-    if(isPayerNull)
-      request.getReceipt().setPayer(null);
-    //fix due to the fact that the field setter has non-standard name
-    request.getReceipt().setPSPCompanyName(podamFactory.manufacturePojo(String.class));
-    request.getReceipt().getTransferList().getTransfers().forEach(t -> {
-      t.setIBAN(podamFactory.manufacturePojo(String.class));
-      t.setMBDAttachment(podamFactory.manufacturePojo(byte[].class));
-    });
-    //when
-    ReceiptWithAdditionalNodeDataDTO response = receiptMapper.map(request);
-    //verify
-    TestUtils.checkNotNullFields(response, "receiptId", "ingestionFlowFileId", "creationDate", "updateDate", "payer", "rtFilePath"); // FIXME rtFilePath will be set with P4ADEV-2947
-    TestUtils.checkNotNullFields(response.getDebtor());
-    if(!isPayerNull) {
-      Assertions.assertNotNull(response.getPayer());
-      TestUtils.checkNotNullFields(response.getPayer());
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+
+    @AfterEach
+    void verifyNoMoreInteractions(){
+        Mockito.verifyNoMoreInteractions(rtFileHandlerServiceMock);
     }
-    Assertions.assertEquals(request.getReceipt().getTransferList().getTransfers().size(), response.getTransfers().size());
-    Assertions.assertEquals(request.getReceipt().getMetadata().getMapEntries().size(), response.getMetadata().size());
-    response.getTransfers().forEach(TestUtils::checkNotNullFields);
 
-  }
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void givenPaSendRTV2RequestWhenMapThenOk(boolean isPayerNull) {
+        // Given
+        IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
+        ingestionFlowFile.setIngestionFlowFileId(10L);
+        ingestionFlowFile.setOrganizationId(0L);
+        ingestionFlowFile.setFileName("rtFileName.xml");
+
+        PaSendRTV2Request request = podamFactory.manufacturePojo(PaSendRTV2Request.class);
+        if (isPayerNull)
+            request.getReceipt().setPayer(null);
+        //fix due to the fact that the field setter has non-standard name
+        request.getReceipt().setPSPCompanyName(podamFactory.manufacturePojo(String.class));
+        request.getReceipt().getTransferList().getTransfers().forEach(t -> {
+            t.setIBAN(podamFactory.manufacturePojo(String.class));
+            t.setMBDAttachment(podamFactory.manufacturePojo(byte[].class));
+        });
+
+        String rtFilePath = "RT/FILE/PATH.xml";
+        Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getReceipt()), Mockito.same(ingestionFlowFile.getFileName())))
+                .thenReturn(rtFilePath);
+
+        // When
+        ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
+
+        // Then
+        TestUtils.checkNotNullFields(result, "receiptId", "creationDate", "updateDate", "payer");
+        TestUtils.checkNotNullFields(result.getDebtor());
+        if (!isPayerNull) {
+            Assertions.assertNotNull(result.getPayer());
+            TestUtils.checkNotNullFields(result.getPayer());
+        }
+        Assertions.assertEquals(ingestionFlowFile.getIngestionFlowFileId(), result.getIngestionFlowFileId());
+        Assertions.assertEquals(rtFilePath, result.getRtFilePath());
+        Assertions.assertEquals(request.getReceipt().getTransferList().getTransfers().size(), result.getTransfers().size());
+        Assertions.assertEquals(request.getReceipt().getMetadata().getMapEntries().size(), result.getMetadata().size());
+        result.getTransfers().forEach(TestUtils::checkNotNullFields);
+    }
 }
