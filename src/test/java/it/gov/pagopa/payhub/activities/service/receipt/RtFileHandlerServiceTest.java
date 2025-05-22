@@ -84,4 +84,20 @@ class RtFileHandlerServiceTest {
         Assertions.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ctReceiptV2><fiscalCode>FC</fiscalCode><paymentAmount>10</paymentAmount><companyName>COMPANY</companyName><debtor><fullName>FULLNAME</fullName></debtor></ctReceiptV2>",
                 resultRead);
     }
+
+    @Test
+    void givenNotRtFilePathWhenReadThenReturnNull(){
+        // Given
+        Long organizationId = 1L;
+        ReceiptDTO receiptDTO = new ReceiptDTO();
+
+        Mockito.when(foldersPathsConfigMock.getShared())
+                .thenReturn(tmpDir);
+
+        // When
+        String result = service.read(organizationId, receiptDTO);
+
+        // Then
+        Assertions.assertNull(result);
+    }
 }
