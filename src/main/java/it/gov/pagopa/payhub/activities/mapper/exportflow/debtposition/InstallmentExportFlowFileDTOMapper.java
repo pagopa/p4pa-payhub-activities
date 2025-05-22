@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallmentExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
+import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.Person;
@@ -16,6 +17,12 @@ public class InstallmentExportFlowFileDTOMapper {
     private static final String ANONYMOUS = "ANONIMO";
     private static final String MARCA_BOLLO = "MARCA_BOLLO";
     private static final String RECEIPT_ATTACHMENT_TYPE = "BD";
+
+    private final RtFileHandlerService rtFileHandlerService;
+
+    public InstallmentExportFlowFileDTOMapper(RtFileHandlerService rtFileHandlerService) {
+        this.rtFileHandlerService = rtFileHandlerService;
+    }
 
     public PaidInstallmentExportFlowFileDTO map(InstallmentPaidViewDTO installmentPaidViewDTO) {
 
@@ -59,7 +66,7 @@ public class InstallmentExportFlowFileDTOMapper {
                 .paymentReason(installmentPaidViewDTO.getRemittanceInformation())
                 .collectionSpecificData("9/".concat(installmentPaidViewDTO.getCategory()))
                 .dueType(installmentPaidViewDTO.getCode())
-                .rt(null) // TODO: field rt depends on task https://pagopa.atlassian.net/browse/P4ADEV-2306
+                .rt(rtFileHandlerService.read(installmentPaidViewDTO.getOrganizationId(), installmentPaidViewDTO.getRtFilePath()))
                 .singlePaymentDataIndex(installmentPaidViewDTO.getTransferIndex())
                 .pspAppliedFees(installmentPaidViewDTO.getFeeCents() != null ? Utilities.longCentsToBigDecimalEuro(installmentPaidViewDTO.getFeeCents()) : null)
                 .balance(installmentPaidViewDTO.getBalance())

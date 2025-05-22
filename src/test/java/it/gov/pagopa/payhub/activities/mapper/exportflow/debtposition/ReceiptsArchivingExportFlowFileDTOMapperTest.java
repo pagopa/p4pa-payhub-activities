@@ -1,58 +1,83 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
+import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptArchivingView;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class ReceiptsArchivingExportFlowFileDTOMapperTest {
 
+    @Mock
+    private RtFileHandlerService rtFileHandlerServiceMock;
+
     private ReceiptsArchivingExportFlowFileDTOMapper receiptsArchivingExportFlowFileDTOMapper;
-    private PodamFactory podamFactory;
+
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
     @BeforeEach
     void setUp() {
-        receiptsArchivingExportFlowFileDTOMapper = new ReceiptsArchivingExportFlowFileDTOMapper();
-        podamFactory= new PodamFactoryImpl();
+        receiptsArchivingExportFlowFileDTOMapper = new ReceiptsArchivingExportFlowFileDTOMapper(rtFileHandlerServiceMock);
+    }
+
+    @AfterEach
+    void verifyNoMoreInteractions(){
+        Mockito.verifyNoMoreInteractions(rtFileHandlerServiceMock);
     }
 
     @Test
     void givenValidReceiptArchivingView_whenMap_thenReturnReceiptsArchivingViewDTO() {
-        //given
+        // Given
         ReceiptArchivingView receiptArchivingView = podamFactory.manufacturePojo(ReceiptArchivingView.class);
-        //when
+
+        Mockito.when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        // When
         ReceiptsArchivingExportFlowFileDTO result = receiptsArchivingExportFlowFileDTOMapper.map(receiptArchivingView);
-        //then
+
+        // Then
         assertNotNull(result);
         TestUtils.reflectionEqualsByName(receiptArchivingView,result);
-        TestUtils.checkNotNullFields(result, "receiptXml");
-        assertNull(result.getReceiptXml());
+        TestUtils.checkNotNullFields(result);
+        assertEquals("RTXML", result.getReceiptXml());
         assertEquals("OK", result.getPaymentOutcome());
     }
 
     @Test
     void givenValidReceiptArchivingViewWhenPayerAndDebtorAreNull_whenMap_thenReturnReceiptsArchivingViewDTO() {
-        //given
+        // Given
         ReceiptArchivingView receiptArchivingView = podamFactory.manufacturePojo(ReceiptArchivingView.class);
         receiptArchivingView.setPayer(null);
         receiptArchivingView.setDebtor(null);
-        //when
+
+        Mockito.when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        // When
         ReceiptsArchivingExportFlowFileDTO result = receiptsArchivingExportFlowFileDTOMapper.map(receiptArchivingView);
-        //then
+
+        // Then
         assertNotNull(result);
         TestUtils.reflectionEqualsByName(receiptArchivingView,result);
-        TestUtils.checkNotNullFields(result, "receiptXml","debtorEntityType", "debtorFullName", "debtorEmail", "debtorUniqueIdentifierCode", "payerFullName", "payerUniqueIdentifierCode");
+        TestUtils.checkNotNullFields(result, "debtorEntityType", "debtorFullName", "debtorEmail", "debtorUniqueIdentifierCode", "payerFullName", "payerUniqueIdentifierCode");
         assertNull(result.getDebtorEntityType());
         assertNull(result.getDebtorFullName());
         assertNull(result.getDebtorUniqueIdentifierCode());
         assertNull(result.getDebtorEmail());
         assertNull(result.getPayerUniqueIdentifierCode());
         assertNull(result.getPayerFullName());
+        assertEquals("RTXML", result.getReceiptXml());
         assertEquals("OK", result.getPaymentOutcome());
     }
 
