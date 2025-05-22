@@ -25,7 +25,7 @@ import java.io.InputStream;
 public class XMLUnmarshallerService {
 
 	/**
-	 * Unmarshals an XML file into a Java object.
+	 * Unmarshal an XML file into a Java object.
 	 *
 	 * @param <T>         the type of the resulting Java object
 	 * @param file        the XML file to parse
@@ -43,8 +43,9 @@ public class XMLUnmarshallerService {
 			JAXBElement<T> element = unmarshaller.unmarshal(new StreamSource(is), clazz);
 			return element.getValue();
 		} catch (IOException | JAXBException e) {
-			log.error("Error while parsing file: {}", file.getName(), e);
-			throw new InvalidValueException("Error while parsing file: "+ file.getName());
+			String errorMessage = "Error while parsing file: " + file.getName();
+			log.error(errorMessage, e);
+			throw new InvalidValueException(errorMessage);
 		}
 	}
 }

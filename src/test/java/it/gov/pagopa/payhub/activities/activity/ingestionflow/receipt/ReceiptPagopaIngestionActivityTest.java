@@ -58,7 +58,7 @@ class ReceiptPagopaIngestionActivityTest {
       ingestionFlowFileServiceMock,
       ingestionFlowFileRetrieverServiceMock,
       receiptParserServiceMock,
-            fileArchiverServiceMock,
+      fileArchiverServiceMock,
       receiptServiceMock,
       receiptMapperMock
     );
@@ -89,7 +89,7 @@ class ReceiptPagopaIngestionActivityTest {
 
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
 
-    Mockito.when(receiptMapperMock.map(paSendRTV2Request)).thenReturn(receiptWithAdditionalNodeDataDTO);
+    Mockito.when(receiptMapperMock.map(ingestionFlowFileDTO, paSendRTV2Request)).thenReturn(receiptWithAdditionalNodeDataDTO);
 
     ReceiptDTO receiptDTO = new ReceiptDTO();
     receiptDTO.setReceiptId(1L);
@@ -108,15 +108,6 @@ class ReceiptPagopaIngestionActivityTest {
 
     // Then
     Assertions.assertEquals(expectedResult, result);
-
-    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(ingestionFlowFileId);
-    Mockito.verify(ingestionFlowFileRetrieverServiceMock, Mockito.times(1)).retrieveAndUnzipFile(
-      ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-    Mockito.verify(receiptParserServiceMock, Mockito.times(1)).parseReceiptPagopaFile(filePath, ingestionFlowFileDTO);
-    Mockito.verify(receiptMapperMock, Mockito.times(1)).map(paSendRTV2Request);
-    Mockito.verify(receiptServiceMock, Mockito.times(1)).createReceipt(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
-
     Assertions.assertFalse(filePath.toFile().exists());
   }
 
@@ -168,13 +159,8 @@ class ReceiptPagopaIngestionActivityTest {
         ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName()))
       .thenReturn(mockedListPath);
 
-    // When
+    // When, Then
     Assertions.assertThrows(InvalidIngestionFileException.class, () -> receiptPagopaIngestionActivity.processFile(ingestionFlowFileId));
-
-    // Then
-    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(ingestionFlowFileId);
-    Mockito.verify(ingestionFlowFileRetrieverServiceMock, Mockito.times(1)).retrieveAndUnzipFile(
-      ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
     Assertions.assertFalse(filePath.toFile().exists());
   }

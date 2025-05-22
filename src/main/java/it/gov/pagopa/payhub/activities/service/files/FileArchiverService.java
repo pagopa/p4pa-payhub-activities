@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -83,8 +84,7 @@ public class FileArchiverService {
      * @param ingestionFlowFileDTO the DTO containing details of the file to be archived.
      */
     public void archive(IngestionFlowFile ingestionFlowFileDTO) {
-        Path originalFileFolder = sharedDirectoryPath
-                .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
+        Path originalFileFolder = FileShareUtils.buildOrganizationBasePath(sharedDirectoryPath,ingestionFlowFileDTO.getOrganizationId())
                 .resolve(ingestionFlowFileDTO.getFilePathName());
 
         Path originalFilePath = originalFileFolder
