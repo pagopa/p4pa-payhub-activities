@@ -19,6 +19,7 @@ public class OrganizationApisHolder {
     private final OrganizationEntityControllerApi organizationEntityControllerApi;
     private final OrganizationApi organizationApi;
     private final TaxonomyApi taxonomyApi;
+    private final OrgSilServiceEntityControllerApi orgSilServiceEntityControllerApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -42,6 +43,7 @@ public class OrganizationApisHolder {
         this.organizationEntityControllerApi = new OrganizationEntityControllerApi(apiClient);
         this.taxonomyApi = new TaxonomyApi(apiClient);
         this.organizationApi = new OrganizationApi(apiClient);
+        this.orgSilServiceEntityControllerApi = new OrgSilServiceEntityControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -80,6 +82,13 @@ public class OrganizationApisHolder {
      */
     public OrganizationApi getOrganizationApi(String accessToken){
         return getApi(accessToken, organizationApi);
+    }
+
+    /**
+     * It will return a {@link OrgSilServiceEntityControllerApi} instrumented with the provided accessToken. Use null if auth is not required.
+     */
+    public OrgSilServiceEntityControllerApi getOrgSilServiceEntityControllerApi(String accessToken){
+        return getApi(accessToken, orgSilServiceEntityControllerApi);
     }
 
 
