@@ -64,14 +64,16 @@ public class FileArchiverService {
      * @param targetPath    the destination path where the encrypted archive will be saved.
      * @throws IOException if an error occurs during compression, encryption, file copying, or cleanup.
      */
-    public void compressAndArchive(List<Path> files2Archive, Path file2Zip, Path targetPath) throws IOException {
+    public Long compressAndArchive(List<Path> files2Archive, Path file2Zip, Path targetPath) throws IOException {
         File zipped = zipFileService.zipper(file2Zip, files2Archive);
+        Long zippedFileSize = zipped.length();
         File encrypted = AESUtils.encrypt(dataCipherPsw, zipped);
         Files.delete(zipped.toPath());
         for (Path path : files2Archive) {
             Files.deleteIfExists(path);
         }
         archive(List.of(encrypted.toPath()), targetPath);
+        return zippedFileSize;
     }
 
     /**

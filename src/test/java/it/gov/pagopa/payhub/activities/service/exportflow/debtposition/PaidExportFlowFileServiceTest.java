@@ -1,16 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionsDataExportService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
@@ -25,13 +14,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +22,19 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaidExportFlowFileServiceTest {
@@ -213,7 +208,7 @@ class PaidExportFlowFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(PaidInstallmentExportFlowFileDTO.class), any(), eq("v1"));
 
-        doNothing().when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
+        when(fileArchiverServiceMock.compressAndArchive(any(), any(), any())).thenReturn(2L);
 
         // When
         ExportFileResult result = paidExportFlowFileService.executeExport(exportFileId);
@@ -224,6 +219,7 @@ class PaidExportFlowFileServiceTest {
         assertEquals(relativeFileFolder, result.getFilePath());
         assertEquals(5, result.getExportedRows());
         assertEquals(LocalDate.now(), result.getExportDate());
+        assertEquals(2L, result.getFileSize());
     }
 
     @Test

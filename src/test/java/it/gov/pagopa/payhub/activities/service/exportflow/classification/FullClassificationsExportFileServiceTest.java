@@ -241,7 +241,7 @@ class FullClassificationsExportFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(ClassificationsExportFlowFileDTO.class), any(), eq("WITH_NOTIFICATION_v1.3"));
 
-        doNothing().when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
+        when(fileArchiverServiceMock.compressAndArchive(any(), any(), any())).thenReturn(2L);
 
         // When
         ExportFileResult result = fullClassificationsExportFileService.executeExport(exportFileId);
@@ -252,6 +252,7 @@ class FullClassificationsExportFileServiceTest {
         assertEquals(relativeFileFolder, result.getFilePath());
         assertEquals(5, result.getExportedRows());
         assertEquals(LocalDate.now(), result.getExportDate());
+        assertEquals(2L, result.getFileSize());
     }
 
     @Test
