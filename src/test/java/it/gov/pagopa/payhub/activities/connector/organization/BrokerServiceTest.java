@@ -47,4 +47,24 @@ class BrokerServiceTest {
 		assertEquals(embedded.getBrokers(), result);
 		verify(brokerClientMock, times(1)).fetchAll(accessToken);
 	}
+
+	@Test
+	void testGetBrokerByFiscalCode() {
+		// Given
+		String fiscalCode = "ABC123";
+		String accessToken = "accessToken";
+		Broker expectedBroker = mock(Broker.class);
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+		when(brokerClientMock.getByFiscalCode(fiscalCode, accessToken)).thenReturn(expectedBroker);
+
+		// When
+		Broker result = service.getBrokerByFiscalCode(fiscalCode);
+
+		// Then
+		assertEquals(expectedBroker, result);
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(brokerClientMock, times(1)).getByFiscalCode(fiscalCode, accessToken);
+	}
+
 }

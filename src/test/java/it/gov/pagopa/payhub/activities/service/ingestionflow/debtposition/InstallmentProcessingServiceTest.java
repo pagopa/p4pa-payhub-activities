@@ -97,6 +97,7 @@ class InstallmentProcessingServiceTest {
         assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
         assertEquals(1, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
+        assertEquals(1, result.getOrganizationId());
         assertNull(result.getErrorDescription());
         assertNull(result.getDiscardedFileName());
     }
