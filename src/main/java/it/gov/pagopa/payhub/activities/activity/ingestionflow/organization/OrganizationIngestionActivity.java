@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.organization;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
 
 /**
@@ -11,7 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIn
  */
 
 @ActivityInterface
-public interface OrganizationIngestionActivity extends IngestionFlowFileProcessorActivity<OrganizationIngestionFlowFileResult> {
+public interface OrganizationIngestionActivity {
 
 
   /**
@@ -21,7 +20,6 @@ public interface OrganizationIngestionActivity extends IngestionFlowFileProcesso
    * @return {@link OrganizationIngestionFlowFileResult} containing the list of ipa code.
    */
   @ActivityMethod
-  @Override
   OrganizationIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 
 }

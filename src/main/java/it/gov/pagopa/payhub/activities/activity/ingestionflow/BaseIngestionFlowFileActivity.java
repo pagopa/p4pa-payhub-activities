@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
-public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileResult> implements IngestionFlowFileProcessorActivity<T> {
+public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileResult> {
 
 	private final IngestionFlowFileService ingestionFlowFileService;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
