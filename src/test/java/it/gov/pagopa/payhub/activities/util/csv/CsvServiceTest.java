@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CsvServiceTest {
 
     private final PodamFactory podamFactory = new PodamFactoryImpl();
-    private final CsvService csvService = new CsvService(';', '\"', "legacies", 5, 10);
+    private final CsvService csvService = new CsvService(';', '\"', 5, 10);
 
     @Test
     void testCreateCsv_success() throws IOException {
@@ -102,7 +102,7 @@ class CsvServiceTest {
             totalReaderExceptions.clear();
             totalReaderExceptions.addAll(readerException);
             return list;
-        });
+        }, "default");
 
         // Then
         List<String[]> actualData = resultList.stream()
@@ -136,7 +136,7 @@ class CsvServiceTest {
             List<TestCsv> list = new ArrayList<>();
             iterator.forEachRemaining(list::add);
             return list;
-        });
+        }, "default");
 
         // Then
         assertEquals(0, resultList.size());
@@ -159,7 +159,7 @@ class CsvServiceTest {
                     List<TestCsv> list = new ArrayList<>();
                     iterator.forEachRemaining(list::add);
                     return list;
-                })
+                }, "default")
         );
     }
 
@@ -175,7 +175,7 @@ class CsvServiceTest {
                     List<TestCsv> list = new ArrayList<>();
                     iterator.forEachRemaining(list::add);
                     return list;
-                })
+                }, "default")
         );
     }
 
@@ -241,9 +241,7 @@ class CsvServiceTest {
         List<TestCsv> testCsvList = List.of(testCsv);
 
         // When / Then
-        InvalidCsvRowException ex = assertThrows(InvalidCsvRowException.class, () -> {
-            csvService.createCsv(filePath, TestCsv.class, () -> testCsvList, "v1");
-        });
+        InvalidCsvRowException ex = assertThrows(InvalidCsvRowException.class, () -> csvService.createCsv(filePath, TestCsv.class, () -> testCsvList, "v1"));
 
         assertEquals("Invalid CSV row: Field 'column1' is mandatory but no value was provided.", ex.getMessage());
 
