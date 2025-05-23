@@ -98,7 +98,7 @@ class DebtPositionTypeIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeIngestionFlowFileDTO.class), any()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeIngestionFlowFileDTO.class), any(), any()))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<DebtPositionTypeIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
@@ -140,7 +140,7 @@ class DebtPositionTypeIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeIngestionFlowFileDTO.class), any()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeIngestionFlowFileDTO.class), any(), any()))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<DebtPositionTypeIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);

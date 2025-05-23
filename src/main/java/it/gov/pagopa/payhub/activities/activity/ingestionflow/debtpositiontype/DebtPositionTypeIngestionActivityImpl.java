@@ -58,7 +58,7 @@ public class DebtPositionTypeIngestionActivityImpl extends
           DebtPositionTypeIngestionFlowFileDTO.class, (csvIterator, readerException) ->
               debtPositionTypeProcessingService.processDebtPositionType(csvIterator,
                   readerException,
-                  ingestionFlowFileDTO, workingDirectory));
+                  ingestionFlowFileDTO, workingDirectory), "default");
     } catch (Exception e) {
       log.error("Error processing file {}: {}", filePath, e.getMessage(), e);
       throw new InvalidIngestionFileException(
