@@ -20,9 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Lazy
 @Component
-public class OrganizationIngestionActivityImpl extends BaseIngestionFlowFileActivity<OrganizationIngestionFlowFileResult> implements
-    OrganizationIngestionActivity {
-
+public class OrganizationIngestionActivityImpl extends BaseIngestionFlowFileActivity<OrganizationIngestionFlowFileResult> implements OrganizationIngestionActivity {
 
   private final CsvService csvService;
   private final OrganizationProcessingService organizationProcessingService;

@@ -78,6 +78,7 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
 
 
     return ReceiptPagopaIngestionFlowFileResult.builder()
+            .organizationId(ingestionFlowFileDTO.getOrganizationId())
             .fileVersion(version2receiptWithAdditionalNodeDataDTO.getKey())
             .totalRows(1L)
             .processedRows(1L)

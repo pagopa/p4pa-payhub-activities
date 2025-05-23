@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
 
 /**
@@ -9,7 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngest
  * Defines methods for processing files based on an IngestionFlow ID.
  */
 @ActivityInterface
-public interface ReceiptPagopaIngestionActivity {
+public interface ReceiptPagopaIngestionActivity extends IngestionFlowFileProcessorActivity<ReceiptPagopaIngestionFlowFileResult> {
 
     /**
      * Processes a file based on the provided IngestionFlow ID.
@@ -18,5 +19,6 @@ public interface ReceiptPagopaIngestionActivity {
      * @return {@link ReceiptPagopaIngestionFlowFileResult} containing the receiptDto and the mapped "ordinary" installment (if present).
      */
     @ActivityMethod
+    @Override
     ReceiptPagopaIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }

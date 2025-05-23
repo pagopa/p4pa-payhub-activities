@@ -15,5 +15,4 @@ import java.util.List;
 @ToString(callSuper = true)
 public class PaymentNotificationIngestionFlowFileResult extends IngestionFlowFileResult {
     private List<String> iudList;
-    private Long organizationId;
 }

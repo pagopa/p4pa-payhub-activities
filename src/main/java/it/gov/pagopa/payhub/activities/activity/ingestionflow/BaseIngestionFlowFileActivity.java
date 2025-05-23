@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
-public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileResult> {
+public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileResult> implements IngestionFlowFileProcessorActivity<T> {
 
 	private final IngestionFlowFileService ingestionFlowFileService;
 	private final IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService;
@@ -39,6 +39,7 @@ public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileR
 			retrievedFiles = retrieveFiles(ingestionFlowFileDTO);
 
 			T result = handleRetrievedFiles(retrievedFiles, ingestionFlowFileDTO);
+			result.setOrganizationId(ingestionFlowFileDTO.getOrganizationId());
 
 			fileArchiverService.archive(ingestionFlowFileDTO);
 

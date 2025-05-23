@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 
 /**
@@ -9,7 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngesti
  * Defines methods for processing files based on an IngestionFlow ID.
  */
 @ActivityInterface
-public interface TreasuryOpiIngestionActivity {
+public interface TreasuryOpiIngestionActivity extends IngestionFlowFileProcessorActivity<TreasuryIufIngestionFlowFileResult> {
 
     /**
      * Processes a file based on the provided IngestionFlow ID.
@@ -18,5 +19,6 @@ public interface TreasuryOpiIngestionActivity {
      * @return {@link TreasuryIufIngestionFlowFileResult} containing the list of IUFs and status.
      */
     @ActivityMethod
+    @Override
     TreasuryIufIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }
