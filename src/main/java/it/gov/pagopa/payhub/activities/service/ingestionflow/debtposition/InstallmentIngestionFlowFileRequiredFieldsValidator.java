@@ -18,8 +18,8 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
     }
 
     private static void setDefaultValues(InstallmentIngestionFlowFileDTO dto){
-        if (dto.getFlagPagoPaPayment() == null) {
-            dto.setFlagPagoPaPayment(Boolean.TRUE);
+        if (dto.getFlagPuPagoPaPayment() == null) {
+            dto.setFlagPuPagoPaPayment(Boolean.TRUE);
         }
 
         if (dto.getFlagMultiBeneficiary() == null) {

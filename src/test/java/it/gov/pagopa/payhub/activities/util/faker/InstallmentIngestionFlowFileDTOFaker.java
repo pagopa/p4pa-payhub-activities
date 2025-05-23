@@ -40,7 +40,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .notificationFee(BigDecimal.valueOf(10))
                 .remittanceInformation("remittanceInformation")
                 .legacyPaymentMetadata("legacyPaymentMetadata")
-                .flagPagoPaPayment(false)
+                .flagPuPagoPaPayment(false)
                 .balance("balance")
                 .flagMultiBeneficiary(true)
                 .numberBeneficiary(5)
@@ -70,7 +70,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setFullName("name");
         installmentIngestionFlowFileDTO.setNumberBeneficiary(2);
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(true);
-        installmentIngestionFlowFileDTO.setFlagPagoPaPayment(true);
+        installmentIngestionFlowFileDTO.setFlagPuPagoPaPayment(true);
         installmentIngestionFlowFileDTO.setTransfer2(buildTransferData(2));
         return installmentIngestionFlowFileDTO;
     }
