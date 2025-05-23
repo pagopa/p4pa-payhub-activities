@@ -25,7 +25,8 @@ public class DebtPositionTypeServiceImpl implements DebtPositionTypeService {
 
     @Override
     public DebtPositionType createDebtPositionType(DebtPositionTypeRequestBody debtPositionTypeRequestBody) {
-        log.info("Creating a new DebtPositionType");
+        log.debug("Creating a new DebtPositionType with brokerId: {}, code: {} and description: {}",debtPositionTypeRequestBody.getBrokerId(),
+                debtPositionTypeRequestBody.getCode(),debtPositionTypeRequestBody.getDescription());
         return debtPositionTypeClient.createDebtPositionType(debtPositionTypeRequestBody, authnService.getAccessToken());
     }
 }

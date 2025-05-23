@@ -11,7 +11,7 @@ public class DebtPositionTypeMapper {
 
     return DebtPositionTypeRequestBody.builder()
         .brokerId(brokerId)
-        .code(dto.getDebtPositionTypeCode())//todo corretto?
+        .code(dto.getDebtPositionTypeCode())
         .description(dto.getDescription())
         .orgType(dto.getOrgType())
         .macroArea(dto.getMacroArea())

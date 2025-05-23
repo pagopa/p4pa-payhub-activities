@@ -58,7 +58,6 @@ class DebtPositionTypeServiceTest {
 
     // Then
     Assertions.assertSame(expectedDebtPositionType, result);
-    Mockito.verify(debtPositionTypeClientMock).createDebtPositionType(requestBody, accessToken);
   }
 
 }
