@@ -60,4 +60,25 @@ class DebtPositionTypeServiceTest {
     Assertions.assertSame(expectedDebtPositionType, result);
   }
 
+  @Test
+  void givenMainFieldsWhenGetByMainFieldsThenReturnCollectionModel() {
+    // Given
+    String code = "CODE";
+    Long brokerId = 123L;
+    String orgType = "ORG_TYPE";
+    String macroArea = "MACRO";
+    String serviceType = "SERVICE";
+    String collectingReason = "REASON";
+    String taxonomyCode = "TAX";
+    var expected = Mockito.mock(it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType.class);
+    Mockito.when(debtPositionTypeClientMock.getByMainFields(code, brokerId, orgType, macroArea, serviceType, collectingReason, taxonomyCode, accessToken))
+        .thenReturn(expected);
+
+    // When
+    var result = service.getByMainFields(code, brokerId, orgType, macroArea, serviceType, collectingReason, taxonomyCode);
+
+    // Then
+    Assertions.assertSame(expected, result);
+  }
+
 }

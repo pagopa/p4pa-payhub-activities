@@ -24,9 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class DebtPositionTypeErrorsArchiverServiceTest {
-
-
+class DebtPositionTypeErrorsArchiverServiceTest {
 
   @Mock
   private FileArchiverService fileArchiverServiceMock;
