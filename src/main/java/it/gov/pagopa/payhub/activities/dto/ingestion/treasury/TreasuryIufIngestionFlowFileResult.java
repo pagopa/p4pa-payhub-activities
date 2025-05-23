@@ -18,6 +18,4 @@ import java.util.Map;
 public class TreasuryIufIngestionFlowFileResult extends IngestionFlowFileResult {
     /** Map of IUFs and their corresponding Treasury IDs */
     private Map<String, String> iuf2TreasuryIdMap;
-    /** Organization ID */
-    private Long organizationId;
 }

@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtpositiontype;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
 
 /**
@@ -10,8 +11,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositi
  */
 
 @ActivityInterface
-public interface DebtPositionTypeIngestionActivity {
-
+public interface DebtPositionTypeIngestionActivity extends IngestionFlowFileProcessorActivity<DebtPositionTypeIngestionFlowFileResult> {
 
   /**
    * Processes a debt position type import file based on the provided IngestionFlowFile ID.
@@ -20,6 +20,7 @@ public interface DebtPositionTypeIngestionActivity {
    * @return {@link DebtPositionTypeIngestionFlowFileResult} containing the list of ipa code.
    */
   @ActivityMethod
+  @Override
   DebtPositionTypeIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 
 }

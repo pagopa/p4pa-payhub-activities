@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 
 /**
@@ -9,7 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIng
  * Defines methods for processing files based on an IngestionFlow ID.
  */
 @ActivityInterface
-public interface InstallmentIngestionFlowFileActivity {
+public interface InstallmentIngestionFlowFileActivity extends IngestionFlowFileProcessorActivity<InstallmentIngestionFlowFileResult> {
 
     /**
      * Processes a file based on the provided IngestionFlow ID.
@@ -18,5 +19,6 @@ public interface InstallmentIngestionFlowFileActivity {
      * @return {@link InstallmentIngestionFlowFileResult} containing the number of total rows and the number of row correctly handled.
      */
     @ActivityMethod
+    @Override
     InstallmentIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }

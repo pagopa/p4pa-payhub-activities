@@ -15,6 +15,5 @@ import java.util.List;
 @ToString(callSuper = true)
 public class PaymentsReportingIngestionFlowFileActivityResult extends IngestionFlowFileResult {
     private String iuf;
-    private Long organizationId;
     private List<PaymentsReportingTransferDTO> transfers;
 }
