@@ -68,9 +68,10 @@ class FileArchiverServiceTest {
 		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
 			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, mockZippedFile)).thenReturn(mockEncryptedFile.toFile());
 			// when
-			service.compressAndArchive(files, zipFilePath, targetDir);
+			Long fileSize = service.compressAndArchive(files, zipFilePath, targetDir);
 
 			//then
+			assertNotNull(fileSize);
 			assertFalse(zipFilePath.toFile().exists(), "zipped file should be deleted");
 			assertFalse(mockEncryptedFile.toFile().exists(), "encrypted file should be deleted from source directory");
 			assertTrue(targetDir.resolve("output.zip" + AESUtils.CIPHER_EXTENSION).toFile().exists(), "Success");

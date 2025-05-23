@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow;
 import it.gov.pagopa.payhub.activities.service.files.FileValidatorService;
 import it.gov.pagopa.payhub.activities.service.files.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -74,8 +75,7 @@ public class IngestionFlowFileRetrieverService {
     public List<Path> retrieveAndUnzipFile(Long organizationId, Path sourcePath, String filename) {
         log.debug("Retrieving file: {}", filename);
         String organizationFolder = String.valueOf(organizationId);
-        Path encryptedFilePath = sharedDirectoryPath
-                .resolve(organizationFolder)
+        Path encryptedFilePath = FileShareUtils.buildOrganizationBasePath(sharedDirectoryPath, organizationId)
                 .resolve(sourcePath)
                 .resolve(filename + AESUtils.CIPHER_EXTENSION);
 

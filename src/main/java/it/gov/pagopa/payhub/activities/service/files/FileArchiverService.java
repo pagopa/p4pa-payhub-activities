@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -64,14 +65,16 @@ public class FileArchiverService {
      * @param targetPath    the destination path where the encrypted archive will be saved.
      * @throws IOException if an error occurs during compression, encryption, file copying, or cleanup.
      */
-    public void compressAndArchive(List<Path> files2Archive, Path file2Zip, Path targetPath) throws IOException {
+    public Long compressAndArchive(List<Path> files2Archive, Path file2Zip, Path targetPath) throws IOException {
         File zipped = zipFileService.zipper(file2Zip, files2Archive);
+        Long zippedFileSize = zipped.length();
         File encrypted = AESUtils.encrypt(dataCipherPsw, zipped);
         Files.delete(zipped.toPath());
         for (Path path : files2Archive) {
             Files.deleteIfExists(path);
         }
         archive(List.of(encrypted.toPath()), targetPath);
+        return zippedFileSize;
     }
 
     /**
@@ -81,8 +84,7 @@ public class FileArchiverService {
      * @param ingestionFlowFileDTO the DTO containing details of the file to be archived.
      */
     public void archive(IngestionFlowFile ingestionFlowFileDTO) {
-        Path originalFileFolder = sharedDirectoryPath
-                .resolve(String.valueOf(ingestionFlowFileDTO.getOrganizationId()))
+        Path originalFileFolder = FileShareUtils.buildOrganizationBasePath(sharedDirectoryPath,ingestionFlowFileDTO.getOrganizationId())
                 .resolve(ingestionFlowFileDTO.getFilePathName());
 
         Path originalFilePath = originalFileFolder

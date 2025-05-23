@@ -43,6 +43,8 @@ folders:
   process-target-sub-folders:
     archive: "\${PROCESS_TARGET_SUB_FOLDER_ARCHIVE:archive}"
     errors: "\${PROCESS_TARGET_SUB_FOLDER_ERRORS:errors}"
+  paths:
+    rt-folder: "/data/rt"
 
 cipher:
   file-encrypt-psw: "\${FILE_ENCRYPT_PSW:psw}"

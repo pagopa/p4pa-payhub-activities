@@ -3,35 +3,54 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallmentExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
+import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class PaidInstallmentExportFlowFileDTOMapperTest {
 
+    @Mock
+    private RtFileHandlerService rtFileHandlerServiceMock;
+
     private InstallmentExportFlowFileDTOMapper installmentExportFlowFileDTOMapper;
-    PodamFactory podamFactory;
+
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
     @BeforeEach
     void setUp() {
-        installmentExportFlowFileDTOMapper = new InstallmentExportFlowFileDTOMapper();
-        podamFactory = new PodamFactoryImpl();
+        installmentExportFlowFileDTOMapper = new InstallmentExportFlowFileDTOMapper(rtFileHandlerServiceMock);
+    }
+
+    @AfterEach
+    void verifyNoMoreInteractions(){
+        Mockito.verifyNoMoreInteractions(rtFileHandlerServiceMock);
     }
 
     @Test
     void  givenValidInstallmentPaidView_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
+        // Given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
         installmentPaidViewDTO.setCode("MARCA_BOLLO");
-        //when
+
+        Mockito.when(rtFileHandlerServiceMock.read(installmentPaidViewDTO.getOrganizationId(), installmentPaidViewDTO.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        // When
         PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
-        //then
+
+        // Then
         assertNotNull(result);
         assertAllField(installmentPaidViewDTO, result);
         TestUtils.checkNotNullFields(result,
@@ -78,14 +97,13 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
                 "singlePaymentOutcomeDateTime",
                 "uniqueCollectionIdentifier",
                 "signatureType",
-                "rt",
                 "receiptAttachmentTest"
         );
     }
 
     @Test
     void  givenValidInstallmentPaidWithNullFieldView_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
+        // Given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
         installmentPaidViewDTO.getDebtor().setEntityType(null);
         installmentPaidViewDTO.getDebtor().setFiscalCode(null);
@@ -93,9 +111,13 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         installmentPaidViewDTO.getPayer().setFiscalCode(null);
         installmentPaidViewDTO.setFeeCents(null);
 
-        //when
+        Mockito.when(rtFileHandlerServiceMock.read(installmentPaidViewDTO.getOrganizationId(), installmentPaidViewDTO.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        // When
         PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
-        //then
+
+        // Then
         assertNotNull(result);
         assertNull(result.getReceiptAttachmentType());
         assertNull(result.getReceiptAttachmentTest());
@@ -108,13 +130,17 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
 
     @Test
     void  givenValidInstallmentPaidWithNullPayerView_whenMap_thenReturnInstallmentPaidViewDTO() {
-        //given
+        // Given
         InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
         installmentPaidViewDTO.setPayer(null);
 
-        //when
+        Mockito.when(rtFileHandlerServiceMock.read(installmentPaidViewDTO.getOrganizationId(), installmentPaidViewDTO.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        // When
         PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
-        //then
+
+        // Then
         assertNotNull(result);
         assertNull(result.getPayerEntityType());
         assertNull(result.getPayerUniqueIdentifierCode());
@@ -188,7 +214,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals("9/"+ paidViewDTO.getCategory(), exportFlowFileDTO.getCollectionSpecificData());
         assertEquals(paidViewDTO.getCode(), exportFlowFileDTO.getDueType());
         assertNull(exportFlowFileDTO.getSignatureType());
-        assertNull(exportFlowFileDTO.getRt());
+        assertEquals("RTXML", exportFlowFileDTO.getRt());
         assertEquals(paidViewDTO.getTransferIndex(), exportFlowFileDTO.getSinglePaymentDataIndex());
         assertEquals(Utilities.longCentsToBigDecimalEuro(paidViewDTO.getFeeCents()), exportFlowFileDTO.getPspAppliedFees());
         assertEquals("BD", exportFlowFileDTO.getReceiptAttachmentType());
@@ -197,6 +223,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getOrgFiscalCode());
         assertEquals(paidViewDTO.getCompanyName(), exportFlowFileDTO.getOrgName());
         assertEquals(paidViewDTO.getCategory(), exportFlowFileDTO.getDueTaxonomicCode());
+
     }
 
 }
