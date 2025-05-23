@@ -1,0 +1,63 @@
+package it.gov.pagopa.payhub.activities.connector.debtposition;
+
+import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeClient;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class DebtPositionTypeServiceTest {
+
+  @Mock
+  private AuthnService authnServiceMock;
+  @Mock
+  private DebtPositionTypeClient debtPositionTypeClientMock;
+
+  private DebtPositionTypeService service;
+
+  private final String accessToken = "ACCESSTOKEN";
+
+  @BeforeEach
+  void init() {
+    service = new DebtPositionTypeServiceImpl(
+        authnServiceMock,
+        debtPositionTypeClientMock
+    );
+
+    Mockito.when(authnServiceMock.getAccessToken())
+        .thenReturn(accessToken);
+  }
+
+  @AfterEach
+  void verifyNoMoreInteractions() {
+    Mockito.verifyNoMoreInteractions(
+        authnServiceMock,
+        debtPositionTypeClientMock
+    );
+  }
+
+
+  @Test
+  void givenDebtPositionTypeRequestBodyWhenCreateDebtPositionTypeThenReturnDebtPositionTypeType() {
+    // Given
+    DebtPositionTypeRequestBody requestBody = new DebtPositionTypeRequestBody();
+    DebtPositionType expectedDebtPositionType = new DebtPositionType();
+    Mockito.when(debtPositionTypeClientMock.createDebtPositionType(requestBody, accessToken))
+        .thenReturn(expectedDebtPositionType);
+
+    // When
+    DebtPositionType result = service.createDebtPositionType(requestBody);
+
+    // Then
+    Assertions.assertSame(expectedDebtPositionType, result);
+  }
+
+}
