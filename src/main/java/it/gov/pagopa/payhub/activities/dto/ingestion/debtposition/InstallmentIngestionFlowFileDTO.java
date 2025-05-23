@@ -20,12 +20,12 @@ import static it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.Install
 @Builder
 public class InstallmentIngestionFlowFileDTO {
 
-    @CsvBindByName(column = "IUPD", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "IUPD", profiles = V2_0)
     @CsvBindByName(column = "iupdOrg", profiles = V2_0)
     private String iupdOrg;
 
-    @CsvBindByName(column = "descrizione", required = true, profiles = {V1_4, V2_0}) //concatenazione tra descrizione tipo dovuto(debtPositionTypeCode o query?) e data creazione
-    @CsvBindByName(column = "description", required = true, profiles = V2_0)
+    @CsvBindByName(column = "descrizionePosizioneDebitoria", profiles = V2_0)
+    @CsvBindByName(column = "description", profiles = V2_0)
     private String description;
 
     @CsvBindByName(column = "dataValidita", profiles = {V1_4, V2_0})
@@ -41,12 +41,12 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvDate(value = "yyyy-MM-dd")
     private LocalDate notificationDate;
 
-    @CsvBindByName(column = "indiceOpzionePagamento", required = true, profiles = {V1_4, V2_0})
-    @CsvBindByName(column = "paymentOptionIndex", required = true, profiles = V2_0)
+    @CsvBindByName(column = "indiceOpzionePagamento", profiles = {V1_4, V2_0})
+    @CsvBindByName(column = "paymentOptionIndex", profiles = V2_0)
     private Integer paymentOptionIndex;
 
-    @CsvBindByName(column = "tipoOpzionePagamento", required = true, profiles = V2_0)
-    @CsvBindByName(column = "paymentOptionType", required = true, profiles = V2_0)
+    @CsvBindByName(column = "tipoOpzionePagamento", profiles = V2_0)
+    @CsvBindByName(column = "paymentOptionType", profiles = V2_0)
     private String paymentOptionType;
 
     @CsvBindByName(column = "descrizioneOpzionePagamento", profiles = V2_0)
@@ -60,16 +60,16 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "iuv", profiles = V2_0)
     private String iuv;
 
-    @CsvBindByName(column = "tipoIdentificativoUnivoco", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "entityType", required = true, profiles = V2_0)
+    @CsvBindByName(column = "tipoIdentificativoUnivoco", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "entityType", profiles = V2_0)
     private EntityTypeEnum entityType;
 
-    @CsvBindByName(column = "codiceIdentificativoUnivoco", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "fiscalCode", required = true, profiles = V2_0)
+    @CsvBindByName(column = "codiceIdentificativoUnivoco", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "fiscalCode", profiles = V2_0)
     private String fiscalCode;
 
-    @CsvBindByName(column = "anagraficaPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "fullName", required = true, profiles = V2_0)
+    @CsvBindByName(column = "anagraficaPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "fullName", profiles = V2_0)
     private String fullName;
 
     @CsvBindByName(column = "indirizzoPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
@@ -105,28 +105,28 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvDate(value = "yyyy-MM-dd")
     private LocalDate dueDate;
 
-    @CsvBindByName(column = "importoDovuto", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "amount", required = true, profiles = V2_0)
+    @CsvBindByName(column = "importoDovuto", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "amount", profiles = V2_0)
     private BigDecimal amount;
 
-    @CsvBindByName(column = "tipoDovuto", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "debtPositionTypeCode", required = true, profiles = V2_0)
+    @CsvBindByName(column = "tipoDovuto", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "debtPositionTypeCode", profiles = V2_0)
     private String debtPositionTypeCode;
 
     @CsvBindByName(column = "commissioneNotifica", profiles = V2_0)
     @CsvBindByName(column = "notificationFee", profiles = V2_0)
     private BigDecimal notificationFee;
 
-    @CsvBindByName(column = "causaleVersamento", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "remittanceInformation", required = true, profiles = V2_0)
+    @CsvBindByName(column = "causaleVersamento", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "remittanceInformation", profiles = V2_0)
     private String remittanceInformation;
 
     @CsvBindByName(column = "datiSpecificiRiscossione", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "legacyPaymentMetadata", profiles = V2_0)
     private String legacyPaymentMetadata;
 
-    @CsvBindByName(column = "flagGeneraIuv", required = true, profiles = {V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "flagPagoPaPayment", required = true, profiles = V2_0)
+    @CsvBindByName(column = "flagGeneraIuv", profiles = {V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "flagPagoPaPayment", profiles = V2_0)
     private Boolean flagPagoPaPayment;
 
     @CsvBindByName(column = "bilancio", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
@@ -157,8 +157,8 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "executionConfig", profiles = V2_0)
     private String executionConfig;
 
-    @CsvBindByName(column = "azione", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "action", required = true, profiles = V2_0)
+    @CsvBindByName(column = "azione", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "action", profiles = V2_0)
     private ActionEnum action;
 
     @CsvBindByName(column = "draft", profiles = V2_0)

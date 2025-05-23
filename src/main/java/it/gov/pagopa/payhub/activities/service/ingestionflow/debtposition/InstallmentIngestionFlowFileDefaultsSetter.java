@@ -13,6 +13,7 @@ public class InstallmentIngestionFlowFileDefaultsSetter {
     public static final String CREATION_DATE_FORMAT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     public static void setDefaultValues(InstallmentIngestionFlowFileDTO dto) {
+        validateRequiredFields(dto);
 
         if (dto.getFlagPagoPaPayment() == null) {
             dto.setFlagPagoPaPayment(Boolean.TRUE);
@@ -41,6 +42,30 @@ public class InstallmentIngestionFlowFileDefaultsSetter {
         }
         if (dto.getPaymentOptionDescription() == null) {
             dto.setPaymentOptionDescription("Pagamento Singolo Avviso");
+        }
+    }
+
+    private static void validateRequiredFields(InstallmentIngestionFlowFileDTO dto){
+        if (dto.getEntityType() == null){
+            throw new IllegalArgumentException("Field EntityType required");
+        }
+        if (dto.getFiscalCode() == null){
+            throw new IllegalArgumentException("Field FiscalCode required");
+        }
+        if (dto.getFullName() == null){
+            throw new IllegalArgumentException("Field FullName required");
+        }
+        if (dto.getAmount() == null){
+            throw new IllegalArgumentException("Field Amount required");
+        }
+        if (dto.getDebtPositionTypeCode() == null){
+            throw new IllegalArgumentException("Field DebtPositionTypeCode required");
+        }
+        if (dto.getRemittanceInformation() == null){
+            throw new IllegalArgumentException("Field RemittanceInformation required");
+        }
+        if (dto.getAction() == null){
+            throw new IllegalArgumentException("Field Action required");
         }
     }
 }

@@ -164,6 +164,7 @@ public class CsvService {
 
             HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(typeClass);
+            strategy.setProfile(cvsProfile);
 
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
                     .withType(typeClass)
