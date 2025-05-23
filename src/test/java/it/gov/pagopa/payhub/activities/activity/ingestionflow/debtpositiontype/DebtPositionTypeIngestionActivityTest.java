@@ -155,6 +155,7 @@ class DebtPositionTypeIngestionActivityTest {
 
   private DebtPositionTypeIngestionFlowFileResult buildDebtPositionTypeIngestionFlowFileResult() {
     return DebtPositionTypeIngestionFlowFileResult.builder()
+        .organizationId(10L)
         .processedRows(20L)
         .totalRows(30L)
         .discardedFileName("dicardedFileName")

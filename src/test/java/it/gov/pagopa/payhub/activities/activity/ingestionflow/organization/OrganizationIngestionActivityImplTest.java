@@ -155,6 +155,7 @@ class OrganizationIngestionActivityImplTest {
 
   private OrganizationIngestionFlowFileResult buildOrganizationIngestionFlowFileResult() {
     return OrganizationIngestionFlowFileResult.builder()
+        .organizationId(10L)
         .processedRows(20L)
         .totalRows(30L)
         .discardedFileName("dicardedFileName")
