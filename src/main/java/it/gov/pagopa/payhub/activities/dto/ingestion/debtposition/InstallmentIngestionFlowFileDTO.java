@@ -141,16 +141,16 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "numberBeneficiary", profiles = V2_0)
     private Integer numberBeneficiary;
 
-    @CsvBindAndJoinByName(column = ".*_2", elementType = String.class, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindAndJoinByName(column = ".*_2", elementType = String.class, profiles = {V1_4, V2_0})
     private MultiValuedMap<String, String> transfer2;
 
-    @CsvBindAndJoinByName(column = ".*_3", elementType = String.class)
+    @CsvBindAndJoinByName(column = ".*_3", elementType = String.class, profiles = V2_0)
     private MultiValuedMap<String, String> transfer3;
 
-    @CsvBindAndJoinByName(column = ".*_4", elementType = String.class)
+    @CsvBindAndJoinByName(column = ".*_4", elementType = String.class, profiles = V2_0)
     private MultiValuedMap<String, String> transfer4;
 
-    @CsvBindAndJoinByName(column = ".*_5", elementType = String.class)
+    @CsvBindAndJoinByName(column = ".*_5", elementType = String.class, profiles = V2_0)
     private MultiValuedMap<String, String> transfer5;
 
     @CsvBindByName(column = "configurazioniEsecuzione", profiles = V2_0)
