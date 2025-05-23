@@ -86,7 +86,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                         errors.append("\nSynchronization workflow for debt position with iupdOrg ")
                                 .append(debtPosition.getIupdOrg())
                                 .append(" terminated with error status.");
-                    } else if (debtPosition.getFlagPagoPaPayment()) {
+                    } else if (debtPosition.getFlagPuPagoPaPayment()) {
                         debtPositionsGenerateNotices.add(debtPosition);
                     }
                 } catch (Exception e) {

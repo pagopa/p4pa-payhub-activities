@@ -46,7 +46,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .notificationFeeCents(1000L)
                 .remittanceInformation("remittanceInformation")
                 .legacyPaymentMetadata("legacyPaymentMetadata")
-                .flagPagoPaPayment(false)
+                .flagPuPagoPaPayment(false)
                 .balance("balance")
                 .flagMultibeneficiary(true)
                 .numberBeneficiary(5)
