@@ -69,7 +69,7 @@ public class InstallmentSynchronizeMapper {
                 .notificationFeeCents(bigDecimalEuroToLongCentsAmount(installmentIngestionFlowFileDTO.getNotificationFee()))
                 .remittanceInformation(installmentIngestionFlowFileDTO.getRemittanceInformation())
                 .legacyPaymentMetadata(installmentIngestionFlowFileDTO.getLegacyPaymentMetadata())
-                .flagPuPagoPaPayment(installmentIngestionFlowFileDTO.getFlagPagoPaPayment())
+                .flagPuPagoPaPayment(installmentIngestionFlowFileDTO.getFlagPuPagoPaPayment())
                 .balance(installmentIngestionFlowFileDTO.getBalance())
                 .flagMultibeneficiary(installmentIngestionFlowFileDTO.getFlagMultiBeneficiary())
                 .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? installmentIngestionFlowFileDTO.getNumberBeneficiary() : null)

@@ -131,8 +131,8 @@ public class InstallmentIngestionFlowFileDTO {
     private String legacyPaymentMetadata;
 
     @CsvBindByName(column = "flagGeneraIuv", required = true, profiles = "legacy")
-    @CsvBindByName(column = "flagPagoPaPayment", required = true)
-    private Boolean flagPagoPaPayment;
+    @CsvBindByName(column = "flagPuPagoPaPayment", required = true)
+    private Boolean flagPuPagoPaPayment;
 
     @CsvBindByName(column = "bilancio", profiles = "legacy")
     @CsvBindByName(column = "balance")

@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeEntityControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +22,8 @@ class DebtPositionTypeClientTest {
     private DebtPositionApisHolder debtPositionApisHolderMock;
     @Mock
     private DebtPositionTypeEntityControllerApi debtPositionTypeEntityControllerApiMock;
+    @Mock
+    private DebtPositionTypeSearchControllerApi debtPositionTypeSearchControllerApiMock;
 
     private DebtPositionTypeClient client;
 
@@ -52,6 +56,32 @@ class DebtPositionTypeClientTest {
 
         // Then
         Assertions.assertSame(expectedDebtPositionType, result);
+    }
+
+    @Test
+    void whenFindByMainFieldsThenInvokeWithAccessToken(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String code = "code";
+        Long brokerId = 1L;
+        String orgType = "orgType";
+        String macroArea = "macroArea";
+        String serviceType = "serviceType";
+        String collectingReason = "collectingReason";
+        String taxonomyCode = "taxonomyCode";
+        CollectionModelDebtPositionType expectedResult = new CollectionModelDebtPositionType();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
+            .thenReturn(debtPositionTypeSearchControllerApiMock);
+        Mockito.when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByMainFields(
+                code, brokerId, orgType, macroArea, serviceType, collectingReason, taxonomyCode))
+            .thenReturn(expectedResult);
+
+        // When
+        CollectionModelDebtPositionType result = client.getByMainFields(code, brokerId, orgType, macroArea, serviceType, collectingReason, taxonomyCode, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
     }
 
 
