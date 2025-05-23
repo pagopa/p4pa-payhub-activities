@@ -84,7 +84,7 @@ public class DebtPositionTypeProcessingService extends
           debtPositionTypeDTO.getCollectingReason(),
           debtPositionTypeDTO.getTaxonomyCode());
 
-      List<DebtPositionType> debtPositionTypeList = new ArrayList<>();
+      List<DebtPositionType> debtPositionTypeList = null;
       if (existingDebtPosType != null && existingDebtPosType.getEmbedded() != null && existingDebtPosType.getEmbedded().getDebtPositionTypes() != null) {
         debtPositionTypeList = existingDebtPosType.getEmbedded().getDebtPositionTypes();
       }
