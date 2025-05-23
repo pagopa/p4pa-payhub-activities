@@ -89,7 +89,7 @@ public class DebtPositionTypeProcessingService extends
         debtPositionTypeList = existingDebtPosType.getEmbedded().getDebtPositionTypes();
       }
 
-      if (!debtPositionTypeList.isEmpty()) {
+      if (!CollectionUtils.isEmpty(debtPositionTypeList)) {
         DebtPositionTypeErrorDTO error = new DebtPositionTypeErrorDTO(
             ingestionFlowFile.getFileName(), debtPositionTypeDTO.getDebtPositionTypeCode(),
             debtPositionTypeDTO.getBrokerCf(), lineNumber, "DEBT_POSITION_TYPE_ALREADY_EXISTS",
