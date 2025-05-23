@@ -50,7 +50,6 @@ public class DebtPositionTypeProcessingService extends
 
     List<DebtPositionTypeErrorDTO> errorList = new ArrayList<>();
     DebtPositionTypeIngestionFlowFileResult ingestionFlowFileResult = new DebtPositionTypeIngestionFlowFileResult();
-    ingestionFlowFileResult.setDebtPositionTypeCodeList(new ArrayList<>());
 
     Organization organization = organizationService.getOrganizationById(
         ingestionFlowFile.getOrganizationId()).orElse(null);
@@ -97,9 +96,7 @@ public class DebtPositionTypeProcessingService extends
         return false;
       }
 
-      DebtPositionType debtPositionTypeCreated = debtPositionTypeService.createDebtPositionType(
-          debtPositionTypeMapper.map(debtPositionTypeDTO, ingestionFlowFileResult.getBrokerId()));
-      ingestionFlowFileResult.getDebtPositionTypeCodeList().add(debtPositionTypeCreated.getCode());
+      debtPositionTypeService.createDebtPositionType(debtPositionTypeMapper.map(debtPositionTypeDTO, ingestionFlowFileResult.getBrokerId()));
       return true;
 
     } catch (Exception e) {

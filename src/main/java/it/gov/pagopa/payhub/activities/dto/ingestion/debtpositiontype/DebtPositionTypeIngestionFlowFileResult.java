@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString(callSuper = true)
 public class DebtPositionTypeIngestionFlowFileResult extends IngestionFlowFileResult {
-  private List<String> debtPositionTypeCodeList;
   private String brokerFiscalCode;
   private Long brokerId;
 }
