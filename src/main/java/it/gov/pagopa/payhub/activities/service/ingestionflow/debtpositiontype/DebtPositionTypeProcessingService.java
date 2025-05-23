@@ -52,9 +52,8 @@ public class DebtPositionTypeProcessingService extends
     DebtPositionTypeIngestionFlowFileResult ingestionFlowFileResult = new DebtPositionTypeIngestionFlowFileResult();
     ingestionFlowFileResult.setDebtPositionTypeCodeList(new ArrayList<>());
 
-    Optional<Organization> organizationBroker = organizationService.getOrganizationById(
-        ingestionFlowFile.getOrganizationId());
-    Organization organization = organizationBroker.orElse(null);
+    Organization organization = organizationService.getOrganizationById(
+        ingestionFlowFile.getOrganizationId()).orElse(null);
     Long brokerId = organization != null ? organization.getBrokerId() : null;
     if (brokerId == null) {
       log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
