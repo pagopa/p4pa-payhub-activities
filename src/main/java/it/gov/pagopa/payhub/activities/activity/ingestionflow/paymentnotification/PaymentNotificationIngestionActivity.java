@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentnotificati
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 
 /**
@@ -10,7 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.Payment
  * Defines methods for processing payment notification files based on an IngestionFlowFile ID.
  */
 @ActivityInterface
-public interface PaymentNotificationIngestionActivity extends IngestionFlowFileProcessorActivity<PaymentNotificationIngestionFlowFileResult> {
+public interface PaymentNotificationIngestionActivity {
 
   /**
    * Processes a payment notification file based on the provided IngestionFlowFile ID.
@@ -19,6 +18,5 @@ public interface PaymentNotificationIngestionActivity extends IngestionFlowFileP
    * @return {@link PaymentNotificationIngestionFlowFileResult} containing the list of IUDs and organization Id.
    */
   @ActivityMethod
-  @Override
   PaymentNotificationIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }
