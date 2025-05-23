@@ -17,25 +17,6 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
     public static final String CREATION_DATE_FORMAT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     public static void validateRequiredFields(InstallmentIngestionFlowFileDTO dto) {
-        Map<String, Object> requiredFields = new HashMap<>();
-        requiredFields.put("EntityType", dto.getEntityType());
-        requiredFields.put("FiscalCode", dto.getFiscalCode());
-        requiredFields.put("FullName", dto.getFullName());
-        requiredFields.put("Amount", dto.getAmount());
-        requiredFields.put("DebtPositionTypeCode", dto.getDebtPositionTypeCode());
-        requiredFields.put("RemittanceInformation", dto.getRemittanceInformation());
-        requiredFields.put("Action", dto.getAction());
-
-
-        List<String> missingFields = requiredFields.entrySet().stream()
-                .filter(entry -> entry.getValue() == null)
-                .map(Map.Entry::getKey)
-                .toList();
-
-        if (!missingFields.isEmpty()) {
-            throw new InvalidIngestionFileException("Missing required fields: " + String.join(", ", missingFields));
-        }
-
         setDefaultValues(dto);
         setDefaultIfNotLastVersion(dto);
     }
