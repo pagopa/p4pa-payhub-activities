@@ -118,10 +118,6 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "debtPositionTypeCode", required = true)
     private String debtPositionTypeCode;
 
-    @CsvBindByName(column = "commissioneNotifica", profiles = "legacy")
-    @CsvBindByName(column = "notificationFee")
-    private BigDecimal notificationFee;
-
     @CsvBindByName(column = "causaleVersamento", required = true, profiles = "legacy")
     @CsvBindByName(column = "remittanceInformation", required = true)
     private String remittanceInformation;
