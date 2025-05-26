@@ -39,6 +39,7 @@ public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileR
 			retrievedFiles = retrieveFiles(ingestionFlowFileDTO);
 
 			T result = handleRetrievedFiles(retrievedFiles, ingestionFlowFileDTO);
+			result.setOrganizationId(ingestionFlowFileDTO.getOrganizationId());
 
 			fileArchiverService.archive(ingestionFlowFileDTO);
 

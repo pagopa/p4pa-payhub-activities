@@ -12,7 +12,6 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositi
 @ActivityInterface
 public interface DebtPositionTypeIngestionActivity {
 
-
   /**
    * Processes a debt position type import file based on the provided IngestionFlowFile ID.
    *

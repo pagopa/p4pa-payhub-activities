@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.organization;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtpositiontype;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,19 +9,18 @@ import static org.mockito.Mockito.doReturn;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.organization.OrganizationProcessingService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.debtpositiontype.DebtPositionTypeProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -38,12 +37,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 
 @ExtendWith(MockitoExtension.class)
-class OrganizationIngestionActivityImplTest {
+class DebtPositionTypeIngestionActivityTest {
+
 
   @Mock
   private CsvService csvServiceMock;
   @Mock
-  private OrganizationProcessingService organizationProcessingServiceMock;
+  private DebtPositionTypeProcessingService debtPositionTypeProcessingServiceMock;
   @Mock
   private IngestionFlowFileService ingestionFlowFileServiceMock;
   @Mock
@@ -51,19 +51,19 @@ class OrganizationIngestionActivityImplTest {
   @Mock
   private FileArchiverService fileArchiverServiceMock;
 
-  private OrganizationIngestionActivityImpl activity;
+  private DebtPositionTypeIngestionActivityImpl activity;
 
   @TempDir
   private Path workingDir;
 
   @BeforeEach
   void setUp() {
-    activity = new OrganizationIngestionActivityImpl(
+    activity = new DebtPositionTypeIngestionActivityImpl(
         ingestionFlowFileServiceMock,
         ingestionFlowFileRetrieverServiceMock,
         fileArchiverServiceMock,
         csvServiceMock,
-        organizationProcessingServiceMock
+        debtPositionTypeProcessingServiceMock
     );
   }
 
@@ -74,7 +74,7 @@ class OrganizationIngestionActivityImplTest {
         ingestionFlowFileRetrieverServiceMock,
         fileArchiverServiceMock,
         csvServiceMock,
-        organizationProcessingServiceMock
+        debtPositionTypeProcessingServiceMock
     );
   }
 
@@ -85,8 +85,8 @@ class OrganizationIngestionActivityImplTest {
     IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
     ingestionFlowFileDTO.setOrganizationId(organizationId);
     ingestionFlowFileDTO.setFilePathName(workingDir.toString());
-    ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.ORGANIZATIONS);
-    Iterator<OrganizationIngestionFlowFileDTO> iterator = buildOrganizationIngestionFlowFileDTO();
+    ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE);
+    Iterator<DebtPositionTypeIngestionFlowFileDTO> iterator = buildDebtPositionTypeIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
 
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
@@ -98,21 +98,21 @@ class OrganizationIngestionActivityImplTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrganizationIngestionFlowFileDTO.class), any()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeIngestionFlowFileDTO.class), any()))
         .thenAnswer(invocation -> {
-          BiFunction<Iterator<OrganizationIngestionFlowFileDTO>, List<CsvException>, OrganizationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+          BiFunction<Iterator<DebtPositionTypeIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
         });
 
-    Mockito.when(organizationProcessingServiceMock.processOrganization(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
-        .thenReturn(buildOrganizationIngestionFlowFileResult());
+    Mockito.when(debtPositionTypeProcessingServiceMock.processDebtPositionType(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        .thenReturn(buildDebtPositionTypeIngestionFlowFileResult());
 
     // When
-    OrganizationIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
+    DebtPositionTypeIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
     // Then
     Assertions.assertEquals(
-        buildOrganizationIngestionFlowFileResult(),
+        buildDebtPositionTypeIngestionFlowFileResult(),
         result);
     Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
     Assertions.assertFalse(filePath.toFile().exists());
@@ -127,8 +127,8 @@ class OrganizationIngestionActivityImplTest {
     IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
     ingestionFlowFileDTO.setFilePathName(workingDir.toString());
     ingestionFlowFileDTO.setOrganizationId(organizationId);
-    ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.ORGANIZATIONS);
-    Iterator<OrganizationIngestionFlowFileDTO> iterator = buildOrganizationIngestionFlowFileDTO();
+    ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE);
+    Iterator<DebtPositionTypeIngestionFlowFileDTO> iterator = buildDebtPositionTypeIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
 
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
@@ -140,78 +140,67 @@ class OrganizationIngestionActivityImplTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrganizationIngestionFlowFileDTO.class), any()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeIngestionFlowFileDTO.class), any()))
         .thenAnswer(invocation -> {
-          BiFunction<Iterator<OrganizationIngestionFlowFileDTO>, List<CsvException>, OrganizationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
+          BiFunction<Iterator<DebtPositionTypeIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
         });
 
-    Mockito.when(organizationProcessingServiceMock.processOrganization(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+    Mockito.when(debtPositionTypeProcessingServiceMock.processDebtPositionType(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
         .thenThrow(new RestClientException("Error"));
 
     // When & Then
     assertThrows(InvalidIngestionFileException.class, () -> activity.processFile(ingestionFlowFileId));
   }
 
-  private OrganizationIngestionFlowFileResult buildOrganizationIngestionFlowFileResult() {
-    return OrganizationIngestionFlowFileResult.builder()
+  private DebtPositionTypeIngestionFlowFileResult buildDebtPositionTypeIngestionFlowFileResult() {
+    return DebtPositionTypeIngestionFlowFileResult.builder()
         .organizationId(10L)
         .processedRows(20L)
         .totalRows(30L)
         .discardedFileName("dicardedFileName")
         .errorDescription("errorDescription")
-        .organizationIpaCodeList(List.of(
-            "ipa1",
-            "ipa2"))
+        .brokerFiscalCode("BrokerFiscalCode")
         .build();
   }
 
-  private Iterator<OrganizationIngestionFlowFileDTO> buildOrganizationIngestionFlowFileDTO() {
-    List<OrganizationIngestionFlowFileDTO> organizationIngestionFlowFileDTOList = List.of(
-        OrganizationIngestionFlowFileDTO.builder()
-            .ipaCode("ipaCode1")
-            .orgFiscalCode("orgFiscalCode1")
-            .orgName("orgName1")
-            .orgTypeCode("orgTypeCode1")
-            .orgEmail("orgEmail1")
-            .iban("iban1")
-            .postalIban("postalIban1")
-            .segregationCode("segregationCode1")
-            .cbillInterBankCode("cbillInterBankCode1")
-            .orgLogo("orgLogo1")
-            .status("status1")
-            .additionalLanguage("additionalLanguage1")
-            .startDate(LocalDateTime.now())
+  private Iterator<DebtPositionTypeIngestionFlowFileDTO> buildDebtPositionTypeIngestionFlowFileDTO() {
+    List<DebtPositionTypeIngestionFlowFileDTO> debtPositionTypeIngestionFlowFileDTOS = List.of(
+        DebtPositionTypeIngestionFlowFileDTO.builder()
+            .debtPositionTypeCode("code1")
+            .description("description1")
+            .orgType("orgType1")
             .brokerCf("brokerCf1")
-            .ioApiKey("ioApiKey1")
-            .flagNotifyIo(true)
-            .flagNotifyOutcomePush(true)
-            .sendApiKey("sendApiKey1")
+            .collectingReason("collectingReason1")
+            .serviceType("serviceType1")
+            .taxonomyCode("taxonomyCode1")
+            .ioTemplateMessage("ioTemplateMessage1")
+            .ioTemplateSubject("ioTemplateSubject1")
+            .flagAnonymousFiscalCode(false)
+            .flagNotifyIo(false)
+            .flagMandatoryDueDate(false)
+            .macroArea("macroArea1")
             .build(),
-        OrganizationIngestionFlowFileDTO.builder()
-            .ipaCode("ipaCode2")
-            .orgFiscalCode("orgFiscalCode2")
-            .orgName("orgName2")
-            .orgTypeCode("orgTypeCode2")
-            .orgEmail("orgEmail2")
-            .iban("iban2")
-            .postalIban("postalIban2")
-            .segregationCode("segregationCode2")
-            .cbillInterBankCode("cbillInterBankCode2")
-            .orgLogo("orgLogo2")
-            .status("status2")
-            .additionalLanguage("additionalLanguage2")
-            .startDate(LocalDateTime.now())
+        DebtPositionTypeIngestionFlowFileDTO.builder()
+            .debtPositionTypeCode("code2")
+            .description("description2")
+            .orgType("orgType2")
             .brokerCf("brokerCf2")
-            .ioApiKey("ioApiKey2")
-            .flagNotifyIo(true)
-            .flagNotifyOutcomePush(true)
-            .sendApiKey("sendApiKey2")
+            .collectingReason("collectingReason2")
+            .serviceType("serviceType2")
+            .taxonomyCode("taxonomyCode2")
+            .ioTemplateMessage("ioTemplateMessage2")
+            .ioTemplateSubject("ioTemplateSubject2")
+            .flagAnonymousFiscalCode(false)
+            .flagNotifyIo(false)
+            .flagMandatoryDueDate(false)
+            .macroArea("macroArea2")
             .build()
     );
 
-    return organizationIngestionFlowFileDTOList.iterator();
+    return debtPositionTypeIngestionFlowFileDTOS.iterator();
   }
+
 
 
 
