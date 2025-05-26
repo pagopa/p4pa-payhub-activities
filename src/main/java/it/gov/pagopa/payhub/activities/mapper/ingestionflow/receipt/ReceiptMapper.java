@@ -36,7 +36,6 @@ public class ReceiptMapper {
   public ReceiptWithAdditionalNodeDataDTO map(IngestionFlowFile ingestionFlowFile, PaSendRTV2Request paSendRTV2Request) {
     Long organizationId = ingestionFlowFile.getOrganizationId();
     CtReceiptV2 rec = paSendRTV2Request.getReceipt();
-     organizationService.getOrganizationById(organizationId);
     Organization org = organizationService.getOrganizationById(organizationId)
         .orElseThrow(() -> new OrganizationNotFoundException("Organization with id "+organizationId+" not found."));
 
