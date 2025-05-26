@@ -64,7 +64,7 @@ class RtFileHandlerServiceTest {
                         .rtFolder("data/rt/path")
                         .build());
 
-        String expectedRtFilePath = "data/rt/path\\rtFileName.xml";
+        String expectedRtFilePath = "data/rt/path/rtFileName.xml";
         Path expectedStoredPath = tmpDir.resolve("1").resolve(expectedRtFilePath + AESUtils.CIPHER_EXTENSION);
 
         // When store
