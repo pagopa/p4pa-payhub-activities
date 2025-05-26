@@ -1,10 +1,13 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +25,9 @@ class ReceiptMapperTest {
     @Mock
     private RtFileHandlerService rtFileHandlerServiceMock;
 
+    @Mock
+    private OrganizationService organizationServiceMock;
+
     @InjectMocks
     private ReceiptMapper receiptMapper;
 
@@ -29,16 +35,18 @@ class ReceiptMapperTest {
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(rtFileHandlerServiceMock);
+        Mockito.verifyNoMoreInteractions(rtFileHandlerServiceMock,
+            organizationServiceMock);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void givenPaSendRTV2RequestWhenMapThenOk(boolean isPayerNull) {
         // Given
+        Long organizationId = 0L;
         IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
         ingestionFlowFile.setIngestionFlowFileId(10L);
-        ingestionFlowFile.setOrganizationId(0L);
+        ingestionFlowFile.setOrganizationId(organizationId);
         ingestionFlowFile.setFileName("rtFileName.xml");
 
         PaSendRTV2Request request = podamFactory.manufacturePojo(PaSendRTV2Request.class);
@@ -51,15 +59,21 @@ class ReceiptMapperTest {
             t.setMBDAttachment(podamFactory.manufacturePojo(byte[].class));
         });
 
+        Organization organization = new Organization();
+        organization.setOrganizationId(organizationId);
+        organization.setIpaCode("IPACODE");
+
         String rtFilePath = "RT/FILE/PATH.xml";
         Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getReceipt()), Mockito.same(ingestionFlowFile.getFileName())))
                 .thenReturn(rtFilePath);
+        Mockito.when(organizationServiceMock.getOrganizationById(organizationId)).thenReturn(
+            Optional.of(organization));
 
         // When
         ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
 
         // Then
-        TestUtils.checkNotNullFields(result, "receiptId", "sourceFlowName", "creationDate", "updateDate", "payer");
+        TestUtils.checkNotNullFields(result, "receiptId", "creationDate", "updateDate", "payer");
         TestUtils.checkNotNullFields(result.getDebtor());
         if (!isPayerNull) {
             Assertions.assertNotNull(result.getPayer());
