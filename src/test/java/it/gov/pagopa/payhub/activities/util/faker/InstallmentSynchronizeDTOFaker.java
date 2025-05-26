@@ -43,7 +43,6 @@ public class InstallmentSynchronizeDTOFaker {
                 .dueDate(LOCALDATE)
                 .amountCents(100L)
                 .debtPositionTypeCode("debtPositionTypeCode")
-                .notificationFeeCents(1000L)
                 .remittanceInformation("remittanceInformation")
                 .legacyPaymentMetadata("legacyPaymentMetadata")
                 .flagPuPagoPaPayment(false)

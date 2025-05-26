@@ -37,7 +37,6 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .dueDate(LOCALDATE)
                 .amount(BigDecimal.valueOf(1L))
                 .debtPositionTypeCode("debtPositionTypeCode")
-                .notificationFee(BigDecimal.valueOf(10))
                 .remittanceInformation("remittanceInformation")
                 .legacyPaymentMetadata("legacyPaymentMetadata")
                 .flagPuPagoPaPayment(false)
@@ -63,7 +62,6 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setRemittanceInformation("info");
         installmentIngestionFlowFileDTO.setPaymentOptionIndex(1);
         installmentIngestionFlowFileDTO.setPaymentOptionType("type");
-        installmentIngestionFlowFileDTO.setNotificationFee(BigDecimal.valueOf(10));
         installmentIngestionFlowFileDTO.setIud("iud");
         installmentIngestionFlowFileDTO.setFiscalCode("fiscalCode");
         installmentIngestionFlowFileDTO.setLegacyPaymentMetadata("legacy");
