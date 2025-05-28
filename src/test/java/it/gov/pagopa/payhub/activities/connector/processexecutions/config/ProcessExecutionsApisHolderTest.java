@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,7 +95,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     void whenGetExportFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> processExecutionsApisHolder.getExportFileEntityExtendedControllerApi(accessToken)
-                        .updateExportFileStatus(1L, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "filePath", "fileName", 20L,2L, ""),
+                        .updateExportFileStatus(1L, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "filePath", "fileName", 20L,2L, "", OffsetDateTime.now().plusDays(5L)),
                 new ParameterizedTypeReference<>() {},
                 processExecutionsApisHolder::unload);
     }
