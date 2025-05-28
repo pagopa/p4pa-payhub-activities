@@ -7,8 +7,12 @@ import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionPara
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
+import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.IUVArchivingExportFileService;
 import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,19 +43,21 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     private final Integer pageSize;
     private final int maxAttempts;
     private final int retryDelayMs;
+    private final IUVArchivingExportFileService iuvArchivingExportFileService;
 
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
 
     public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowCompletionService workflowCompletionService, GenerateNoticeService generateNoticeService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
                                                        @Value("${query-limits.debt-positions.size}") Integer pageSize,
                                                        @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes}") int maxWaitingMinutes,
-                                                       @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs) {
+                                                       @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs, IUVArchivingExportFileService iuvArchivingExportFileService) {
         this.debtPositionService = debtPositionService;
         this.workflowDebtPositionService = workflowDebtPositionService;
         this.workflowCompletionService = workflowCompletionService;
         this.generateNoticeService = generateNoticeService;
         this.debtPositionOperationTypeResolver = debtPositionOperationTypeResolver;
         this.pageSize = pageSize;
+        this.iuvArchivingExportFileService = iuvArchivingExportFileService;
         this.maxAttempts = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
         this.retryDelayMs = retryDelayMs;
     }
@@ -104,13 +111,17 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         log.info("Synchronization of all debt positions related to ingestion flow file id {} completed", ingestionFlowFileId);
 
         String pdfGeneratedId = null;
+        Path csvPath = null;
         if (!debtPositionsGenerateNotices.isEmpty()) {
             pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices);
+            csvPath = iuvArchivingExportFileService.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId);
         }
 
         return SyncIngestedDebtPositionDTO.builder()
                 .errorsDescription(errors.toString())
                 .pdfGeneratedId(pdfGeneratedId)
+                .iuvFileName(Objects.requireNonNull(csvPath).getFileName().toString())
+                .iuvFilePath(csvPath.toString())
                 .build();
     }
 
