@@ -144,7 +144,7 @@ class IUVArchivingExportFileServiceTest {
         IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
                 service.executeExport(List.of(debtPositionDTO), ingestionFlowFileId));
 
-        assertEquals("Error", ex.getMessage());
+        assertEquals("Error writing to CSV file: Error", ex.getMessage());
     }
 
     @Test
