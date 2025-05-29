@@ -141,7 +141,7 @@ class IUVArchivingExportFileServiceTest {
                 .when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
 
         // When & Then
-        IOException ex = assertThrows(IOException.class, () ->
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
                 service.executeExport(List.of(debtPositionDTO), ingestionFlowFileId));
 
         assertEquals("Error", ex.getMessage());
