@@ -175,7 +175,7 @@ class IUVArchivingExportFileServiceTest {
                         .build());
 
 
-        doThrow(new IllegalStateException("Error"))
+        doThrow(new IOException("Error"))
                 .when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
 
         // When & Then
