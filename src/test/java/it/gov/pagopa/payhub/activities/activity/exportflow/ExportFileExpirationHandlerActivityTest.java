@@ -46,7 +46,7 @@ class ExportFileExpirationHandlerActivityTest {
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setStatus(ExportFileStatus.COMPLETED);
     UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED,
-        exportFile.getFilePathName(), exportFile.getFileName(), exportFile.getFileSize(), exportFile.getNumTotalRows(),exportFile.getErrorDescription());
+        exportFile.getFilePathName(), exportFile.getFileName(), exportFile.getFileSize(), exportFile.getNumTotalRows(),exportFile.getErrorDescription(), exportFile.getExpirationDate());
 
     when(exportFileServiceMock.findById(exportFile.getExportFileId())).thenReturn(Optional.of(exportFile));
 
@@ -100,7 +100,7 @@ class ExportFileExpirationHandlerActivityTest {
     ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
     exportFile.setStatus(ExportFileStatus.COMPLETED);
     UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED,
-        exportFile.getFilePathName(), exportFile.getFileName(), exportFile.getFileSize(), exportFile.getNumTotalRows(),exportFile.getErrorDescription());
+        exportFile.getFilePathName(), exportFile.getFileName(), exportFile.getFileSize(), exportFile.getNumTotalRows(),exportFile.getErrorDescription(), exportFile.getExpirationDate());
     Long exportFileId = exportFile.getExportFileId();
     when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 
@@ -129,7 +129,7 @@ class ExportFileExpirationHandlerActivityTest {
     exportFile.setStatus(ExportFileStatus.COMPLETED);
     exportFile.setFilePathName("");
     UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFile.getExportFileId(), exportFile.getStatus(), ExportFileStatus.EXPIRED,
-        exportFile.getFilePathName(), exportFile.getFileName(), exportFile.getFileSize(), exportFile.getNumTotalRows(),exportFile.getErrorDescription());
+        exportFile.getFilePathName(), exportFile.getFileName(), exportFile.getFileSize(), exportFile.getNumTotalRows(),exportFile.getErrorDescription(), exportFile.getExpirationDate());
     Long exportFileId = exportFile.getExportFileId();
     when(exportFileServiceMock.findById(exportFileId)).thenReturn(Optional.of(exportFile));
 

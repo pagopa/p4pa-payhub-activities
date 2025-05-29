@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +21,5 @@ public class UpdateStatusRequest {
   private Long fileSize;
   private Long exportedRows;
   private String errorDescription;
+  private OffsetDateTime expirationDate;
 }

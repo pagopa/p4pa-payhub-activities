@@ -75,6 +75,7 @@ val openCsvVersion = "5.11"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
 val httpClientVersion = "5.4.4"
+val commonsBeanUtilsVersion = "1.11.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -86,6 +87,7 @@ dependencies {
 	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
 	implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
+	implementation("commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion")
 	implementation("org.mapstruct:mapstruct:$mapStructVersion")
 	implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
 	// openApi
