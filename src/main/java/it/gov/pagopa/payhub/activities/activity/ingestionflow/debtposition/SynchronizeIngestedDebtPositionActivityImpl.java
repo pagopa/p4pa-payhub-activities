@@ -120,8 +120,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         return SyncIngestedDebtPositionDTO.builder()
                 .errorsDescription(errors.toString())
                 .pdfGeneratedId(pdfGeneratedId)
-                .iuvFileName(Objects.requireNonNull(csvPath).getFileName().toString())
-                .iuvFilePath(csvPath.toString())
+                .iuvFileName(csvPath != null ? csvPath.getFileName().toString() : null)
+                .iuvFilePath(csvPath != null ? csvPath.toString() : null)
                 .build();
     }
 

@@ -1,23 +1,23 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
+import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmentsExportFlowFileDTO;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.IUVInstallmentsExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
+import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Lazy
@@ -26,43 +26,36 @@ public class IUVArchivingExportFileService {
 
     private final CsvService csvService;
     private final FileArchiverService fileArchiverService;
-    private final String sharedFolder;
-    private final String relativeFileFolder;
-    private final Path workingDirectory;
+    private final FoldersPathsConfig foldersPathsConfig;
     private final IUVInstallmentsExportFlowFileDTOMapper iuvMapper;
     private final IngestionFlowFileService ingestionFlowFileService;
 
     public IUVArchivingExportFileService(CsvService csvService,
                                          FileArchiverService fileArchiverService,
-                                         @Value("${folders.shared}") String sharedFolder,
-                                         @Value("${export-flow-files.paid.relative-file-folder}") String relativeFileFolder,
-                                         @Value("${folders.tmp}") Path workingDirectory,
+                                         FoldersPathsConfig foldersPathsConfig,
                                          IUVInstallmentsExportFlowFileDTOMapper iuvMapper,
                                          IngestionFlowFileService ingestionFlowFileService) {
         this.csvService = csvService;
         this.fileArchiverService = fileArchiverService;
-        this.sharedFolder = sharedFolder;
-        this.relativeFileFolder = relativeFileFolder;
-        this.workingDirectory = workingDirectory;
+        this.foldersPathsConfig = foldersPathsConfig;
         this.iuvMapper = iuvMapper;
         this.ingestionFlowFileService = ingestionFlowFileService;
     }
 
     public Path executeExport(List<DebtPositionDTO> debtPositions, Long ingestionFlowFileId) {
-        Optional<IngestionFlowFile> ingestionFlowFile = ingestionFlowFileService.findById(ingestionFlowFileId);
-        Path csvFilePath = null;
-        if (ingestionFlowFile.isPresent()) {
-            csvFilePath = workingDirectory.resolve(relativeFileFolder).resolve(ingestionFlowFile.get().getFilePathName());
-        }
+        IngestionFlowFile ingestionFlowFile = ingestionFlowFileService.findById(ingestionFlowFileId)
+                .orElseThrow(() -> new IngestionFlowFileNotFoundException(String.format("IngestionFlowFile with id %s was not found", ingestionFlowFileId)));
 
+        Path csvFilePath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getTmp(), ingestionFlowFile.getOrganizationId())
+                .resolve(ingestionFlowFile.getFilePathName());
 
-        List<IUVInstallmentsExportFlowFileDTO> csvRows = retrieveAndMap(debtPositions, ingestionFlowFileId);
+        List<IUVInstallmentsExportFlowFileDTO> csvRows = filterAndMap(debtPositions, ingestionFlowFileId);
 
         final boolean[] alreadySupplied = {false};
 
         try {
             log.info("Creating iuv file with ingestionFlowFileId: {}", ingestionFlowFileId);
-            csvService.createCsv(Objects.requireNonNull(csvFilePath), IUVInstallmentsExportFlowFileDTO.class,
+            csvService.createCsv(csvFilePath, IUVInstallmentsExportFlowFileDTO.class,
                     () -> {
                         if (!alreadySupplied[0]) {
                             alreadySupplied[0] = true;
@@ -75,14 +68,15 @@ public class IUVArchivingExportFileService {
             throw new IllegalStateException("Error writing to CSV file: " + e.getMessage(), e);
         }
 
-        Path sharedTargetPath = Path.of(sharedFolder).resolve(relativeFileFolder);
+        Path sharedTargetPath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), ingestionFlowFile.getOrganizationId())
+                        .resolve(ingestionFlowFile.getFilePathName()).resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
         Path zipFilePath = resolveZipFilePath(csvFilePath);
         createZipArchive(csvFilePath, zipFilePath, sharedTargetPath);
 
         return zipFilePath;
     }
 
-    private List<IUVInstallmentsExportFlowFileDTO> retrieveAndMap(List<DebtPositionDTO> debtPositions, Long ingestionFlowFileId) {
+    private List<IUVInstallmentsExportFlowFileDTO> filterAndMap(List<DebtPositionDTO> debtPositions, Long ingestionFlowFileId) {
         return debtPositions.stream()
                 .flatMap(dp -> dp.getPaymentOptions().stream())
                 .flatMap(po -> po.getInstallments().stream())

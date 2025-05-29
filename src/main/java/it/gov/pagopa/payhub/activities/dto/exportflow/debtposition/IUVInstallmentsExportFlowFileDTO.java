@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.dto.exportflow.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
+import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -85,9 +86,5 @@ public class IUVInstallmentsExportFlowFileDTO {
 
     public enum ActionEnum {
         I, M, A
-    }
-
-    public enum EntityTypeEnum {
-        F, G
     }
 }
