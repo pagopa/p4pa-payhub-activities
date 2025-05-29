@@ -59,8 +59,7 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
         } else if (paymentEventType.equals(PaymentEventType.DP_CANCELLED)){
             return IUVInstallmentsExportFlowFileDTO.ActionEnum.A;
         } else {
-            throw new IllegalArgumentException("Unsupported payment event type: " + paymentEventType);
+            throw new IllegalArgumentException("It's not possible to identify Action with paymentEventType: " + paymentEventType);
         }
     }
-
 }

@@ -47,7 +47,7 @@ public class IUVArchivingExportFileService {
                 .orElseThrow(() -> new IngestionFlowFileNotFoundException(String.format("IngestionFlowFile with id %s was not found", ingestionFlowFileId)));
 
         Path csvFilePath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getTmp(), ingestionFlowFile.getOrganizationId())
-                .resolve(ingestionFlowFile.getFilePathName());
+                .resolve(ingestionFlowFile.getFileName());
 
         List<IUVInstallmentsExportFlowFileDTO> csvRows = filterAndMap(debtPositions, ingestionFlowFileId);
 
@@ -69,7 +69,7 @@ public class IUVArchivingExportFileService {
         }
 
         Path sharedTargetPath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), ingestionFlowFile.getOrganizationId())
-                        .resolve(ingestionFlowFile.getFilePathName()).resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
+                        .resolve(ingestionFlowFile.getFileName()).resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
         Path zipFilePath = resolveZipFilePath(csvFilePath);
         createZipArchive(csvFilePath, zipFilePath, sharedTargetPath);
 
