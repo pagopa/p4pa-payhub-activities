@@ -182,6 +182,6 @@ class IUVArchivingExportFileServiceTest {
         IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
                 service.executeExport(List.of(debtPositionDTO), ingestionFlowFileId));
 
-        assertEquals("Error", ex.getMessage());
+        assertEquals("Error during compression and archiving: Error", ex.getMessage());
     }
 }
