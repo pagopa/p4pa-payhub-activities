@@ -77,14 +77,14 @@ class IUVArchivingExportFileServiceTest {
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
 
+        Mockito.when(foldersPathsConfigMock.getTmp())
+                .thenReturn(Path.of("/tmp"));
+
         doAnswer(invocation -> {
             Supplier<List<IUVInstallmentsExportFlowFileDTO>> supplier = invocation.getArgument(2);
             supplier.get();
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
-
-        Mockito.when(foldersPathsConfigMock.getTmp())
-                .thenReturn(Path.of("/tmp"));
 
         Mockito.when(foldersPathsConfigMock.getShared())
                 .thenReturn(Path.of("/shared"));
@@ -134,6 +134,9 @@ class IUVArchivingExportFileServiceTest {
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
 
+        Mockito.when(foldersPathsConfigMock.getTmp())
+                .thenReturn(Path.of("/tmp"));
+
         doThrow(new IOException("Error"))
                 .when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
 
@@ -154,14 +157,14 @@ class IUVArchivingExportFileServiceTest {
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
 
+        Mockito.when(foldersPathsConfigMock.getTmp())
+                .thenReturn(Path.of("/tmp"));
+
         doAnswer(invocation -> {
             Supplier<List<IUVInstallmentsExportFlowFileDTO>> supplier = invocation.getArgument(2);
             supplier.get();
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
-
-        Mockito.when(foldersPathsConfigMock.getTmp())
-                .thenReturn(Path.of("/tmp"));
 
         Mockito.when(foldersPathsConfigMock.getShared())
                 .thenReturn(Path.of("/shared"));
