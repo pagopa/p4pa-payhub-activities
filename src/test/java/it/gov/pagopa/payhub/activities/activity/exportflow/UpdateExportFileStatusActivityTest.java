@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
+
 @ExtendWith(MockitoExtension.class)
 class UpdateExportFileStatusActivityTest {
 
@@ -30,11 +32,12 @@ class UpdateExportFileStatusActivityTest {
   private static final Long FILE_SIZE = 20L;
   private static final Long EXPORTED_ROWS = 2L;
   private static final String ERROR_DESCRIPTION = "errorDescription";
+  private static final OffsetDateTime EXPIRATION_DATE = OffsetDateTime.now().plusDays(5L);
 
   @Test
   void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
     UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(VALID_ID, OLD_STATUS,
-        NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION);
+        NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION, EXPIRATION_DATE);
     //given
     Mockito.when(
         exportFileServiceMock.updateStatus(updateStatusRequest)).thenReturn(1);
@@ -46,7 +49,7 @@ class UpdateExportFileStatusActivityTest {
 
   @Test
   void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
-    UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(INVALID_ID, OLD_STATUS, NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION);
+    UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(INVALID_ID, OLD_STATUS, NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION, EXPIRATION_DATE);
     //given
     Mockito.when(
         exportFileServiceMock.updateStatus(updateStatusRequest)).thenReturn(0);

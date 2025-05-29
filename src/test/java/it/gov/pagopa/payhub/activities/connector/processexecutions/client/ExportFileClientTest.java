@@ -19,6 +19,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.time.OffsetDateTime;
+
 @ExtendWith(MockitoExtension.class)
 class ExportFileClientTest {
 
@@ -130,13 +132,14 @@ class ExportFileClientTest {
         String fileName = "fileName";
         Long fileSize = 20L;
         Long numTotalRows = 2L;
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusDays(5L);
 
         Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(exportFileEntityExtendedControllerApiMock);
-        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, ""))
+        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate))
                 .thenReturn(1);
         //when
-        Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows,""),accessToken);
+        Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows,"", expirationDate),accessToken);
         //then
         Assertions.assertEquals(1, result);
     }
@@ -150,13 +153,14 @@ class ExportFileClientTest {
         String fileName = "fileName";
         Long fileSize = 20L;
         Long numTotalRows = 2L;
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusDays(5L);
 
         Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(exportFileEntityExtendedControllerApiMock);
-        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, ""))
+        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
         //when
-        Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, ""), accessToken);
+        Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate), accessToken);
         //then
         Assertions.assertNull(result);
     }

@@ -12,6 +12,7 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.client.Export
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.*;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -97,8 +98,10 @@ class ExportFileServiceImplTest {
         Long numTotalRows = 2L;
         String errorDescription = "errorDescription";
         Integer expectedResponse = 1;
+        OffsetDateTime expirationDate = OffsetDateTime.now().plusDays(5L);
+
         UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(exportFileId,
-            oldStatus, newStatus, filePath, fileName, fileSize, numTotalRows, errorDescription);
+            oldStatus, newStatus, filePath, fileName, fileSize, numTotalRows, errorDescription, expirationDate);
         when(exportFileClientMock.updateStatus(updateStatusRequest, accessToken)).thenReturn(expectedResponse);
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
         // When

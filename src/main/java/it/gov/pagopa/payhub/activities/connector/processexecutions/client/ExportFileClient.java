@@ -69,7 +69,8 @@ public class ExportFileClient {
                     updateStatusRequest.getFileName(),
                     updateStatusRequest.getFileSize(),
                     updateStatusRequest.getExportedRows(),
-                    updateStatusRequest.getErrorDescription());
+                    updateStatusRequest.getErrorDescription(),
+                    updateStatusRequest.getExpirationDate());
         } catch (HttpClientErrorException.NotFound e){
             log.info("Cannot find ExportFile having id {} and status {}", updateStatusRequest.getExportFileId(), updateStatusRequest.getOldStatus());
             return null;

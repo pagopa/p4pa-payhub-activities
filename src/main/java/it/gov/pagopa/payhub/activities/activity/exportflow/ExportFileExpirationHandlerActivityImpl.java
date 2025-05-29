@@ -7,14 +7,15 @@ import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Slf4j
 @Component
@@ -63,7 +64,7 @@ public class ExportFileExpirationHandlerActivityImpl implements
 
     if (file.getStatus() != ExportFileStatus.EXPIRED &&
         exportFileService.updateStatus(new UpdateStatusRequest(file.getExportFileId(), file.getStatus(),
-            ExportFileStatus.EXPIRED, file.getFilePathName(), file.getFileName(), file.getFileSize(), file.getNumTotalRows(), file.getErrorDescription())) != 1) {
+            ExportFileStatus.EXPIRED, file.getFilePathName(), file.getFileName(), file.getFileSize(), file.getNumTotalRows(), file.getErrorDescription(), file.getExpirationDate())) != 1) {
       throw new ExportFileNotFoundException(
           "Cannot update exportFile having exportFileId " + file.getExportFileId()
               + " from status " + file.getStatus() + " to status "
