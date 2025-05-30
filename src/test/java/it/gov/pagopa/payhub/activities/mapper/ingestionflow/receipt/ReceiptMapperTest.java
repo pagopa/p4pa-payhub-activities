@@ -97,7 +97,7 @@ class ReceiptMapperTest {
 
         ReceiptIngestionFlowFileDTO request = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
         if (codPaymentResult) {
-            request.setCodiceEsitoPagamento("1");
+            request.setOutcome("1");
         }
 
         String rtFilePath = "RT/FILE/PATH.xml";
@@ -110,7 +110,7 @@ class ReceiptMapperTest {
         // Then
         TestUtils.checkNotNullFields(result, "receiptId", "officeName", "pspFiscalCode", "pspPartitaIva",
                 "idChannel", "channelDescription", "paymentMethod", "applicationDate", "transferDate", "standin",
-                "creationDate", "updateDate", "metadata", "sourceFlowName");
+                "creationDate", "updateDate", "metadata");
         TestUtils.checkNotNullFields(result.getDebtor());
         TestUtils.checkNotNullFields(result.getPayer());
         if (!codPaymentResult) {

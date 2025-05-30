@@ -50,7 +50,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
         List<ReceiptErrorDTO> errorList = new ArrayList<>();
         ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
-        result.setFileVersion(ingestionFlowFile.getFileVersion());
+        result.setFileVersion("1.0");
         result.setOrganizationId(ingestionFlowFile.getOrganizationId());
         return result;
     }
@@ -66,10 +66,10 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
             receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
             return true;
         } catch (Exception e) {
-            log.error("Error processing receipt with codIuv {}: {}", receipt.getCodIuv(), e.getMessage());
+            log.error("Error processing receipt with codIuv {}: {}", receipt.getNoticeNumber(), e.getMessage());
             ReceiptErrorDTO error = ReceiptErrorDTO.builder()
                     .fileName(ingestionFlowFile.getFileName())
-                    .codIuv(receipt.getCodIuv())
+                    .codIuv(receipt.getNoticeNumber())
                     .rowNumber(lineNumber)
                     .errorCode("PROCESS_EXCEPTION")
                     .errorMessage(e.getMessage())

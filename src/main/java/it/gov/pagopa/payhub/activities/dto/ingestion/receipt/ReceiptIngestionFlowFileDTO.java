@@ -18,232 +18,232 @@ import java.time.LocalDateTime;
 @Builder
 public class ReceiptIngestionFlowFileDTO {
 
-    @CsvBindByName(column = "IUF")
-    private String iuf;
+    @CsvBindByName(column = "iuf")
+    private String sourceFlowName;
 
     @CsvBindByName(column = "numRigaFlusso")
-    private Integer numRigaFlusso;
+    private Integer flowRowNumber;
 
     @CsvBindByName(column = "codIud", required = true)
-    private String codIud;
+    private String iud;
 
     @CsvBindByName(column = "codIuv", required = true)
-    private String codIuv;
+    private String noticeNumber;
 
     @CsvBindByName(column = "versioneOggetto")
-    private String versioneOggetto;
+    private String objectVersion;
 
     @CsvBindByName(column = "identificativoDominio", required = true)
-    private String identificativoDominio;
+    private String orgFiscalCode;
 
     @CsvBindByName(column = "identificativoStazioneRichiedente")
-    private String identificativoStazioneRichiedente;
+    private String requestingStationId;
 
     @CsvBindByName(column = "identificativoMessaggioRicevuta", required = true)
-    private String identificativoMessaggioRicevuta;
+    private String paymentReceiptId;
 
     @CsvBindByName(column = "dataOraMessaggioRicevuta", required = true)
     @CsvDate(value = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime dataOraMessaggioRicevuta;
+    private LocalDateTime paymentDateTime;
 
     @CsvBindByName(column = "riferimentoMessaggioRichiesta")
-    private String riferimentoMessaggioRichiesta;
+    private String requestMessageReference;
 
     @CsvBindByName(column = "riferimentoDataRichiesta")
     @CsvDate(value = "yyyy-MM-dd")
-    private LocalDate riferimentoDataRichiesta;
+    private LocalDate requestDateReference;
 
     @CsvBindByName(column = "tipoIdentificativoUnivoco")
-    private String tipoIdentificativoUnivoco;
+    private String uniqueIdType;
 
     @CsvBindByName(column = "codiceIdentificativoUnivoco", required = true)
-    private String codiceIdentificativoUnivoco;
+    private String idPsp;
 
     @CsvBindByName(column = "denominazioneAttestante", required = true)
-    private String denominazioneAttestante;
+    private String pspCompanyName;
 
     @CsvBindByName(column = "codiceUnitOperAttestante")
-    private String codiceUnitOperAttestante;
+    private String certifierOperationalUnitCode;
 
     @CsvBindByName(column = "denomUnitOperAttestante")
-    private String denomUnitOperAttestante;
+    private String certifierOperationalUnitName;
 
     @CsvBindByName(column = "indirizzoAttestante")
-    private String indirizzoAttestante;
+    private String certifierAddress;
 
     @CsvBindByName(column = "civicoAttestante")
-    private String civicoAttestante;
+    private String certifierCivicNumber;
 
     @CsvBindByName(column = "capAttestante")
-    private String capAttestante;
+    private String certifierPostalCode;
 
     @CsvBindByName(column = "localitaAttestante")
-    private String localitaAttestante;
+    private String certifierLocation;
 
     @CsvBindByName(column = "provinciaAttestante")
-    private String provinciaAttestante;
+    private String certifierProvince;
 
     @CsvBindByName(column = "nazioneAttestante")
-    private String nazioneAttestante;
+    private String certifierNation;
 
     @CsvBindByName(column = "enteBenefTipoIdentificativoUnivoco")
-    private TipoEnteIUEnum enteBenefTipoIdentificativoUnivoco;
+    private EntityIdType beneficiaryEntityIdType;
 
     @CsvBindByName(column = "enteBenefCodiceIdentificativoUnivoco")
-    private String enteBenefCodiceIdentificativoUnivoco;
+    private String beneficiaryEntityIdCode;
 
     @CsvBindByName(column = "denominazioneBeneficiario", required = true)
-    private String denominazioneBeneficiario;
+    private String beneficiaryCompanyName;
 
     @CsvBindByName(column = "codiceUnitOperBeneficiario")
-    private String codiceUnitOperBeneficiario;
+    private String beneficiaryOperationalUnitCode;
 
     @CsvBindByName(column = "denomUnitOperBeneficiario")
-    private String denomUnitOperBeneficiario;
+    private String beneficiaryOperationalUnitName;
 
     @CsvBindByName(column = "indirizzoBeneficiario")
-    private String indirizzoBeneficiario;
+    private String beneficiaryAddress;
 
     @CsvBindByName(column = "civicoBeneficiario")
-    private String civicoBeneficiario;
+    private String beneficiaryCivic;
 
     @CsvBindByName(column = "capBeneficiario")
-    private String capBeneficiario;
+    private String beneficiaryPostalCode;
 
     @CsvBindByName(column = "localitaBeneficiario")
-    private String localitaBeneficiario;
+    private String beneficiaryCity;
 
     @CsvBindByName(column = "provinciaBeneficiario")
-    private String provinciaBeneficiario;
+    private String beneficiaryProvince;
 
     @CsvBindByName(column = "nazioneBeneficiario")
-    private String nazioneBeneficiario;
+    private String beneficiaryNation;
 
     @CsvBindByName(column = "soggVersTipoIdentificativoUnivoco")
-    private EntityTypeEnum soggVersTipoIdentificativoUnivoco;
+    private EntityTypeEnum payerEntityType;
 
     @CsvBindByName(column = "soggVersCodiceIdentificativoUnivoco")
-    private String soggVersCodiceIdentificativoUnivoco;
+    private String payerFiscalCode;
 
     @CsvBindByName(column = "anagraficaVersante")
-    private String anagraficaVersante;
+    private String payerFullName;
 
     @CsvBindByName(column = "indirizzoVersante")
-    private String indirizzoVersante;
+    private String payerAddress;
 
     @CsvBindByName(column = "civicoVersante")
-    private String civicoVersante;
+    private String payerCivic;
 
     @CsvBindByName(column = "capVersante")
-    private String capVersante;
+    private String payerPostalCode;
 
     @CsvBindByName(column = "localitaVersante")
-    private String localitaVersante;
+    private String payerLocation;
 
     @CsvBindByName(column = "provinciaVersante")
-    private String provinciaVersante;
+    private String payerProvince;
 
     @CsvBindByName(column = "nazioneVersante")
-    private String nazioneVersante;
+    private String payerNation;
 
     @CsvBindByName(column = "emailVersante")
-    private String emailVersante;
+    private String payerEmail;
 
     @CsvBindByName(column = "soggPagTipoIdentificativoUnivoco", required = true)
-    private EntityTypeEnum soggPagTipoIdentificativoUnivoco;
+    private EntityTypeEnum debtorEntityType;
 
     @CsvBindByName(column = "soggPagCodiceIdentificativoUnivoco", required = true)
-    private String soggPagCodiceIdentificativoUnivoco;
+    private String debtorFiscalCode;
 
     @CsvBindByName(column = "anagraficaPagatore", required = true)
-    private String anagraficaPagatore;
+    private String debtorFullName;
 
     @CsvBindByName(column = "indirizzoPagatore")
-    private String indirizzoPagatore;
+    private String debtorAddress;
 
     @CsvBindByName(column = "civicoPagatore")
-    private String civicoPagatore;
+    private String debtorCivic;
 
     @CsvBindByName(column = "capPagatore")
-    private String capPagatore;
+    private String debtorPostalCode;
 
     @CsvBindByName(column = "localitaPagatore")
-    private String localitaPagatore;
+    private String debtorLocation;
 
     @CsvBindByName(column = "provinciaPagatore")
-    private String provinciaPagatore;
+    private String debtorProvince;
 
     @CsvBindByName(column = "nazionePagatore")
-    private String nazionePagatore;
+    private String debtorNation;
 
     @CsvBindByName(column = "emailPagatore")
-    private String emailPagatore;
+    private String debtorEmail;
 
     @CsvBindByName(column = "codiceEsitoPagamento", required = true)
-    private String codiceEsitoPagamento;
+    private String outcome;
 
     @CsvBindByName(column = "importoTotalePagato", required = true)
-    private BigDecimal importoTotalePagato;
+    private BigDecimal paymentAmountCents;
 
     @CsvBindByName(column = "identificativoUnivocoVersamento", required = true)
-    private String identificativoUnivocoVersamento;
+    private String creditorReferenceId;
 
     @CsvBindByName(column = "codiceContestoPagamento")
-    private String codiceContestoPagamento;
+    private String paymentContextCode;
 
     @CsvBindByName(column = "singoloImportoPagato")
-    private String singoloImportoPagato;
+    private String singlePaymentAmount;
 
     @CsvBindByName(column = "esitoSingoloPagamento")
-    private String esitoSingoloPagamento;
+    private String singlePaymentOutcome;
 
     @CsvBindByName(column = "dataEsitoSingoloPagamento")
     @CsvDate(value = "yyyy-MM-dd")
-    private LocalDate dataEsitoSingoloPagamento;
+    private LocalDate singlePaymentOutcomeDate;
 
     @CsvBindByName(column = "identificativoUnivocoRiscoss")
-    private String identificativoUnivocoRiscoss;
+    private String uniqueCollectionId;
 
     @CsvBindByName(column = "causaleVersamento", required = true)
-    private String causaleVersamento;
+    private String remittanceInformation;
 
     @CsvBindByName(column = "datiSpecificiRiscossione")
-    private String datiSpecificiRiscossione;
+    private String paymentNote;
 
     @CsvBindByName(column = "tipoDovuto")
-    private String tipoDovuto;
+    private String debtPositionTypeOrgCode;
 
     @CsvBindByName(column = "tipoFirma")
-    private String tipoFirma;
+    private String signatureType;
 
     @CsvBindByName(column = "rt")
     private String rt;
 
     @CsvBindByName(column = "indiceDatiSingoloPagamento", required = true)
-    private Integer indiceDatiSingoloPagamento;
+    private Integer idTransfer;
 
     @CsvBindByName(column = "numRtDatiPagDatiSingPagCommissioniApplicatePsp")
-    private BigDecimal numRtDatiPagDatiSingPagCommissioniApplicatePsp;
+    private BigDecimal feeCents;
 
     @CsvBindByName(column = "codRtDatiPagDatiSingPagAllegatoRicevutaTipo")
-    private String codRtDatiPagDatiSingPagAllegatoRicevutaTipo;
+    private String receiptAttachmentTypeCode;
 
     @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest")
-    private byte[] blbRtDatiPagDatiSingPagAllegatoRicevutaTest;
+    private byte[] mbdAttachment;
 
     @CsvBindByName(column = "bilancio")
-    private String bilancio;
+    private String balance;
 
     @CsvBindByName(column = "cod_fiscale_pa1", required = true)
-    private String codFiscalePa1;
+    private String fiscalCodePA;
 
     @CsvBindByName(column = "de_nome_pa1")
-    private String deNomePa1;
+    private String companyName;
 
     @CsvBindByName(column = "cod_tassonomico_dovuto_pa1", required = true)
-    private String codTassonomicoDovutoPa1;
+    private String transferCategory;
 
-    public enum TipoEnteIUEnum {
+    public enum EntityIdType {
         G
     }
 }

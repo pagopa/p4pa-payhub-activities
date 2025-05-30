@@ -148,12 +148,12 @@ class ReceiptIngestionActivityImplTest {
 	private Iterator<ReceiptIngestionFlowFileDTO> buildReceiptIngestionFlowFileDTO() {
 		List<ReceiptIngestionFlowFileDTO> receiptIngestionFlowFileDTOList = List.of(
 				ReceiptIngestionFlowFileDTO.builder()
-						.iuf("iuf1")
-						.importoTotalePagato(BigDecimal.valueOf(1L))
+						.sourceFlowName("iuf1")
+						.paymentAmountCents(BigDecimal.valueOf(1L))
 						.build(),
 				ReceiptIngestionFlowFileDTO.builder()
-						.iuf("iuf2")
-						.importoTotalePagato(BigDecimal.valueOf(2L))
+						.sourceFlowName("iuf2")
+						.paymentAmountCents(BigDecimal.valueOf(2L))
 						.build()
 		);
 
