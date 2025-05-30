@@ -75,11 +75,8 @@ public class IUVInstallmentsExportFlowFileDTO {
     @CsvBindByName(column = "flgGeneraIuv")
     private Boolean flagPuPagoPaPayment;
 
-    @CsvBindByName(column = "tipoVersamento")
-    private String paymentType;
-
     @CsvBindByName(column = "commissioneCaricoPa")
-    private BigDecimal paCommissionCents;
+    private Long paCommissionCents;
 
     @CsvBindByName(column = "azione")
     private ActionEnum action;

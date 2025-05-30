@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmentsExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.debtposition.InstallmentOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
@@ -15,9 +16,11 @@ import static it.gov.pagopa.payhub.activities.util.Utilities.longCentsToBigDecim
 public class IUVInstallmentsExportFlowFileDTOMapper {
 
     private final InstallmentOperationTypeResolver installmentOperationTypeResolver;
+    private final DebtPositionTypeOrgService debtPositionTypeOrgService;
 
-    public IUVInstallmentsExportFlowFileDTOMapper(InstallmentOperationTypeResolver installmentOperationTypeResolver) {
+    public IUVInstallmentsExportFlowFileDTOMapper(InstallmentOperationTypeResolver installmentOperationTypeResolver, DebtPositionTypeOrgService debtPositionTypeOrgService) {
         this.installmentOperationTypeResolver = installmentOperationTypeResolver;
+        this.debtPositionTypeOrgService = debtPositionTypeOrgService;
     }
 
     public IUVInstallmentsExportFlowFileDTO map(InstallmentDTO dto) {
@@ -38,9 +41,8 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
                 .email(debtor.getEmail())
                 .dueDate(dto.getDueDate())
                 .amount(longCentsToBigDecimalEuro(dto.getAmountCents()))
-                .paCommissionCents(longCentsToBigDecimalEuro(dto.getNotificationFeeCents()))
+                .paCommissionCents(dto.getNotificationFeeCents())
                 .debtPositionTypeCode(null)
-                .paymentType("MPA")
                 .remittanceInformation(dto.getRemittanceInformation())
                 .legacyPaymentMetadata(dto.getLegacyPaymentMetadata())
                 .balance(dto.getBalance())
@@ -52,11 +54,11 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
     private IUVInstallmentsExportFlowFileDTO.ActionEnum calculateInstallmentAction(InstallmentDTO dto){
         PaymentEventType paymentEventType = installmentOperationTypeResolver.calculateInstallmentOperationType(dto);
 
-        if (paymentEventType.equals(PaymentEventType.DP_CREATED)){
+        if (PaymentEventType.DP_CREATED.equals(paymentEventType)){
             return IUVInstallmentsExportFlowFileDTO.ActionEnum.I;
-        } else if (paymentEventType.equals(PaymentEventType.DP_UPDATED)){
+        } else if (PaymentEventType.DP_UPDATED.equals(paymentEventType)){
             return IUVInstallmentsExportFlowFileDTO.ActionEnum.M;
-        } else if (paymentEventType.equals(PaymentEventType.DP_CANCELLED)){
+        } else if (PaymentEventType.DP_CANCELLED.equals(paymentEventType)){
             return IUVInstallmentsExportFlowFileDTO.ActionEnum.A;
         } else {
             throw new IllegalArgumentException("It's not possible to identify Action with paymentEventType: " + paymentEventType);

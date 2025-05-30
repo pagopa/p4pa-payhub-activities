@@ -26,7 +26,7 @@ class IUVInstallmentsExportFlowFileDTOMapperTest {
 
     @BeforeEach
     void setUp() {
-        mapper = new IUVInstallmentsExportFlowFileDTOMapper(installmentOperationTypeResolver);
+        mapper = new IUVInstallmentsExportFlowFileDTOMapper(installmentOperationTypeResolver, debtPositionTypeOrgService);
     }
 
     @AfterEach
