@@ -1,13 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
 import com.opencsv.exceptions.CsvException;
-import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
-import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -15,26 +14,24 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
 
 @Service
 @Lazy
 @Slf4j
 public class ReceiptProcessingService extends IngestionFlowProcessingService<ReceiptIngestionFlowFileDTO, ReceiptIngestionFlowFileResult, ReceiptErrorDTO> {
 
-    private final RtFileHandlerService rtFileHandlerService;
-    private final DebtPositionService debtPositionService;
+    private final ReceiptService receiptService;
+    private final ReceiptMapper receiptMapper;
 
-    public ReceiptProcessingService(ReceiptErrorsArchiverService receiptErrorsArchiverService,
-                                    RtFileHandlerService rtFileHandlerService, DebtPositionService debtPositionService) {
+    public ReceiptProcessingService(ReceiptMapper receiptMapper,
+                                    ReceiptErrorsArchiverService receiptErrorsArchiverService,
+                                    ReceiptService receiptService) {
         super(receiptErrorsArchiverService);
-        this.rtFileHandlerService = rtFileHandlerService;
-        this.debtPositionService = debtPositionService;
+        this.receiptService = receiptService;
+        this.receiptMapper = receiptMapper;
     }
 
     /**
@@ -65,7 +62,8 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                                  List<ReceiptErrorDTO> errorList,
                                  IngestionFlowFile ingestionFlowFile) {
         try {
-            rtFileHandlerService.store(ingestionFlowFile.getOrganizationId(), receipt.getRt(), ingestionFlowFile.getFileName());
+            ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
+            receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
             return true;
         } catch (Exception e) {
             log.error("Error processing receipt {}: {}", receipt.getCodIud(), e.getMessage());
@@ -89,56 +87,6 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
-                .build();
-    }
-
-    private ReceiptWithAdditionalNodeDataDTO buildReceiptDataDTO(ReceiptIngestionFlowFileDTO receipt, IngestionFlowFile ingestionFlowFile) {
-        PersonDTO payer = PersonDTO.builder()
-                .entityType(receipt.getSoggVersTipoIdentificativoUnivoco())
-                .fiscalCode(receipt.getSoggVersCodiceIdentificativoUnivoco())
-                .fullName(receipt.getAnagraficaVersante())
-                .address(receipt.getIndirizzoVersante())
-                .civic(receipt.getCivicoVersante())
-                .postalCode(receipt.getCapVersante())
-                .location(receipt.getLocalitaVersante())
-                .province(receipt.getProvinciaVersante())
-                .nation(receipt.getNazioneVersante())
-                .email(receipt.getEmailVersante())
-                .build();
-        PersonDTO debtor = PersonDTO.builder()
-                .entityType(receipt.getSoggPagTipoIdentificativoUnivoco())
-                .fiscalCode(receipt.getSoggPagCodiceIdentificativoUnivoco())
-                .fullName(receipt.getAnagraficaPagatore())
-                .address(receipt.getIndirizzoPagatore())
-                .civic(receipt.getCivicoPagatore())
-                .postalCode(receipt.getCapPagatore())
-                .location(receipt.getLocalitaPagatore())
-                .province(receipt.getProvinciaPagatore())
-                .nation(receipt.getNazionePagatore())
-                .email(receipt.getEmailPagatore())
-                .build();
-
-        return ReceiptWithAdditionalNodeDataDTO.builder()
-                .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
-                .iud(receipt.getCodIud())
-                .noticeNumber(receipt.getCodIuv())
-                .orgFiscalCode(receipt.getIdentificativoDominio())
-                .paymentReceiptId(receipt.getIdentificativoMessaggioRicevuta())
-                .paymentDateTime(OffsetDateTime.from(receipt.getDataOraMessaggioRicevuta()))
-                .idPsp(receipt.getCodiceIdentificativoUnivoco())
-                .pspCompanyName(receipt.getDenominazioneAttestante())
-                .companyName(receipt.getDenominazioneBeneficiario())
-                .payer(payer)
-                .debtor(debtor)
-                .outcome(receipt.getCodiceEsitoPagamento())
-                .paymentAmountCents(receipt.getImportoTotalePagato())
-                .creditorReferenceId(receipt.getIdentificativoUnivocoVersamento())
-                .description(receipt.getCausaleVersamento())
-                .paymentNote(receipt.getDatiSpecificiRiscossione())
-                .debtPositionTypeOrgCode(receipt.getTipoDovuto())
-                .feeCents(bigDecimalEuroToLongCentsAmount(receipt.getNumRtDatiPagDatiSingPagCommissioniApplicatePsp()))
-                .balance(receipt.getBilancio())
-                .transfers(new ArrayList<>())
                 .build();
     }
 

@@ -54,7 +54,7 @@ public class ReceiptIngestionFlowFileDTO {
     private LocalDate riferimentoDataRichiesta;
 
     @CsvBindByName(column = "tipoIdentificativoUnivoco")
-    private TipoIUEnum tipoIdentificativoUnivoco;
+    private String tipoIdentificativoUnivoco;
 
     @CsvBindByName(column = "codiceIdentificativoUnivoco", required = true)
     private String codiceIdentificativoUnivoco;
@@ -183,7 +183,7 @@ public class ReceiptIngestionFlowFileDTO {
     private String codiceEsitoPagamento;
 
     @CsvBindByName(column = "importoTotalePagato", required = true)
-    private Long importoTotalePagato;
+    private BigDecimal importoTotalePagato;
 
     @CsvBindByName(column = "identificativoUnivocoVersamento", required = true)
     private String identificativoUnivocoVersamento;
@@ -229,7 +229,7 @@ public class ReceiptIngestionFlowFileDTO {
     private String codRtDatiPagDatiSingPagAllegatoRicevutaTipo;
 
     @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest")
-    private String blbRtDatiPagDatiSingPagAllegatoRicevutaTest;
+    private byte[] blbRtDatiPagDatiSingPagAllegatoRicevutaTest;
 
     @CsvBindByName(column = "bilancio")
     private String bilancio;
@@ -242,10 +242,6 @@ public class ReceiptIngestionFlowFileDTO {
 
     @CsvBindByName(column = "cod_tassonomico_dovuto_pa1", required = true)
     private String codTassonomicoDovutoPa1;
-
-    public enum TipoIUEnum {
-        A, B
-    }
 
     public enum TipoEnteIUEnum {
         G
