@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class SyncIngestedDebtPositionDTO {
     private String errorsDescription;
     private String pdfGeneratedId;
+    private String iuvFilePath;
+    private String iuvFileName;
 }
