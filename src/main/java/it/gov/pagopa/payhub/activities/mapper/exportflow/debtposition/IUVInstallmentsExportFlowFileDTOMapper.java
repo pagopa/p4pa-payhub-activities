@@ -23,7 +23,7 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
     }
 
-    public IUVInstallmentsExportFlowFileDTO map(InstallmentDTO dto) {
+    public IUVInstallmentsExportFlowFileDTO map(InstallmentDTO dto, Long debtPositionTypeOrgId) {
         PersonDTO debtor = dto.getDebtor();
 
         return IUVInstallmentsExportFlowFileDTO.builder()
@@ -42,7 +42,7 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
                 .dueDate(dto.getDueDate())
                 .amount(longCentsToBigDecimalEuro(dto.getAmountCents()))
                 .paCommissionCents(dto.getNotificationFeeCents())
-                .debtPositionTypeCode(null)
+                .debtPositionTypeCode(findCodeById(debtPositionTypeOrgId))
                 .remittanceInformation(dto.getRemittanceInformation())
                 .legacyPaymentMetadata(dto.getLegacyPaymentMetadata())
                 .balance(dto.getBalance())
@@ -51,17 +51,21 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
                 .build();
     }
 
-    private IUVInstallmentsExportFlowFileDTO.ActionEnum calculateInstallmentAction(InstallmentDTO dto){
+    private IUVInstallmentsExportFlowFileDTO.ActionEnum calculateInstallmentAction(InstallmentDTO dto) {
         PaymentEventType paymentEventType = installmentOperationTypeResolver.calculateInstallmentOperationType(dto);
 
-        if (PaymentEventType.DP_CREATED.equals(paymentEventType)){
+        if (PaymentEventType.DP_CREATED.equals(paymentEventType)) {
             return IUVInstallmentsExportFlowFileDTO.ActionEnum.I;
-        } else if (PaymentEventType.DP_UPDATED.equals(paymentEventType)){
+        } else if (PaymentEventType.DP_UPDATED.equals(paymentEventType)) {
             return IUVInstallmentsExportFlowFileDTO.ActionEnum.M;
-        } else if (PaymentEventType.DP_CANCELLED.equals(paymentEventType)){
+        } else if (PaymentEventType.DP_CANCELLED.equals(paymentEventType)) {
             return IUVInstallmentsExportFlowFileDTO.ActionEnum.A;
         } else {
             throw new IllegalArgumentException("It's not possible to identify Action with paymentEventType: " + paymentEventType);
         }
+    }
+
+    private String findCodeById(Long debtPositionTypeOrgId) {
+        return debtPositionTypeOrgService.getById(debtPositionTypeOrgId).getCode();
     }
 }

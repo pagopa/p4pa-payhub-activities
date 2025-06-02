@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.IUVInstall
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import java.util.function.Supplier;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
+import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildIUVInstallmentsExportFlowFileDTO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doAnswer;
@@ -76,6 +78,9 @@ class IUVArchivingExportFileServiceTest {
         
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
+
+        Mockito.when(iuvMapperMock.map(any(InstallmentDTO.class), any()))
+                        .thenReturn(buildIUVInstallmentsExportFlowFileDTO());
 
         Mockito.when(foldersPathsConfigMock.getTmp())
                 .thenReturn(Path.of("/tmp"));
@@ -134,6 +139,9 @@ class IUVArchivingExportFileServiceTest {
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
 
+        Mockito.when(iuvMapperMock.map(any(InstallmentDTO.class), any()))
+                .thenReturn(buildIUVInstallmentsExportFlowFileDTO());
+
         Mockito.when(foldersPathsConfigMock.getTmp())
                 .thenReturn(Path.of("/tmp"));
 
@@ -156,6 +164,8 @@ class IUVArchivingExportFileServiceTest {
 
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
+        Mockito.when(iuvMapperMock.map(any(InstallmentDTO.class), any()))
+                .thenReturn(buildIUVInstallmentsExportFlowFileDTO());
 
         Mockito.when(foldersPathsConfigMock.getTmp())
                 .thenReturn(Path.of("/tmp"));

@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
+import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmentsExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 
@@ -8,6 +9,7 @@ import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCALDATE;
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
+import static it.gov.pagopa.payhub.activities.util.Utilities.longCentsToBigDecimalEuro;
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
 
@@ -18,6 +20,7 @@ public class InstallmentFaker {
         transfers.add(buildTransferDTO());
         return TestUtils.getPodamFactory().manufacturePojo(InstallmentDTO.class)
                 .installmentId(1L)
+                .ingestionFlowFileId(1L)
                 .paymentOptionId(1L)
                 .status(InstallmentStatus.PAID)
                 .syncStatus(null)
@@ -94,6 +97,35 @@ public class InstallmentFaker {
             .remittanceInformation("remittanceInformation")
             .legacyPaymentMetadata("legacyPaymentMetadata")
             .balance("balance");
+    }
+
+    public static IUVInstallmentsExportFlowFileDTO buildIUVInstallmentsExportFlowFileDTO(){
+        InstallmentDTO dto = buildInstallmentDTO();
+        PersonDTO debtor = dto.getDebtor();
+
+        return IUVInstallmentsExportFlowFileDTO.builder()
+                .iud(dto.getIud())
+                .iuv(dto.getIuv())
+                .entityType(debtor.getEntityType())
+                .fiscalCode(debtor.getFiscalCode())
+                .fullName(debtor.getFullName())
+                .address(debtor.getAddress())
+                .civic(debtor.getCivic())
+                .postalCode(debtor.getPostalCode())
+                .location(debtor.getLocation())
+                .province(debtor.getProvince())
+                .nation(debtor.getNation())
+                .email(debtor.getEmail())
+                .dueDate(dto.getDueDate())
+                .amount(longCentsToBigDecimalEuro(dto.getAmountCents()))
+                .paCommissionCents(dto.getNotificationFeeCents())
+                .debtPositionTypeCode("code")
+                .remittanceInformation(dto.getRemittanceInformation())
+                .legacyPaymentMetadata(dto.getLegacyPaymentMetadata())
+                .balance(dto.getBalance())
+                .flagPuPagoPaPayment(Boolean.TRUE)
+                .action(IUVInstallmentsExportFlowFileDTO.ActionEnum.I)
+                .build();
     }
 
 }

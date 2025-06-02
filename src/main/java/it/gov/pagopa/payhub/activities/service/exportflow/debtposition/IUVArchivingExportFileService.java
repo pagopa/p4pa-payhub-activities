@@ -78,13 +78,14 @@ public class IUVArchivingExportFileService {
 
     private List<IUVInstallmentsExportFlowFileDTO> filterAndMap(List<DebtPositionDTO> debtPositions, Long ingestionFlowFileId) {
         return debtPositions.stream()
-                .flatMap(dp -> dp.getPaymentOptions().stream())
-                .flatMap(po -> po.getInstallments().stream())
-                .filter(inst -> ingestionFlowFileId.equals(inst.getIngestionFlowFileId()))
-                .map(iuvMapper::map)
+                .flatMap(dp -> dp.getPaymentOptions().stream()
+                                .flatMap(po ->
+                                        po.getInstallments().stream()
+                                                .filter(inst -> ingestionFlowFileId.equals(inst.getIngestionFlowFileId()))
+                                                .map(inst -> iuvMapper.map(inst, dp.getDebtPositionTypeOrgId()))
+                                ))
                 .toList();
     }
-
 
     private Path resolveZipFilePath(Path csvFilePath) {
         return csvFilePath.getParent()
