@@ -1,37 +1,21 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.validateRequiredFields;
-import static org.junit.jupiter.api.Assertions.*;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
-
-    @Test
-    void givenRequiredFieldsNullWhenValidateRequiredFieldsThenThrowIllegalStateException(){
-        InstallmentIngestionFlowFileDTO dto = new InstallmentIngestionFlowFileDTO();
-
-        InvalidIngestionFileException result =
-                assertThrows(InvalidIngestionFileException.class, () -> validateRequiredFields(dto));
-
-        assertTrue(result.getMessage().contains("EntityType"));
-        assertTrue(result.getMessage().contains("FiscalCode"));
-        assertTrue(result.getMessage().contains("FullName"));
-        assertTrue(result.getMessage().contains("Amount"));
-        assertTrue(result.getMessage().contains("DebtPositionTypeCode"));
-        assertTrue(result.getMessage().contains("RemittanceInformation"));
-        assertTrue(result.getMessage().contains("Action"));
-    }
 
     @Test
     void givenObligatoryFieldsNullWhenValidateRequiredFieldsThenOk(){
         InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
 
-        validateRequiredFields(dto);
+        setDefaultValues(dto);
 
         assertEquals(true, dto.getFlagPuPagoPaPayment());
         assertEquals(false, dto.getFlagMultiBeneficiary());
@@ -48,7 +32,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
         InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
         dto.setFlagMultiBeneficiary(true);
 
-        validateRequiredFields(dto);
+        setDefaultValues(dto);
 
         assertEquals(1, dto.getNumberBeneficiary());
     }
@@ -65,7 +49,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
         dto.setPaymentOptionType("Payment Option Type");
         dto.setPaymentOptionDescription("Payment option Description");
 
-        validateRequiredFields(dto);
+        setDefaultValues(dto);
 
         assertEquals(false, dto.getFlagPuPagoPaPayment());
         assertEquals(true, dto.getFlagMultiBeneficiary());
