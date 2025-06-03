@@ -33,7 +33,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
 
         validateRequiredFields(dto);
 
-        assertEquals(true, dto.getFlagPagoPaPayment());
+        assertEquals(true, dto.getFlagPuPagoPaPayment());
         assertEquals(false, dto.getFlagMultiBeneficiary());
         assertEquals(0, dto.getNumberBeneficiary());
 
@@ -57,7 +57,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
     void givenObligatoryFieldsNotNullWhenValidateRequiredFieldsThenDoNothing(){
         InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
         dto.setFlagMultiBeneficiary(true);
-        dto.setFlagPagoPaPayment(Boolean.FALSE);
+        dto.setFlagPuPagoPaPayment(Boolean.FALSE);
         dto.setFlagMultiBeneficiary(Boolean.TRUE);
         dto.setNumberBeneficiary(3);
         dto.setDescription("DP Description");
@@ -67,7 +67,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
 
         validateRequiredFields(dto);
 
-        assertEquals(false, dto.getFlagPagoPaPayment());
+        assertEquals(false, dto.getFlagPuPagoPaPayment());
         assertEquals(true, dto.getFlagMultiBeneficiary());
         assertEquals(3, dto.getNumberBeneficiary());
 

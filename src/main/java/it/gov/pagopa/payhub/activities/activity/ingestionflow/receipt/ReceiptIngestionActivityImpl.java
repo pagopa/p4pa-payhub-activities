@@ -61,7 +61,7 @@ public class ReceiptIngestionActivityImpl extends BaseIngestionFlowFileActivity<
 
         try {
             ReceiptIngestionFlowFileResult result = csvService.readCsv(filePath, ReceiptIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
-                    receiptProcessingService.processReceipts(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory));
+                    receiptProcessingService.processReceipts(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
 
             result.setOrganizationId(ingestionFlowFileDTO.getOrganizationId());
             return result;
