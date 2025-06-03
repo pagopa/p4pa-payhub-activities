@@ -46,8 +46,7 @@ public class IUVArchivingExportFileService {
         IngestionFlowFile ingestionFlowFile = ingestionFlowFileService.findById(ingestionFlowFileId)
                 .orElseThrow(() -> new IngestionFlowFileNotFoundException(String.format("IngestionFlowFile with id %s was not found", ingestionFlowFileId)));
 
-        Path csvFilePath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getTmp(), ingestionFlowFile.getOrganizationId())
-                .resolve(ingestionFlowFile.getFileName());
+        Path csvFilePath = risolveCsvFilePath(ingestionFlowFile);
 
         List<IUVInstallmentsExportFlowFileDTO> csvRows = filterAndMap(debtPositions, ingestionFlowFileId);
 
@@ -69,7 +68,7 @@ public class IUVArchivingExportFileService {
         }
 
         Path sharedTargetPath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), ingestionFlowFile.getOrganizationId())
-                        .resolve(ingestionFlowFile.getFileName()).resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
+                        .resolve(ingestionFlowFile.getFilePathName()).resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
         Path zipFilePath = resolveZipFilePath(csvFilePath);
         createZipArchive(csvFilePath, zipFilePath, sharedTargetPath);
 
@@ -87,9 +86,15 @@ public class IUVArchivingExportFileService {
                 .toList();
     }
 
+    private Path risolveCsvFilePath(IngestionFlowFile ingestionFlowFile) {
+        return FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getTmp(), ingestionFlowFile.getOrganizationId())
+                .resolve(ingestionFlowFile.getFilePathName())
+                .resolve(ingestionFlowFile.getFileName().replace(".zip", "_iuv.csv"));
+    }
+
     private Path resolveZipFilePath(Path csvFilePath) {
         return csvFilePath.getParent()
-                .resolve(Utilities.replaceFileExtension(csvFilePath.getFileName().toString(), "_iuv.zip"));
+                .resolve(Utilities.replaceFileExtension(csvFilePath.getFileName().toString(), ".zip"));
     }
 
     private void createZipArchive(Path csvFilePath, Path tmpZipFilePath, Path sharedTargetPath) {

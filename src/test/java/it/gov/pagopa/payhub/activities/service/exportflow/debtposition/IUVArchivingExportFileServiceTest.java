@@ -108,7 +108,7 @@ class IUVArchivingExportFileServiceTest {
 
         // Then
         assertNotNull(result);
-        assertTrue(result.toString().endsWith("_iuv.zip"));
+        assertTrue(result.toString().endsWith(".zip"));
         assertEquals("fileName_iuv.zip", result.getFileName().toString());
 
     }
