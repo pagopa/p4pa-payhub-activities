@@ -12,6 +12,9 @@ class EmailTemplateResolverServiceTest {
     private final EmailTemplatesConfiguration configMock = new EmailTemplatesConfiguration(
             "MAILTEXTLOADOK",
             "MAILTEXTLOADKO",
+            "exportMailTextOk",
+            "exportMailTextKo",
+
 
             new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_PAYMENTS_REPORTING_OK_SUBJECT", "INGESTION_PAYMENTS_REPORTING_OK_BODY"),
@@ -57,6 +60,19 @@ class EmailTemplateResolverServiceTest {
           new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                    new EmailTemplate("INGESTION_ASSESSMENTS_OK_SUBJECT", "INGESTION_ASSESSMENTS_OK_BODY"),
                    new EmailTemplate("INGESTION_ASSESSMENTS_KO_SUBJECT", "INGESTION_ASSESSMENTS_KO_BODY")
+        ),
+
+        new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                new EmailTemplate("EXPORT_PAID_OK_SUBJECT", "EXPORT_PAID_OK_BODY"),
+                new EmailTemplate("EXPORT_PAID_KO_SUBJECT", "EXPORT_PAID_KO_BODY")
+        ),
+        new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                new EmailTemplate("EXPORT_RECEIPTS_ARCHIVING_OK_SUBJECT", "EXPORT_RECEIPTS_ARCHIVING_OK_BODY"),
+                new EmailTemplate("EXPORT_RECEIPTS_ARCHIVING_KO_SUBJECT", "EXPORT_RECEIPTS_ARCHIVING_KO_BODY")
+        ),
+        new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                new EmailTemplate("EXPORT_CLASSIFICATIONS_OK_SUBJECT", "EXPORT_CLASSIFICATIONS_OK_BODY"),
+                new EmailTemplate("EXPORT_CLASSIFICATIONS_KO_SUBJECT", "EXPORT_CLASSIFICATIONS_KO_BODY")
         )
 
     );

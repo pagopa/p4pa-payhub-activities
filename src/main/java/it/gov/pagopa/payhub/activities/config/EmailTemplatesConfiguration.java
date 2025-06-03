@@ -18,6 +18,8 @@ import org.springframework.context.annotation.PropertySource;
 public class EmailTemplatesConfiguration {
     private String mailTextLoadOk;
     private String mailTextLoadKo;
+    private String exportMailTextOk;
+    private String exportMailTextKo;
 
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates paymentsReportingFlow;
@@ -39,6 +41,12 @@ public class EmailTemplatesConfiguration {
     private EmailOutcomeBasedTemplates debtPositionsTypeOrgOperatorsFlow;
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates assessmentsFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates exportPaidFile;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates exportReceiptsArchivingFile;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates exportClassificationsFile;
 
     @Data
     @NoArgsConstructor
