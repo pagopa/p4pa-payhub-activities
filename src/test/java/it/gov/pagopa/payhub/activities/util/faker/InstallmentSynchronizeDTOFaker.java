@@ -17,6 +17,7 @@ public class InstallmentSynchronizeDTOFaker {
         return InstallmentSynchronizeDTO.builder()
                 .organizationId(1L)
                 .ingestionFlowFileId(1L)
+                .ingestionFlowFileName("fileName.zip")
                 .ingestionFlowFileLineNumber(1L)
                 .action(ActionEnum.I)
                 .draft(false)

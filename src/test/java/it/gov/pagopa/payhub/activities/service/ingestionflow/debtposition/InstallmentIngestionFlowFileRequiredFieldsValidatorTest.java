@@ -3,18 +3,19 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import org.junit.jupiter.api.Test;
 
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.validateRequiredFields;
+import java.math.BigDecimal;
+
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
 
-
     @Test
     void givenObligatoryFieldsNullWhenValidateRequiredFieldsThenOk(){
-        InstallmentIngestionFlowFileDTO dto = new InstallmentIngestionFlowFileDTO();
+        InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
 
-        validateRequiredFields(dto);
+        setDefaultValues(dto);
 
         assertEquals(true, dto.getFlagPuPagoPaPayment());
         assertEquals(false, dto.getFlagMultiBeneficiary());
@@ -28,17 +29,17 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
 
     @Test
     void givenFlagMultiBeneficiaryTrueWhenValidateRequiredFieldsThenOk(){
-        InstallmentIngestionFlowFileDTO dto = new InstallmentIngestionFlowFileDTO();
+        InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
         dto.setFlagMultiBeneficiary(true);
 
-        validateRequiredFields(dto);
+        setDefaultValues(dto);
 
         assertEquals(1, dto.getNumberBeneficiary());
     }
 
     @Test
     void givenObligatoryFieldsNotNullWhenValidateRequiredFieldsThenDoNothing(){
-        InstallmentIngestionFlowFileDTO dto = new InstallmentIngestionFlowFileDTO();
+        InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
         dto.setFlagMultiBeneficiary(true);
         dto.setFlagPuPagoPaPayment(Boolean.FALSE);
         dto.setFlagMultiBeneficiary(Boolean.TRUE);
@@ -48,7 +49,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
         dto.setPaymentOptionType("Payment Option Type");
         dto.setPaymentOptionDescription("Payment option Description");
 
-        validateRequiredFields(dto);
+        setDefaultValues(dto);
 
         assertEquals(false, dto.getFlagPuPagoPaPayment());
         assertEquals(true, dto.getFlagMultiBeneficiary());
@@ -58,5 +59,17 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
         assertEquals(3, dto.getPaymentOptionIndex());
         assertEquals("Payment Option Type", dto.getPaymentOptionType());
         assertEquals("Payment option Description", dto.getPaymentOptionDescription());
+    }
+
+    private static InstallmentIngestionFlowFileDTO buildInstallmentIngestionFlowFileDTO() {
+        InstallmentIngestionFlowFileDTO dto = new InstallmentIngestionFlowFileDTO();
+        dto.setEntityType(InstallmentIngestionFlowFileDTO.EntityTypeEnum.F);
+        dto.setFiscalCode("FiscalCode");
+        dto.setFullName("FullName");
+        dto.setAmount(BigDecimal.TEN);
+        dto.setDebtPositionTypeCode("DebtPositionTypeCode");
+        dto.setRemittanceInformation("RemittanceInformation");
+        dto.setAction(InstallmentIngestionFlowFileDTO.ActionEnum.I);
+        return dto;
     }
 }

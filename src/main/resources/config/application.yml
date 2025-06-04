@@ -52,7 +52,6 @@ cipher:
 csv:
   separator: "\${CSV_SEPARATOR_CHAR:;}"
   quote-char: "\${CSV_QUOTE_CHAR:\\\"}"
-  profile: "\${CSV_PROFILE:default}"
 
 zip-file:
   max-entries: "\${ZIP_MAX_ENTRIES:1000}"
