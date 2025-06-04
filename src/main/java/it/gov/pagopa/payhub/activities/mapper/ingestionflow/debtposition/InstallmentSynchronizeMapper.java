@@ -36,7 +36,8 @@ public class InstallmentSynchronizeMapper {
     public InstallmentSynchronizeDTO map(InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO,
                                          Long ingestionFlowFileId,
                                          Long ingestionFlowFileLineNumber,
-                                         Long organizationId) {
+                                         Long organizationId,
+                                         String fileName) {
         return InstallmentSynchronizeDTO.builder()
                 .ingestionFlowFileId(ingestionFlowFileId)
                 .ingestionFlowFileLineNumber(ingestionFlowFileLineNumber)
@@ -74,6 +75,7 @@ public class InstallmentSynchronizeMapper {
                 .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? installmentIngestionFlowFileDTO.getNumberBeneficiary() : null)
                 .additionalTransfers(buildAdditionalTransferList(installmentIngestionFlowFileDTO))
                 .executionConfig(mapExecutionConfig(installmentIngestionFlowFileDTO.getExecutionConfig()))
+                .ingestionFlowFileName(fileName)
                 .build();
     }
 
