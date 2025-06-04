@@ -27,7 +27,7 @@ class ExportFileEmailContentConfigurerServiceTest {
     private EmailTemplatesConfiguration emailTemplatesConfigurationMock;
 
     private static final String EXPORT_URL = "http://piattaforma-unitaria/export";
-    private final String ENV = "TEST";
+    private static final String ENV = "TEST";
 
     private ExportFileEmailContentConfigurerService exportFileEmailContentConfigurerService;
 
