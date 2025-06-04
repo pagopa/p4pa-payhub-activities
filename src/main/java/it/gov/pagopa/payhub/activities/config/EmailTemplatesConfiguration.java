@@ -39,6 +39,8 @@ public class EmailTemplatesConfiguration {
     private EmailOutcomeBasedTemplates debtPositionsTypeOrgOperatorsFlow;
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates assessmentsFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates receiptFlow;
 
     @Data
     @NoArgsConstructor

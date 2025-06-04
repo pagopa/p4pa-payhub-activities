@@ -30,34 +30,39 @@ class EmailTemplateResolverServiceTest {
                     new EmailTemplate("INGESTION_DP_INSTALLMENTS_KO_SUBJECT", "INGESTION_DP_INSTALLMENTS_KO_BODY")
             ),
 
-          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_ORGANIZATIONS_OK_SUBJECT", "INGESTION_ORGANIZATIONS_OK_BODY"),
                     new EmailTemplate("INGESTION_ORGANIZATIONS_KO_SUBJECT", "INGESTION_ORGANIZATIONS_KO_BODY")
-        ),
-          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+            ),
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_ORGANIZATIONS_SIL_SERVICE_OK_SUBJECT", "INGESTION_ORGANIZATIONS_SIL_SERVICE_OK_BODY"),
                     new EmailTemplate("INGESTION_ORGANIZATIONS_SIL_SERVICE_KO_SUBJECT", "INGESTION_ORGANIZATIONS_SIL_SERVICE_KO_BODY")
-        ),
+            ),
 
-          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_OK_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_OK_BODY"),
                     new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_KO_BODY")
-        ),
+            ),
 
-          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OK_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OK_BODY"),
                     new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_KO_BODY")
-        ),
+            ),
 
-          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
-                   new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK_BODY"),
-                   new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_BODY")
-        ),
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK_BODY"),
+                    new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_BODY")
+            ),
 
-          new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
-                   new EmailTemplate("INGESTION_ASSESSMENTS_OK_SUBJECT", "INGESTION_ASSESSMENTS_OK_BODY"),
-                   new EmailTemplate("INGESTION_ASSESSMENTS_KO_SUBJECT", "INGESTION_ASSESSMENTS_KO_BODY")
-        )
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_ASSESSMENTS_OK_SUBJECT", "INGESTION_ASSESSMENTS_OK_BODY"),
+                    new EmailTemplate("INGESTION_ASSESSMENTS_KO_SUBJECT", "INGESTION_ASSESSMENTS_KO_BODY")
+            ),
+
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_RECEIPT_OK_SUBJECT", "INGESTION_RECEIPT_OK_BODY"),
+                    new EmailTemplate("INGESTION_RECEIPT_KO_SUBJECT", "INGESTION_RECEIPT_KO_BODY")
+            )
 
     );
 
@@ -65,7 +70,7 @@ class EmailTemplateResolverServiceTest {
 
     @ParameterizedTest
     @EnumSource(EmailTemplateName.class)
-    void givenEnumWhenResolveThenReturnExpectedTemplate(EmailTemplateName templateName){
+    void givenEnumWhenResolveThenReturnExpectedTemplate(EmailTemplateName templateName) {
         EmailTemplate template = service.resolve(templateName);
 
         Assertions.assertEquals(templateName + "_SUBJECT", template.getSubject());
