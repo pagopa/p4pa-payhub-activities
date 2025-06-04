@@ -47,6 +47,8 @@ public class EmailTemplateResolverService {
             case INGESTION_ASSESSMENTS_OK -> emailTemplatesConfiguration.getAssessmentsFlow().getOk();
             case INGESTION_ASSESSMENTS_KO -> emailTemplatesConfiguration.getAssessmentsFlow().getKo();
 
+            case INGESTION_RECEIPT_OK -> emailTemplatesConfiguration.getReceiptFlow().getOk();
+            case INGESTION_RECEIPT_KO -> emailTemplatesConfiguration.getReceiptFlow().getKo();
         };
     }
 }
