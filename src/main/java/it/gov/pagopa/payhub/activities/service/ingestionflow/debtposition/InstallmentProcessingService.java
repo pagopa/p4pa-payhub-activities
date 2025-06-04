@@ -70,7 +70,8 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
                     installment,
                     ingestionFlowFile.getIngestionFlowFileId(),
                     lineNumber,
-                    ingestionFlowFile.getOrganizationId()
+                    ingestionFlowFile.getOrganizationId(),
+                    ingestionFlowFile.getFileName()
             );
             WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
             wfExecutionParameters.setMassive(true);

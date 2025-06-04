@@ -57,6 +57,7 @@ public class InstallmentSynchronizeDTOFaker {
                         buildTransferSynchronizeDTO(5)
                 ))
                 .executionConfig(JsonNodeFactory.instance.objectNode().put("executionConfig", "test"))
+                .ingestionFlowFileName("fileName.zip")
                 .build();
     }
 
