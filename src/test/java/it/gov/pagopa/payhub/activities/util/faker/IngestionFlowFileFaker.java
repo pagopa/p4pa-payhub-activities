@@ -19,7 +19,7 @@ public class IngestionFlowFileFaker {
                 .updateDate(OFFSETDATETIME)
                 .operatorExternalId("operatorExternalId")
                 .filePathName("filePathName")
-                .fileName("fileName.csv")
+                .fileName("fileName.zip")
                 .pdfGenerated(2L)
                 .errorDescription("errorDescription")
                 .pspIdentifier("PspId")
