@@ -30,7 +30,6 @@ public class CsvService {
 
     private final char separator;
     private final char quoteChar;
-    private final String profile;
     private final int warnThreshold;
     private final int errorThreshold;
 
@@ -38,12 +37,10 @@ public class CsvService {
     public CsvService(
             @Value("${csv.separator}") char separator,
             @Value("${csv.quote-char}") char quoteChar,
-            @Value("${csv.profile}") String profile,
             @Value("${export-flow-files.page-request-thresholds.warn}")int warnThreshold,
             @Value("${export-flow-files.page-request-thresholds.error}")int errorThreshold) {
         this.separator = separator;
         this.quoteChar = quoteChar;
-        this.profile = profile;
         this.warnThreshold = warnThreshold;
         this.errorThreshold = errorThreshold;
     }
@@ -108,8 +105,8 @@ public class CsvService {
 
         try (Writer writer = Files.newBufferedWriter(csvFilePath)) {
             HeaderColumnNameMappingStrategy<C> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
-            mappingStrategy.setType(typeClass);
             mappingStrategy.setProfile(csvProfile);
+            mappingStrategy.setType(typeClass);
 
             StatefulBeanToCsv<C> beanToCsv = new StatefulBeanToCsvBuilder<C>(writer)
                     .withProfile(csvProfile)
@@ -162,15 +159,16 @@ public class CsvService {
      * @return The result produced by the row processor.
      * @throws IOException If an error occurs while reading the file.
      */
-    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor) throws IOException {
+    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String cvsProfile) throws IOException {
         try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
 
             HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
+            strategy.setProfile(cvsProfile);
             strategy.setType(typeClass);
 
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
                     .withType(typeClass)
-                    .withProfile(profile)
+                    .withProfile(cvsProfile)
                     .withMappingStrategy(strategy)
                     .withSeparator(separator)
                     .withQuoteChar(quoteChar)

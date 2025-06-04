@@ -17,6 +17,7 @@ public class InstallmentSynchronizeDTOFaker {
         return InstallmentSynchronizeDTO.builder()
                 .organizationId(1L)
                 .ingestionFlowFileId(1L)
+                .ingestionFlowFileName("fileName.zip")
                 .ingestionFlowFileLineNumber(1L)
                 .action(ActionEnum.I)
                 .draft(false)
@@ -56,6 +57,7 @@ public class InstallmentSynchronizeDTOFaker {
                         buildTransferSynchronizeDTO(5)
                 ))
                 .executionConfig(JsonNodeFactory.instance.objectNode().put("executionConfig", "test"))
+                .ingestionFlowFileName("fileName.zip")
                 .build();
     }
 

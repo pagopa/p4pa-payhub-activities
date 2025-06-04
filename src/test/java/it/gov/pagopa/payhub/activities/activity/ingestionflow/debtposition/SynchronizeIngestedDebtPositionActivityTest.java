@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDe
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
 import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
+import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.IUVArchivingExportFileService;
 import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +43,14 @@ class SynchronizeIngestedDebtPositionActivityTest {
     private GenerateNoticeService generateNoticeServiceMock;
     @Mock
     private DebtPositionOperationTypeResolver debtPositionOperationTypeResolverMock;
+    @Mock
+    private IUVArchivingExportFileService iuvArchivingExportFileServiceMock;
 
     private static final Integer PAGE_SIZE = 2;
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
     private static final int MAX_WAITING_MINUTES = 1;
     private static final int RETRY_DELAY = 10;
-    private static final int MAX_ATTEMPS = (int) (((double) MAX_WAITING_MINUTES * 60_000) / RETRY_DELAY);
+    private static final int MAX_ATTEMPTS = (int) (((double) MAX_WAITING_MINUTES * 60_000) / RETRY_DELAY);
 
 
     private SynchronizeIngestedDebtPositionActivity activity;
@@ -55,7 +59,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     void setUp() {
         activity = new SynchronizeIngestedDebtPositionActivityImpl(
                 debtPositionServiceMock, workflowDebtPositionServiceMock, workflowCompletionServiceMock, generateNoticeServiceMock,
-                debtPositionOperationTypeResolverMock, PAGE_SIZE, MAX_WAITING_MINUTES, RETRY_DELAY
+                debtPositionOperationTypeResolverMock, PAGE_SIZE, MAX_WAITING_MINUTES, RETRY_DELAY, iuvArchivingExportFileServiceMock
         );
     }
 
@@ -65,7 +69,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 debtPositionServiceMock,
                 workflowDebtPositionServiceMock,
                 workflowCompletionServiceMock,
-                debtPositionOperationTypeResolverMock
+                debtPositionOperationTypeResolverMock,
+                iuvArchivingExportFileServiceMock
         );
     }
 
@@ -116,9 +121,12 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .folderId("folderId")
                 .build();
 
+        Path path = Path.of("test", "iuv.csv");
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
                 .pdfGeneratedId(responseFolder.getFolderId())
                 .errorsDescription("")
+                .iuvFilePath(path.toString())
+                .iuvFileName(path.getFileName().toString())
                 .build();
 
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
@@ -144,11 +152,14 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPS), eq(RETRY_DELAY)))
+        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
         Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
                 .thenReturn("folderId");
+
+        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId))
+                .thenReturn(path);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
@@ -204,8 +215,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(null);
 
         Mockito.doThrow(new TooManyAttemptsException("Error")).when(workflowCompletionServiceMock)
-                .waitTerminationStatus("workflowId_2", MAX_ATTEMPS, RETRY_DELAY);
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus("workflowId_3", MAX_ATTEMPS, RETRY_DELAY))
+                .waitTerminationStatus("workflowId_2", MAX_ATTEMPTS, RETRY_DELAY);
+        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
                 .thenReturn(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_TIMED_OUT);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
@@ -262,9 +273,12 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .folderId("folderId")
                 .build();
 
+        Path path = Path.of("test", "iuv.csv");
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
                 .pdfGeneratedId(responseFolder.getFolderId())
                 .errorsDescription("\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": DUMMYEXCEPTION DP2")
+                .iuvFilePath(path.toString())
+                .iuvFileName(path.getFileName().toString())
                 .build();
 
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
@@ -290,11 +304,13 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPS), eq(RETRY_DELAY)))
+        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
         Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
                 .thenReturn("folderId");
+        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId))
+                .thenReturn(path);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 

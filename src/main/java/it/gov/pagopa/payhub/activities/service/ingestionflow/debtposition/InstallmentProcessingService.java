@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 
 @Service
@@ -64,11 +65,13 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     @Override
     protected boolean consumeRow(long lineNumber, InstallmentIngestionFlowFileDTO installment, InstallmentIngestionFlowFileResult ingestionFlowFileResult, List<InstallmentErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
         try {
+            setDefaultValues(installment);
             InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
                     installment,
                     ingestionFlowFile.getIngestionFlowFileId(),
                     lineNumber,
-                    ingestionFlowFile.getOrganizationId()
+                    ingestionFlowFile.getOrganizationId(),
+                    ingestionFlowFile.getFileName()
             );
             WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
             wfExecutionParameters.setMassive(true);

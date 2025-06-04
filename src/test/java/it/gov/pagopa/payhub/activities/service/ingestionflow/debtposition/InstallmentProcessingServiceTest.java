@@ -77,7 +77,7 @@ class InstallmentProcessingServiceTest {
                 .partialChange(true)
                 .build();
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L,1L))
+        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L,1L, ingestionFlowFile.getFileName()))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
@@ -114,7 +114,7 @@ class InstallmentProcessingServiceTest {
                 .partialChange(true)
                 .build();
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
+        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, ingestionFlowFile.getFileName()))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
@@ -146,7 +146,7 @@ class InstallmentProcessingServiceTest {
                 .partialChange(true)
                 .build();
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L))
+        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, ingestionFlowFile.getFileName()))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
@@ -181,7 +181,7 @@ class InstallmentProcessingServiceTest {
                 .build();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 2L, 1L))
+                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 2L, 1L, ingestionFlowFile.getFileName()))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))

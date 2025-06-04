@@ -12,12 +12,7 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
 
     public static final String CREATION_DATE_FORMAT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-    public static void validateRequiredFields(InstallmentIngestionFlowFileDTO dto) {
-        setDefaultValues(dto);
-        setDefaultIfNotLastVersion(dto);
-    }
-
-    private static void setDefaultValues(InstallmentIngestionFlowFileDTO dto){
+    public static void setDefaultValues(InstallmentIngestionFlowFileDTO dto){
         if (dto.getFlagPuPagoPaPayment() == null) {
             dto.setFlagPuPagoPaPayment(Boolean.TRUE);
         }
@@ -29,6 +24,8 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
         if (dto.getNumberBeneficiary() == null) {
             dto.setNumberBeneficiary(Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) ? 1 : 0);
         }
+
+        setDefaultIfNotLastVersion(dto);
     }
 
     private static void setDefaultIfNotLastVersion(InstallmentIngestionFlowFileDTO dto) {

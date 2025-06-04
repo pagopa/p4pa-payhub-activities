@@ -57,6 +57,15 @@ class EmailTemplateResolverServiceTest {
                    new EmailTemplate("INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_SUBJECT", "INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO_BODY")
         ),
 
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_ASSESSMENTS_OK_SUBJECT", "INGESTION_ASSESSMENTS_OK_BODY"),
+                    new EmailTemplate("INGESTION_ASSESSMENTS_KO_SUBJECT", "INGESTION_ASSESSMENTS_KO_BODY")
+            ),
+
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_RECEIPT_OK_SUBJECT", "INGESTION_RECEIPT_OK_BODY"),
+                    new EmailTemplate("INGESTION_RECEIPT_KO_SUBJECT", "INGESTION_RECEIPT_KO_BODY")
+            )
           new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                    new EmailTemplate("INGESTION_ASSESSMENTS_OK_SUBJECT", "INGESTION_ASSESSMENTS_OK_BODY"),
                    new EmailTemplate("INGESTION_ASSESSMENTS_KO_SUBJECT", "INGESTION_ASSESSMENTS_KO_BODY")

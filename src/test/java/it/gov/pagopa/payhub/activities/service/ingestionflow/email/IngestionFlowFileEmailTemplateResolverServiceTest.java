@@ -12,7 +12,6 @@ import java.util.Set;
 class IngestionFlowFileEmailTemplateResolverServiceTest {
 
     private final Set<IngestionFlowFile.IngestionFlowFileTypeEnum> expectedUnsupported = Set.of(
-            IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT,
             IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA,
 
             IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_POSTE,
@@ -28,12 +27,12 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
 
     @ParameterizedTest
     @EnumSource(IngestionFlowFile.IngestionFlowFileTypeEnum.class)
-    void whenResolveThenReturnExpected(IngestionFlowFile.IngestionFlowFileTypeEnum ingestionFlowFileType){
+    void whenResolveThenReturnExpected(IngestionFlowFile.IngestionFlowFileTypeEnum ingestionFlowFileType) {
         // Given
         IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
         ingestionFlowFile.setIngestionFlowFileType(ingestionFlowFileType);
 
-        if(expectedUnsupported.contains(ingestionFlowFileType)){
+        if (expectedUnsupported.contains(ingestionFlowFileType)) {
             Assertions.assertThrows(IngestionFlowTypeNotSupportedException.class, () -> service.resolve(ingestionFlowFile, true));
         } else {
             // When success=true

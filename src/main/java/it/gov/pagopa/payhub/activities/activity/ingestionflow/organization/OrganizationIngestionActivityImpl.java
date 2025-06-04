@@ -20,7 +20,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Lazy
 @Component
-public class OrganizationIngestionActivityImpl extends BaseIngestionFlowFileActivity<OrganizationIngestionFlowFileResult> implements OrganizationIngestionActivity {
+public class OrganizationIngestionActivityImpl extends BaseIngestionFlowFileActivity<OrganizationIngestionFlowFileResult> implements
+    OrganizationIngestionActivity {
+
 
   private final CsvService csvService;
   private final OrganizationProcessingService organizationProcessingService;
@@ -54,7 +56,7 @@ public class OrganizationIngestionActivityImpl extends BaseIngestionFlowFileActi
       return csvService.readCsv(filePath,
           OrganizationIngestionFlowFileDTO.class, (csvIterator, readerException) ->
               organizationProcessingService.processOrganization(csvIterator, readerException,
-                  ingestionFlowFileDTO, workingDirectory));
+                  ingestionFlowFileDTO, workingDirectory), null);
     } catch (Exception e) {
       log.error("Error processing file {}: {}", filePath, e.getMessage(), e);
       throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
