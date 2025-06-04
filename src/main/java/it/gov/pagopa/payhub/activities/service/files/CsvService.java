@@ -105,8 +105,8 @@ public class CsvService {
 
         try (Writer writer = Files.newBufferedWriter(csvFilePath)) {
             HeaderColumnNameMappingStrategy<C> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
-            mappingStrategy.setType(typeClass);
             mappingStrategy.setProfile(csvProfile);
+            mappingStrategy.setType(typeClass);
 
             StatefulBeanToCsv<C> beanToCsv = new StatefulBeanToCsvBuilder<C>(writer)
                     .withProfile(csvProfile)
@@ -163,8 +163,8 @@ public class CsvService {
         try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
 
             HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
-            strategy.setType(typeClass);
             strategy.setProfile(cvsProfile);
+            strategy.setType(typeClass);
 
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
                     .withType(typeClass)

@@ -2,9 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.organization;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
 import com.opencsv.exceptions.CsvException;
@@ -100,7 +98,7 @@ class OrganizationIngestionActivityImplTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrganizationIngestionFlowFileDTO.class), any(), any()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrganizationIngestionFlowFileDTO.class), any(), isNull()))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<OrganizationIngestionFlowFileDTO>, List<CsvException>, OrganizationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
@@ -142,7 +140,7 @@ class OrganizationIngestionActivityImplTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrganizationIngestionFlowFileDTO.class), any(), any()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrganizationIngestionFlowFileDTO.class), any(), isNull()))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<OrganizationIngestionFlowFileDTO>, List<CsvException>, OrganizationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);

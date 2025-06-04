@@ -56,7 +56,7 @@ public class OrganizationIngestionActivityImpl extends BaseIngestionFlowFileActi
       return csvService.readCsv(filePath,
           OrganizationIngestionFlowFileDTO.class, (csvIterator, readerException) ->
               organizationProcessingService.processOrganization(csvIterator, readerException,
-                  ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
+                  ingestionFlowFileDTO, workingDirectory), null);
     } catch (Exception e) {
       log.error("Error processing file {}: {}", filePath, e.getMessage(), e);
       throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
