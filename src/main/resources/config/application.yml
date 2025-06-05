@@ -18,8 +18,6 @@ ingestion-flow-files:
       retry-delays-ms: 1000
 
 export-flow-files:
-  mail:
-    env: "\${EXPORT_FLOW_FILES_MAIL_ENV}"
   page-request-thresholds:
     warn: "\${EXPORT_FLOW_FILES_PAGE_REQUEST_THRESHOLDS_WARN: 100}"
     error: "\${EXPORT_FLOW_FILES_PAGE_REQUEST_THRESHOLDS_ERROR: 1000}"

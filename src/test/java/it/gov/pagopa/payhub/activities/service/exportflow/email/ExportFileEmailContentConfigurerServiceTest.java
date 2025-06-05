@@ -26,13 +26,11 @@ class ExportFileEmailContentConfigurerServiceTest {
     @Mock
     private EmailTemplatesConfiguration emailTemplatesConfigurationMock;
 
-    private static final String ENV = "TEST";
-
     private ExportFileEmailContentConfigurerService exportFileEmailContentConfigurerService;
 
     @BeforeEach
     void setUp() {
-        exportFileEmailContentConfigurerService = new ExportFileEmailContentConfigurerService(emailTemplatesConfigurationMock, ENV);
+        exportFileEmailContentConfigurerService = new ExportFileEmailContentConfigurerService(emailTemplatesConfigurationMock);
     }
 
     @Test
@@ -52,7 +50,6 @@ class ExportFileEmailContentConfigurerServiceTest {
         Assertions.assertNotNull(result);
         Assertions.assertEquals("exportFileName",result.get("filename"));
         Assertions.assertEquals("orgName",result.get("entityName"));
-        Assertions.assertEquals(ENV, result.get("env"));
         Assertions.assertEquals("EXPORT_OK", result.get("mailText"));
         Assertions.assertEquals("pagati", result.get("exportFileType"));
         Assertions.assertEquals(MAILDATETIMEFORMATTER.format(LocalDateTime.now()), result.get("currentDate"));
@@ -74,7 +71,6 @@ class ExportFileEmailContentConfigurerServiceTest {
         Assertions.assertNull(result.get("exportUrl"));
         Assertions.assertNull(result.get("filename"));
         Assertions.assertEquals("orgName",result.get("entityName"));
-        Assertions.assertEquals(ENV, result.get("env"));
         Assertions.assertEquals("EXPORT_KO", result.get("mailText"));
         Assertions.assertEquals("classificazione", result.get("exportFileType"));
         Assertions.assertEquals(MAILDATETIMEFORMATTER.format(LocalDateTime.now()), result.get("currentDate"));

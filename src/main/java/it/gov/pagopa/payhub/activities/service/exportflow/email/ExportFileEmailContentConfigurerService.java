@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.service.exportflow.email;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +19,6 @@ public class ExportFileEmailContentConfigurerService {
 
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
 
-    private final String env;
-
     private static final Map<ExportFile.ExportFileTypeEnum, String> EXPORT_FILE_TYPE_MAP = Map.of(
             ExportFile.ExportFileTypeEnum.PAID, "pagati",
             ExportFile.ExportFileTypeEnum.RECEIPTS_ARCHIVING, "conservazione",
@@ -29,10 +26,8 @@ public class ExportFileEmailContentConfigurerService {
     );
 
 
-    public ExportFileEmailContentConfigurerService(EmailTemplatesConfiguration emailTemplatesConfiguration,
-                                                   @Value("${export-flow-files.mail.env}") String env) {
+    public ExportFileEmailContentConfigurerService(EmailTemplatesConfiguration emailTemplatesConfiguration) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
-        this.env = env;
     }
 
 
@@ -53,7 +48,6 @@ public class ExportFileEmailContentConfigurerService {
         }
         mailParams.put("exportFileType", getExportFileType(exportFileTypeEnum));
         mailParams.put("entityName", orgName);
-        mailParams.put("env", env);
         mailParams.put("mailText", mailText);
         mailParams.put("currentDate", MAILDATETIMEFORMATTER.format(LocalDateTime.now()));
 
