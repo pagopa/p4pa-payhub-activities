@@ -26,14 +26,13 @@ class ExportFileEmailContentConfigurerServiceTest {
     @Mock
     private EmailTemplatesConfiguration emailTemplatesConfigurationMock;
 
-    private static final String EXPORT_URL = "http://piattaforma-unitaria/export";
     private static final String ENV = "TEST";
 
     private ExportFileEmailContentConfigurerService exportFileEmailContentConfigurerService;
 
     @BeforeEach
     void setUp() {
-        exportFileEmailContentConfigurerService = new ExportFileEmailContentConfigurerService(emailTemplatesConfigurationMock, EXPORT_URL, ENV);
+        exportFileEmailContentConfigurerService = new ExportFileEmailContentConfigurerService(emailTemplatesConfigurationMock, ENV);
     }
 
     @Test
@@ -51,7 +50,6 @@ class ExportFileEmailContentConfigurerServiceTest {
         Map<String, String> result = exportFileEmailContentConfigurerService.configureParams(exportFile, organization, true);
         //then
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(EXPORT_URL,result.get("exportUrl"));
         Assertions.assertEquals("exportFileName",result.get("filename"));
         Assertions.assertEquals("orgName",result.get("entityName"));
         Assertions.assertEquals(ENV, result.get("env"));

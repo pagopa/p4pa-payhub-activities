@@ -20,7 +20,6 @@ public class ExportFileEmailContentConfigurerService {
 
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
 
-    private final String exportUrl;
     private final String env;
 
     private static final Map<ExportFile.ExportFileTypeEnum, String> EXPORT_FILE_TYPE_MAP = Map.of(
@@ -31,10 +30,8 @@ public class ExportFileEmailContentConfigurerService {
 
 
     public ExportFileEmailContentConfigurerService(EmailTemplatesConfiguration emailTemplatesConfiguration,
-                                                   @Value("${export-flow-files.mail.request-url}") String exportUrl,
                                                    @Value("${export-flow-files.mail.env}") String env) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
-        this.exportUrl = exportUrl;
         this.env = env;
     }
 
@@ -49,7 +46,6 @@ public class ExportFileEmailContentConfigurerService {
         String mailText;
         if (success) {
             mailText = emailTemplatesConfiguration.getExportMailTextOk();
-            mailParams.put("exportUrl", exportUrl);
             mailParams.put("filename", fileName);
 
         } else {
