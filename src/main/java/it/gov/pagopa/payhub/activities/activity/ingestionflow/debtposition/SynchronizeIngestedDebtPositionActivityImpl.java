@@ -3,9 +3,9 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
-import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.IUVArchivingExportFileService;
 import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
@@ -37,7 +37,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
     private final DebtPositionService debtPositionService;
     private final WorkflowDebtPositionService workflowDebtPositionService;
-    private final WorkflowCompletionService workflowCompletionService;
+    private final WorkflowHubService workflowHubService;
     private final GenerateNoticeService generateNoticeService;
     private final DebtPositionOperationTypeResolver debtPositionOperationTypeResolver;
     private final Integer pageSize;
@@ -47,13 +47,13 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
 
-    public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowCompletionService workflowCompletionService, GenerateNoticeService generateNoticeService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
+    public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowHubService workflowHubService, GenerateNoticeService generateNoticeService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
                                                        @Value("${query-limits.debt-positions.size}") Integer pageSize,
                                                        @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes}") int maxWaitingMinutes,
                                                        @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs, IUVArchivingExportFileService iuvArchivingExportFileService) {
         this.debtPositionService = debtPositionService;
         this.workflowDebtPositionService = workflowDebtPositionService;
-        this.workflowCompletionService = workflowCompletionService;
+        this.workflowHubService = workflowHubService;
         this.generateNoticeService = generateNoticeService;
         this.debtPositionOperationTypeResolver = debtPositionOperationTypeResolver;
         this.pageSize = pageSize;
@@ -87,7 +87,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                 WorkflowCreatedDTO workflow = p.getRight();
                 DebtPositionDTO debtPosition = p.getLeft();
                 try {
-                    WorkflowExecutionStatus workflowExecutionStatus = workflowCompletionService.waitTerminationStatus(workflow.getWorkflowId(), maxAttempts, retryDelayMs);
+                    WorkflowExecutionStatus workflowExecutionStatus = workflowHubService.waitWorkflowCompletion(workflow.getWorkflowId(), maxAttempts, retryDelayMs);
 
                     if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowExecutionStatus)) {
                         errors.append("\nSynchronization workflow for debt position with iupdOrg ")

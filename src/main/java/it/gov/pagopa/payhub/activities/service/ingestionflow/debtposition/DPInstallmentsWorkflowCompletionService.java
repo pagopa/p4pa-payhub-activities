@@ -1,10 +1,9 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
-import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -19,14 +18,14 @@ import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTIO
 @Slf4j
 public class DPInstallmentsWorkflowCompletionService {
 
-    private final WorkflowCompletionService workflowCompletionService;
+    private final WorkflowHubService workflowHubService;
     private final int maxAttempts;
     private final int retryDelayMs;
 
-    public DPInstallmentsWorkflowCompletionService(WorkflowCompletionService workflowCompletionService,
+    public DPInstallmentsWorkflowCompletionService(WorkflowHubService workflowHubService,
                                                    @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes}") int maxWaitingMinutes,
                                                    @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs) {
-        this.workflowCompletionService = workflowCompletionService;
+        this.workflowHubService = workflowHubService;
         this.retryDelayMs = retryDelayMs;
         this.maxAttempts = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
     }
@@ -46,7 +45,7 @@ public class DPInstallmentsWorkflowCompletionService {
             if (workflowId == null) {
                 return true;
             }
-            WorkflowExecutionStatus workflowStatus = workflowCompletionService.waitTerminationStatus(
+            WorkflowExecutionStatus workflowStatus = workflowHubService.waitWorkflowCompletion(
                     workflowId, maxAttempts, retryDelayMs);
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
@@ -56,7 +55,7 @@ public class DPInstallmentsWorkflowCompletionService {
             }
 
             return true;
-        } catch (TooManyAttemptsException e) {
+        } catch (Exception e) {
             log.warn("Workflow {} did not complete within retry limits.", workflowId);
             errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, null, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
             return false;
