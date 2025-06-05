@@ -48,4 +48,22 @@ class WorkflowHubClientTest {
         Mockito.verify(workflowApi)
                 .getWorkflowStatus(workflowId);
     }
+
+    @Test
+    void whenWaitWorkflowCompletionThenInvokeWithAccessToken(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String workflowId = "workflowId";
+        Integer maxAttempts = 2;
+        Integer retryDelayMs = 1;
+
+        Mockito.when(workflowHubApisHolder.getWorkflowHubApi(accessToken))
+                .thenReturn(workflowApi);
+
+        // When
+        client.waitWorkflowCompletion(accessToken, workflowId, maxAttempts, retryDelayMs);
+
+        // Then
+        Mockito.verify(workflowApi).waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs);
+    }
 }

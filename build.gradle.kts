@@ -300,7 +300,8 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 		"WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
 		"ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
 		"WorkflowTypeOrg" to "String",
-		"ScheduleEnum" to "String"
+		"ScheduleEnum" to "String",
+		"WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
 	))
 	configOptions.set(
 		mapOf(

@@ -3,10 +3,9 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
-import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
-import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.IUVArchivingExportFileService;
 import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestClientException;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -38,7 +38,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     @Mock
     private WorkflowDebtPositionService workflowDebtPositionServiceMock;
     @Mock
-    private WorkflowCompletionService workflowCompletionServiceMock;
+    private WorkflowHubService workflowHubServiceMock;
     @Mock
     private GenerateNoticeService generateNoticeServiceMock;
     @Mock
@@ -58,7 +58,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     @BeforeEach
     void setUp() {
         activity = new SynchronizeIngestedDebtPositionActivityImpl(
-                debtPositionServiceMock, workflowDebtPositionServiceMock, workflowCompletionServiceMock, generateNoticeServiceMock,
+                debtPositionServiceMock, workflowDebtPositionServiceMock, workflowHubServiceMock, generateNoticeServiceMock,
                 debtPositionOperationTypeResolverMock, PAGE_SIZE, MAX_WAITING_MINUTES, RETRY_DELAY, iuvArchivingExportFileServiceMock
         );
     }
@@ -68,14 +68,14 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.verifyNoMoreInteractions(
                 debtPositionServiceMock,
                 workflowDebtPositionServiceMock,
-                workflowCompletionServiceMock,
+                workflowHubServiceMock,
                 debtPositionOperationTypeResolverMock,
                 iuvArchivingExportFileServiceMock
         );
     }
 
     @Test
-    void testSynchronizeIngestedDebtPositionWithoutErrors() throws TooManyAttemptsException {
+    void testSynchronizeIngestedDebtPositionWithoutErrors() {
         Long ingestionFlowFileId = 1L;
         WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
         DebtPositionDTO debtPosition1 = buildDebtPositionDTO();
@@ -152,7 +152,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
+        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
         Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
@@ -167,7 +167,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     }
 
     @Test
-    void testSynchronizeIngestedDebtPositionWithErrors() throws TooManyAttemptsException {
+    void testSynchronizeIngestedDebtPositionWithErrors() {
         Long ingestionFlowFileId = 1L;
         DebtPositionDTO debtPosition1 = buildDebtPositionDTO();
         DebtPositionDTO debtPosition2 = buildDebtPositionDTO();
@@ -214,9 +214,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(null);
 
-        Mockito.doThrow(new TooManyAttemptsException("Error")).when(workflowCompletionServiceMock)
-                .waitTerminationStatus("workflowId_2", MAX_ATTEMPTS, RETRY_DELAY);
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
+        Mockito.doThrow(new RestClientException("Error")).when(workflowHubServiceMock)
+                .waitWorkflowCompletion("workflowId_2", MAX_ATTEMPTS, RETRY_DELAY);
+        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
                 .thenReturn(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_TIMED_OUT);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
@@ -225,7 +225,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     }
 
     @Test
-    void testSynchronizeIngestedDebtPositionWithErrorsOnSyncAPI() throws TooManyAttemptsException {
+    void testSynchronizeIngestedDebtPositionWithErrorsOnSyncAPI() {
         Long ingestionFlowFileId = 1L;
         WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
         DebtPositionDTO debtPosition1 = buildDebtPositionDTO();
@@ -304,7 +304,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
+        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
         Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
