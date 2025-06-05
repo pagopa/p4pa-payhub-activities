@@ -48,7 +48,7 @@ class ExportFileEmailContentConfigurerServiceTest {
         Map<String, String> result = exportFileEmailContentConfigurerService.configureParams(exportFile, organization, true);
         //then
         Assertions.assertNotNull(result);
-        Assertions.assertEquals("exportFileName",result.get("filename"));
+        Assertions.assertEquals("exportFileName",result.get("fileName"));
         Assertions.assertEquals("orgName",result.get("entityName"));
         Assertions.assertEquals("EXPORT_OK", result.get("mailText"));
         Assertions.assertEquals("pagati", result.get("exportFileType"));
@@ -69,7 +69,7 @@ class ExportFileEmailContentConfigurerServiceTest {
         //then
         Assertions.assertNotNull(result);
         Assertions.assertNull(result.get("exportUrl"));
-        Assertions.assertNull(result.get("filename"));
+        Assertions.assertNull(result.get("fileName"));
         Assertions.assertEquals("orgName",result.get("entityName"));
         Assertions.assertEquals("EXPORT_KO", result.get("mailText"));
         Assertions.assertEquals("classificazione", result.get("exportFileType"));
