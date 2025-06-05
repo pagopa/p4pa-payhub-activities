@@ -289,7 +289,7 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 	description = "openapi"
 
 	generatorName.set("java")
-	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/p4pa-workflow-hub.openapi.yaml")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/P4ADEV-3088-add-api-wait-workflow-completion/openapi/p4pa-workflow-hub.openapi.yaml")
 	outputDir.set("$projectDir/build/generated")
 	invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
 	apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")
@@ -300,7 +300,8 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 		"WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
 		"ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
 		"WorkflowTypeOrg" to "String",
-		"ScheduleEnum" to "String"
+		"ScheduleEnum" to "String",
+		"WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
 	))
 	configOptions.set(
 		mapOf(

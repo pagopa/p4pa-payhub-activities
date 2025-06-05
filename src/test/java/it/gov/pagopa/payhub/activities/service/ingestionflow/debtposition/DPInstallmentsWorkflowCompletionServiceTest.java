@@ -1,15 +1,15 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
+import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.ingestionflow.TooManyAttemptsException;
-import it.gov.pagopa.payhub.activities.service.WorkflowCompletionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestClientException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DPInstallmentsWorkflowCompletionServiceTest {
 
     @Mock
-    private WorkflowCompletionService workflowCompletionServiceMock;
+    private WorkflowHubService workflowHubServiceMock;
 
     private DPInstallmentsWorkflowCompletionService service;
 
@@ -38,19 +38,19 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         retryDelayMs = 10;
         maxRetries = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
         service = new DPInstallmentsWorkflowCompletionService(
-                workflowCompletionServiceMock,
+                workflowHubServiceMock,
                 maxWaitingMinutes,
                 retryDelayMs
         );
     }
 
     @Test
-    void whenWaitForWorkflowCompletionThenSuccess() throws TooManyAttemptsException {
+    void whenWaitForWorkflowCompletionThenSuccess() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(WORKFLOW_ID, maxRetries, retryDelayMs))
+        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs))
                 .thenReturn(WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
         // When
@@ -76,12 +76,12 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenStatusFailedWhenWaitForWorkflowCompletionThenAddErrorList() throws TooManyAttemptsException {
+    void givenStatusFailedWhenWaitForWorkflowCompletionThenAddErrorList() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
-        Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(WORKFLOW_ID, maxRetries, retryDelayMs))
+        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs))
                 .thenReturn(WORKFLOW_EXECUTION_STATUS_FAILED);
 
         // When
@@ -96,13 +96,13 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     }
 
     @Test
-    void givenRetryReachedLimitWhenWaitForWorkflowCompletionThenCatchTooManyAttemptsExceptionAndAddError() throws TooManyAttemptsException {
+    void givenRetryReachedLimitWhenWaitForWorkflowCompletionThenCatchTooManyAttemptsExceptionAndAddError() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
-        Mockito.doThrow(new TooManyAttemptsException("Error"))
-                .when(workflowCompletionServiceMock).waitTerminationStatus(WORKFLOW_ID, maxRetries, retryDelayMs);
+        Mockito.doThrow(new RestClientException("Error"))
+                .when(workflowHubServiceMock).waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs);
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
