@@ -41,7 +41,7 @@ public class ExportFileEmailContentConfigurerService {
         String mailText;
         if (success) {
             mailText = emailTemplatesConfiguration.getExportMailTextOk();
-            mailParams.put("filename", fileName);
+            mailParams.put("fileName", fileName);
 
         } else {
             mailText = emailTemplatesConfiguration.getExportMailTextKo();
