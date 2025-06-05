@@ -49,6 +49,13 @@ public class EmailTemplateResolverService {
 
             case INGESTION_RECEIPT_OK -> emailTemplatesConfiguration.getReceiptFlow().getOk();
             case INGESTION_RECEIPT_KO -> emailTemplatesConfiguration.getReceiptFlow().getKo();
+
+            case EXPORT_PAID_OK -> emailTemplatesConfiguration.getExportPaidFile().getOk();
+            case EXPORT_PAID_KO -> emailTemplatesConfiguration.getExportPaidFile().getKo();
+            case EXPORT_RECEIPTS_ARCHIVING_OK -> emailTemplatesConfiguration.getExportReceiptsArchivingFile().getOk();
+            case EXPORT_RECEIPTS_ARCHIVING_KO -> emailTemplatesConfiguration.getExportReceiptsArchivingFile().getKo();
+            case EXPORT_CLASSIFICATIONS_OK -> emailTemplatesConfiguration.getExportClassificationsFile().getOk();
+            case EXPORT_CLASSIFICATIONS_KO -> emailTemplatesConfiguration.getExportClassificationsFile().getKo();
         };
     }
 }
