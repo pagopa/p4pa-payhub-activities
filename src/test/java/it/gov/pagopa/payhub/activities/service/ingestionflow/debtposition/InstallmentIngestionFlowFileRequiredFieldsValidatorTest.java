@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
+import static it.gov.pagopa.pu.debtposition.dto.generated.Action.I;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -69,7 +70,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
         dto.setAmount(BigDecimal.TEN);
         dto.setDebtPositionTypeCode("DebtPositionTypeCode");
         dto.setRemittanceInformation("RemittanceInformation");
-        dto.setAction(InstallmentIngestionFlowFileDTO.ActionEnum.I);
+        dto.setAction(I);
         return dto;
     }
 }
