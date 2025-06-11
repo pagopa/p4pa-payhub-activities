@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
-import it.gov.pagopa.pu.debtposition.dto.generated.ActionEnum;
-import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -42,7 +39,7 @@ public class InstallmentSynchronizeMapper {
                 .ingestionFlowFileId(ingestionFlowFileId)
                 .ingestionFlowFileLineNumber(ingestionFlowFileLineNumber)
                 .organizationId(organizationId)
-                .action(ActionEnum.valueOf(installmentIngestionFlowFileDTO.getAction().name()))
+                .action(Action.valueOf(installmentIngestionFlowFileDTO.getAction().name()))
                 .draft(installmentIngestionFlowFileDTO.getDraft())
                 .iupdOrg(installmentIngestionFlowFileDTO.getIupdOrg())
                 .description(installmentIngestionFlowFileDTO.getDescription())
