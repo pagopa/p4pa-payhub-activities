@@ -19,7 +19,7 @@ public interface OrganizationIngestionActivity {
    * @param ingestionFlowFileId the unique identifier of the file to process.
    * @return {@link OrganizationIngestionFlowFileResult} containing the list of ipa code.
    */
-  @ActivityMethod
+  @ActivityMethod(name = "ProcessOrganizationFile")
   OrganizationIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 
 }

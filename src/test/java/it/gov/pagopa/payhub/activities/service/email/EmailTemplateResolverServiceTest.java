@@ -21,8 +21,33 @@ class EmailTemplateResolverServiceTest {
             ),
 
             new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_PAYMENT_NOTIFICATION_OK_SUBJECT", "INGESTION_PAYMENT_NOTIFICATION_OK_BODY"),
+                    new EmailTemplate("INGESTION_PAYMENT_NOTIFICATION_KO_SUBJECT", "INGESTION_PAYMENT_NOTIFICATION_KO_BODY")
+            ),
+
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_TREASURY_OPI_OK_SUBJECT", "INGESTION_TREASURY_OPI_OK_BODY"),
                     new EmailTemplate("INGESTION_TREASURY_OPI_KO_SUBJECT", "INGESTION_TREASURY_OPI_KO_BODY")
+            ),
+
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_TREASURY_POSTE_OK_SUBJECT", "INGESTION_TREASURY_POSTE_OK_BODY"),
+                    new EmailTemplate("INGESTION_TREASURY_POSTE_KO_SUBJECT", "INGESTION_TREASURY_POSTE_KO_BODY")
+            ),
+
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_TREASURY_XLS_OK_SUBJECT", "INGESTION_TREASURY_XLS_OK_BODY"),
+                    new EmailTemplate("INGESTION_TREASURY_XLS_KO_SUBJECT", "INGESTION_TREASURY_XLS_KO_BODY")
+            ),
+
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_TREASURY_CSV_OK_SUBJECT", "INGESTION_TREASURY_CSV_OK_BODY"),
+                    new EmailTemplate("INGESTION_TREASURY_CSV_KO_SUBJECT", "INGESTION_TREASURY_CSV_KO_BODY")
+            ),
+
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_TREASURY_CSV_COMPLETE_OK_SUBJECT", "INGESTION_TREASURY_CSV_COMPLETE_OK_BODY"),
+                    new EmailTemplate("INGESTION_TREASURY_CSV_COMPLETE_KO_SUBJECT", "INGESTION_TREASURY_CSV_COMPLETE_KO_BODY")
             ),
 
             new EmailTemplate("INGESTION_PAGOPA_RT_SUBJECT", "INGESTION_PAGOPA_RT_BODY"),

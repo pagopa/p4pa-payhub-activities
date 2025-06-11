@@ -41,7 +41,7 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
   }
 
   @Override
-  public IudClassificationActivityResult classify(Long organizationId, String iud) {
+  public IudClassificationActivityResult classifyIud(Long organizationId, String iud) {
     log.info("Starting IUD Classification for organization id {} and iud {}", organizationId,iud);
 
     CollectionModelInstallmentNoPII installment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organizationId, iud,

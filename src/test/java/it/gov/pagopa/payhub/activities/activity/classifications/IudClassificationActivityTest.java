@@ -61,7 +61,7 @@ class IudClassificationActivityTest {
 
 
   @Test
-  void givenNotificatedTransferWhenClassifyThenOk() {
+  void givenNotificatedTransferWhenClassifyIudThenOk() {
     CollectionModelInstallmentNoPII expectedCollectionModelInstallmentNoPII = InstallmentFaker.buildCollectionModelInstallmentNoPII();
 
     List<InstallmentNoPII> expectedInstallmentNoPIIs = expectedCollectionModelInstallmentNoPII.getEmbedded()
@@ -87,7 +87,7 @@ class IudClassificationActivityTest {
             .build();
 
     IudClassificationActivityResult iudClassificationActivityResult =
-        iudClassificationActivity.classify(ORGANIZATIONID, IUD);
+        iudClassificationActivity.classifyIud(ORGANIZATIONID, IUD);
 
     assertEquals(iudClassificationActivityResult, expectedIudClassificationActivityResult);
 
@@ -102,7 +102,7 @@ class IudClassificationActivityTest {
   }
 
   @Test
-  void givenInstallmentsWithTransfersWhenClassifyThenReturnTransferIndexes() {
+  void givenInstallmentsWithTransfersWhenClassifyIudThenReturnTransferIndexes() {
     CollectionModelInstallmentNoPII installmentNoPII = InstallmentFaker.buildCollectionModelInstallmentNoPII();
     installmentNoPII.getEmbedded().getInstallmentNoPIIs().forEach(installment -> {
       installment.setInstallmentId(1L);
@@ -121,7 +121,7 @@ class IudClassificationActivityTest {
     when(transferServiceMock.findByInstallmentId(Mockito.anyLong()))
         .thenReturn(transferModel);
 
-    IudClassificationActivityResult result = iudClassificationActivity.classify(1L, "IUD");
+    IudClassificationActivityResult result = iudClassificationActivity.classifyIud(1L, "IUD");
 
     assertEquals(1L, result.getOrganizationId());
     assertEquals("IUD", result.getIud());
@@ -140,7 +140,7 @@ class IudClassificationActivityTest {
 
 
   @Test
-  void givenNoReportedTransferWhenClassifyThenNoInteractionWithPaymentNotificationService() {
+  void givenNoReportedTransferWhenClassifyIudThenNoInteractionWithPaymentNotificationService() {
     CollectionModelInstallmentNoPII installmentNoPII = new CollectionModelInstallmentNoPII();
     installmentNoPII.setEmbedded(new CollectionModelInstallmentNoPIIEmbedded(Collections.emptyList()));
 
@@ -151,7 +151,7 @@ class IudClassificationActivityTest {
         .thenReturn(installmentNoPII);
 
     IudClassificationActivityResult iudClassificationActivityResult =
-        iudClassificationActivity.classify(ORGANIZATIONID, IUD);
+        iudClassificationActivity.classifyIud(ORGANIZATIONID, IUD);
 
     IudClassificationActivityResult expectedIudClassificationActivityResult =
         IudClassificationActivityResult
@@ -175,7 +175,7 @@ class IudClassificationActivityTest {
 
 
   @Test
-  void givenEmptyTransferIndexListWhenClassifyThenSaveClassification() {
+  void givenEmptyTransferIndexListWhenClassifyIudThenSaveClassification() {
     // Mocking installments with no transfers
     CollectionModelInstallmentNoPII installmentNoPII = InstallmentFaker.buildCollectionModelInstallmentNoPII();
     installmentNoPII.getEmbedded().getInstallmentNoPIIs().forEach(installment -> {
@@ -218,7 +218,7 @@ class IudClassificationActivityTest {
             .build();
 
     IudClassificationActivityResult iudClassificationActivityResult =
-        iudClassificationActivity.classify(ORGANIZATIONID, IUD);
+        iudClassificationActivity.classifyIud(ORGANIZATIONID, IUD);
 
     assertEquals(expectedIudClassificationActivityResult, iudClassificationActivityResult);
 

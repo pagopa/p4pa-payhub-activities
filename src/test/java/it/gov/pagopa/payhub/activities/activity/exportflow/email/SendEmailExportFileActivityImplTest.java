@@ -66,7 +66,7 @@ class SendEmailExportFileActivityImplTest {
     }
 
     @Test
-    void givenNotExportFileWhenSendEmailThenExportFileNotFoundException() {
+    void givenNotExportFileWhenSendExportCompletedEmailThenExportFileNotFoundException() {
         // Given
         long exportFileId = 1L;
         Mockito.when(exportFileServiceMock.findById(exportFileId))
@@ -74,12 +74,12 @@ class SendEmailExportFileActivityImplTest {
 
         // When, Then
         ExportFileNotFoundException ex = Assertions.assertThrows(ExportFileNotFoundException.class,
-        () -> sendEmailExportFileActivity.sendEmail(exportFileId, true));
+        () -> sendEmailExportFileActivity.sendExportCompletedEmail(exportFileId, true));
         assertEquals("Cannot find ExportFile having id: 1", ex.getMessage());
     }
 
     @Test
-    void givenNotOrganizationWhenSendEmailThenOrganizationNotFoundException() {
+    void givenNotOrganizationWhenSendExportCompletedEmailThenOrganizationNotFoundException() {
         // Given
         long exportFileId = 1L;
         long organizationId = 1L;
@@ -95,12 +95,12 @@ class SendEmailExportFileActivityImplTest {
 
         // When, Then
         OrganizationNotFoundException ex = assertThrows(OrganizationNotFoundException.class,
-                () -> sendEmailExportFileActivity.sendEmail(exportFileId, true));
+                () -> sendEmailExportFileActivity.sendExportCompletedEmail(exportFileId, true));
         assertEquals("Cannot find Organization having id: 1", ex.getMessage());
     }
 
     @Test
-    void givenCompleteConfigurationWhenSendEmailThenOk() {
+    void givenCompleteConfigurationWhenSendExportCompletedEmailThenOk() {
         // Given
         long organizationId = 1L;
         ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
@@ -133,7 +133,7 @@ class SendEmailExportFileActivityImplTest {
                 .thenReturn(templatedEmailDTO);
 
         // When
-        sendEmailExportFileActivity.sendEmail(exportFile.getExportFileId(), success);
+        sendEmailExportFileActivity.sendExportCompletedEmail(exportFile.getExportFileId(), success);
 
         // Then
         Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(expectedTemplatedEmail);

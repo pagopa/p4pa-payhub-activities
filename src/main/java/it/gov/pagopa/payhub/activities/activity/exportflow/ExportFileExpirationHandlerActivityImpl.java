@@ -41,7 +41,7 @@ public class ExportFileExpirationHandlerActivityImpl implements
   }
 
   @Override
-  public void handleExpiration(Long exportFileId) {
+  public void handleExportExpiration(Long exportFileId) {
     log.info("Handling expiration of Export File having exportFileId {}", exportFileId);
     ExportFile file = exportFileService.findById(exportFileId)
         .orElseThrow(() -> new ExportFileNotFoundException(

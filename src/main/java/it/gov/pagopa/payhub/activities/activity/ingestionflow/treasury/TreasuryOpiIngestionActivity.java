@@ -17,6 +17,6 @@ public interface TreasuryOpiIngestionActivity {
      * @param ingestionFlowFileId the unique identifier related to the file to process.
      * @return {@link TreasuryIufIngestionFlowFileResult} containing the list of IUFs and status.
      */
-    @ActivityMethod
+    @ActivityMethod(name = "ProcessTreasuryOpiFile")
     TreasuryIufIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }

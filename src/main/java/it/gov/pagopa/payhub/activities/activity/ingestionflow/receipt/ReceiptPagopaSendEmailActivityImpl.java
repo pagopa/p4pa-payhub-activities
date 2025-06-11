@@ -28,7 +28,7 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
 
 
   @Override
-  public void sendEmail(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
+  public void sendReceiptHandledEmail(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
     if (installmentDTO == null) {
       log.info("Not sending email for receipt id[{}] [{}/{}]: installment is null",
         receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber());

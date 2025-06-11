@@ -16,7 +16,7 @@ public class DeliveryNotificationActivityImpl implements DeliveryNotificationAct
     }
 
     @Override
-    public void deliveryNotification(String sendNotificationId) {
+    public void deliverySendNotification(String sendNotificationId) {
         log.info("Starting deliveryNotification for sendNotificationId {}", sendNotificationId);
         sendService.deliveryNotification(sendNotificationId);
     }

@@ -17,6 +17,6 @@ public interface PaymentNotificationIngestionActivity {
    * @param ingestionFlowFileId the unique identifier related to the file to process.
    * @return {@link PaymentNotificationIngestionFlowFileResult} containing the list of IUDs and organization Id.
    */
-  @ActivityMethod
+  @ActivityMethod(name = "ProcessPaymentNotificationFile")
   PaymentNotificationIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }

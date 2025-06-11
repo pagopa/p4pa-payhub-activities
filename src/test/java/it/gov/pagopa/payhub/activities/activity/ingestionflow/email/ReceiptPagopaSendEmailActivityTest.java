@@ -32,7 +32,7 @@ class ReceiptPagopaSendEmailActivityTest {
 
 
   @Test
-  void givenValidReceiptAndInstallmentWhenSendEmailMailThenOk() {
+  void givenValidReceiptAndInstallmentWhenSendReceiptHandledEmailMailThenOk() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
@@ -43,7 +43,7 @@ class ReceiptPagopaSendEmailActivityTest {
     Mockito.when(receiptPagoPaEmailConfigurerServiceMock.buildTemplateParams(receiptWithAdditionalNodeDataDTO)).thenReturn(params);
 
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
 
     // Then
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock, Mockito.times(1)).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
@@ -54,19 +54,19 @@ class ReceiptPagopaSendEmailActivityTest {
   }
 
   @Test
-  void givenNoInstallmentWhenSendEmailMailThenNotSent() {
+  void givenNoInstallmentWhenSendReceiptHandledEmailMailThenNotSent() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
 
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendEmail(receiptWithAdditionalNodeDataDTO, null));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, null));
 
     // Then
     Mockito.verifyNoInteractions(receiptPagoPaEmailConfigurerServiceMock, sendEmailActivityMock);
   }
 
   @Test
-  void givenNoRecipientsWhenSendEmailMailThenNotSent() {
+  void givenNoRecipientsWhenSendReceiptHandledEmailMailThenNotSent() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
@@ -75,7 +75,7 @@ class ReceiptPagopaSendEmailActivityTest {
     Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
 
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
 
     // Then
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock, Mockito.times(1)).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);

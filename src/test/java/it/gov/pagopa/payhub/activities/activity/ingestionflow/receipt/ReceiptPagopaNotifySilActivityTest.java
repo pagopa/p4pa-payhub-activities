@@ -16,13 +16,13 @@ class ReceiptPagopaNotifySilActivityTest {
 
 
   @Test
-  void givenValidReceiptAndInstallmentWhenHandleNotifySilThenOk() {
+  void givenValidReceiptAndInstallmentWhenNotifyReceiptToSilThenOk() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
 
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaNotifySilActivity.handleNotifySil(receiptDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaNotifySilActivity.notifyReceiptToSil(receiptDTO, installmentDTO));
 
     // Then
 

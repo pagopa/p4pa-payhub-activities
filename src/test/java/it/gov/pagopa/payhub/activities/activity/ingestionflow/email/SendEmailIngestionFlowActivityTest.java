@@ -60,18 +60,18 @@ class SendEmailIngestionFlowActivityTest {
     }
 
     @Test
-    void givenNotIngestionFlowFileRecordWhenSendEmailThenIngestionFlowFileNotFoundException() {
+    void givenNotIngestionFlowFileRecordWhenSendIngestionFlowFileCompleteEmailThenIngestionFlowFileNotFoundException() {
         // Given
         long ingestionFlowFileId = 1L;
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.empty());
 
         // When, Then
-        Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> activity.sendEmail(ingestionFlowFileId, true));
+        Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> activity.sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true));
     }
 
     @Test
-    void givenCompleteConfigurationWhenSendEmailThenOk() {
+    void givenCompleteConfigurationWhenSendIngestionFlowFileCompleteEmailThenOk() {
         // Given
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         boolean success = true;
@@ -96,7 +96,7 @@ class SendEmailIngestionFlowActivityTest {
                 .thenReturn(Pair.of(to, cc));
 
         // When
-        activity.sendEmail(ingestionFlowFileDTO.getIngestionFlowFileId(), success);
+        activity.sendIngestionFlowFileCompleteEmail(ingestionFlowFileDTO.getIngestionFlowFileId(), success);
 
         // Then
         Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(expectedTemplatedEmail);

@@ -58,7 +58,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	}
 
 	@Override
-	public void classify(TransferSemanticKeyDTO transferSemanticKey) {
+	public void classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
 		log.info("Transfer classification for organization id: {} and iuv: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
@@ -133,7 +133,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	 */
 	private PaymentNotificationNoPII retrievePaymentNotification(Long orgId, Optional<InstallmentNoPII> installmentDTO) {
 		return installmentDTO.map(installment -> {
-				log.info("Retrieving payment notification from organizationId {} and iud", orgId, installment.getIud());
+				log.info("Retrieving payment notification from organizationId {} and iud {}", orgId, installment.getIud());
 				return paymentNotificationService.getByOrgIdAndIud(orgId, installment.getIud());
 			})
 			.orElse(null);
