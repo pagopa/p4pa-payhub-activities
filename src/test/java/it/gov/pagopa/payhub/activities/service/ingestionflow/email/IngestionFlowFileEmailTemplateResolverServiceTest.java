@@ -20,7 +20,9 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
 
             IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION,
 
-            IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA
+            IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA,
+
+            IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE
     );
 
     private final IngestionFlowFileEmailTemplateResolverService service = new IngestionFlowFileEmailTemplateResolverService();
