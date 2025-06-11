@@ -163,7 +163,6 @@ class TreasuryCsvCompleteIngestionActivityTest {
         .totalRows(30L)
         .discardedFileName("dicardedFileName")
         .errorDescription("errorDescription")
-        //.brokerFiscalCode("BrokerFiscalCode")
         .build();
   }
 
