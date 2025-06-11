@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
-import it.gov.pagopa.pu.debtposition.dto.generated.ActionEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
@@ -42,7 +41,7 @@ public class InstallmentSynchronizeMapper {
                 .ingestionFlowFileId(ingestionFlowFileId)
                 .ingestionFlowFileLineNumber(ingestionFlowFileLineNumber)
                 .organizationId(organizationId)
-                .action(ActionEnum.valueOf(installmentIngestionFlowFileDTO.getAction().name()))
+                .action(installmentIngestionFlowFileDTO.getAction())
                 .draft(installmentIngestionFlowFileDTO.getDraft())
                 .iupdOrg(installmentIngestionFlowFileDTO.getIupdOrg())
                 .description(installmentIngestionFlowFileDTO.getDescription())
