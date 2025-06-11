@@ -12,6 +12,7 @@ import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.Utilities.longCentsToBigDecimalEuro;
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
+import static it.gov.pagopa.pu.debtposition.dto.generated.Action.I;
 
 public class InstallmentFaker {
 
@@ -39,6 +40,7 @@ public class InstallmentFaker {
                 .legacyPaymentMetadata("legacyPaymentMetadata")
                 .balance("balance")
                 .transfers(transfers)
+                .ingestionFlowFileAction(I)
                 .debtor(buildPersonDTO());
     }
 
@@ -124,7 +126,7 @@ public class InstallmentFaker {
                 .legacyPaymentMetadata(dto.getLegacyPaymentMetadata())
                 .balance(dto.getBalance())
                 .flagPuPagoPaPayment(Boolean.TRUE)
-                .action(IUVInstallmentsExportFlowFileDTO.ActionEnum.I)
+                .action(I)
                 .build();
     }
 
