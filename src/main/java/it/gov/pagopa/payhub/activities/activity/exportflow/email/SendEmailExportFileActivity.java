@@ -17,5 +17,5 @@ public interface SendEmailExportFileActivity {
      * @param success true if the process succeeded, false otherwise.
      */
     @ActivityMethod
-    void sendEmail(Long exportFileId, boolean success);
+    void sendExportCompletedEmail(Long exportFileId, boolean success);
 }

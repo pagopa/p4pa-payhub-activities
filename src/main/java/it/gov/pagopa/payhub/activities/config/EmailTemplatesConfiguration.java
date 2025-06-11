@@ -24,7 +24,17 @@ public class EmailTemplatesConfiguration {
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates paymentsReportingFlow;
     @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates paymentNotificationFlow;
+    @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates treasuryOpiFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates treasuryPosteFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates treasuryXlsFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates treasuryCsvFlow;
+    @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates treasuryCsvCompleteFlow;
     @NestedConfigurationProperty
     private EmailTemplate receivedPagopaReceipt;
     @NestedConfigurationProperty

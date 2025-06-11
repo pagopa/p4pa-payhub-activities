@@ -21,8 +21,23 @@ public class EmailTemplateResolverService {
             case INGESTION_PAYMENTS_REPORTING_OK -> emailTemplatesConfiguration.getPaymentsReportingFlow().getOk();
             case INGESTION_PAYMENTS_REPORTING_KO -> emailTemplatesConfiguration.getPaymentsReportingFlow().getKo();
 
+            case INGESTION_PAYMENT_NOTIFICATION_OK -> emailTemplatesConfiguration.getPaymentNotificationFlow().getOk();
+            case INGESTION_PAYMENT_NOTIFICATION_KO -> emailTemplatesConfiguration.getPaymentNotificationFlow().getKo();
+
             case INGESTION_TREASURY_OPI_OK -> emailTemplatesConfiguration.getTreasuryOpiFlow().getOk();
             case INGESTION_TREASURY_OPI_KO -> emailTemplatesConfiguration.getTreasuryOpiFlow().getKo();
+
+            case INGESTION_TREASURY_POSTE_OK -> emailTemplatesConfiguration.getTreasuryPosteFlow().getOk();
+            case INGESTION_TREASURY_POSTE_KO -> emailTemplatesConfiguration.getTreasuryPosteFlow().getKo();
+
+            case INGESTION_TREASURY_XLS_OK -> emailTemplatesConfiguration.getTreasuryXlsFlow().getOk();
+            case INGESTION_TREASURY_XLS_KO -> emailTemplatesConfiguration.getTreasuryXlsFlow().getKo();
+
+            case INGESTION_TREASURY_CSV_OK -> emailTemplatesConfiguration.getTreasuryCsvFlow().getOk();
+            case INGESTION_TREASURY_CSV_KO -> emailTemplatesConfiguration.getTreasuryCsvFlow().getKo();
+
+            case INGESTION_TREASURY_CSV_COMPLETE_OK -> emailTemplatesConfiguration.getTreasuryCsvCompleteFlow().getOk();
+            case INGESTION_TREASURY_CSV_COMPLETE_KO -> emailTemplatesConfiguration.getTreasuryCsvCompleteFlow().getKo();
 
             case INGESTION_DP_INSTALLMENTS_OK -> emailTemplatesConfiguration.getDpInstallmentsFlow().getOk();
             case INGESTION_DP_INSTALLMENTS_KO -> emailTemplatesConfiguration.getDpInstallmentsFlow().getKo();

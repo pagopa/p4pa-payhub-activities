@@ -22,7 +22,7 @@ public class UpdateExportFileStatusActivityImpl implements UpdateExportFileStatu
     }
 
     @Override
-    public void updateStatus(UpdateStatusRequest updateStatusRequest) {
+    public void updateExportStatus(UpdateStatusRequest updateStatusRequest) {
         log.info("Updating ExportFile {} to new status {} from {}", updateStatusRequest.getExportFileId(), updateStatusRequest.getNewStatus(), updateStatusRequest.getOldStatus());
         if(exportFileService.updateStatus(updateStatusRequest) != 1){
             throw new ExportFileNotFoundException("Cannot update ExportFile having id " + updateStatusRequest.getExportFileId()

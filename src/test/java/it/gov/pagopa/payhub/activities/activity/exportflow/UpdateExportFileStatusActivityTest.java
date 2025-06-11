@@ -35,26 +35,26 @@ class UpdateExportFileStatusActivityTest {
   private static final OffsetDateTime EXPIRATION_DATE = OffsetDateTime.now().plusDays(5L);
 
   @Test
-  void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
+  void givenValidIdAndNewStatusWhenUpdateExportStatusThenTrue(){
     UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(VALID_ID, OLD_STATUS,
         NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION, EXPIRATION_DATE);
     //given
     Mockito.when(
         exportFileServiceMock.updateStatus(updateStatusRequest)).thenReturn(1);
     //when
-    updateExportFileStatusActivity.updateStatus(updateStatusRequest);
+    updateExportFileStatusActivity.updateExportStatus(updateStatusRequest);
     //verify
     Mockito.verify(exportFileServiceMock, Mockito.times(1)).updateStatus(updateStatusRequest);
   }
 
   @Test
-  void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
+  void givenInvalidIdAndNewStatusWhenUpdateExportStatusThenFalse(){
     UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest(INVALID_ID, OLD_STATUS, NEW_STATUS, FILE_PATH, FILE_NAME, FILE_SIZE, EXPORTED_ROWS, ERROR_DESCRIPTION, EXPIRATION_DATE);
     //given
     Mockito.when(
         exportFileServiceMock.updateStatus(updateStatusRequest)).thenReturn(0);
     //when
-    Assertions.assertThrows(ExportFileNotFoundException.class, () -> updateExportFileStatusActivity.updateStatus(updateStatusRequest));
+    Assertions.assertThrows(ExportFileNotFoundException.class, () -> updateExportFileStatusActivity.updateExportStatus(updateStatusRequest));
   }
 
 }

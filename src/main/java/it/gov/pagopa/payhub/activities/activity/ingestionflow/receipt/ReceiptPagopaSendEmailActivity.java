@@ -19,5 +19,5 @@ public interface ReceiptPagopaSendEmailActivity {
      * @param installmentDTO the "ordinary" installment associated to the receipt.
      */
     @ActivityMethod
-    void sendEmail(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO);
+    void sendReceiptHandledEmail(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO);
 }

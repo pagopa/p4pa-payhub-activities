@@ -31,7 +31,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     }
 
     @Override
-    public IufClassificationActivityResult classify(Long organizationId, String treasuryId, String iuf) {
+    public IufClassificationActivityResult classifyIuf(Long organizationId, String treasuryId, String iuf) {
         log.info("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
         List<Transfer2ClassifyDTO> transfers2classify =

@@ -16,5 +16,5 @@ public interface UpdateExportFileStatusActivity {
      * @param updateStatusRequest the DTO containing the fields to set.
      */
     @ActivityMethod
-    void updateStatus(UpdateStatusRequest updateStatusRequest);
+    void updateExportStatus(UpdateStatusRequest updateStatusRequest);
 }

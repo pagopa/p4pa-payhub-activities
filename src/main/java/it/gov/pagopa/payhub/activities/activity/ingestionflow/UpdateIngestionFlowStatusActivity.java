@@ -20,5 +20,5 @@ public interface UpdateIngestionFlowStatusActivity {
      * @param newStatus the new status to set.
      */
     @ActivityMethod
-    void updateStatus(Long id, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, IngestionFlowFileResult ingestionFlowFileResult);
+    void updateIngestionFlowFileStatus(Long id, IngestionFlowFileStatus oldStatus, IngestionFlowFileStatus newStatus, IngestionFlowFileResult ingestionFlowFileResult);
 }

@@ -44,7 +44,7 @@ public class SendEmailExportFileActivityImpl implements SendEmailExportFileActiv
 
 
     @Override
-    public void sendEmail(Long exportFileId, boolean success) {
+    public void sendExportCompletedEmail(Long exportFileId, boolean success) {
         log.info("Sending email for ExportFile {} with success {}", exportFileId, success);
         ExportFile exportFile = retrieveExportFile(exportFileId);
 

@@ -33,7 +33,7 @@ class UpdateIngestionFlowStatusActivityTest {
   }
 
   @Test
-  void givenValidIdAndNewStatusWhenUpdateStatusThenTrue(){
+  void givenValidIdAndNewStatusWhenUpdateIngestionFlowFileStatusThenTrue(){
     // Given
     IngestionFlowFileResult ingestionFlowFileResult = new IngestionFlowFileResult();
 
@@ -41,11 +41,11 @@ class UpdateIngestionFlowStatusActivityTest {
             .thenReturn(1);
 
     // When, Then
-    Assertions.assertDoesNotThrow(() -> updateIngestionFlowStatusActivity.updateStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ingestionFlowFileResult));
+    Assertions.assertDoesNotThrow(() -> updateIngestionFlowStatusActivity.updateIngestionFlowFileStatus(VALID_ID, OLD_STATUS, NEW_STATUS, ingestionFlowFileResult));
   }
 
   @Test
-  void givenInvalidIdAndNewStatusWhenUpdateStatusThenFalse(){
+  void givenInvalidIdAndNewStatusWhenUpdateIngestionFlowFileStatusThenFalse(){
     // Given
     IngestionFlowFileResult ingestionFlowFileResult = new IngestionFlowFileResult();
 
@@ -53,7 +53,7 @@ class UpdateIngestionFlowStatusActivityTest {
             .thenReturn(0);
 
     // When, Then
-    Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> updateIngestionFlowStatusActivity.updateStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, ingestionFlowFileResult));
+    Assertions.assertThrows(IngestionFlowFileNotFoundException.class, () -> updateIngestionFlowStatusActivity.updateIngestionFlowFileStatus(INVALID_ID, OLD_STATUS, NEW_STATUS, ingestionFlowFileResult));
   }
 
 }

@@ -15,6 +15,6 @@ public interface DeliveryNotificationActivity {
      * @param sendNotificationId the ID of send notification
      */
     @ActivityMethod
-    void deliveryNotification(String sendNotificationId);
+    void deliverySendNotification(String sendNotificationId);
 
 }

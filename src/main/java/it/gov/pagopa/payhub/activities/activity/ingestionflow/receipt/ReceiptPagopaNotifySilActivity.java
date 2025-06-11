@@ -19,5 +19,5 @@ public interface ReceiptPagopaNotifySilActivity {
      * @param installmentDTO the "ordinary" installment associated to the receipt.
      */
     @ActivityMethod
-    void handleNotifySil(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO);
+    void notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO);
 }

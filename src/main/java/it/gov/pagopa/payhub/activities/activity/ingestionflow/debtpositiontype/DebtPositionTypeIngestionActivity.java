@@ -18,7 +18,7 @@ public interface DebtPositionTypeIngestionActivity {
    * @param ingestionFlowFileId the unique identifier of the file to process.
    * @return {@link DebtPositionTypeIngestionFlowFileResult} containing the list of ipa code.
    */
-  @ActivityMethod
+  @ActivityMethod(name = "ProcessDpTypeFile")
   DebtPositionTypeIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 
 }

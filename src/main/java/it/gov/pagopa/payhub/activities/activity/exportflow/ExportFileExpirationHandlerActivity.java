@@ -10,5 +10,5 @@ import io.temporal.activity.ActivityMethod;
 public interface ExportFileExpirationHandlerActivity {
 
   @ActivityMethod
-  void handleExpiration(Long exportFileId);
+  void handleExportExpiration(Long exportFileId);
 }

@@ -16,6 +16,6 @@ public interface PaymentsReportingIngestionFlowFileActivity {
      * @param ingestionFlowFileId the unique identifier related to the file to process.
      * @return {@link PaymentsReportingIngestionFlowFileActivityResult} containing the list of IUFs and status.
      */
-    @ActivityMethod
+    @ActivityMethod(name = "ProcessPaymentsReportingFile")
     PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId);
 }
