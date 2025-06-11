@@ -47,9 +47,6 @@ public class EmailTemplateResolverService {
             case INGESTION_ORGANIZATIONS_OK -> emailTemplatesConfiguration.getOrganizationsFlow().getOk();
             case INGESTION_ORGANIZATIONS_KO -> emailTemplatesConfiguration.getOrganizationsFlow().getKo();
 
-            case INGESTION_TREASURY_CSV_COMPLETE_OK -> emailTemplatesConfiguration.getTreasuryCsvCompleteFlow().getOk();
-            case INGESTION_TREASURY_CSV_COMPLETE_KO -> emailTemplatesConfiguration.getTreasuryCsvCompleteFlow().getKo();
-
             case INGESTION_ORGANIZATIONS_SIL_SERVICE_OK -> emailTemplatesConfiguration.getOrganizationsSilServiceFlow().getOk();
             case INGESTION_ORGANIZATIONS_SIL_SERVICE_KO -> emailTemplatesConfiguration.getOrganizationsSilServiceFlow().getKo();
 

@@ -63,11 +63,6 @@ class EmailTemplateResolverServiceTest {
             ),
 
             new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
-                    new EmailTemplate("INGESTION_TREASURY_CSV_COMPLETE_OK_SUBJECT", "INGESTION_TREASURY_CSV_COMPLETE_OK_BODY"),
-                    new EmailTemplate("INGESTION_TREASURY_CSV_COMPLETE_KO_SUBJECT", "INGESTION_TREASURY_CSV_COMPLETE_KO_BODY")
-            ),
-
-            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("INGESTION_ORGANIZATIONS_SIL_SERVICE_OK_SUBJECT", "INGESTION_ORGANIZATIONS_SIL_SERVICE_OK_BODY"),
                     new EmailTemplate("INGESTION_ORGANIZATIONS_SIL_SERVICE_KO_SUBJECT", "INGESTION_ORGANIZATIONS_SIL_SERVICE_KO_BODY")
             ),

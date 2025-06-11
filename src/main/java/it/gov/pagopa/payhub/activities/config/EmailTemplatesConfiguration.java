@@ -42,8 +42,6 @@ public class EmailTemplatesConfiguration {
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates organizationsFlow;
     @NestedConfigurationProperty
-    private EmailOutcomeBasedTemplates treasuryCsvCompleteFlow;
-    @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates organizationsSilServiceFlow;
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates debtPositionsTypeFlow;
