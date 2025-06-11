@@ -37,7 +37,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
 
 
     @Override
-    public void sendEmail(Long ingestionFlowFileId, boolean success) {
+    public void sendIngestionFlowFileCompleteEmail(Long ingestionFlowFileId, boolean success) {
         log.info("Sending email for IngestionFlowFile {} with success {}", ingestionFlowFileId, success);
         IngestionFlowFile ingestionFlowFileDTO = retrieveIngestionFlowFileRecord(ingestionFlowFileId);
 

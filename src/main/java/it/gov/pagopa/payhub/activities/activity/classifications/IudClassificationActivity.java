@@ -18,5 +18,5 @@ public interface IudClassificationActivity {
      * @return an {@link IudClassificationActivityResult} object containing the classification results
      */
     @ActivityMethod
-    IudClassificationActivityResult classify(Long organizationId, String iud);
+    IudClassificationActivityResult classifyIud(Long organizationId, String iud);
 }

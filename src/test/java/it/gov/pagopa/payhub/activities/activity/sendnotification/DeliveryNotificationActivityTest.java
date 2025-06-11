@@ -24,7 +24,7 @@ class DeliveryNotificationActivityTest {
 
     @Test
     void whenPreloadSendFileThenVoid() {
-        deliveryNotificationActivity.deliveryNotification("sendNotificationId");
+        deliveryNotificationActivity.deliverySendNotification("sendNotificationId");
 
         Mockito.verify(sendServiceMock).deliveryNotification("sendNotificationId");
     }

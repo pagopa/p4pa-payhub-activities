@@ -17,5 +17,5 @@ public interface SendEmailIngestionFlowActivity {
      * @param success      true if the process succeeded, false otherwise.
      */
     @ActivityMethod
-    void sendEmail(Long ingestionFlowId, boolean success);
+    void sendIngestionFlowFileCompleteEmail(Long ingestionFlowId, boolean success);
 }

@@ -17,6 +17,6 @@ public interface InstallmentIngestionFlowFileActivity {
      * @param ingestionFlowFileId the unique identifier related to the file to process.
      * @return {@link InstallmentIngestionFlowFileResult} containing the number of total rows and the number of row correctly handled.
      */
-    @ActivityMethod
+    @ActivityMethod(name = "ProcessDpInstallmentsFile")
     InstallmentIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }

@@ -16,5 +16,5 @@ public interface TransferClassificationActivity {
 	 * @param transferSemanticKey the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
 	 */
 	@ActivityMethod
-	void classify(TransferSemanticKeyDTO transferSemanticKey);
+	void classifyTransfer(TransferSemanticKeyDTO transferSemanticKey);
 }

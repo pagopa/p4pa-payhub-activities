@@ -32,11 +32,11 @@ class NotRetryableActivityExceptionHandlerAspectTest {
     @Test
     void givenNotErrorWhenInvokeActivityThenReturnItsValue(){
         // Given
-        Mockito.when(lockerActivitySpy.acquireProcessingLock(1L))
+        Mockito.when(lockerActivitySpy.acquireIngestionFlowFileProcessingLock(1L))
                 .thenReturn(true);
 
         // When
-        boolean result = lockerActivitySpy.acquireProcessingLock(1L);
+        boolean result = lockerActivitySpy.acquireIngestionFlowFileProcessingLock(1L);
 
         // Then
         Assertions.assertTrue(result);
@@ -52,7 +52,7 @@ class NotRetryableActivityExceptionHandlerAspectTest {
                 .thenThrow(expectedNestedException);
 
         // When
-        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateStatus(1L, oldStatus, newStatus, new IngestionFlowFileResult()));
+        ApplicationFailure result = Assertions.assertThrows(ApplicationFailure.class, () -> statusActivitySpy.updateIngestionFlowFileStatus(1L, oldStatus, newStatus, new IngestionFlowFileResult()));
 
         // Then
         Assertions.assertTrue(result.isNonRetryable());

@@ -13,6 +13,6 @@ public interface IngestionFlowFileProcessingLockerActivity {
      * @param ingestionFlowFileId the unique identifier of the IngestionFlowFile to update.
      */
     @ActivityMethod
-    boolean acquireProcessingLock(Long ingestionFlowFileId);
+    boolean acquireIngestionFlowFileProcessingLock(Long ingestionFlowFileId);
 
 }

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySilActivity {
 
   @Override
-  public void handleNotifySil(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
+  public void notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
     //TODO the real implementation will be added in the future
   }
 }

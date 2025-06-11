@@ -17,6 +17,6 @@ public interface ReceiptIngestionActivity {
      * @param ingestionFlowFileId the unique identifier related to the file to process.
      * @return {@link ReceiptIngestionFlowFileResult} containing the receiptDto, the number of total rows and the number of row correctly handled.
      */
-    @ActivityMethod
+    @ActivityMethod(name = "ProcessReceiptFile")
     ReceiptIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }

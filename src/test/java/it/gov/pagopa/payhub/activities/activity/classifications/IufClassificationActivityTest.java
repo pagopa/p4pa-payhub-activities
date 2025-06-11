@@ -52,7 +52,7 @@ class IufClassificationActivityTest {
     }
 
     @Test
-    void givenReportedTransferWhenClassifyThenOk() {
+    void givenReportedTransferWhenClassifyIufThenOk() {
         Classification classificationDTO = ClassificationFaker.buildClassificationDTO();
 
         CollectionModelPaymentsReporting expectedCollectionModelPaymentsReporting = PaymentsReportingFaker.buildCollectionModelPaymentsReporting();
@@ -81,7 +81,7 @@ class IufClassificationActivityTest {
                 .thenReturn(expectedCollectionModelPaymentsReporting);
 
         IufClassificationActivityResult iufClassificationActivityResult =
-                iufClassificationActivity.classify(ORGANIZATIONID, TREASURYID, IUF);
+                iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, IUF);
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
@@ -90,7 +90,7 @@ class IufClassificationActivityTest {
     }
 
     @Test
-    void givenNoReportedTransferWhenClassifyThenAnomalyClassificationSave() {
+    void givenNoReportedTransferWhenClassifyIufThenAnomalyClassificationSave() {
         Treasury treasury = TreasuryFaker.buildTreasuryDTO();
 
         Classification expectedClassification = Classification.builder()
@@ -123,7 +123,7 @@ class IufClassificationActivityTest {
         when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
 
         IufClassificationActivityResult iufClassificationActivityResult =
-                iufClassificationActivity.classify(ORGANIZATIONID, TREASURYID, IUF);
+                iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, IUF);
 
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);

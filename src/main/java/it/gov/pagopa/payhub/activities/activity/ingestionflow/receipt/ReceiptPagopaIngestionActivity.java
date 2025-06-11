@@ -17,6 +17,6 @@ public interface ReceiptPagopaIngestionActivity {
      * @param ingestionFlowFileId the unique identifier related to the file to process.
      * @return {@link ReceiptPagopaIngestionFlowFileResult} containing the receiptDto and the mapped "ordinary" installment (if present).
      */
-    @ActivityMethod
+    @ActivityMethod(name = "ProcessPagoPaReceiptFile")
     ReceiptPagopaIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }
