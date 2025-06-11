@@ -2,10 +2,8 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmentsExportFlowFileDTO;
-import it.gov.pagopa.payhub.activities.service.debtposition.InstallmentOperationTypeResolver;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
-import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +13,9 @@ import static it.gov.pagopa.payhub.activities.util.Utilities.longCentsToBigDecim
 @Service
 public class IUVInstallmentsExportFlowFileDTOMapper {
 
-    private final InstallmentOperationTypeResolver installmentOperationTypeResolver;
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
 
-    public IUVInstallmentsExportFlowFileDTOMapper(InstallmentOperationTypeResolver installmentOperationTypeResolver, DebtPositionTypeOrgService debtPositionTypeOrgService) {
-        this.installmentOperationTypeResolver = installmentOperationTypeResolver;
+    public IUVInstallmentsExportFlowFileDTOMapper(DebtPositionTypeOrgService debtPositionTypeOrgService) {
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
     }
 
@@ -47,22 +43,8 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
                 .legacyPaymentMetadata(dto.getLegacyPaymentMetadata())
                 .balance(dto.getBalance())
                 .flagPuPagoPaPayment(Boolean.TRUE)
-                .action(calculateInstallmentAction(dto))
+                .action(dto.getIngestionFlowFileAction())
                 .build();
-    }
-
-    private IUVInstallmentsExportFlowFileDTO.ActionEnum calculateInstallmentAction(InstallmentDTO dto) {
-        PaymentEventType paymentEventType = installmentOperationTypeResolver.calculateInstallmentOperationType(dto);
-
-        if (PaymentEventType.DP_CREATED.equals(paymentEventType)) {
-            return IUVInstallmentsExportFlowFileDTO.ActionEnum.I;
-        } else if (PaymentEventType.DP_UPDATED.equals(paymentEventType)) {
-            return IUVInstallmentsExportFlowFileDTO.ActionEnum.M;
-        } else if (PaymentEventType.DP_CANCELLED.equals(paymentEventType)) {
-            return IUVInstallmentsExportFlowFileDTO.ActionEnum.A;
-        } else {
-            throw new IllegalArgumentException("It's not possible to identify Action with paymentEventType: " + paymentEventType);
-        }
     }
 
     private String findCodeById(Long debtPositionTypeOrgId) {

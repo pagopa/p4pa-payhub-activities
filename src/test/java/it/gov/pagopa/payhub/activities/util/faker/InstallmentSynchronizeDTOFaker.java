@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import it.gov.pagopa.pu.debtposition.dto.generated.ActionEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.Action;
 import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
@@ -19,7 +19,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .ingestionFlowFileId(1L)
                 .ingestionFlowFileName("fileName.zip")
                 .ingestionFlowFileLineNumber(1L)
-                .action(ActionEnum.I)
+                .action(Action.I)
                 .draft(false)
                 .iupdOrg("iupd")
                 .description("description")

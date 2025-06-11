@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.dto.exportflow.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
+import it.gov.pagopa.pu.debtposition.dto.generated.Action;
 import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -79,9 +80,5 @@ public class IUVInstallmentsExportFlowFileDTO {
     private Long paCommissionCents;
 
     @CsvBindByName(column = "azione")
-    private ActionEnum action;
-
-    public enum ActionEnum {
-        I, M, A
-    }
+    private Action action;
 }

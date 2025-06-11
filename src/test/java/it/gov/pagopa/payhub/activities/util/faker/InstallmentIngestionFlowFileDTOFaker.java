@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.Action;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -12,7 +13,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
 
     public static InstallmentIngestionFlowFileDTO buildInstallmentIngestionFlowFileDTO() {
         return InstallmentIngestionFlowFileDTO.builder()
-                .action(InstallmentIngestionFlowFileDTO.ActionEnum.I)
+                .action(Action.I)
                 .draft(false)
                 .iupdOrg("iupd")
                 .description("description")
@@ -53,7 +54,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
 
     public static InstallmentIngestionFlowFileDTO buildTransferFake() {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = new TransferFake();
-        installmentIngestionFlowFileDTO.setAction(InstallmentIngestionFlowFileDTO.ActionEnum.I);
+        installmentIngestionFlowFileDTO.setAction(Action.I);
         installmentIngestionFlowFileDTO.setDescription("description");
         installmentIngestionFlowFileDTO.setAmount(BigDecimal.valueOf(1L));
         installmentIngestionFlowFileDTO.setDebtPositionTypeCode("typeCode");
