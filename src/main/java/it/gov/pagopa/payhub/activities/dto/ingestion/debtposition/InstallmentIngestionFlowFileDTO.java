@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
+import it.gov.pagopa.pu.debtposition.dto.generated.Action;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -159,14 +160,10 @@ public class InstallmentIngestionFlowFileDTO {
 
     @CsvBindByName(column = "azione", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "action", required = true, profiles = V2_0_ENG)
-    private ActionEnum action;
+    private Action action;
 
     @CsvBindByName(column = "draft", profiles = {V2_0, V2_0_ENG})
     private Boolean draft;
-
-    public enum ActionEnum {
-        I, M, A
-    }
 
     public enum EntityTypeEnum {
         F, G
