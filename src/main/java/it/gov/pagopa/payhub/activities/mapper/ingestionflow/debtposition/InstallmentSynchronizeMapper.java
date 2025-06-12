@@ -39,7 +39,7 @@ public class InstallmentSynchronizeMapper {
                 .ingestionFlowFileId(ingestionFlowFileId)
                 .ingestionFlowFileLineNumber(ingestionFlowFileLineNumber)
                 .organizationId(organizationId)
-                .action(Action.valueOf(installmentIngestionFlowFileDTO.getAction().name()))
+                .action(installmentIngestionFlowFileDTO.getAction())
                 .draft(installmentIngestionFlowFileDTO.getDraft())
                 .iupdOrg(installmentIngestionFlowFileDTO.getIupdOrg())
                 .description(installmentIngestionFlowFileDTO.getDescription())
