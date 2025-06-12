@@ -17,6 +17,6 @@ public interface TreasuryCsvCompleteIngestionActivity {
      * @param ingestionFlowFileId the unique identifier related to the file to process.
      * @return {@link TreasuryIufIngestionFlowFileResult} containing the list of IUFs and status.
      */
-    @ActivityMethod
+    @ActivityMethod(name = "ProcessTreasuryCsvCompleteFile")
     TreasuryIufIngestionFlowFileResult processFile(Long ingestionFlowFileId);
 }
