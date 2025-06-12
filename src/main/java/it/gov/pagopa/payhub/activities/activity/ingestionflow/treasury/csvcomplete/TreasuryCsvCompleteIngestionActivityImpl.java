@@ -49,8 +49,11 @@ public class TreasuryCsvCompleteIngestionActivityImpl
     protected TreasuryIufIngestionFlowFileResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
 
         if (retrievedFiles.size() > 1) {
-            log.warn("Multiple files [{}] found for ingestion flow file ID {}. Only the first file will be processed.",
+            String msg = String.format(
+                    "Multiple files [%s] found for ingestion flow file ID %s. Only the first file will be processed.",
                     retrievedFiles.size(), ingestionFlowFileDTO.getIngestionFlowFileId());
+            log.error(msg);
+            throw new InvalidIngestionFileException(msg);
         }
 
         Path filePath = retrievedFiles.getFirst();
