@@ -2,12 +2,13 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.csvcomple
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
-import it.gov.pagopa.payhub.activities.util.OrganizationIpaCacheUtils;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
@@ -39,7 +41,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
     private TreasuryCsvCompleteErrorsArchiverService errorsArchiverServiceMock;
 
     @Mock
-    private OrganizationIpaCacheUtils organizationIpaCacheUtils;
+    private OrganizationService organizationService;
 
     @Mock
     private Path workingDirectory;
@@ -54,7 +56,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new TreasuryCsvCompleteProcessingService(mapperMock, errorsArchiverServiceMock, treasuryService, organizationIpaCacheUtils);
+        service = new TreasuryCsvCompleteProcessingService(mapperMock, errorsArchiverServiceMock, treasuryService, organizationService);
     }
 
     @Test
@@ -66,7 +68,12 @@ class TreasuryCsvCompleteProcessingServiceTest {
 
         String ipa = "IPA123";
         dto.setOrganizationIpaCode(ipa);
-        Mockito.when(organizationIpaCacheUtils.getIpaById(any())).thenReturn(ipa + "_WRONG");
+
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa + "_WRONG");
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        Mockito.when(organizationService.getOrganizationById(any())).thenReturn(organizationOptional);
 
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
@@ -82,13 +89,17 @@ class TreasuryCsvCompleteProcessingServiceTest {
     @Test
     void processTreasuryCsvCompleteWithNoErrors() {
 
+        String ipa = "IPA123";
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
-
-        String ipa = "IPA123";
         dto.setOrganizationIpaCode(ipa);
-        Mockito.when(organizationIpaCacheUtils.getIpaById(any())).thenReturn(ipa);
+
+        Mockito.when(organizationService.getOrganizationById(any())).thenReturn(organizationOptional);
 
         Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
 
@@ -106,13 +117,17 @@ class TreasuryCsvCompleteProcessingServiceTest {
 
     @Test
     void givenThrowExceptionWhenProcessTreasuryCsvCompleteThenAddError() throws URISyntaxException {
-        // Given
-        TreasuryCsvCompleteIngestionFlowFileDTO paymentNotificationIngestionFlowFileDTO = TestUtils.getPodamFactory().manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
-        paymentNotificationIngestionFlowFileDTO.setBillYear("2025");
 
         String ipa = "IPA123";
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        TreasuryCsvCompleteIngestionFlowFileDTO paymentNotificationIngestionFlowFileDTO = TestUtils.getPodamFactory().manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
+        paymentNotificationIngestionFlowFileDTO.setBillYear("2025");
         paymentNotificationIngestionFlowFileDTO.setOrganizationIpaCode(ipa);
-        Mockito.when(organizationIpaCacheUtils.getIpaById(any())).thenReturn(ipa);
+
+        Mockito.when(organizationService.getOrganizationById(any())).thenReturn(organizationOptional);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         workingDirectory = Path.of(new URI("file:///tmp"));

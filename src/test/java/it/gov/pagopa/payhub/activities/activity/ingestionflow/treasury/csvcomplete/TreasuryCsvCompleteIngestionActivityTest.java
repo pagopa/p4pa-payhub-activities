@@ -80,6 +80,29 @@ class TreasuryCsvCompleteIngestionActivityTest {
   }
 
   @Test
+  void handleRetrievedFilesMultipleFileException() throws Exception {
+    Long ingestionFlowFileId = 1L;
+    Long organizationId = 10L;
+    IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
+    ingestionFlowFileDTO.setOrganizationId(organizationId);
+    ingestionFlowFileDTO.setFilePathName(workingDir.toString());
+    ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE);
+
+    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
+
+    // There are two of them to allow Exception on testing
+    List<Path> mockedListPath = List.of(filePath, filePath);
+
+    Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+            .thenReturn(Optional.of(ingestionFlowFileDTO));
+
+    doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
+            .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
+
+    assertThrows(InvalidIngestionFileException.class, () -> activity.processFile(ingestionFlowFileId));
+  }
+
+  @Test
   void handleRetrievedFilesSuccessfully() throws Exception {
     Long ingestionFlowFileId = 1L;
     Long organizationId = 10L;
@@ -92,8 +115,7 @@ class TreasuryCsvCompleteIngestionActivityTest {
 
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
 
-    // There are two of them to allow warn log warning on testing
-    List<Path> mockedListPath = List.of(filePath, filePath);
+    List<Path> mockedListPath = List.of(filePath);
 
     Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
         .thenReturn(Optional.of(ingestionFlowFileDTO));
