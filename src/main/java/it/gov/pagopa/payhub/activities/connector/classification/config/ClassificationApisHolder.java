@@ -36,7 +36,7 @@ public class ClassificationApisHolder {
 
     public ClassificationApisHolder(
             ClassificationApiClientConfig clientConfig,
-            RestTemplateBuilder restTemplateBuilder, AssessmentsRegistryApi assessmentsRegistryApi
+            RestTemplateBuilder restTemplateBuilder
     ) {
       RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
