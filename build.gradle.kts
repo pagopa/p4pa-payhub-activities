@@ -440,6 +440,9 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
 	invokerPackage.set("it.gov.pagopa.pu.classification.generated")
 	apiPackage.set("it.gov.pagopa.pu.classification.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.classification.dto.generated")
+	typeMappings.set(mapOf(
+		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO"
+	))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",

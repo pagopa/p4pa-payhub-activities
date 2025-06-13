@@ -131,7 +131,20 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     }
 //endregion
 
-    //region Assessments entity
+//region Assessments Registry entity
+    @Test
+    void whenGetAssessmentsRegistryApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> { classificationApisHolder.getAssessmentsRegistryApi(accessToken)
+                .createAssessmentsRegistryByDebtPositionDTOAndIud(new CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest());
+                return voidMock;
+            },
+            new ParameterizedTypeReference<>() {},
+            classificationApisHolder::unload);
+    }
+//endregion
+
+//region Payment Notification entity
     @Test
     void whenGetPaymentNotificationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
@@ -140,7 +153,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
             new ParameterizedTypeReference<>() {},
             classificationApisHolder::unload);
     }
-    //endregion
+//endregion
 
     @Test
     void whenGetPaymentNotificationNoPiiSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {

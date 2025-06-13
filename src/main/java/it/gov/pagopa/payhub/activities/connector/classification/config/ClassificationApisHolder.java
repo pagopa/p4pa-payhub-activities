@@ -26,6 +26,7 @@ public class ClassificationApisHolder {
     private final TreasuryEntityExtendedControllerApi treasuryEntityExtendedControllerApi;
 
     private final AssessmentsControllerApi assessmentsControllerApi;
+    private final AssessmentsRegistryApi assessmentsRegistryApi;
 
     private final PaymentNotificationApi paymentNotificationApi;
     private final PaymentNotificationNoPiiSearchControllerApi paymentNotificationNoPiiSearchControllerApi;
@@ -37,7 +38,7 @@ public class ClassificationApisHolder {
             ClassificationApiClientConfig clientConfig,
             RestTemplateBuilder restTemplateBuilder
     ) {
-        RestTemplate restTemplate = restTemplateBuilder.build();
+      RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
         apiClient.setBasePath(clientConfig.getBaseUrl());
         apiClient.setBearerToken(bearerTokenHolder::get);
@@ -59,6 +60,7 @@ public class ClassificationApisHolder {
         this.treasuryEntityExtendedControllerApi = new TreasuryEntityExtendedControllerApi(apiClient);
 
         this.assessmentsControllerApi = new AssessmentsControllerApi(apiClient);
+        this.assessmentsRegistryApi = new AssessmentsRegistryApi(apiClient);
 
         this.paymentNotificationApi = new PaymentNotificationApi(apiClient);
         this.paymentNotificationNoPiiSearchControllerApi = new PaymentNotificationNoPiiSearchControllerApi(apiClient);
@@ -104,8 +106,12 @@ public class ClassificationApisHolder {
         return getApi(accessToken, assessmentsControllerApi);
     }
 
-    public PaymentNotificationApi getPaymentNotificationApi(String accessToken){
-        return getApi(accessToken, paymentNotificationApi);
+    public AssessmentsRegistryApi getAssessmentsRegistryApi(String accessToken){
+        return getApi(accessToken, assessmentsRegistryApi);
+    }
+
+    public PaymentNotificationApi getPaymentNotificationApi(String accessToken) {
+      return getApi(accessToken, paymentNotificationApi);
     }
 
     public PaymentNotificationNoPiiSearchControllerApi getPaymentNotificationNoPiiSearchControllerApi(String accessToken){
