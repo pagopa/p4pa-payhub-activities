@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
-import it.gov.pagopa.pu.classification.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import java.util.List;
 
 /**

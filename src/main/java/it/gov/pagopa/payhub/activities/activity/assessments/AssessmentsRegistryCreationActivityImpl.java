@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.assessments;
 
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsRegistryService;
-import it.gov.pagopa.pu.classification.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
