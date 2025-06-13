@@ -13,43 +13,43 @@ import lombok.NoArgsConstructor;
 
 public class DebtPositionTypeIngestionFlowFileDTO {
 
-    @CsvBindByName(column = "broker_cf", required = true)
+    @CsvBindByName(column = "brokerCf", required = true)
     private String brokerCf;
 
-    @CsvBindByName(column = "debt_position_type_code", required = true)
+    @CsvBindByName(column = "debtPositionTypeCode", required = true)
     private String debtPositionTypeCode;
 
     @CsvBindByName(column = "description", required = true)
     private String description;
 
-    @CsvBindByName(column = "org_type", required = true)
+    @CsvBindByName(column = "orgType", required = true)
     private String orgType;
 
-    @CsvBindByName(column = "macro_area", required = true)
+    @CsvBindByName(column = "macroArea", required = true)
     private String macroArea;
 
-    @CsvBindByName(column = "service_type", required = true)
+    @CsvBindByName(column = "serviceType", required = true)
     private String serviceType;
 
-    @CsvBindByName(column = "collecting_reason", required = true)
+    @CsvBindByName(column = "collectingReason", required = true)
     private String collectingReason;
 
-    @CsvBindByName(column = "taxonomy_code", required = true)
+    @CsvBindByName(column = "taxonomyCode", required = true)
     private String taxonomyCode;
 
-    @CsvBindByName(column = "flag_anonymous_fiscal_code", required = true)
+    @CsvBindByName(column = "flagAnonymousFiscalCode", required = true)
     private Boolean flagAnonymousFiscalCode;
 
-    @CsvBindByName(column = "flag_mandatory_due_date", required = true)
+    @CsvBindByName(column = "flagMandatoryDueDate", required = true)
     private Boolean flagMandatoryDueDate;
 
-    @CsvBindByName(column = "flag_notify_io", required = true)
+    @CsvBindByName(column = "flagNotifyIo", required = true)
     private Boolean flagNotifyIo;
 
-    @CsvBindByName(column = "io_template_message")
+    @CsvBindByName(column = "ioTemplateMessage")
     private String ioTemplateMessage;
 
-    @CsvBindByName(column = "io_template_subject", required = true)
+    @CsvBindByName(column = "ioTemplateSubject", required = true)
     private String ioTemplateSubject;
 
 }
