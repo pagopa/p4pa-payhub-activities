@@ -125,7 +125,6 @@ class SynchronizeIngestedDebtPositionActivityTest {
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
                 .pdfGeneratedId(responseFolder.getFolderId())
                 .errorsDescription("")
-                .iuvFilePath(path.toString())
                 .iuvFileName(path.getFileName().toString())
                 .build();
 
@@ -277,7 +276,6 @@ class SynchronizeIngestedDebtPositionActivityTest {
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
                 .pdfGeneratedId(responseFolder.getFolderId())
                 .errorsDescription("\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": DUMMYEXCEPTION DP2")
-                .iuvFilePath(path.toString())
                 .iuvFileName(path.getFileName().toString())
                 .build();
 
