@@ -121,7 +121,6 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                 .errorsDescription(errors.toString())
                 .pdfGeneratedId(pdfGeneratedId)
                 .iuvFileName(csvPath != null ? csvPath.getFileName().toString() : null)
-                .iuvFilePath(csvPath != null ? csvPath.toString() : null)
                 .build();
     }
 
