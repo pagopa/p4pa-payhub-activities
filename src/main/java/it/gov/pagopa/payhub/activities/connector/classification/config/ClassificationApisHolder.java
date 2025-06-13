@@ -110,6 +110,10 @@ public class ClassificationApisHolder {
         return getApi(accessToken, assessmentsRegistryApi);
     }
 
+    public PaymentNotificationApi getPaymentNotificationApi(String accessToken) {
+      return getApi(accessToken, paymentNotificationApi);
+    }
+
     public PaymentNotificationNoPiiSearchControllerApi getPaymentNotificationNoPiiSearchControllerApi(String accessToken){
         return getApi(accessToken, paymentNotificationNoPiiSearchControllerApi);
     }
