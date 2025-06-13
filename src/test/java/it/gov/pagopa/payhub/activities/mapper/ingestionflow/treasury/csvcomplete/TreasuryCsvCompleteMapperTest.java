@@ -39,6 +39,6 @@ class TreasuryCsvCompleteMapperTest {
 
         Assertions.assertNotNull(result);
         checkNotNullFields(result, "creationDate","updateDate","updateTraceId","treasuryId","updateOperatorExternalId", "links",
-                "receptionDate", "actualSuspensionDate", "regionValueDate");
+                "receptionDate", "actualSuspensionDate", "regionValueDate", "ingestionFlowFileId");
     }
 }
