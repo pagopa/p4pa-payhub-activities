@@ -36,6 +36,7 @@ public class TreasuryCsvCompleteMapper {
         return Treasury.builder()
                 .billYear(dto.getBillYear())
                 .billCode(dto.getBillCode())
+                .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .organizationId(ingestionFlowFile.getOrganizationId())
                 .iuf(dto.getIuf())
                 .iuv(dto.getIuv())
