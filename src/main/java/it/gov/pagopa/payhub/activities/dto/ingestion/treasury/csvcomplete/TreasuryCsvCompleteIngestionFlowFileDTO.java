@@ -23,9 +23,6 @@ public class TreasuryCsvCompleteIngestionFlowFileDTO {
     @CsvBindByName(column = "codBolletta", required = true)
     private String billCode;
 
-    @CsvBindByName(column = "ingestion_flow_file_id", required = true)
-    private Long ingestionFlowFileId;
-
     @Size(max=50)
     @CsvBindByName(column = "enteIpaCode", required = true)
     private String organizationIpaCode;
