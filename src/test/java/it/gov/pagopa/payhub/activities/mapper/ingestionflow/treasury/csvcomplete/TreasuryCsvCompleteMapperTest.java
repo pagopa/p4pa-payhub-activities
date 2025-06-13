@@ -34,7 +34,7 @@ class TreasuryCsvCompleteMapperTest {
 
         IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
         ingestionFlowFile.setOrganizationId(123L);
-
+        ingestionFlowFile.setIngestionFlowFileId(1L);
         var result = treasuryCsvCompleteMapper.map(dto, ingestionFlowFile);
 
         Assertions.assertNotNull(result);

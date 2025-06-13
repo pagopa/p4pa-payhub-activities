@@ -16,18 +16,15 @@ import lombok.NoArgsConstructor;
 public class TreasuryCsvCompleteIngestionFlowFileDTO {
 
     @Pattern(regexp = "^\\d{4}$", message = "The year must be 4 digits long")
-    @CsvBindByName(column = "bill_year", required = true)
+    @CsvBindByName(column = "annoBolletta", required = true)
     private String billYear;
 
     @Size(max=7)
-    @CsvBindByName(column = "bill_code", required = true)
+    @CsvBindByName(column = "codBolletta", required = true)
     private String billCode;
 
-    @CsvBindByName(column = "ingestion_flow_file_code", required = true)
-    private Long ingestionFlowFileCode;
-
     @Size(max=50)
-    @CsvBindByName(column = "organization_ipa_code", required = true)
+    @CsvBindByName(column = "enteIpaCode", required = true)
     private String organizationIpaCode;
 
     @NotNull
@@ -42,165 +39,165 @@ public class TreasuryCsvCompleteIngestionFlowFileDTO {
 
     @NotNull
     @Size(max=7)
-    @CsvBindByName(column = "account_code")
+    @CsvBindByName(column = "codConto")
     private String accountCode;
 
     @NotNull
     @Size(max=7)
-    @CsvBindByName(column = "domain_id_code")
+    @CsvBindByName(column = "codIdDominio")
     private String domainIdCode;
 
     @NotNull
     @Size(max=3)
-    @CsvBindByName(column = "transaction_type_code")
+    @CsvBindByName(column = "codTipoMovimento")
     private String transactionTypeCode;
 
     @NotNull
     @Size(max=3)
-    @CsvBindByName(column = "remittance_code")
+    @CsvBindByName(column = "codCausale")
     private String remittanceCode;
 
     @NotNull
     @Size(max=255)
-    @CsvBindByName(column = "remittance_description")
+    @CsvBindByName(column = "causale")
     private String remittanceDescription;
 
-    @CsvBindByName(column = "bill_amount_cents", required = true)
+    @CsvBindByName(column = "importoCentesimi", required = true)
     private Long billAmountCents;
 
     @Size(max=10)
-    @CsvBindByName(column = "bill_date", required = true)
+    @CsvBindByName(column = "dataBolletta", required = true)
     private String billDate;
 
     @NotNull
     @Size(max=15)
-    @CsvBindByName(column = "reception_date")
+    @CsvBindByName(column = "dataRicezione")
     private String receptionDate;
 
     @NotNull
     @Size(max=4)
-    @CsvBindByName(column = "document_year")
+    @CsvBindByName(column = "annoDocumento")
     private String documentYear;
 
     @NotNull
     @Size(max=7)
-    @CsvBindByName(column = "document_code")
+    @CsvBindByName(column = "codDocumento")
     private String documentCode;
 
     @NotNull
     @Size(max=6)
-    @CsvBindByName(column = "seal_code")
+    @CsvBindByName(column = "codBollo")
     private String sealCode;
 
     @Size(max=255)
-    @CsvBindByName(column = "psp_last_name", required = true)
+    @CsvBindByName(column = "pspCognome", required = true)
     private String pspLastName;
 
     @NotNull
     @Size(max=30)
-    @CsvBindByName(column = "psp_first_name")
+    @CsvBindByName(column = "pspNome")
     private String pspFirstName;
 
     @NotNull
     @Size(max=50)
-    @CsvBindByName(column = "psp_address")
+    @CsvBindByName(column = "pspIndirizzo")
     private String pspAddress;
 
     @NotNull
     @Size(max=5)
-    @CsvBindByName(column = "psp_postal_code")
+    @CsvBindByName(column = "pspCodicePostale")
     private String pspPostalCode;
 
     @NotNull
     @Size(max=40)
-    @CsvBindByName(column = "psp_city")
+    @CsvBindByName(column = "pspCitta")
     private String pspCity;
 
     @NotNull
     @Size(max=16)
-    @CsvBindByName(column = "psp_fiscal_code")
+    @CsvBindByName(column = "pspCf")
     private String pspFiscalCode;
 
     @NotNull
     @Size(max=12)
-    @CsvBindByName(column = "psp_vat_number")
+    @CsvBindByName(column = "pspPiva")
     private String pspVatNumber;
 
     @NotNull
     @Size(max=5)
-    @CsvBindByName(column = "abi_code")
+    @CsvBindByName(column = "codAbi")
     private String abiCode;
 
     @NotNull
     @Size(max=5)
-    @CsvBindByName(column = "cab_code")
+    @CsvBindByName(column = "codCab")
     private String cabCode;
 
     @NotNull
     @Size(max=34)
-    @CsvBindByName(column = "iban_code")
+    @CsvBindByName(column = "codIban")
     private String ibanCode;
 
     @NotNull
     @Size(max=50)
-    @CsvBindByName(column = "account_registry_code")
+    @CsvBindByName(column = "codContoAnagrafica")
     private String accountRegistryCode;
 
     @NotNull
     @Size(max=4)
-    @CsvBindByName(column = "provisional_ae")
+    @CsvBindByName(column = "aeProvvisorio")
     private String provisionalAe;
 
     @NotNull
     @Size(max=6)
-    @CsvBindByName(column = "provisional_code")
+    @CsvBindByName(column = "codProvvisorio")
     private String provisionalCode;
 
     @NotNull
     @Size(max=1)
-    @CsvBindByName(column = "account_type_code")
+    @CsvBindByName(column = "codTipoConto")
     private String accountTypeCode;
 
     @NotNull
     @Size(max=10)
-    @CsvBindByName(column = "process_code")
+    @CsvBindByName(column = "codProcesso")
     private String processCode;
 
     @NotNull
     @Size(max=4)
-    @CsvBindByName(column = "execution_pg_code")
+    @CsvBindByName(column = "codPgEsecuzione")
     private String executionPgCode;
 
     @NotNull
     @Size(max=4)
-    @CsvBindByName(column = "transfer_pg_code")
+    @CsvBindByName(column = "codPgTrasferimento")
     private String transferPgCode;
 
     @NotNull
-    @CsvBindByName(column = "process_pg_number")
+    @CsvBindByName(column = "numPgProcesso")
     private Long processPgNumber;
 
     @NotNull
     @Size(max=255)
-    @CsvBindByName(column = "region_value_date")
+    @CsvBindByName(column = "dataValutaRegione")
     private String regionValueDate;
 
     @Size(max=3)
-    @CsvBindByName(column = "is_regularized", required = true)
+    @CsvBindByName(column = "flgRegolarizzata", required = true)
     private String isRegularized;
 
     @NotNull
     @Size(max=255)
-    @CsvBindByName(column = "actual_suspension_date")
+    @CsvBindByName(column = "dataEffettivaSospeso")
     private String actualSuspensionDate;
 
     @NotNull
     @Size(max=10)
-    @CsvBindByName(column = "management_provisional_code")
+    @CsvBindByName(column = "codGestionaleProvvisorio")
     private String managementProvisionalCode;
 
     @NotNull
     @Size(max=50)
-    @CsvBindByName(column = "end_to_end_code")
+    @CsvBindByName(column = "endToEndId")
     private String endToEndCode;
 }
