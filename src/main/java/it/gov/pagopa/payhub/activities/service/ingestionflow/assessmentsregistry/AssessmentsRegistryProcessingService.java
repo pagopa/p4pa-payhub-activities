@@ -44,7 +44,7 @@ public class AssessmentsRegistryProcessingService extends
         List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
 
         AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsRegistryIngestionFlowFileResult();
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
+        ingestionFlowFileResult.setFileVersion("1.0");
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
