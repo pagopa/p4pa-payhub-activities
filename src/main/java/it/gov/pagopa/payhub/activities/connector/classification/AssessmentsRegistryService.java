@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
+import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface AssessmentsRegistryService {
    * @param iudList list of IUD
    */
   void createAssessmentsRegistryByDebtPositionDTOAndIudList(DebtPositionDTO debtPositionDTO, List<String> iudList);
+
+  void createAssessmentsRegistry(AssessmentsRegistry assessmentsRegistry);
 }

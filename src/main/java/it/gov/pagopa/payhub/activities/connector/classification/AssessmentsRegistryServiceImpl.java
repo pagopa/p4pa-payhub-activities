@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.AssessmentsRegistryClient;
+import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.classification.dto.generated.CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import java.util.List;
@@ -31,5 +32,10 @@ public class AssessmentsRegistryServiceImpl implements AssessmentsRegistryServic
             .iudList(iudList)
             .build(),
         authnService.getAccessToken());
+  }
+
+  @Override
+  public void createAssessmentsRegistry(AssessmentsRegistry assessmentsRegistry) {
+    assessmentsRegistryClient.createAssessmentsRegistry(assessmentsRegistry, authnService.getAccessToken());
   }
 }
