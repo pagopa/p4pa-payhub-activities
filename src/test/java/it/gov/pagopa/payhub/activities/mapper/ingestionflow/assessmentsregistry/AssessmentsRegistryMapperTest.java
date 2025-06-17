@@ -30,7 +30,7 @@ class AssessmentsRegistryMapperTest {
 
     Assertions.assertNotNull(result);
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "links");
+        "updateTraceId", "links", "assessmentRegistryId");
   }
 
 }
