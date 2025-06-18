@@ -75,6 +75,10 @@ public class ReceiptMapper {
     }
 
     public ReceiptWithAdditionalNodeDataDTO map(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO receipt) {
+        Long organizationId = ingestionFlowFile.getOrganizationId();
+        Organization org = organizationService.getOrganizationById(organizationId)
+            .orElseThrow(() -> new OrganizationNotFoundException("Organization with id " + organizationId + " not found."));
+
         return ReceiptWithAdditionalNodeDataDTO.builder()
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .receiptOrigin(ReceiptOriginType.RECEIPT_FILE)
@@ -96,6 +100,7 @@ public class ReceiptMapper {
                 .description(receipt.getRemittanceInformation())
                 .paymentNote("9/".concat(receipt.getPaymentNote()))
                 .debtPositionTypeOrgCode(receipt.getDebtPositionTypeOrgCode())
+                .sourceFlowName(org.getIpaCode() + "_IMPORT-DOVUTO")
                 .feeCents(bigDecimalEuroToLongCentsAmount(receipt.getFeeCents()))
                 .balance(receipt.getBalance())
                 .transfers(Collections.singletonList(buildTransferDTO(receipt)))
