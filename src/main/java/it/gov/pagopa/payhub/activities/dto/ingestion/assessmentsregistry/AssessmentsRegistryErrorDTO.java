@@ -4,6 +4,8 @@ import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Objects;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
@@ -30,7 +32,7 @@ public class AssessmentsRegistryErrorDTO extends ErrorFileDTO {
         return new String[]{
                 getFileName(),
                 getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
-                getAssessmentCode() != null ? getAssessmentCode() : "",
+                Objects.requireNonNullElse(getAssessmentCode(), ""),
                 getOrganizationIpaCode() != null ? String.valueOf(getOrganizationIpaCode()) : "",
                 getErrorCode(), getErrorMessage()
         };

@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessmentsregistr
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsRegistryService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 import static it.gov.pagopa.payhub.activities.util.faker.AssessmentsRegistryFaker.buildAssessmentsRegistry;
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -43,20 +45,54 @@ class AssessmentRegistryProcessingServiceTest {
     @Mock
     private AssessmentsRegistryProcessingService service;
 
+    @Mock
+    private OrganizationService organizationServiceMock;
+
     @BeforeEach
     void setUp() {
         service = new AssessmentsRegistryProcessingService(mapperMock, errorsArchiverServiceMock,
-                assessmentsRegistryServiceMock);
+                assessmentsRegistryServiceMock, organizationServiceMock);
+    }
+
+    @Test
+    void processAssessmentsRegistryWithIpaErrors() {
+        // Given
+        String ipaCode = "IPA123";
+        String ipaWrong = "IPA123_WRONG";
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(123L);
+        AssessmentsRegistryIngestionFlowFileDTO dto = mock(AssessmentsRegistryIngestionFlowFileDTO.class);
+        Mockito.when(dto.getOrganizationIpaCode()).thenReturn(ipaCode);
+
+        Mockito.when(organizationServiceMock.getIpaCodeByOrganizationId(any())).thenReturn(ipaWrong);
+
+        // When
+        AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
+                Stream.of(dto).iterator(), List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        // Then
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(0L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
     }
 
     @Test
     void processAssessmentsRegistryWithNoErrors() {
         // Given
+
+        String ipaCode = "IPA123";
+
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(123L);
         AssessmentsRegistryIngestionFlowFileDTO dto = mock(AssessmentsRegistryIngestionFlowFileDTO.class);
+        Mockito.when(dto.getOrganizationIpaCode()).thenReturn(ipaCode);
 
         AssessmentsRegistry assessmentsRegistry = buildAssessmentsRegistry();
-        Mockito.when(mapperMock.map(dto, 1L)).thenReturn(assessmentsRegistry);
+        Mockito.when(mapperMock.map(dto, 123L)).thenReturn(assessmentsRegistry);
+
+        Mockito.when(organizationServiceMock.getIpaCodeByOrganizationId(any())).thenReturn(ipaCode);
 
         // When
         AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
@@ -67,7 +103,7 @@ class AssessmentRegistryProcessingServiceTest {
         Assertions.assertEquals(1L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
 
-        Mockito.verify(mapperMock).map(dto, 1L);
+        Mockito.verify(mapperMock).map(dto, 123L);
         Mockito.verify(assessmentsRegistryServiceMock).createAssessmentsRegistry(assessmentsRegistry);
 
         Mockito.verifyNoMoreInteractions(
@@ -78,13 +114,20 @@ class AssessmentRegistryProcessingServiceTest {
 
     @Test
     void processAssessmentsRegistryWithErrors() {
+
         // Given
+        String ipaCode = "IPA123";
+
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(123L);
         AssessmentsRegistryIngestionFlowFileDTO dto = mock(AssessmentsRegistryIngestionFlowFileDTO.class);
+        Mockito.when(dto.getOrganizationIpaCode()).thenReturn(ipaCode);
 
         AssessmentsRegistry assessmentsRegistry = buildAssessmentsRegistry();
 
-        Mockito.when(mapperMock.map(dto, 1L)).thenReturn(assessmentsRegistry);
+        Mockito.when(mapperMock.map(dto, 123L)).thenReturn(assessmentsRegistry);
+
+        Mockito.when(organizationServiceMock.getIpaCodeByOrganizationId(any())).thenReturn(ipaCode);
 
         doThrow(new RuntimeException("Processing error"))
                 .when(assessmentsRegistryServiceMock).createAssessmentsRegistry(assessmentsRegistry);
@@ -103,7 +146,6 @@ class AssessmentRegistryProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-        Mockito.verify(mapperMock).map(dto, 1L);
         Mockito.verify(assessmentsRegistryServiceMock).createAssessmentsRegistry(assessmentsRegistry);
         Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
     }

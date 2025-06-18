@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.organization;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationEntityClient;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
+import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -54,6 +55,49 @@ class OrganizationServiceTest {
                 authnServiceMock,
                 organizationSearchClientMock
         );
+    }
+
+    @Test
+    void getIpaCodeByOrganizationId(){
+
+        // Given
+        String expectedIpaCode = "IPA12345";
+        Long organizationId = 123L;
+
+        Organization expectedOrganization = OrganizationFaker.buildOrganizationDTO();
+        expectedOrganization.setIpaCode(expectedIpaCode);
+
+        Mockito.when(organizationSearchClientMock.findById(organizationId, accessToken))
+                .thenReturn(expectedOrganization);
+
+        // When
+        String ipaCodeResult = organizationService.getIpaCodeByOrganizationId(organizationId);
+
+        // Then
+        Assertions.assertEquals(expectedIpaCode, ipaCodeResult);
+    }
+
+    @Test
+    void getIpaCodeOrganizationIdWithByOrganizationNotFound(){
+
+        // Given
+        Long organizationId = 123L;
+
+        OrganizationNotFoundException organizationNotFoundException =
+                new OrganizationNotFoundException("Organization with id ... not found.)");
+
+        String expectedIpaCode = "IPA12345";
+
+        Organization expectedOrganization = OrganizationFaker.buildOrganizationDTO();
+        expectedOrganization.setIpaCode(expectedIpaCode);
+
+        // When
+        Mockito
+                .when(organizationSearchClientMock.findById(organizationId, accessToken))
+                .thenThrow(organizationNotFoundException);
+
+        // Then
+        Assertions.assertThrows(OrganizationNotFoundException.class, () -> organizationService.getIpaCodeByOrganizationId(organizationId));
     }
 
 //region getOrganizationByFiscalCode tests

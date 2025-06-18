@@ -2,9 +2,11 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessmentsregistr
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsRegistryService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.exception.organization.OrganizationIpaCodeNotMatchException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
@@ -26,14 +28,16 @@ public class AssessmentsRegistryProcessingService extends
 
     private final AssessmentsRegistryMapper assessmentsRegistryMapper;
     private final AssessmentsRegistryService assessmentsRegistryService;
+    private final OrganizationService organizationService;
 
     public AssessmentsRegistryProcessingService(
             AssessmentsRegistryMapper assessmentsRegistryMapper,
             AssessmentsRegistryErrorsArchiverService assessmentsRegistryErrorsArchiverService,
-            AssessmentsRegistryService assessmentsRegistryService) {
+            AssessmentsRegistryService assessmentsRegistryService, OrganizationService organizationService) {
         super(assessmentsRegistryErrorsArchiverService);
         this.assessmentsRegistryMapper = assessmentsRegistryMapper;
         this.assessmentsRegistryService = assessmentsRegistryService;
+        this.organizationService = organizationService;
     }
 
     public AssessmentsRegistryIngestionFlowFileResult processAssessmentsRegistry(
@@ -47,18 +51,30 @@ public class AssessmentsRegistryProcessingService extends
         ingestionFlowFileResult.setFileVersion("1.0");
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
+        String ipaCode = organizationService.getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+        ingestionFlowFileResult.setIpaCode(ipaCode);
+
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
     }
 
     @Override
     protected boolean consumeRow(long lineNumber,
-                                 AssessmentsRegistryIngestionFlowFileDTO assessmentsRegistryIngestionFlowFileDTO,
+                                 AssessmentsRegistryIngestionFlowFileDTO row,
                                  AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult,
                                  List<AssessmentsRegistryErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
         try {
+            String ipa = ingestionFlowFileResult.getIpaCode();
+            if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
+                String errorMessage = String.format(
+                        "Organization IPA code %s does not match with the one in the ingestion flow file %s",
+                        row.getOrganizationIpaCode(), ipa);
+                log.error(errorMessage);
+                throw new OrganizationIpaCodeNotMatchException(errorMessage);
+            }
+
             AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
-                    assessmentsRegistryIngestionFlowFileDTO, ingestionFlowFileResult.getOrganizationId());
+                    row, ingestionFlowFileResult.getOrganizationId());
 
             assessmentsRegistryService.createAssessmentsRegistry(assessmentsRegistry);
             return true;
@@ -68,7 +84,7 @@ public class AssessmentsRegistryProcessingService extends
             AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
                     ingestionFlowFile.getFileName(),
                     lineNumber,
-                    assessmentsRegistryIngestionFlowFileDTO.getAssessmentCode(),
+                    row.getAssessmentCode(),
                     ingestionFlowFile.getOrganizationId(),
                     "PROCESS_EXCEPTION", e.getMessage());
             errorList.add(error);

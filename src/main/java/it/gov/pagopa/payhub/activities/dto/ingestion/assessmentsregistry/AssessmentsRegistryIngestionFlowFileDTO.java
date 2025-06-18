@@ -13,27 +13,27 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AssessmentsRegistryIngestionFlowFileDTO {
 
-    @CsvBindByName(column = "ipaCodeEnte")
-    private Long organizationIpaCode;
+    @CsvBindByName(column = "enteIpaCode")
+    private String organizationIpaCode;
 
     @NotNull
-    @CsvBindByName(column = "codiceEnteTipoDovuto")
+    @CsvBindByName(column = "codiceTipoDovuto")
     private String debtPositionTypeOrgCode;
 
     @NotNull
-    @CsvBindByName(column = "codiceCapitolo")
+    @CsvBindByName(column = "codCapitolo")
     private String sectionCode;
 
     @CsvBindByName(column = "descrizioneCapitolo")
     private String sectionDescription;
 
-    @CsvBindByName(column = "codiceUfficio")
+    @CsvBindByName(column = "codUfficio")
     private String officeCode;
 
     @CsvBindByName(column = "descrizioneUfficio")
     private String officeDescription;
 
-    @CsvBindByName(column = "codiceAccertamento")
+    @CsvBindByName(column = "codAccertamento")
     private String assessmentCode;
 
     @CsvBindByName(column = "descrizioneAccertamento")
@@ -44,7 +44,7 @@ public class AssessmentsRegistryIngestionFlowFileDTO {
     private String operatingYear;
 
     @NotNull
-    @CsvBindByName(column = "stato")
+    @CsvBindByName(column = "flgAttivo")
     private String status;
 
 }

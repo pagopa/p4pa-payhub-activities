@@ -26,6 +26,6 @@ public class TreasuryCsvCompleteErrorsArchiverService extends
     @Override
     protected List<String[]> getHeaders() {
         return Collections.singletonList(
-                new String[]{"File Name", "IUV", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message"});
+                new String[]{"File Name", "IUV", "IUF", "Row Number", "Error Code", "Error Message"});
     }
 }

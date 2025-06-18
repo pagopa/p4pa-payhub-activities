@@ -6,9 +6,12 @@ import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
 public class AssessmentsRegistryIngestionFlowFileResult extends IngestionFlowFileResult {
+
+    private String ipaCode;
 
 }
