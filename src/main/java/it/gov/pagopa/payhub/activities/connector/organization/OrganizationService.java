@@ -14,8 +14,6 @@ public interface OrganizationService {
 
   Optional<Organization> getOrganizationById(Long organizationId);
 
-  String getIpaCodeByOrganizationId(Long organizationId);
-
   List<Organization> getActiveOrganizationsByBrokerId(Long brokerId);
 
   Organization createOrganization(OrganizationRequestBody organization);

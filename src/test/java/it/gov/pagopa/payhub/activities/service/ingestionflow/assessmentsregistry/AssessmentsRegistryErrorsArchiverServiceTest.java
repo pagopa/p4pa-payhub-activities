@@ -49,8 +49,8 @@ class AssessmentsRegistryErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
         List<AssessmentsRegistryErrorDTO> errorDTOList = List.of(
-                new AssessmentsRegistryErrorDTO(FILE_NAME, 1L, "code1", 1L, ERROR_CODE, ERROR_MESSAGE),
-                new AssessmentsRegistryErrorDTO(FILE_NAME, 2L, "code2", 1L, ERROR_CODE, ERROR_MESSAGE)
+                new AssessmentsRegistryErrorDTO(FILE_NAME, 1L, "code1", "1", ERROR_CODE, ERROR_MESSAGE),
+                new AssessmentsRegistryErrorDTO(FILE_NAME, 2L, "code2", "1", ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -81,7 +81,7 @@ class AssessmentsRegistryErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
         List<AssessmentsRegistryErrorDTO> errorDTOList = List.of(
-                new AssessmentsRegistryErrorDTO(FILE_NAME, 1L, "code1", 1L, ERROR_CODE, ERROR_MESSAGE)
+                new AssessmentsRegistryErrorDTO(FILE_NAME, 1L, "code1", "1", ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();

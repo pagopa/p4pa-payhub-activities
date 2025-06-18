@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.connector.organization;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationEntityClient;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSearchClient;
-import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
@@ -50,18 +49,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         return Optional.ofNullable(
                 organizationSearchClient.findById(organizationId, authnService.getAccessToken())
         );
-    }
-
-    @Override
-    public String getIpaCodeByOrganizationId(Long organizationId){
-        Organization organization = organizationSearchClient.findById(organizationId, authnService.getAccessToken());
-        if (organization==null){
-            String errorMessage = String.format("Organization with id %s not found", organizationId);
-            log.error(errorMessage);
-            throw new OrganizationNotFoundException(errorMessage);
-        } else{
-            return organization.getIpaCode();
-        }
     }
 
     @Override

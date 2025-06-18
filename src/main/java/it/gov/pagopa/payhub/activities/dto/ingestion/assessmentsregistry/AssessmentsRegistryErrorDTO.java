@@ -16,10 +16,10 @@ public class AssessmentsRegistryErrorDTO extends ErrorFileDTO {
 
     private Long rowNumber;
     private String assessmentCode;
-    private Long organizationIpaCode;
+    private String organizationIpaCode;
 
     public AssessmentsRegistryErrorDTO(String fileName,
-                                       Long rowNumber, String assessmentCode, Long organizationIpaCode,
+                                       Long rowNumber, String assessmentCode, String organizationIpaCode,
                                        String errorCode, String errorMessage) {
         super(fileName, errorCode, errorMessage);
         this.rowNumber = rowNumber;
@@ -33,7 +33,7 @@ public class AssessmentsRegistryErrorDTO extends ErrorFileDTO {
                 getFileName(),
                 getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
                 Objects.requireNonNullElse(getAssessmentCode(), ""),
-                getOrganizationIpaCode() != null ? String.valueOf(getOrganizationIpaCode()) : "",
+                Objects.requireNonNullElse(getOrganizationIpaCode(), ""),
                 getErrorCode(), getErrorMessage()
         };
     }

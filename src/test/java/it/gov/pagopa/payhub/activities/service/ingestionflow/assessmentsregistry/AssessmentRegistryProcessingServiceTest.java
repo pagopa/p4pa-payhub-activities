@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.Assessm
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.AssessmentsRegistryFaker.buildAssessmentsRegistry;
@@ -65,7 +67,11 @@ class AssessmentRegistryProcessingServiceTest {
         AssessmentsRegistryIngestionFlowFileDTO dto = mock(AssessmentsRegistryIngestionFlowFileDTO.class);
         Mockito.when(dto.getOrganizationIpaCode()).thenReturn(ipaCode);
 
-        Mockito.when(organizationServiceMock.getIpaCodeByOrganizationId(any())).thenReturn(ipaWrong);
+        Organization organization = new Organization();
+        organization.setIpaCode(ipaWrong);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
         // When
         AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
@@ -92,7 +98,11 @@ class AssessmentRegistryProcessingServiceTest {
         AssessmentsRegistry assessmentsRegistry = buildAssessmentsRegistry();
         Mockito.when(mapperMock.map(dto, 123L)).thenReturn(assessmentsRegistry);
 
-        Mockito.when(organizationServiceMock.getIpaCodeByOrganizationId(any())).thenReturn(ipaCode);
+        Organization organization = new Organization();
+        organization.setIpaCode(ipaCode);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
         // When
         AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
@@ -127,7 +137,11 @@ class AssessmentRegistryProcessingServiceTest {
 
         Mockito.when(mapperMock.map(dto, 123L)).thenReturn(assessmentsRegistry);
 
-        Mockito.when(organizationServiceMock.getIpaCodeByOrganizationId(any())).thenReturn(ipaCode);
+        Organization organization = new Organization();
+        organization.setIpaCode(ipaCode);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
         doThrow(new RuntimeException("Processing error"))
                 .when(assessmentsRegistryServiceMock).createAssessmentsRegistry(assessmentsRegistry);

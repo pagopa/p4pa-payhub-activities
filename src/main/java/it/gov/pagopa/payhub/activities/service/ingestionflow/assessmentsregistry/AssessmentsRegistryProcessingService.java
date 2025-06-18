@@ -28,16 +28,14 @@ public class AssessmentsRegistryProcessingService extends
 
     private final AssessmentsRegistryMapper assessmentsRegistryMapper;
     private final AssessmentsRegistryService assessmentsRegistryService;
-    private final OrganizationService organizationService;
 
     public AssessmentsRegistryProcessingService(
             AssessmentsRegistryMapper assessmentsRegistryMapper,
             AssessmentsRegistryErrorsArchiverService assessmentsRegistryErrorsArchiverService,
             AssessmentsRegistryService assessmentsRegistryService, OrganizationService organizationService) {
-        super(assessmentsRegistryErrorsArchiverService);
+        super(assessmentsRegistryErrorsArchiverService, organizationService);
         this.assessmentsRegistryMapper = assessmentsRegistryMapper;
         this.assessmentsRegistryService = assessmentsRegistryService;
-        this.organizationService = organizationService;
     }
 
     public AssessmentsRegistryIngestionFlowFileResult processAssessmentsRegistry(
@@ -51,7 +49,7 @@ public class AssessmentsRegistryProcessingService extends
         ingestionFlowFileResult.setFileVersion("1.0");
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
-        String ipaCode = organizationService.getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+        String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
@@ -85,7 +83,7 @@ public class AssessmentsRegistryProcessingService extends
                     ingestionFlowFile.getFileName(),
                     lineNumber,
                     row.getAssessmentCode(),
-                    ingestionFlowFile.getOrganizationId(),
+                    row.getOrganizationIpaCode(),
                     "PROCESS_EXCEPTION", e.getMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());

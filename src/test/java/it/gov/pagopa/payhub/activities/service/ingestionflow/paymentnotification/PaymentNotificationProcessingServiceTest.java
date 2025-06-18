@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentnotificatio
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
@@ -43,6 +44,8 @@ class PaymentNotificationProcessingServiceTest {
   
   @Mock
   private PaymentNotificationMapper mapperMock;
+  @Mock
+  private OrganizationService organizationServiceMock;
 
   @Mock
   private PaymentNotificationService paymentNotificationServiceMock;
@@ -51,7 +54,7 @@ class PaymentNotificationProcessingServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock, paymentNotificationServiceMock);
+    service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock, paymentNotificationServiceMock, organizationServiceMock);
   }
 
   @AfterEach

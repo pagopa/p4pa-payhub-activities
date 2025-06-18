@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentnotificatio
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
@@ -29,12 +30,12 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
     public PaymentNotificationProcessingService(
             PaymentNotificationMapper paymentNotificationMapper,
             PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService,
-            PaymentNotificationService paymentNotificationService) {
-        super(paymentNotificationErrorsArchiverService);
+            PaymentNotificationService paymentNotificationService,
+            OrganizationService organizationService) {
+        super(paymentNotificationErrorsArchiverService, organizationService);
         this.paymentNotificationMapper = paymentNotificationMapper;
         this.paymentNotificationService = paymentNotificationService;
     }
-
 
     public PaymentNotificationIngestionFlowFileResult processPaymentNotification(
             Iterator<PaymentNotificationIngestionFlowFileDTO> iterator,

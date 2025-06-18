@@ -32,17 +32,15 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
 
     private final TreasuryCsvCompleteMapper treasuryCsvCompleteMapper;
     private final TreasuryService treasuryService;
-    private final OrganizationService organizationService;
 
     public TreasuryCsvCompleteProcessingService(
             TreasuryCsvCompleteMapper treasuryCsvCompleteMapper,
             TreasuryCsvCompleteErrorsArchiverService treasuryCsvCompleteErrorsArchiverService,
             TreasuryService treasuryService,
             OrganizationService organizationService) {
-        super(treasuryCsvCompleteErrorsArchiverService);
+        super(treasuryCsvCompleteErrorsArchiverService, organizationService);
         this.treasuryCsvCompleteMapper = treasuryCsvCompleteMapper;
         this.treasuryService = treasuryService;
-        this.organizationService = organizationService;
     }
 
     public TreasuryIufIngestionFlowFileResult processTreasuryCsvComplete(
@@ -54,7 +52,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
 
-        String ipaCode = organizationService.getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+        String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
@@ -102,4 +100,3 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                 .build();
     }
 }
-
