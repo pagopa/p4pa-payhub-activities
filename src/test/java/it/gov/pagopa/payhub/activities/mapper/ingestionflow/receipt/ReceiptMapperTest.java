@@ -91,9 +91,15 @@ class ReceiptMapperTest {
     @ValueSource(booleans = {true, false})
     void givenReceiptIngestionFlowFileDTOWhenMapThenOk(boolean codPaymentResult) {
         // Given
+        Long organizationId = 1L;
         IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
         ingestionFlowFile.setIngestionFlowFileId(10L);
         ingestionFlowFile.setFileName("rtFileName.csv");
+        ingestionFlowFile.setOrganizationId(organizationId);
+
+        Organization organization = new Organization();
+        organization.setOrganizationId(organizationId);
+        organization.setIpaCode("IPACODE");
 
         ReceiptIngestionFlowFileDTO request = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
         if (codPaymentResult) {
@@ -103,6 +109,8 @@ class ReceiptMapperTest {
         String rtFilePath = "RT/FILE/PATH.xml";
         Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
                 .thenReturn(rtFilePath);
+        Mockito.when(organizationServiceMock.getOrganizationById(organizationId)).thenReturn(
+            Optional.of(organization));
 
         // When
         ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
