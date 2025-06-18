@@ -62,9 +62,6 @@ public class EmailTemplateResolverService {
             case INGESTION_ASSESSMENTS_OK -> emailTemplatesConfiguration.getAssessmentsFlow().getOk();
             case INGESTION_ASSESSMENTS_KO -> emailTemplatesConfiguration.getAssessmentsFlow().getKo();
 
-            case INGESTION_ASSESSMENTS_REGISTRY_OK -> emailTemplatesConfiguration.getAssessmentsRegistryFlow().getOk();
-            case INGESTION_ASSESSMENTS_REGISTRY_KO -> emailTemplatesConfiguration.getAssessmentsRegistryFlow().getKo();
-
             case INGESTION_RECEIPT_OK -> emailTemplatesConfiguration.getReceivedReceipt().getOk();
             case INGESTION_RECEIPT_KO -> emailTemplatesConfiguration.getReceivedReceipt().getKo();
 
