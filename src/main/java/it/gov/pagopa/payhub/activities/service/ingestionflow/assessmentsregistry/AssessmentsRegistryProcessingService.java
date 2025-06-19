@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.exception.organization.OrganizationIpaCodeNotMatchException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
@@ -21,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Validated
 @Service
@@ -71,14 +71,19 @@ public class AssessmentsRegistryProcessingService extends
                         "Organization IPA code %s does not match with the one in the ingestion flow file %s",
                         row.getOrganizationIpaCode(), ipa);
                 log.error(errorMessage);
-                throw new OrganizationIpaCodeNotMatchException(errorMessage);
+                AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
+                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
+                        row.getOrganizationIpaCode(), "ORGANIZATION_IPA_DOES_NOT_MATCH", errorMessage);
+                errorList.add(error);
+                return false;
+
             }
 
             AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
                     row, ingestionFlowFileResult.getOrganizationId());
 
-            List<AssessmentsRegistry> assessmentsRegistryList = assessmentsRegistryService.getAssessmentsRegistrySearch(assessmentsRegistry);
-            if (!assessmentsRegistryList.isEmpty()) {
+            Optional<AssessmentsRegistry> assessmentsRegistryOptional = assessmentsRegistryService.searchAssessmentsRegistryByBusinessKey(assessmentsRegistry);
+            if (assessmentsRegistryOptional.isPresent()) {
                 AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, assessmentsRegistry.getAssessmentCode(),
                         row.getOrganizationIpaCode(), "ASSESSMENTS_REGISTRY_ALREADY_EXISTS", "AssessmentsRegistry already exists");

@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry;
 
 import com.opencsv.bean.CsvBindByName;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +17,11 @@ public class AssessmentsRegistryIngestionFlowFileDTO {
     private String organizationIpaCode;
 
     @Size(max=256)
-    @NotNull
-    @CsvBindByName(column = "codiceTipoDovuto")
+    @CsvBindByName(column = "codiceTipoDovuto", required = true)
     private String debtPositionTypeOrgCode;
 
     @Size(max=64)
-    @NotNull
-    @CsvBindByName(column = "codCapitolo")
+    @CsvBindByName(column = "codCapitolo", required = true)
     private String sectionCode;
 
     @Size(max=512)
@@ -48,13 +45,11 @@ public class AssessmentsRegistryIngestionFlowFileDTO {
     private String assessmentDescription;
 
     @Size(max=4)
-    @NotNull
-    @CsvBindByName(column = "annoEsercizio")
+    @CsvBindByName(column = "annoEsercizio", required = true)
     private String operatingYear;
 
     @Size(max=50)
-    @NotNull
-    @CsvBindByName(column = "flgAttivo")
+    @CsvBindByName(column = "flgAttivo", required = true)
     private String status;
 
 }

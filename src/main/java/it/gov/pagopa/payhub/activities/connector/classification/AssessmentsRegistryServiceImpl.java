@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Lazy
 @Service
@@ -42,15 +43,15 @@ public class AssessmentsRegistryServiceImpl implements AssessmentsRegistryServic
   }
 
   @Override
-  public List<AssessmentsRegistry> getAssessmentsRegistrySearch(AssessmentsRegistry assessmentsRegistry) {
+  public Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(AssessmentsRegistry assessmentsRegistry) {
     PagedModelAssessmentsRegistry pagedModelAssessmentsRegistry =
-            assessmentsRegistryClient.getAssessmentsRegistrySearch(assessmentsRegistry, authnService.getAccessToken(), null, null, null);
+            assessmentsRegistryClient.getAssessmentsRegistrySearch(assessmentsRegistry, authnService.getAccessToken(), 0, 1, null);
 
     if (pagedModelAssessmentsRegistry.getEmbedded() == null ||
         pagedModelAssessmentsRegistry.getEmbedded().getAssessmentsRegistries() == null){
-      return List.of();
+      return Optional.empty();
     }
-    return pagedModelAssessmentsRegistry.getEmbedded().getAssessmentsRegistries();
+    return Optional.of(pagedModelAssessmentsRegistry.getEmbedded().getAssessmentsRegistries().getFirst());
   }
 
 }

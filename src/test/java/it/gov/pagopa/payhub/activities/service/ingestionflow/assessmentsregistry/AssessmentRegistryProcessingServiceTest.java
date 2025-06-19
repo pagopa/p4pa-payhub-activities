@@ -101,8 +101,8 @@ class AssessmentRegistryProcessingServiceTest {
 
         AssessmentsRegistry assessmentsRegistry = mock(AssessmentsRegistry.class);
         Mockito.when(mapperMock.map(row, 123L)).thenReturn(assessmentsRegistry);
-        Mockito.when(assessmentsRegistryServiceMock.getAssessmentsRegistrySearch(assessmentsRegistry))
-                .thenReturn(List.of());
+        Mockito.when(assessmentsRegistryServiceMock.searchAssessmentsRegistryByBusinessKey(assessmentsRegistry))
+                .thenReturn(Optional.empty());
 
         List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
 

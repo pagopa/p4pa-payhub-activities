@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -72,62 +73,67 @@ class AssessmentsRegistryServiceImplTest {
     }
 
     @Test
-    void testGetAssessmentsRegistrySearch_withData() {
+    void testSearchAssessmentsRegistryByBusinessKey_found() {
         // Arrange
-        AssessmentsRegistry input = new AssessmentsRegistry();
-        AssessmentsRegistry result1 = new AssessmentsRegistry();
-        AssessmentsRegistry result2 = new AssessmentsRegistry();
+        AssessmentsRegistry mockRegistry = new AssessmentsRegistry(); // Usa costruttore adeguato
+        String token = "mockToken";
 
         PagedModelAssessmentsRegistryEmbedded embedded = new PagedModelAssessmentsRegistryEmbedded();
-        embedded.setAssessmentsRegistries(List.of(result1, result2));
+        embedded.setAssessmentsRegistries(List.of(mockRegistry));
 
-        PagedModelAssessmentsRegistry paged = new PagedModelAssessmentsRegistry();
-        paged.setEmbedded(embedded);
+        PagedModelAssessmentsRegistry pagedModel = new PagedModelAssessmentsRegistry();
+        pagedModel.setEmbedded(embedded);
 
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(eq(input), eq(ACCESS_TOKEN), any(), any(), any()))
-                .thenReturn(paged);
+        when(authnService.getAccessToken()).thenReturn(token);
+        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(mockRegistry, token, 0, 1, null))
+                .thenReturn(pagedModel);
 
         // Act
-        List<AssessmentsRegistry> result = service.getAssessmentsRegistrySearch(input);
+        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(mockRegistry);
 
         // Assert
-        assertEquals(2, result.size());
-        assertSame(result1, result.get(0));
-        assertSame(result2, result.get(1));
+        assertTrue(result.isPresent());
+        assertEquals(mockRegistry, result.get());
     }
 
     @Test
-    void testGetAssessmentsRegistrySearch_nullEmbedded() {
+    void testSearchAssessmentsRegistryByBusinessKey_notFound_nullEmbedded() {
         // Arrange
-        AssessmentsRegistry input = new AssessmentsRegistry();
-        PagedModelAssessmentsRegistry paged = new PagedModelAssessmentsRegistry();
-        paged.setEmbedded(null);
+        AssessmentsRegistry mockRegistry = new AssessmentsRegistry();
+        String token = "mockToken";
 
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(eq(input), eq(ACCESS_TOKEN), any(), any(), any()))
-                .thenReturn(paged);
+        PagedModelAssessmentsRegistry pagedModel = new PagedModelAssessmentsRegistry();
+        pagedModel.setEmbedded(null);
 
-        // Act
-        List<AssessmentsRegistry> result = service.getAssessmentsRegistrySearch(input);
+        when(authnService.getAccessToken()).thenReturn(token);
+        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(mockRegistry, token, 0, 1, null))
+                .thenReturn(pagedModel);
+
+        // service
+        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(mockRegistry);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void testGetAssessmentsRegistrySearch_nullAssessmentsRegistries() {
+    void testSearchAssessmentsRegistryByBusinessKey_notFound_nullAssessments() {
         // Arrange
-        AssessmentsRegistry input = new AssessmentsRegistry();
+        AssessmentsRegistry mockRegistry = new AssessmentsRegistry();
+        String token = "mockToken";
+
         PagedModelAssessmentsRegistryEmbedded embedded = new PagedModelAssessmentsRegistryEmbedded();
         embedded.setAssessmentsRegistries(null);
 
-        PagedModelAssessmentsRegistry paged = new PagedModelAssessmentsRegistry();
-        paged.setEmbedded(embedded);
+        PagedModelAssessmentsRegistry pagedModel = new PagedModelAssessmentsRegistry();
+        pagedModel.setEmbedded(embedded);
 
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(eq(input), eq(ACCESS_TOKEN), any(), any(), any()))
-                .thenReturn(paged);
+        when(authnService.getAccessToken()).thenReturn(token);
+        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(mockRegistry, token, 0, 1, null))
+                .thenReturn(pagedModel);
 
         // Act
-        List<AssessmentsRegistry> result = service.getAssessmentsRegistrySearch(input);
+        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(mockRegistry);
 
         // Assert
         assertTrue(result.isEmpty());

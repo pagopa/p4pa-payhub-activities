@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This interface provides methods for creating assessments registry in the system.
@@ -20,5 +21,5 @@ public interface AssessmentsRegistryService {
 
   void createAssessmentsRegistry(AssessmentsRegistry assessmentsRegistry);
 
-  List<AssessmentsRegistry> getAssessmentsRegistrySearch(AssessmentsRegistry assessmentsRegistry);
+  Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(AssessmentsRegistry assessmentsRegistry);
 }
