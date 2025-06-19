@@ -74,6 +74,15 @@ public class AssessmentsRegistryProcessingService extends
             AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
                     row, ingestionFlowFileResult.getOrganizationId());
 
+            List<AssessmentsRegistry> assessmentsRegistryList = assessmentsRegistryService.getAssessmentsRegistrySearch(assessmentsRegistry);
+            if (!assessmentsRegistryList.isEmpty()) {
+                AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
+                        ingestionFlowFile.getFileName(), lineNumber, assessmentsRegistry.getAssessmentCode(),
+                        row.getOrganizationIpaCode(), "ASSESSMENTS_REGISTRY_ALREADY_EXISTS", "AssessmentsRegistry already exists");
+                errorList.add(error);
+                return false;
+            }
+
             assessmentsRegistryService.createAssessmentsRegistry(assessmentsRegistry);
             return true;
 
