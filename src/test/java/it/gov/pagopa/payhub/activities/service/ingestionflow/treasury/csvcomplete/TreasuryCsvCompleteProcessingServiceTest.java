@@ -41,7 +41,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
     private TreasuryCsvCompleteErrorsArchiverService errorsArchiverServiceMock;
 
     @Mock
-    private OrganizationService organizationService;
+    private OrganizationService organizationServiceMock;
 
     @Mock
     private Path workingDirectory;
@@ -56,7 +56,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new TreasuryCsvCompleteProcessingService(mapperMock, errorsArchiverServiceMock, treasuryService, organizationService);
+        service = new TreasuryCsvCompleteProcessingService(mapperMock, errorsArchiverServiceMock, treasuryService, organizationServiceMock);
     }
 
     @Test
@@ -73,7 +73,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         organization.setIpaCode(ipa + "_WRONG");
         Optional<Organization> organizationOptional = Optional.of(organization);
 
-        Mockito.when(organizationService.getOrganizationById(any())).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
@@ -99,7 +99,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         dto.setBillYear("2025");
         dto.setOrganizationIpaCode(ipa);
 
-        Mockito.when(organizationService.getOrganizationById(any())).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
         Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
 
@@ -127,7 +127,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         paymentNotificationIngestionFlowFileDTO.setBillYear("2025");
         paymentNotificationIngestionFlowFileDTO.setOrganizationIpaCode(ipa);
 
-        Mockito.when(organizationService.getOrganizationById(any())).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         workingDirectory = Path.of(new URI("file:///tmp"));

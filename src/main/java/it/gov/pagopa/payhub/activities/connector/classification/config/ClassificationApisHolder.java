@@ -27,6 +27,7 @@ public class ClassificationApisHolder {
 
     private final AssessmentsControllerApi assessmentsControllerApi;
     private final AssessmentsRegistryApi assessmentsRegistryApi;
+    private final AssessmentsRegistrySearchControllerApi assessmentsRegistrySearchControllerApi;
 
     private final PaymentNotificationApi paymentNotificationApi;
     private final PaymentNotificationNoPiiSearchControllerApi paymentNotificationNoPiiSearchControllerApi;
@@ -61,7 +62,7 @@ public class ClassificationApisHolder {
 
         this.assessmentsControllerApi = new AssessmentsControllerApi(apiClient);
         this.assessmentsRegistryApi = new AssessmentsRegistryApi(apiClient);
-
+        this.assessmentsRegistrySearchControllerApi = new AssessmentsRegistrySearchControllerApi(apiClient);
         this.paymentNotificationApi = new PaymentNotificationApi(apiClient);
         this.paymentNotificationNoPiiSearchControllerApi = new PaymentNotificationNoPiiSearchControllerApi(apiClient);
 
@@ -108,6 +109,10 @@ public class ClassificationApisHolder {
 
     public AssessmentsRegistryApi getAssessmentsRegistryApi(String accessToken){
         return getApi(accessToken, assessmentsRegistryApi);
+    }
+
+    public AssessmentsRegistrySearchControllerApi getAssessmentsRegistrySearchControllerApi(String accessToken){
+        return getApi(accessToken, assessmentsRegistrySearchControllerApi);
     }
 
     public PaymentNotificationApi getPaymentNotificationApi(String accessToken) {

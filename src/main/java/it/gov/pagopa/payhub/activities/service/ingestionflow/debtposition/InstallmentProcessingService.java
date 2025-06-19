@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
@@ -34,8 +35,9 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     public InstallmentProcessingService(DebtPositionService debtPositionService,
                                         InstallmentSynchronizeMapper installmentSynchronizeMapper,
                                         InstallmentErrorsArchiverService installmentErrorsArchiverService,
-                                        DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService) {
-        super(installmentErrorsArchiverService);
+                                        DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService,
+                                        OrganizationService organizationService) {
+        super(installmentErrorsArchiverService, organizationService);
         this.debtPositionService = debtPositionService;
         this.installmentSynchronizeMapper = installmentSynchronizeMapper;
         this.dpInstallmentsWorkflowCompletionService = dpInstallmentsWorkflowCompletionService;
