@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeClient;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
 import org.junit.jupiter.api.AfterEach;
@@ -70,12 +71,28 @@ class DebtPositionTypeServiceTest {
     String serviceType = "SERVICE";
     String collectingReason = "REASON";
     String taxonomyCode = "TAX";
-    var expected = Mockito.mock(it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType.class);
+    var expected = Mockito.mock(CollectionModelDebtPositionType.class);
     Mockito.when(debtPositionTypeClientMock.getByMainFields(code, brokerId, orgType, macroArea, serviceType, collectingReason, taxonomyCode, accessToken))
         .thenReturn(expected);
 
     // When
     var result = service.getByMainFields(code, brokerId, orgType, macroArea, serviceType, collectingReason, taxonomyCode);
+
+    // Then
+    Assertions.assertSame(expected, result);
+  }
+
+  @Test
+  void givenBrokerIdAndCodeWhenGetByBrokerIdAndCodeThenReturnCollectionModel() {
+    // Given
+    String code = "CODE";
+    Long brokerId = 123L;
+    var expected = Mockito.mock(CollectionModelDebtPositionType.class);
+    Mockito.when(debtPositionTypeClientMock.getByBrokerIdAndCode(brokerId, code, accessToken))
+            .thenReturn(expected);
+
+    // When
+    var result = service.getByBrokerIdAndCode(brokerId, code);
 
     // Then
     Assertions.assertSame(expected, result);

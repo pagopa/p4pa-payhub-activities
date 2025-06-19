@@ -2,9 +2,10 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
-import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,9 @@ class DebtPositionTypeOrgServiceTest {
 
     private DebtPositionTypeOrgService debtPositionTypeOrgService;
 
+    private final String accessToken = "ACCESSTOKEN";
+
+
     @BeforeEach
     void setUp() {
         debtPositionTypeOrgService = new DebtPositionTypeOrgServiceImpl(authnServiceMock, debtPositionTypeOrgClientMock);
@@ -39,8 +43,6 @@ class DebtPositionTypeOrgServiceTest {
     @Test
     void whenGetDefaultIONotificationDetailsThenInvokeClient() {
         // Given
-        String accessToken = "ACCESSTOKEN";
-
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
@@ -53,9 +55,6 @@ class DebtPositionTypeOrgServiceTest {
 
     @Test
     void givenGetDefaultIONotificationDetailsWhenOperationTypeDPUpdatedThenInvokeClient() {
-        // Given
-        String accessToken = "ACCESSTOKEN";
-
         // When
         IONotificationDTO ioNotificationDetails = debtPositionTypeOrgService.getDefaultIONotificationDetails(1L, PaymentEventType.DP_UPDATED);
 
@@ -67,8 +66,6 @@ class DebtPositionTypeOrgServiceTest {
     @Test
     void whenGetDefaultIONotificationDetailsThrowsExceptionThenReturnNull() {
         // Given
-        String accessToken = "ACCESSTOKEN";
-
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
@@ -87,8 +84,6 @@ class DebtPositionTypeOrgServiceTest {
     @Test
     void whenGetByIdThenInvokeClient() {
         // Given
-        String accessToken = "ACCESSTOKEN";
-
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
@@ -102,8 +97,6 @@ class DebtPositionTypeOrgServiceTest {
     @Test
     void whenGetDebtPositionTypeOrgByInstallmentIdThenInvokeClient() {
         // Given
-        String accessToken = "ACCESSTOKEN";
-
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
@@ -113,4 +106,34 @@ class DebtPositionTypeOrgServiceTest {
         // Then
         Mockito.verify(debtPositionTypeOrgClientMock).getDebtPositionTypeOrgByInstallmentId(1L, accessToken);
     }
+
+    @Test
+    void whenGetDebtPositionTypeOrgByOrganizationIdAndCodeThenInvokeClient() {
+        // Given
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        // When
+        debtPositionTypeOrgService.getDebtPositionTypeOrgByOrganizationIdAndCode(1L, "CODE");
+
+        // Then
+        Mockito.verify(debtPositionTypeOrgClientMock).getDebtPositionTypeOrgByOrganizationIdAndCode(1L, "CODE", accessToken);
+    }
+
+    @Test
+    void givenDebtPositionTypeOrgRequestBodyWhenCreateDebtPositionTypeOrgThenReturnDebtPositionTypeOrgType() {
+        // Given
+        DebtPositionTypeOrgRequestBody requestBody = new DebtPositionTypeOrgRequestBody();
+        DebtPositionTypeOrg expectedDebtPositionTypeOrg = new DebtPositionTypeOrg();
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(debtPositionTypeOrgClientMock.createDebtPositionTypeOrg(requestBody, accessToken))
+                .thenReturn(expectedDebtPositionTypeOrg);
+
+        // When
+        DebtPositionTypeOrg result = debtPositionTypeOrgService.createDebtPositionTypeOrg(requestBody);
+
+        // Then
+        Assertions.assertSame(expectedDebtPositionTypeOrg, result);
+    }
+
 }

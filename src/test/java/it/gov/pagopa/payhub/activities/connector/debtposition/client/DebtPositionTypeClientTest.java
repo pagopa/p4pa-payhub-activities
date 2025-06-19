@@ -85,4 +85,27 @@ class DebtPositionTypeClientTest {
     }
 
 
+    @Test
+    void whenFindByBrokerIdAndCodeThenInvokeWithAccessToken(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String code = "code";
+        Long brokerId = 1L;
+
+        CollectionModelDebtPositionType expectedResult = new CollectionModelDebtPositionType();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
+            .thenReturn(debtPositionTypeSearchControllerApiMock);
+        Mockito.when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByBrokerIdAndCode(
+                        brokerId, code))
+            .thenReturn(expectedResult);
+
+        // When
+        CollectionModelDebtPositionType result = client.getByBrokerIdAndCode(brokerId, code, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+
 }

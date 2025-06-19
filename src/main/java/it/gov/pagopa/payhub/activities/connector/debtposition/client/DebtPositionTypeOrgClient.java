@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import lombok.extern.slf4j.Slf4j;
@@ -49,4 +50,21 @@ public class DebtPositionTypeOrgClient {
             return null;
         }
     }
+
+
+    public DebtPositionTypeOrg getDebtPositionTypeOrgByOrganizationIdAndCode(Long organizationId, String code, String accessToken) {
+        try {
+            return debtPositionApisHolder.getDebtPositionTypeOrgSearchControllerApi(accessToken)
+                    .crudDebtPositionTypeOrgsFindByOrganizationIdAndCode(organizationId, code);
+        } catch (HttpClientErrorException.NotFound e){
+            log.info("Cannot find DebtPositionTypeOrg having organization id {} and debt position type code {}", organizationId, code);
+            return null;
+        }
+    }
+
+    public DebtPositionTypeOrg createDebtPositionTypeOrg(DebtPositionTypeOrgRequestBody debtPositionTypeOrgRequestBody, String accessToken) {
+        return debtPositionApisHolder.getDebtPositionTypeOrgEntityApi(accessToken)
+                .crudCreateDebtpositiontypeorg(debtPositionTypeOrgRequestBody);
+    }
+
 }
