@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgErrorDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.LocalDateIntervalFilter;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -162,5 +164,16 @@ public class Utilities {
 
     public static String centsAmountToEuroString(Long centsAmount){
         return parseBigDecimalToString(longCentsToBigDecimalEuro(centsAmount));
+    }
+
+    public static void checkFieldMaxLength(String fieldName, String value, int maxLength, List<DebtPositionTypeOrgErrorDTO> errors, Long rowNumber, String debtPositionTypeCode) {
+        if (value != null && value.length() > maxLength) {
+            errors.add(DebtPositionTypeOrgErrorDTO.builder()
+                    .debtPositionTypeCode(debtPositionTypeCode)
+                    .rowNumber(rowNumber)
+                    .errorCode("VALUE_TOO_LONG")
+                    .errorMessage("Field " + fieldName + " exceeds maximum length of " + maxLength + " characters")
+                    .build());
+        }
     }
 }
