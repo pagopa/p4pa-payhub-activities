@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.classification.dto.generated.CreateAssessmentsRegistryBy
 import it.gov.pagopa.pu.classification.dto.generated.PagedModelAssessmentsRegistry;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,7 @@ public class AssessmentsRegistryServiceImpl implements AssessmentsRegistryServic
                     authnService.getAccessToken(), 0, 1, null);
 
     var embedded = pagedModelAssessmentsRegistry.getEmbedded();
-      if (embedded == null || embedded.getAssessmentsRegistries() == null || embedded.getAssessmentsRegistries().isEmpty()) {
+      if (embedded == null || CollectionUtils.isEmpty(embedded.getAssessmentsRegistries())) {
           return Optional.empty();
       }
       return Optional.of(embedded.getAssessmentsRegistries().getFirst());
