@@ -44,31 +44,40 @@ class GenerateNoticeServiceTest {
         );
     }
 
+
     @Test
     void whenGenerateNoticesThenOk() {
         Long ingestionFlowFileId = 1L;
         String folderId = "folderId";
         DebtPositionDTO debtPosition1 = buildDebtPositionDTO();
         DebtPositionDTO debtPosition2 = buildDebtPositionDTO();
+        debtPosition2.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.UNPAID);
 
         List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition1, debtPosition2);
         String requestId = "PU_" + debtPosition1.getOrganizationId() + "_" + ingestionFlowFileId;
 
         NoticeRequestMassiveDTO requestMassive = NoticeRequestMassiveDTO.builder()
-                .debtPositions(debtPositionsGenerateNotices)
-                .requestId(requestId)
-                .build();
+            .debtPositions(debtPositionsGenerateNotices)
+            .requestId(requestId)
+            .build();
         GeneratedNoticeMassiveFolderDTO responseFolder = GeneratedNoticeMassiveFolderDTO.builder()
-                .folderId(folderId)
-                .build();
+            .folderId(folderId)
+            .build();
+
+        long pdfGenerated = debtPositionsGenerateNotices.stream()
+            .flatMap(debt -> debt.getPaymentOptions().stream())
+            .flatMap(option -> option.getInstallments().stream())
+            .filter(installment -> installment.getStatus() == InstallmentStatus.UNPAID)
+            .count();
 
         Mockito.when(printPaymentNoticeServiceMock.generateMassive(requestMassive))
-                .thenReturn(responseFolder);
-        Mockito.when(ingestionFlowFileServiceMock.updatePdfGenerated(ingestionFlowFileId, (long) debtPositionsGenerateNotices.size(), responseFolder.getFolderId()))
-                .thenReturn(1);
+            .thenReturn(responseFolder);
+        Mockito.when(ingestionFlowFileServiceMock.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, responseFolder.getFolderId()))
+            .thenReturn(1);
 
         String result = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices);
 
         assertEquals(folderId, result);
+        assertEquals(1, pdfGenerated);
     }
 }
