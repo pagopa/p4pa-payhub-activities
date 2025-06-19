@@ -15,84 +15,84 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PaymentNotificationIngestionFlowFileDTO {
 
-    @CsvBindByName(column = "cod_iud", required = true, profiles = "legacy")
-    @CsvBindByName(column = "iud", required = true)
+    @CsvBindByName(column = "IUD", required = true)
+    @CsvBindByName(column = "iud", required = true, profiles = "eng")
     private String iud;
 
-    @CsvBindByName(column = "cod_rp_silinviarp_id_univoco_versamento", required = true, profiles = "legacy")
-    @CsvBindByName(column = "iuv", required = true)
+    @CsvBindByName(column = "codIuv", required = true)
+    @CsvBindByName(column = "iuv", required = true, profiles = "eng")
     private String iuv;
 
-    @CsvBindByName(column = "cod_rp_sogg_pag_id_univ_pag_tipo_id_univoco ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "debtorUniqueIdentifierType", required = true)
+    @CsvBindByName(column = "tipoIdentificativoUnivoco", required = true)
+    @CsvBindByName(column = "debtorUniqueIdentifierType", required = true, profiles = "eng")
     private String debtorUniqueIdentifierType;
 
-    @CsvBindByName(column = "cod_rp_sogg_pag_id_univ_pag_codice_id_univoco ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "debtorUniqueIdentifierCode", required = true)
+    @CsvBindByName(column = "codiceIdentificativoUnivoco", required = true)
+    @CsvBindByName(column = "debtorUniqueIdentifierCode", required = true, profiles = "eng")
     private String debtorUniqueIdentifierCode;
 
-    @CsvBindByName(column = "de_rp_sogg_pag_anagrafica_pagatore ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "debtorFullName", required = true)
+    @CsvBindByName(column = "anagraficaPagatore", required = true)
+    @CsvBindByName(column = "debtorFullName", required = true, profiles = "eng")
     private String debtorFullName;
 
-    @CsvBindByName(column = "de_rp_sogg_pag_indirizzo_pagatore ", profiles = "legacy")
-    @CsvBindByName(column = "debtorAddress")
+    @CsvBindByName(column = "indirizzoPagatore")
+    @CsvBindByName(column = "debtorAddress", profiles = "eng")
     private String debtorAddress;
 
-    @CsvBindByName(column = "de_rp_sogg_pag_civico_pagatore ", profiles = "legacy")
-    @CsvBindByName(column = "debtorCivic")
+    @CsvBindByName(column = "civicoPagatore")
+    @CsvBindByName(column = "debtorCivic", profiles = "eng")
     private String debtorCivic;
 
-    @CsvBindByName(column = "cod_rp_sogg_pag_cap_pagatore ", profiles = "legacy")
-    @CsvBindByName(column = "debtorPostalCode")
+    @CsvBindByName(column = "capPagatore")
+    @CsvBindByName(column = "debtorPostalCode", profiles = "eng")
     private String debtorPostalCode;
 
-    @CsvBindByName(column = "de_rp_sogg_pag_localita_pagatore ", profiles = "legacy")
-    @CsvBindByName(column = "debtorLocation")
+    @CsvBindByName(column = "localitaPagatore")
+    @CsvBindByName(column = "debtorLocation", profiles = "eng")
     private String debtorLocation;
 
-    @CsvBindByName(column = "de_rp_sogg_pag_provincia_pagatore ", profiles = "legacy")
-    @CsvBindByName(column = "debtorProvince")
+    @CsvBindByName(column = "provinciaPagatore")
+    @CsvBindByName(column = "debtorProvince", profiles = "eng")
     private String debtorProvince;
 
-    @CsvBindByName(column = "cod_rp_sogg_pag_nazione_pagatore ", profiles = "legacy")
-    @CsvBindByName(column = "debtorNation")
+    @CsvBindByName(column = "nazionePagatore")
+    @CsvBindByName(column = "debtorNation", profiles = "eng")
     private String debtorNation;
 
-    @CsvBindByName(column = "de_rp_sogg_pag_email_pagatore ", profiles = "legacy")
-    @CsvBindByName(column = "debtorEmail")
+    @CsvBindByName(column = "e-mailPagatore")
+    @CsvBindByName(column = "debtorEmail", profiles = "eng")
     private String debtorEmail;
 
-    @CsvBindByName(column = "dt_rp_dati_vers_data_esecuzione_pagamento ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "paymentExecutionDate", required = true)
+    @CsvBindByName(column = "dataEsecuzionePagamento", required = true)
+    @CsvBindByName(column = "paymentExecutionDate", required = true, profiles = "eng")
     @CsvDate(value = "yyyy-MM-dd")
     private LocalDate paymentExecutionDate;
 
-    @CsvBindByName(column = "num_rp_dati_vers_dati_sing_vers_importo_singolo_versamento ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "amountPaidCents", required = true)
+    @CsvBindByName(column = "importoDovutoPagato", required = true)
+    @CsvBindByName(column = "amountPaidCents", required = true, profiles = "eng")
     private BigDecimal amountPaidCents;
 
-    @CsvBindByName(column = "num_rp_dati_vers_dati_sing_vers_commissione_carico_pa ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "paCommissionCents", required = true)
+    @CsvBindByName(column = "commissioneCaricoPa", required = true)
+    @CsvBindByName(column = "paCommissionCents", required = true, profiles = "eng")
     private BigDecimal paCommissionCents;
 
-    @CsvBindByName(column = "cod_tipo_dovuto ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "debtPositionTypeOrgCode", required = true)
+    @CsvBindByName(column = "tipoDovuto", required = true)
+    @CsvBindByName(column = "debtPositionTypeOrgCode", required = true, profiles = "eng")
     private String debtPositionTypeOrgCode;
 
-    @CsvBindByName(column = "cod_rp_dati_vers_tipo_versamento ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "paymentType", required = true)
+    @CsvBindByName(column = "tipoVersamento", required = true)
+    @CsvBindByName(column = "paymentType", required = true, profiles = "eng")
     private String paymentType;
 
-    @CsvBindByName(column = "de_rp_dati_vers_dati_sing_vers_causale_versamento ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "remittanceInformation", required = true)
+    @CsvBindByName(column = "causaleVersamento", required = true)
+    @CsvBindByName(column = "remittanceInformation", required = true, profiles = "eng")
     private String remittanceInformation;
 
-    @CsvBindByName(column = "de_rp_dati_vers_dati_sing_vers_dati_specifici_riscossione ", required = true, profiles = "legacy")
-    @CsvBindByName(column = "transferCategory", required = true)
+    @CsvBindByName(column = "datiSpecificiRiscossione ", required = true)
+    @CsvBindByName(column = "transferCategory", required = true, profiles = "eng")
     private String transferCategory;
 
-    @CsvBindByName(column = "bilancio", profiles = "legacy")
-    @CsvBindByName(column = "balance")
+    @CsvBindByName(column = "bilancio")
+    @CsvBindByName(column = "balance", profiles = "eng")
     private String balance;
 }
