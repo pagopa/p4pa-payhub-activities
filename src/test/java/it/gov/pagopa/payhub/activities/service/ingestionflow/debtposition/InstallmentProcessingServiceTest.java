@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
@@ -43,7 +44,8 @@ class InstallmentProcessingServiceTest {
     private InstallmentErrorsArchiverService installmentErrorsArchiverServiceMock;
     @Mock
     private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
-
+    @Mock
+    private OrganizationService organizationServiceMock;
     private InstallmentProcessingService service;
 
     @BeforeEach
@@ -52,7 +54,8 @@ class InstallmentProcessingServiceTest {
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
-                dpInstallmentsWorkflowCompletionServiceMock
+                dpInstallmentsWorkflowCompletionServiceMock,
+                organizationServiceMock
                 );
     }
 

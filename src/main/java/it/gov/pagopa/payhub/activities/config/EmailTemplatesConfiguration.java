@@ -52,6 +52,8 @@ public class EmailTemplatesConfiguration {
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates assessmentsFlow;
     @NestedConfigurationProperty
+    private EmailOutcomeBasedTemplates assessmentsRegistryFlow;
+    @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates receivedReceipt;
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates exportPaidFile;

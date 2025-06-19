@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
@@ -28,8 +29,9 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
 
     public ReceiptProcessingService(ReceiptMapper receiptMapper,
                                     ReceiptErrorsArchiverService receiptErrorsArchiverService,
-                                    ReceiptService receiptService) {
-        super(receiptErrorsArchiverService);
+                                    ReceiptService receiptService,
+                                    OrganizationService organizationService) {
+        super(receiptErrorsArchiverService, organizationService);
         this.receiptService = receiptService;
         this.receiptMapper = receiptMapper;
     }

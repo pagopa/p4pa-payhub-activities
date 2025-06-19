@@ -8,11 +8,9 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngesti
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationIpaCodeNotMatchException;
-import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 @Validated
 @Service
@@ -31,29 +32,15 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
 
     private final TreasuryCsvCompleteMapper treasuryCsvCompleteMapper;
     private final TreasuryService treasuryService;
-    private final OrganizationService organizationService;
 
     public TreasuryCsvCompleteProcessingService(
             TreasuryCsvCompleteMapper treasuryCsvCompleteMapper,
             TreasuryCsvCompleteErrorsArchiverService treasuryCsvCompleteErrorsArchiverService,
             TreasuryService treasuryService,
             OrganizationService organizationService) {
-        super(treasuryCsvCompleteErrorsArchiverService);
+        super(treasuryCsvCompleteErrorsArchiverService, organizationService);
         this.treasuryCsvCompleteMapper = treasuryCsvCompleteMapper;
         this.treasuryService = treasuryService;
-        this.organizationService = organizationService;
-    }
-
-    public void loadIpaCode(Long organizationId, TreasuryCsvCompleteIngestionFlowFileResult ingestionFlowFileResult){
-        Optional<Organization> organizationOptional =
-                organizationService.getOrganizationById(organizationId);
-        if (organizationOptional.isEmpty()) {
-            String errorMessage = String.format("Organization with id %s not found", organizationId);
-            log.error(errorMessage);
-            throw new OrganizationNotFoundException(errorMessage);
-        } else {
-            ingestionFlowFileResult.setIpaCode(organizationOptional.get().getIpaCode());
-        }
     }
 
     public TreasuryIufIngestionFlowFileResult processTreasuryCsvComplete(
@@ -64,7 +51,10 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
         TreasuryCsvCompleteIngestionFlowFileResult ingestionFlowFileResult = new TreasuryCsvCompleteIngestionFlowFileResult();
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
-        loadIpaCode(ingestionFlowFile.getOrganizationId(), ingestionFlowFileResult);
+
+        String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+        ingestionFlowFileResult.setIpaCode(ipaCode);
+
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
     }
@@ -91,8 +81,9 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                     row.getIuf(), row.getIuv(),
                     e.getMessage());
             TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(
-                    ingestionFlowFile.getFileName(), row.getIuv(),
-                    null, lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    ingestionFlowFile.getFileName(),
+                    row.getIuv(), row.getIuf(),
+                    lineNumber, "PROCESS_EXCEPTION", e.getMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;
@@ -109,4 +100,3 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                 .build();
     }
 }
-
