@@ -38,6 +38,7 @@ public class PaymentsReporting2ReceiptMapper {
 			.idChannel(paymentsReporting.getIuv())
 			.channelDescription(CHANNEL)
 			.paymentDateTime(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getPayDate()))
+			.sourceFlowName(organization.getIpaCode() + "_IMPORT-DOVUTO")
 			.applicationDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getAcquiringDate()))
 			.transferDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getRegulationDate()))
 			.standin(false)
