@@ -12,15 +12,16 @@ import it.gov.pagopa.pu.organization.dto.generated.KeyTypeEnum;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationApiKeys;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
 
 @Service
 @Lazy
@@ -28,20 +29,16 @@ import org.springframework.stereotype.Service;
 public class OrganizationProcessingService extends IngestionFlowProcessingService<OrganizationIngestionFlowFileDTO, OrganizationIngestionFlowFileResult, OrganizationErrorDTO> {
 
     private final OrganizationMapper organizationMapper;
-    private final OrganizationService organizationService;
     private final OrganizationApiService organizationApiService;
-
 
     public OrganizationProcessingService(
             OrganizationMapper organizationMapper,
             OrganizationErrorsArchiverService organizationErrorsArchiverService,
         OrganizationService organizationService, OrganizationApiService organizationApiService) {
-        super(organizationErrorsArchiverService);
+        super(organizationErrorsArchiverService, organizationService);
         this.organizationMapper = organizationMapper;
-        this.organizationService = organizationService;
       this.organizationApiService = organizationApiService;
     }
-
 
     public OrganizationIngestionFlowFileResult processOrganization(
             Iterator<OrganizationIngestionFlowFileDTO> iterator,

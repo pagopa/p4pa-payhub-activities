@@ -1,24 +1,27 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow;
 
 import com.opencsv.exceptions.CsvException;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor
 public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowFileResult, E extends ErrorFileDTO> {
 
     private final ErrorArchiverService<E> errorArchiverService;
-
-    protected IngestionFlowProcessingService(ErrorArchiverService<E> errorArchiverService) {
-        this.errorArchiverService = errorArchiverService;
-    }
+    protected final OrganizationService organizationService;
 
     /**
      * Processes the input Iterator and readerExceptions in order to:
@@ -102,6 +105,17 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         log.info("Error file archived at: {}", errorsZipFileName);
 
         return errorsZipFileName;
+    }
+
+    protected String getIpaCodeByOrganizationId(Long organizationId){
+        Optional<Organization> organizationOptional = organizationService.getOrganizationById(organizationId);
+        if (organizationOptional.isEmpty()){
+            String errorMessage = String.format("Organization with id %s not found", organizationId);
+            log.error(errorMessage);
+            throw new OrganizationNotFoundException(errorMessage);
+        } else {
+            return organizationOptional.get().getIpaCode();
+        }
     }
 }
 

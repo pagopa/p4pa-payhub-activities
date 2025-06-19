@@ -1,6 +1,6 @@
-package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.csvcomplete;
+package it.gov.pagopa.payhub.activities.service.ingestionflow.assessmentsregistry;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryErrorDTO;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -13,10 +13,10 @@ import java.util.List;
 
 @Lazy
 @Service
-public class TreasuryCsvCompleteErrorsArchiverService extends
-        ErrorArchiverService<TreasuryCsvCompleteErrorDTO> {
+public class AssessmentsRegistryErrorsArchiverService extends
+        ErrorArchiverService<AssessmentsRegistryErrorDTO> {
 
-    protected TreasuryCsvCompleteErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
+    protected AssessmentsRegistryErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                                        @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
                                                        FileArchiverService fileArchiverService,
                                                        CsvService csvService) {
@@ -26,6 +26,6 @@ public class TreasuryCsvCompleteErrorsArchiverService extends
     @Override
     protected List<String[]> getHeaders() {
         return Collections.singletonList(
-                new String[]{"File Name", "IUV", "IUF", "Row Number", "Error Code", "Error Message"});
+                new String[]{"File Name", "Row Number", "Assessment code", "Organization IPA code", "Error Code", "Error Message"});
     }
 }

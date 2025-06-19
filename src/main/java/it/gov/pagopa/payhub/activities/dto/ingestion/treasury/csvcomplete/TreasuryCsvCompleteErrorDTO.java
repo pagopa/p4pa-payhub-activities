@@ -13,20 +13,20 @@ import lombok.experimental.SuperBuilder;
 public class TreasuryCsvCompleteErrorDTO extends ErrorFileDTO {
 
     private String iuv;
-    private String iud;
+    private String iuf;
     private Long rowNumber;
 
-    public TreasuryCsvCompleteErrorDTO(String fileName, String iuv, String iud, Long rowNumber, String errorCode, String errorMessage) {
+    public TreasuryCsvCompleteErrorDTO(String fileName, String iuv, String iuf, Long rowNumber, String errorCode, String errorMessage) {
         super(fileName, errorCode, errorMessage);
         this.iuv = iuv;
-        this.iud = iud;
+        this.iuf = iuf;
         this.rowNumber = rowNumber;
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
-                getFileName(), iuv, iud,
+                getFileName(), iuv, iuf,
                 rowNumber.toString(),
                 getErrorCode(), getErrorMessage()
         };

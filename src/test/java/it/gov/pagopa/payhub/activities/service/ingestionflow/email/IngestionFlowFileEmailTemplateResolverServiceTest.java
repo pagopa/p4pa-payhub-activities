@@ -13,7 +13,6 @@ class IngestionFlowFileEmailTemplateResolverServiceTest {
 
     private final Set<IngestionFlowFile.IngestionFlowFileTypeEnum> expectedUnsupported = Set.of(
             IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA,
-
             IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA
     );
 

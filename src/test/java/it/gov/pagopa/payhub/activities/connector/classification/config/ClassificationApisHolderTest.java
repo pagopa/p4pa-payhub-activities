@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.when;
 
@@ -142,6 +143,33 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
             new ParameterizedTypeReference<>() {},
             classificationApisHolder::unload);
     }
+
+    @Test
+    void getAssessmentsRegistrySearchControllerApiReturnsCorrectInstance() throws InterruptedException {
+        Long organizationId = 1L;
+        Set<String> debtPositionTypeOrgCodes = Set.of("dptOrgCode1");
+        String sectionCode = "a";
+        String sectionDescription = "a";
+        String officeCode = "a";
+        String officeDescription = "a";
+        String assessmentCode = "a";
+        String assessmentDescription = "a";
+        String operatingYear = "2025";
+        AssessmentsRegistryStatus status = AssessmentsRegistryStatus.ACTIVE;
+        Integer page = 0;
+        Integer size = 20;
+        List<String> sort = List.of("assessmentCode,asc");
+
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken ->  classificationApisHolder.getAssessmentsRegistrySearchControllerApi(accessToken)
+                        .crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(organizationId ,
+                                debtPositionTypeOrgCodes, sectionCode, sectionDescription, officeCode, officeDescription,
+                                assessmentCode, assessmentDescription, operatingYear, status, page, size, sort)
+                ,new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
+    }
+
+
 //endregion
 
 //region Payment Notification entity

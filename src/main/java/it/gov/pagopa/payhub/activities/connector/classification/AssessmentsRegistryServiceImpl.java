@@ -2,12 +2,17 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.AssessmentsRegistryClient;
+import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.classification.dto.generated.CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelAssessmentsRegistry;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Lazy
 @Service
@@ -32,4 +37,25 @@ public class AssessmentsRegistryServiceImpl implements AssessmentsRegistryServic
             .build(),
         authnService.getAccessToken());
   }
+
+  @Override
+  public void createAssessmentsRegistry(AssessmentsRegistry assessmentsRegistry) {
+    assessmentsRegistryClient.createAssessmentsRegistry(assessmentsRegistry, authnService.getAccessToken());
+  }
+
+  @Override
+  public Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(
+          Long organizationId, String debtPositionTypeOrgCode, String sectionCode, String officeCode, String assessmentCode, String operatingYear) {
+
+    PagedModelAssessmentsRegistry pagedModelAssessmentsRegistry = assessmentsRegistryClient.getAssessmentsRegistry(
+                    organizationId, debtPositionTypeOrgCode, sectionCode, officeCode, assessmentCode, operatingYear,
+                    authnService.getAccessToken(), 0, 1, null);
+
+    var embedded = pagedModelAssessmentsRegistry.getEmbedded();
+      if (embedded == null || CollectionUtils.isEmpty(embedded.getAssessmentsRegistries())) {
+          return Optional.empty();
+      }
+      return Optional.of(embedded.getAssessmentsRegistries().getFirst());
+  }
+
 }

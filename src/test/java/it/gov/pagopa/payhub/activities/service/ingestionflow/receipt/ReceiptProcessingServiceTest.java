@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
@@ -49,13 +50,16 @@ class ReceiptProcessingServiceTest {
   @Mock
   private ReceiptMapper mapperMock;
 
+  @Mock
+  private OrganizationService organizationServiceMock;
+
   private ReceiptProcessingService service;
 
   private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
   @BeforeEach
   void setUp() {
-    service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock);
+    service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock);
   }
 
   @AfterEach

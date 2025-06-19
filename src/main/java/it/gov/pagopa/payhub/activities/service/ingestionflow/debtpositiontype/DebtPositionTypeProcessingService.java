@@ -12,14 +12,15 @@ import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionTy
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 @Lazy
@@ -29,17 +30,14 @@ public class DebtPositionTypeProcessingService extends
 
   private final DebtPositionTypeMapper debtPositionTypeMapper;
   private final DebtPositionTypeService debtPositionTypeService;
-  private final OrganizationService organizationService;
-
 
   public DebtPositionTypeProcessingService(
       DebtPositionTypeMapper debtPositionTypeMapper,
       DebtPositionTypeErrorsArchiverService debtPositionTypeErrorsArchiverService,
       DebtPositionTypeService debtPositionTypeService, OrganizationService organizationService) {
-    super(debtPositionTypeErrorsArchiverService);
+    super(debtPositionTypeErrorsArchiverService, organizationService);
     this.debtPositionTypeMapper = debtPositionTypeMapper;
     this.debtPositionTypeService = debtPositionTypeService;
-    this.organizationService = organizationService;
   }
 
 
