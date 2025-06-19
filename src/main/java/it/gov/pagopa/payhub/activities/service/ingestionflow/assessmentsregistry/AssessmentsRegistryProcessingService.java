@@ -11,15 +11,18 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Validated
 @Service
 @Lazy
 @Slf4j
@@ -58,7 +61,7 @@ public class AssessmentsRegistryProcessingService extends
 
     @Override
     protected boolean consumeRow(long lineNumber,
-                                 AssessmentsRegistryIngestionFlowFileDTO row,
+                                 @Valid AssessmentsRegistryIngestionFlowFileDTO row,
                                  AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult,
                                  List<AssessmentsRegistryErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
         try {
