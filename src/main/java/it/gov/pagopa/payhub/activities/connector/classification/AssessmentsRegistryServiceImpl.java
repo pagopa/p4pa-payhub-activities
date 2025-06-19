@@ -46,15 +46,15 @@ public class AssessmentsRegistryServiceImpl implements AssessmentsRegistryServic
   public Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(
           Long organizationId, String debtPositionTypeOrgCode, String sectionCode, String officeCode, String assessmentCode, String operatingYear) {
 
-    PagedModelAssessmentsRegistry pagedModelAssessmentsRegistry = assessmentsRegistryClient.getAssessmentsRegistrySearch(
+    PagedModelAssessmentsRegistry pagedModelAssessmentsRegistry = assessmentsRegistryClient.getAssessmentsRegistry(
                     organizationId, debtPositionTypeOrgCode, sectionCode, officeCode, assessmentCode, operatingYear,
                     authnService.getAccessToken(), 0, 1, null);
 
-    if (pagedModelAssessmentsRegistry.getEmbedded() == null ||
-        pagedModelAssessmentsRegistry.getEmbedded().getAssessmentsRegistries() == null){
-      return Optional.empty();
-    }
-    return Optional.of(pagedModelAssessmentsRegistry.getEmbedded().getAssessmentsRegistries().getFirst());
+    var embedded = pagedModelAssessmentsRegistry.getEmbedded();
+      if (embedded == null || embedded.getAssessmentsRegistries() == null || embedded.getAssessmentsRegistries().isEmpty()) {
+          return Optional.empty();
+      }
+      return Optional.of(embedded.getAssessmentsRegistries().getFirst());
   }
 
 }

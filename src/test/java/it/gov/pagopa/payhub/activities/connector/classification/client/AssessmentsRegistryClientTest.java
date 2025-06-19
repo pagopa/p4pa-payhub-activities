@@ -56,7 +56,7 @@ class AssessmentsRegistryClientTest {
     }
 
     @Test
-    void testGetAssessmentsRegistrySearch_withValidParams() {
+    void testGetAssessmentsRegistry_withValidParams() {
         // Arrange
         String accessToken = "token123";
         Long organizationId = 1L;
@@ -93,7 +93,7 @@ class AssessmentsRegistryClientTest {
         )).thenReturn(expectedResponse);
 
         // Act
-        PagedModelAssessmentsRegistry result = assessmentsRegistryClient.getAssessmentsRegistrySearch(
+        PagedModelAssessmentsRegistry result = assessmentsRegistryClient.getAssessmentsRegistry(
                 organizationId,
                 debtPositionTypeOrgCode,
                 sectionCode,
@@ -127,7 +127,7 @@ class AssessmentsRegistryClientTest {
     }
 
     @Test
-    void testGetAssessmentsRegistrySearch_withNullDebtPositionTypeOrgCode() {
+    void testGetAssessmentsRegistry_withNullDebtPositionTypeOrgCode() {
         AssessmentsRegistrySearchControllerApi searchControllerApi = mock(AssessmentsRegistrySearchControllerApi.class);
         when(classificationApisHolderMock.getAssessmentsRegistrySearchControllerApi(anyString()))
                 .thenReturn(searchControllerApi);
@@ -149,7 +149,7 @@ class AssessmentsRegistryClientTest {
         )).thenReturn(new PagedModelAssessmentsRegistry());
 
         // Act
-        PagedModelAssessmentsRegistry result = assessmentsRegistryClient.getAssessmentsRegistrySearch(
+        PagedModelAssessmentsRegistry result = assessmentsRegistryClient.getAssessmentsRegistry(
                 1L, null, "SEC", "OFF", "ASS", "2024", "token", 0, 10, List.of("sort"));
 
         // Assert

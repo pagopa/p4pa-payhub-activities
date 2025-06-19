@@ -37,7 +37,7 @@ public class AssessmentsRegistryClient {
   /**
    * Retrieves a paginated list of assessments registry based on the provided filters.   *
    */
-  public PagedModelAssessmentsRegistry getAssessmentsRegistrySearch(
+  public PagedModelAssessmentsRegistry getAssessmentsRegistry(
           Long organizationId, String debtPositionTypeOrgCode, String sectionCode,
           String officeCode, String assessmentCode, String operatingYear,
           String accessToken, Integer page, Integer size, List<String> sort) {

@@ -84,7 +84,7 @@ class AssessmentsRegistryServiceImplTest {
         pagedModel.setEmbedded(embedded);
 
         when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(
+        when(assessmentsRegistryClient.getAssessmentsRegistry(
                 mockRegistry.getOrganizationId(),
                 mockRegistry.getDebtPositionTypeOrgCode(),
                 mockRegistry.getSectionCode(),
@@ -119,7 +119,7 @@ class AssessmentsRegistryServiceImplTest {
         pagedModel.setEmbedded(null);
 
         when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(
+        when(assessmentsRegistryClient.getAssessmentsRegistry(
                 mockRegistry.getOrganizationId(),
                 mockRegistry.getDebtPositionTypeOrgCode(),
                 mockRegistry.getSectionCode(),
@@ -156,7 +156,7 @@ class AssessmentsRegistryServiceImplTest {
         pagedModel.setEmbedded(embedded);
 
         when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(
+        when(assessmentsRegistryClient.getAssessmentsRegistry(
                 mockRegistry.getOrganizationId(),
                 mockRegistry.getDebtPositionTypeOrgCode(),
                 mockRegistry.getSectionCode(),
