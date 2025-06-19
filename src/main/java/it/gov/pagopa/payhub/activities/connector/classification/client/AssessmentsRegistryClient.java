@@ -35,28 +35,24 @@ public class AssessmentsRegistryClient {
   }
 
   /**
-   * Retrieves a paginated list of assessments registry based on the provided filters.
-   *
-   * @param request
-   * @param accessToken
-   * @param page default: 0
-   * @param size default: 20
-   * @param sort default: ["assessmentRegistryId,asc"]
-   * @return PagedModelAssessmentsRegistry
+   * Retrieves a paginated list of assessments registry based on the provided filters.   *
    */
-  public PagedModelAssessmentsRegistry getAssessmentsRegistrySearch(AssessmentsRegistry request, String accessToken, Integer page, Integer size, List<String> sort) {
+  public PagedModelAssessmentsRegistry getAssessmentsRegistrySearch(
+          Long organizationId, String debtPositionTypeOrgCode, String sectionCode,
+          String officeCode, String assessmentCode, String operatingYear,
+          String accessToken, Integer page, Integer size, List<String> sort) {
     Set<String> debtPositionTypeOrgCodes = new HashSet<>();
-    if (!request.getDebtPositionTypeOrgCode().isEmpty()) {
-        debtPositionTypeOrgCodes.add(request.getDebtPositionTypeOrgCode());
+    if (debtPositionTypeOrgCode != null ) {
+        debtPositionTypeOrgCodes.add(debtPositionTypeOrgCode);
     }
     return classificationApisHolder.getAssessmentsRegistrySearchControllerApi(accessToken)
             .crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(
-                    request.getOrganizationId(),
+                    organizationId,
                     debtPositionTypeOrgCodes,
-                    request.getSectionCode(),null,
-                    request.getOfficeCode(),null,
-                    request.getAssessmentCode(), null,
-                    request.getOperatingYear(),
+                    sectionCode,null,
+                    officeCode,null,
+                    assessmentCode, null,
+                    operatingYear,
                     null,
                     page, size, sort);
   }

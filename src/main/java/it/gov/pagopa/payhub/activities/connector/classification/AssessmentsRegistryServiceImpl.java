@@ -43,9 +43,12 @@ public class AssessmentsRegistryServiceImpl implements AssessmentsRegistryServic
   }
 
   @Override
-  public Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(AssessmentsRegistry assessmentsRegistry) {
-    PagedModelAssessmentsRegistry pagedModelAssessmentsRegistry =
-            assessmentsRegistryClient.getAssessmentsRegistrySearch(assessmentsRegistry, authnService.getAccessToken(), 0, 1, null);
+  public Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(
+          Long organizationId, String debtPositionTypeOrgCode, String sectionCode, String officeCode, String assessmentCode, String operatingYear) {
+
+    PagedModelAssessmentsRegistry pagedModelAssessmentsRegistry = assessmentsRegistryClient.getAssessmentsRegistrySearch(
+                    organizationId, debtPositionTypeOrgCode, sectionCode, officeCode, assessmentCode, operatingYear,
+                    authnService.getAccessToken(), 0, 1, null);
 
     if (pagedModelAssessmentsRegistry.getEmbedded() == null ||
         pagedModelAssessmentsRegistry.getEmbedded().getAssessmentsRegistries() == null){

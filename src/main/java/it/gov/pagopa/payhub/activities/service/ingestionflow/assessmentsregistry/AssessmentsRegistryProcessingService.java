@@ -79,7 +79,15 @@ public class AssessmentsRegistryProcessingService extends
             AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
                     row, ingestionFlowFileResult.getOrganizationId());
 
-            Optional<AssessmentsRegistry> assessmentsRegistryOptional = assessmentsRegistryService.searchAssessmentsRegistryByBusinessKey(assessmentsRegistry);
+            Optional<AssessmentsRegistry> assessmentsRegistryOptional =
+                    assessmentsRegistryService.searchAssessmentsRegistryByBusinessKey(
+                            assessmentsRegistry.getOrganizationId(),
+                            assessmentsRegistry.getDebtPositionTypeOrgCode(),
+                            assessmentsRegistry.getSectionCode(),
+                            assessmentsRegistry.getOfficeCode(),
+                            assessmentsRegistry.getAssessmentCode(),
+                            assessmentsRegistry.getOperatingYear()
+                    );
             if (assessmentsRegistryOptional.isPresent()) {
                 AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, assessmentsRegistry.getAssessmentCode(),

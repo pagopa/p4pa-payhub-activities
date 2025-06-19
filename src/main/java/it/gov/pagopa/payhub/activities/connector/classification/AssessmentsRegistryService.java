@@ -11,15 +11,15 @@ import java.util.Optional;
  */
 public interface AssessmentsRegistryService {
 
-  /**
-   * Creates assessments registry by specified debtPositionDTO and IUDList if not already exists.
-   *
-   * @param debtPositionDTO debt position to create assessment registry
-   * @param iudList list of IUD
-   */
-  void createAssessmentsRegistryByDebtPositionDTOAndIudList(DebtPositionDTO debtPositionDTO, List<String> iudList);
+    /**
+     * Creates assessments registry by specified debtPositionDTO and IUDList if not already exists.
+     *
+     * @param debtPositionDTO debt position to create assessment registry
+     * @param iudList         list of IUD
+     */
+    void createAssessmentsRegistryByDebtPositionDTOAndIudList(DebtPositionDTO debtPositionDTO, List<String> iudList);
 
-  void createAssessmentsRegistry(AssessmentsRegistry assessmentsRegistry);
+    void createAssessmentsRegistry(AssessmentsRegistry assessmentsRegistry);
 
-  Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(AssessmentsRegistry assessmentsRegistry);
+    Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(Long organizationId, String debtPositionTypeOrgCode, String sectionCode, String officeCode, String assessmentCode, String operatingYear);
 }

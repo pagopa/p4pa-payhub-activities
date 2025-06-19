@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
-
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.AssessmentsRegistryClient;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
@@ -85,11 +84,25 @@ class AssessmentsRegistryServiceImplTest {
         pagedModel.setEmbedded(embedded);
 
         when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(mockRegistry, token, 0, 1, null))
+        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(
+                mockRegistry.getOrganizationId(),
+                mockRegistry.getDebtPositionTypeOrgCode(),
+                mockRegistry.getSectionCode(),
+                mockRegistry.getOfficeCode(),
+                mockRegistry.getAssessmentCode(),
+                mockRegistry.getOperatingYear(),
+                token, 0, 1, null))
                 .thenReturn(pagedModel);
 
         // Act
-        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(mockRegistry);
+        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(
+                mockRegistry.getOrganizationId(),
+                mockRegistry.getDebtPositionTypeOrgCode(),
+                mockRegistry.getSectionCode(),
+                mockRegistry.getOfficeCode(),
+                mockRegistry.getAssessmentCode(),
+                mockRegistry.getOperatingYear()
+        );
 
         // Assert
         assertTrue(result.isPresent());
@@ -106,11 +119,25 @@ class AssessmentsRegistryServiceImplTest {
         pagedModel.setEmbedded(null);
 
         when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(mockRegistry, token, 0, 1, null))
+        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(
+                mockRegistry.getOrganizationId(),
+                mockRegistry.getDebtPositionTypeOrgCode(),
+                mockRegistry.getSectionCode(),
+                mockRegistry.getOfficeCode(),
+                mockRegistry.getAssessmentCode(),
+                mockRegistry.getOperatingYear()
+                , token, 0, 1, null))
                 .thenReturn(pagedModel);
 
         // service
-        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(mockRegistry);
+        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(
+                mockRegistry.getOrganizationId(),
+                mockRegistry.getDebtPositionTypeOrgCode(),
+                mockRegistry.getSectionCode(),
+                mockRegistry.getOfficeCode(),
+                mockRegistry.getAssessmentCode(),
+                mockRegistry.getOperatingYear()
+        );
 
         // Assert
         assertTrue(result.isEmpty());
@@ -129,11 +156,25 @@ class AssessmentsRegistryServiceImplTest {
         pagedModel.setEmbedded(embedded);
 
         when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(mockRegistry, token, 0, 1, null))
+        when(assessmentsRegistryClient.getAssessmentsRegistrySearch(
+                mockRegistry.getOrganizationId(),
+                mockRegistry.getDebtPositionTypeOrgCode(),
+                mockRegistry.getSectionCode(),
+                mockRegistry.getOfficeCode(),
+                mockRegistry.getAssessmentCode(),
+                mockRegistry.getOperatingYear(),
+                token, 0, 1, null))
                 .thenReturn(pagedModel);
 
         // Act
-        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(mockRegistry);
+        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(
+                mockRegistry.getOrganizationId(),
+                mockRegistry.getDebtPositionTypeOrgCode(),
+                mockRegistry.getSectionCode(),
+                mockRegistry.getOfficeCode(),
+                mockRegistry.getAssessmentCode(),
+                mockRegistry.getOperatingYear()
+        );
 
         // Assert
         assertTrue(result.isEmpty());
