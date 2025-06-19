@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeClient;
-import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
@@ -37,5 +36,10 @@ public class DebtPositionTypeServiceImpl implements DebtPositionTypeService {
         String macroArea, String serviceType, String collectingReason, String taxonomyCode) {
         return debtPositionTypeClient.getByMainFields(code, brokerId, orgType, macroArea, serviceType,
             collectingReason, taxonomyCode, authnService.getAccessToken());
+    }
+
+    @Override
+    public CollectionModelDebtPositionType getByBrokerIdAndCode(Long brokerId, String code) {
+        return debtPositionTypeClient.getByBrokerIdAndCode(brokerId, code, authnService.getAccessToken());
     }
 }

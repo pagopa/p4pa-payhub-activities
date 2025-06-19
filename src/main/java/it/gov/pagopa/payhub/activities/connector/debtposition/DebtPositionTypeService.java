@@ -31,4 +31,14 @@ public interface DebtPositionTypeService {
      */
     CollectionModelDebtPositionType getByMainFields(String code, Long brokerId, String orgType,
         String macroArea, String serviceType, String collectingReason, String taxonomyCode);
+
+
+    /**
+     * Retrieves a collection of debt position types filtered by broker ID and code.
+     *
+     * @param brokerId the broker identifier
+     * @param code the code of the debt position type
+     * @return a collection of matching DebtPositionType objects
+     */
+    CollectionModelDebtPositionType getByBrokerIdAndCode(Long brokerId, String code);
 }

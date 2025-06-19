@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 
@@ -27,4 +28,21 @@ public interface DebtPositionTypeOrgService {
      * @return the {@link DebtPositionTypeOrg} object.
      */
     DebtPositionTypeOrg getDebtPositionTypeOrgByInstallmentId(Long installmentId);
+
+    /**
+     * Get the debt position type org by organization id and code.
+     *
+     * @param organizationId the identifier of the organization.
+     * @param code the code of the debt position type.
+     * @return the {@link DebtPositionTypeOrg} object.
+     */
+    DebtPositionTypeOrg getDebtPositionTypeOrgByOrganizationIdAndCode(Long organizationId, String code);
+
+    /**
+     * Creates a new debt position type org.
+     *
+     * @param debtPositionTypeOrgRequestBody the request body for creation.
+     * @return the newly created {@link DebtPositionTypeOrg} object.
+     */
+    DebtPositionTypeOrg createDebtPositionTypeOrg(DebtPositionTypeOrgRequestBody debtPositionTypeOrgRequestBody);
 }

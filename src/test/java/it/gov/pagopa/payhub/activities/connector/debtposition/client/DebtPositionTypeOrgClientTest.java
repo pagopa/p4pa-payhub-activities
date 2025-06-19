@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgApi;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgEntityControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeOrgSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.AfterEach;
@@ -156,4 +157,64 @@ class DebtPositionTypeOrgClientTest {
         // Then
         Assertions.assertNull(result);
     }
+
+	@Test
+	void whenGetDebtPositionTypeOrgByOrganizationIdAndCodeInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 0L;
+        String code = "CODE";
+        DebtPositionTypeOrg expectedResult = new DebtPositionTypeOrg();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgSearchControllerApi(accessToken))
+                .thenReturn(debtPositionTypeOrgSearchApiMock);
+        Mockito.when(debtPositionTypeOrgSearchApiMock.crudDebtPositionTypeOrgsFindByOrganizationIdAndCode(organizationId, code))
+                .thenReturn(expectedResult);
+
+        // When
+        DebtPositionTypeOrg result = debtPositionTypeOrgClient.getDebtPositionTypeOrgByOrganizationIdAndCode(organizationId, code, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+	}
+
+    @Test
+    void givenNotExistentDebtPositionTypeOrgWhenGetDebtPositionTypeOrgByOrganizationIdAndCodeThenNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 0L;
+        String code = "CODE";
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgSearchControllerApi(accessToken))
+                .thenReturn(debtPositionTypeOrgSearchApiMock);
+        Mockito.when(debtPositionTypeOrgSearchApiMock.crudDebtPositionTypeOrgsFindByOrganizationIdAndCode(organizationId, code))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        DebtPositionTypeOrg result = debtPositionTypeOrgClient.getDebtPositionTypeOrgByOrganizationIdAndCode(organizationId, code, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void testCreateDebtPositionTypeOrg() {
+        // Given
+        String accessToken = "accessToken";
+        DebtPositionTypeOrg expectedDebtPositionType = new DebtPositionTypeOrg();
+        DebtPositionTypeOrgRequestBody requestBody = new DebtPositionTypeOrgRequestBody();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeOrgEntityApi(accessToken))
+                .thenReturn(debtPositionTypeOrgEntityApiMock);
+        Mockito.when(debtPositionTypeOrgEntityApiMock.crudCreateDebtpositiontypeorg(requestBody))
+                .thenReturn(expectedDebtPositionType);
+
+        // When
+        DebtPositionTypeOrg result = debtPositionTypeOrgClient.createDebtPositionTypeOrg(requestBody, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedDebtPositionType, result);
+    }
+
+
 }

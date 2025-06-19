@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import lombok.extern.slf4j.Slf4j;
@@ -47,5 +48,20 @@ public class DebtPositionTypeOrgServiceImpl implements DebtPositionTypeOrgServic
     public DebtPositionTypeOrg getDebtPositionTypeOrgByInstallmentId(Long installmentId) {
         log.info("Fetching DebtPositionTypeOrg with installmentId: {}", installmentId);
         return debtPositionTypeOrgClient.getDebtPositionTypeOrgByInstallmentId(installmentId, authnService.getAccessToken());
+    }
+
+    @Override
+    public DebtPositionTypeOrg getDebtPositionTypeOrgByOrganizationIdAndCode(Long organizationId, String code) {
+        log.info("Find DebtPositionTypeOrg with organizationId: {} and debt position type code: {}", organizationId, code);
+        return debtPositionTypeOrgClient.getDebtPositionTypeOrgByOrganizationIdAndCode(organizationId, code, authnService.getAccessToken());
+    }
+
+    @Override
+    public DebtPositionTypeOrg createDebtPositionTypeOrg(DebtPositionTypeOrgRequestBody debtPositionTypeOrgRequestBody) {
+        log.info("Create ner DebtPositionTypeOrg whit organizationId: {}, code: {} and description: {}",
+                debtPositionTypeOrgRequestBody.getOrganizationId(),
+                debtPositionTypeOrgRequestBody.getCode(),
+                debtPositionTypeOrgRequestBody.getDescription());
+        return debtPositionTypeOrgClient.createDebtPositionTypeOrg(debtPositionTypeOrgRequestBody, authnService.getAccessToken());
     }
 }

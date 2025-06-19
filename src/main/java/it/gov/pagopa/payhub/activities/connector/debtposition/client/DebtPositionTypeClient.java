@@ -32,4 +32,10 @@ public class DebtPositionTypeClient {
                 collectingReason, taxonomyCode);
     }
 
+    public CollectionModelDebtPositionType getByBrokerIdAndCode(Long brokerId, String code, String accessToken) {
+        return debtPositionApisHolder.getDebtPositionTypeSearchControllerApi(accessToken)
+                .crudDebtPositionTypesFindByBrokerIdAndCode(brokerId,code);
+    }
+
+
 }
