@@ -166,7 +166,7 @@ class DebtPositionTypeOrgIngestionActivityTest {
   private Iterator<DebtPositionTypeOrgIngestionFlowFileDTO> buildDebtPositionTypeOrgIngestionFlowFileDTO() {
     List<DebtPositionTypeOrgIngestionFlowFileDTO> debtPositionTypeOrgIngestionFlowFileDTOS = List.of(
         DebtPositionTypeOrgIngestionFlowFileDTO.builder()
-            .debtPositionTypeCode("code1")
+            .code("code1")
             .description("description1")
             .ioTemplateMessage("ioTemplateMessage1")
             .ioTemplateSubject("ioTemplateSubject1")
@@ -175,7 +175,7 @@ class DebtPositionTypeOrgIngestionActivityTest {
             .flagMandatoryDueDate(false)
             .build(),
             DebtPositionTypeOrgIngestionFlowFileDTO.builder()
-            .debtPositionTypeCode("code2")
+            .code("code2")
             .description("description2")
             .ioTemplateMessage("ioTemplateMessage2")
             .ioTemplateSubject("ioTemplateSubject2")

@@ -33,19 +33,20 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
     private final DebtPositionTypeOrgMapper debtPositionTypeOrgMapper;
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
     private final DebtPositionTypeService debtPositionTypeService;
-    private final OrganizationService organizationService;
+    private final OrganizationService organizationServiceSpecialized;
 
 
     public DebtPositionTypeOrgProcessingService(
             DebtPositionTypeOrgMapper debtPositionTypeOrgMapper,
             DebtPositionTypeOrgErrorsArchiverService debtPositionTypeErrorsArchiverService,
             DebtPositionTypeOrgService debtPositionTypeOrgService, DebtPositionTypeService debtPositionTypeService,
-            OrganizationService organizationService) {
-        super(debtPositionTypeErrorsArchiverService);
+            OrganizationService organizationServiceSpecialized,
+            OrganizationService organizationServiceSuper) {
+        super(debtPositionTypeErrorsArchiverService, organizationServiceSuper);
         this.debtPositionTypeOrgMapper = debtPositionTypeOrgMapper;
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
         this.debtPositionTypeService = debtPositionTypeService;
-        this.organizationService = organizationService;
+        this.organizationServiceSpecialized = organizationServiceSpecialized;
     }
 
 
@@ -58,7 +59,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
         List<DebtPositionTypeOrgErrorDTO> errorList = new ArrayList<>();
         DebtPositionTypeOrgIngestionFlowFileResult ingestionFlowFileResult = new DebtPositionTypeOrgIngestionFlowFileResult();
 
-        Organization organization = organizationService.getOrganizationById(ingestionFlowFile.getOrganizationId()).orElse(null);
+        Organization organization = organizationServiceSpecialized.getOrganizationById(ingestionFlowFile.getOrganizationId()).orElse(null);
         Long brokerId = organization != null ? organization.getBrokerId() : null;
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
@@ -87,7 +88,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
             if (existingDebtPosTypeOrg != null) {
                 DebtPositionTypeOrgErrorDTO error = new DebtPositionTypeOrgErrorDTO(
                         ingestionFlowFile.getFileName(),
-                        debtPositionTypeOrgDTO.getDebtPositionTypeCode(),
+                        debtPositionTypeOrgDTO.getCode(),
                         ingestionFlowFile.getOrganizationId(),
                         lineNumber,
                         "DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS",
@@ -101,11 +102,11 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
             if (debtPositionTypeList.isEmpty()) {
                 DebtPositionTypeOrgErrorDTO error = new DebtPositionTypeOrgErrorDTO(
                         ingestionFlowFile.getFileName(),
-                        debtPositionTypeOrgDTO.getDebtPositionTypeCode(),
+                        debtPositionTypeOrgDTO.getCode(),
                         ingestionFlowFile.getOrganizationId(),
                         lineNumber,
                         "DEBT_POSITION_TYPE_NOT_FOUND",
-                        "Debt position type not found for code: " + debtPositionTypeOrgDTO.getDebtPositionTypeCode());
+                        "Debt position type not found for code: " + debtPositionTypeOrgDTO.getCode());
                 errorList.add(error);
                 return false;
             }
@@ -118,7 +119,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
             log.error("Error processing debt position type org with organization id:{} and type code {}: {}", ingestionFlowFile.getOrganizationId(), debtPositionTypeOrgDTO.getCode(), e.getMessage());
             DebtPositionTypeOrgErrorDTO error = new DebtPositionTypeOrgErrorDTO(
                     ingestionFlowFile.getFileName(),
-                    debtPositionTypeOrgDTO.getDebtPositionTypeCode(),
+                    debtPositionTypeOrgDTO.getCode(),
                     ingestionFlowFile.getOrganizationId(),
                     lineNumber,
                     "PROCESS_EXCEPTION",

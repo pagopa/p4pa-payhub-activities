@@ -56,6 +56,8 @@ class DebtPositionTypeOrgProcessingServiceTest {
 
     @Mock
     private OrganizationService organizationServiceMock;
+    @Mock
+    private OrganizationService organizationServiceSuperMock;
 
     @Mock
     private DebtPositionTypeOrgProcessingService service;
@@ -67,7 +69,8 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 errorsArchiverServiceMock,
                 debtPositionTypeOrgServiceMock,
                 debtPositionTypeServiceMock,
-                organizationServiceMock
+                organizationServiceMock,
+                organizationServiceSuperMock
         );
     }
 
@@ -78,7 +81,8 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 errorsArchiverServiceMock,
                 debtPositionTypeOrgServiceMock,
                 debtPositionTypeServiceMock,
-                organizationServiceMock
+                organizationServiceMock,
+                organizationServiceSuperMock
                 );
     }
 
@@ -201,7 +205,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
                 new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
-                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeOrgIngestionFlowFileDTO.getDebtPositionTypeCode(),1L, 2L, "PROCESS_EXCEPTION", "Processing error")
+                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeOrgIngestionFlowFileDTO.getCode(),1L, 2L, "PROCESS_EXCEPTION", "Processing error")
         )));
         Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
         Mockito.verify(mapperMock).map(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());
