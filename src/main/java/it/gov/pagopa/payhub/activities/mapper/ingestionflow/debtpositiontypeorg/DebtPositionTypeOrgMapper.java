@@ -34,6 +34,7 @@ public class DebtPositionTypeOrgMapper {
         .flagAmountActualization(dto.isFlagAmountActualization())
         .flagExternal(dto.isFlagExternal())
         .build();
+    //todo : implement the mapping for fields serviceId, notifyOutcomePushOrgSilServiceId e amountActualizationOrgSilServiceId with task https://pagopa.atlassian.net/browse/P4ADEV-3224
   }
 }
 

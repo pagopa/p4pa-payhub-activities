@@ -32,6 +32,7 @@ class DebtPositionTypeOrgMapperTest {
     Assertions.assertNotNull(result);
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
         "updateTraceId", "debtPositionTypeOrgId","serviceId","notifyOutcomePushOrgSilServiceId","amountActualizationOrgSilServiceId");
+    //todo : remove exclusion in checkNotNullFields for serviceId, notifyOutcomePushOrgSilServiceId e amountActualizationOrgSilServiceId with task https://pagopa.atlassian.net/browse/P4ADEV-3224
   }
 
 }
