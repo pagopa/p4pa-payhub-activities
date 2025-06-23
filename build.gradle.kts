@@ -3,9 +3,9 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.5.0"
+	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.sonarqube") version "6.1.0.5360"
+	id("org.sonarqube") version "6.2.0.5505"
 	`java-library`
 	`maven-publish`
 	jacoco
@@ -69,7 +69,7 @@ val jaxbApiVersion = "4.0.2"
 val jsoupVersion = "1.20.1"
 val openApiToolsVersion = "0.2.6"
 val temporalVersion = "1.29.0"
-val protobufJavaVersion = "4.30.2"
+val protobufJavaVersion = "4.31.1"
 val guavaVersion = "33.4.8-jre"
 val openCsvVersion = "5.11"
 val mapStructVersion = "1.6.3"
