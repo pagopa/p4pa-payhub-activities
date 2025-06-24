@@ -12,11 +12,9 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -24,7 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-@Validated
 @Service
 @Lazy
 @Slf4j
@@ -60,7 +57,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, @Valid TreasuryCsvCompleteIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryCsvCompleteErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+    protected boolean consumeRow(long lineNumber, TreasuryCsvCompleteIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryCsvCompleteErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
         TreasuryCsvCompleteIngestionFlowFileResult treasuryCsvCompleteIngestionFlowFileResult = (TreasuryCsvCompleteIngestionFlowFileResult) ingestionFlowFileResult;
         try {
             String ipa = treasuryCsvCompleteIngestionFlowFileResult.getIpaCode();
