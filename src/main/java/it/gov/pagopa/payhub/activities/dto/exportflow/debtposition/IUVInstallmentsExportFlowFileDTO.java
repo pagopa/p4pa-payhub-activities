@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.dto.exportflow.debtposition;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 import it.gov.pagopa.pu.debtposition.dto.generated.Action;
-import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class IUVInstallmentsExportFlowFileDTO {
     private String iuv;
 
     @CsvBindByName(column = "tipoIdentificativoUnivoco")
-    private EntityTypeEnum entityType;
+    private PersonEntityType entityType;
 
     @CsvBindByName(column = "codiceIdentificativoUnivoco")
     private String fiscalCode;

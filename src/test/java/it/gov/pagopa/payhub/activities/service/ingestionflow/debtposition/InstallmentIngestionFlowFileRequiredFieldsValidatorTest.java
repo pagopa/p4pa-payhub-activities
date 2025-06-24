@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -64,7 +65,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
 
     private static InstallmentIngestionFlowFileDTO buildInstallmentIngestionFlowFileDTO() {
         InstallmentIngestionFlowFileDTO dto = new InstallmentIngestionFlowFileDTO();
-        dto.setEntityType(InstallmentIngestionFlowFileDTO.EntityTypeEnum.F);
+        dto.setEntityType(PersonEntityType.F);
         dto.setFiscalCode("FiscalCode");
         dto.setFullName("FullName");
         dto.setAmount(BigDecimal.TEN);

@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.dto.exportflow.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvIgnore;
-import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -65,7 +65,7 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "nazioneAttestante")
     private String attestingCountry;
     @CsvBindByName(column = "enteBenefTipoIdentificativoUnivoco")
-    private EntityIdentifierType beneficiaryEntityType;
+    private PersonEntityType beneficiaryEntityType;
     @CsvBindByName(column = "enteBenefCodiceIdentificativoUnivoco")
     private String beneficiaryUniqueIdentifierCode;
     @CsvBindByName(column = "denominazioneBeneficiario")
@@ -87,7 +87,7 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "nazioneBeneficiario")
     private String beneficiaryCountry;
     @CsvBindByName(column = "soggVersTipoIdentificativoUnivoco")
-    private EntityIdentifierType payerEntityType;
+    private PersonEntityType payerEntityType;
     @CsvBindByName(column = "soggVersCodiceIdentificativoUnivoco")
     private String payerUniqueIdentifierCode;
     @CsvBindByName(column = "anagraficaVersante")
@@ -107,7 +107,7 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "emailVersante")
     private String payerEmail;
     @CsvBindByName(column = "soggPagTipoIdentificativoUnivoco", required = true)
-    private EntityIdentifierType debtorEntityType;
+    private PersonEntityType debtorEntityType;
     @CsvBindByName(column = "soggPagCodiceIdentificativoUnivoco", required = true)
     private String debtorUniqueIdentifierCode;
     @CsvBindByName(column = "anagraficaPagatore")

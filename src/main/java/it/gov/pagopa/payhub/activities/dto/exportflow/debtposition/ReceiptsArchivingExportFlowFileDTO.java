@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.exportflow.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
-import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +24,7 @@ public class ReceiptsArchivingExportFlowFileDTO {
     @CsvBindByName(column = "causale_versamento")
     private String remittanceInformation;
     @CsvBindByName(column = "tipo_soggetto_pagatore")
-    private EntityIdentifierType debtorEntityType;
+    private PersonEntityType debtorEntityType;
     @CsvBindByName(column = "anagrafica_pagatore")
     private String debtorFullName;
     @CsvBindByName(column = "id_univoco_pagatore")

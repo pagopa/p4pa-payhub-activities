@@ -104,7 +104,7 @@ public class ReceiptMapper {
 
     private PersonDTO map(CtSubject subject) {
         return new PersonDTO()
-                .entityType(EntityTypeEnum.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
+                .entityType(PersonEntityType.fromValue(subject.getUniqueIdentifier().getEntityUniqueIdentifierType().value()))
                 .fiscalCode(subject.getUniqueIdentifier().getEntityUniqueIdentifierValue())
                 .fullName(subject.getFullName())
                 .email(subject.getEMail())

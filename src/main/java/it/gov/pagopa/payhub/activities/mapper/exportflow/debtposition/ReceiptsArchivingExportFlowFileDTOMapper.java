@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
-import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptArchivingView;
@@ -35,7 +34,7 @@ public class ReceiptsArchivingExportFlowFileDTOMapper {
 
         if (debtor != null){
             receiptsArchivingExportFlowFileDTOBuilder
-                    .debtorEntityType(EntityIdentifierType.valueOf(debtor.getEntityType().getValue()))
+                    .debtorEntityType(debtor.getEntityType())
                     .debtorFullName(debtor.getFullName())
                     .debtorUniqueIdentifierCode(debtor.getFiscalCode())
                     .debtorEmail(debtor.getEmail());
