@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.receipt;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
-import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -120,7 +120,7 @@ public class ReceiptIngestionFlowFileDTO {
     private String beneficiaryNation;
 
     @CsvBindByName(column = "soggVersTipoIdentificativoUnivoco")
-    private EntityTypeEnum payerEntityType;
+    private PersonEntityType payerEntityType;
 
     @CsvBindByName(column = "soggVersCodiceIdentificativoUnivoco")
     private String payerFiscalCode;
@@ -150,7 +150,7 @@ public class ReceiptIngestionFlowFileDTO {
     private String payerEmail;
 
     @CsvBindByName(column = "soggPagTipoIdentificativoUnivoco", required = true)
-    private EntityTypeEnum debtorEntityType;
+    private PersonEntityType debtorEntityType;
 
     @CsvBindByName(column = "soggPagCodiceIdentificativoUnivoco", required = true)
     private String debtorFiscalCode;

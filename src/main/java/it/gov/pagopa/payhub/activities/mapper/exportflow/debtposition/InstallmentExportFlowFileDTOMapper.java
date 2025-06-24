@@ -1,14 +1,16 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallmentExportFlowFileDTO;
-import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.Person;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Lazy
 @Service
@@ -26,8 +28,8 @@ public class InstallmentExportFlowFileDTOMapper {
 
     public PaidInstallmentExportFlowFileDTO map(InstallmentPaidViewDTO installmentPaidViewDTO) {
 
-        Person debtor = installmentPaidViewDTO.getDebtor();
-        Person payer = installmentPaidViewDTO.getPayer();
+        PersonDTO debtor = installmentPaidViewDTO.getDebtor();
+        PersonDTO payer = installmentPaidViewDTO.getPayer();
 
         PaidInstallmentExportFlowFileDTO.PaidInstallmentExportFlowFileDTOBuilder builder = PaidInstallmentExportFlowFileDTO.builder()
                 .iuf(installmentPaidViewDTO.getIuf())
@@ -42,11 +44,11 @@ public class InstallmentExportFlowFileDTOMapper {
                 .uniqueIdentifierType(UniqueIdentifierType.B)
                 .uniqueIdentifierCode(installmentPaidViewDTO.getIdPsp())
                 .attestingName(installmentPaidViewDTO.getPspCompanyName())
-                .beneficiaryEntityType(EntityIdentifierType.G)
+                .beneficiaryEntityType(PersonEntityType.G)
                 .beneficiaryUniqueIdentifierCode(installmentPaidViewDTO.getOrgFiscalCode())
                 .beneficiaryName(installmentPaidViewDTO.getCompanyName())
-                .debtorEntityType(debtor.getEntityType() != null ? EntityIdentifierType.valueOf(debtor.getEntityType().getValue()) : null)
-                .debtorUniqueIdentifierCode(debtor.getFiscalCode() != null ? debtor.getFiscalCode() : ANONYMOUS)
+                .debtorEntityType(debtor.getEntityType())
+                .debtorUniqueIdentifierCode(Objects.requireNonNullElse(debtor.getFiscalCode(), ANONYMOUS))
                 .debtorFullName(debtor.getFullName())
                 .debtorAddress(debtor.getAddress())
                 .debtorStreetNumber(debtor.getCivic())
@@ -80,8 +82,8 @@ public class InstallmentExportFlowFileDTOMapper {
         }
 
         if (payer != null) {
-            builder.payerEntityType(payer.getEntityType() != null ? EntityIdentifierType.valueOf(payer.getEntityType().getValue()) : null)
-                    .payerUniqueIdentifierCode(payer.getFiscalCode() != null ? payer.getFiscalCode() : ANONYMOUS)
+            builder.payerEntityType(payer.getEntityType())
+                    .payerUniqueIdentifierCode(Objects.requireNonNullElse(payer.getFiscalCode(), ANONYMOUS))
                     .payerFullName(payer.getFullName())
                     .payerAddress(payer.getAddress())
                     .payerStreetNumber(payer.getCivic())

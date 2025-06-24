@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallmentExportFlowFileDTO;
-import it.gov.pagopa.payhub.activities.enums.EntityIdentifierType;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -177,11 +177,11 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertNull(exportFlowFileDTO.getAttestingCity());
         assertNull(exportFlowFileDTO.getAttestingProvince());
         assertNull(exportFlowFileDTO.getAttestingCountry());
-        assertEquals(EntityIdentifierType.G, exportFlowFileDTO.getBeneficiaryEntityType());
+        assertEquals(PersonEntityType.G, exportFlowFileDTO.getBeneficiaryEntityType());
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getBeneficiaryUniqueIdentifierCode());
         assertEquals(paidViewDTO.getCompanyName(), exportFlowFileDTO.getBeneficiaryName());
 
-        assertEquals(EntityIdentifierType.valueOf(paidViewDTO.getPayer().getEntityType().getValue()) , exportFlowFileDTO.getPayerEntityType());
+        assertEquals(paidViewDTO.getPayer().getEntityType() , exportFlowFileDTO.getPayerEntityType());
         assertEquals(paidViewDTO.getPayer().getFiscalCode() , exportFlowFileDTO.getPayerUniqueIdentifierCode());
         assertEquals(paidViewDTO.getPayer().getFullName(), exportFlowFileDTO.getPayerFullName());
         assertEquals(paidViewDTO.getPayer().getAddress(), exportFlowFileDTO.getPayerAddress());
@@ -192,7 +192,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getPayer().getNation(), exportFlowFileDTO.getPayerCountry());
         assertEquals(paidViewDTO.getPayer().getEmail(), exportFlowFileDTO.getPayerEmail());
 
-        assertEquals(EntityIdentifierType.valueOf(paidViewDTO.getDebtor().getEntityType().getValue()) , exportFlowFileDTO.getDebtorEntityType());
+        assertEquals(paidViewDTO.getDebtor().getEntityType() , exportFlowFileDTO.getDebtorEntityType());
         assertEquals(paidViewDTO.getDebtor().getFiscalCode() , exportFlowFileDTO.getDebtorUniqueIdentifierCode());
         assertEquals(paidViewDTO.getDebtor().getFullName(), exportFlowFileDTO.getDebtorFullName());
         assertEquals(paidViewDTO.getDebtor().getAddress(), exportFlowFileDTO.getDebtorAddress());

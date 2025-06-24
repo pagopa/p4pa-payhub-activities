@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.Action;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -25,7 +26,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .paymentOptionDescription("paymentOptionDescription")
                 .iud("iud")
                 .iuv("iuv")
-                .entityType(InstallmentIngestionFlowFileDTO.EntityTypeEnum.F)
+                .entityType(PersonEntityType.F)
                 .fiscalCode("fiscalCode")
                 .fullName("fullName")
                 .address("address")
@@ -58,7 +59,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setDescription("description");
         installmentIngestionFlowFileDTO.setAmount(BigDecimal.valueOf(1L));
         installmentIngestionFlowFileDTO.setDebtPositionTypeCode("typeCode");
-        installmentIngestionFlowFileDTO.setEntityType(InstallmentIngestionFlowFileDTO.EntityTypeEnum.F);
+        installmentIngestionFlowFileDTO.setEntityType(PersonEntityType.F);
         installmentIngestionFlowFileDTO.setIupdOrg("iupd");
         installmentIngestionFlowFileDTO.setRemittanceInformation("info");
         installmentIngestionFlowFileDTO.setPaymentOptionIndex(1);

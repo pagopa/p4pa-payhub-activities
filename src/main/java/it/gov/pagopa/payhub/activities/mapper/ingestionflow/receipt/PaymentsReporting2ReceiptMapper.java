@@ -49,7 +49,7 @@ public class PaymentsReporting2ReceiptMapper {
 
 	private PersonDTO buildAnonymousPerson() {
 		return new PersonDTO()
-			.entityType(EntityTypeEnum.F)
+			.entityType(PersonEntityType.F)
 			.fiscalCode(ANONYMOUS_PERSON)
 			.fullName(ANONYMOUS_PERSON);
 	}
