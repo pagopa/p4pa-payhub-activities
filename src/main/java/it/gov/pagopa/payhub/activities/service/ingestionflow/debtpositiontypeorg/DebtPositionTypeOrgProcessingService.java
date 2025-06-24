@@ -13,18 +13,15 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Validated
 @Service
 @Lazy
 @Slf4j
@@ -76,7 +73,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
     @Override
     protected boolean consumeRow(
             long lineNumber,
-            @Valid  DebtPositionTypeOrgIngestionFlowFileDTO debtPositionTypeOrgDTO,
+            DebtPositionTypeOrgIngestionFlowFileDTO debtPositionTypeOrgDTO,
             DebtPositionTypeOrgIngestionFlowFileResult ingestionFlowFileResult,
             List<DebtPositionTypeOrgErrorDTO> errorList,
             IngestionFlowFile ingestionFlowFile) {
