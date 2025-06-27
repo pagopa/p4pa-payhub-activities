@@ -129,11 +129,11 @@ class DebtPositionClientTest {
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
                 .thenReturn(debtPositionApiMock);
-        Mockito.when(debtPositionApiMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, page, size, null))
+        Mockito.when(debtPositionApiMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, null, page, size, null))
                 .thenReturn(new PagedDebtPositions());
 
         // When
-        PagedDebtPositions result = debtPositionClient.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, page, size, null);
+        PagedDebtPositions result = debtPositionClient.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, null, page, size, null);
 
         // Then
         Assertions.assertEquals(new PagedDebtPositions(), result);

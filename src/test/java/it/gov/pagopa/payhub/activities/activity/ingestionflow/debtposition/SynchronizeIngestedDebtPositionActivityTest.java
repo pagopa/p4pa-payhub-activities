@@ -51,6 +51,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     private static final int MAX_WAITING_MINUTES = 1;
     private static final int RETRY_DELAY = 10;
     private static final int MAX_ATTEMPTS = (int) (((double) MAX_WAITING_MINUTES * 60_000) / RETRY_DELAY);
+    private static final List<InstallmentStatus> statusToExclude = List.of(InstallmentStatus.DRAFT);
 
 
     private SynchronizeIngestedDebtPositionActivity activity;
@@ -128,9 +129,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .iuvFileName(path.getFileName().toString())
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId,  statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 1, PAGE_SIZE, DEFAULT_ORDERING))
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
 
         Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition1, Map.of("iud", iupdSyncStatusUpdateDTO1)))
@@ -196,9 +197,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
                         "\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.")
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 1, PAGE_SIZE, DEFAULT_ORDERING))
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
 
         Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
@@ -279,9 +280,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .iuvFileName(path.getFileName().toString())
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, 1, PAGE_SIZE, DEFAULT_ORDERING))
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
 
         Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition1, Map.of("iud", iupdSyncStatusUpdateDTO1)))

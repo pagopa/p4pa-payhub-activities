@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
-import it.gov.pagopa.pu.classification.dto.generated.Person;
+import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonEntityType;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.stereotype.Service;
@@ -30,8 +30,8 @@ public class PaymentNotificationMapper {
   }
 
 
-  public static Person mapPersonalDataFromPaymentNotification(PaymentNotificationIngestionFlowFileDTO dto) {
-    return Person.builder()
+  public static PersonDTO mapPersonalDataFromPaymentNotification(PaymentNotificationIngestionFlowFileDTO dto) {
+    return PersonDTO.builder()
         .entityType(PersonEntityType.valueOf((dto.getDebtorUniqueIdentifierType())))
         .fiscalCode(dto.getDebtorUniqueIdentifierCode())
         .fullName(dto.getDebtorFullName())

@@ -145,11 +145,11 @@ class DebtPositionServiceTest {
         Integer size = 2;
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionClientMock.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, page, size, null))
+        Mockito.when(debtPositionClientMock.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, null, page, size, null))
                 .thenReturn(new PagedDebtPositions());
 
         // When
-        PagedDebtPositions result = debtPositionService.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, page, size, null);
+        PagedDebtPositions result = debtPositionService.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, null, page, size, null);
 
         // Then
         assertEquals(new PagedDebtPositions(), result);

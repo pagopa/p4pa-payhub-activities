@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.classifications;
 import it.gov.pagopa.payhub.activities.dto.exportflow.classifications.ClassificationsExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.FullClassificationViewDTO;
-import it.gov.pagopa.pu.classification.dto.generated.Person;
+import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +13,8 @@ public class FullClassificationsExportFlowFileDTOMapper {
 
     public ClassificationsExportFlowFileDTO map(FullClassificationViewDTO retrievedObject) {
 
-        Person payer = retrievedObject.getRecPayer();
-        Person debtor = retrievedObject.getRecDebtor();
+        PersonDTO payer = retrievedObject.getRecPayer();
+        PersonDTO debtor = retrievedObject.getRecDebtor();
 
         ClassificationsExportFlowFileDTO.ClassificationsExportFlowFileDTOBuilder classificationsExportFlowFileDTOBuilder = ClassificationsExportFlowFileDTO.builder()
                 .recFileName(retrievedObject.getRecFileName())

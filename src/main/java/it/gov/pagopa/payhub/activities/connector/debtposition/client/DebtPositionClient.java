@@ -37,8 +37,8 @@ public class DebtPositionClient {
         return response.getHeaders().getFirst("x-workflow-id");
     }
 
-    public PagedDebtPositions getDebtPositionsByIngestionFlowFileId(String accessToken, Long ingestionFlowFileId, Integer page, Integer size, List<String> sort){
-        return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, page, size, sort);
+    public PagedDebtPositions getDebtPositionsByIngestionFlowFileId(String accessToken, Long ingestionFlowFileId, List<InstallmentStatus> statusToExclude, Integer page, Integer size, List<String> sort){
+        return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, page, size, sort);
     }
 
     public String updateInstallmentNotificationDate(String accessToken, UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest) {
