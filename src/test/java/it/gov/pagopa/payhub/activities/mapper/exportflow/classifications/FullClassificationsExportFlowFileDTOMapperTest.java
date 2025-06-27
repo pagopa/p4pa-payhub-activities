@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.classifications.Classifica
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.FullClassificationViewDTO;
-import it.gov.pagopa.pu.classification.dto.generated.Person;
+import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.jemos.podam.api.PodamFactory;
@@ -131,7 +131,7 @@ class FullClassificationsExportFlowFileDTOMapperTest {
         assertEquals(fullClassificationViewDTO.getRecOrgFiscalCode(), result.getBeneficiaryUniqueIdCode());
         assertEquals(fullClassificationViewDTO.getRecBeneficiaryOrgName(), result.getRecBeneficiaryName());
 
-        Person payer = fullClassificationViewDTO.getRecPayer();
+        PersonDTO payer = fullClassificationViewDTO.getRecPayer();
 
         assertEquals(payer.getEntityType(), result.getPayerUniqueIdType());
          assertEquals(payer.getEntityType(), result.getPayerUniqueIdCode());
@@ -153,8 +153,8 @@ class FullClassificationsExportFlowFileDTOMapperTest {
          assertEquals(payer.getProvince(), result.getPayerProvinceI());
          assertEquals(payer.getNation(), result.getPayerCountryI());
          assertEquals(payer.getEmail(), result.getPayerEmailI());
-         
-        Person debtor = fullClassificationViewDTO.getRecDebtor();
+
+        PersonDTO debtor = fullClassificationViewDTO.getRecDebtor();
         assertEquals(debtor.getEntityType(), result.getDebtorUniqueIdType());
         assertEquals(debtor.getEntityType(), result.getDebtorUniqueIdCode());
         assertEquals(debtor.getFullName(), result.getDebtorFullName());

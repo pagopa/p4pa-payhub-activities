@@ -44,9 +44,9 @@ public class DebtPositionServiceImpl implements DebtPositionService {
     }
 
     @Override
-    public PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, Integer page, Integer size, List<String> sort) {
+    public PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, List<InstallmentStatus> statusToExclude, Integer page, Integer size, List<String> sort) {
         String accessToken = authnService.getAccessToken();
-        return debtPositionClient.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, page, size, sort);
+        return debtPositionClient.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, statusToExclude, page, size, sort);
     }
 
     @Override

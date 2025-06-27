@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
-import it.gov.pagopa.pu.classification.dto.generated.Person;
+import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonEntityType;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import java.math.BigDecimal;
@@ -84,7 +84,7 @@ class PaymentNotificationMapperTest {
     dto.setDebtorNation("testNation");
     dto.setDebtorEmail("email@email.com");
 
-    Person result = PaymentNotificationMapper.mapPersonalDataFromPaymentNotification(dto);
+    PersonDTO result = PaymentNotificationMapper.mapPersonalDataFromPaymentNotification(dto);
 
     Assertions.assertEquals(PersonEntityType.F, result.getEntityType());
     Assertions.assertEquals("testCode", result.getFiscalCode());

@@ -28,7 +28,11 @@ public class DebtPositionsDataExportClient {
         OffsetDateTime from = paymentDateTime != null ? paymentDateTime.getFrom() : null;
         OffsetDateTime to = paymentDateTime != null ? paymentDateTime.getTo() : null;
 
-        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(organizationId, operatorExternalUserId, from, to, paidExportFileFilter.getDebtPositionTypeOrgId(), page, size, sort);
+        //TODO: fixare in base al task P4ADEV-2960
+        OffsetDateTime installmentUpdateDateTimeFrom = null;
+        OffsetDateTime installmentUpdateDateTimeTo = null;
+
+        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(organizationId, operatorExternalUserId, from, to, installmentUpdateDateTimeFrom, installmentUpdateDateTimeTo, paidExportFileFilter.getDebtPositionTypeOrgId(), page, size, sort);
     }
 
     public PagedReceiptsArchivingView getExportReceiptsArchivingView(String accessToken, Long organizationId, String operatorExternalUserId, ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter, Integer page, Integer size, List<String> sort) {

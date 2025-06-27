@@ -37,7 +37,7 @@ public interface DebtPositionService {
      */
     String installmentSynchronize(DebtPositionOrigin origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId);
 
-    PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, Integer page, Integer size, List<String> sort);
+    PagedDebtPositions getDebtPositionsByIngestionFlowFileId(Long ingestionFlowFileId, List<InstallmentStatus> statusToExclude, Integer page, Integer size, List<String> sort);
 
     /**
      * Update the notification date for the installment that matches the given nav input and is not in a CANCELLED state.

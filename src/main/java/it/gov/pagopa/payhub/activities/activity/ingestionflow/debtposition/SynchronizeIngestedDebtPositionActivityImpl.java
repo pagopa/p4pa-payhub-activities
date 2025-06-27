@@ -72,9 +72,11 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         boolean hasMorePages = true;
 
         List<DebtPositionDTO> debtPositionsGenerateNotices = new ArrayList<>();
+        List<InstallmentStatus> statusToExclude = List.of(InstallmentStatus.DRAFT);
 
         while (hasMorePages) {
             PagedDebtPositions pagedDebtPositions = debtPositionService.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId,
+                    statusToExclude,
                     currentPage,
                     pageSize,
                     DEFAULT_ORDERING);
