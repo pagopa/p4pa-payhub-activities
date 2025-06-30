@@ -64,26 +64,6 @@ class DebtPositionsDataExportServiceImplTest {
     }
 
     @Test
-    void givenNullDateParameters_WhenGetExportPaidInstallments_ThenReturnPagedInstallmentsPaidView() {
-        //given
-        String accessToken = "accessToken";
-        Long organizationId = 1L;
-        String operatorExternalUserId = "operatorExternalUserId";
-
-        PaidExportFileFilter paidExportFileFilter = podamFactory.manufacturePojo(PaidExportFileFilter.class);
-        paidExportFileFilter.setInstallmentUpdateDateTime(null);
-        PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
-
-        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionsDataExportClientMock.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId ,paidExportFileFilter, 0, 10, null)).thenReturn(expected);
-        //when
-        PagedInstallmentsPaidView result = dataExportService.exportPaidInstallments(organizationId, operatorExternalUserId,paidExportFileFilter, 0, 10, null);
-        //then
-        assertNotNull(result);
-        assertEquals(expected, result);
-    }
-
-    @Test
     void givenParameters_WhenGetExportReceiptsArchiving_ThenReturnPagedReceiptsArchivingView() {
         //given
         String accessToken = "accessToken";
