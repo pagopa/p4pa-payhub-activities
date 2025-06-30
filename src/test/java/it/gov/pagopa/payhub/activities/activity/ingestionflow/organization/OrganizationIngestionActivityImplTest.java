@@ -1,10 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.organization;
 
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
-
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
@@ -16,16 +11,6 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 import it.gov.pagopa.payhub.activities.service.ingestionflow.organization.OrganizationProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +21,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
+import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationIngestionActivityImplTest {
@@ -160,9 +159,6 @@ class OrganizationIngestionActivityImplTest {
                 .totalRows(30L)
                 .discardedFileName("dicardedFileName")
                 .errorDescription("errorDescription")
-                .organizationIpaCodeList(List.of(
-                        "ipa1",
-                        "ipa2"))
                 .build();
     }
 

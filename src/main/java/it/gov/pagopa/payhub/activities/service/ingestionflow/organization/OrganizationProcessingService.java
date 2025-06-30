@@ -46,7 +46,6 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
         List<OrganizationErrorDTO> errorList = new ArrayList<>();
         OrganizationIngestionFlowFileResult ingestionFlowFileResult = new OrganizationIngestionFlowFileResult();
-        ingestionFlowFileResult.setOrganizationIpaCodeList(new ArrayList<>());
 
         Optional<Organization> organizationBroker = organizationService.getOrganizationById(ingestionFlowFile.getOrganizationId());
         Long brokerId = organizationBroker.map(Organization::getBrokerId).orElse(null);
@@ -85,7 +84,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
 
             Organization organizationCreated = organizationService.createOrganization(
                 organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
-            ingestionFlowFileResult.getOrganizationIpaCodeList().add(organizationCreated.getIpaCode());
+
             saveApiKeys(organizationCreated.getOrganizationId(), organizationDTO);
             return true;
 
