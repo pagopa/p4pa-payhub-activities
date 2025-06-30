@@ -1,12 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.organization;
 
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationApiService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
@@ -19,12 +12,6 @@ import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +20,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationProcessingServiceTest {
@@ -127,8 +128,6 @@ class OrganizationProcessingServiceTest {
     // Then
     Assertions.assertEquals(1L, result.getProcessedRows());
     Assertions.assertEquals(1L, result.getTotalRows());
-    Assertions.assertNotNull(result.getOrganizationIpaCodeList());
-    Assertions.assertEquals(1, result.getOrganizationIpaCodeList().size());
     Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.any());
     Mockito.verify(organizationApiServiceMock).encryptAndSaveApiKey(Mockito.anyLong(), Mockito.any());
   }
@@ -175,8 +174,6 @@ class OrganizationProcessingServiceTest {
     assertEquals(0, result.getProcessedRows());
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
-    Assertions.assertNotNull(result.getOrganizationIpaCodeList());
-    Assertions.assertEquals(0, result.getOrganizationIpaCodeList().size());
     Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
         new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
@@ -239,8 +236,6 @@ class OrganizationProcessingServiceTest {
     // Then
     Assertions.assertEquals(0, result.getProcessedRows());
     Assertions.assertEquals(1, result.getTotalRows());
-    Assertions.assertNotNull(result.getOrganizationIpaCodeList());
-    Assertions.assertEquals(0, result.getOrganizationIpaCodeList().size());
     Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
     Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
     Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
@@ -270,7 +265,6 @@ class OrganizationProcessingServiceTest {
     Assertions.assertNull(result.getBrokerId());
     Assertions.assertEquals("Broker not found", result.getErrorDescription());
     Assertions.assertEquals(0, result.getProcessedRows());
-    Assertions.assertTrue(result.getOrganizationIpaCodeList().isEmpty());
     Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
   }
 
@@ -307,7 +301,6 @@ class OrganizationProcessingServiceTest {
     // Then
     Assertions.assertEquals(0, result.getProcessedRows());
     Assertions.assertEquals(1, result.getTotalRows());
-    Assertions.assertTrue(result.getOrganizationIpaCodeList().isEmpty());
     Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
     Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
     Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
@@ -363,7 +356,6 @@ class OrganizationProcessingServiceTest {
     // Then
     Assertions.assertEquals(0, result.getProcessedRows());
     Assertions.assertEquals(1, result.getTotalRows());
-    Assertions.assertTrue(result.getOrganizationIpaCodeList().isEmpty());
     Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
     Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
     Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());

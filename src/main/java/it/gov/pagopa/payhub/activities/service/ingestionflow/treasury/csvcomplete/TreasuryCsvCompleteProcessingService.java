@@ -3,10 +3,10 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.csvcomple
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryCsvCompleteIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationIpaCodeNotMatchException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;

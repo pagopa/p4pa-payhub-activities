@@ -1,5 +1,6 @@
-package it.gov.pagopa.payhub.activities.dto.ingestion.treasury;
+package it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete;
 
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
