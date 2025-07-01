@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.email;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -113,6 +114,9 @@ class EmailTemplateResolverServiceTest {
     @ParameterizedTest
     @EnumSource(EmailTemplateName.class)
     void givenEnumWhenResolveThenReturnExpectedTemplate(EmailTemplateName templateName) {
+        if(templateName.toString().startsWith("INGESTION_"+ IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA)){
+            templateName = EmailTemplateName.valueOf(templateName.toString().replace("_PAGOPA", ""));
+        }
         EmailTemplate template = service.resolve(templateName);
 
         Assertions.assertEquals(templateName + "_SUBJECT", template.getSubject());
