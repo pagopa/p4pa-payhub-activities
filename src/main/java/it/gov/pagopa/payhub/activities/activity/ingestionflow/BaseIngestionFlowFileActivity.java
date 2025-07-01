@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileResult> {
@@ -62,8 +63,8 @@ public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileR
 		IngestionFlowFile ingestionFlowFileDTO = ingestionFlowFileService.findById(ingestionFlowFileId)
 			.orElseThrow(() -> new IngestionFlowFileNotFoundException("Cannot found ingestionFlow having id: "+ ingestionFlowFileId));
 
-		if (!(getHandledIngestionFlowFileType()).equals(ingestionFlowFileDTO.getIngestionFlowFileType())) {
-			throw new IngestionFlowTypeNotSupportedException("invalid ingestionFlow file type: " + ingestionFlowFileDTO.getIngestionFlowFileType() + " expected " + getHandledIngestionFlowFileType());
+		if (!(getHandledIngestionFlowFileTypes()).contains(ingestionFlowFileDTO.getIngestionFlowFileType())) {
+			throw new IngestionFlowTypeNotSupportedException("invalid ingestionFlow file type: " + ingestionFlowFileDTO.getIngestionFlowFileType() + " expected " + getHandledIngestionFlowFileTypes());
 		}
 
 		return ingestionFlowFileDTO;
@@ -98,6 +99,10 @@ public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileR
 		}
 	}
 
+	/** The {@link IngestionFlowFile.IngestionFlowFileTypeEnum}s supported */
+	protected Set<IngestionFlowFile.IngestionFlowFileTypeEnum> getHandledIngestionFlowFileTypes(){
+		return Set.of(getHandledIngestionFlowFileType());
+	}
 	/** The {@link IngestionFlowFile.IngestionFlowFileTypeEnum} supported */
 	protected abstract IngestionFlowFile.IngestionFlowFileTypeEnum getHandledIngestionFlowFileType();
 
