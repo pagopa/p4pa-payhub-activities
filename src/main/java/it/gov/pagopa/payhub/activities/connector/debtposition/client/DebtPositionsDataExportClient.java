@@ -25,14 +25,14 @@ public class DebtPositionsDataExportClient {
 
     public PagedInstallmentsPaidView getExportPaidInstallments(String accessToken, Long organizationId, String operatorExternalUserId, PaidExportFileFilter paidExportFileFilter, Integer page, Integer size, List<String> sort) {
         OffsetDateTimeIntervalFilter paymentDateTime = paidExportFileFilter.getPaymentDateTime();
-        OffsetDateTime from = paymentDateTime != null ? paymentDateTime.getFrom() : null;
-        OffsetDateTime to = paymentDateTime != null ? paymentDateTime.getTo() : null;
+        OffsetDateTime paymentDateTimeFrom = paymentDateTime != null ? paymentDateTime.getFrom() : null;
+        OffsetDateTime paymentDateTimeTo = paymentDateTime != null ? paymentDateTime.getTo() : null;
 
-        //TODO: fixare in base al task P4ADEV-2960
-        OffsetDateTime installmentUpdateDateTimeFrom = null;
-        OffsetDateTime installmentUpdateDateTimeTo = null;
+        OffsetDateTimeIntervalFilter installmentUpdateDateTime = paidExportFileFilter.getInstallmentUpdateDateTime();
+        OffsetDateTime installmentUpdateDateTimeFrom = installmentUpdateDateTime != null ? installmentUpdateDateTime.getFrom() : null;
+        OffsetDateTime installmentUpdateDateTimeTo = installmentUpdateDateTime != null ? installmentUpdateDateTime.getTo() : null;
 
-        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(organizationId, operatorExternalUserId, from, to, installmentUpdateDateTimeFrom, installmentUpdateDateTimeTo, paidExportFileFilter.getDebtPositionTypeOrgId(), page, size, sort);
+        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateTimeFrom, paymentDateTimeTo, installmentUpdateDateTimeFrom, installmentUpdateDateTimeTo, paidExportFileFilter.getDebtPositionTypeOrgId(), page, size, sort);
     }
 
     public PagedReceiptsArchivingView getExportReceiptsArchivingView(String accessToken, Long organizationId, String operatorExternalUserId, ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter, Integer page, Integer size, List<String> sort) {
