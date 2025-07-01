@@ -20,6 +20,8 @@ public class EmailTemplateResolverService {
         return switch (templateName){
             case INGESTION_PAYMENTS_REPORTING_OK -> emailTemplatesConfiguration.getPaymentsReportingFlow().getOk();
             case INGESTION_PAYMENTS_REPORTING_KO -> emailTemplatesConfiguration.getPaymentsReportingFlow().getKo();
+            case INGESTION_PAYMENTS_REPORTING_PAGOPA_OK -> emailTemplatesConfiguration.getPaymentsReportingFlow().getOk();
+            case INGESTION_PAYMENTS_REPORTING_PAGOPA_KO -> emailTemplatesConfiguration.getPaymentsReportingFlow().getKo();
 
             case INGESTION_PAYMENT_NOTIFICATION_OK -> emailTemplatesConfiguration.getPaymentNotificationFlow().getOk();
             case INGESTION_PAYMENT_NOTIFICATION_KO -> emailTemplatesConfiguration.getPaymentNotificationFlow().getKo();
