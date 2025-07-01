@@ -12,21 +12,23 @@ public class PaymentNotificationMapper {
 
   public PaymentNotificationDTO map(PaymentNotificationIngestionFlowFileDTO dto, IngestionFlowFile ingestionFlowFile) {
 
-    return PaymentNotificationDTO.builder()
-        .organizationId(ingestionFlowFile.getOrganizationId())
-        .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
-        .iud(dto.getIud())
-        .iuv(dto.getIuv())
-        .paymentExecutionDate(dto.getPaymentExecutionDate())
-        .paymentType(dto.getPaymentType())
-        .amountPaidCents(dto.getAmountPaidCents().longValue())
-        .paCommissionCents(dto.getPaCommissionCents().longValue())
-        .remittanceInformation(dto.getRemittanceInformation())
-        .transferCategory(dto.getTransferCategory())
-        .debtPositionTypeOrgCode(dto.getDebtPositionTypeOrgCode())
-        .balance(dto.getBalance())
-        .debtor(mapPersonalDataFromPaymentNotification(dto))
-        .build();
+    PaymentNotificationDTO paymentNotificationDTO = new PaymentNotificationDTO();
+    paymentNotificationDTO.setOrganizationId(ingestionFlowFile.getOrganizationId());
+    paymentNotificationDTO.setIngestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId());
+    paymentNotificationDTO.setIud(dto.getIud());
+    paymentNotificationDTO.setIuv(dto.getIuv());
+    paymentNotificationDTO.setPaymentExecutionDate(dto.getPaymentExecutionDate());
+    paymentNotificationDTO.setPaymentType(dto.getPaymentType());
+    paymentNotificationDTO.setAmountPaidCents(dto.getAmountPaidCents().longValue());
+    paymentNotificationDTO.setPaCommissionCents(dto.getPaCommissionCents().longValue());
+    paymentNotificationDTO.setRemittanceInformation(dto.getRemittanceInformation());
+    paymentNotificationDTO.setTransferCategory(dto.getTransferCategory());
+    paymentNotificationDTO.setDebtPositionTypeOrgCode(dto.getDebtPositionTypeOrgCode());
+    paymentNotificationDTO.setBalance(dto.getBalance());
+    paymentNotificationDTO.setDebtor(mapPersonalDataFromPaymentNotification(dto));
+
+
+    return paymentNotificationDTO;
   }
 
 
