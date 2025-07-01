@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Lazy
@@ -48,8 +49,13 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	}
 
 	@Override
+	protected Set<IngestionFlowFile.IngestionFlowFileTypeEnum> getHandledIngestionFlowFileTypes() {
+		return Set.of(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA);
+	}
+
+	@Override
 	protected IngestionFlowFile.IngestionFlowFileTypeEnum getHandledIngestionFlowFileType() {
-		return IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
