@@ -315,6 +315,7 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 			"generateSupportingFiles" to "true",
 			"generateConstructorWithAllArgs" to "true",
 			"generatedConstructorWithRequiredArgs" to "true",
+			"enumPropertyNaming" to "original",
 			"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 		)
 	)
@@ -342,6 +343,7 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	)
 	)
@@ -369,6 +371,7 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
@@ -395,6 +398,7 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
@@ -425,6 +429,7 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
@@ -454,6 +459,7 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
@@ -484,6 +490,7 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
@@ -516,6 +523,7 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "MACRO_CASE",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
@@ -540,6 +548,7 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
