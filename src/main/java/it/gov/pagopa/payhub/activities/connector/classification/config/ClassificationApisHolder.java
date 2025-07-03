@@ -26,6 +26,11 @@ public class ClassificationApisHolder {
     private final TreasuryEntityExtendedControllerApi treasuryEntityExtendedControllerApi;
 
     private final AssessmentsControllerApi assessmentsControllerApi;
+    private final AssessmentsSearchControllerApi assessmentsSearchControllerApi;
+    private final AssessmentsEntityControllerApi assessmentsEntityControllerApi;
+
+    private final AssessmentsDetailEntityControllerApi assessmentsDetailEntityControllerApi;
+
     private final AssessmentsRegistryApi assessmentsRegistryApi;
     private final AssessmentsRegistrySearchControllerApi assessmentsRegistrySearchControllerApi;
 
@@ -61,8 +66,13 @@ public class ClassificationApisHolder {
         this.treasuryEntityExtendedControllerApi = new TreasuryEntityExtendedControllerApi(apiClient);
 
         this.assessmentsControllerApi = new AssessmentsControllerApi(apiClient);
+        this.assessmentsSearchControllerApi = new AssessmentsSearchControllerApi(apiClient);
+        this.assessmentsEntityControllerApi = new AssessmentsEntityControllerApi(apiClient);
+        this.assessmentsDetailEntityControllerApi = new AssessmentsDetailEntityControllerApi(apiClient);
         this.assessmentsRegistryApi = new AssessmentsRegistryApi(apiClient);
         this.assessmentsRegistrySearchControllerApi = new AssessmentsRegistrySearchControllerApi(apiClient);
+
+
         this.paymentNotificationApi = new PaymentNotificationApi(apiClient);
         this.paymentNotificationNoPiiSearchControllerApi = new PaymentNotificationNoPiiSearchControllerApi(apiClient);
 
@@ -105,6 +115,18 @@ public class ClassificationApisHolder {
 
     public AssessmentsControllerApi getAssessmentsControllerApi(String accessToken){
         return getApi(accessToken, assessmentsControllerApi);
+    }
+
+    public AssessmentsSearchControllerApi getAssessmentsSearchControllerApi(String accessToken){
+        return getApi(accessToken, assessmentsSearchControllerApi);
+    }
+
+    public AssessmentsEntityControllerApi getAssessmentsEntityControllerApi(String accessToken){
+        return getApi(accessToken, assessmentsEntityControllerApi);
+    }
+
+    public AssessmentsDetailEntityControllerApi getAssessmentsDetailEntityControllerApi(String accessToken){
+        return getApi(accessToken, assessmentsDetailEntityControllerApi);
     }
 
     public AssessmentsRegistryApi getAssessmentsRegistryApi(String accessToken){

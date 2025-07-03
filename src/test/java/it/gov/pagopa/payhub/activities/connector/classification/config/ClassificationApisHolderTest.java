@@ -130,6 +130,35 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 classificationApisHolder::unload);
     }
+
+@Test
+    void whenGetAssessmentsSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> classificationApisHolder.getAssessmentsSearchControllerApi(accessToken)
+                            .crudAssessmentsFindByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(1L,"debtPositionTypeOrgCode", "assessmentName"),
+                new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
+    }
+
+@Test
+    void whenGetAssessmentsEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> classificationApisHolder.getAssessmentsEntityControllerApi(accessToken)
+                            .crudCreateAssessments(new AssessmentsRequestBody()),
+                new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
+    }
+//endregion
+
+    //region Assessments Detail entity
+    @Test
+    void whenGetAssessmentsDetailEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> classificationApisHolder.getAssessmentsDetailEntityControllerApi(accessToken)
+                        .crudCreateAssessmentsdetail(new AssessmentsDetailRequestBody()),
+                new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
+    }
 //endregion
 
 //region Assessments Registry entity
