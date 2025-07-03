@@ -137,7 +137,6 @@ class AssessmentServiceImplTest {
   @Test
   void testSearchAssessmentByBusinessKey_NotFound() {
     // Arrange
-    Assessments assessment = new Assessments();
     String accessToken = "accessToken";
 
 
