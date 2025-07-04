@@ -1,25 +1,24 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAYED_STATUSES_LIST;
-
-import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
-import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAYED_STATUSES_LIST;
 
 @Slf4j
 @Lazy
@@ -28,11 +27,11 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
   private final InstallmentService installmentService;
   private final TransferService transferService;
-  private final ClassificationService classificationService;
+  private final TransferClassificationStoreService classificationService;
   private final PaymentNotificationService paymentNotificationService;
 
   public IudClassificationActivityImpl(InstallmentService installmentService,
-      TransferService transferService, ClassificationService classificationService,
+      TransferService transferService, TransferClassificationStoreService classificationService,
       PaymentNotificationService paymentNotificationService) {
     this.installmentService = installmentService;
     this.transferService = transferService;
@@ -91,18 +90,12 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
    * @param iud  flow unique identifier
    */
   private void saveClassification(Long organizationId, String iud) {
-    log.debug("retrieving payment notification from organizationId {} and iud", organizationId, iud);
+    log.debug("Retrieving payment notification from organizationId {} and iud {}", organizationId, iud);
     PaymentNotificationNoPII paymentNotificationNoPII = paymentNotificationService.getByOrgIdAndIud(organizationId, iud);
 
     log.debug("Saving classification IUD_NO_RT for organizationId: {} - iud: {}", organizationId, iud);
-    classificationService.save(Classification.builder()
-        .organizationId(organizationId)
-        .iud(iud)
-        .label(ClassificationsEnum.IUD_NO_RT)
-        .lastClassificationDate(LocalDate.now())
-        .debtPositionTypeOrgCode(paymentNotificationNoPII.getDebtPositionTypeOrgCode())
-        .iuv(paymentNotificationNoPII.getIuv())
-        .payDate(paymentNotificationNoPII.getPaymentExecutionDate())
-        .build());
+    classificationService.saveIudClassifications(
+            paymentNotificationNoPII,
+            List.of(ClassificationsEnum.IUD_NO_RT));
   }
 }

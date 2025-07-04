@@ -1,18 +1,16 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-import it.gov.pagopa.pu.classification.dto.generated.Classification;
+import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,12 +19,12 @@ import java.util.Objects;
 @Component
 public class IufClassificationActivityImpl implements IufClassificationActivity {
     private final PaymentsReportingService paymentsReportingService;
-    private final ClassificationService classificationService;
+    private final TransferClassificationStoreService transferClassificationStoreService;
     private final TreasuryService treasuryService;
 
-    public IufClassificationActivityImpl(PaymentsReportingService paymentsReportingService, ClassificationService classificationService, TreasuryService treasuryService) {
+    public IufClassificationActivityImpl(PaymentsReportingService paymentsReportingService, TransferClassificationStoreService transferClassificationStoreService, TreasuryService treasuryService) {
         this.paymentsReportingService = paymentsReportingService;
-        this.classificationService = classificationService;
+        this.transferClassificationStoreService = transferClassificationStoreService;
 	    this.treasuryService = treasuryService;
     }
 
@@ -68,17 +66,6 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         Treasury treasury = treasuryService.getById(treasuryId);
 
         log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} - iuf: {}", organizationId, treasuryId, iuf);
-        classificationService.save(Classification.builder()
-            .organizationId(organizationId)
-            .treasuryId(treasuryId)
-            .iuf(iuf)
-            .label(ClassificationsEnum.TES_NO_MATCH)
-            .lastClassificationDate(LocalDate.now())
-            .billDate(treasury.getBillDate())
-            .regionValueDate(treasury.getRegionValueDate())
-            .pspLastName(treasury.getPspLastName())
-            .accountRegistryCode(treasury.getAccountRegistryCode())
-            .billAmountCents(treasury.getBillAmountCents())
-            .build());
+        transferClassificationStoreService.saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_MATCH));
     }
 }

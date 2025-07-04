@@ -13,5 +13,5 @@ public class TransferSemanticKeyDTO {
 	private Long orgId;
 	private String iuv;
 	private String iur;
-	private int transferIndex;
+	private Integer transferIndex;
 }
