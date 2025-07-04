@@ -14,11 +14,11 @@ import java.util.Optional;
 @Lazy
 @Service
 @Slf4j
-public class AssessmentServiceImpl implements AssessmentService {
+public class AssessmentsServiceImpl implements AssessmentsService {
     private final AssessmentClient assessmentClient;
     private final AuthnService authnService;
 
-    public AssessmentServiceImpl(AssessmentClient assessmentClient, AuthnService authnService) {
+    public AssessmentsServiceImpl(AssessmentClient assessmentClient, AuthnService authnService) {
         this.assessmentClient = assessmentClient;
         this.authnService = authnService;
     }

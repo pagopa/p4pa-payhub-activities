@@ -1,11 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.assessments;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.when;
-
-import it.gov.pagopa.payhub.activities.connector.classification.AssessmentService;
+import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,31 +10,36 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class AssessmentsCreationActivityImplTest {
 
 	@Mock
-	private AssessmentService assessmentServiceMock;
+	private AssessmentsService assessmentsServiceMock;
 
 	private AssessmentsCreationActivity activity;
 
 	@BeforeEach
 	void setUp() {
-		activity = new AssessmentsCreationActivityImpl(assessmentServiceMock);
+		activity = new AssessmentsCreationActivityImpl(assessmentsServiceMock);
 	}
 
 	@AfterEach
-	void verifyNoMoreInteractions(){Mockito.verifyNoMoreInteractions(assessmentServiceMock);}
+	void verifyNoMoreInteractions(){Mockito.verifyNoMoreInteractions(assessmentsServiceMock);}
 	@Test
 	void createAssessmentsSuccess() {
 		Long receiptId = 123L;
 		List<Assessments> assessmentsList = List.of(new Assessments());
 
-		when(assessmentServiceMock.createAssessments(receiptId)).thenReturn(assessmentsList);
+		when(assessmentsServiceMock.createAssessments(receiptId)).thenReturn(assessmentsList);
 
 		assertDoesNotThrow(() -> activity.createAssessments(receiptId));
 
-		Mockito.verify(assessmentServiceMock, Mockito.times(1)).createAssessments(receiptId);
+		Mockito.verify(assessmentsServiceMock, Mockito.times(1)).createAssessments(receiptId);
 	}
 
 	@Test
@@ -47,7 +48,7 @@ class AssessmentsCreationActivityImplTest {
 
 		assertDoesNotThrow(() -> activity.createAssessments(receiptId));
 
-		Mockito.verify(assessmentServiceMock, Mockito.times(1)).createAssessments(receiptId);
+		Mockito.verify(assessmentsServiceMock, Mockito.times(1)).createAssessments(receiptId);
 	}
 
 	@Test
@@ -55,10 +56,10 @@ class AssessmentsCreationActivityImplTest {
 		Long receiptId = 123L;
 		List<Assessments> emptyAssessmentsList = List.of();
 
-		when(assessmentServiceMock.createAssessments(receiptId)).thenReturn(emptyAssessmentsList);
+		when(assessmentsServiceMock.createAssessments(receiptId)).thenReturn(emptyAssessmentsList);
 
 		assertDoesNotThrow(() -> activity.createAssessments(receiptId));
 
-		Mockito.verify(assessmentServiceMock, Mockito.times(1)).createAssessments(receiptId);
+		Mockito.verify(assessmentsServiceMock, Mockito.times(1)).createAssessments(receiptId);
 	}
 }
