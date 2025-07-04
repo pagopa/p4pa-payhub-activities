@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.assessments;
 
 import com.opencsv.exceptions.CsvException;
-import it.gov.pagopa.payhub.activities.connector.classification.AssessmentService;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsDetailService;
+import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
@@ -32,15 +32,15 @@ import java.util.Optional;
 public class AssessmentsProcessingService extends
         IngestionFlowProcessingService<AssessmentsIngestionFlowFileDTO, AssessmentsIngestionFlowFileResult, AssessmentsErrorDTO> {
 
-    private final AssessmentService assessmentService;
+    private final AssessmentsService assessmentsService;
     private final AssessmentsDetailService assessmentsDetailService;
     private final AssessmentsDetailMapper assessmentsDetailMapper;
 
 
 
-    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentService assessmentService, AssessmentsDetailService assessmentsDetailService, OrganizationService organizationService1, AssessmentsDetailMapper assessmentsDetailMapper) {
+    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper) {
         super(errorArchiverService, organizationService);
-        this.assessmentService = assessmentService;
+        this.assessmentsService = assessmentsService;
         this.assessmentsDetailService = assessmentsDetailService;
         this.assessmentsDetailMapper = assessmentsDetailMapper;
     }
@@ -101,8 +101,8 @@ public class AssessmentsProcessingService extends
                 organization = organizationOptional.get();
 
 
-            Optional <Assessments> assessmentsOptional = assessmentService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(organization.getOrganizationId(),
-                    row.getDebtPositionTypeOrgCode(), row.getAssessmentCode());
+            Optional <Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(organization.getOrganizationId(),
+                    row.getDebtPositionTypeOrgCode(), ingestionFlowFile.getFileName());
 
             Assessments assessments = null;
             if (assessmentsOptional.isEmpty()) {
@@ -115,7 +115,7 @@ public class AssessmentsProcessingService extends
                         .flagManualGeneration(true)
                         .build();
 
-                assessments = assessmentService.createAssessment(assessmentsRequestBody);
+                assessments = assessmentsService.createAssessment(assessmentsRequestBody);
             }else
                 assessments = assessmentsOptional.get();
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * This interface provides methods for creating assessments in the system.
  */
-public interface AssessmentService {
+public interface AssessmentsService {
     /**
      * Creates assessments for the specified receipt ID.
      *

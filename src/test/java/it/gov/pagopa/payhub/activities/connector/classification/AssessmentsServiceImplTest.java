@@ -1,11 +1,5 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.AssessmentClient;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
@@ -27,19 +21,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AssessmentServiceImplTest {
+class AssessmentsServiceImplTest {
 
   @Mock
   private AssessmentClient assessmentClientMock;
   @Mock
   private AuthnService authnServiceMock;
 
-  private AssessmentService assessmentService;
+  private AssessmentsService assessmentsService;
 
 
   @BeforeEach
   void setUp() {
-    assessmentService = new AssessmentServiceImpl(assessmentClientMock, authnServiceMock);
+    assessmentsService = new AssessmentsServiceImpl(assessmentClientMock, authnServiceMock);
   }
 
   @AfterEach
@@ -59,7 +53,7 @@ class AssessmentServiceImplTest {
     Mockito.when(authnServiceMock.getAccessToken())
         .thenReturn(accessToken);
 
-    List<Assessments> result = assessmentService.createAssessments(receiptId);
+    List<Assessments> result = assessmentsService.createAssessments(receiptId);
 
     assertEquals(expectedResponse, result);
     verify(assessmentClientMock, times(1)).createAssessments(receiptId, accessToken);
@@ -74,7 +68,7 @@ class AssessmentServiceImplTest {
     Mockito.when(authnServiceMock.getAccessToken())
         .thenReturn(accessToken);
 
-    List<Assessments> result = assessmentService.createAssessments(receiptId);
+    List<Assessments> result = assessmentsService.createAssessments(receiptId);
 
     assertTrue(result.isEmpty());
     verify(assessmentClientMock, times(1)).createAssessments(receiptId, accessToken);
@@ -90,7 +84,7 @@ class AssessmentServiceImplTest {
     Mockito.when(authnServiceMock.getAccessToken())
         .thenReturn(accessToken);
 
-    List<Assessments> result = assessmentService.createAssessments(receiptId);
+    List<Assessments> result = assessmentsService.createAssessments(receiptId);
 
     assertEquals(expectedResponse, result);
     verify(assessmentClientMock, times(1)).createAssessments(receiptId, accessToken);
@@ -106,7 +100,7 @@ class AssessmentServiceImplTest {
     Mockito.when(authnServiceMock.getAccessToken())
             .thenReturn(accessToken);
 
-    Assessments result = assessmentService.createAssessment(assessmentsRequestBody);
+    Assessments result = assessmentsService.createAssessment(assessmentsRequestBody);
 
     assertEquals(expectedResponse, result);
     verify(assessmentClientMock, times(1)).createAssessment(assessmentsRequestBody, accessToken);
@@ -128,7 +122,7 @@ class AssessmentServiceImplTest {
             .thenReturn(assessment);
 
     // Act
-    Optional<Assessments> result = assessmentService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
+    Optional<Assessments> result = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
             1L,
             "debtPositionTypeOrgCode",
             "assessmentName"
@@ -143,7 +137,6 @@ class AssessmentServiceImplTest {
   @Test
   void testSearchAssessmentByBusinessKey_NotFound() {
     // Arrange
-    Assessments assessment = new Assessments();
     String accessToken = "accessToken";
 
 
@@ -156,7 +149,7 @@ class AssessmentServiceImplTest {
             .thenReturn(null);
 
     // Act
-    Optional<Assessments> result = assessmentService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
+    Optional<Assessments> result = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
             1L,
             "debtPositionTypeOrgCode",
             "assessmentName"
