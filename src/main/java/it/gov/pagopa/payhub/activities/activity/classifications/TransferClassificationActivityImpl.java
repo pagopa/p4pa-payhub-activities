@@ -92,7 +92,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			String.join(", ", classifications.stream().map(String::valueOf).toList()));
 
 		// Store results
-		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, installmentDTO, paymentsReporting, treasuryIUF, classifications);
+		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, installmentDTO, paymentsReporting, treasuryIUF, paymentNotificationDTO, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
 	}
 

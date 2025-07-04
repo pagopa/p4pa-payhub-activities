@@ -50,25 +50,18 @@ class TransferClassificationActivityImplTest {
 
 	@Mock
 	private ClassificationService classificationServiceMock;
-
 	@Mock
 	private TransferService transferServiceMock;
-
 	@Mock
 	private PaymentsReportingService paymentsReportingServiceMock;
-
 	@Mock
 	private TreasuryService treasuryServiceMock;
-
 	@Mock
 	private TransferClassificationService transferClassificationServiceMock;
-
 	@Mock
 	private TransferClassificationStoreService transferClassificationStoreServiceMock;
-
 	@Mock
 	private PaymentNotificationService paymentNotificationServiceMock;
-
 	@Mock
 	private InstallmentService installmentServiceMock;
 
@@ -97,7 +90,14 @@ class TransferClassificationActivityImplTest {
 	@AfterEach
 	void verifyNoMoreInteractions(){
 		Mockito.verifyNoMoreInteractions(
-				classificationServiceMock, transferServiceMock, paymentsReportingServiceMock, treasuryServiceMock, transferClassificationServiceMock, transferClassificationStoreServiceMock);
+				classificationServiceMock,
+				transferServiceMock,
+				paymentsReportingServiceMock,
+				transferClassificationServiceMock,
+				transferClassificationStoreServiceMock,
+				treasuryServiceMock,
+				installmentServiceMock,
+				paymentNotificationServiceMock);
 	}
 
 	@Test
@@ -110,7 +110,7 @@ class TransferClassificationActivityImplTest {
 		when(treasuryServiceMock.getByOrganizationIdAndIuf(ORGANIZATION, IUF)).thenReturn(treasuryIuf);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, installmentDTO, paymentNotificationDTO, paymentsReportingDTO, treasuryIuf)).thenReturn(List.of(ClassificationsEnum.RT_IUF_TES));
 		doReturn(1).when(transferClassificationStoreServiceMock)
-			.saveClassifications(transferSemanticKeyDTO, transferDTO, installmentDTO, paymentsReportingDTO, treasuryIuf, List.of(ClassificationsEnum.RT_IUF_TES));
+			.saveClassifications(transferSemanticKeyDTO, transferDTO, installmentDTO, paymentsReportingDTO, treasuryIuf, paymentNotificationDTO, List.of(ClassificationsEnum.RT_IUF_TES));
 		when(transferServiceMock.notifyReportedTransferId(transferDTO.getTransferId(), new TransferReportedRequest(paymentsReportingDTO.getIuf()))).thenReturn(new DebtPositionDTO());
 
 		assertDoesNotThrow(() -> activity.classifyTransfer(transferSemanticKeyDTO));
@@ -130,7 +130,7 @@ class TransferClassificationActivityImplTest {
 		when(paymentsReportingServiceMock.getByTransferSemanticKey(transferSemanticKeyDTO)).thenReturn(null);
 		when(transferClassificationServiceMock.defineLabels(transferDTO, installmentDTO, paymentNotificationDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
 		doReturn(1).when(transferClassificationStoreServiceMock)
-			.saveClassifications(transferSemanticKeyDTO, transferDTO, installmentDTO, null, null, List.of(ClassificationsEnum.RT_NO_IUF));
+			.saveClassifications(transferSemanticKeyDTO, transferDTO, installmentDTO, null, null, paymentNotificationDTO, List.of(ClassificationsEnum.RT_NO_IUF));
 
 		assertDoesNotThrow(() -> activity.classifyTransfer(transferSemanticKeyDTO));
 
@@ -148,7 +148,7 @@ class TransferClassificationActivityImplTest {
 		when(treasuryServiceMock.getByOrganizationIdAndIuf(ORGANIZATION, IUF)).thenReturn(treasuryIuf);
 		when(transferClassificationServiceMock.defineLabels(null, null, null, paymentsReportingDTO, treasuryIuf)).thenReturn(List.of(ClassificationsEnum.IUV_NO_RT));
 		doReturn(1).when(transferClassificationStoreServiceMock)
-			.saveClassifications(transferSemanticKeyDTO, null, null, paymentsReportingDTO, treasuryIuf, List.of(ClassificationsEnum.IUV_NO_RT));
+			.saveClassifications(transferSemanticKeyDTO, null, null, paymentsReportingDTO, treasuryIuf, null, List.of(ClassificationsEnum.IUV_NO_RT));
 
 		assertDoesNotThrow(() -> activity.classifyTransfer(transferSemanticKeyDTO));
 	}

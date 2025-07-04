@@ -1,11 +1,10 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
+import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.dto.generated.*;
@@ -17,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +24,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class IufClassificationActivityTest {
+
     @Mock
     private PaymentsReportingService paymentsReportingServiceMock;
-
     @Mock
-    private ClassificationService classificationServiceMock;
-
+    private TransferClassificationStoreService transferClassificationStoreService;
     @Mock
     private TreasuryService treasuryServiceMock;
 
@@ -43,18 +40,22 @@ class IufClassificationActivityTest {
 
     @BeforeEach
     void init() {
-        iufClassificationActivity = new IufClassificationActivityImpl(paymentsReportingServiceMock, classificationServiceMock, treasuryServiceMock);
+        iufClassificationActivity = new IufClassificationActivityImpl(
+                paymentsReportingServiceMock,
+                transferClassificationStoreService,
+                treasuryServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(paymentsReportingServiceMock, classificationServiceMock, treasuryServiceMock);
+        Mockito.verifyNoMoreInteractions(
+                paymentsReportingServiceMock,
+                transferClassificationStoreService,
+                treasuryServiceMock);
     }
 
     @Test
     void givenReportedTransferWhenClassifyIufThenOk() {
-        Classification classificationDTO = ClassificationFaker.buildClassificationDTO();
-
         CollectionModelPaymentsReporting expectedCollectionModelPaymentsReporting = PaymentsReportingFaker.buildCollectionModelPaymentsReporting();
 
         List<PaymentsReporting> expectedPaymentsReportingS =expectedCollectionModelPaymentsReporting.getEmbedded().getPaymentsReportings();
@@ -84,27 +85,11 @@ class IufClassificationActivityTest {
                 iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, IUF);
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
-
-        Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
-        Mockito.verify(classificationServiceMock, Mockito.times(0)).save(classificationDTO);
     }
 
     @Test
     void givenNoReportedTransferWhenClassifyIufThenAnomalyClassificationSave() {
         Treasury treasury = TreasuryFaker.buildTreasuryDTO();
-
-        Classification expectedClassification = Classification.builder()
-            .organizationId(ORGANIZATIONID)
-            .treasuryId(TREASURYID)
-            .iuf(IUF)
-            .label(ClassificationsEnum.TES_NO_MATCH)
-            .lastClassificationDate(LocalDate.now())
-            .billDate(treasury.getBillDate())
-            .regionValueDate(treasury.getRegionValueDate())
-            .pspLastName(treasury.getPspLastName())
-            .accountRegistryCode(treasury.getAccountRegistryCode())
-            .billAmountCents(treasury.getBillAmountCents())
-            .build();
 
         IufClassificationActivityResult expectedIufClassificationActivityResult =
                 IufClassificationActivityResult
@@ -128,9 +113,7 @@ class IufClassificationActivityTest {
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
-        Mockito.verify(paymentsReportingServiceMock, Mockito.times(1)).getByOrganizationIdAndIuf(ORGANIZATIONID, IUF);
-        Mockito.verify(treasuryServiceMock, Mockito.times(1)).getById(TREASURYID);
-        Mockito.verify(classificationServiceMock, Mockito.times(1)).save(expectedClassification);
+        Mockito.verify(transferClassificationStoreService).saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_MATCH));
     }
 }
 
