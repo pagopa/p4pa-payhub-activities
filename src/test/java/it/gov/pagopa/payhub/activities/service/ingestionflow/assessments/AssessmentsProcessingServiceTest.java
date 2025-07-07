@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessments;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsDetailService;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
@@ -11,6 +12,9 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.As
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPIIEmbedded;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
@@ -51,6 +55,9 @@ class AssessmentsProcessingServiceTest {
     private AssessmentsDetailService assessmentsDetailServiceMock;
 
     @Mock
+    private InstallmentService installmentServiceMock;
+
+    @Mock
     private AssessmentsProcessingService service;
 
     @Mock
@@ -63,7 +70,8 @@ class AssessmentsProcessingServiceTest {
                 organizationServiceMock,
                 assessmentsServiceMock,
                 assessmentsDetailServiceMock,
-                mapperMock
+                mapperMock,
+                installmentServiceMock
                 );
     }
 
@@ -105,26 +113,30 @@ class AssessmentsProcessingServiceTest {
         ingestionFlowFileResult.setIpaCode("IPA123");
 
         IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
-        Mockito.when(ingestionFlowFile.getFileName()).thenReturn("fileName.csv");
 
         Organization organization = new Organization();
         organization.setIpaCode("IPA123");
         organization.setOrganizationId(123L);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(any())).thenReturn(Optional.of(organization));
 
-        Optional <Assessments> assessmentsOptional = Optional.empty();
+        var collectionInstallment = mock(CollectionModelInstallmentNoPII.class);
+        var embedded = mock(CollectionModelInstallmentNoPIIEmbedded.class);
+        Mockito.when(collectionInstallment.getEmbedded()).thenReturn(embedded);
+        Mockito.when(embedded.getInstallmentNoPIIs()).thenReturn(List.of(mock(InstallmentNoPII.class)));
+        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(Mockito.eq(123L), any(), any())).thenReturn(collectionInstallment);
+
         AssessmentsDetailRequestBody assessmentsDetailRequestBody = mock(AssessmentsDetailRequestBody.class);
         Assessments assessments = mock(Assessments.class);
         Mockito.when(assessments.getAssessmentId()).thenReturn(456L);
         Mockito.when(assessmentsServiceMock.createAssessment(any())).thenReturn(assessments);
         Mockito.when(mapperMock.map2AssessmentsDetailRequestBody(row, 123L,456L)).thenReturn(assessmentsDetailRequestBody);
-        Mockito.when(assessmentsServiceMock.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
-                organization.getOrganizationId(), "DPT001", "fileName.csv")).thenReturn(assessmentsOptional);
-
         List<AssessmentsErrorDTO> errorList = new ArrayList<>();
 
         Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
         Mockito.when(row.getDebtPositionTypeOrgCode()).thenReturn("DPT001");
+        Mockito.when(row.getAssessmentName()).thenReturn("ASSESSMENT1");
+        Mockito.when(row.getIud()).thenReturn("IUD1");
+
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
 
         // When
         boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
