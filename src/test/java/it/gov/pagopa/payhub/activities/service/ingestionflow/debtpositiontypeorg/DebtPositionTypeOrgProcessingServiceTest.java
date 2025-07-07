@@ -101,6 +101,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 .flagNotifyIo(true)
                 .flagPaymentNotification(true)
                 .flagNotifyOutcomePush(true)
+                .pdndEnabled(false)
                 .build();
         DebtPositionTypeOrgRequestBody mappedDebtPosType = DebtPositionTypeOrgRequestBody.builder()
                 .code("CODE")
@@ -172,6 +173,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 .flagNotifyIo(true)
                 .flagPaymentNotification(true)
                 .flagNotifyOutcomePush(true)
+                .pdndEnabled(false)
                 .build();
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(organization));
@@ -253,6 +255,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 .flagNotifyIo(true)
                 .flagPaymentNotification(true)
                 .flagNotifyOutcomePush(true)
+                .pdndEnabled(false)
                 .build();
 
         DebtPositionTypeOrg existingDebtPosType = DebtPositionTypeOrg.builder()
