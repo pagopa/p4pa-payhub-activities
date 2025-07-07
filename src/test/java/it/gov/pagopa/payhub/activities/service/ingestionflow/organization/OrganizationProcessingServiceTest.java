@@ -101,6 +101,7 @@ class OrganizationProcessingServiceTest {
         .flagNotifyIo(false)
         .flagNotifyOutcomePush(false)
         .flagPaymentNotification(false)
+        .pdndEnabled(false)
         .build();
 
     Organization createdOrg = Organization.builder()
@@ -112,6 +113,7 @@ class OrganizationProcessingServiceTest {
         .flagNotifyIo(false)
         .flagNotifyOutcomePush(false)
         .flagPaymentNotification(false)
+        .pdndEnabled(false)
         .build();
 
     Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
@@ -344,6 +346,7 @@ class OrganizationProcessingServiceTest {
         .flagNotifyIo(true)
         .flagPaymentNotification(true)
         .flagNotifyOutcomePush(true)
+        .pdndEnabled(false)
         .build();
 
     Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
