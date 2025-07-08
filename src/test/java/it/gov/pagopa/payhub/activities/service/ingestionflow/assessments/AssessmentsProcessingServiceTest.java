@@ -182,4 +182,38 @@ class AssessmentsProcessingServiceTest {
         Mockito.verifyNoInteractions(assessmentsDetailServiceMock);
         Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
     }
+
+    @Test
+    void consumeRowWithNoInstallmentsShouldReturnFalseAndAddError() {
+        // Given
+        long lineNumber = 2L;
+        AssessmentsIngestionFlowFileDTO row = mock(AssessmentsIngestionFlowFileDTO.class);
+        AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
+        ingestionFlowFileResult.setIpaCode("IPA123");
+        IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+
+        Organization organization = new Organization();
+        organization.setIpaCode("IPA123");
+        organization.setOrganizationId(123L);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
+
+        var collectionInstallment = mock(CollectionModelInstallmentNoPII.class);
+        var embedded = mock(CollectionModelInstallmentNoPIIEmbedded.class);
+        Mockito.when(collectionInstallment.getEmbedded()).thenReturn(embedded);
+        Mockito.when(embedded.getInstallmentNoPIIs()).thenReturn(new ArrayList<>());
+        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(Mockito.eq(123L), any(), any())).thenReturn(collectionInstallment);
+
+        List<AssessmentsErrorDTO> errorList = new ArrayList<>();
+        Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
+        Mockito.when(row.getIud()).thenReturn("IUD1");
+
+        // When
+        boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
+
+        // Then
+        Assertions.assertFalse(result);
+        Assertions.assertEquals(1, errorList.size());
+        Assertions.assertEquals("DEBT_POSITION_NOT_FOUND", errorList.get(0).getErrorCode());
+        Assertions.assertTrue(errorList.get(0).getErrorMessage().contains("Debt position with IUD IUD1 not found"));
+    }
 }
