@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AssessmentsIngestionFlowFileDTO {
 
-    @CsvBindByName(column = "codiceAccertamento", required = true)
-    private String assessmentCode;
+    @CsvBindByName(column = "nomeAccertamento", required = true)
+    private String assessmentName;
 
     @CsvBindByName(column = "enteIpaCode")
     private String organizationIpaCode;
@@ -35,6 +35,9 @@ public class AssessmentsIngestionFlowFileDTO {
 
     @CsvBindByName(column = "codCapitolo", required = true)
     private String sectionCode;
+
+    @CsvBindByName(column = "codiceAccertamento")
+    private String assessmentCode;
 
     @CsvBindByName(column = "codiceFiscaleDebitore", required = true)
     private String debtorFiscalCode;

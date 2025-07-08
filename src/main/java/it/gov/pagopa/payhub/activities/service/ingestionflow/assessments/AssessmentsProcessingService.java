@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessments;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsDetailService;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
@@ -10,10 +11,9 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsInge
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
-import it.gov.pagopa.pu.classification.dto.generated.AssessmentStatus;
-import it.gov.pagopa.pu.classification.dto.generated.Assessments;
-import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
-import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
+import it.gov.pagopa.pu.classification.dto.generated.*;
+import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +35,16 @@ public class AssessmentsProcessingService extends
     private final AssessmentsService assessmentsService;
     private final AssessmentsDetailService assessmentsDetailService;
     private final AssessmentsDetailMapper assessmentsDetailMapper;
+    private final InstallmentService installmentService;
 
 
 
-    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper) {
+    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper, InstallmentService installmentService) {
         super(errorArchiverService, organizationService);
         this.assessmentsService = assessmentsService;
         this.assessmentsDetailService = assessmentsDetailService;
         this.assessmentsDetailMapper = assessmentsDetailMapper;
+        this.installmentService = installmentService;
     }
 
     public AssessmentsIngestionFlowFileResult processAssessments(
@@ -100,16 +102,30 @@ public class AssessmentsProcessingService extends
             else
                 organization = organizationOptional.get();
 
+            CollectionModelInstallmentNoPII collectionInstallment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organization.getOrganizationId(),
+            row.getIud(),List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED));
+            if(collectionInstallment.getEmbedded().getInstallmentNoPIIs().isEmpty()) {
+                log.error("Debt position with IUD {} not found for organization {}", row.getIud(), organization.getOrganizationId());
+                String errorMessage = String.format(
+                        "Debt position with IUD %s not found for organization %s", row.getIud(), organization.getOrganizationId());
+                AssessmentsErrorDTO error = new AssessmentsErrorDTO(
+                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
+                        row.getOrganizationIpaCode(), "DEBT_POSITION_NOT_FOUND", errorMessage);
+                errorList.add(error);
+                return false;
+            }
+
+
 
             Optional <Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(organization.getOrganizationId(),
-                    row.getDebtPositionTypeOrgCode(), ingestionFlowFile.getFileName());
+                    row.getDebtPositionTypeOrgCode(), row.getAssessmentName());
 
             Assessments assessments = null;
             if (assessmentsOptional.isEmpty()) {
                 AssessmentsRequestBody assessmentsRequestBody = AssessmentsRequestBody.builder()
                         .organizationId(organization.getOrganizationId())
                         .debtPositionTypeOrgCode(row.getDebtPositionTypeOrgCode())
-                        .assessmentName(ingestionFlowFile.getFileName())
+                        .assessmentName(row.getAssessmentName())
                         .status(AssessmentStatus.NEW)
                         .printed(false)
                         .flagManualGeneration(true)
