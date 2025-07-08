@@ -213,7 +213,7 @@ class AssessmentsProcessingServiceTest {
         // Then
         Assertions.assertFalse(result);
         Assertions.assertEquals(1, errorList.size());
-        Assertions.assertEquals("DEBT_POSITION_NOT_FOUND", errorList.get(0).getErrorCode());
-        Assertions.assertTrue(errorList.get(0).getErrorMessage().contains("Debt position with IUD IUD1 not found"));
+        Assertions.assertEquals("DEBT_POSITION_NOT_FOUND", errorList.getFirst().getErrorCode());
+        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("Debt position with IUD IUD1 not found"));
     }
 }
