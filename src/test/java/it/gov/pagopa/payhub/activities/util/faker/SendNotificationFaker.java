@@ -13,11 +13,11 @@ public class SendNotificationFaker {
     public static SendNotificationDTO buildSendNotificationDTO(){
         return SendNotificationDTO.builder()
                 .sendNotificationId("sendNotificationId")
-                .notificationDate(OFFSETDATETIME)
                 .iun("iun")
                 .organizationId(1L)
                 .payments(Collections.singletonList(SendNotificationPaymentsDTO.builder()
                         .debtPositionId(123L)
+                        .notificationDate(OFFSETDATETIME)
                         .navList(Collections.singletonList("nav"))
                         .build()))
                 .status(NotificationStatus.ACCEPTED)

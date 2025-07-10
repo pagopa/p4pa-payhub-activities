@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificationService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.pu.debtposition.dto.generated.UpdateInstallmentNotificationDateRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
@@ -17,26 +16,15 @@ import java.util.List;
 @Lazy
 public class SendNotificationDateRetrieveActivityImpl implements SendNotificationDateRetrieveActivity {
     private final SendService sendService;
-    private final SendNotificationService sendNotificationService;
     private final DebtPositionService debtPositionService;
 
-    public SendNotificationDateRetrieveActivityImpl(SendService sendService, SendNotificationService sendNotificationService, DebtPositionService debtPositionService) {
+    public SendNotificationDateRetrieveActivityImpl(SendService sendService, DebtPositionService debtPositionService) {
         this.sendService = sendService;
-        this.sendNotificationService = sendNotificationService;
         this.debtPositionService = debtPositionService;
     }
 
     @Override
     public SendNotificationDTO sendNotificationDateRetrieve(String sendNotificationId) {
-        SendNotificationDTO foundSendNotification = sendNotificationService.getSendNotification(sendNotificationId);
-        List<SendNotificationPaymentsDTO> paymentsWithDate = foundSendNotification.getPayments().stream()
-                .filter(payment -> payment.getNotificationDate() == null)
-                .toList();
-
-        if (paymentsWithDate.isEmpty()) {
-            return foundSendNotification;
-        }
-
         SendNotificationDTO sendNotificationDTO = sendService.retrieveNotificationDate(sendNotificationId);
         sendNotificationDTO.getPayments().stream()
                 .filter(payment -> payment.getNotificationDate() != null)
@@ -49,6 +37,14 @@ public class SendNotificationDateRetrieveActivityImpl implements SendNotificatio
 
                     debtPositionService.updateInstallmentNotificationDate(request);
                 });
+
+        List<SendNotificationPaymentsDTO> paymentsWithoutDate = sendNotificationDTO.getPayments().stream()
+                .filter(payment -> payment.getNotificationDate() == null)
+                .toList();
+
+        if (paymentsWithoutDate.isEmpty()) {
+            return sendNotificationDTO;
+        }
 
         return null;
     }
