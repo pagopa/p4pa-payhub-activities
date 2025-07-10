@@ -303,22 +303,22 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
 		"ScheduleEnum" to "String",
 		"WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
 	))
-	configOptions.set(
-		mapOf(
-			"swaggerAnnotations" to "false",
-			"openApiNullable" to "false",
-			"dateLibrary" to "java8",
-			"serializableModel" to "true",
-			"useSpringBoot3" to "true",
-			"useJakartaEe" to "true",
-			"serializationLibrary" to "jackson",
-			"generateSupportingFiles" to "true",
-			"generateConstructorWithAllArgs" to "true",
-			"generatedConstructorWithRequiredArgs" to "true",
-			"enumPropertyNaming" to "original",
-			"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
-		)
-	)
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"serializableModel" to "true",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "true",
+		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
+	))
 	library.set("resttemplate")
 }
 
@@ -339,14 +339,15 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
 		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
 		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
-	)
-	)
+	))
 	library.set("resttemplate")
 }
 
@@ -367,6 +368,8 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
 		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
@@ -394,6 +397,8 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
 		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
@@ -425,6 +430,8 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
 		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
@@ -455,6 +462,8 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
 		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
@@ -486,6 +495,8 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
@@ -519,6 +530,8 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
 		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
@@ -542,8 +555,11 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
 		"swaggerAnnotations" to "false",
 		"openApiNullable" to "false",
 		"dateLibrary" to "java8",
+		"serializableModel" to "true",
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
+		"useOneOfInterfaces" to "true",
+		"useBeanValidation" to "true",
 		"serializationLibrary" to "jackson",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
