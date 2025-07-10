@@ -126,7 +126,7 @@ public class AssessmentsProcessingService extends
                         .organizationId(organization.getOrganizationId())
                         .debtPositionTypeOrgCode(row.getDebtPositionTypeOrgCode())
                         .assessmentName(row.getAssessmentName())
-                        .status(AssessmentStatus.NEW)
+                        .status(AssessmentStatus.ACTIVE)
                         .printed(false)
                         .flagManualGeneration(true)
                         .build();
