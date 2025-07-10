@@ -20,7 +20,6 @@ public class OrganizationApisHolder {
     private final OrganizationApi organizationApi;
     private final TaxonomyApi taxonomyApi;
     private final OrganizationSilServiceApi orgSilServiceApi;
-    private final OrgSilServiceSearchControllerApi orgSilServiceSearchControllerApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -45,7 +44,6 @@ public class OrganizationApisHolder {
         this.taxonomyApi = new TaxonomyApi(apiClient);
         this.organizationApi = new OrganizationApi(apiClient);
         this.orgSilServiceApi = new OrganizationSilServiceApi(apiClient);
-        this.orgSilServiceSearchControllerApi = new OrgSilServiceSearchControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -84,12 +82,6 @@ public class OrganizationApisHolder {
      */
     public OrganizationSilServiceApi getOrganizationSilServiceApi(String accessToken){
         return getApi(accessToken, orgSilServiceApi);}
-
-    /**
-     * It will return a {@link OrgSilServiceSearchControllerApi} instrumented with the provided accessToken. Use null if auth is not required.
-     */
-    public OrgSilServiceSearchControllerApi getOrgSilServiceSearchControllerApi(String accessToken){
-        return getApi(accessToken, orgSilServiceSearchControllerApi);}
 
     /**
      * It will return a {@link OrganizationApi} instrumented with the provided accessToken. Use null if auth is not required.

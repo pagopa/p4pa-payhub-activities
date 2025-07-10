@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.connector.organization.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
-import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,15 +61,6 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> organizationApisHolder.getOrganizationSilServiceApi(accessToken)
                 .createOrUpdateOrgSilService(new OrgSilServiceDTO()),
-            new ParameterizedTypeReference<>() {},
-            organizationApisHolder::unload);
-	}
-
-	@Test
-	void whenGetOrgSilServiceSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
-        assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> organizationApisHolder.getOrgSilServiceSearchControllerApi(accessToken)
-                .crudOrgSilServicesFindAllByOrganizationIdAndServiceType(0L, OrgSilServiceType.ACTUALIZATION),
             new ParameterizedTypeReference<>() {},
             organizationApisHolder::unload);
 	}
