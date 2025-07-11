@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InstallmentSynchronizeMapperTest {
 
     private InstallmentSynchronizeMapper installmentSynchronizeMapper;
-    private final String FILENAME = "fileName.zip";
+    private static final String FILENAME = "fileName.zip";
 
     @BeforeEach
     void setUp(){

@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemanticKey;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
@@ -21,5 +22,5 @@ public interface AssessmentsRegistryService {
 
     void createAssessmentsRegistry(AssessmentsRegistry assessmentsRegistry);
 
-    Optional<AssessmentsRegistry> searchAssessmentsRegistryByBusinessKey(Long organizationId, String debtPositionTypeOrgCode, String sectionCode, String officeCode, String assessmentCode, String operatingYear);
+    Optional<AssessmentsRegistry> searchAssessmentsRegistryBySemanticKey(AssessmentsRegistrySemanticKey semanticKey);
 }
