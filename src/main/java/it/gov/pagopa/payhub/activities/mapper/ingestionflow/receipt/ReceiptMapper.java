@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
+import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
+
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMapEntry;
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMetadata;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
@@ -12,15 +14,22 @@ import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtReceiptV2;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtSubject;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtTransferPAReceiptV2;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptOriginType;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptTransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
 
 @Service
 @Lazy
@@ -122,7 +131,7 @@ public class ReceiptMapper {
                 .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
                 .fiscalCodePA(transfer.getFiscalCodePA())
                 .companyName(transfer.getCompanyName())
-                .mbdAttachment(transfer.getMBDAttachment())
+                .mbdAttachment(new String(Base64.decodeBase64(transfer.getMBDAttachment()), StandardCharsets.UTF_8))
                 .iban(transfer.getIBAN())
                 .remittanceInformation(transfer.getRemittanceInformation())
                 .transferCategory(transfer.getTransferCategory())
