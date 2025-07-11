@@ -229,7 +229,7 @@ public class ReceiptIngestionFlowFileDTO {
     private String receiptAttachmentTypeCode;
 
     @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest")
-    private byte[] mbdAttachment;
+    private String mbdAttachment;
 
     @CsvBindByName(column = "bilancio")
     private String balance;
