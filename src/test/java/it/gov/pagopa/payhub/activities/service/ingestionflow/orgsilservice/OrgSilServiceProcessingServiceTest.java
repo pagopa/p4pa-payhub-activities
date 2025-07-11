@@ -152,4 +152,35 @@ class OrgSilServiceProcessingServiceTest {
     Mockito.verify(orgSilServiceServiceMock).createOrUpdateOrgSilService(orgSilServiceDTO);
     Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
   }
+
+  @Test
+  void consumeRowWithMissingOrganizationAddsError() {
+    // Given
+    long lineNumber = 2L;
+    OrgSilServiceIngestionFlowFileDTO row = mock(OrgSilServiceIngestionFlowFileDTO.class);
+    Mockito.when(row.getIpaCode()).thenReturn("IPA_NOT_FOUND");
+    Mockito.when(row.getApplicationName()).thenReturn("TestApp");
+
+    OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult = new OrgSilServiceIngestionFlowFileResult();
+    ingestionFlowFileResult.setOrganizationId(456L);
+    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    ingestionFlowFile.setFileName("testfile.csv");
+
+    List<OrgSilServiceErrorDTO> errorList = new ArrayList<>();
+    Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA_NOT_FOUND")).thenReturn(Optional.empty());
+
+    // When
+    boolean result = service.consumeRow(lineNumber, row,ingestionFlowFileResult, errorList, ingestionFlowFile);
+
+    // Then
+    Assertions.assertFalse(result);
+    Assertions.assertEquals(1, errorList.size());
+    OrgSilServiceErrorDTO error = errorList.get(0);
+    Assertions.assertEquals("testfile.csv", error.getFileName());
+    Assertions.assertEquals("IPA_NOT_FOUND", error.getIpaCode());
+    Assertions.assertEquals("TestApp", error.getApplicationName());
+    Assertions.assertEquals(lineNumber, error.getRowNumber());
+    Assertions.assertEquals("ORGANIZATION_NOT_FOUND", error.getErrorCode());
+    Assertions.assertTrue(error.getErrorMessage().contains("Organization not found for IPA code: IPA_NOT_FOUND"));
+  }
 }
