@@ -131,11 +131,18 @@ public class ReceiptMapper {
                 .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
                 .fiscalCodePA(transfer.getFiscalCodePA())
                 .companyName(transfer.getCompanyName())
-                .mbdAttachment(new String(Base64.decodeBase64(transfer.getMBDAttachment()), StandardCharsets.UTF_8))
+                .mbdAttachment(decodeMdbAttachment(transfer))
                 .iban(transfer.getIBAN())
                 .remittanceInformation(transfer.getRemittanceInformation())
                 .transferCategory(transfer.getTransferCategory())
                 .metadata(map(transfer.getMetadata()));
+    }
+
+    private static String decodeMdbAttachment(CtTransferPAReceiptV2 transfer) {
+        if(transfer.getMBDAttachment()==null){
+            return null;
+        }
+        return new String(Base64.decodeBase64(transfer.getMBDAttachment()), StandardCharsets.UTF_8);
     }
 
     private Map<String, String> map(CtMetadata metadata) {

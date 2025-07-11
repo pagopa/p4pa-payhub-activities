@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
+
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptMapperTest {
@@ -57,8 +58,8 @@ class ReceiptMapperTest {
         request.getReceipt().setPSPCompanyName(podamFactory.manufacturePojo(String.class));
         request.getReceipt().getTransferList().getTransfers().forEach(t -> {
             t.setIBAN(podamFactory.manufacturePojo(String.class));
-            t.setMBDAttachment(podamFactory.manufacturePojo(byte[].class));
         });
+        request.getReceipt().getTransferList().getTransfers().getFirst().setMBDAttachment(podamFactory.manufacturePojo(byte[].class));
 
         Organization organization = new Organization();
         organization.setOrganizationId(organizationId);
@@ -84,7 +85,8 @@ class ReceiptMapperTest {
         Assertions.assertEquals(rtFilePath, result.getRtFilePath());
         Assertions.assertEquals(request.getReceipt().getTransferList().getTransfers().size(), result.getTransfers().size());
         Assertions.assertEquals(request.getReceipt().getMetadata().getMapEntries().size(), result.getMetadata().size());
-        result.getTransfers().forEach(TestUtils::checkNotNullFields);
+        result.getTransfers().forEach(o -> TestUtils.checkNotNullFields(o, "mbdAttachment"));
+        Assertions.assertNotNull(result.getTransfers().getFirst().getMbdAttachment());
     }
 
     @ParameterizedTest
