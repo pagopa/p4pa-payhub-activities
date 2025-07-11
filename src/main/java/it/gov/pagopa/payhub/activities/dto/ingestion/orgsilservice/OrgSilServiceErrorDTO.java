@@ -16,9 +16,10 @@ public class OrgSilServiceErrorDTO extends ErrorFileDTO {
     private String applicationName;
     private Long rowNumber;
 
-    public OrgSilServiceErrorDTO(String fileName, String ipaCode, Long rowNumber, String errorCode, String errorMessage) {
+    public OrgSilServiceErrorDTO(String fileName, String ipaCode, String applicationName, Long rowNumber, String errorCode, String errorMessage) {
         super(fileName, errorCode, errorMessage);
         this.ipaCode = ipaCode;
+        this.applicationName = applicationName;
         this.rowNumber = rowNumber;
     }
 
