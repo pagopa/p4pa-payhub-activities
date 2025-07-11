@@ -2,31 +2,34 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.AssessmentsRegistryClient;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemanticKey;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.classification.dto.generated.CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest;
-import it.gov.pagopa.pu.classification.dto.generated.PagedModelAssessmentsRegistry;
-import it.gov.pagopa.pu.classification.dto.generated.PagedModelAssessmentsRegistryEmbedded;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class AssessmentsRegistryServiceImplTest {
 
     @Mock
-    private AssessmentsRegistryClient assessmentsRegistryClient;
-
+    private AssessmentsRegistryClient assessmentsRegistryClientMock;
     @Mock
-    private AuthnService authnService;
+    private AuthnService authnServiceMock;
 
     @InjectMocks
     private AssessmentsRegistryServiceImpl service;
@@ -35,8 +38,14 @@ class AssessmentsRegistryServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        when(authnService.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(authnServiceMock.getAccessToken()).thenReturn(ACCESS_TOKEN);
+    }
+
+    @AfterEach
+    void verifyNoMoreInteractions(){
+        Mockito.verifyNoMoreInteractions(
+                assessmentsRegistryClientMock,
+                authnServiceMock);
     }
 
     @Test
@@ -51,7 +60,7 @@ class AssessmentsRegistryServiceImplTest {
         // Assert
         ArgumentCaptor<CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest> requestCaptor =
                 ArgumentCaptor.forClass(CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest.class);
-        verify(assessmentsRegistryClient).createAssessmentsRegistryByDebtPositionDTOAndIud(
+        verify(assessmentsRegistryClientMock).createAssessmentsRegistryByDebtPositionDTOAndIud(
                 requestCaptor.capture(), eq(ACCESS_TOKEN));
 
         CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest captured = requestCaptor.getValue();
@@ -68,115 +77,27 @@ class AssessmentsRegistryServiceImplTest {
         service.createAssessmentsRegistry(registry);
 
         // Assert
-        verify(assessmentsRegistryClient).createAssessmentsRegistry(eq(registry), eq(ACCESS_TOKEN));
+        verify(assessmentsRegistryClientMock).createAssessmentsRegistry(registry, ACCESS_TOKEN);
     }
 
     @Test
-    void testSearchAssessmentsRegistryByBusinessKey_found() {
+    void testSearchAssessmentsRegistryBySemanticKey_found() {
         // Arrange
-        AssessmentsRegistry mockRegistry = new AssessmentsRegistry(); // Usa costruttore adeguato
+        Optional<AssessmentsRegistry> expectedResult = Optional.empty();
+        AssessmentsRegistrySemanticKey registrySemanticKey = new AssessmentsRegistrySemanticKey();
         String token = "mockToken";
 
-        PagedModelAssessmentsRegistryEmbedded embedded = new PagedModelAssessmentsRegistryEmbedded();
-        embedded.setAssessmentsRegistries(List.of(mockRegistry));
-
-        PagedModelAssessmentsRegistry pagedModel = new PagedModelAssessmentsRegistry();
-        pagedModel.setEmbedded(embedded);
-
-        when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistry(
-                mockRegistry.getOrganizationId(),
-                mockRegistry.getDebtPositionTypeOrgCode(),
-                mockRegistry.getSectionCode(),
-                mockRegistry.getOfficeCode(),
-                mockRegistry.getAssessmentCode(),
-                mockRegistry.getOperatingYear(),
-                token, 0, 1, null))
-                .thenReturn(pagedModel);
+        when(authnServiceMock.getAccessToken()).thenReturn(token);
+        when(assessmentsRegistryClientMock.searchAssessmentsRegistryBySemanticKey(
+                registrySemanticKey,
+                token))
+                .thenReturn(expectedResult);
 
         // Act
-        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(
-                mockRegistry.getOrganizationId(),
-                mockRegistry.getDebtPositionTypeOrgCode(),
-                mockRegistry.getSectionCode(),
-                mockRegistry.getOfficeCode(),
-                mockRegistry.getAssessmentCode(),
-                mockRegistry.getOperatingYear()
-        );
+        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryBySemanticKey(registrySemanticKey);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(mockRegistry, result.get());
+        assertSame(expectedResult, result);
     }
 
-    @Test
-    void testSearchAssessmentsRegistryByBusinessKey_notFound_nullEmbedded() {
-        // Arrange
-        AssessmentsRegistry mockRegistry = new AssessmentsRegistry();
-        String token = "mockToken";
-
-        PagedModelAssessmentsRegistry pagedModel = new PagedModelAssessmentsRegistry();
-        pagedModel.setEmbedded(null);
-
-        when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistry(
-                mockRegistry.getOrganizationId(),
-                mockRegistry.getDebtPositionTypeOrgCode(),
-                mockRegistry.getSectionCode(),
-                mockRegistry.getOfficeCode(),
-                mockRegistry.getAssessmentCode(),
-                mockRegistry.getOperatingYear()
-                , token, 0, 1, null))
-                .thenReturn(pagedModel);
-
-        // service
-        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(
-                mockRegistry.getOrganizationId(),
-                mockRegistry.getDebtPositionTypeOrgCode(),
-                mockRegistry.getSectionCode(),
-                mockRegistry.getOfficeCode(),
-                mockRegistry.getAssessmentCode(),
-                mockRegistry.getOperatingYear()
-        );
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testSearchAssessmentsRegistryByBusinessKey_notFound_nullAssessments() {
-        // Arrange
-        AssessmentsRegistry mockRegistry = new AssessmentsRegistry();
-        String token = "mockToken";
-
-        PagedModelAssessmentsRegistryEmbedded embedded = new PagedModelAssessmentsRegistryEmbedded();
-        embedded.setAssessmentsRegistries(null);
-
-        PagedModelAssessmentsRegistry pagedModel = new PagedModelAssessmentsRegistry();
-        pagedModel.setEmbedded(embedded);
-
-        when(authnService.getAccessToken()).thenReturn(token);
-        when(assessmentsRegistryClient.getAssessmentsRegistry(
-                mockRegistry.getOrganizationId(),
-                mockRegistry.getDebtPositionTypeOrgCode(),
-                mockRegistry.getSectionCode(),
-                mockRegistry.getOfficeCode(),
-                mockRegistry.getAssessmentCode(),
-                mockRegistry.getOperatingYear(),
-                token, 0, 1, null))
-                .thenReturn(pagedModel);
-
-        // Act
-        Optional<AssessmentsRegistry> result = service.searchAssessmentsRegistryByBusinessKey(
-                mockRegistry.getOrganizationId(),
-                mockRegistry.getDebtPositionTypeOrgCode(),
-                mockRegistry.getSectionCode(),
-                mockRegistry.getOfficeCode(),
-                mockRegistry.getAssessmentCode(),
-                mockRegistry.getOperatingYear()
-        );
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
 }

@@ -39,7 +39,7 @@ class ApiRequestPerformanceLoggerTest {
     }
 
     @BeforeEach
-    public void setupMemoryAppender() {
+    void setupMemoryAppender() {
         this.memoryAppender = PerformanceLoggerTest.buildPerformanceLoggerMemoryAppender(APPENDER_NAME);
     }
 
