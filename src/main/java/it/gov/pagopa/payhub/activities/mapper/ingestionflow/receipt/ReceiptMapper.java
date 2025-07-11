@@ -21,6 +21,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptTransferDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -130,7 +131,7 @@ public class ReceiptMapper {
                 .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(transfer.getTransferAmount()))
                 .fiscalCodePA(transfer.getFiscalCodePA())
                 .companyName(transfer.getCompanyName())
-                .mbdAttachment(new String(Base64.decodeBase64(transfer.getMBDAttachment())))
+                .mbdAttachment(new String(Base64.decodeBase64(transfer.getMBDAttachment()), StandardCharsets.UTF_8))
                 .iban(transfer.getIBAN())
                 .remittanceInformation(transfer.getRemittanceInformation())
                 .transferCategory(transfer.getTransferCategory())
