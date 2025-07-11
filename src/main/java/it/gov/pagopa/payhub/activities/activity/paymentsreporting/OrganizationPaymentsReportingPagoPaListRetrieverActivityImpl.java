@@ -65,6 +65,7 @@ public class OrganizationPaymentsReportingPagoPaListRetrieverActivityImpl implem
 	 * @param paymentsReportingIds the list of payments reporting IDs
 	 * @return the oldest date found in the list, or null if the list is empty
 	 */
+	@SuppressWarnings("squid:S2637") // suppressing @NotNull parameters: the null is used to handle empty list
 	private OffsetDateTime findOldestDate(List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		return paymentsReportingIds.stream()
 			.map(PaymentsReportingIdDTO::getFlowDateTime)
