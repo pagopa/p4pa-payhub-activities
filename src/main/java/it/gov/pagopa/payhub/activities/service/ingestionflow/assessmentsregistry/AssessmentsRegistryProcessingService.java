@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessmentsregistr
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsRegistryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemanticKey;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
@@ -80,13 +81,15 @@ public class AssessmentsRegistryProcessingService extends
                     row, ingestionFlowFileResult.getOrganizationId());
 
             Optional<AssessmentsRegistry> assessmentsRegistryOptional =
-                    assessmentsRegistryService.searchAssessmentsRegistryByBusinessKey(
-                            assessmentsRegistry.getOrganizationId(),
-                            assessmentsRegistry.getDebtPositionTypeOrgCode(),
-                            assessmentsRegistry.getSectionCode(),
-                            assessmentsRegistry.getOfficeCode(),
-                            assessmentsRegistry.getAssessmentCode(),
-                            assessmentsRegistry.getOperatingYear()
+                    assessmentsRegistryService.searchAssessmentsRegistryBySemanticKey(
+                            AssessmentsRegistrySemanticKey.builder()
+                                    .organizationId(assessmentsRegistry.getOrganizationId())
+                                    .debtPositionTypeOrgCode(assessmentsRegistry.getDebtPositionTypeOrgCode())
+                                    .sectionCode(assessmentsRegistry.getSectionCode())
+                                    .officeCode(assessmentsRegistry.getOfficeCode())
+                                    .assessmentCode(assessmentsRegistry.getAssessmentCode())
+                                    .operatingYear(assessmentsRegistry.getOperatingYear())
+                                    .build()
                     );
             if (assessmentsRegistryOptional.isPresent()) {
                 AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(

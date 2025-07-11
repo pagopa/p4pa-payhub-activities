@@ -122,9 +122,10 @@ class IUVArchivingExportFileServiceTest {
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.empty());
 
+        List<DebtPositionDTO> dpList = List.of(debtPositionDTO);
         // When & Then
         IngestionFlowFileNotFoundException ex = assertThrows(IngestionFlowFileNotFoundException.class, () ->
-            service.executeExport(List.of(debtPositionDTO), ingestionFlowFileId));
+            service.executeExport(dpList, ingestionFlowFileId));
 
         assertEquals("IngestionFlowFile with id 1 was not found", ex.getMessage());
     }
@@ -148,9 +149,11 @@ class IUVArchivingExportFileServiceTest {
         doThrow(new IOException("Error"))
                 .when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
 
+        List<DebtPositionDTO> dpList = List.of(debtPositionDTO);
+
         // When & Then
         IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                service.executeExport(List.of(debtPositionDTO), ingestionFlowFileId));
+                service.executeExport(dpList, ingestionFlowFileId));
 
         assertEquals("Error writing to CSV file: Error", ex.getMessage());
     }
@@ -188,9 +191,10 @@ class IUVArchivingExportFileServiceTest {
         doThrow(new IOException("Error"))
                 .when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
 
+        List<DebtPositionDTO> dpList = List.of(debtPositionDTO);
         // When & Then
         IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                service.executeExport(List.of(debtPositionDTO), ingestionFlowFileId));
+                service.executeExport(dpList, ingestionFlowFileId));
 
         assertEquals("Error during compression and archiving: Error", ex.getMessage());
     }

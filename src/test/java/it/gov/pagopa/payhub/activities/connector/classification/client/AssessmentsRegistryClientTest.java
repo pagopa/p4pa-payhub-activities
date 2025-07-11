@@ -1,10 +1,14 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemanticKey;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.client.generated.AssessmentsRegistryApi;
 import it.gov.pagopa.pu.classification.client.generated.AssessmentsRegistrySearchControllerApi;
+import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.classification.dto.generated.CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest;
 import it.gov.pagopa.pu.classification.dto.generated.PagedModelAssessmentsRegistry;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelAssessmentsRegistryEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,11 +16,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.co.jemos.podam.api.PodamFactory;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,8 +31,14 @@ class AssessmentsRegistryClientTest {
 
     @Mock
     private ClassificationApisHolder classificationApisHolderMock;
+    @Mock
+    private AssessmentsRegistryApi assessmentsRegistryApiMock;
+    @Mock
+    private AssessmentsRegistrySearchControllerApi assessmentsRegistrySearchControllerApiMock;
 
     private AssessmentsRegistryClient assessmentsRegistryClient;
+
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
     @BeforeEach
     void setUp() {
@@ -34,7 +47,10 @@ class AssessmentsRegistryClientTest {
 
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(classificationApisHolderMock);
+        Mockito.verifyNoMoreInteractions(
+                classificationApisHolderMock,
+                assessmentsRegistryApiMock,
+                assessmentsRegistrySearchControllerApiMock);
     }
 
     @Test
@@ -43,9 +59,8 @@ class AssessmentsRegistryClientTest {
         CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest request = new CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest();
         String accessToken = "accessToken";
 
-        AssessmentsRegistryApi mockApi = mock(AssessmentsRegistryApi.class);
-        when(classificationApisHolderMock.getAssessmentsRegistryApi(accessToken)).thenReturn(mockApi);
-        doNothing().when(mockApi).createAssessmentsRegistryByDebtPositionDTOAndIud(request);
+        when(classificationApisHolderMock.getAssessmentsRegistryApi(accessToken)).thenReturn(assessmentsRegistryApiMock);
+        doNothing().when(assessmentsRegistryApiMock).createAssessmentsRegistryByDebtPositionDTOAndIud(request);
 
         // When
         assessmentsRegistryClient.createAssessmentsRegistryByDebtPositionDTOAndIud(request, accessToken);
@@ -56,104 +71,84 @@ class AssessmentsRegistryClientTest {
     }
 
     @Test
-    void testGetAssessmentsRegistry_withValidParams() {
+    void testSearchAssessmentsRegistry_BySemanticKey_withValidParams() {
         // Arrange
         String accessToken = "token123";
-        Long organizationId = 1L;
-        String debtPositionTypeOrgCode = "CODE123";
-        String sectionCode = "SEC1";
-        String officeCode = "OFF1";
-        String assessmentCode = "ASS1";
-        String operatingYear = "2024";
-        int page = 0;
-        int size = 10;
-        List<String> sort = Collections.singletonList("field,asc");
+        AssessmentsRegistrySemanticKey registrySemanticKey = podamFactory.manufacturePojo(AssessmentsRegistrySemanticKey.class);
+        registrySemanticKey.setDebtPositionTypeOrgCode(null);
 
-        PagedModelAssessmentsRegistry expectedResponse = new PagedModelAssessmentsRegistry();
-
-        AssessmentsRegistrySearchControllerApi searchControllerApi = mock(AssessmentsRegistrySearchControllerApi.class);
+        AssessmentsRegistry expectedResult = new AssessmentsRegistry();
+        PagedModelAssessmentsRegistry pagedResult = new PagedModelAssessmentsRegistry();
+        pagedResult.setEmbedded(new PagedModelAssessmentsRegistryEmbedded(List.of(expectedResult)));
 
         when(classificationApisHolderMock.getAssessmentsRegistrySearchControllerApi(accessToken))
-                .thenReturn(searchControllerApi);
+                .thenReturn(assessmentsRegistrySearchControllerApiMock);
 
-        when(searchControllerApi.crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(
-                eq(organizationId),
-                anySet(),
-                eq(sectionCode),
+        when(assessmentsRegistrySearchControllerApiMock.crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(
+                eq(registrySemanticKey.getOrganizationId()),
+                eq(Set.of()),
+                eq(registrySemanticKey.getSectionCode()),
                 isNull(), // macroArea
-                eq(officeCode),
+                eq(registrySemanticKey.getOfficeCode()),
                 isNull(), // subOffice
-                eq(assessmentCode),
+                eq(registrySemanticKey.getAssessmentCode()),
                 isNull(), // assessmentTypeCode
-                eq(operatingYear),
+                eq(registrySemanticKey.getOperatingYear()),
                 isNull(), // assessmentDate
-                eq(page),
-                eq(size),
-                eq(sort)
-        )).thenReturn(expectedResponse);
+                eq(0),
+                eq(1),
+                isNull()
+        )).thenReturn(pagedResult);
 
         // Act
-        PagedModelAssessmentsRegistry result = assessmentsRegistryClient.getAssessmentsRegistry(
-                organizationId,
-                debtPositionTypeOrgCode,
-                sectionCode,
-                officeCode,
-                assessmentCode,
-                operatingYear,
-                accessToken,
-                page,
-                size,
-                sort
+        Optional<AssessmentsRegistry> result = assessmentsRegistryClient.searchAssessmentsRegistryBySemanticKey(
+                registrySemanticKey,
+                accessToken
         );
 
         // Assert
-        assertEquals(expectedResponse, result);
-        verify(classificationApisHolderMock, times(1)).getAssessmentsRegistrySearchControllerApi(accessToken);
-        verify(searchControllerApi, times(1)).crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(
-                eq(organizationId),
-                eq(Collections.singleton(debtPositionTypeOrgCode)),
-                eq(sectionCode),
-                isNull(),
-                eq(officeCode),
-                isNull(),
-                eq(assessmentCode),
-                isNull(),
-                eq(operatingYear),
-                isNull(),
-                eq(page),
-                eq(size),
-                eq(sort)
-        );
+        assertTrue(result.isPresent());
+        assertSame(expectedResult, result.get());
     }
 
     @Test
-    void testGetAssessmentsRegistry_withNullDebtPositionTypeOrgCode() {
-        AssessmentsRegistrySearchControllerApi searchControllerApi = mock(AssessmentsRegistrySearchControllerApi.class);
-        when(classificationApisHolderMock.getAssessmentsRegistrySearchControllerApi(anyString()))
-                .thenReturn(searchControllerApi);
+    void testSearchAssessmentsRegistry_BySemanticKey_withNullDebtPositionTypeOrgCode() {
+        // Arrange
+        String accessToken = "token123";
+        AssessmentsRegistrySemanticKey registrySemanticKey = podamFactory.manufacturePojo(AssessmentsRegistrySemanticKey.class);
 
-        when(searchControllerApi.crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(
-                anyLong(),
-                eq(Collections.emptySet()),
-                anyString(),
-                any(),
-                anyString(),
-                any(),
-                anyString(),
-                any(),
-                anyString(),
-                any(),
-                anyInt(),
-                anyInt(),
-                anyList()
-        )).thenReturn(new PagedModelAssessmentsRegistry());
+        AssessmentsRegistry expectedResult = new AssessmentsRegistry();
+        PagedModelAssessmentsRegistry pagedResult = new PagedModelAssessmentsRegistry();
+        pagedResult.setEmbedded(new PagedModelAssessmentsRegistryEmbedded(List.of(expectedResult)));
+
+        when(classificationApisHolderMock.getAssessmentsRegistrySearchControllerApi(accessToken))
+                .thenReturn(assessmentsRegistrySearchControllerApiMock);
+
+        when(assessmentsRegistrySearchControllerApiMock.crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(
+                eq(registrySemanticKey.getOrganizationId()),
+                eq(Set.of(registrySemanticKey.getDebtPositionTypeOrgCode())),
+                eq(registrySemanticKey.getSectionCode()),
+                isNull(), // macroArea
+                eq(registrySemanticKey.getOfficeCode()),
+                isNull(), // subOffice
+                eq(registrySemanticKey.getAssessmentCode()),
+                isNull(), // assessmentTypeCode
+                eq(registrySemanticKey.getOperatingYear()),
+                isNull(), // assessmentDate
+                eq(0),
+                eq(1),
+                isNull()
+        )).thenReturn(pagedResult);
 
         // Act
-        PagedModelAssessmentsRegistry result = assessmentsRegistryClient.getAssessmentsRegistry(
-                1L, null, "SEC", "OFF", "ASS", "2024", "token", 0, 10, List.of("sort"));
+        Optional<AssessmentsRegistry> result = assessmentsRegistryClient.searchAssessmentsRegistryBySemanticKey(
+                registrySemanticKey,
+                accessToken
+        );
 
         // Assert
-        assertEquals(PagedModelAssessmentsRegistry.class, result.getClass());
+        assertTrue(result.isPresent());
+        assertSame(expectedResult, result.get());
     }
 
 }

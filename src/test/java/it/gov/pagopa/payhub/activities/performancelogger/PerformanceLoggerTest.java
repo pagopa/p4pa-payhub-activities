@@ -16,7 +16,7 @@ public class PerformanceLoggerTest {
     private MemoryAppender memoryAppender;
 
     @BeforeEach
-    public void setupMemoryAppender() {
+    void setupMemoryAppender() {
         this.memoryAppender = buildPerformanceLoggerMemoryAppender(APPENDER_NAME);
     }
 
