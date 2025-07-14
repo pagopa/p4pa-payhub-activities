@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt;
 
 import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
 
+import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMapEntry;
 import it.gov.pagopa.pagopa_api.xsd.common_types.v1_0.CtMetadata;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
@@ -151,21 +152,6 @@ public class ReceiptMapper {
 
     private PersonDTO buildDebtorDTO(ReceiptIngestionFlowFileDTO receipt) {
         return PersonDTO.builder()
-                .entityType(receipt.getPayerEntityType())
-                .fiscalCode(receipt.getPayerFiscalCode())
-                .fullName(receipt.getPayerFullName())
-                .address(receipt.getPayerAddress())
-                .civic(receipt.getPayerCivic())
-                .postalCode(receipt.getPayerPostalCode())
-                .location(receipt.getPayerLocation())
-                .province(receipt.getPayerProvince())
-                .nation(receipt.getPayerNation())
-                .email(receipt.getPayerEmail())
-                .build();
-    }
-
-    private PersonDTO buildPayerDTO(ReceiptIngestionFlowFileDTO receipt) {
-        return PersonDTO.builder()
                 .entityType(receipt.getDebtorEntityType())
                 .fiscalCode(receipt.getDebtorFiscalCode())
                 .fullName(receipt.getDebtorFullName())
@@ -176,6 +162,24 @@ public class ReceiptMapper {
                 .province(receipt.getDebtorProvince())
                 .nation(receipt.getDebtorNation())
                 .email(receipt.getDebtorEmail())
+                .build();
+    }
+
+    private PersonDTO buildPayerDTO(ReceiptIngestionFlowFileDTO receipt) {
+        if (receipt.getPayerEntityType() == null || StringUtils.isBlank(receipt.getPayerFiscalCode()) || StringUtils.isBlank(receipt.getPayerFullName())) {
+            return null;
+        }
+        return PersonDTO.builder()
+                .entityType(receipt.getPayerEntityType())
+                .fiscalCode(receipt.getPayerFiscalCode())
+                .fullName(receipt.getPayerFullName())
+                .address(receipt.getPayerAddress())
+                .civic(receipt.getPayerCivic())
+                .postalCode(receipt.getPayerPostalCode())
+                .location(receipt.getPayerLocation())
+                .province(receipt.getPayerProvince())
+                .nation(receipt.getPayerNation())
+                .email(receipt.getPayerEmail())
                 .build();
     }
 

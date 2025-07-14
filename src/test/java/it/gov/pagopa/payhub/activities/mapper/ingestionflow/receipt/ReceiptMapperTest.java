@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,9 +37,9 @@ class ReceiptMapperTest {
     private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
     @AfterEach
-    void verifyNoMoreInteractions(){
+    void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(rtFileHandlerServiceMock,
-            organizationServiceMock);
+                organizationServiceMock);
     }
 
     @ParameterizedTest
@@ -69,7 +70,7 @@ class ReceiptMapperTest {
         Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getReceipt()), Mockito.same(ingestionFlowFile.getFileName())))
                 .thenReturn(rtFilePath);
         Mockito.when(organizationServiceMock.getOrganizationById(organizationId)).thenReturn(
-            Optional.of(organization));
+                Optional.of(organization));
 
         // When
         ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
@@ -122,4 +123,51 @@ class ReceiptMapperTest {
         Assertions.assertEquals(rtFilePath, result.getRtFilePath());
         result.getTransfers().forEach((transfer -> TestUtils.checkNotNullFields(transfer, "iban", "metadata")));
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "true,true,true",
+            "false,true,true",
+            "true,false,true",
+            "true,true,false"
+    })
+    void givenVariousPayerInputs_whenMap_thenPayerSetOnlyIfValid(
+            boolean hasEntityType,
+            boolean hasFiscalCode,
+            boolean hasFullName
+    ) {
+        // Given
+        IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
+        ingestionFlowFile.setIngestionFlowFileId(10L);
+        ingestionFlowFile.setFileName("rtFileName.csv");
+
+        ReceiptIngestionFlowFileDTO request = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+
+        if (!hasEntityType) {
+            request.setPayerEntityType(null);
+        }
+
+        if (!hasFiscalCode) {
+            request.setPayerFiscalCode(null);
+        }
+
+        if (!hasFullName) {
+            request.setPayerFullName(null);
+        }
+
+        String rtFilePath = "RT/FILE/PATH.xml";
+        Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
+                .thenReturn(rtFilePath);
+
+        // When
+        ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
+
+        // Then
+        if (hasEntityType && hasFiscalCode && hasFullName) {
+            TestUtils.checkNotNullFields(result.getPayer(), "entityType", "fiscalCode", "fullName");
+        } else {
+            Assertions.assertNull(result.getPayer());
+        }
+    }
+
 }
