@@ -18,6 +18,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,15 +62,15 @@ class ClassificationsDataExportClientTest {
         Mockito.when(dataExportsApiMock.exportClassifications(
                organizationId,
                 operatorExternalUserId,
-                ClassificationsEnum.fromValue(classificationsExportFileFilter.getLabel().getValue()),
+                classificationsExportFileFilter.getLabel().stream().map(l -> ClassificationsEnum.fromValue(l.getValue())).collect(Collectors.toSet()),
                 classificationsExportFileFilter.getLastClassificationDate().getFrom(),
                 classificationsExportFileFilter.getLastClassificationDate().getTo(),
                 classificationsExportFileFilter.getIuf(),
                 classificationsExportFileFilter.getIud(),
                 classificationsExportFileFilter.getIuv(),
                 classificationsExportFileFilter.getIur(),
-                Utilities.toOffsetDateTimeStartOfTheDay(classificationsExportFileFilter.getPayDate().getFrom()),
-                Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
+                classificationsExportFileFilter.getPayDate().getFrom(),
+                classificationsExportFileFilter.getPayDate().getTo(),
                 Utilities.toOffsetDateTimeStartOfTheDay(classificationsExportFileFilter.getPaymentDate().getFrom()),
                 Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
                 classificationsExportFileFilter.getRegulationDate().getFrom(),
@@ -84,6 +85,7 @@ class ClassificationsDataExportClientTest {
                 classificationsExportFileFilter.getRemittanceInformation(),
                 classificationsExportFileFilter.getPspCompanyName(),
                 classificationsExportFileFilter.getPspLastName(),
+                classificationsExportFileFilter.getDebtPositionTypeOrgCodes(),
                 0,
                 0,
                 List.of("classificationId"))).thenReturn(pagedClassificationView);
@@ -108,15 +110,15 @@ class ClassificationsDataExportClientTest {
         Mockito.when(dataExportsApiMock.exportFullClassifications(
                 organizationId,
                 operatorExternalUserId,
-                ClassificationsEnum.fromValue(classificationsExportFileFilter.getLabel().getValue()),
+                classificationsExportFileFilter.getLabel().stream().map(l -> ClassificationsEnum.fromValue(l.getValue())).collect(Collectors.toSet()),
                 classificationsExportFileFilter.getLastClassificationDate().getFrom(),
                 classificationsExportFileFilter.getLastClassificationDate().getTo(),
                 classificationsExportFileFilter.getIuf(),
                 classificationsExportFileFilter.getIud(),
                 classificationsExportFileFilter.getIuv(),
                 classificationsExportFileFilter.getIur(),
-                Utilities.toOffsetDateTimeStartOfTheDay(classificationsExportFileFilter.getPayDate().getFrom()),
-                Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
+                classificationsExportFileFilter.getPayDate().getFrom(),
+                classificationsExportFileFilter.getPayDate().getTo(),
                 Utilities.toOffsetDateTimeStartOfTheDay(classificationsExportFileFilter.getPaymentDate().getFrom()),
                 Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
                 classificationsExportFileFilter.getRegulationDate().getFrom(),
@@ -131,6 +133,7 @@ class ClassificationsDataExportClientTest {
                 classificationsExportFileFilter.getRemittanceInformation(),
                 classificationsExportFileFilter.getPspCompanyName(),
                 classificationsExportFileFilter.getPspLastName(),
+                classificationsExportFileFilter.getDebtPositionTypeOrgCodes(),
                 0,
                 0,
                 List.of("classificationId"))).thenReturn(pagedFullClassificationView);
@@ -166,8 +169,8 @@ class ClassificationsDataExportClientTest {
                 classificationsExportFileFilter.getIud(),
                 classificationsExportFileFilter.getIuv(),
                 classificationsExportFileFilter.getIur(),
-                Utilities.toOffsetDateTimeStartOfTheDay(classificationsExportFileFilter.getPayDate().getFrom()),
-                Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
+                classificationsExportFileFilter.getPayDate().getFrom(),
+                classificationsExportFileFilter.getPayDate().getTo(),
                 Utilities.toOffsetDateTimeStartOfTheDay(classificationsExportFileFilter.getPaymentDate().getFrom()),
                 Utilities.toOffsetDateTimeEndOfTheDay(classificationsExportFileFilter.getPayDate().getTo()),
                 null,
@@ -182,6 +185,7 @@ class ClassificationsDataExportClientTest {
                 classificationsExportFileFilter.getRemittanceInformation(),
                 classificationsExportFileFilter.getPspCompanyName(),
                 classificationsExportFileFilter.getPspLastName(),
+                classificationsExportFileFilter.getDebtPositionTypeOrgCodes(),
                 0,
                 0,
                 List.of("classificationId"))).thenReturn(pagedClassificationView);
