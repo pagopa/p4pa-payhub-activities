@@ -81,4 +81,24 @@ class OrgSilServiceMapperTest {
                 "updateTraceId", "orgSilServiceId");
     }
 
+    @Test
+    void map_shouldReturnNullAuthConfig_whenNoBasicOrJwtFieldsAreSet() {
+        OrgSilServiceIngestionFlowFileDTO dto = OrgSilServiceIngestionFlowFileDTO.builder()
+                .ipaCode("IPA000")
+                .applicationName("APP000")
+                .serviceUrl("http://example.com/noservice")
+                .serviceType("ACTUALIZATION")
+                .flagLegacy(false)
+                .build();
+        Long orgId = 789L;
+        OrgSilServiceDTO result = new OrgSilServiceMapper().map(dto, orgId);
+        Assertions.assertNotNull(result);
+        Assertions.assertNull(result.getAuthConfig());
+        Assertions.assertEquals(orgId, result.getOrganizationId());
+        Assertions.assertEquals("APP000", result.getApplicationName());
+        Assertions.assertEquals("http://example.com/noservice", result.getServiceUrl());
+        Assertions.assertEquals(OrgSilServiceType.ACTUALIZATION, result.getServiceType());
+        Assertions.assertFalse(result.getFlagLegacy());
+    }
+
 }
