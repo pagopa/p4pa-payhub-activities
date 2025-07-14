@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.organizationsilservice;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.orgsilservice;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;

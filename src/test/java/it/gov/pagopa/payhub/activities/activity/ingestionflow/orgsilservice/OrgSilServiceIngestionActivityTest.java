@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.orgsilservice;
 
 import com.opencsv.exceptions.CsvException;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.organizationsilservice.OrgSilServiceIngestionActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;

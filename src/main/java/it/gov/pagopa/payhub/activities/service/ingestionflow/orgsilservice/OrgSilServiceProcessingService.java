@@ -8,6 +8,9 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilService
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.orgsilservice.OrgSilServiceMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSilService;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +51,9 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
         ingestionFlowFileResult.setFileVersion("1.0");
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
+        String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+        ingestionFlowFileResult.setIpaCode(ipaCode);
+
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
     }
@@ -56,25 +62,50 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
     protected boolean consumeRow(long lineNumber, OrgSilServiceIngestionFlowFileDTO row, OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult, List<OrgSilServiceErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
 
         try {
+            String ipa = ingestionFlowFileResult.getIpaCode();
+            if (!row.getIpaCode().equalsIgnoreCase(ipa)) {
+                String errorMessage = String.format(
+                        "Organization IPA code %s does not match with the one in the ingestion flow file %s",
+                        row.getIpaCode(), ipa);
+                log.error(errorMessage);
+                OrgSilServiceErrorDTO error = new OrgSilServiceErrorDTO(
+                        ingestionFlowFile.getFileName(), row.getIpaCode(), row.getApplicationName(),
+                        lineNumber, "ORGANIZATION_IPA_DOES_NOT_MATCH", errorMessage);
+                errorList.add(error);
+                return false;
+
+            }
             Optional <Organization> optionalOrganization = organizationService.getOrganizationByIpaCode(row.getIpaCode());
             Organization organization = null;
 
-            if (optionalOrganization.isEmpty()) {
-                OrgSilServiceErrorDTO error = OrgSilServiceErrorDTO.builder()
-                        .fileName(ingestionFlowFile.getFileName())
-                        .ipaCode(row.getIpaCode())
-                        .applicationName(row.getApplicationName())
-                        .rowNumber(lineNumber)
-                        .errorCode("ORGANIZATION_NOT_FOUND")
-                        .errorMessage("Organization not found for IPA code: " + row.getIpaCode())
-                        .build();
+            if(optionalOrganization.isEmpty()) {
+                log.error("Organization with IPA code {} does not exist", row.getIpaCode());
+                String errorMessage = String.format(
+                        "Organization with IPA code %s does not exist", row.getIpaCode());
+                OrgSilServiceErrorDTO error = new OrgSilServiceErrorDTO(
+                        ingestionFlowFile.getFileName(), row.getIpaCode(), row.getApplicationName(),
+                        lineNumber, "ORGANIZATION_IPA_DOES_NOT_EXISTS", errorMessage);
                 errorList.add(error);
                 return false;
-            }else {
+            }
+            else
                 organization = optionalOrganization.get();
+
+            List<OrgSilService> existingServices = orgSilServiceService.getAllByOrganizationIdAndServiceType(
+                    organization.getOrganizationId(), OrgSilServiceType.valueOf(row.getServiceType()));
+            OrgSilServiceDTO orgSilServiceMapped = orgSilServiceMapper.map(row, organization.getOrganizationId());
+
+            if (!existingServices.isEmpty()) {
+                existingServices.stream()
+                        .filter(s -> s.getApplicationName().equalsIgnoreCase(row.getApplicationName()))
+                        .findFirst()
+                        .ifPresent(s -> {
+                            log.info("Found existing OrgSilService with same applicationName: {}. Updating orgSilServiceId.", row.getApplicationName());
+                            orgSilServiceMapped.setOrgSilServiceId(s.getOrgSilServiceId());
+                        });
             }
 
-            orgSilServiceService.createOrUpdateOrgSilService(orgSilServiceMapper.map(row, organization.getOrganizationId()));
+            orgSilServiceService.createOrUpdateOrgSilService(orgSilServiceMapped);
             return true;
 
         } catch (Exception e) {
@@ -103,4 +134,3 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
                 .build();
     }
 }
-

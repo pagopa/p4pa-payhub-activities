@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilService
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.orgsilservice.OrgSilServiceMapper;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
@@ -25,8 +26,10 @@ import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OrgSilServiceProcessingServiceTest {
@@ -69,7 +72,8 @@ class OrgSilServiceProcessingServiceTest {
     Organization organization = new Organization();
     organization.setIpaCode(ipaWrong);
 
-    Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
+    Mockito.when(organizationServiceMock.getOrganizationById(123L)).thenReturn(Optional.of(organization));
+    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile)).thenReturn("errors.zip");
 
     // When
     OrgSilServiceIngestionFlowFileResult result = service.processOrgSilService(
@@ -78,28 +82,44 @@ class OrgSilServiceProcessingServiceTest {
 
     // Then
     Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    assertEquals(1L, result.getProcessedRows());
+    assertEquals(0L, result.getProcessedRows());
     assertEquals(1L, result.getTotalRows());
+    assertEquals("Some rows have failed", result.getErrorDescription());
+    assertEquals("errors.zip", result.getDiscardedFileName());
   }
 
   @Test
   void consumeRowWithMatchingIpaCodeProcessesSuccessfully() {
     // Given
     long lineNumber = 1L;
-    OrgSilServiceIngestionFlowFileDTO row = mock(OrgSilServiceIngestionFlowFileDTO.class);
-    Mockito.when(row.getIpaCode()).thenReturn("IPA123");
+    OrgSilServiceIngestionFlowFileDTO row = OrgSilServiceIngestionFlowFileDTO.builder()
+            .ipaCode("IPA123")
+            .applicationName("TestApp")
+            .serviceUrl("http://test.url")
+            .serviceType("ACTUALIZATION")
+            .flagLegacy(true)
+            .build();
+    OrgSilServiceDTO orgSilServiceDTOMapped = OrgSilServiceDTO.builder()
+                    .organizationId(123L)
+                    .applicationName("TestApp")
+                    .serviceUrl("http://test.url")
+                    .serviceType(OrgSilServiceType.ACTUALIZATION)
+                    .flagLegacy(true)
+                    .authConfig(null)
+                    .build();
+
+    Mockito.when(mapperMock.map(row, 123L)).thenReturn(orgSilServiceDTOMapped);
 
     OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult = new OrgSilServiceIngestionFlowFileResult();
     ingestionFlowFileResult.setOrganizationId(123L);
+    ingestionFlowFileResult.setIpaCode("IPA123");
 
     IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
 
-    OrgSilServiceDTO orgSilServiceDTO = mock(OrgSilServiceDTO.class);
     Organization organization = new Organization();
     organization.setIpaCode("IPA123");
     organization.setOrganizationId(123L);
     Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
-    Mockito.when(mapperMock.map(row, 123L)).thenReturn(orgSilServiceDTO);
 
     List<OrgSilServiceErrorDTO> errorList = new ArrayList<>();
 
@@ -108,35 +128,25 @@ class OrgSilServiceProcessingServiceTest {
 
     // Then
     Assertions.assertTrue(result);
-    Mockito.verify(orgSilServiceServiceMock).createOrUpdateOrgSilService(orgSilServiceDTO);
+    Mockito.verify(orgSilServiceServiceMock).createOrUpdateOrgSilService(any());
     Assertions.assertTrue(errorList.isEmpty());
   }
 
   @Test
   void processOrgSilServiceWithErrors() {
-
     // Given
     String ipaCode = "IPA123";
-
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     ingestionFlowFile.setOrganizationId(123L);
     OrgSilServiceIngestionFlowFileDTO dto = mock(OrgSilServiceIngestionFlowFileDTO.class);
     Mockito.when(dto.getIpaCode()).thenReturn(ipaCode);
-
-    OrgSilServiceDTO orgSilServiceDTO = new OrgSilServiceDTO();
-
-    Mockito.when(mapperMock.map(dto, 123L)).thenReturn(orgSilServiceDTO);
-
     Organization organization = new Organization();
     organization.setIpaCode(ipaCode);
     organization.setOrganizationId(123L);
-    Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
-
-    doThrow(new RuntimeException("Processing error"))
-            .when(orgSilServiceServiceMock).createOrUpdateOrgSilService(orgSilServiceDTO);
 
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
             .thenReturn("zipFileName.csv");
+
 
     // When
     OrgSilServiceIngestionFlowFileResult result = service.processOrgSilService(
@@ -148,8 +158,7 @@ class OrgSilServiceProcessingServiceTest {
     assertEquals(0, result.getProcessedRows());
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
-
-    Mockito.verify(orgSilServiceServiceMock).createOrUpdateOrgSilService(orgSilServiceDTO);
+    verify(errorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), any());
     Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
   }
 
@@ -163,24 +172,22 @@ class OrgSilServiceProcessingServiceTest {
 
     OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult = new OrgSilServiceIngestionFlowFileResult();
     ingestionFlowFileResult.setOrganizationId(456L);
+    ingestionFlowFileResult.setIpaCode("IPA_CODE");
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     ingestionFlowFile.setFileName("testfile.csv");
 
     List<OrgSilServiceErrorDTO> errorList = new ArrayList<>();
-    Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA_NOT_FOUND")).thenReturn(Optional.empty());
 
     // When
-    boolean result = service.consumeRow(lineNumber, row,ingestionFlowFileResult, errorList, ingestionFlowFile);
+    service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
 
     // Then
-    Assertions.assertFalse(result);
-    Assertions.assertEquals(1, errorList.size());
     OrgSilServiceErrorDTO error = errorList.get(0);
     Assertions.assertEquals("testfile.csv", error.getFileName());
     Assertions.assertEquals("IPA_NOT_FOUND", error.getIpaCode());
     Assertions.assertEquals("TestApp", error.getApplicationName());
     Assertions.assertEquals(lineNumber, error.getRowNumber());
-    Assertions.assertEquals("ORGANIZATION_NOT_FOUND", error.getErrorCode());
-    Assertions.assertTrue(error.getErrorMessage().contains("Organization not found for IPA code: IPA_NOT_FOUND"));
+    Assertions.assertEquals("ORGANIZATION_IPA_DOES_NOT_MATCH", error.getErrorCode());
+    Assertions.assertTrue(error.getErrorMessage().contains("Organization IPA code IPA_NOT_FOUND does not match with the one in the ingestion flow file IPA_CODE"));
   }
 }
