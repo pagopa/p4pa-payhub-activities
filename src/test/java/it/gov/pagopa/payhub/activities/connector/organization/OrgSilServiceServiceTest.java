@@ -1,8 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
+import it.gov.pagopa.payhub.activities.connector.organization.client.OrgSilServiceSearchControllerClient;
 import it.gov.pagopa.payhub.activities.connector.organization.client.OrganizationSilServiceClient;
-import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
+import it.gov.pagopa.pu.organization.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+
 @ExtendWith(MockitoExtension.class)
 class OrgSilServiceServiceTest {
 
@@ -19,6 +24,9 @@ class OrgSilServiceServiceTest {
     private AuthnService authnServiceMock;
     @Mock
     private OrganizationSilServiceClient organizationSilServiceClientMock;
+
+    @Mock
+    private OrgSilServiceSearchControllerClient orgSilServiceSearchControllerClientMock;
 
     private OrgSilServiceService orgSilServiceService;
 
@@ -28,7 +36,8 @@ class OrgSilServiceServiceTest {
     void init(){
         orgSilServiceService = new OrgSilServiceServiceImpl(
                 authnServiceMock,
-                organizationSilServiceClientMock
+                organizationSilServiceClientMock,
+                orgSilServiceSearchControllerClientMock
                 );
 
         Mockito.when(authnServiceMock.getAccessToken())
@@ -39,7 +48,8 @@ class OrgSilServiceServiceTest {
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
                 authnServiceMock,
-                organizationSilServiceClientMock
+                organizationSilServiceClientMock,
+                orgSilServiceSearchControllerClientMock
         );
     }
 
@@ -60,5 +70,41 @@ class OrgSilServiceServiceTest {
     }
     //endregion
 
+
+    //region findAllByOrganizationIdAndServiceType tests
+    @Test
+    void givenNotMatchingDataWhenFindAllByOrganizationIdAndServiceTypeThenReturnEmpty(){
+        // Given
+        Long orgId = 123L;
+        PagedModelOrgSilServiceEmbedded embedded = mock(PagedModelOrgSilServiceEmbedded.class);
+        CollectionModelOrgSilService expectedResponse = new CollectionModelOrgSilService().embedded(embedded);
+        Mockito.when(orgSilServiceSearchControllerClientMock.findAllByOrganizationIdAndServiceType(orgId, OrgSilServiceType.ACTUALIZATION,accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<OrgSilService> result = orgSilServiceService.getAllByOrganizationIdAndServiceType(orgId, OrgSilServiceType.ACTUALIZATION);
+
+        // Then
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenMatchingDataWhenFindAllByOrganizationIdAndServiceTypeThenReturnList(){
+        // Given
+        Long orgId = 123L;
+        List<OrgSilService> organizations = List.of(new OrgSilService());
+        PagedModelOrgSilServiceEmbedded embedded = new PagedModelOrgSilServiceEmbedded(organizations);
+        CollectionModelOrgSilService expectedResponse = new CollectionModelOrgSilService().embedded(embedded);
+        Mockito.when(orgSilServiceSearchControllerClientMock.findAllByOrganizationIdAndServiceType(orgId, OrgSilServiceType.ACTUALIZATION, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<OrgSilService> result = orgSilServiceService.getAllByOrganizationIdAndServiceType(orgId, OrgSilServiceType.ACTUALIZATION);
+
+        // Then
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertSame(embedded.getOrgSilServices(), result);
+    }
+    //end region
 
 }

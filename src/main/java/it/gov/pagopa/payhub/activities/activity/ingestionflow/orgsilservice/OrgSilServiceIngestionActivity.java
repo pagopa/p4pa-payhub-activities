@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.organizationsilservice;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.orgsilservice;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
