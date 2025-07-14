@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Lazy
 @Slf4j
@@ -62,6 +64,7 @@ public class ClassificationsDataExportClient {
                 classificationsExportFileFilter.getRemittanceInformation(),
                 classificationsExportFileFilter.getPspCompanyName(),
                 classificationsExportFileFilter.getPspLastName(),
+                classificationsExportFileFilter.getDebtPositionTypeOrgCodes(),
                 page,
                 size,
                 sort);
@@ -101,6 +104,7 @@ public class ClassificationsDataExportClient {
                 classificationsExportFileFilter.getRemittanceInformation(),
                 classificationsExportFileFilter.getPspCompanyName(),
                 classificationsExportFileFilter.getPspLastName(),
+                classificationsExportFileFilter.getDebtPositionTypeOrgCodes(),
                 page,
                 size,
                 sort);
@@ -109,7 +113,8 @@ public class ClassificationsDataExportClient {
     private FilterParams extractFilterParams(ClassificationsExportFileFilter filter) {
         LocalDate lastClassificationDateFrom = filter.getLastClassificationDate() != null ? filter.getLastClassificationDate().getFrom() : null;
         LocalDate lastClassificationDateTo = filter.getLastClassificationDate() != null ? filter.getLastClassificationDate().getTo() : null;
-        OffsetDateTimeIntervalFilter payDate = Utilities.toRangeClosedOffsetDateTimeIntervalFilter(filter.getPayDate());
+        LocalDate payDateFrom = filter.getPayDate() != null ? filter.getPayDate().getFrom() : null;
+        LocalDate payDateTo = filter.getPayDate() != null ? filter.getPayDate().getTo() : null;
         OffsetDateTimeIntervalFilter paymentDate = Utilities.toRangeClosedOffsetDateTimeIntervalFilter(filter.getPaymentDate());
         LocalDate regulationDateFrom = filter.getRegulationDate() != null ? filter.getRegulationDate().getFrom() : null;
         LocalDate regulationDateTo = filter.getRegulationDate() != null ? filter.getRegulationDate().getTo() : null;
@@ -117,9 +122,8 @@ public class ClassificationsDataExportClient {
         LocalDate billDateTo = filter.getBillDate() != null ? filter.getBillDate().getTo() : null;
         LocalDate regionValueDateFrom = filter.getRegionValueDate() != null ? filter.getRegionValueDate().getFrom() : null;
         LocalDate regionValueDateTo = filter.getRegionValueDate() != null ? filter.getRegionValueDate().getTo() : null;
-        ClassificationsEnum label = filter.getLabel() != null ? ClassificationsEnum.fromValue(filter.getLabel().getValue()) : null;
-
-        return new FilterParams(lastClassificationDateFrom, lastClassificationDateTo, payDate.getFrom(), payDate.getTo(), paymentDate.getFrom(), paymentDate.getTo(), regulationDateFrom, regulationDateTo, billDateFrom, billDateTo, regionValueDateFrom, regionValueDateTo, label);
+        Set<ClassificationsEnum> labels = filter.getLabel() != null ? filter.getLabel().stream().map( l -> ClassificationsEnum.fromValue(l.getValue())).collect(Collectors.toSet()) : null;
+        return new FilterParams(lastClassificationDateFrom, lastClassificationDateTo,payDateFrom, payDateTo, paymentDate.getFrom(), paymentDate.getTo(), regulationDateFrom, regulationDateTo, billDateFrom, billDateTo, regionValueDateFrom, regionValueDateTo, labels);
     }
 
     @Data
@@ -128,8 +132,8 @@ public class ClassificationsDataExportClient {
     private static class FilterParams {
         LocalDate lastClassificationDateFrom;
         LocalDate lastClassificationDateTo;
-        OffsetDateTime payDateFrom;
-        OffsetDateTime payDateTo;
+        LocalDate payDateFrom;
+        LocalDate payDateTo;
         OffsetDateTime paymentDateFrom;
         OffsetDateTime paymentDateTo;
         LocalDate regulationDateFrom;
@@ -138,6 +142,6 @@ public class ClassificationsDataExportClient {
         LocalDate billDateTo;
         LocalDate regionValueDateFrom;
         LocalDate regionValueDateTo;
-        ClassificationsEnum label;
+        Set<ClassificationsEnum> label;
     }
 }
