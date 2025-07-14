@@ -138,11 +138,17 @@ class OrgSilServiceProcessingServiceTest {
     String ipaCode = "IPA123";
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     ingestionFlowFile.setOrganizationId(123L);
-    OrgSilServiceIngestionFlowFileDTO dto = mock(OrgSilServiceIngestionFlowFileDTO.class);
-    Mockito.when(dto.getIpaCode()).thenReturn(ipaCode);
+    OrgSilServiceIngestionFlowFileDTO dto = OrgSilServiceIngestionFlowFileDTO.builder()
+            .ipaCode("IPA123")
+            .applicationName("TestApp")
+            .serviceUrl("http://test.url")
+            .serviceType("ACTUALIZATION")
+            .flagLegacy(true)
+            .build();
     Organization organization = new Organization();
     organization.setIpaCode(ipaCode);
     organization.setOrganizationId(123L);
+    Mockito.when(organizationServiceMock.getOrganizationById(123L)).thenReturn(Optional.of(organization));
 
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
             .thenReturn("zipFileName.csv");
