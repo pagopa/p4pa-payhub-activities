@@ -1,13 +1,22 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg;
 
+import it.gov.pagopa.payhub.activities.connector.organization.OrgSilServiceService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSilService;
+import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DebtPositionTypeOrgMapper {
 
-  public DebtPositionTypeOrgRequestBody map(DebtPositionTypeOrgIngestionFlowFileDTO dto,Long debtPositionTypeId, Long organizationId) {
+  private final OrgSilServiceService orgSilServiceService;
+
+    public DebtPositionTypeOrgMapper(OrgSilServiceService orgSilServiceService) {
+        this.orgSilServiceService = orgSilServiceService;
+    }
+
+    public DebtPositionTypeOrgRequestBody map(DebtPositionTypeOrgIngestionFlowFileDTO dto,Long debtPositionTypeId, Long organizationId) {
 
     return DebtPositionTypeOrgRequestBody.builder()
         .debtPositionTypeId(debtPositionTypeId)
@@ -33,8 +42,22 @@ public class DebtPositionTypeOrgMapper {
         .flagNotifyOutcomePush(dto.isFlagNotifyOutcomePush())
         .flagAmountActualization(dto.isFlagAmountActualization())
         .flagExternal(dto.isFlagExternal())
+        .notifyOutcomePushOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.PAID_NOTIFICATION_OUTCOME))
+        .amountActualizationOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.ACTUALIZATION))
         .build();
-    //todo : implement the mapping for fields serviceId, notifyOutcomePushOrgSilServiceId e amountActualizationOrgSilServiceId with task https://pagopa.atlassian.net/browse/P4ADEV-3224
   }
-}
 
+
+  private Long getOrgSilServiceId(Long organizationId, OrgSilServiceType orgSilServiceType) {
+    if (orgSilServiceType == null) {
+      return null;
+    }
+    return orgSilServiceService.getAllByOrganizationIdAndServiceType(organizationId, orgSilServiceType)
+        .stream()
+        .findFirst()
+        .map(OrgSilService::getOrgSilServiceId)
+        .orElse(null);
+  }
+
+
+}
