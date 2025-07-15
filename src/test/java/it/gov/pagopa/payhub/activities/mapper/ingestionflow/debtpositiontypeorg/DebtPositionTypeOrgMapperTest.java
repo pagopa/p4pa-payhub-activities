@@ -39,8 +39,10 @@ class DebtPositionTypeOrgMapperTest {
 
     OrgSilService orgSilServicePaidNotificationOutcome = new OrgSilService();
     orgSilServicePaidNotificationOutcome.setOrgSilServiceId(111L);
+    orgSilServicePaidNotificationOutcome.setApplicationName(dto.getNotifyOutcomePushOrgSilServiceCode());
     OrgSilService orgSilServiceActualization = new OrgSilService();
     orgSilServiceActualization.setOrgSilServiceId(222L);
+    orgSilServiceActualization.setApplicationName(dto.getAmountActualizationOrgSilServiceCode());
     when(orgSilServiceServiceMock.getAllByOrganizationIdAndServiceType(organizationId, OrgSilServiceType.PAID_NOTIFICATION_OUTCOME))
         .thenReturn(Collections.singletonList(orgSilServicePaidNotificationOutcome));
     when(orgSilServiceServiceMock.getAllByOrganizationIdAndServiceType(organizationId, OrgSilServiceType.ACTUALIZATION))
@@ -52,8 +54,7 @@ class DebtPositionTypeOrgMapperTest {
     Assertions.assertEquals(111L, result.getNotifyOutcomePushOrgSilServiceId());
     Assertions.assertEquals(222L, result.getAmountActualizationOrgSilServiceId());
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "debtPositionTypeOrgId", "serviceId");
-    // ora i campi notifyOutcomePushOrgSilServiceId e amountActualizationOrgSilServiceId sono valorizzati
+        "updateTraceId", "debtPositionTypeOrgId");
   }
 
 }

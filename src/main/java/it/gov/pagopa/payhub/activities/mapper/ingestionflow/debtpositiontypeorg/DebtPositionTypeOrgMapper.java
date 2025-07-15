@@ -42,18 +42,20 @@ public class DebtPositionTypeOrgMapper {
         .flagNotifyOutcomePush(dto.isFlagNotifyOutcomePush())
         .flagAmountActualization(dto.isFlagAmountActualization())
         .flagExternal(dto.isFlagExternal())
-        .notifyOutcomePushOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.PAID_NOTIFICATION_OUTCOME))
-        .amountActualizationOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.ACTUALIZATION))
+        .notifyOutcomePushOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.PAID_NOTIFICATION_OUTCOME,dto.getNotifyOutcomePushOrgSilServiceCode()))
+        .amountActualizationOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.ACTUALIZATION,dto.getAmountActualizationOrgSilServiceCode()))
+        .serviceId(dto.getServiceCode())
         .build();
   }
 
 
-  private Long getOrgSilServiceId(Long organizationId, OrgSilServiceType orgSilServiceType) {
+  private Long getOrgSilServiceId(Long organizationId, OrgSilServiceType orgSilServiceType, String applicationName) {
     if (orgSilServiceType == null) {
       return null;
     }
     return orgSilServiceService.getAllByOrganizationIdAndServiceType(organizationId, orgSilServiceType)
         .stream()
+        .filter(orgSilService -> orgSilService.getApplicationName() != null && orgSilService.getApplicationName().equals(applicationName))
         .findFirst()
         .map(OrgSilService::getOrgSilServiceId)
         .orElse(null);
