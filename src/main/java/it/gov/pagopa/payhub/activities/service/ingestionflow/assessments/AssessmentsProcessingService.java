@@ -11,7 +11,10 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsInge
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
-import it.gov.pagopa.pu.classification.dto.generated.*;
+import it.gov.pagopa.pu.classification.dto.generated.AssessmentStatus;
+import it.gov.pagopa.pu.classification.dto.generated.Assessments;
+import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
+import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -126,7 +129,7 @@ public class AssessmentsProcessingService extends
                         .organizationId(organization.getOrganizationId())
                         .debtPositionTypeOrgCode(row.getDebtPositionTypeOrgCode())
                         .assessmentName(row.getAssessmentName())
-                        .status(AssessmentStatus.ACTIVE)
+                        .status(AssessmentStatus.CLOSED)
                         .printed(false)
                         .flagManualGeneration(true)
                         .build();
