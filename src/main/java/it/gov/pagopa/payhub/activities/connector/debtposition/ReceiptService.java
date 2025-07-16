@@ -10,4 +10,5 @@ import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeData
 public interface ReceiptService {
 	ReceiptDTO createReceipt(ReceiptWithAdditionalNodeDataDTO receipt);
 	ReceiptNoPII getByTransferId(Long transferId);
+	ReceiptDTO getByReceiptId(Long receiptId);
 }

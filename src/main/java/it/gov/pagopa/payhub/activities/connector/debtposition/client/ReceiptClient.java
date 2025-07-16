@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.Optional;
-
 @Lazy
 @Slf4j
 @Service
@@ -34,4 +32,17 @@ public class ReceiptClient {
             return null;
         }
     }
+
+   public ReceiptDTO getByReceiptId(String accessToken, Long receiptId) {
+        try {
+           return debtPositionApisHolder.getReceiptApi(accessToken)
+                   .getReceipt(receiptId);
+       } catch (HttpClientErrorException.NotFound e) {
+           log.info("ReceiptDTO not found for id: {}", receiptId);
+           return null;
+       }
+
+    }
+
+
 }

@@ -27,9 +27,6 @@ public class AssessmentsIngestionFlowFileDTO {
     @CsvBindByName(column = "iud", required = true)
     private String iud;
 
-    @CsvBindByName(column = "iur", required = true)
-    private String iur;
-
     @CsvBindByName(column = "codUfficio")
     private String officeCode;
 
@@ -38,9 +35,6 @@ public class AssessmentsIngestionFlowFileDTO {
 
     @CsvBindByName(column = "codiceAccertamento")
     private String assessmentCode;
-
-    @CsvBindByName(column = "codiceFiscaleDebitore", required = true)
-    private String debtorFiscalCode;
 
     @CsvBindByName(column = "importoCentesimi", required = true)
     private Long amountCents;
