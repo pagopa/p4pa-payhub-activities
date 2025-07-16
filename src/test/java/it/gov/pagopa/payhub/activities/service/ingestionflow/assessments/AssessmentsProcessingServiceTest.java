@@ -4,6 +4,7 @@ import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsDetailService;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
@@ -58,6 +59,9 @@ class AssessmentsProcessingServiceTest {
     private InstallmentService installmentServiceMock;
 
     @Mock
+    private ReceiptService receiptServiceMock;
+
+    @Mock
     private AssessmentsProcessingService service;
 
     @Mock
@@ -71,7 +75,8 @@ class AssessmentsProcessingServiceTest {
                 assessmentsServiceMock,
                 assessmentsDetailServiceMock,
                 mapperMock,
-                installmentServiceMock
+                installmentServiceMock,
+                receiptServiceMock
                 );
     }
 
@@ -128,7 +133,6 @@ class AssessmentsProcessingServiceTest {
         Assessments assessments = mock(Assessments.class);
         Mockito.when(assessments.getAssessmentId()).thenReturn(456L);
         Mockito.when(assessmentsServiceMock.createAssessment(any())).thenReturn(assessments);
-        Mockito.when(mapperMock.map2AssessmentsDetailRequestBody(row, 123L,456L)).thenReturn(assessmentsDetailRequestBody);
         List<AssessmentsErrorDTO> errorList = new ArrayList<>();
 
         Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
@@ -137,6 +141,10 @@ class AssessmentsProcessingServiceTest {
         Mockito.when(row.getIud()).thenReturn("IUD1");
 
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
+
+        var receiptDTOMock = mock(it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO.class);
+        Mockito.when(receiptServiceMock.getByReceiptId(any())).thenReturn(receiptDTOMock);
+        Mockito.when(mapperMock.map2AssessmentsDetailRequestBody(row, 123L,456L, receiptDTOMock)).thenReturn(assessmentsDetailRequestBody);
 
         // When
         boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);

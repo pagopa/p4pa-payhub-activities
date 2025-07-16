@@ -28,4 +28,9 @@ public class ReceiptServiceImpl implements ReceiptService {
     public ReceiptNoPII getByTransferId(Long transferId) {
         return receiptClient.getByTransferId(authnService.getAccessToken(), transferId);
     }
+
+    @Override
+    public ReceiptDTO getByReceiptId(Long receiptId) {
+        return receiptClient.getByReceiptId(authnService.getAccessToken(), receiptId);
+    }
 }

@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import static org.mockito.Mockito.*;
 
@@ -64,4 +66,56 @@ class ReceiptClientTest {
 		verify(debtPositionApisHolderMock, times(1)).getReceiptNoPiiSearchControllerApi(accessToken);
 		verify(receiptNoPiiSearchControllerApiMock, times(1)).crudReceiptsGetByTransferId(transferId);
 	}
+
+	@Test
+	void whenGetByReceiptIdThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long receiptId = 1L;
+		ReceiptDTO expectedResult = mock(ReceiptDTO.class);
+
+		when(debtPositionApisHolderMock.getReceiptApi(accessToken)).thenReturn(receiptApiMock);
+		when(receiptApiMock.getReceipt(receiptId)).thenReturn(expectedResult);
+
+		// When
+		ReceiptDTO result = receiptClient.getByReceiptId(accessToken, receiptId);
+		// Then
+		Assertions.assertEquals(expectedResult, result);
+
+		verify(debtPositionApisHolderMock, times(1)).getReceiptApi(accessToken);
+		verify(receiptApiMock, times(1)).getReceipt(receiptId);
+	}
+
+	@Test
+	void whenGetByTransferIdNotFoundThenReturnNull() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long transferId = 1L;
+
+		when(debtPositionApisHolderMock.getReceiptNoPiiSearchControllerApi(accessToken)).thenReturn(receiptNoPiiSearchControllerApiMock);
+		when(receiptNoPiiSearchControllerApiMock.crudReceiptsGetByTransferId(transferId))
+				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+		// When
+		var result = receiptClient.getByTransferId(accessToken, transferId);
+		// Then
+		Assertions.assertNull(result);
+	}
+
+	@Test
+	void whenGetByReceiptIdNotFoundThenReturnNull() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long receiptId = 2L;
+
+		when(debtPositionApisHolderMock.getReceiptApi(accessToken)).thenReturn(receiptApiMock);
+		when(receiptApiMock.getReceipt(receiptId))
+				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+		// When
+		var result = receiptClient.getByReceiptId(accessToken, receiptId);
+		// Then
+		Assertions.assertNull(result);
+	}
+
 }

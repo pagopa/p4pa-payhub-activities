@@ -4,6 +4,7 @@ import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsDetailService;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
@@ -16,7 +17,9 @@ import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -39,15 +42,17 @@ public class AssessmentsProcessingService extends
     private final AssessmentsDetailService assessmentsDetailService;
     private final AssessmentsDetailMapper assessmentsDetailMapper;
     private final InstallmentService installmentService;
+    private final ReceiptService receiptService;
 
 
 
-    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper, InstallmentService installmentService) {
+    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper, InstallmentService installmentService, ReceiptService receiptService) {
         super(errorArchiverService, organizationService);
         this.assessmentsService = assessmentsService;
         this.assessmentsDetailService = assessmentsDetailService;
         this.assessmentsDetailMapper = assessmentsDetailMapper;
         this.installmentService = installmentService;
+        this.receiptService = receiptService;
     }
 
     public AssessmentsIngestionFlowFileResult processAssessments(
@@ -118,7 +123,9 @@ public class AssessmentsProcessingService extends
                 return false;
             }
 
+            InstallmentNoPII installmentNoPII = collectionInstallment.getEmbedded().getInstallmentNoPIIs().getFirst();
 
+            ReceiptDTO receiptDTO = receiptService.getByReceiptId(installmentNoPII.getReceiptId());
 
             Optional <Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(organization.getOrganizationId(),
                     row.getDebtPositionTypeOrgCode(), row.getAssessmentName());
@@ -138,7 +145,7 @@ public class AssessmentsProcessingService extends
             }else
                 assessments = assessmentsOptional.get();
 
-            AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(row, organization.getOrganizationId(), assessments.getAssessmentId());
+            AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(row, organization.getOrganizationId(), assessments.getAssessmentId(), receiptDTO);
 
             assessmentsDetailService.createAssessmentDetail(assessmentsDetailRequestBody);
 

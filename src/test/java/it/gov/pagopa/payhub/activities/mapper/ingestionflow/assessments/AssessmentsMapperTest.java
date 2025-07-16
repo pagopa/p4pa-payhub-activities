@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessments;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,9 @@ class AssessmentsMapperTest {
     AssessmentsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
     Long organizationId = 123L;
     Long assessmentId = 123L;
+    ReceiptDTO receiptDTO = podamFactory.manufacturePojo(ReceiptDTO.class);
 
-    var result = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(dto, organizationId, assessmentId);
+    var result = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(dto, organizationId, assessmentId, receiptDTO);
 
     Assertions.assertNotNull(result);
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
