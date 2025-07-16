@@ -61,4 +61,23 @@ class ReceiptServiceTest {
 		verify(authnServiceMock, times(1)).getAccessToken();
 		verify(receiptClientMock, times(1)).getByTransferId(accessToken, transferId);
 	}
+
+	@Test
+	void whenGetByReceiptIdThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		ReceiptDTO expected = mock(ReceiptDTO.class);
+		Long receiptId = 1L;
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+		when(receiptClientMock.getByReceiptId(accessToken, receiptId)).thenReturn(expected);
+
+		// When
+		ReceiptDTO result = receiptService.getByReceiptId(receiptId);
+
+		// Then
+		assertEquals(expected, result);
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(receiptClientMock, times(1)).getByReceiptId(accessToken, receiptId);
+	}
 }

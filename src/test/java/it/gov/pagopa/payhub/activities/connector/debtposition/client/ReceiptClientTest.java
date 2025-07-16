@@ -64,4 +64,25 @@ class ReceiptClientTest {
 		verify(debtPositionApisHolderMock, times(1)).getReceiptNoPiiSearchControllerApi(accessToken);
 		verify(receiptNoPiiSearchControllerApiMock, times(1)).crudReceiptsGetByTransferId(transferId);
 	}
+
+
+	@Test
+	void whenGetByReceiptIdThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long receiptId = 1L;
+		ReceiptDTO expectedResult = mock(ReceiptDTO.class);
+
+		when(debtPositionApisHolderMock.getReceiptApi(accessToken)).thenReturn(receiptApiMock);
+		when(receiptApiMock.getReceipt(receiptId)).thenReturn(expectedResult);
+
+		// When
+		ReceiptDTO result = receiptClient.getByReceiptId(accessToken, receiptId);
+		// Then
+		Assertions.assertEquals(expectedResult, result);
+
+		verify(debtPositionApisHolderMock, times(1)).getReceiptApi(accessToken);
+		verify(receiptApiMock, times(1)).getReceipt(receiptId);
+	}
+
 }
