@@ -185,7 +185,7 @@ public class ReceiptMapper {
 
     private ReceiptTransferDTO buildTransferDTO(ReceiptIngestionFlowFileDTO receipt) {
         return ReceiptTransferDTO.builder()
-                .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(receipt.getPaymentAmountCents()))
+                .transferAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(receipt.getSinglePaymentAmount()))
                 .remittanceInformation(receipt.getRemittanceInformation())
                 .idTransfer(receipt.getIdTransfer())
                 .fiscalCodePA(receipt.getFiscalCodePA())

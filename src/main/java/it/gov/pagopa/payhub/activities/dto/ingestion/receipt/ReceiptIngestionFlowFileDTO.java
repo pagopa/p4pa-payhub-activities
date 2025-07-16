@@ -192,7 +192,7 @@ public class ReceiptIngestionFlowFileDTO {
     private String paymentContextCode;
 
     @CsvBindByName(column = "singoloImportoPagato")
-    private String singlePaymentAmount;
+    private BigDecimal singlePaymentAmount;
 
     @CsvBindByName(column = "esitoSingoloPagamento")
     private String singlePaymentOutcome;
