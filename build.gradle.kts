@@ -280,7 +280,8 @@ tasks.register("dependenciesBuild") {
 		"openApiGeneratePAGOPAPAYMENTS",
 		"openApiGeneratePROCESSEXECUTIONS",
 		"openApiGenerateWORKFLOWHUB",
-		"openApiGenerateP4PASENDNOTIFICATION"
+		"openApiGenerateP4PASENDNOTIFICATION",
+		"openApiGeneratePUSIL"
 	)
 }
 
@@ -487,6 +488,7 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 	modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
 	typeMappings.set(mapOf(
 		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+		"InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO",
 		"NoticeGenerationMassiveResourceDTO" to "String",
 	))
 	configOptions.set(mapOf(
@@ -565,6 +567,34 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
 		"enumPropertyNaming" to "original",
+		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
+	))
+	library.set("resttemplate")
+}
+
+tasks.register<GenerateTask>("openApiGeneratePUSIL") {
+	group = "AutomaticallyGeneratedCode"
+	description = "description"
+
+	generatorName.set("java")
+	remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-pu-sil/refs/heads/develop/openapi/generated-internal.openapi.json")
+	outputDir.set("$projectDir/build/generated")
+	apiPackage.set("it.gov.pagopa.pu.pusil.controller.generated")
+	modelPackage.set("it.gov.pagopa.pu.pusil.dto.generated")
+	importMappings.set(mapOf(
+		"InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO"
+	))
+	configOptions.set(mapOf(
+		"swaggerAnnotations" to "false",
+		"openApiNullable" to "false",
+		"dateLibrary" to "java8",
+		"serializableModel" to "true",
+		"useSpringBoot3" to "true",
+		"useJakartaEe" to "true",
+		"serializationLibrary" to "jackson",
+		"generateSupportingFiles" to "true",
+		"generateConstructorWithAllArgs" to "true",
+		"generatedConstructorWithRequiredArgs" to "true",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
