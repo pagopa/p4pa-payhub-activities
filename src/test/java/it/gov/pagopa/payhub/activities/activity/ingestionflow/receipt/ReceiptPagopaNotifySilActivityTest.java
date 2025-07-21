@@ -56,7 +56,6 @@ class ReceiptPagopaNotifySilActivityTest {
   @Test
   void givenValidReceiptAndInstallmentWhenNotifyReceiptToSilThenOk() {
     // Given
-    String accessToken = "ACCESSTOKEN";
     ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
     receiptDTO.setOrgFiscalCode("FISCALCODE");
     receiptDTO.setDebtPositionTypeOrgCode("DPORGCODE");
@@ -81,7 +80,7 @@ class ReceiptPagopaNotifySilActivityTest {
     Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO, installmentDTO));
 
     // Then
-    Mockito.verify(puSilServiceMock).notifyPayment(2L, installmentDTO, accessToken);
+    Mockito.verify(puSilServiceMock).notifyPayment(2L, installmentDTO, "IPACODE");
   }
 
   @Test
