@@ -362,7 +362,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Path path = Path.of("test", "iuv.csv");
         SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
                 .pdfGeneratedId(null)
-                .errorsDescription("Error on generate notice massive for ingestionFlowFileId 1: Broker 1 has not GENERATE_NOTICE apiKey configured!")
+                .errorsDescription("\nError on generate notice massive for ingestionFlowFileId 1: Broker 1 has not GENERATE_NOTICE apiKey configured!")
                 .iuvFileName(path.getFileName().toString())
                 .build();
 
