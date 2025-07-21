@@ -488,8 +488,7 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
 	modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
 	typeMappings.set(mapOf(
 		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
-		"InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO",
-		"NoticeGenerationMassiveResourceDTO" to "String",
+		"NoticeGenerationMassiveResourceDTO" to "String"
 	))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",
