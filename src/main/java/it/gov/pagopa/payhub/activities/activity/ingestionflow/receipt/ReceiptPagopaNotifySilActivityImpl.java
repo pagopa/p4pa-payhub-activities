@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
-import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.pu_sil.PuSilService;
@@ -26,15 +25,12 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
   private final OrganizationService organizationService;
   private final DebtPositionTypeOrgService debtPositionTypeOrgService;
   private final PuSilService puSilService;
-  private final AuthnService authnService;
 
   public ReceiptPagopaNotifySilActivityImpl(OrganizationService organizationService,
-      DebtPositionTypeOrgService debtPositionTypeOrgService, PuSilService puSilService,
-      AuthnService authnService) {
+      DebtPositionTypeOrgService debtPositionTypeOrgService, PuSilService puSilService) {
     this.organizationService = organizationService;
     this.debtPositionTypeOrgService = debtPositionTypeOrgService;
     this.puSilService = puSilService;
-    this.authnService = authnService;
   }
 
   @Override
@@ -45,8 +41,9 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
       DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
           .getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(),receiptDTO.getDebtPositionTypeOrgCode());
       if(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId()!=null){
-        puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installmentDTO,
-            authnService.getAccessToken(organization.getIpaCode()));
+        puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installmentDTO, organization.getIpaCode());
+      } else {
+        log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {}", debtPositionTypeOrg.getDebtPositionTypeOrgId());
       }
     }
   }

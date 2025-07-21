@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 
-import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.pu_sil.PuSilService;
@@ -33,8 +32,6 @@ class ReceiptPagopaNotifySilActivityTest {
   private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
   @Mock
   private PuSilService puSilServiceMock;
-  @Mock
-  private AuthnService authnServiceMock;
 
   private ReceiptPagopaNotifySilActivity activity;
 
@@ -43,8 +40,7 @@ class ReceiptPagopaNotifySilActivityTest {
     activity = new ReceiptPagopaNotifySilActivityImpl(
         organizationServiceMock,
         debtPositionTypeOrgServiceMock,
-        puSilServiceMock,
-        authnServiceMock
+        puSilServiceMock
     );
   }
 
@@ -53,8 +49,7 @@ class ReceiptPagopaNotifySilActivityTest {
     Mockito.verifyNoMoreInteractions(
         organizationServiceMock,
         debtPositionTypeOrgServiceMock,
-        puSilServiceMock,
-        authnServiceMock
+        puSilServiceMock
     );
   }
 
@@ -80,7 +75,6 @@ class ReceiptPagopaNotifySilActivityTest {
         Optional.of(organization));
     Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(1L, "DPORGCODE"))
         .thenReturn(debtPositionTypeOrg);
-    Mockito.when(authnServiceMock.getAccessToken("IPACODE")).thenReturn(accessToken);
 
 
     // When

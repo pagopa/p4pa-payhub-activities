@@ -591,9 +591,11 @@ tasks.register<GenerateTask>("openApiGeneratePUSIL") {
 		"useSpringBoot3" to "true",
 		"useJakartaEe" to "true",
 		"serializationLibrary" to "jackson",
+		"useOneOfInterfaces" to "true",
 		"generateSupportingFiles" to "true",
 		"generateConstructorWithAllArgs" to "true",
 		"generatedConstructorWithRequiredArgs" to "true",
+		"enumPropertyNaming" to "original",
 		"additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
 	))
 	library.set("resttemplate")
