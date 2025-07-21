@@ -166,7 +166,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken ->
                     debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken)
-                            .crudInstallmentsFindByReceiptId(1L),
+                            .crudInstallmentsGetByOrganizationIdAndReceiptId(0L, 1L, null),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload
         );
