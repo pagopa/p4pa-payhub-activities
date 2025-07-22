@@ -115,7 +115,14 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         String pdfGeneratedId = null;
         Path csvPath = null;
         if (!debtPositionsGenerateNotices.isEmpty()) {
-            pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices);
+            try {
+                pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices);
+            } catch (IllegalStateException e) {
+                log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}: {}", ingestionFlowFileId, e.getMessage());
+                errors.append("\nError on generate notice massive for ingestionFlowFileId ")
+                        .append(ingestionFlowFileId).append(": ")
+                        .append(e.getMessage());
+            }
             csvPath = iuvArchivingExportFileService.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId);
         }
 
