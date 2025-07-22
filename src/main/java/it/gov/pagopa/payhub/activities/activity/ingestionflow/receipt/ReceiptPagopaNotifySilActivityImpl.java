@@ -51,13 +51,14 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
       DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
           .getDebtPositionTypeOrgByInstallmentId(installmentToNotify.getInstallmentId());
 
-      if(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId()!=null){
-        // ignoring technical debt position types
-        if(debtPositionTypeOrg.getDebtPositionTypeId() > 0)
+      // ignoring technical debt position types
+      if(debtPositionTypeOrg.getDebtPositionTypeId() > 0) {
+        if (debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId() != null) {
           puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installmentToNotify, organization.getIpaCode());
-      } else {
-        log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
-            debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
+        } else {
+          log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
+              debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
+        }
       }
     }
   }
