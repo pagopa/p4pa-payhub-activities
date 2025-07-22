@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 
 /**
@@ -16,8 +15,7 @@ public interface ReceiptPagopaNotifySilActivity {
      * Processes a file based on the provided IngestionFlow ID.
      *
      * @param receiptDTO the received receipt.
-     * @param installmentDTO the "ordinary" installment associated to the receipt.
      */
     @ActivityMethod
-    void notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO);
+    void notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO);
 }

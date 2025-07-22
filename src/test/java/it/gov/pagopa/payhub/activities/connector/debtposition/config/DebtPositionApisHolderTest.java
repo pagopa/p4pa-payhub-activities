@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import java.util.Collections;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -166,7 +167,8 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken ->
                     debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken)
-                            .crudInstallmentsFindByReceiptId(1L),
+                        .crudInstallmentsFindByOrganizationIdAndIuds(1L,
+                            Collections.singleton("IUDS")),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload
         );

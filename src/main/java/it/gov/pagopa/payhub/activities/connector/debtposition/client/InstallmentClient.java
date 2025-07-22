@@ -58,4 +58,10 @@ public class InstallmentClient {
 		debtPositionApisHolder.getInstallmentsEntityExtendedControllerApi(accessToken).updateIunByDebtPositionId(debptPositionId, iun);
 	}
 
+	public List<InstallmentDTO> getByOrganizationIdAndReceiptId(Long organizationId, Long receiptId,
+			List<DebtPositionOrigin> debtPositionOrigin, String accessToken) {
+		return debtPositionApisHolder.getInstallmentApi(accessToken)
+				.getInstallmentsByOrganizationIdAndReceiptId(organizationId, receiptId, debtPositionOrigin);
+	}
+
 }

@@ -3,6 +3,8 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
@@ -49,4 +51,12 @@ public class InstallmentServiceImpl implements InstallmentService {
 	public void updateIunByDebtPositionId(Long debtPositionId, String iun) {
 		installmentClient.updateIunByDebtPositionId(debtPositionId, iun, authnService.getAccessToken());
 	}
+
+	@Override
+	public List<InstallmentDTO> getByOrganizationIdAndReceiptId(Long organizationId, Long receiptId,
+			List<DebtPositionOrigin> debtPositionOrigin) {
+		return installmentClient.getByOrganizationIdAndReceiptId(organizationId, receiptId, debtPositionOrigin,
+				authnService.getAccessToken());
+	}
+
 }
