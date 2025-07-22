@@ -52,7 +52,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
         List<ReceiptErrorDTO> errorList = new ArrayList<>();
         ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
-        result.setFileVersion("1.0");
+        result.setFileVersion(ingestionFlowFile.getFileVersion());
         result.setOrganizationId(ingestionFlowFile.getOrganizationId());
         return result;
     }
