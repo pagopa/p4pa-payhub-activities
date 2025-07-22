@@ -38,7 +38,7 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
   }
 
   @Override
-  public void notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
+  public InstallmentDTO notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     log.info("Notify receipt to SIL by receiptId {}", receiptDTO.getReceiptId());
     Organization organization = organizationService.getOrganizationByFiscalCode(receiptDTO.getOrgFiscalCode())
         .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptDTO.getOrgFiscalCode() + " not found"));
@@ -55,11 +55,13 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
       if(debtPositionTypeOrg.getDebtPositionTypeId() > 0) {
         if (debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId() != null) {
           puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installmentToNotify, organization.getIpaCode());
+          return installmentToNotify;
         } else {
           log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
               debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
         }
       }
     }
+    return null;
   }
 }
