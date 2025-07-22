@@ -44,11 +44,11 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
     Organization organization = organizationService.getOrganizationByFiscalCode(receiptDTO.getOrgFiscalCode())
         .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptDTO.getOrgFiscalCode() + " not found"));
     if(organization.getFlagNotifyOutcomePush()) {
+      List<InstallmentDTO> installmentDTOs = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),
+          receiptDTO.getReceiptId(),null);
       DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
-          .getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(),receiptDTO.getDebtPositionTypeOrgCode());
+          .getDebtPositionTypeOrgByInstallmentId(installmentDTOs.getFirst().getInstallmentId());
       if(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId()!=null){
-        List<InstallmentDTO> installmentDTOs = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),
-            receiptDTO.getReceiptId(),null);
         puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installmentDTOs.getFirst(), organization.getIpaCode());
       } else {
         log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {}", debtPositionTypeOrg.getDebtPositionTypeOrgId());

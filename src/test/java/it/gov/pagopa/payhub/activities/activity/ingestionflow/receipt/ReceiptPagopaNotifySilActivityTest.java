@@ -80,7 +80,7 @@ class ReceiptPagopaNotifySilActivityTest {
 
     Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
         Optional.of(organization));
-    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(1L, "DPORGCODE"))
+    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(installmentDTOs.getFirst().getInstallmentId()))
         .thenReturn(debtPositionTypeOrg);
     Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
         .thenReturn(installmentDTOs);
@@ -142,10 +142,15 @@ class ReceiptPagopaNotifySilActivityTest {
     DebtPositionTypeOrg debtPositionTypeOrg = new DebtPositionTypeOrg();
     debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(null);
 
+    List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO());
+
     Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
         Optional.of(organization));
-    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(1L, "DPORGCODE"))
+    Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
+        .thenReturn(installmentDTOs);
+    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(installmentDTOs.getFirst().getInstallmentId()))
         .thenReturn(debtPositionTypeOrg);
+
     // When
     activity.notifyReceiptToSil(receiptDTO);
     // Then
