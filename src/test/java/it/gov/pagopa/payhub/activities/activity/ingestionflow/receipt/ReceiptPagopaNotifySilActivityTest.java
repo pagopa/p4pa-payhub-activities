@@ -85,11 +85,14 @@ class ReceiptPagopaNotifySilActivityTest {
         .thenReturn(debtPositionTypeOrg);
     Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
         .thenReturn(installmentDTOs);
+
     // When
-    Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
+    InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
 
     // Then
+    Assertions.assertEquals(installmentDTOs.getFirst(), result);
     Mockito.verify(puSilServiceMock).notifyPayment(2L, installmentDTOs.getFirst(), "IPACODE");
+
   }
 
   @Test
@@ -119,9 +122,10 @@ class ReceiptPagopaNotifySilActivityTest {
         Optional.of(organization));
 
     // When
-    activity.notifyReceiptToSil(receiptDTO);
+    InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
 
     // Then
+    Assertions.assertNull(result);
     Mockito.verifyNoMoreInteractions(debtPositionTypeOrgServiceMock);
     Mockito.verifyNoMoreInteractions(puSilServiceMock);
   }
@@ -152,8 +156,9 @@ class ReceiptPagopaNotifySilActivityTest {
         .thenReturn(debtPositionTypeOrg);
 
     // When
-    activity.notifyReceiptToSil(receiptDTO);
+    InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
     // Then
+    Assertions.assertNull(result);
     Mockito.verify(puSilServiceMock, never()).notifyPayment(anyLong(), any(), any());
   }
 
@@ -183,8 +188,9 @@ class ReceiptPagopaNotifySilActivityTest {
         .thenReturn(debtPositionTypeOrg);
 
     // When
-    activity.notifyReceiptToSil(receiptDTO);
+    InstallmentDTO result =activity.notifyReceiptToSil(receiptDTO);
     // Then
+    Assertions.assertNull(result);
     Mockito.verify(puSilServiceMock, never()).notifyPayment(anyLong(), any(), any());
   }
 
