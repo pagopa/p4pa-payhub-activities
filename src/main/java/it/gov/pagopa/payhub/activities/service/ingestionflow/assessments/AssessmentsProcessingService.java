@@ -139,6 +139,8 @@ public class AssessmentsProcessingService extends
                         .status(AssessmentStatus.CLOSED)
                         .printed(false)
                         .flagManualGeneration(true)
+                        //TODO - needs to define a default user for massive
+                        .operatorExternalUserId("piattaforma-unitaria")
                         .build();
 
                 assessments = assessmentsService.createAssessment(assessmentsRequestBody);

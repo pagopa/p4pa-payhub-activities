@@ -10,7 +10,6 @@ import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptParserService;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -70,8 +69,6 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
 
     //invoke service to send receipt to debt-position for its persistence and processing
     ReceiptDTO receiptDTO = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
-    //TODO installment will be retrieved from the response of the createReceipt service, with the implementation of a future task. To use on notifySIL? otherwise it could be removed
-    InstallmentDTO installmentDTO = null;
 
     //set the missing ID in the DTO
     receiptWithAdditionalNodeDataDTO.setReceiptId(receiptDTO.getReceiptId());
@@ -83,7 +80,6 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
             .totalRows(1L)
             .processedRows(1L)
             .receiptDTO(receiptWithAdditionalNodeDataDTO)
-            .installmentDTO(installmentDTO)
             .build();
   }
 

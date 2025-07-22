@@ -124,6 +124,12 @@ rest:
     wait-time-millis: "\${WORKFLOW_HUB_WAIT_TIME_MILLIS:500}"
     print-body-when-error: "\${WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR:true}"
 
+  pu-sil:
+    base-url: "\${PU_SIL_BASE_URL:http://localhost:8080/pusil}"
+    max-attempts: "\${PU_SIL_MAX_ATTEMPTS:3}" # It's counting also the first attempt
+    wait-time-millis: "\${PU_SIL_WAIT_TIME_MILLIS:500}"
+    print-body-when-error: "\${PU_SIL_PRINT_BODY_WHEN_ERROR:true}"
+
 query-limits:
   default:
     size: "\${DEFAULT_PAGE_SIZE:1000}"

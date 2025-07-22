@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import java.time.LocalDate;
@@ -120,6 +121,24 @@ class InstallmentServiceTest {
 		// Then
 		verify(authnServiceMock, times(1)).getAccessToken();
 		verify(installmentClientMock, times(1)).updateIunByDebtPositionId(debtPositionId, iun, accessToken);
+	}
+
+	@Test
+	void whenGetInstallmentsByOrgIdAndReceiptIdThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long orgId = 1L;
+		Long receiptId = 999L;
+		List<DebtPositionOrigin> origins = List.of(DebtPositionOrigin.ORDINARY, DebtPositionOrigin.ORDINARY_SIL);
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+		// When
+		installmentService.getByOrganizationIdAndReceiptId(orgId,receiptId, origins);
+
+		// Then
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(installmentClientMock, times(1)).getByOrganizationIdAndReceiptId(orgId, receiptId, origins, accessToken);
 	}
 
 }
