@@ -117,7 +117,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         if (!debtPositionsGenerateNotices.isEmpty()) {
             try {
                 pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices);
-            } catch (IllegalStateException e) {
+            } catch (Exception e) {
                 log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}: {}", ingestionFlowFileId, e.getMessage());
                 errors.append("\nError on generate notice massive for ingestionFlowFileId ")
                         .append(ingestionFlowFileId).append(": ")
