@@ -74,6 +74,7 @@ class ReceiptPagopaNotifySilActivityTest {
     organization.setIpaCode("IPACODE");
 
     DebtPositionTypeOrg debtPositionTypeOrg = new DebtPositionTypeOrg();
+    debtPositionTypeOrg.setDebtPositionTypeId(1L);
     debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(2L);
 
     List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO());
@@ -84,8 +85,6 @@ class ReceiptPagopaNotifySilActivityTest {
         .thenReturn(debtPositionTypeOrg);
     Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
         .thenReturn(installmentDTOs);
-
-
     // When
     Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
 
@@ -140,7 +139,39 @@ class ReceiptPagopaNotifySilActivityTest {
     organization.setIpaCode("IPACODE");
 
     DebtPositionTypeOrg debtPositionTypeOrg = new DebtPositionTypeOrg();
+    debtPositionTypeOrg.setDebtPositionTypeId(1L);
     debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(null);
+
+    List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO());
+
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
+        Optional.of(organization));
+    Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
+        .thenReturn(installmentDTOs);
+    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(installmentDTOs.getFirst().getInstallmentId()))
+        .thenReturn(debtPositionTypeOrg);
+
+    // When
+    activity.notifyReceiptToSil(receiptDTO);
+    // Then
+    Mockito.verify(puSilServiceMock, never()).notifyPayment(anyLong(), any(), any());
+  }
+
+  @Test
+  void givenNegativeDebtPositionTypeIdWhenNotifyReceiptToSilThenVerify() {
+    // Given
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
+    receiptDTO.setOrgFiscalCode("FISCALCODE");
+    receiptDTO.setDebtPositionTypeOrgCode("DPORGCODE");
+
+    Organization organization = new Organization();
+    organization.setFlagNotifyOutcomePush(true);
+    organization.setOrganizationId(1L);
+    organization.setIpaCode("IPACODE");
+
+    DebtPositionTypeOrg debtPositionTypeOrg = new DebtPositionTypeOrg();
+    debtPositionTypeOrg.setDebtPositionTypeId(-1L);
+    debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(9L);
 
     List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO());
 
