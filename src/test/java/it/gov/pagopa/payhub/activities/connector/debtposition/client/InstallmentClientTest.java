@@ -195,4 +195,22 @@ class InstallmentClientTest {
 		// Then
 		verify(installmentsEntityExtendedControllerApiMock, times(1)).updateIunByDebtPositionId(debtPositionId, iun);
 	}
+
+	@Test
+	void whenGetByOrganizationIdAndReceiptIdThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long organizationId = 1L;
+		Long receiptId = 99L;
+		List<DebtPositionOrigin> origins = List.of(DebtPositionOrigin.ORDINARY);
+
+		when(debtPositionApisHolderMock.getInstallmentApi(accessToken))
+				.thenReturn(installmentApiMock);
+
+		// When
+		installmentClient.getByOrganizationIdAndReceiptId(organizationId, receiptId, origins, accessToken);
+
+		// Then
+		verify(installmentApiMock, times(1)).getInstallmentsByOrganizationIdAndReceiptId(organizationId, receiptId, origins);
+	}
 }
