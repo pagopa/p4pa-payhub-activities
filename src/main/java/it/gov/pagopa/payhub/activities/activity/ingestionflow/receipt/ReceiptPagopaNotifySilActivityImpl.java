@@ -10,7 +10,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -43,15 +42,21 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
     log.info("Notify receipt to SIL by receiptId {}", receiptDTO.getReceiptId());
     Organization organization = organizationService.getOrganizationByFiscalCode(receiptDTO.getOrgFiscalCode())
         .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptDTO.getOrgFiscalCode() + " not found"));
+
     if(organization.getFlagNotifyOutcomePush()) {
-      List<InstallmentDTO> installmentDTOs = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),
-          receiptDTO.getReceiptId(),null);
+      // we expect just one Installment
+      InstallmentDTO installmentToNotify = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),
+          receiptDTO.getReceiptId(),null).getFirst();
+
       DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
-          .getDebtPositionTypeOrgByInstallmentId(installmentDTOs.getFirst().getInstallmentId());
-      if(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId()!=null){
-        puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installmentDTOs.getFirst(), organization.getIpaCode());
+          .getDebtPositionTypeOrgByInstallmentId(installmentToNotify.getInstallmentId());
+
+      // ignoring technical debt position types
+      if(debtPositionTypeOrg.getDebtPositionTypeId() > 0 && debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId()!=null){
+        puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installmentToNotify, organization.getIpaCode());
       } else {
-        log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {}", debtPositionTypeOrg.getDebtPositionTypeOrgId());
+        log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
+            debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
       }
     }
   }
