@@ -20,8 +20,8 @@ public class DebtPositionSearchClient {
 
     public DebtPosition findById(Long debtPositionId, String accessToken) {
         try{
-            return debtPositionApisHolder.getDebtPositionSearchControllerApi(accessToken)
-                    .crudDebtPositionsFindOneWithAllDataByDebtPositionId(debtPositionId);
+            return debtPositionApisHolder.getDebtPositionEntityControllerApi(accessToken)
+                    .crudGetDebtposition(String.valueOf(debtPositionId));
         } catch (HttpClientErrorException.NotFound e){
             log.info("Cannot find DebtPosition having id {}", debtPositionId);
             return null;
