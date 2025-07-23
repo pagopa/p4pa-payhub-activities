@@ -44,10 +44,10 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     }
 
     @Test
-    void whenGetDebtPositionSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+    void whenGetDebtPositionEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> debtPositionApisHolder.getDebtPositionSearchControllerApi(accessToken)
-                        .crudDebtPositionsFindOneWithAllDataByDebtPositionId(0L),
+                accessToken -> debtPositionApisHolder.getDebtPositionEntityControllerApi(accessToken)
+                        .crudGetDebtposition("0"),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }

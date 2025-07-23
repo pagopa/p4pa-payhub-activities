@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionSearchControllerApi;
+import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionEntityControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPosition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +19,7 @@ class DebtPositionSearchClientTest {
     @Mock
     private DebtPositionApisHolder debtPositionApisHolderMock;
     @Mock
-    private DebtPositionSearchControllerApi debtPositionSearchControllerApiMock;
+    private DebtPositionEntityControllerApi debtPositionEntityControllerApiMock;
 
     private DebtPositionSearchClient debtPositionSearchClient;
 
@@ -42,9 +42,9 @@ class DebtPositionSearchClientTest {
         Long debtPositionId = 0L;
         DebtPosition expectedResult = new DebtPosition();
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionSearchControllerApi(accessToken))
-                .thenReturn(debtPositionSearchControllerApiMock);
-        Mockito.when(debtPositionSearchControllerApiMock.crudDebtPositionsFindOneWithAllDataByDebtPositionId(debtPositionId))
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionEntityControllerApi(accessToken))
+                .thenReturn(debtPositionEntityControllerApiMock);
+        Mockito.when(debtPositionEntityControllerApiMock.crudGetDebtposition(String.valueOf(debtPositionId)))
                 .thenReturn(expectedResult);
 
         // When
@@ -60,9 +60,9 @@ class DebtPositionSearchClientTest {
         String accessToken = "ACCESSTOKEN";
         Long debtPositionId = 0L;
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionSearchControllerApi(accessToken))
-                .thenReturn(debtPositionSearchControllerApiMock);
-        Mockito.when(debtPositionSearchControllerApiMock.crudDebtPositionsFindOneWithAllDataByDebtPositionId(debtPositionId))
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionEntityControllerApi(accessToken))
+                .thenReturn(debtPositionEntityControllerApiMock);
+        Mockito.when(debtPositionEntityControllerApiMock.crudGetDebtposition(String.valueOf(debtPositionId)))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When

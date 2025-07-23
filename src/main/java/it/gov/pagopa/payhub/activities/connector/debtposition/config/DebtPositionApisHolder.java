@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 public class DebtPositionApisHolder {
     private final TransferSearchControllerApi transferSearchControllerApi;
     private final TransferApi transferApi;
-    private final DebtPositionSearchControllerApi debtPositionSearchControllerApi;
+    private final DebtPositionEntityControllerApi debtPositionEntityControllerApi;
     private final DebtPositionApi debtPositionApi;
     private final ReceiptApi receiptApi;
     private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
@@ -49,7 +49,7 @@ public class DebtPositionApisHolder {
             restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("DEBT-POSITIONS"));
         }
 
-        this.debtPositionSearchControllerApi = new DebtPositionSearchControllerApi(apiClient);
+        this.debtPositionEntityControllerApi = new DebtPositionEntityControllerApi(apiClient);
         this.debtPositionApi = new DebtPositionApi(apiClient);
         this.transferSearchControllerApi = new TransferSearchControllerApi(apiClient);
         this.transferApi = new TransferApi(apiClient);
@@ -73,8 +73,8 @@ public class DebtPositionApisHolder {
         authContextHolder.remove();
     }
 
-    public DebtPositionSearchControllerApi getDebtPositionSearchControllerApi(String accessToken) {
-        return getApi(accessToken, null, debtPositionSearchControllerApi);
+    public DebtPositionEntityControllerApi getDebtPositionEntityControllerApi(String accessToken) {
+        return getApi(accessToken, null, debtPositionEntityControllerApi);
     }
 
     public DebtPositionApi getDebtPositionApi(String accessToken){
