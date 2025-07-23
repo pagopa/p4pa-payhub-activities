@@ -77,7 +77,7 @@ class DebtPositionServiceTest {
         InstallmentDTO installment2 = new InstallmentDTO();
         installment2.setStatus(unpaidStatus);
         installment2.setDueDate(now.plusDays(5));
-        installment1.setSwitchToExpired(Boolean.TRUE);
+        installment2.setSwitchToExpired(Boolean.TRUE);
 
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installment1, installment2));
 

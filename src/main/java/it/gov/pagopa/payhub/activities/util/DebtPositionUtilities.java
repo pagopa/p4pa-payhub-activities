@@ -24,8 +24,7 @@ public class DebtPositionUtilities {
     public static LocalDate calcDebtPositionNextDueDate(DebtPositionDTO debtPositionDTO){
         return debtPositionDTO.getPaymentOptions().stream()
                 .flatMap(po ->po.getInstallments().stream())
-                .filter(i -> Boolean.TRUE.equals(i.getSwitchToExpired()))
-                .filter(i -> expirableStatuses.contains(i.getStatus()))
+                .filter(i -> expirableStatuses.contains(i.getStatus()) && Boolean.TRUE.equals(i.getSwitchToExpired()))
                 .map(InstallmentDTO::getDueDate)
                 .filter(Objects::nonNull)
                 .min(Comparator.naturalOrder())
