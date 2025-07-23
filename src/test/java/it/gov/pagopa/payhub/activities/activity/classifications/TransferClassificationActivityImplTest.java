@@ -162,4 +162,17 @@ class TransferClassificationActivityImplTest {
 
 		assertDoesNotThrow(() -> activity.classifyTransfer(transferSemanticKeyDTO));
 	}
+
+	@Test
+	void whenTransferHasDifferentOriginThenNotCallPaymentNotification() {
+		organization.setOrganizationId(999L);
+		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
+		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(transferDTO);
+		when(organizationServiceMock.getOrganizationByFiscalCode(transferDTO.getOrgFiscalCode())).thenReturn(Optional.of(organization));
+
+		assertDoesNotThrow(() -> activity.classifyTransfer(transferSemanticKeyDTO));
+
+		Mockito.verify(classificationServiceMock, Mockito.times(1)).deleteBySemanticKey(transferSemanticKeyDTO);
+		Mockito.verify(transferServiceMock, Mockito.times(1)).findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet);
+		Mockito.verify(paymentsReportingServiceMock, Mockito.times(0)).getByTransferSemanticKey(transferSemanticKeyDTO);}
 }
