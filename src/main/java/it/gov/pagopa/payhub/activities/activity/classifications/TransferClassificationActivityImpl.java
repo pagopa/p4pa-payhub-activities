@@ -8,8 +8,10 @@ import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportin
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationService;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
@@ -18,6 +20,7 @@ import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferReportedRequest;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +41,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	private final TreasuryService treasuryService;
 	private final InstallmentService installmentService;
 	private final PaymentNotificationService paymentNotificationService;
+	private final OrganizationService organizationService;
 
 	public TransferClassificationActivityImpl(ClassificationService classificationService,
 	                                          TransferService transferService,
@@ -46,7 +50,8 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 	                                          TransferClassificationStoreService transferClassificationStoreService,
 	                                          TreasuryService treasuryService,
 	                                          InstallmentService installmentService,
-	                                          PaymentNotificationService paymentNotificationService) {
+	                                          PaymentNotificationService paymentNotificationService,
+      OrganizationService organizationService) {
 		this.classificationService = classificationService;
 		this.transferService = transferService;
 		this.paymentsReportingService = paymentsReportingService;
@@ -55,7 +60,8 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
         this.treasuryService = treasuryService;
 		this.installmentService = installmentService;
 		this.paymentNotificationService = paymentNotificationService;
-	}
+    this.organizationService = organizationService;
+  }
 
 	@Override
 	public void classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
@@ -69,6 +75,14 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 
 		// Retrieve Transfer 2 classify
 		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_PAYED_STATUSES_SET);
+
+		// Exclude transfer if exists from different organization origin
+		if(transferDTO!=null) {
+			Organization organization = organizationService.getOrganizationByFiscalCode(transferDTO.getOrgFiscalCode())
+					.orElseThrow(() -> new OrganizationNotFoundException("Organization not foud with fiscalCode "+transferDTO.getOrgFiscalCode()));
+			if(!transferSemanticKey.getOrgId().equals(organization.getOrganizationId()))
+				return;
+		}
 
 		// find Installment related to the transfer
 		Optional<InstallmentNoPII> optionalInstallmentNoPII = findInstallment(transferDTO);
