@@ -137,6 +137,7 @@ class TransferClassificationActivityImplTest {
 		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.ofNullable(installmentDTO));
 		when(paymentNotificationServiceMock.getByOrgIdAndIud(transferSemanticKeyDTO.getOrgId(), installmentDTO.getIud())).thenReturn(paymentNotificationDTO);
 		when(paymentsReportingServiceMock.getByTransferSemanticKey(transferSemanticKeyDTO)).thenReturn(null);
+		when(organizationServiceMock.getOrganizationByFiscalCode(transferDTO.getOrgFiscalCode())).thenReturn(Optional.of(organization));
 		when(transferClassificationServiceMock.defineLabels(transferDTO, installmentDTO, paymentNotificationDTO, null, null)).thenReturn(List.of(ClassificationsEnum.RT_NO_IUF));
 		doReturn(1).when(transferClassificationStoreServiceMock)
 			.saveClassifications(transferSemanticKeyDTO, transferDTO, installmentDTO, null, null, paymentNotificationDTO, List.of(ClassificationsEnum.RT_NO_IUF));
