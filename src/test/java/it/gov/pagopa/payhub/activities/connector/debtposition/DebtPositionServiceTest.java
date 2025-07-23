@@ -72,10 +72,12 @@ class DebtPositionServiceTest {
         InstallmentDTO installment1 = new InstallmentDTO();
         installment1.setStatus(unpaidStatus);
         installment1.setDueDate(now.plusDays(10));
+        installment1.setSwitchToExpired(Boolean.TRUE);
 
         InstallmentDTO installment2 = new InstallmentDTO();
         installment2.setStatus(unpaidStatus);
         installment2.setDueDate(now.plusDays(5));
+        installment2.setSwitchToExpired(Boolean.TRUE);
 
         debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installment1, installment2));
 
@@ -91,6 +93,35 @@ class DebtPositionServiceTest {
         // Then
         assertNotNull(dueDate);
         assertEquals(installment2.getDueDate(), dueDate);
+        Mockito.verify(debtPositionClientMock).checkAndUpdateInstallmentExpiration(accessToken, 1L);
+    }
+
+    @Test
+    void givenCheckAndUpdateInstallmentExpirationWithSwitchToExpiredFalseThenNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+        InstallmentStatus unpaidStatus = InstallmentStatus.UNPAID;
+        LocalDate now = LocalDate.now();
+
+        InstallmentDTO installment1 = new InstallmentDTO();
+        installment1.setStatus(unpaidStatus);
+        installment1.setDueDate(now.plusDays(10));
+        installment1.setSwitchToExpired(Boolean.FALSE);
+
+        debtPositionDTO.getPaymentOptions().getFirst().setInstallments(List.of(installment1));
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        Mockito.when(debtPositionClientMock.checkAndUpdateInstallmentExpiration(accessToken, 1L))
+                .thenReturn(debtPositionDTO);
+
+        // When
+        LocalDate dueDate = debtPositionService.checkAndUpdateInstallmentExpiration(1L);
+
+        // Then
+        assertNull(dueDate);
         Mockito.verify(debtPositionClientMock).checkAndUpdateInstallmentExpiration(accessToken, 1L);
     }
 
