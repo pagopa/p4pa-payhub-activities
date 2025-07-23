@@ -164,7 +164,7 @@ class TransferClassificationActivityImplTest {
 	}
 
 	@Test
-	void whenTransferHasDifferentOriginThenNotCallPaymentNotification() {
+	void whenTransferHasDifferentOriginThenNotCreateClassification() {
 		organization.setOrganizationId(999L);
 		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
 		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(transferDTO);
