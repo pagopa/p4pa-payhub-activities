@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
+
 @Service
 @Lazy
 @Slf4j
@@ -52,7 +54,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
         List<ReceiptErrorDTO> errorList = new ArrayList<>();
         ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
-        result.setFileVersion("1.0");
+        result.setFileVersion(ingestionFlowFile.getFileVersion());
         result.setOrganizationId(ingestionFlowFile.getOrganizationId());
         return result;
     }
@@ -64,6 +66,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                                  List<ReceiptErrorDTO> errorList,
                                  IngestionFlowFile ingestionFlowFile) {
         try {
+            setDefaultValues(receipt);
             ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
             receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
             return true;
