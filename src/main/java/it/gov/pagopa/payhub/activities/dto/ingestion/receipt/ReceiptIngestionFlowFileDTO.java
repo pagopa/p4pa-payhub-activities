@@ -242,7 +242,7 @@ public class ReceiptIngestionFlowFileDTO {
     @CsvBindByName(column = "de_nome_pa1", profiles = {V1_3})
     private String companyName;
 
-    @CsvBindByName(column = "cod_tassonomico_dovuto_pa1", required = true, profiles = {V1_3})
+    @CsvBindByName(column = "cod_tassonomico_dovuto_pa1", profiles = {V1_3})
     private String transferCategory;
 
     public enum EntityIdType {
