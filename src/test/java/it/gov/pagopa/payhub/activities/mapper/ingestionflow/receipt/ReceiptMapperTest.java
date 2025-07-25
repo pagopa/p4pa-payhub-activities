@@ -103,8 +103,10 @@ class ReceiptMapperTest {
         }
 
         String rtFilePath = "RT/FILE/PATH.xml";
-        Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
-                .thenReturn(rtFilePath);
+        if (!codPaymentResult) {
+            Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
+                    .thenReturn(rtFilePath);
+        }
 
         // When
         ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
@@ -112,7 +114,7 @@ class ReceiptMapperTest {
         // Then
         TestUtils.checkNotNullFields(result, "receiptId", "officeName", "pspFiscalCode", "pspPartitaIva",
                 "idChannel", "channelDescription", "paymentMethod", "applicationDate", "transferDate", "standin",
-                "creationDate", "updateDate", "metadata");
+                "creationDate", "updateDate", "metadata", "rtFilePath");
         TestUtils.checkNotNullFields(result.getDebtor());
         TestUtils.checkNotNullFields(result.getPayer());
         if (!codPaymentResult) {
