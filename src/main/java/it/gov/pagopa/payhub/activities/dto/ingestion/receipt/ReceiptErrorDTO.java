@@ -13,12 +13,10 @@ import lombok.experimental.SuperBuilder;
 public class ReceiptErrorDTO extends ErrorFileDTO {
 
     private Long rowNumber;
-    private String codIuv;
 
-    public ReceiptErrorDTO(String fileName, String codIuv, Long rowNumber, String errorCode, String errorMessage) {
+    public ReceiptErrorDTO(String fileName, Long rowNumber, String errorCode, String errorMessage) {
         super(fileName, errorCode, errorMessage);
         this.rowNumber = rowNumber;
-        this.codIuv = codIuv;
     }
 
     @Override
@@ -26,7 +24,6 @@ public class ReceiptErrorDTO extends ErrorFileDTO {
         return new String[]{
                 getFileName(),
                 rowNumber.toString(),
-                codIuv,
                 getErrorCode(), getErrorMessage()
         };
     }

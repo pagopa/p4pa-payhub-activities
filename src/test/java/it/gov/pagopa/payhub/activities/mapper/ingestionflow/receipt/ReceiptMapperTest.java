@@ -57,9 +57,7 @@ class ReceiptMapperTest {
             request.getReceipt().setPayer(null);
         //fix due to the fact that the field setter has non-standard name
         request.getReceipt().setPSPCompanyName(podamFactory.manufacturePojo(String.class));
-        request.getReceipt().getTransferList().getTransfers().forEach(t -> {
-            t.setIBAN(podamFactory.manufacturePojo(String.class));
-        });
+        request.getReceipt().getTransferList().getTransfers().forEach(t -> t.setIBAN(podamFactory.manufacturePojo(String.class)));
         request.getReceipt().getTransferList().getTransfers().getFirst().setMBDAttachment(podamFactory.manufacturePojo(byte[].class));
 
         Organization organization = new Organization();
@@ -101,11 +99,14 @@ class ReceiptMapperTest {
         ReceiptIngestionFlowFileDTO request = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
         if (codPaymentResult) {
             request.setOutcome("1");
+            request.setRt(null);
         }
 
         String rtFilePath = "RT/FILE/PATH.xml";
-        Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
-                .thenReturn(rtFilePath);
+        if (!codPaymentResult) {
+            Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
+                    .thenReturn(rtFilePath);
+        }
 
         // When
         ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
@@ -113,14 +114,14 @@ class ReceiptMapperTest {
         // Then
         TestUtils.checkNotNullFields(result, "receiptId", "officeName", "pspFiscalCode", "pspPartitaIva",
                 "idChannel", "channelDescription", "paymentMethod", "applicationDate", "transferDate", "standin",
-                "creationDate", "updateDate", "metadata");
+                "creationDate", "updateDate", "metadata", "rtFilePath");
         TestUtils.checkNotNullFields(result.getDebtor());
         TestUtils.checkNotNullFields(result.getPayer());
         if (!codPaymentResult) {
             Assertions.assertEquals("OK", result.getOutcome());
+            Assertions.assertEquals(rtFilePath, result.getRtFilePath());
         }
         Assertions.assertEquals(ingestionFlowFile.getIngestionFlowFileId(), result.getIngestionFlowFileId());
-        Assertions.assertEquals(rtFilePath, result.getRtFilePath());
         result.getTransfers().forEach((transfer -> TestUtils.checkNotNullFields(transfer, "iban", "metadata")));
     }
 
