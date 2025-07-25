@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.eq;
 class ReceiptErrorsArchiverServiceTest {
 
     public static final String FILE_NAME = "fileName";
-    public static final String COD_IUV = "codIuv";
     public static final String ERROR_CODE = "errorCode";
     public static final String ERROR_MESSAGE = "errorMessage";
     private final String errorFolder = "error";
@@ -49,8 +48,8 @@ class ReceiptErrorsArchiverServiceTest {
     @Test
     void whenValidInputThenCreatesAndArchivesCsv() throws IOException {
         List<ReceiptErrorDTO> errorDTOList = List.of(
-                new ReceiptErrorDTO(FILE_NAME, COD_IUV, 1L, ERROR_CODE, ERROR_MESSAGE),
-                new ReceiptErrorDTO(FILE_NAME, COD_IUV, 1L, ERROR_CODE, ERROR_MESSAGE)
+                new ReceiptErrorDTO(FILE_NAME, 1L, ERROR_CODE, ERROR_MESSAGE),
+                new ReceiptErrorDTO(FILE_NAME, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -81,7 +80,7 @@ class ReceiptErrorsArchiverServiceTest {
     @Test
     void whenIOExceptionThenThrowsActivitiesException() throws IOException {
         List<ReceiptErrorDTO> errorDTOList = List.of(
-                new ReceiptErrorDTO(FILE_NAME, COD_IUV, 1L, ERROR_CODE, ERROR_MESSAGE)
+                new ReceiptErrorDTO(FILE_NAME, 1L, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
