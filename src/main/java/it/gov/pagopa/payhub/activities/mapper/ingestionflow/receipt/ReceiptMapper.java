@@ -104,7 +104,7 @@ public class ReceiptMapper {
                 .paymentAmountCents(Utilities.bigDecimalEuroToLongCentsAmount(receipt.getPaymentAmountCents()))
                 .creditorReferenceId(receipt.getCreditorReferenceId())
                 .description(receipt.getRemittanceInformation())
-                .paymentNote("9/".concat(receipt.getPaymentNote()))
+                .paymentNote(StringUtils.isNotBlank(receipt.getPaymentNote()) ? "9/".concat(receipt.getPaymentNote()) : null)
                 .debtPositionTypeOrgCode(receipt.getDebtPositionTypeOrgCode())
                 .feeCents(bigDecimalEuroToLongCentsAmount(receipt.getFeeCents()))
                 .balance(receipt.getBalance())
