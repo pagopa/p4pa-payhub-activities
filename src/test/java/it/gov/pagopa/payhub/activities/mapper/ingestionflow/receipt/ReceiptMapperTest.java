@@ -121,7 +121,7 @@ class ReceiptMapperTest {
         if (!codPaymentResult) {
             Assertions.assertEquals("OK", result.getOutcome());
             Assertions.assertEquals(rtFilePath, result.getRtFilePath());
-            Assertions.assertEquals(request.getPaymentNote(), result.getPaymentNote());
+            Assertions.assertEquals("9/".concat(request.getPaymentNote()), result.getPaymentNote());
         }
         Assertions.assertEquals(ingestionFlowFile.getIngestionFlowFileId(), result.getIngestionFlowFileId());
         result.getTransfers().forEach((transfer -> TestUtils.checkNotNullFields(transfer, "iban", "metadata")));
