@@ -39,5 +39,8 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorTest {
 
         assertNotNull(dto.getRemittanceInformation());
         assertNotNull(dto.getFiscalCodePA());
+        assertNotNull(dto.getIdTransfer());
+        assertNotNull(dto.getSinglePaymentAmount());
+        assertNotNull(dto.getTransferCategory());
     }
 }
