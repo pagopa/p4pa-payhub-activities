@@ -18,11 +18,17 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorTest {
         ReceiptIngestionFlowFileDTO dto =  podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
         dto.setRemittanceInformation(null);
         dto.setFiscalCodePA(null);
+        dto.setIdTransfer(null);
+        dto.setSinglePaymentAmount(null);
+        dto.setTransferCategory(null);
 
         setDefaultValues(dto);
 
         assertEquals("Causale Default iuv: " + dto.getCreditorReferenceId(), dto.getRemittanceInformation());
         assertEquals(dto.getOrgFiscalCode(), dto.getFiscalCodePA());
+        assertEquals(1, dto.getIdTransfer());
+        assertEquals(dto.getSinglePaymentAmount(), dto.getPaymentAmountCents());
+        assertEquals("UNKNOWN", dto.getTransferCategory());
     }
 
     @Test

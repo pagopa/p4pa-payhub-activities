@@ -16,5 +16,17 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidator {
         if (StringUtils.isBlank(dto.getFiscalCodePA())) {
             dto.setFiscalCodePA(dto.getOrgFiscalCode());
         }
+
+        if (dto.getIdTransfer() == null) {
+            dto.setIdTransfer(1);
+        }
+
+        if (dto.getSinglePaymentAmount() == null) {
+            dto.setSinglePaymentAmount(dto.getPaymentAmountCents());
+        }
+
+        if (StringUtils.isBlank(dto.getTransferCategory())) {
+            dto.setTransferCategory("UNKNOWN");
+        }
     }
 }
