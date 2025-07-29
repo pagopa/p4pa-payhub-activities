@@ -100,6 +100,7 @@ class ReceiptMapperTest {
         if (codPaymentResult) {
             request.setOutcome("1");
             request.setRt(null);
+            request.setPaymentNote(null);
         }
 
         String rtFilePath = "RT/FILE/PATH.xml";
@@ -114,12 +115,13 @@ class ReceiptMapperTest {
         // Then
         TestUtils.checkNotNullFields(result, "receiptId", "officeName", "pspFiscalCode", "pspPartitaIva",
                 "idChannel", "channelDescription", "paymentMethod", "applicationDate", "transferDate", "standin",
-                "creationDate", "updateDate", "metadata", "rtFilePath");
+                "creationDate", "updateDate", "metadata", "rtFilePath", "paymentNote");
         TestUtils.checkNotNullFields(result.getDebtor());
         TestUtils.checkNotNullFields(result.getPayer());
         if (!codPaymentResult) {
             Assertions.assertEquals("OK", result.getOutcome());
             Assertions.assertEquals(rtFilePath, result.getRtFilePath());
+            Assertions.assertEquals(request.getPaymentNote(), result.getPaymentNote());
         }
         Assertions.assertEquals(ingestionFlowFile.getIngestionFlowFileId(), result.getIngestionFlowFileId());
         result.getTransfers().forEach((transfer -> TestUtils.checkNotNullFields(transfer, "iban", "metadata")));
