@@ -14,52 +14,55 @@ import java.util.List;
  */
 @Service
 public class PaymentsReporting2ReceiptMapper {
-	public static final String ANONYMOUS_PERSON = "ANONIMO";
-	public static final String ALIAS_TEMPLATE = "CODE_%s_" + ReceiptOriginType.PAYMENTS_REPORTING.getValue();
-	public static final String CHANNEL = "BATCH";
-	/** Taxonomy for general incomes */
-	public static final String DEFAULT_TRANSFER_CATEGORY = "9/0801100AP/";
+    public static final String ANONYMOUS_PERSON = "ANONIMO";
+    public static final String ALIAS_TEMPLATE = "CODE_%s_" + ReceiptOriginType.PAYMENTS_REPORTING.getValue();
+    public static final String CHANNEL = "BATCH";
+    /**
+     * Taxonomy for general incomes
+     */
+    public static final String DEFAULT_TRANSFER_CATEGORY = "9/0801100AP/";
 
-	public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, Organization organization) {
-		return new ReceiptWithAdditionalNodeDataDTO()
-			.ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
-			.receiptOrigin(ReceiptOriginType.PAYMENTS_REPORTING)
-			.paymentReceiptId(paymentsReporting.getIur())
-			.creditorReferenceId(paymentsReporting.getIuv())
-			.orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
-			.outcome(paymentsReporting.getPaymentOutcomeCode())
-			.noticeNumber(DebtPositionUtilities.iuv2nav(paymentsReporting.getIuv()))
-			.paymentAmountCents(paymentsReporting.getAmountPaidCents())
-			.description(paymentsReporting.getIuf())
-			.companyName(organization.getOrgName())
-			.idPsp(paymentsReporting.getPspIdentifier())
-			.pspFiscalCode(paymentsReporting.getSenderPspCode())
-			.pspCompanyName(paymentsReporting.getSenderPspName())
-			.idChannel(paymentsReporting.getIuv())
-			.channelDescription(CHANNEL)
-			.paymentDateTime(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getPayDate()))
-			.sourceFlowName(organization.getIpaCode() + "_IMPORT-DOVUTO")
-			.applicationDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getAcquiringDate()))
-			.transferDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getRegulationDate()))
-			.standin(false)
-			.debtor(buildAnonymousPerson())
-			.payer(buildAnonymousPerson())
-			.transfers(List.of(buildDummyTransfer(paymentsReporting, organization.getOrgFiscalCode())));
-	}
+    public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, Organization organization) {
+        return new ReceiptWithAdditionalNodeDataDTO()
+                .ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
+                .receiptOrigin(ReceiptOriginType.PAYMENTS_REPORTING)
+                .paymentReceiptId(paymentsReporting.getIur())
+                .creditorReferenceId(paymentsReporting.getIuv())
+                .orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
+                .outcome(paymentsReporting.getPaymentOutcomeCode())
+                .noticeNumber(DebtPositionUtilities.iuv2nav(paymentsReporting.getIuv()))
+                .paymentAmountCents(paymentsReporting.getAmountPaidCents())
+                .description(paymentsReporting.getIuf())
+                .companyName(organization.getOrgName())
+                .idPsp(paymentsReporting.getPspIdentifier())
+                .pspFiscalCode(paymentsReporting.getSenderPspCode())
+                .pspCompanyName(paymentsReporting.getSenderPspName())
+                .idChannel(paymentsReporting.getIuv())
+                .channelDescription(CHANNEL)
+                .paymentDateTime(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getPayDate()))
+                .sourceFlowName(organization.getIpaCode() + "_IMPORT-DOVUTO")
+                .applicationDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getAcquiringDate()))
+                .transferDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getRegulationDate()))
+                .standin(false)
+                .debtor(buildAnonymousPerson())
+                .payer(buildAnonymousPerson())
+                .transfers(List.of(buildDummyTransfer(paymentsReporting, organization.getOrgFiscalCode(), organization.getOrgName())));
+    }
 
-	private PersonDTO buildAnonymousPerson() {
-		return new PersonDTO()
-			.entityType(PersonEntityType.F)
-			.fiscalCode(ANONYMOUS_PERSON)
-			.fullName(ANONYMOUS_PERSON);
-	}
+    private PersonDTO buildAnonymousPerson() {
+        return new PersonDTO()
+                .entityType(PersonEntityType.F)
+                .fiscalCode(ANONYMOUS_PERSON)
+                .fullName(ANONYMOUS_PERSON);
+    }
 
-	private ReceiptTransferDTO buildDummyTransfer(PaymentsReporting paymentsReporting, String fiscalCodePA) {
-		return new ReceiptTransferDTO()
-			.idTransfer(1)
-			.transferAmountCents(paymentsReporting.getAmountPaidCents())
-			.fiscalCodePA(fiscalCodePA)
-			.remittanceInformation(ALIAS_TEMPLATE.formatted(paymentsReporting.getPaymentOutcomeCode()))
-			.transferCategory(DEFAULT_TRANSFER_CATEGORY);
-	}
+    private ReceiptTransferDTO buildDummyTransfer(PaymentsReporting paymentsReporting, String fiscalCodePA, String orgName) {
+        return new ReceiptTransferDTO()
+                .idTransfer(1)
+                .transferAmountCents(paymentsReporting.getAmountPaidCents())
+                .fiscalCodePA(fiscalCodePA)
+                .remittanceInformation(ALIAS_TEMPLATE.formatted(paymentsReporting.getPaymentOutcomeCode()))
+                .transferCategory(DEFAULT_TRANSFER_CATEGORY)
+                .companyName(orgName);
+    }
 }

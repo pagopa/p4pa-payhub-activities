@@ -101,6 +101,7 @@ class ReceiptMapperTest {
             request.setOutcome("1");
             request.setRt(null);
             request.setPaymentNote(null);
+            request.setSourceFlowName(null);
         }
 
         String rtFilePath = "RT/FILE/PATH.xml";
@@ -122,6 +123,9 @@ class ReceiptMapperTest {
             Assertions.assertEquals("OK", result.getOutcome());
             Assertions.assertEquals(rtFilePath, result.getRtFilePath());
             Assertions.assertEquals("9/".concat(request.getPaymentNote()), result.getPaymentNote());
+            Assertions.assertEquals(request.getSourceFlowName(), result.getSourceFlowName());
+        } else {
+            Assertions.assertEquals("rtFileName.csv", result.getSourceFlowName());
         }
         Assertions.assertEquals(ingestionFlowFile.getIngestionFlowFileId(), result.getIngestionFlowFileId());
         result.getTransfers().forEach((transfer -> TestUtils.checkNotNullFields(transfer, "iban", "metadata")));

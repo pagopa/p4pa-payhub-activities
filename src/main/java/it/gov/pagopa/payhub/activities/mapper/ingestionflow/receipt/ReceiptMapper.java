@@ -88,7 +88,7 @@ public class ReceiptMapper {
         return ReceiptWithAdditionalNodeDataDTO.builder()
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .receiptOrigin(ReceiptOriginType.RECEIPT_FILE)
-                .sourceFlowName(receipt.getSourceFlowName())
+                .sourceFlowName(receipt.getSourceFlowName() != null ? receipt.getSourceFlowName() : ingestionFlowFile.getFileName())
                 .rtFilePath(StringUtils.isNotBlank(receipt.getRt()) ? rtFileHandlerService.store(ingestionFlowFile.getOrganizationId(), receipt.getRt(), ingestionFlowFile.getFileName()) : null)
                 .iud(receipt.getIud())
                 .noticeNumber(DebtPositionUtilities.iuv2nav(receipt.getNoticeNumber()))
