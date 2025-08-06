@@ -91,7 +91,7 @@ public class ReceiptMapper {
                 .sourceFlowName(receipt.getSourceFlowName() != null ? receipt.getSourceFlowName() : ingestionFlowFile.getFileName())
                 .rtFilePath(StringUtils.isNotBlank(receipt.getRt()) ? rtFileHandlerService.store(ingestionFlowFile.getOrganizationId(), receipt.getRt(), ingestionFlowFile.getFileName()) : null)
                 .iud(receipt.getIud())
-                .noticeNumber(DebtPositionUtilities.iuv2nav(receipt.getNoticeNumber()))
+                .noticeNumber(DebtPositionUtilities.iuv2nav(receipt.getIuv()))
                 .orgFiscalCode(receipt.getOrgFiscalCode())
                 .paymentReceiptId(receipt.getPaymentReceiptId())
                 .paymentDateTime(Utilities.toOffsetDateTime(receipt.getPaymentDateTime()))

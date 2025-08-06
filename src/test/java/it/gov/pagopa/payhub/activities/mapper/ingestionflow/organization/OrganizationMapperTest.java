@@ -57,6 +57,6 @@ class OrganizationMapperTest {
     Assertions.assertFalse(result.getFlagNotifyOutcomePush());
     Assertions.assertFalse(result.getFlagPaymentNotification());
     TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "organizationId","password", "ioApiKey", "sendApiKey");
+        "updateTraceId", "organizationId","password", "ioApiKey", "sendApiKey", "generateNoticeApiKey");
   }
 }

@@ -21,6 +21,6 @@ public class WorkflowHubClient {
     }
 
     public WorkflowExecutionStatus waitWorkflowCompletion(String accessToken, String workflowId, Integer maxAttempts, Integer retryDelayMs){
-        return workflowHubApisHolder.getWorkflowHubApi(accessToken).waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs);
+        return workflowHubApisHolder.getWorkflowHubApi(accessToken).waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs).getStatus();
     }
 }

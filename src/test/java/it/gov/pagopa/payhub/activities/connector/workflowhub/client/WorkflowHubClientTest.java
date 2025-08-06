@@ -1,8 +1,11 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub.client;
 
+import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.config.WorkflowHubApisHolder;
 import it.gov.pagopa.pu.workflowhub.controller.generated.WorkflowApi;
+import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,21 +17,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class WorkflowHubClientTest {
 
     @Mock
-    private WorkflowHubApisHolder workflowHubApisHolder;
+    private WorkflowHubApisHolder workflowHubApisHolderMock;
     @Mock
-    private WorkflowApi workflowApi;
+    private WorkflowApi workflowApiMock;
 
     private WorkflowHubClient client;
 
     @BeforeEach
     void setUp() {
-        client = new WorkflowHubClient(workflowHubApisHolder);
+        client = new WorkflowHubClient(workflowHubApisHolderMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                workflowHubApisHolder
+                workflowHubApisHolderMock,
+                workflowApiMock
         );
     }
 
@@ -38,15 +42,18 @@ class WorkflowHubClientTest {
         String accessToken = "ACCESSTOKEN";
         String workflowId = "workflowId";
 
-        Mockito.when(workflowHubApisHolder.getWorkflowHubApi(accessToken))
-                .thenReturn(workflowApi);
+        Mockito.when(workflowHubApisHolderMock.getWorkflowHubApi(accessToken))
+                .thenReturn(workflowApiMock);
+
+        WorkflowStatusDTO expectedResult = new WorkflowStatusDTO();
+        Mockito.when(workflowApiMock.getWorkflowStatus(workflowId))
+                .thenReturn(expectedResult);
 
         // When
-        client.getWorkflowStatus(accessToken, workflowId);
+        WorkflowStatusDTO result = client.getWorkflowStatus(accessToken, workflowId);
 
         // Then
-        Mockito.verify(workflowApi)
-                .getWorkflowStatus(workflowId);
+        Assertions.assertSame(expectedResult, result);
     }
 
     @Test
@@ -57,13 +64,16 @@ class WorkflowHubClientTest {
         Integer maxAttempts = 2;
         Integer retryDelayMs = 1;
 
-        Mockito.when(workflowHubApisHolder.getWorkflowHubApi(accessToken))
-                .thenReturn(workflowApi);
+        Mockito.when(workflowHubApisHolderMock.getWorkflowHubApi(accessToken))
+                .thenReturn(workflowApiMock);
+        WorkflowStatusDTO expectedResult = new WorkflowStatusDTO().status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+        Mockito.when(workflowApiMock.waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs))
+                .thenReturn(expectedResult);
 
         // When
-        client.waitWorkflowCompletion(accessToken, workflowId, maxAttempts, retryDelayMs);
+        WorkflowExecutionStatus result = client.waitWorkflowCompletion(accessToken, workflowId, maxAttempts, retryDelayMs);
 
         // Then
-        Mockito.verify(workflowApi).waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs);
+        Assertions.assertSame(expectedResult.getStatus(), result);
     }
 }
