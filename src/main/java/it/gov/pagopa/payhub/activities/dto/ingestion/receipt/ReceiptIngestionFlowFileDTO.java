@@ -30,7 +30,7 @@ public class ReceiptIngestionFlowFileDTO {
     private String iud;
 
     @CsvBindByName(column = "codIuv", required = true, profiles = {V1_0, V1_1, V1_2, V1_3})
-    private String noticeNumber;
+    private String iuv;
 
     @CsvBindByName(column = "versioneOggetto", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String objectVersion;
