@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class IudNoRtClassifierTest {
@@ -38,11 +38,11 @@ class IudNoRtClassifierTest {
         return Stream.of(
             Arguments.of(null, null, null, null),
             Arguments.of(validTransfer, null, null, null),
-            Arguments.of(null, validNotif, null, null),
+            Arguments.of(null, validNotif, null, ClassificationsEnum.IUD_NO_RT),
             Arguments.of(null, null, matchingInstallment, null),
             Arguments.of(validTransfer, validNotif, null, null),
             Arguments.of(validTransfer, null, matchingInstallment, null),
-            Arguments.of(null, validNotif, matchingInstallment, null),
+            Arguments.of(null, validNotif, matchingInstallment, ClassificationsEnum.IUD_NO_RT),
             Arguments.of(validTransfer, validNotif, matchingInstallment, null),
             Arguments.of(validTransfer, diffNotif, diffInstallment, ClassificationsEnum.IUD_NO_RT));
     }
