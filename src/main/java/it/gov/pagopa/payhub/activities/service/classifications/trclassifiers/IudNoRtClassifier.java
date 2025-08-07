@@ -19,6 +19,9 @@ public class IudNoRtClassifier implements TransferClassifier {
 			!installmentDTO.getAmountCents().equals(getIudAmountCents(paymentNotificationDTO))) {
 			return ClassificationsEnum.IUD_NO_RT;
 		}
+		if( transferDTO == null && paymentNotificationDTO!= null) {
+			return ClassificationsEnum.IUD_NO_RT;
+		}
 		return null;
 	}
 }

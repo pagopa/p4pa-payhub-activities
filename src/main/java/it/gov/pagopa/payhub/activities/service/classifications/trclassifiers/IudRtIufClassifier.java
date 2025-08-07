@@ -18,7 +18,7 @@ public class IudRtIufClassifier implements TransferClassifier {
 		if (transferDTO != null && installmentDTO != null && paymentNotificationDTO != null && paymentsReportingDTO != null &&
 			getAmountCents(transferDTO).equals(getTransferAmountCents(paymentsReportingDTO)) &&
 			installmentDTO.getAmountCents().equals(getIudAmountCents(paymentNotificationDTO))) {
-			return ClassificationsEnum.IUD_NO_RT;
+			return ClassificationsEnum.IUD_RT_IUF;
 		}
 		return null;
 	}

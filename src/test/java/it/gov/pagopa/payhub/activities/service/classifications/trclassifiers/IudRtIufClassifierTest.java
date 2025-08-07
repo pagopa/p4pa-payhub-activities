@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class IudRtIufClassifierTest {
@@ -47,7 +47,7 @@ class IudRtIufClassifierTest {
 			Arguments.of(transfer100, notif100, repMismatch, installment100, null),
 			Arguments.of(transfer100, notif100, rep100, null, null),
 			Arguments.of(transfer100, notif100, rep100, installment99, null),
-			Arguments.of(transfer100, notif100, rep100, installment100, ClassificationsEnum.IUD_NO_RT)
+			Arguments.of(transfer100, notif100, rep100, installment100, ClassificationsEnum.IUD_RT_IUF)
 		);
 	}
 }
