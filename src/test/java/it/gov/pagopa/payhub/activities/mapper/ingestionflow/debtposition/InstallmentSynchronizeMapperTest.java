@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +37,21 @@ class InstallmentSynchronizeMapperTest {
     void givenMapThenOk() {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setExecutionConfig(null);
+
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
+
+        assertEquals(4, Objects.requireNonNull(result.getAdditionalTransfers()).size());
+        assertEquals(NullNode.instance, result.getExecutionConfig());
+        checkNotNullFields(result);
+    }
+
+    @Test
+    void givenMapUsingSecondarioThenOk() {
+        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setExecutionConfig(null);
+        MultiValuedMap<String, String> secondario = new ArrayListValuedHashMap<>();
+        installmentIngestionFlowFileDTO.getTransfer2().entries().forEach(e -> secondario.put(e.getKey(), e.getValue()));
+        installmentIngestionFlowFileDTO.setTransfer2(secondario);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
 
@@ -114,7 +131,7 @@ class InstallmentSynchronizeMapperTest {
                 installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME)
         );
 
-        assertEquals("Missing required value for keys: causaleVersamentoEnte or remittanceInformation", exception.getMessage());
+        assertEquals("Missing required value for keys: [causaleVersamentoEnte, remittanceInformation]", exception.getMessage());
     }
 
     @Test
