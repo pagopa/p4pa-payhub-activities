@@ -7,8 +7,11 @@ import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,14 +28,17 @@ public class SendNotificationProcessingService extends
 
   private final SendNotificationService sendNotificationService;
   private final SendService sendService;
+  private final SendNotificationMapper mapper;
 
   public SendNotificationProcessingService(
       SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
       SendNotificationService sendNotificationService,
-      OrganizationService organizationService, SendService sendService) {
+      OrganizationService organizationService, SendService sendService,
+      SendNotificationMapper mapper) {
     super(sendNotificationErrorArchiverService, organizationService);
     this.sendNotificationService = sendNotificationService;
     this.sendService = sendService;
+    this.mapper = mapper;
   }
 
   /**
@@ -63,7 +69,15 @@ public class SendNotificationProcessingService extends
       List<SendNotificationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
 
       try {
-        // to be implemented
+        CreateNotificationResponse createResponse =  sendNotificationService
+            .createSendNotification(mapper.buildCreateNotificationRequest(row));
+        if(createResponse!=null)
+        {
+          SendNotificationDTO sendNotificationDTO = sendNotificationService.getSendNotification(createResponse.getSendNotificationId());
+          //TODO preload and upload notification
+          // potential solution:
+          // if can read shared directory we can copy uploaded file to SEND directory with the FileArchiverService
+        }
         return true;
       } catch (Exception e) {
         log.error("Error processing send notification: {}", e.getMessage());

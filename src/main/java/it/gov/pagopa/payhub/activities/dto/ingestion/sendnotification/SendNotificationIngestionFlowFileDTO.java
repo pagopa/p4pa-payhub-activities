@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification;
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +36,7 @@ public class SendNotificationIngestionFlowFileDTO {
   private String senderTaxId;
 
   @CsvBindByName(column = "amount")
-  private Integer amount;
+  private BigDecimal amount;
 
   @CsvBindByName(column = "paymentExpirationDate")
   @CsvDate(value = "yyyy-MM-dd")
