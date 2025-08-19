@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi171;
 
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,43 +44,11 @@ class TreasuryMapperOpi171ServiceTest {
 
     @Test
     void testApply_givenValidInput_whenMapping_thenCorrectResult() throws Exception {
-
-        FlussoGiornaleDiCassa flussoGiornaleDiCassa = new FlussoGiornaleDiCassa();
-
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa = createFGC();
         TestataMessaggio testataMessaggio = new TestataMessaggio();
         testataMessaggio.setCodiceEnteBT("12345678");
         testataMessaggio.setCodiceIstatEnte("98765432");
         flussoGiornaleDiCassa.getTestataMessaggio().add(testataMessaggio);
-
-        InformazioniContoEvidenza informazioniContoEvidenza = new InformazioniContoEvidenza();
-        InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza = new InformazioniContoEvidenza.MovimentoContoEvidenza();
-        InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = new InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente();
-        InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare sospesoDaRegolarizzare = new InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare();
-
-        flussoGiornaleDiCassa.getEsercizio().add(2023);
-
-        movimentoContoEvidenza.setTipoMovimento("ENTRATA");
-        movimentoContoEvidenza.setTipoDocumento("SOSPESO ENTRATA");
-        movimentoContoEvidenza.setTipoOperazione("ESEGUITO");
-        movimentoContoEvidenza.setNumeroBollettaQuietanza(BigInteger.ONE);
-        movimentoContoEvidenza.setImporto(BigDecimal.TEN);
-        movimentoContoEvidenza.setDataMovimento(toXMLGregorianCalendar(new GregorianCalendar(2023, Calendar.JANUARY, 1)));
-        movimentoContoEvidenza.setDataValutaEnte(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
-        sospesoDaRegolarizzare.setDataEffettivaSospeso(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
-        sospesoDaRegolarizzare.setCodiceGestionaleProvvisorio("ABC");
-        movimentoContoEvidenza.setSospesoDaRegolarizzare(sospesoDaRegolarizzare);
-        movimentoContoEvidenza.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890");
-        movimentoContoEvidenza.setEndToEndId("e2eId");
-        movimentoContoEvidenza.setCliente(cliente);
-        cliente.setAnagraficaCliente(LAST_NAME_CLIENTE);
-        cliente.setIndirizzoCliente(ADDRESS_CLIENTE);
-        cliente.setCapCliente(POSTAL_CODE);
-        cliente.setLocalitaCliente(CITY);
-        cliente.setCodiceFiscaleCliente(FISCAL_CODE);
-        cliente.setPartitaIvaCliente(VAT_NUMBER);
-
-        informazioniContoEvidenza.getMovimentoContoEvidenzas().add(movimentoContoEvidenza);
-        flussoGiornaleDiCassa.getInformazioniContoEvidenza().add(informazioniContoEvidenza);
 
         IngestionFlowFile ingestionFlowFileDTO = createIngestionFlowFile();
         Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
@@ -109,6 +79,73 @@ class TreasuryMapperOpi171ServiceTest {
                 "links"
         );
 
+    }
+
+    @Test
+    void testApply_givenTestataInputWithBlankValue_whenMapping_thenCorrectResult() throws Exception {
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa = createFGC();
+        TestataMessaggio testataMessaggio = new TestataMessaggio();
+        flussoGiornaleDiCassa.getTestataMessaggio().add(testataMessaggio);
+
+        IngestionFlowFile ingestionFlowFileDTO = createIngestionFlowFile();
+        Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
+
+        assertNotNull(result);
+        assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
+        assertFalse(result.get(TreasuryOperationEnum.INSERT).isEmpty());
+
+        List<Treasury> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
+        assertNotNull(treasuryDTOList);
+
+        Treasury treasuryDTO = treasuryDTOList.getFirst();
+        assertEquals("2023", treasuryDTO.getBillYear());
+        assertEquals("1", treasuryDTO.getBillCode());
+        assertEquals(ORG_BT_CODE_DEFAULT, treasuryDTO.getOrgBtCode());
+        assertEquals(ORG_ISTAT_CODE_DEFAULT, treasuryDTO.getOrgIstatCode());
+
+        TestUtils.checkNotNullFields(treasuryDTO,
+                "treasuryId", "updateOperatorExternalId", "updateTraceId", "iuv", "accountCode", "domainIdCode",
+                "transactionTypeCode", "remittanceCode", "documentYear", "sealCode",
+                "pspFirstName", "abiCode", "cabCode", "ibanCode", "accountRegistryCode",
+                "provisionalAe", "provisionalCode", "accountTypeCode", "processCode",
+                "executionPgCode", "transferPgCode", "processPgNumber", "regularized",
+                "links"
+        );
+    }
+
+    private FlussoGiornaleDiCassa createFGC() throws Exception {
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa = new FlussoGiornaleDiCassa();
+
+        InformazioniContoEvidenza informazioniContoEvidenza = new InformazioniContoEvidenza();
+        InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza = new InformazioniContoEvidenza.MovimentoContoEvidenza();
+        InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = new InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente();
+        InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare sospesoDaRegolarizzare = new InformazioniContoEvidenza.MovimentoContoEvidenza.SospesoDaRegolarizzare();
+
+        flussoGiornaleDiCassa.getEsercizio().add(2023);
+
+        movimentoContoEvidenza.setTipoMovimento("ENTRATA");
+        movimentoContoEvidenza.setTipoDocumento("SOSPESO ENTRATA");
+        movimentoContoEvidenza.setTipoOperazione("ESEGUITO");
+        movimentoContoEvidenza.setNumeroBollettaQuietanza(BigInteger.ONE);
+        movimentoContoEvidenza.setImporto(BigDecimal.TEN);
+        movimentoContoEvidenza.setDataMovimento(toXMLGregorianCalendar(new GregorianCalendar(2023, Calendar.JANUARY, 1)));
+        movimentoContoEvidenza.setDataValutaEnte(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
+        sospesoDaRegolarizzare.setDataEffettivaSospeso(toXMLGregorianCalendar(new GregorianCalendar(2024, Calendar.JANUARY, 1)));
+        sospesoDaRegolarizzare.setCodiceGestionaleProvvisorio("ABC");
+        movimentoContoEvidenza.setSospesoDaRegolarizzare(sospesoDaRegolarizzare);
+        movimentoContoEvidenza.setCausale("ACCREDITI VARI LGPE-RIVERSAMENTO/URI/2024-12-15 IUV_TEST_RFS12345678901234567891234567890");
+        movimentoContoEvidenza.setEndToEndId("e2eId");
+        movimentoContoEvidenza.setCliente(cliente);
+        cliente.setAnagraficaCliente(LAST_NAME_CLIENTE);
+        cliente.setIndirizzoCliente(ADDRESS_CLIENTE);
+        cliente.setCapCliente(POSTAL_CODE);
+        cliente.setLocalitaCliente(CITY);
+        cliente.setCodiceFiscaleCliente(FISCAL_CODE);
+        cliente.setPartitaIvaCliente(VAT_NUMBER);
+
+        informazioniContoEvidenza.getMovimentoContoEvidenzas().add(movimentoContoEvidenza);
+        flussoGiornaleDiCassa.getInformazioniContoEvidenza().add(informazioniContoEvidenza);
+        return flussoGiornaleDiCassa;
     }
 
     private IngestionFlowFile createIngestionFlowFile() {

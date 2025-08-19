@@ -10,8 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
 import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCALDATE;
 import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class TreasuryCsvCompleteMapperTest {
@@ -28,6 +31,8 @@ class TreasuryCsvCompleteMapperTest {
 
         dto.setBillYear("2025");
         dto.setBillDate(LOCALDATE.toString());
+        dto.setOrgBtCode("BTCODE");
+        dto.setOrgIstatCode("ISTATCODE");
         dto.setReceptionDate(null);
         dto.setActualSuspensionDate(null);
         dto.setRegionValueDate(null);
@@ -40,5 +45,29 @@ class TreasuryCsvCompleteMapperTest {
         Assertions.assertNotNull(result);
         checkNotNullFields(result, "creationDate","updateDate","updateTraceId","treasuryId","updateOperatorExternalId", "links",
                 "receptionDate", "actualSuspensionDate", "regionValueDate");
+    }
+
+    @Test
+    void mapWithNullOrgValue() {
+        TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(
+                TreasuryCsvCompleteIngestionFlowFileDTO.class);
+
+        dto.setBillYear("2025");
+        dto.setBillDate(LOCALDATE.toString());
+        dto.setOrgBtCode(null);
+        dto.setOrgIstatCode(null);
+        dto.setReceptionDate(LOCALDATE.toString());
+        dto.setActualSuspensionDate(LOCALDATE.toString());
+        dto.setRegionValueDate(LOCALDATE.toString());
+
+        IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(123L);
+        ingestionFlowFile.setIngestionFlowFileId(1L);
+        var result = treasuryCsvCompleteMapper.map(dto, ingestionFlowFile);
+
+        assertEquals(ORG_BT_CODE_DEFAULT, result.getOrgBtCode());
+        assertEquals(ORG_ISTAT_CODE_DEFAULT, result.getOrgIstatCode());
+        Assertions.assertNotNull(result);
+        checkNotNullFields(result, "creationDate","updateDate","updateTraceId","treasuryId","updateOperatorExternalId", "links");
     }
 }
