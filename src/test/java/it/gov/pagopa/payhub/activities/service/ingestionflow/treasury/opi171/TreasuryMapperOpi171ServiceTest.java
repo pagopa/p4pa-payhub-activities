@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.InformazioniContoEvidenza;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.TestataMessaggio;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import java.math.BigDecimal;
@@ -43,6 +44,12 @@ class TreasuryMapperOpi171ServiceTest {
     void testApply_givenValidInput_whenMapping_thenCorrectResult() throws Exception {
 
         FlussoGiornaleDiCassa flussoGiornaleDiCassa = new FlussoGiornaleDiCassa();
+
+        TestataMessaggio testataMessaggio = new TestataMessaggio();
+        testataMessaggio.setCodiceEnteBT("12345678");
+        testataMessaggio.setCodiceIstatEnte("98765432");
+        flussoGiornaleDiCassa.getTestataMessaggio().add(testataMessaggio);
+
         InformazioniContoEvidenza informazioniContoEvidenza = new InformazioniContoEvidenza();
         InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza = new InformazioniContoEvidenza.MovimentoContoEvidenza();
         InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = new InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente();

@@ -86,19 +86,21 @@ class TreasuryClientTest {
         Long organizationId = 1L;
         String billCode = "BILL123";
         String billYear = "2023";
+        String orgBtCode = "BT123";
+        String orgIstatCode = "ISTAT123";
         String accessToken = "accessToken";
         Treasury expectedTreasury = new Treasury();
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear)).thenReturn(expectedTreasury);
+        when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode)).thenReturn(expectedTreasury);
 
         // When
-        Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, accessToken);
+        Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);
 
         // Then
         assertEquals(expectedTreasury, result);
         verify(classificationApisHolderMock.getTreasurySearchApi(accessToken), times(1))
-                .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear);
+                .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
     }
 
     @Test
@@ -107,14 +109,16 @@ class TreasuryClientTest {
         Long organizationId = 1L;
         String billCode = "BILL123";
         String billYear = "2023";
+        String orgBtCode = "BT123";
+        String orgIstatCode = "ISTAT123";
         String accessToken = "accessToken";
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear))
+        when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
-        Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, accessToken);
+        Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);
 
         // Then
         Assertions.assertNull(result);
@@ -145,19 +149,21 @@ class TreasuryClientTest {
         Long organizationId = 1L;
         String billCode = "BILL123";
         String billYear = "2023";
+        String orgBtCode = "BT123";
+        String orgIstatCode = "ISTAT123";
         String accessToken = "accessToken";
         Long expectedDeletedCount = 1L;
         TreasuryEntityExtendedControllerApi mockApi = mock(TreasuryEntityExtendedControllerApi.class);
         when(classificationApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear)).thenReturn(expectedDeletedCount);
+        when(mockApi.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode)).thenReturn(expectedDeletedCount);
 
         // When
-        Long result = treasuryClient.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken);
+        Long result = treasuryClient.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);
 
         // Then
         assertEquals(expectedDeletedCount, result);
         verify(classificationApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken), times(1))
-                .deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
+                .deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
     }
 
 

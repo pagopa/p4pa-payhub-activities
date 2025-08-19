@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi161;
 
+import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
@@ -17,10 +18,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE;
+
 @Service
 public class TreasuryMapperOpi161Service implements TreasuryMapperService<FlussoGiornaleDiCassa> {
     @Override
     public Map<TreasuryOperationEnum, List<Treasury>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFile ingestionFlowFileDTO) {
+        String orgBtCode = StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceEnteBT()) ? fGC.getTestataMessaggio().getFirst().getCodiceEnteBT() : ORG_BT_CODE;
+        String orgIstatCode = StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte()) ? fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte() : ORG_ISTAT_CODE;
 
         return fGC.getInformazioniContoEvidenza().stream()
                 .flatMap(infoContoEvidenza -> infoContoEvidenza.getMovimentoContoEvidenzas().stream())
@@ -37,6 +43,8 @@ public class TreasuryMapperOpi161Service implements TreasuryMapperService<Flusso
                     Treasury treasuryDTO = Treasury.builder()
                             .billYear(fGC.getEsercizio().getFirst().toString())
                             .billCode(movContoEvidenza.getNumeroBollettaQuietanza().toString())
+                            .orgBtCode(orgBtCode)
+                            .orgIstatCode(orgIstatCode)
                             .billAmountCents(movContoEvidenza.getImporto().movePointRight(2).longValueExact())
                             .billDate(Utilities.convertToLocalDate(movContoEvidenza.getDataMovimento()))
                             .receptionDate(OffsetDateTime.now())

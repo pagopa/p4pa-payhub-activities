@@ -10,6 +10,6 @@ import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 public interface TreasuryService {
     TreasuryIuf getByOrganizationIdAndIuf(Long organizationId, String iuf);
     Treasury insert(Treasury treasury);
-    Long deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear);
+    Long deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(Long organizationId, String billCode, String billYear, String orgBtCode, String orgIstatCode);
     Treasury getById(String treasuryId);
 }

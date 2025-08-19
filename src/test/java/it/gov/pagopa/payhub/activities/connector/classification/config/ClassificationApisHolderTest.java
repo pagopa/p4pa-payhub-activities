@@ -115,7 +115,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     void whenGetTreasuryEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> classificationApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
-                            .deleteByOrganizationIdAndBillCodeAndBillYear(1L, "billCode", "2021"),
+                            .deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(1L, "billCode", "2021", "btCode", "istatCode"),
                 new ParameterizedTypeReference<>() {},
                 classificationApisHolder::unload);
     }

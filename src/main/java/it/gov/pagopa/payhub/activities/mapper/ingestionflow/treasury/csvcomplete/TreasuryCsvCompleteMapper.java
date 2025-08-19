@@ -3,11 +3,15 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplet
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE;
 
 @Service
 public class TreasuryCsvCompleteMapper {
@@ -36,6 +40,8 @@ public class TreasuryCsvCompleteMapper {
         return Treasury.builder()
                 .billYear(dto.getBillYear())
                 .billCode(dto.getBillCode())
+                .orgBtCode(StringUtils.isNotBlank(dto.getOrgBtCode()) ? dto.getOrgBtCode() : ORG_BT_CODE)
+                .orgIstatCode(StringUtils.isNotBlank(dto.getOrgIstatCode()) ? dto.getOrgIstatCode() : ORG_ISTAT_CODE)
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .organizationId(ingestionFlowFile.getOrganizationId())
                 .iuf(dto.getIuf())

@@ -34,8 +34,8 @@ public class TreasuryServiceImpl implements TreasuryService {
     }
 
     @Override
-    public Long deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear) {
-        return treasuryClient.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, authnService.getAccessToken());
+    public Long deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(Long organizationId, String billCode, String billYear, String orgBtCode, String orgIstatCode) {
+        return treasuryClient.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode, authnService.getAccessToken());
     }
 
     @Override
