@@ -70,6 +70,9 @@ public class EmailTemplateResolverService {
             case INGESTION_RECEIPT_OK -> emailTemplatesConfiguration.getReceivedReceipt().getOk();
             case INGESTION_RECEIPT_KO -> emailTemplatesConfiguration.getReceivedReceipt().getKo();
 
+            case INGESTION_SEND_NOTIFICATION_OK -> null; //TODO fixme
+            case INGESTION_SEND_NOTIFICATION_KO -> null;
+
             case EXPORT_PAID_OK -> emailTemplatesConfiguration.getExportPaidFile().getOk();
             case EXPORT_PAID_KO -> emailTemplatesConfiguration.getExportPaidFile().getKo();
             case EXPORT_RECEIPTS_ARCHIVING_OK -> emailTemplatesConfiguration.getExportReceiptsArchivingFile().getOk();
