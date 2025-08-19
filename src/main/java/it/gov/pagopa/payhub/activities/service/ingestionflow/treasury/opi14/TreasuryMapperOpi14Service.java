@@ -18,17 +18,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE;
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
 
 @Service
 public class TreasuryMapperOpi14Service implements TreasuryMapperService<FlussoGiornaleDiCassa> {
 
     @Override
     public Map<TreasuryOperationEnum, List<Treasury>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFile ingestionFlowFileDTO) {
-        String orgBtCode = StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceEnteBT()) ? fGC.getTestataMessaggio().getFirst().getCodiceEnteBT() : ORG_BT_CODE;
-        String orgIstatCode = StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte()) ? fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte() : ORG_ISTAT_CODE;
-
         return fGC.getInformazioniContoEvidenza().stream()
                 .flatMap(infoContoEvidenza -> infoContoEvidenza.getMovimentoContoEvidenzas().stream())
                 .filter(movContoEvidenza -> movContoEvidenza.getTipoMovimento().equals("ENTRATA")
@@ -44,8 +41,8 @@ public class TreasuryMapperOpi14Service implements TreasuryMapperService<FlussoG
                     Treasury treasuryDTO = Treasury.builder()
                             .billYear(fGC.getEsercizio().getFirst().toString())
                             .billCode(movContoEvidenza.getNumeroBollettaQuietanza().toString())
-                            .orgBtCode(orgBtCode)
-                            .orgIstatCode(orgIstatCode)
+                            .orgBtCode(StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceEnteBT()) ? fGC.getTestataMessaggio().getFirst().getCodiceEnteBT() : ORG_BT_CODE_DEFAULT)
+                            .orgIstatCode(StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte()) ? fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte() : ORG_ISTAT_CODE_DEFAULT)
                             .billAmountCents(movContoEvidenza.getImporto().movePointRight(2).longValueExact())
                             .billDate(Utilities.convertToLocalDate(movContoEvidenza.getDataMovimento()))
                             .receptionDate(OffsetDateTime.now())

@@ -26,8 +26,8 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
     private final TreasuryErrorsArchiverService treasuryErrorsArchiverService;
     private final TreasuryService treasuryService;
 
-    public static final String ORG_BT_CODE = "0000000000";
-    public static final String ORG_ISTAT_CODE = "0000000000";
+    public static final String ORG_BT_CODE_DEFAULT = "0000000000";
+    public static final String ORG_ISTAT_CODE_DEFAULT = "0000000000";
 
     protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService, TreasuryService treasuryService) {
         this.mapperService = mapperService;

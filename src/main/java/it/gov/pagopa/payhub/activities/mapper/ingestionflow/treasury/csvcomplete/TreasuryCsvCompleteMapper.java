@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE;
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
 
 @Service
 public class TreasuryCsvCompleteMapper {
@@ -40,8 +40,8 @@ public class TreasuryCsvCompleteMapper {
         return Treasury.builder()
                 .billYear(dto.getBillYear())
                 .billCode(dto.getBillCode())
-                .orgBtCode(StringUtils.isNotBlank(dto.getOrgBtCode()) ? dto.getOrgBtCode() : ORG_BT_CODE)
-                .orgIstatCode(StringUtils.isNotBlank(dto.getOrgIstatCode()) ? dto.getOrgIstatCode() : ORG_ISTAT_CODE)
+                .orgBtCode(StringUtils.isNotBlank(dto.getOrgBtCode()) ? dto.getOrgBtCode() : ORG_BT_CODE_DEFAULT)
+                .orgIstatCode(StringUtils.isNotBlank(dto.getOrgIstatCode()) ? dto.getOrgIstatCode() : ORG_ISTAT_CODE_DEFAULT)
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .organizationId(ingestionFlowFile.getOrganizationId())
                 .iuf(dto.getIuf())

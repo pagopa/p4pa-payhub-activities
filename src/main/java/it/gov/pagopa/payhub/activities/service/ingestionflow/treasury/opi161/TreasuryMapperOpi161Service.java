@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi161;
 
-import io.micrometer.common.util.StringUtils;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
@@ -9,6 +8,7 @@ import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -18,16 +18,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE;
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
 
 @Service
 public class TreasuryMapperOpi161Service implements TreasuryMapperService<FlussoGiornaleDiCassa> {
     @Override
     public Map<TreasuryOperationEnum, List<Treasury>> apply(FlussoGiornaleDiCassa fGC, IngestionFlowFile ingestionFlowFileDTO) {
-        String orgBtCode = StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceEnteBT()) ? fGC.getTestataMessaggio().getFirst().getCodiceEnteBT() : ORG_BT_CODE;
-        String orgIstatCode = StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte()) ? fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte() : ORG_ISTAT_CODE;
-
         return fGC.getInformazioniContoEvidenza().stream()
                 .flatMap(infoContoEvidenza -> infoContoEvidenza.getMovimentoContoEvidenzas().stream())
                 .filter(movContoEvidenza -> movContoEvidenza.getTipoMovimento().equals("ENTRATA")
@@ -43,8 +40,8 @@ public class TreasuryMapperOpi161Service implements TreasuryMapperService<Flusso
                     Treasury treasuryDTO = Treasury.builder()
                             .billYear(fGC.getEsercizio().getFirst().toString())
                             .billCode(movContoEvidenza.getNumeroBollettaQuietanza().toString())
-                            .orgBtCode(orgBtCode)
-                            .orgIstatCode(orgIstatCode)
+                            .orgBtCode(StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceEnteBT()) ? fGC.getTestataMessaggio().getFirst().getCodiceEnteBT() : ORG_BT_CODE_DEFAULT)
+                            .orgIstatCode(StringUtils.isNotBlank(fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte()) ? fGC.getTestataMessaggio().getFirst().getCodiceIstatEnte() : ORG_ISTAT_CODE_DEFAULT)
                             .billAmountCents(movContoEvidenza.getImporto().movePointRight(2).longValueExact())
                             .billDate(Utilities.convertToLocalDate(movContoEvidenza.getDataMovimento()))
                             .receptionDate(OffsetDateTime.now())
