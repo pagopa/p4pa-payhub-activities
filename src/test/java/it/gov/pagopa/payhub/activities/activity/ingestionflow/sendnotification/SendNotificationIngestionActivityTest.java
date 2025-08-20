@@ -38,7 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 
 @ExtendWith(MockitoExtension.class)
-class SendNotificationIngestionActivityImplTest {
+class SendNotificationIngestionActivityTest {
 
   @Mock
   private CsvService csvServiceMock;
