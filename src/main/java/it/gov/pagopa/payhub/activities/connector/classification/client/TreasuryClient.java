@@ -31,12 +31,12 @@ public class TreasuryClient {
         }
     }
 
-    public Treasury getBySemanticKey(Long organizationId, String billCode, String billYear, String accessToken) {
+    public Treasury getBySemanticKey(Long organizationId, String billCode, String billYear, String orgBtCode, String orgIstatCode, String accessToken) {
         try {
             return classificationApisHolder.getTreasurySearchApi(accessToken)
-                    .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear);
+                    .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
         } catch (HttpClientErrorException.NotFound e) {
-            log.info("Treasury not found: organizationId: {}, billCode: {}, billYear: {}", organizationId, billCode, billYear);
+            log.info("Treasury not found: organizationId: {}, billCode: {}, billYear: {}, orgBtCode: {}, orgIstatCode: {}", organizationId, billCode, billYear, orgBtCode, orgIstatCode);
             return null;
         }
     }
@@ -46,9 +46,9 @@ public class TreasuryClient {
                 .crudCreateTreasury(mapper.map(treasury));
     }
 
-    public Long deleteByOrganizationIdAndBillCodeAndBillYear(Long organizationId, String billCode, String billYear, String accessToken) {
+    public Long deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(Long organizationId, String billCode, String billYear, String orgBtCode, String orgIstatCode, String accessToken) {
         return classificationApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
-                .deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
+                .deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
     }
 
     public Treasury getById(String treasuryId, String accessToken) {

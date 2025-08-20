@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.TestataMessaggio;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TreasuryMapperOpi161ServiceTest {
@@ -39,8 +42,78 @@ class TreasuryMapperOpi161ServiceTest {
 
     @Test
     void testApply_givenValidInput_whenMapping_thenCorrectResult() throws Exception {
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa = createFGC();
+        TestataMessaggio testataMessaggio = new TestataMessaggio();
+        testataMessaggio.setCodiceEnteBT("12345678");
+        testataMessaggio.setCodiceIstatEnte("98765432");
+        flussoGiornaleDiCassa.getTestataMessaggio().add(testataMessaggio);
 
+        IngestionFlowFile ingestionFlowFileDTO = createIngestionFlowFile();
+        Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
+
+        assertNotNull(result);
+        assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
+        assertFalse(result.get(TreasuryOperationEnum.INSERT).isEmpty());
+
+        List<Treasury> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
+        assertNotNull(treasuryDTOList);
+
+        Treasury treasuryDTO = treasuryDTOList.getFirst();
+        assertEquals("2023", treasuryDTO.getBillYear());
+        assertEquals("1", treasuryDTO.getBillCode());
+        assertEquals(1000L, treasuryDTO.getBillAmountCents());
+        assertEquals(LAST_NAME_CLIENTE, treasuryDTO.getPspLastName());
+        assertEquals(ADDRESS_CLIENTE, treasuryDTO.getPspAddress());
+        assertEquals(POSTAL_CODE, treasuryDTO.getPspPostalCode());
+        assertEquals(CITY, treasuryDTO.getPspCity());
+        assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
+        assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
+        TestUtils.checkNotNullFields(treasuryDTO,
+                "treasuryId", "updateOperatorExternalId", "updateTraceId", "iuv", "accountCode", "domainIdCode",
+                "transactionTypeCode", "remittanceCode", "documentYear", "sealCode",
+                "pspFirstName", "abiCode", "cabCode", "ibanCode", "accountRegistryCode",
+                "provisionalAe", "provisionalCode", "accountTypeCode", "processCode",
+                "executionPgCode", "transferPgCode", "processPgNumber", "regularized",
+                "links"
+        );
+
+    }
+
+    @Test
+    void testApply_givenTestataInputWithBlankValue_whenMapping_thenCorrectResult() throws Exception {
+        FlussoGiornaleDiCassa flussoGiornaleDiCassa = createFGC();
+        TestataMessaggio testataMessaggio = new TestataMessaggio();
+        flussoGiornaleDiCassa.getTestataMessaggio().add(testataMessaggio);
+
+        IngestionFlowFile ingestionFlowFileDTO = createIngestionFlowFile();
+        Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
+
+        assertNotNull(result);
+        assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
+        assertFalse(result.get(TreasuryOperationEnum.INSERT).isEmpty());
+
+        List<Treasury> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
+        assertNotNull(treasuryDTOList);
+
+        Treasury treasuryDTO = treasuryDTOList.getFirst();
+        assertEquals("2023", treasuryDTO.getBillYear());
+        assertEquals("1", treasuryDTO.getBillCode());
+        assertEquals(ORG_BT_CODE_DEFAULT, treasuryDTO.getOrgBtCode());
+        assertEquals(ORG_ISTAT_CODE_DEFAULT, treasuryDTO.getOrgIstatCode());
+
+        TestUtils.checkNotNullFields(treasuryDTO,
+                "treasuryId", "updateOperatorExternalId", "updateTraceId", "iuv", "accountCode", "domainIdCode",
+                "transactionTypeCode", "remittanceCode", "documentYear", "sealCode",
+                "pspFirstName", "abiCode", "cabCode", "ibanCode", "accountRegistryCode",
+                "provisionalAe", "provisionalCode", "accountTypeCode", "processCode",
+                "executionPgCode", "transferPgCode", "processPgNumber", "regularized",
+                "links"
+        );
+    }
+
+    private FlussoGiornaleDiCassa createFGC() throws DatatypeConfigurationException {
         FlussoGiornaleDiCassa flussoGiornaleDiCassa = new FlussoGiornaleDiCassa();
+
         InformazioniContoEvidenza informazioniContoEvidenza = new InformazioniContoEvidenza();
         InformazioniContoEvidenza.MovimentoContoEvidenza movimentoContoEvidenza = new InformazioniContoEvidenza.MovimentoContoEvidenza();
         InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente cliente = new InformazioniContoEvidenza.MovimentoContoEvidenza.Cliente();
@@ -70,36 +143,7 @@ class TreasuryMapperOpi161ServiceTest {
 
         informazioniContoEvidenza.getMovimentoContoEvidenzas().add(movimentoContoEvidenza);
         flussoGiornaleDiCassa.getInformazioniContoEvidenza().add(informazioniContoEvidenza);
-
-        IngestionFlowFile ingestionFlowFileDTO = createIngestionFlowFile();
-        Map<TreasuryOperationEnum, List<Treasury>> result = treasuryMapperService.apply(flussoGiornaleDiCassa, ingestionFlowFileDTO);
-
-        assertNotNull(result);
-        assertTrue(result.containsKey(TreasuryOperationEnum.INSERT));
-        assertFalse(result.get(TreasuryOperationEnum.INSERT).isEmpty());
-
-        List<Treasury> treasuryDTOList = result.get(TreasuryOperationEnum.INSERT);
-        assertNotNull(treasuryDTOList);
-
-        Treasury treasuryDTO = treasuryDTOList.getFirst();
-        assertEquals("2023", treasuryDTO.getBillYear());
-        assertEquals("1", treasuryDTO.getBillCode());
-        assertEquals(1000L, treasuryDTO.getBillAmountCents());
-        assertEquals(LAST_NAME_CLIENTE, treasuryDTO.getPspLastName());
-        assertEquals(ADDRESS_CLIENTE, treasuryDTO.getPspAddress());
-        assertEquals(POSTAL_CODE, treasuryDTO.getPspPostalCode());
-        assertEquals(CITY, treasuryDTO.getPspCity());
-        assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
-        assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
-        TestUtils.checkNotNullFields(treasuryDTO,
-                "treasuryId","updateOperatorExternalId","updateTraceId","iuv","accountCode","domainIdCode",
-                "transactionTypeCode","remittanceCode","documentYear","sealCode",
-                "pspFirstName","abiCode","cabCode","ibanCode","accountRegistryCode",
-                "provisionalAe","provisionalCode","accountTypeCode","processCode",
-                "executionPgCode","transferPgCode","processPgNumber","regularized",
-                "links"
-        );
-
+        return flussoGiornaleDiCassa;
     }
 
     private IngestionFlowFile createIngestionFlowFile() {
