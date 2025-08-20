@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.sendnotification;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import com.opencsv.exceptions.CsvException;
