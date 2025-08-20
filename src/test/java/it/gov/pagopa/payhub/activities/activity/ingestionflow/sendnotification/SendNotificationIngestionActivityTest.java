@@ -4,7 +4,6 @@ import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doReturn;
 
@@ -79,15 +78,15 @@ class SendNotificationIngestionActivityTest {
   }
 
   @Test
-  void handleRetrievedFilesSuccessfully() throws Exception {
+  void givenValidIngestionFlowWhenProcessFileThenOk() throws IOException {
+    // Given
     Long ingestionFlowFileId = 1L;
-    Long organizationId = 10L;
     IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
-    ingestionFlowFileDTO.setOrganizationId(organizationId);
     ingestionFlowFileDTO.setFilePathName(workingDir.toString());
     ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.SEND_NOTIFICATION);
     Iterator<SendNotificationIngestionFlowFileDTO> iterator = buildSendNotificationIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
+    SendNotificationIngestionFlowFileResult expectedResult = buildSendNotificationIngestionFlowFileResult();
 
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
@@ -98,35 +97,30 @@ class SendNotificationIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(SendNotificationIngestionFlowFileDTO.class), any(), isNull()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(SendNotificationIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<SendNotificationIngestionFlowFileDTO>, List<CsvException>, SendNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
         });
 
     Mockito.when(sendNotificationProcessingService.processSendNotifications(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
-        .thenReturn(buildSendNotificationIngestionFlowFileResult());
+        .thenReturn(expectedResult);
 
     // When
     SendNotificationIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
     // Then
-    Assertions.assertEquals(
-        buildSendNotificationIngestionFlowFileResult(),
-        result);
+    Assertions.assertSame(expectedResult, result);
     Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
     Assertions.assertFalse(filePath.toFile().exists());
   }
-
 
   @Test
   void givenValidIngestionFlowWhenExceptionThenThrowInvalidIngestionFileException() throws IOException {
     // Given
     Long ingestionFlowFileId = 1L;
-    Long organizationId = 10L;
     IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile();
     ingestionFlowFileDTO.setFilePathName(workingDir.toString());
-    ingestionFlowFileDTO.setOrganizationId(organizationId);
     ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.SEND_NOTIFICATION);
     Iterator<SendNotificationIngestionFlowFileDTO> iterator = buildSendNotificationIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
@@ -140,7 +134,7 @@ class SendNotificationIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(SendNotificationIngestionFlowFileDTO.class), any(), isNull()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(SendNotificationIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<SendNotificationIngestionFlowFileDTO>, List<CsvException>, SendNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
@@ -166,7 +160,7 @@ class SendNotificationIngestionActivityTest {
   private Iterator<SendNotificationIngestionFlowFileDTO> buildSendNotificationIngestionFlowFileDTO() {
     List<SendNotificationIngestionFlowFileDTO> sendNotificationIngestionFlowFileDTOS = List.of(
         SendNotificationIngestionFlowFileDTO.builder()
-            .organizationId(10L)
+            .organizationId(1L)
             .paProtocolNumber("paProtocolNumber")
             .notificationFeePolicy("notificationFeePolicy")
             .physicalCommunicationType("physicalCommunicationType")
@@ -177,7 +171,7 @@ class SendNotificationIngestionActivityTest {
             .municipality("municipality")
             .build(),
         SendNotificationIngestionFlowFileDTO.builder()
-            .organizationId(10L)
+            .organizationId(1L)
             .paProtocolNumber("paProtocolNumber2")
             .notificationFeePolicy("notificationFeePolicy")
             .physicalCommunicationType("physicalCommunicationType")
