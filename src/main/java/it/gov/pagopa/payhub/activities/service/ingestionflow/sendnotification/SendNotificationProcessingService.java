@@ -74,9 +74,9 @@ public class SendNotificationProcessingService extends
         if(createResponse!=null)
         {
           SendNotificationDTO sendNotificationDTO = sendNotificationService.getSendNotification(createResponse.getSendNotificationId());
-          //TODO preload and upload notification
-          // potential solution:
-          // if can read shared directory we can copy uploaded file to SEND directory with the FileArchiverService
+          //TODO copy file to shared directory for preload and upload with the FileArchiverService
+          //sendService.preloadSendFile(sendNotificationDTO.getSendNotificationId());
+          //sendService.uploadSendFile(sendNotificationDTO.getSendNotificationId());
         }
         return true;
       } catch (Exception e) {
