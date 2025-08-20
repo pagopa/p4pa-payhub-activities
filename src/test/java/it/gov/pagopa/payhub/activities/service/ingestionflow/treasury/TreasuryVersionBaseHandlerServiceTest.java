@@ -190,7 +190,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(errorDTOS);
         when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
-        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear())).thenReturn(1L);
+        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(1L);
 
         // When
         Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
@@ -205,7 +205,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
                         .build(),
                 result.getLeft());
         Assertions.assertTrue(result.getRight().isEmpty());
-        verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear());
+        verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode());
         Mockito.verify(treasuryErrorsArchiverServiceMock)
                 .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
     }
@@ -232,7 +232,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(errorDTOS);
         when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
-        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear())).thenReturn(0L);
+        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(0L);
 
         // When
         Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
@@ -247,7 +247,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
                         .build(),
                 result.getLeft());
         Assertions.assertTrue(result.getRight().isEmpty());
-        verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear());
+        verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode());
 
         Mockito.verify(treasuryErrorsArchiverServiceMock)
                 .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
