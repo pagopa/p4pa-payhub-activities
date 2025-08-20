@@ -58,7 +58,7 @@ public class SendNotificationProcessingService extends
     List<SendNotificationErrorDTO> errorList = new ArrayList<>();
     SendNotificationIngestionFlowFileResult result = new SendNotificationIngestionFlowFileResult();
     process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
-    result.setFileVersion(ingestionFlowFile.getFileVersion());
+    result.setFileVersion("1.0");
     result.setOrganizationId(ingestionFlowFile.getOrganizationId());
     return result;
   }
@@ -69,14 +69,15 @@ public class SendNotificationProcessingService extends
       List<SendNotificationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
 
       try {
-        CreateNotificationResponse createResponse =  sendNotificationService
-            .createSendNotification(mapper.buildCreateNotificationRequest(row));
+        // TODO check notification if already exists in status UPLOADED/COMPLETE/ACCEPTED then skip row
+        CreateNotificationResponse createResponse =  sendNotificationService.createSendNotification(mapper.buildCreateNotificationRequest(row));
         if(createResponse!=null)
         {
           SendNotificationDTO sendNotificationDTO = sendNotificationService.getSendNotification(createResponse.getSendNotificationId());
           //TODO copy file to shared directory for preload and upload with the FileArchiverService
-          //sendService.preloadSendFile(sendNotificationDTO.getSendNotificationId());
-          //sendService.uploadSendFile(sendNotificationDTO.getSendNotificationId());
+          // destination folder {orgid}/data/send/{notificationId}/{notificationId}_{fileName}.pdf.chiper
+          // sendService.preloadSendFile(sendNotificationDTO.getSendNotificationId());
+          // sendService.uploadSendFile(sendNotificationDTO.getSendNotificationId());
         }
         return true;
       } catch (Exception e) {
