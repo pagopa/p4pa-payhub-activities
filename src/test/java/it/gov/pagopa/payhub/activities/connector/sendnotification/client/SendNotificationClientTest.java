@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
+import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
+import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -67,6 +69,45 @@ class SendNotificationClientTest {
 
         // When
         SendNotificationDTO result = client.findSendNotification(sendNotificationId, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void whenCreateSendNotificationThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+
+        CreateNotificationRequest request = new CreateNotificationRequest();
+        CreateNotificationResponse expectedResult = new CreateNotificationResponse();
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+            .thenReturn(sendNotificationApiMock);
+        Mockito.when(sendNotificationApiMock.createSendNotification(request))
+            .thenReturn(expectedResult);
+
+        // When
+        CreateNotificationResponse result = client.createSendNotification(request, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotExistentSendNotificationWhenCreateSendNotificationThenReturnNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+
+        CreateNotificationRequest request = new CreateNotificationRequest();
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+            .thenReturn(sendNotificationApiMock);
+        Mockito.when(sendNotificationApiMock.createSendNotification(request))
+            .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        CreateNotificationResponse result = client.createSendNotification(request, accessToken);
 
         // Then
         Assertions.assertNull(result);
