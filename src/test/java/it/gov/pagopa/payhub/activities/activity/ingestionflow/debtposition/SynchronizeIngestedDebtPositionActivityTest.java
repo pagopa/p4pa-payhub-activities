@@ -235,7 +235,10 @@ class SynchronizeIngestedDebtPositionActivityTest {
         DebtPositionDTO debtPosition3 = buildDebtPositionDTO();
         DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
 
-        List<DebtPositionDTO> debtPositionsExportIuv = List.of(debtPosition1, debtPosition2, debtPosition3, debtPosition4);
+        debtPosition3.setFlagPuPagoPaPayment(false);
+        debtPosition1.setFlagPuPagoPaPayment(false);
+
+        List<DebtPositionDTO> debtPositionsExportIuv = List.of(debtPosition2, debtPosition4);
         List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition2, debtPosition4);
         List<String> iuvListGenerateNotices = List.of("iuv", "iuv");
 
@@ -250,7 +253,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncCompleteDTO iupdSyncStatusUpdateDTO1 = new SyncCompleteDTO(InstallmentStatus.CANCELLED);
         SyncCompleteDTO iupdSyncStatusUpdateDTO2 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
-        SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.INVALID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.CANCELLED);
         SyncCompleteDTO iupdSyncStatusUpdateDTO4 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
         WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
