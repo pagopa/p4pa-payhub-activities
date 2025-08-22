@@ -235,12 +235,11 @@ class SynchronizeIngestedDebtPositionActivityTest {
         DebtPositionDTO debtPosition3 = buildDebtPositionDTO();
         DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
 
-        debtPosition3.setFlagPuPagoPaPayment(false);
         debtPosition1.setFlagPuPagoPaPayment(false);
 
-        List<DebtPositionDTO> debtPositionsExportIuv = List.of(debtPosition2, debtPosition4);
-        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition2, debtPosition4);
-        List<String> iuvListGenerateNotices = List.of("iuv", "iuv");
+        List<DebtPositionDTO> debtPositionsExportIuv = List.of(debtPosition3, debtPosition4);
+        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition4);
+        List<String> iuvListGenerateNotices = List.of("iuv");
 
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
