@@ -111,7 +111,7 @@ public class SendNotificationIngestionFlowFileDTO {
   @CsvBindAndJoinByName(column = "attachment.*_5", elementType = String.class)
   private MultiValuedMap<String, String> attachment5;
 
-  @CsvBindAndJoinByName(column = "document.*_1", elementType = String.class)
+  @CsvBindAndJoinByName(column = "document.*_1", elementType = String.class, required = true)
   private MultiValuedMap<String, String> document;
 
   @CsvBindAndJoinByName(column = "document.*_2", elementType = String.class)
