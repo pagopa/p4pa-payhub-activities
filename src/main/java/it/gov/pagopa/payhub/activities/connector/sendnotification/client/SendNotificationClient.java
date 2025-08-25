@@ -30,6 +30,16 @@ public class SendNotificationClient {
     }
   }
 
+  public SendNotificationDTO findSendNotificationByOrgIdAndNav(Long organizationId, String nav, String accessToken) {
+    try {
+      return sendApisHolder.getSendNotificationApi(accessToken)
+          .findSendNotificationByOrgIdAndNav(organizationId, nav);
+    } catch (HttpClientErrorException.NotFound e){
+      log.info("Cannot find SendNotification having orgId {} and nav {}", organizationId, nav);
+      return null;
+    }
+  }
+
   public CreateNotificationResponse createSendNotification(CreateNotificationRequest createNotificationRequest, String accessToken){
     try {
       return sendApisHolder.getSendNotificationApi(accessToken)

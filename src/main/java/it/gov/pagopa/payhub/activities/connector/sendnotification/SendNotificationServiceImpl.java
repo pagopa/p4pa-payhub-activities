@@ -28,4 +28,9 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     public CreateNotificationResponse createSendNotification(CreateNotificationRequest createNotificationRequest) {
         return sendNotificationClient.createSendNotification(createNotificationRequest, authnService.getAccessToken());
     }
+
+    @Override
+    public SendNotificationDTO findSendNotificationByOrgIdAndNav(Long organizationId, String nav) {
+        return sendNotificationClient.findSendNotificationByOrgIdAndNav(organizationId, nav, authnService.getAccessToken());
+    }
 }

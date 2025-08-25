@@ -10,7 +10,10 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotifi
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
+import it.gov.pagopa.pu.sendnotification.dto.generated.Payment;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -69,8 +72,15 @@ public class SendNotificationProcessingService extends
       List<SendNotificationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
 
       try {
-        // TODO check notification if already exists in status UPLOADED/COMPLETE/ACCEPTED then skip row
-        CreateNotificationResponse createResponse =  sendNotificationService.createSendNotification(mapper.buildCreateNotificationRequest(row));
+        CreateNotificationRequest createNotificationRequest = mapper.buildCreateNotificationRequest(row);
+
+        // check if exists a send notification with status UPLOADED/COMPLETE/ACCEPTED and if exists skip row
+        if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
+            && checkSendNotificationAlreadyExists(row.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
+          return false;
+        }
+
+        CreateNotificationResponse createResponse =  sendNotificationService.createSendNotification(createNotificationRequest);
         if(createResponse!=null)
         {
           SendNotificationDTO sendNotificationDTO = sendNotificationService.getSendNotification(createResponse.getSendNotificationId());
@@ -104,5 +114,15 @@ public class SendNotificationProcessingService extends
         .errorCode(errorCode)
         .errorMessage(message)
         .build();
+  }
+
+  private boolean checkSendNotificationAlreadyExists(Long organizationId, List<Payment> payments) {
+    return payments.stream()
+        .map(payment -> sendNotificationService.findSendNotificationByOrgIdAndNav(organizationId, payment.getPagoPa().getNoticeCode()))
+        .anyMatch(notificationDTO ->
+            notificationDTO.getStatus().equals(NotificationStatus.UPLOADED) ||
+            notificationDTO.getStatus().equals(NotificationStatus.COMPLETE) ||
+            notificationDTO.getStatus().equals(NotificationStatus.ACCEPTED)
+        );
   }
 }
