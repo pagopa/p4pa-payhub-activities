@@ -53,20 +53,20 @@ class SendNotificationMapperTest {
     dto.setDigitalDomicileType("PEC");
     // Payment and attachment
     MultiValuedMap<String, String> payment = new ArrayListValuedHashMap<>();
-    payment.put("paymentNoticeCode", "1234567890");
-    payment.put("paymentCreditorTaxId", "987654321");
-    payment.put("paymentApplyCost", "true");
+    payment.put("paymentNoticeCode_1", "1234567890");
+    payment.put("paymentCreditorTaxId_1", "987654321");
+    payment.put("paymentApplyCost_1", "true");
     MultiValuedMap<String, String> attachment = new ArrayListValuedHashMap<>();
-    attachment.put("attachmentFileName", "file.pdf");
-    attachment.put("attachmentDigest", "xxxyyyzzz");
-    attachment.put("attachmentContentType", "application/pdf");
+    attachment.put("attachmentFileName_1", "file.pdf");
+    attachment.put("attachmentDigest_1", "xxxyyyzzz");
+    attachment.put("attachmentContentType_1", "application/pdf");
     dto.setPayment(payment);
     dto.setAttachment(attachment);
     // Document
     MultiValuedMap<String, String> document = new ArrayListValuedHashMap<>();
-    document.put("documentFileName", "doc.pdf");
-    document.put("documentDigest", "digest123");
-    document.put("documentContentType", "application/pdf");
+    document.put("documentFileName_1", "doc.pdf");
+    document.put("documentDigest_1", "digest123");
+    document.put("documentContentType_1", "application/pdf");
     dto.setDocument(document);
     // When
     CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);

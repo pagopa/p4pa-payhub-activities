@@ -108,18 +108,16 @@ public class SendNotificationMapper {
   }
 
   private Document getDocument(SendNotificationIngestionFlowFileDTO dto, int index) {
-
     MultiValuedMap<String, String> map = getDocumentByIndex(dto, index);
 
-    if (map == null) {
-      throw new IllegalStateException("Missing or empty document map for index: " + index);
-    }
-
-    return Document.builder()
-        .fileName(getFirstValue(map, "documentFileName_"+index))
-        .digest(getFirstValue(map, "documentDigest_"+index))
-        .contentType(getFirstValue(map, "documentContentType_"+index))
-        .build();
+    if(map!=null && !map.isEmpty()){
+      return Document.builder()
+          .fileName(getFirstValue(map, "documentFileName_"+index))
+          .digest(getFirstValue(map, "documentDigest_"+index))
+          .contentType(getFirstValue(map, "documentContentType_"+index))
+          .build();
+      } else
+        return null;
   }
 
   private String getFirstValue(MultiValuedMap<String, String> map, String key) {
