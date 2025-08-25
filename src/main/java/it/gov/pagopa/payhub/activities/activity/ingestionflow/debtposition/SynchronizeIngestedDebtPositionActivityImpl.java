@@ -9,10 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDe
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.IUVArchivingExportFileService;
 import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedDebtPositions;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +19,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
@@ -72,6 +66,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         boolean hasMorePages = true;
 
         List<DebtPositionDTO> debtPositionsGenerateNotices = new ArrayList<>();
+        List<String> iuvListGenerateNotices = new ArrayList<>();
+        List<DebtPositionDTO> debtPositionsExportIuv = new ArrayList<>();
         List<InstallmentStatus> statusToExclude = List.of(InstallmentStatus.DRAFT);
 
         while (hasMorePages) {
@@ -96,7 +92,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                                 .append(debtPosition.getIupdOrg())
                                 .append(" terminated with error status.");
                     } else if (debtPosition.getFlagPuPagoPaPayment()) {
-                        debtPositionsGenerateNotices.add(debtPosition);
+                        debtPositionsExportIuv.add(debtPosition);
+                        addIuvListToGenerateNotice(ingestionFlowFileId, debtPosition, debtPositionsGenerateNotices, iuvListGenerateNotices);
                     }
                 } catch (Exception e) {
                     log.error("Error waiting for debt position sync workflowId with id {} and iupdOrg {}: {}", workflow.getWorkflowId(), debtPosition.getIupdOrg(), e.getMessage());
@@ -112,25 +109,53 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
         log.info("Synchronization of all debt positions related to ingestion flow file id {} completed", ingestionFlowFileId);
 
-        String pdfGeneratedId = null;
-        Path csvPath = null;
-        if (!debtPositionsGenerateNotices.isEmpty()) {
-            try {
-                pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices);
-            } catch (Exception e) {
-                log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}: {}", ingestionFlowFileId, e.getMessage());
-                errors.append("\nError on generate notice massive for ingestionFlowFileId ")
-                        .append(ingestionFlowFileId).append(": ")
-                        .append(e.getMessage());
-            }
-            csvPath = iuvArchivingExportFileService.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId);
-        }
+        String pdfGeneratedId = retrievePdfGeneratedIdFromGenerateNotice(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices, errors);
+        Path csvPath = createIuvArchivingExportFile(ingestionFlowFileId, debtPositionsExportIuv);
 
         return SyncIngestedDebtPositionDTO.builder()
                 .errorsDescription(errors.toString())
                 .pdfGeneratedId(pdfGeneratedId)
                 .iuvFileName(csvPath != null ? csvPath.getFileName().toString() : null)
                 .build();
+    }
+
+    private Path createIuvArchivingExportFile(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionExportIuv) {
+        Path csvPath = null;
+        if (!debtPositionExportIuv.isEmpty()) {
+            csvPath = iuvArchivingExportFileService.executeExport(debtPositionExportIuv, ingestionFlowFileId);
+        }
+        return csvPath;
+    }
+
+    private String retrievePdfGeneratedIdFromGenerateNotice(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices, StringBuilder errors) {
+        String pdfGeneratedId = null;
+
+        if (!debtPositionsGenerateNotices.isEmpty()) {
+            try {
+                pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices);
+            } catch (Exception e) {
+                log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}: {}", ingestionFlowFileId, e.getMessage());
+                errors.append("\nError on generate notice massive for ingestionFlowFileId ")
+                        .append(ingestionFlowFileId).append(": ")
+                        .append(e.getMessage());
+            }
+        }
+        return pdfGeneratedId;
+    }
+
+    private void addIuvListToGenerateNotice(Long ingestionFlowFileId, DebtPositionDTO debtPosition, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices) {
+        List<String> iuvList = debtPosition.getPaymentOptions().stream()
+                .flatMap(paymentOption -> paymentOption.getInstallments().stream()
+                        .filter(installment -> Boolean.TRUE.equals(installment.getGenerateNotice()) &&
+                                ingestionFlowFileId.equals(installment.getIngestionFlowFileId()) &&
+                                !InstallmentStatus.CANCELLED.equals(Objects.requireNonNull(installment.getSyncStatus()).getSyncStatusTo()))
+                        .map(InstallmentDTO::getIuv))
+                .toList();
+
+        if (!iuvList.isEmpty()) {
+            debtPositionsGenerateNotices.add(debtPosition);
+            iuvListGenerateNotices.addAll(iuvList);
+        }
     }
 
     private List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> syncDebtPositions(Long ingestionFlowFileId, PagedDebtPositions pagedDebtPositions, StringBuilder errors) {

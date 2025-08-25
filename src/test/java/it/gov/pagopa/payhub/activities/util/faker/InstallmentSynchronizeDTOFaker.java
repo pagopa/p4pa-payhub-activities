@@ -47,6 +47,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .remittanceInformation("remittanceInformation")
                 .legacyPaymentMetadata("legacyPaymentMetadata")
                 .flagPuPagoPaPayment(false)
+                .generateNotice(true)
                 .balance("balance")
                 .flagMultibeneficiary(true)
                 .numberBeneficiary(5)
