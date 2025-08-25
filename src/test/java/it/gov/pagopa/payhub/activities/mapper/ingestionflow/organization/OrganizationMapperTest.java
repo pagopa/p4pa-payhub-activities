@@ -32,6 +32,7 @@ class OrganizationMapperTest {
     dto.setStartDate(LocalDateTime.of(2024, 6, 1, 0, 0));
     dto.setFlagNotifyIo(true);
     dto.setFlagNotifyOutcomePush(false);
+    dto.setFlagTreasury(false);
 
     Long brokerId = 456L;
 
