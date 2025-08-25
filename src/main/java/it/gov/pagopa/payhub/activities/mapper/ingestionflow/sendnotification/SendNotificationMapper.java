@@ -15,11 +15,10 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.PhysicalCommunicationType
 import it.gov.pagopa.pu.sendnotification.dto.generated.Recipient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.RecipientTypeEnum;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TypeEnum;
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -69,27 +68,21 @@ public class SendNotificationMapper {
   }
 
   private List<Payment> buildPayments(SendNotificationIngestionFlowFileDTO dto) {
-    return Stream.of(
-            new AbstractMap.SimpleEntry<>(dto.getPayment(), dto.getAttachment()),
-            new AbstractMap.SimpleEntry<>(dto.getPayment2(), dto.getAttachment2()),
-            new AbstractMap.SimpleEntry<>(dto.getPayment3(), dto.getAttachment3()),
-            new AbstractMap.SimpleEntry<>(dto.getPayment4(), dto.getAttachment4()),
-            new AbstractMap.SimpleEntry<>(dto.getPayment5(), dto.getAttachment5())
-        )
-        .filter(entry -> entry.getKey() != null && entry.getValue() != null)
-        .map(entry -> getPayment(entry.getKey(), entry.getValue()))
+    return IntStream.rangeClosed(1, 5)
+        .mapToObj(i -> new IndexedEntry(i, getPaymentByIndex(dto, i), getAttachmentByIndex(dto, i)))
+        .filter(entry -> entry.paymentMap() != null && entry.attachmentMap() != null)
+        .map(entry -> getPayment(entry.paymentMap(), entry.attachmentMap(), entry.index()))
         .toList();
-
   }
 
-  private Payment getPayment(MultiValuedMap<String, String> paymentMap, MultiValuedMap<String, String> attachmentMap) {
+  private Payment getPayment(MultiValuedMap<String, String> paymentMap, MultiValuedMap<String, String> attachmentMap, int index) {
     PagoPa pagoPa = new PagoPa();
-    pagoPa.setNoticeCode(getRequiredValue(paymentMap, "paymentNoticeCode"));
-    pagoPa.setCreditorTaxId(getRequiredValue(paymentMap, "paymentCreditorTaxId"));
-    pagoPa.setApplyCost(Boolean.valueOf(getRequiredValue(paymentMap, "paymentApplyCost")));
+    pagoPa.setNoticeCode(getFirstValue(paymentMap, "paymentNoticeCode_"+index));
+    pagoPa.setCreditorTaxId(getFirstValue(paymentMap, "paymentCreditorTaxId_"+index));
+    pagoPa.setApplyCost(Boolean.valueOf(getFirstValue(paymentMap, "paymentApplyCost_"+index)));
 
     if (attachmentMap != null) {
-      pagoPa.setAttachment(buildAttachment(attachmentMap));
+      pagoPa.setAttachment(buildAttachment(attachmentMap, index));
     }
 
     return Payment.builder()
@@ -98,40 +91,75 @@ public class SendNotificationMapper {
   }
 
 
-  private Attachment buildAttachment(MultiValuedMap<String, String> map) {
+  private Attachment buildAttachment(MultiValuedMap<String, String> map, int index) {
     return Attachment.builder()
-        .fileName(getRequiredValue(map, "attachmentFileName"))
-        .digest(getRequiredValue(map, "attachmentDigest"))
-        .contentType(getRequiredValue(map, "attachmentContentType"))
+        .fileName(getFirstValue(map, "attachmentFileName_"+index))
+        .digest(getFirstValue(map, "attachmentDigest_"+index))
+        .contentType(getFirstValue(map, "attachmentContentType_"+index))
         .build();
   }
 
+
   private List<Document> buildDocuments(SendNotificationIngestionFlowFileDTO dto) {
-    return Stream.of(
-            dto.getDocument(),
-            dto.getDocument2(),
-            dto.getDocument3(),
-            dto.getDocument4(),
-            dto.getDocument5()
-        )
-        .filter(Objects::nonNull)
-        .map(this::getDocument)
+    return IntStream.rangeClosed(1, 5)
+        .mapToObj(i -> getDocument(dto, i))
         .filter(Objects::nonNull)
         .toList();
   }
 
-  private Document getDocument(MultiValuedMap<String, String> map) {
+  private Document getDocument(SendNotificationIngestionFlowFileDTO dto, int index) {
+
+    MultiValuedMap<String, String> map = getDocumentByIndex(dto, index);
+
+    if (map == null) {
+      throw new IllegalStateException("Missing or empty document map for index: " + index);
+    }
+
     return Document.builder()
-        .fileName(getRequiredValue(map, "documentFileName"))
-        .digest(getRequiredValue(map, "documentDigest"))
-        .contentType(getRequiredValue(map, "documentContentType"))
+        .fileName(getFirstValue(map, "documentFileName_"+index))
+        .digest(getFirstValue(map, "documentDigest_"+index))
+        .contentType(getFirstValue(map, "documentContentType_"+index))
         .build();
   }
 
-  private String getRequiredValue(MultiValuedMap<String, String> map, String key) {
+  private String getFirstValue(MultiValuedMap<String, String> map, String key) {
     return Optional.ofNullable(map.get(key))
         .flatMap(list -> list.stream().findFirst())
         .orElseThrow(() -> new IllegalArgumentException("Missing required value for key: " + key));
   }
 
+  private MultiValuedMap<String, String> getPaymentByIndex(SendNotificationIngestionFlowFileDTO dto, int index) {
+    return switch (index) {
+      case 1 -> dto.getPayment();
+      case 2 -> dto.getPayment2();
+      case 3 -> dto.getPayment3();
+      case 4 -> dto.getPayment4();
+      case 5 -> dto.getPayment5();
+      default -> null;
+    };
+  }
+
+  private MultiValuedMap<String, String> getAttachmentByIndex(SendNotificationIngestionFlowFileDTO dto, int index) {
+    return switch (index) {
+      case 1 -> dto.getAttachment();
+      case 2 -> dto.getAttachment2();
+      case 3 -> dto.getAttachment3();
+      case 4 -> dto.getAttachment4();
+      case 5 -> dto.getAttachment5();
+      default -> null;
+    };
+  }
+
+  private MultiValuedMap<String, String> getDocumentByIndex(SendNotificationIngestionFlowFileDTO dto, int index) {
+    return switch (index) {
+      case 1 -> dto.getDocument();
+      case 2 -> dto.getDocument2();
+      case 3 -> dto.getDocument3();
+      case 4 -> dto.getDocument4();
+      case 5 -> dto.getDocument5();
+      default -> null;
+    };
+  }
+
+  private record IndexedEntry(int index, MultiValuedMap<String, String> paymentMap, MultiValuedMap<String, String> attachmentMap) {}
 }
