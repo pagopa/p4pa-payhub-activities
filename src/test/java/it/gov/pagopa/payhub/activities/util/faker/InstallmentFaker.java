@@ -25,6 +25,7 @@ public class InstallmentFaker {
                 .paymentOptionId(1L)
                 .status(InstallmentStatus.PAID)
                 .syncStatus(null)
+                .generateNotice(Boolean.TRUE)
                 .iupdPagopa("iupdPagopa")
                 .iud("iud")
                 .iuv("iuv")
