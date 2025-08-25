@@ -54,30 +54,28 @@ class GenerateNoticeServiceTest {
         debtPosition2.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.UNPAID);
 
         List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition1, debtPosition2);
+        List<String> iuvListGenerateNotices = List.of("iuv", "iuv");
+        long pdfGenerated = 2;
+
         String requestId = "PU_" + debtPosition1.getOrganizationId() + "_" + ingestionFlowFileId;
 
         NoticeRequestMassiveDTO requestMassive = NoticeRequestMassiveDTO.builder()
             .debtPositions(debtPositionsGenerateNotices)
+            .iuvList(iuvListGenerateNotices)
             .requestId(requestId)
             .build();
         GeneratedNoticeMassiveFolderDTO responseFolder = GeneratedNoticeMassiveFolderDTO.builder()
             .folderId(folderId)
             .build();
 
-        long pdfGenerated = debtPositionsGenerateNotices.stream()
-            .flatMap(debt -> debt.getPaymentOptions().stream())
-            .flatMap(option -> option.getInstallments().stream())
-            .filter(installment -> installment.getStatus() == InstallmentStatus.UNPAID)
-            .count();
-
         Mockito.when(printPaymentNoticeServiceMock.generateMassive(requestMassive))
             .thenReturn(responseFolder);
         Mockito.when(ingestionFlowFileServiceMock.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, responseFolder.getFolderId()))
             .thenReturn(1);
 
-        String result = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices);
+        String result = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices);
 
         assertEquals(folderId, result);
-        assertEquals(1, pdfGenerated);
+        assertEquals(2, pdfGenerated);
     }
 }

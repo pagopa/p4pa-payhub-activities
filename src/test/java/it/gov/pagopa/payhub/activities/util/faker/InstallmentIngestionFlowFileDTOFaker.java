@@ -42,6 +42,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .remittanceInformation("remittanceInformation")
                 .legacyPaymentMetadata("legacyPaymentMetadata")
                 .flagPuPagoPaPayment(false)
+                .generateNotice(true)
                 .balance("balance")
                 .flagMultiBeneficiary(true)
                 .numberBeneficiary(5)
@@ -71,6 +72,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setNumberBeneficiary(2);
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(true);
         installmentIngestionFlowFileDTO.setFlagPuPagoPaPayment(true);
+        installmentIngestionFlowFileDTO.setGenerateNotice(true);
         installmentIngestionFlowFileDTO.setTransfer2(buildTransferData(2));
         return installmentIngestionFlowFileDTO;
     }
