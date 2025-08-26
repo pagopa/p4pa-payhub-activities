@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,6 +67,17 @@ class SendNotificationFileHandlerServiceTest {
 
     assertTrue(Files.exists(expectedTargetDir));
     assertTrue(Files.exists(expectedTargetFile));
+  }
+
+  @Test
+  void whenMoveAllFilesToSendFolderThenError() throws IOException {
+    Long organizationId = 1L;
+    String sourceDirPath = "ingest/send";
+    String sendNotificationId = "sendNotificationId";
+
+    Assertions.assertThrows(IllegalStateException.class, () ->
+    service.moveAllFilesToSendFolder(organizationId, sendNotificationId, sourceDirPath));
+
   }
 
 
