@@ -43,6 +43,8 @@ class SendNotificationProcessingServiceTest {
   private SendNotificationMapper mapperMock;
   @Mock
   private OrganizationService organizationServiceMock;
+  @Mock
+  private SendNotificationFileHandlerService sendNotificationFileHandlerServiceMock;
 
   private SendNotificationProcessingService service;
 
@@ -53,7 +55,8 @@ class SendNotificationProcessingServiceTest {
         sendNotificationServiceMock,
         organizationServiceMock,
         sendServiceMock,
-        mapperMock
+        mapperMock,
+        sendNotificationFileHandlerServiceMock
     );
   }
 
@@ -63,7 +66,8 @@ class SendNotificationProcessingServiceTest {
         sendNotificationErrorArchiverServiceMock,
         mapperMock,
         sendNotificationErrorArchiverServiceMock,
-        sendNotificationServiceMock);
+        sendNotificationServiceMock,
+        sendNotificationFileHandlerServiceMock);
   }
 
   @Test

@@ -32,16 +32,19 @@ public class SendNotificationProcessingService extends
   private final SendNotificationService sendNotificationService;
   private final SendService sendService;
   private final SendNotificationMapper mapper;
+  private final SendNotificationFileHandlerService sendNotificationFileHandlerService;
 
   public SendNotificationProcessingService(
       SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
       SendNotificationService sendNotificationService,
       OrganizationService organizationService, SendService sendService,
-      SendNotificationMapper mapper) {
+      SendNotificationMapper mapper,
+      SendNotificationFileHandlerService sendNotificationFileHandlerService) {
     super(sendNotificationErrorArchiverService, organizationService);
     this.sendNotificationService = sendNotificationService;
     this.sendService = sendService;
     this.mapper = mapper;
+    this.sendNotificationFileHandlerService = sendNotificationFileHandlerService;
   }
 
   /**
@@ -84,12 +87,25 @@ public class SendNotificationProcessingService extends
         if(createResponse!=null)
         {
           SendNotificationDTO sendNotificationDTO = sendNotificationService.getSendNotification(createResponse.getSendNotificationId());
+
+          if(sendNotificationDTO!=null){
+            createNotificationRequest.getRecipients().stream()
+                .filter(recipient -> recipient.getPayments() != null)
+                .flatMap(recipient -> recipient.getPayments().stream())
+                .forEach(payment -> sendNotificationFileHandlerService.moveAllFilesToSendFolder(
+                    row.getOrganizationId(),
+                    sendNotificationDTO.getSendNotificationId(),
+                    ingestionFlowFile.getFilePathName() + "/" + payment.getPagoPa().getNoticeCode()
+                ));
+          }
+
           //TODO copy file to shared directory for preload and upload with the FileArchiverService
           // destination folder {orgid}/data/send/{notificationId}/{notificationId}_{fileName}.pdf.chiper
           // sendService.preloadSendFile(sendNotificationDTO.getSendNotificationId());
           // sendService.uploadSendFile(sendNotificationDTO.getSendNotificationId());
+          return true;
         }
-        return true;
+        return false;
       } catch (Exception e) {
         log.error("Error processing send notification: {}", e.getMessage());
         SendNotificationErrorDTO error = SendNotificationErrorDTO.builder()
