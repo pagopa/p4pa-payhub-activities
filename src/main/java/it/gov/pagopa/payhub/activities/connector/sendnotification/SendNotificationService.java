@@ -7,4 +7,5 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 public interface SendNotificationService {
   SendNotificationDTO getSendNotification(String sendNotificationId);
   CreateNotificationResponse createSendNotification(CreateNotificationRequest createNotificationRequest);
+  SendNotificationDTO findSendNotificationByOrgIdAndNav(Long organizationId, String nav);
 }

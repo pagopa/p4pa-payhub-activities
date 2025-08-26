@@ -10,7 +10,10 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotifi
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
+import it.gov.pagopa.pu.sendnotification.dto.generated.Payment;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,16 +32,19 @@ public class SendNotificationProcessingService extends
   private final SendNotificationService sendNotificationService;
   private final SendService sendService;
   private final SendNotificationMapper mapper;
+  private final SendNotificationFileHandlerService sendNotificationFileHandlerService;
 
   public SendNotificationProcessingService(
       SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
       SendNotificationService sendNotificationService,
       OrganizationService organizationService, SendService sendService,
-      SendNotificationMapper mapper) {
+      SendNotificationMapper mapper,
+      SendNotificationFileHandlerService sendNotificationFileHandlerService) {
     super(sendNotificationErrorArchiverService, organizationService);
     this.sendNotificationService = sendNotificationService;
     this.sendService = sendService;
     this.mapper = mapper;
+    this.sendNotificationFileHandlerService = sendNotificationFileHandlerService;
   }
 
   /**
@@ -69,17 +75,37 @@ public class SendNotificationProcessingService extends
       List<SendNotificationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
 
       try {
-        // TODO check notification if already exists in status UPLOADED/COMPLETE/ACCEPTED then skip row
-        CreateNotificationResponse createResponse =  sendNotificationService.createSendNotification(mapper.buildCreateNotificationRequest(row));
+        CreateNotificationRequest createNotificationRequest = mapper.buildCreateNotificationRequest(row);
+
+        // check if exists a send notification with status UPLOADED/COMPLETE/ACCEPTED and if exists skip row
+        if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
+            && checkSendNotificationAlreadyExists(createNotificationRequest.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
+          return false;
+        }
+
+        CreateNotificationResponse createResponse =  sendNotificationService.createSendNotification(createNotificationRequest);
         if(createResponse!=null)
         {
           SendNotificationDTO sendNotificationDTO = sendNotificationService.getSendNotification(createResponse.getSendNotificationId());
+
+          if(sendNotificationDTO!=null){
+            createNotificationRequest.getRecipients().stream()
+                .filter(recipient -> recipient.getPayments() != null)
+                .flatMap(recipient -> recipient.getPayments().stream())
+                .forEach(payment -> sendNotificationFileHandlerService.moveAllFilesToSendFolder(
+                    sendNotificationDTO.getOrganizationId(),
+                    sendNotificationDTO.getSendNotificationId(),
+                    ingestionFlowFile.getFilePathName() + "/" + payment.getPagoPa().getNoticeCode()
+                ));
+          }
+
           //TODO copy file to shared directory for preload and upload with the FileArchiverService
           // destination folder {orgid}/data/send/{notificationId}/{notificationId}_{fileName}.pdf.chiper
           // sendService.preloadSendFile(sendNotificationDTO.getSendNotificationId());
           // sendService.uploadSendFile(sendNotificationDTO.getSendNotificationId());
+          return true;
         }
-        return true;
+        return false;
       } catch (Exception e) {
         log.error("Error processing send notification: {}", e.getMessage());
         SendNotificationErrorDTO error = SendNotificationErrorDTO.builder()
@@ -104,5 +130,15 @@ public class SendNotificationProcessingService extends
         .errorCode(errorCode)
         .errorMessage(message)
         .build();
+  }
+
+  private boolean checkSendNotificationAlreadyExists(Long organizationId, List<Payment> payments) {
+    return payments.stream()
+        .map(payment -> sendNotificationService.findSendNotificationByOrgIdAndNav(organizationId, payment.getPagoPa().getNoticeCode()))
+        .anyMatch(notificationDTO ->
+            notificationDTO.getStatus().equals(NotificationStatus.UPLOADED) ||
+            notificationDTO.getStatus().equals(NotificationStatus.COMPLETE) ||
+            notificationDTO.getStatus().equals(NotificationStatus.ACCEPTED)
+        );
   }
 }

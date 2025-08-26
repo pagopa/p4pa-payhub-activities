@@ -45,6 +45,7 @@ folders:
     errors: "\${PROCESS_TARGET_SUB_FOLDER_ERRORS:errors}"
   paths:
     rt-folder: "data/rt"
+    send-file-folder: "data/send"
 
 cipher:
   file-encrypt-psw: "\${FILE_ENCRYPT_PSW:psw}"
