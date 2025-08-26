@@ -55,7 +55,10 @@ public class SendNotificationIngestionActivityImpl extends BaseIngestionFlowFile
 
   @Override
   protected SendNotificationIngestionFlowFileResult handleRetrievedFiles(List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
-    Path filePath = retrievedFiles.getFirst();
+    Path filePath = retrievedFiles.stream()
+        .filter(path -> path.getFileName().toString().contains(".csv"))
+        .findFirst()
+        .orElseThrow(() -> new InvalidIngestionFileException(String.format("Error processing file %s", ingestionFlowFileDTO.getFileName())));
     Path workingDirectory = filePath.getParent();
     log.info("Processing file: {}", filePath);
 
