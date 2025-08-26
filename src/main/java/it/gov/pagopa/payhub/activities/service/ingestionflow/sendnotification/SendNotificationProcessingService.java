@@ -79,7 +79,7 @@ public class SendNotificationProcessingService extends
 
         // check if exists a send notification with status UPLOADED/COMPLETE/ACCEPTED and if exists skip row
         if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
-            && checkSendNotificationAlreadyExists(row.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
+            && checkSendNotificationAlreadyExists(createNotificationRequest.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
           return false;
         }
 
@@ -93,7 +93,7 @@ public class SendNotificationProcessingService extends
                 .filter(recipient -> recipient.getPayments() != null)
                 .flatMap(recipient -> recipient.getPayments().stream())
                 .forEach(payment -> sendNotificationFileHandlerService.moveAllFilesToSendFolder(
-                    row.getOrganizationId(),
+                    sendNotificationDTO.getOrganizationId(),
                     sendNotificationDTO.getSendNotificationId(),
                     ingestionFlowFile.getFilePathName() + "/" + payment.getPagoPa().getNoticeCode()
                 ));
