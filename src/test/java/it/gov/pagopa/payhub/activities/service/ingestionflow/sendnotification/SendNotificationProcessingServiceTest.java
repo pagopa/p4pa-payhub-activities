@@ -83,13 +83,7 @@ class SendNotificationProcessingServiceTest {
     String sendNotificationId = "NOTIFICATIONID";
     String nav = "NAV";
 
-    CreateNotificationRequest createNotificationRequest = new CreateNotificationRequest();
-    createNotificationRequest.setOrganizationId(organizationId);
-    Recipient recipient = new Recipient();
-    Payment payment = new Payment();
-    payment.setPagoPa(new PagoPa(nav,"TAXID",true, null));
-    recipient.setPayments(List.of(payment));
-    createNotificationRequest.setRecipients(List.of(recipient));
+    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
     CreateNotificationResponse response = new CreateNotificationResponse();
     response.setSendNotificationId(sendNotificationId);
@@ -139,13 +133,7 @@ class SendNotificationProcessingServiceTest {
     Long organizationId = 1L;
     String nav = "NAV";
 
-    CreateNotificationRequest createNotificationRequest = new CreateNotificationRequest();
-    createNotificationRequest.setOrganizationId(organizationId);
-    Recipient recipient = new Recipient();
-    Payment payment = new Payment();
-    payment.setPagoPa(new PagoPa(nav,"TAXID",true, null));
-    recipient.setPayments(List.of(payment));
-    createNotificationRequest.setRecipients(List.of(recipient));
+    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
     SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
     sendNotificationDTO.sendNotificationId("NOTIFICATIONID");
@@ -184,5 +172,57 @@ class SendNotificationProcessingServiceTest {
         new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
         new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Error when create notification")
     ));
+  }
+
+  @Test
+  void whenProcessSendNotificationThenSendNotificationAlreadyExist(){
+    // Given
+    SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+
+    Long organizationId = 1L;
+    String sendNotificationId = "NOTIFICATIONID";
+    String nav = "NAV";
+
+    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
+
+    SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+    sendNotificationDTO.sendNotificationId(sendNotificationId);
+    sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
+    sendNotificationDTO.setOrganizationId(organizationId);
+
+    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+
+    Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+        .thenReturn(createNotificationRequest);
+
+    Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId,nav))
+        .thenReturn(sendNotificationDTO);
+
+    // When
+    SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+        Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
+        ingestionFlowFile,
+        Path.of("/tmp")
+    );
+
+    // Then
+    assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+    assertEquals(0, result.getProcessedRows());
+    assertEquals(1, result.getTotalRows());
+    assertEquals(1, result.getOrganizationId());
+    assertNull(result.getErrorDescription());
+    assertNull(result.getDiscardedFileName());
+  }
+
+  private CreateNotificationRequest buildNotificationRequest() {
+    CreateNotificationRequest createNotificationRequest = new CreateNotificationRequest();
+    createNotificationRequest.setOrganizationId(1L);
+    Recipient recipient = new Recipient();
+    Payment payment = new Payment();
+    payment.setPagoPa(new PagoPa("NAV","TAXID",true, null));
+    recipient.setPayments(List.of(payment));
+    createNotificationRequest.setRecipients(List.of(recipient));
+
+    return createNotificationRequest;
   }
 }
