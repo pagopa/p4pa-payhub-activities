@@ -45,7 +45,12 @@ public class SendNotificationFileHandlerService {
         Files.createDirectories(targetDir);
       }
 
-      for (Path file : sourceDir) {
+      // Debug: verifica i file esistenti nella sourceDir
+      System.out.println("Files in sourceDir:");
+      Files.list(sourceDir).forEach(file -> System.out.println(file.getFileName()));
+
+
+      for (Path file : Files.newDirectoryStream(sourceDir)) {
         Files.copy(file, targetDir.resolve(sendNotificationId+"_"+file.getFileName()), REPLACE_EXISTING);
         AESUtils.encrypt(dataCipherPsw, targetDir.resolve(sendNotificationId+"_"+file.getFileName()).toFile());
         // Files.deleteIfExists(file);

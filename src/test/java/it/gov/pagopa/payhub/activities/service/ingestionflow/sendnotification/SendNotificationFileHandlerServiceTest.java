@@ -48,7 +48,7 @@ class SendNotificationFileHandlerServiceTest {
   }
 
   @Test
-  void testMoveAllFilesToSendFolder() throws IOException {
+  void whenMoveAllFilesToSendFolderThenVerifyFileExists() throws IOException {
     Long organizationId = 1L;
     String sourceDirPath = "ingest/send";
     String sendNotificationId = "sendNotificationId";
@@ -57,7 +57,7 @@ class SendNotificationFileHandlerServiceTest {
     Path trueSourceDir = orgBase.resolve(sourceDirPath);
     Files.createDirectories(trueSourceDir);
 
-    Path sampleFile = Files.createFile(trueSourceDir.resolve("test.pdf"));
+    Files.createFile(trueSourceDir.resolve("test.pdf"));
 
     Path expectedTargetDir = orgBase.resolve("send/path/" + sendNotificationId);
     Path expectedTargetFile = expectedTargetDir.resolve(sendNotificationId + "_test.pdf");
