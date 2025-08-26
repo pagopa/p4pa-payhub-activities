@@ -113,4 +113,43 @@ class SendNotificationClientTest {
         Assertions.assertNull(result);
     }
 
+    @Test
+    void whenFindSendNotificationByOrgIdAndNavThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String nav = "NAV";
+        Long organizationId = 1L;
+        SendNotificationDTO expectedResult = new SendNotificationDTO();
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+            .thenReturn(sendNotificationApiMock);
+        Mockito.when(sendNotificationApiMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
+            .thenReturn(expectedResult);
+
+        // When
+        SendNotificationDTO result = client.findSendNotificationByOrgIdAndNav(organizationId, nav, accessToken);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotExistentSendNotificationWhenFindSendNotificationByOrgIdAndNavThenReturnNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String nav = "NAV";
+        Long organizationId = 1L;
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+            .thenReturn(sendNotificationApiMock);
+        Mockito.when(sendNotificationApiMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
+            .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        SendNotificationDTO result = client.findSendNotificationByOrgIdAndNav(organizationId, nav, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
+    }
+
 }

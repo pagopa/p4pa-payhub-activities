@@ -73,4 +73,24 @@ class SendNotificationServiceTest {
         Assertions.assertSame(expectedResult, result);
     }
 
+    @Test
+    void givenExistentNotificationRequestWhenFindSendNotificationByOrgIdAndNavThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+        String nav = "NAV";
+        SendNotificationDTO expectedResult = new SendNotificationDTO();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+            .thenReturn(accessToken);
+        Mockito.when(clientMock.findSendNotificationByOrgIdAndNav(organizationId, nav, accessToken))
+            .thenReturn(expectedResult);
+
+        // When
+        SendNotificationDTO result = service.findSendNotificationByOrgIdAndNav(organizationId, nav);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
 }
