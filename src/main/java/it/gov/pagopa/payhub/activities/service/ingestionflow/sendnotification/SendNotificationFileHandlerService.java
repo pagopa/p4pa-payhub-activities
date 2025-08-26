@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
@@ -45,11 +46,16 @@ public class SendNotificationFileHandlerService {
         Files.createDirectories(targetDir);
       }
 
-      for (Path file : Files.newDirectoryStream(sourceDir)) {
-        Files.copy(file, targetDir.resolve(sendNotificationId+"_"+file.getFileName()), REPLACE_EXISTING);
-        AESUtils.encrypt(dataCipherPsw, targetDir.resolve(sendNotificationId+"_"+file.getFileName()).toFile());
-        // Files.deleteIfExists(file);
+
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourceDir)) {
+        for (Path file : stream) {
+          Path targetFile = targetDir.resolve(sendNotificationId + "_" + file.getFileName());
+          Files.copy(file, targetFile, REPLACE_EXISTING);
+          AESUtils.encrypt(dataCipherPsw, targetFile.toFile());
+          //Files.deleteIfExists(targetFile);
+        }
       }
+
 
     } catch (IOException e){
       throw new IllegalStateException("Cannot archive files from: " + sourceDirPath + " into destination", e);
