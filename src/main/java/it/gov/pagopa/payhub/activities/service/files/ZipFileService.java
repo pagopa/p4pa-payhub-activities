@@ -82,22 +82,28 @@ public class ZipFileService {
 				validateEntryCount(++entryCount);
 				Path targetPath = validateAndPrepareTargetPath(zipEntry, target);
 
-				long totalSizeEntry = 0;
-				byte[] buffer = new byte[2048];
+				if(zipEntry.isDirectory()){
+					Files.createDirectories(targetPath);
+				} else {
+					long totalSizeEntry = 0;
+					byte[] buffer = new byte[2048];
 
-				try (OutputStream out = Files.newOutputStream(targetPath, StandardOpenOption.CREATE)) {
-					int bytesRead;
-					while ((bytesRead = zis.read(buffer)) > 0) {
-						totalSizeEntry += bytesRead;
-						totalUncompressedSize += bytesRead;
+					Files.createDirectories(targetPath.getParent());
 
-						validateUncompressedSize(totalUncompressedSize);
-						validateCompressionRatio(zipEntry, totalSizeEntry);
+					try (OutputStream out = Files.newOutputStream(targetPath, StandardOpenOption.CREATE)) {
+						int bytesRead;
+						while ((bytesRead = zis.read(buffer)) > 0) {
+							totalSizeEntry += bytesRead;
+							totalUncompressedSize += bytesRead;
 
-						out.write(buffer, 0, bytesRead);
+							validateUncompressedSize(totalUncompressedSize);
+							validateCompressionRatio(zipEntry, totalSizeEntry);
+
+							out.write(buffer, 0, bytesRead);
+						}
 					}
+					extractedPaths.add(targetPath);
 				}
-				extractedPaths.add(targetPath);
 				zis.closeEntry();
 			}
 		} catch (IOException e) {
