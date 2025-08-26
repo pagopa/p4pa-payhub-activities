@@ -70,7 +70,7 @@ class SendNotificationFileHandlerServiceTest {
   }
 
   @Test
-  void whenMoveAllFilesToSendFolderThenError() throws IOException {
+  void whenMoveAllFilesToSendFolderThenError() {
     Long organizationId = 1L;
     String sourceDirPath = "ingest/send";
     String sendNotificationId = "sendNotificationId";
