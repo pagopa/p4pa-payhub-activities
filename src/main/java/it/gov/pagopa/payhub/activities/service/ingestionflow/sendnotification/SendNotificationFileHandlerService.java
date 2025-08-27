@@ -41,9 +41,6 @@ public class SendNotificationFileHandlerService {
    */
   public void moveAllFilesToSendFolder(Long organizationId, String sendNotificationId, String sourceDirPath) {
     try {
-      // sourceDirPath = data/send_notification/noticecode
-      // /tmp/3/data/send_notification pod
-      // /shared/3/data/send_notification azure
       Path sourceDir = tempDirectoryPath
               .resolve(String.valueOf(organizationId))
               .resolve(sourceDirPath);
@@ -54,13 +51,12 @@ public class SendNotificationFileHandlerService {
         Files.createDirectories(targetDir);
       }
 
-
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourceDir)) {
         for (Path file : stream) {
           Path targetFile = targetDir.resolve(sendNotificationId + "_" + file.getFileName());
           Files.copy(file, targetFile, REPLACE_EXISTING);
           AESUtils.encrypt(dataCipherPsw, targetFile.toFile());
-          //Files.deleteIfExists(targetFile);
+          Files.deleteIfExists(targetFile);
         }
       }
 

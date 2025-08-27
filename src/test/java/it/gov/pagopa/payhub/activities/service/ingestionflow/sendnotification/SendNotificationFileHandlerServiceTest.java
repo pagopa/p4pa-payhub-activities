@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
+import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,11 +63,13 @@ class SendNotificationFileHandlerServiceTest {
     Files.createFile(trueSourceDir.resolve("test.pdf"));
 
     Path expectedTargetDir = orgBase.resolve("send/path/" + sendNotificationId);
-    Path expectedTargetFile = expectedTargetDir.resolve(sendNotificationId + "_test.pdf");
+    Path expectedTargetFile = expectedTargetDir.resolve(sendNotificationId + "_test.pdf" + AESUtils.CIPHER_EXTENSION);
+    Path deletedTargetFile =  expectedTargetDir.resolve(sendNotificationId + "_test.pdf");
 
     service.moveAllFilesToSendFolder(organizationId, sendNotificationId, sourceDirPath);
 
     assertTrue(Files.exists(expectedTargetDir));
+    assertTrue(Files.notExists(deletedTargetFile));
     assertTrue(Files.exists(expectedTargetFile));
   }
 

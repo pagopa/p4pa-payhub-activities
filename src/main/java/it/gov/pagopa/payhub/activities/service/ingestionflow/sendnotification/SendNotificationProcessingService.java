@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.sendnotification;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificationService;
-import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
@@ -12,6 +11,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.Payment;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
@@ -31,19 +31,17 @@ public class SendNotificationProcessingService extends
     IngestionFlowProcessingService<SendNotificationIngestionFlowFileDTO, SendNotificationIngestionFlowFileResult, SendNotificationErrorDTO> {
 
   private final SendNotificationService sendNotificationService;
-  private final SendService sendService;
   private final SendNotificationMapper mapper;
   private final SendNotificationFileHandlerService sendNotificationFileHandlerService;
 
   public SendNotificationProcessingService(
       SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
       SendNotificationService sendNotificationService,
-      OrganizationService organizationService, SendService sendService,
+      OrganizationService organizationService,
       SendNotificationMapper mapper,
       SendNotificationFileHandlerService sendNotificationFileHandlerService) {
     super(sendNotificationErrorArchiverService, organizationService);
     this.sendNotificationService = sendNotificationService;
-    this.sendService = sendService;
     this.mapper = mapper;
     this.sendNotificationFileHandlerService = sendNotificationFileHandlerService;
   }
@@ -89,24 +87,32 @@ public class SendNotificationProcessingService extends
         {
           SendNotificationDTO sendNotificationDTO = sendNotificationService.getSendNotification(createResponse.getSendNotificationId());
 
-          if(sendNotificationDTO!=null){
+          if(sendNotificationDTO!=null) {
             createNotificationRequest.getRecipients().stream()
                 .filter(recipient -> recipient.getPayments() != null)
                 .flatMap(recipient -> recipient.getPayments().stream())
-                .forEach(payment -> sendNotificationFileHandlerService.moveAllFilesToSendFolder(
-                    sendNotificationDTO.getOrganizationId(),
-                    sendNotificationDTO.getSendNotificationId(),
-                    ingestionFlowFile.getFilePathName() + "/" + payment.getPagoPa().getNoticeCode()
-                ));
-          }
+                .forEach(payment -> {
+                    sendNotificationFileHandlerService.moveAllFilesToSendFolder(
+                        sendNotificationDTO.getOrganizationId(),
+                        sendNotificationDTO.getSendNotificationId(),
+                        ingestionFlowFile.getFilePathName() + "/" + payment.getPagoPa().getNoticeCode()
+                    );
 
-          //TODO copy file to shared directory for preload and upload with the FileArchiverService
-          // destination folder {orgid}/data/send/{notificationId}/{notificationId}_{fileName}.pdf.chiper
-          // sendService.preloadSendFile(sendNotificationDTO.getSendNotificationId());
-          // sendService.uploadSendFile(sendNotificationDTO.getSendNotificationId());
-          return true;
+                  if(!Objects.isNull(payment.getPagoPa().getAttachment())) {
+                    sendNotificationService.startSendNotification(sendNotificationDTO.getSendNotificationId(),
+                        new LoadFileRequest(payment.getPagoPa().getAttachment().getDigest(),
+                            payment.getPagoPa().getAttachment().getFileName()));
+                  }
+                });
+
+              createNotificationRequest.getDocuments()
+                  .stream()
+                  .filter(Objects::nonNull)
+                  .forEach(doc -> sendNotificationService.startSendNotification(sendNotificationDTO.getSendNotificationId(),
+                      new LoadFileRequest(doc.getDigest(), doc.getFileName())));
+          }
         }
-        return false;
+        return true;
       } catch (Exception e) {
         log.error("Error processing send notification: {}", e.getMessage());
         SendNotificationErrorDTO error = SendNotificationErrorDTO.builder()

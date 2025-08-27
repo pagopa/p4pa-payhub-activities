@@ -3,7 +3,9 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StartNotificationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -48,5 +50,10 @@ public class SendNotificationClient {
       log.info("Cannot create SendNotification");
       return null;
     }
+  }
+
+  public StartNotificationResponse startSendNotification(String sendNotificationId, LoadFileRequest loadFileRequest, String accessToken) {
+      return sendApisHolder.getSendNotificationApi(accessToken)
+          .startNotification(sendNotificationId, loadFileRequest);
   }
 }
