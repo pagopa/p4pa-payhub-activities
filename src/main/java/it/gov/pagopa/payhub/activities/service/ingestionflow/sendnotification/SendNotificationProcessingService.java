@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -134,7 +135,14 @@ public class SendNotificationProcessingService extends
 
   private boolean checkSendNotificationAlreadyExists(Long organizationId, List<Payment> payments) {
     return payments.stream()
-        .map(payment -> sendNotificationService.findSendNotificationByOrgIdAndNav(organizationId, payment.getPagoPa().getNoticeCode()))
+        .map(payment -> {
+          try{
+            return sendNotificationService.findSendNotificationByOrgIdAndNav(organizationId, payment.getPagoPa().getNoticeCode());
+          } catch (Exception e) {
+            return null;
+          }
+        })
+        .filter(Objects::nonNull)
         .anyMatch(notificationDTO ->
             notificationDTO.getStatus().equals(NotificationStatus.UPLOADED) ||
             notificationDTO.getStatus().equals(NotificationStatus.COMPLETE) ||

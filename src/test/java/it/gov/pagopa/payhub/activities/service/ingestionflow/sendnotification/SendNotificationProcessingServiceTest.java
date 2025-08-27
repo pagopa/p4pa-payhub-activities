@@ -146,8 +146,8 @@ class SendNotificationProcessingServiceTest {
     Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
         .thenReturn(createNotificationRequest);
 
-    Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId,nav))
-        .thenReturn(sendNotificationDTO);
+    Mockito.doThrow(new RestClientException("Notification Not Found"))
+        .when(sendNotificationServiceMock).findSendNotificationByOrgIdAndNav(organizationId,nav);
 
     Mockito.doThrow(new RestClientException("Error when create notification"))
         .when(sendNotificationServiceMock).createSendNotification(createNotificationRequest);
