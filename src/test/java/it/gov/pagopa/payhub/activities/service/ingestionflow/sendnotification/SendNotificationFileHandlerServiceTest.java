@@ -40,7 +40,7 @@ class SendNotificationFileHandlerServiceTest {
         .build();
     when(foldersPathsConfigMock.getShared()).thenReturn(tmpDir);
     when(foldersPathsConfigMock.getPaths()).thenReturn(foldersPaths);
-    service = new SendNotificationFileHandlerService("PSW", foldersPathsConfigMock);
+    service = new SendNotificationFileHandlerService("PSW", tmpDir.toString(), foldersPathsConfigMock);
   }
 
   @AfterEach
@@ -51,11 +51,12 @@ class SendNotificationFileHandlerServiceTest {
   @Test
   void whenMoveAllFilesToSendFolderThenVerifyFileExists() throws IOException {
     Long organizationId = 1L;
-    String sourceDirPath = "ingest/send";
+    String sourceDirPath = "data/send_notification";
     String sendNotificationId = "sendNotificationId";
 
     Path orgBase = FileShareUtils.buildOrganizationBasePath(tmpDir, organizationId);
     Path trueSourceDir = orgBase.resolve(sourceDirPath);
+    System.out.println(trueSourceDir);
     Files.createDirectories(trueSourceDir);
 
     Files.createFile(trueSourceDir.resolve("test.pdf"));
