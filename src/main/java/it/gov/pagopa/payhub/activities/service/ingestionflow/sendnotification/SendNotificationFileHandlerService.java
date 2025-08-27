@@ -21,12 +21,15 @@ public class SendNotificationFileHandlerService {
 
   private final String dataCipherPsw;
   private final FoldersPathsConfig foldersPathsConfig;
+  private final Path tempDirectoryPath;
 
   public SendNotificationFileHandlerService(
       @Value("${cipher.file-encrypt-psw}") String dataCipherPsw,
+      @Value("${folders.tmp}") String tempFolder,
       FoldersPathsConfig foldersPathsConfig) {
     this.dataCipherPsw = dataCipherPsw;
     this.foldersPathsConfig = foldersPathsConfig;
+    this.tempDirectoryPath = Path.of(tempFolder);
   }
 
   /**
@@ -38,7 +41,12 @@ public class SendNotificationFileHandlerService {
    */
   public void moveAllFilesToSendFolder(Long organizationId, String sendNotificationId, String sourceDirPath) {
     try {
-      Path sourceDir = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), organizationId).resolve(sourceDirPath);
+      // sourceDirPath = data/send_notification/noticecode
+      // /tmp/3/data/send_notification pod
+      // /shared/3/data/send_notification azure
+      Path sourceDir = tempDirectoryPath
+              .resolve(String.valueOf(organizationId))
+              .resolve(sourceDirPath);
       Path targetDir = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), organizationId)
           .resolve(foldersPathsConfig.getPaths().getSendFileFolder().concat("/"+sendNotificationId));
 
