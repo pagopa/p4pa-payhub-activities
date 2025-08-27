@@ -88,7 +88,7 @@ class SendNotificationIngestionActivityTest {
     List<CsvException> readerExceptions = List.of();
     SendNotificationIngestionFlowFileResult expectedResult = buildSendNotificationIngestionFlowFileResult();
 
-    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
+    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName().replace(".zip",".csv")));
     List<Path> mockedListPath = List.of(filePath);
 
     Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
@@ -125,7 +125,7 @@ class SendNotificationIngestionActivityTest {
     Iterator<SendNotificationIngestionFlowFileDTO> iterator = buildSendNotificationIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
 
-    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
+    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName().replace(".zip",".csv")));
     List<Path> mockedListPath = List.of(filePath);
 
     Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
