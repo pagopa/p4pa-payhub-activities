@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.sendnotification;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificationService;
-import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
@@ -32,19 +31,17 @@ public class SendNotificationProcessingService extends
     IngestionFlowProcessingService<SendNotificationIngestionFlowFileDTO, SendNotificationIngestionFlowFileResult, SendNotificationErrorDTO> {
 
   private final SendNotificationService sendNotificationService;
-  private final SendService sendService;
   private final SendNotificationMapper mapper;
   private final SendNotificationFileHandlerService sendNotificationFileHandlerService;
 
   public SendNotificationProcessingService(
       SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
       SendNotificationService sendNotificationService,
-      OrganizationService organizationService, SendService sendService,
+      OrganizationService organizationService,
       SendNotificationMapper mapper,
       SendNotificationFileHandlerService sendNotificationFileHandlerService) {
     super(sendNotificationErrorArchiverService, organizationService);
     this.sendNotificationService = sendNotificationService;
-    this.sendService = sendService;
     this.mapper = mapper;
     this.sendNotificationFileHandlerService = sendNotificationFileHandlerService;
   }
@@ -111,10 +108,8 @@ public class SendNotificationProcessingService extends
               createNotificationRequest.getDocuments()
                   .stream()
                   .filter(Objects::nonNull)
-                  .forEach(doc -> {
-                    sendNotificationService.startSendNotification(sendNotificationDTO.getSendNotificationId(),
-                        new LoadFileRequest(doc.getDigest(), doc.getFileName()));
-                  });
+                  .forEach(doc -> sendNotificationService.startSendNotification(sendNotificationDTO.getSendNotificationId(),
+                      new LoadFileRequest(doc.getDigest(), doc.getFileName())));
           }
         }
         return true;

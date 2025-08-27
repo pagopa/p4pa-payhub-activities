@@ -4,7 +4,9 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendNotificationClient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StartNotificationResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,6 +90,26 @@ class SendNotificationServiceTest {
 
         // When
         SendNotificationDTO result = service.findSendNotificationByOrgIdAndNav(organizationId, nav);
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenValidRequestRequestWhenStartSendNotificationThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "ID";
+
+        StartNotificationResponse expectedResult = new StartNotificationResponse();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+            .thenReturn(accessToken);
+        Mockito.when(clientMock.startSendNotification(sendNotificationId, new LoadFileRequest(), accessToken))
+            .thenReturn(expectedResult);
+
+        // When
+        StartNotificationResponse result = service.startSendNotification(sendNotificationId, new LoadFileRequest());
 
         // Then
         Assertions.assertSame(expectedResult, result);

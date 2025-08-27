@@ -13,13 +13,17 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotifi
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.sendnotification.dto.generated.Attachment;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.Document;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.PagoPa;
 import it.gov.pagopa.pu.sendnotification.dto.generated.Payment;
 import it.gov.pagopa.pu.sendnotification.dto.generated.Recipient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StartNotificationResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -42,8 +46,6 @@ class SendNotificationProcessingServiceTest {
   @Mock
   private SendNotificationService sendNotificationServiceMock;
   @Mock
-  private SendService sendServiceMock;
-  @Mock
   private SendNotificationMapper mapperMock;
   @Mock
   private OrganizationService organizationServiceMock;
@@ -58,7 +60,6 @@ class SendNotificationProcessingServiceTest {
         sendNotificationErrorArchiverServiceMock,
         sendNotificationServiceMock,
         organizationServiceMock,
-        sendServiceMock,
         mapperMock,
         sendNotificationFileHandlerServiceMock
     );
@@ -103,6 +104,9 @@ class SendNotificationProcessingServiceTest {
 
     Mockito.doNothing().when(sendNotificationFileHandlerServiceMock)
         .moveAllFilesToSendFolder(organizationId, sendNotificationId, "filePathName/NAV");
+
+    Mockito.when(sendNotificationServiceMock.startSendNotification(sendNotificationId,
+        new LoadFileRequest("DIGEST","ATTACHMENT.pdf"))).thenReturn(new StartNotificationResponse());
 
     Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
         .thenReturn(response);
@@ -219,8 +223,17 @@ class SendNotificationProcessingServiceTest {
     createNotificationRequest.setOrganizationId(1L);
     Recipient recipient = new Recipient();
     Payment payment = new Payment();
-    payment.setPagoPa(new PagoPa("NAV","TAXID",true, null));
+    Attachment attachment = new Attachment();
+    attachment.setDigest("DIGEST");
+    attachment.setFileName("ATTACHMENT.pdf");
+    attachment.setContentType("content/pdf");
+    payment.setPagoPa(new PagoPa("NAV","TAXID",true, attachment));
     recipient.setPayments(List.of(payment));
+    Document document = new Document();
+    document.setDigest("DIGEST");
+    document.setFileName("ATTACHMENT.pdf");
+    document.setContentType("content/pdf");
+    createNotificationRequest.setDocuments(List.of(document));
     createNotificationRequest.setRecipients(List.of(recipient));
 
     return createNotificationRequest;
