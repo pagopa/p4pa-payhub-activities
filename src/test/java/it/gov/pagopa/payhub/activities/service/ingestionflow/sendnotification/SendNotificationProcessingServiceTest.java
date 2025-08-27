@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.web.client.RestClientException;
 
 @ExtendWith(MockitoExtension.class)
@@ -146,8 +147,8 @@ class SendNotificationProcessingServiceTest {
     Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
         .thenReturn(createNotificationRequest);
 
-    Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId,nav))
-        .thenReturn(sendNotificationDTO);
+    Mockito.doThrow(new RestClientException("Notification Not Found"))
+        .when(sendNotificationServiceMock).findSendNotificationByOrgIdAndNav(organizationId,nav);
 
     Mockito.doThrow(new RestClientException("Error when create notification"))
         .when(sendNotificationServiceMock).createSendNotification(createNotificationRequest);
