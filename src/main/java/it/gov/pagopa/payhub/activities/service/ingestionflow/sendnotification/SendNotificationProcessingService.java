@@ -79,6 +79,7 @@ public class SendNotificationProcessingService extends
         // check if exists a send notification with status UPLOADED/COMPLETE/ACCEPTED and if exists skip row
         if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
             && checkSendNotificationAlreadyExists(createNotificationRequest.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
+          errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, "PROCESS_EXCEPTION", "row not processed, notification already exists"));
           return false;
         }
 
@@ -111,8 +112,10 @@ public class SendNotificationProcessingService extends
                   .forEach(doc -> sendNotificationService.startSendNotification(sendNotificationDTO.getSendNotificationId(),
                       new LoadFileRequest(doc.getDigest(), doc.getFileName())));
           }
+          return true;
         }
-        return true;
+        errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, "PROCESS_EXCEPTION", "error while create notification"));
+        return false;
       } catch (Exception e) {
         log.error("Error processing send notification: {}", e.getMessage());
         SendNotificationErrorDTO error = SendNotificationErrorDTO.builder()
