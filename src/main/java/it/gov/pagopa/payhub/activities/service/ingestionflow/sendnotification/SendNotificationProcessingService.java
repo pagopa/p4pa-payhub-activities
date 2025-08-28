@@ -116,7 +116,7 @@ public class SendNotificationProcessingService extends
           }
           return true;
         }
-        errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, PROCESS_ERROR, "error while create notification"));
+        errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, PROCESS_ERROR, "Error while create notification"));
         return false;
       } catch (Exception e) {
         log.error("Error processing send notification: {}", e.getMessage());
