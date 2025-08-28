@@ -53,7 +53,7 @@ class SendNotificationProcessingServiceTest {
 
   private SendNotificationProcessingService service;
 
-  private final String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
+  private final static String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
 
   @BeforeEach
   void setUp(){
