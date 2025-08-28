@@ -53,6 +53,8 @@ class SendNotificationProcessingServiceTest {
 
   private SendNotificationProcessingService service;
 
+  private final String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
+
   @BeforeEach
   void setUp(){
     service = new SendNotificationProcessingService(
@@ -173,7 +175,7 @@ class SendNotificationProcessingServiceTest {
 
     verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
         new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Error when create notification")
+        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
     ));
   }
 
@@ -221,7 +223,7 @@ class SendNotificationProcessingServiceTest {
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
     verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, "PROCESS_EXCEPTION", "Row not processed, notification already exists")
+        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Row not processed, notification already exists")
     ));
   }
 

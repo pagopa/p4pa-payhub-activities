@@ -34,6 +34,8 @@ public class SendNotificationProcessingService extends
   private final SendNotificationMapper mapper;
   private final SendNotificationFileHandlerService sendNotificationFileHandlerService;
 
+  private static final String PROCESS_ERROR = "PROCESS_EXCEPTION";
+
   public SendNotificationProcessingService(
       SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
       SendNotificationService sendNotificationService,
@@ -79,7 +81,7 @@ public class SendNotificationProcessingService extends
         // check if exists a send notification with status UPLOADED/COMPLETE/ACCEPTED and if exists skip row
         if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
             && checkSendNotificationAlreadyExists(createNotificationRequest.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
-          errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, "PROCESS_EXCEPTION", "Row not processed, notification already exists"));
+          errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, PROCESS_ERROR, "Row not processed, notification already exists"));
           return false;
         }
 
@@ -114,14 +116,14 @@ public class SendNotificationProcessingService extends
           }
           return true;
         }
-        errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, "PROCESS_EXCEPTION", "error while create notification"));
+        errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, PROCESS_ERROR, "error while create notification"));
         return false;
       } catch (Exception e) {
         log.error("Error processing send notification: {}", e.getMessage());
         SendNotificationErrorDTO error = SendNotificationErrorDTO.builder()
           .fileName(ingestionFlowFile.getFileName())
           .rowNumber(lineNumber)
-          .errorCode("PROCESS_EXCEPTION")
+          .errorCode(PROCESS_ERROR)
           .errorMessage(e.getMessage())
           .build();
 
