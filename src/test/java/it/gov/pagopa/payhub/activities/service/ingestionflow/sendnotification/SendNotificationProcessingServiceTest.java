@@ -178,13 +178,14 @@ class SendNotificationProcessingServiceTest {
   }
 
   @Test
-  void whenProcessSendNotificationThenSendNotificationAlreadyExist(){
+  void whenProcessSendNotificationThenSendNotificationAlreadyExist() throws URISyntaxException {
     // Given
     SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
 
     Long organizationId = 1L;
     String sendNotificationId = "NOTIFICATIONID";
     String nav = "NAV";
+    Path workingDirectory = Path.of(new URI("file:///tmp"));
 
     CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
@@ -201,11 +202,14 @@ class SendNotificationProcessingServiceTest {
     Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId,nav))
         .thenReturn(sendNotificationDTO);
 
+    Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+        .thenReturn("zipFileName.csv");
+
     // When
     SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
         Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
         ingestionFlowFile,
-        Path.of("/tmp")
+        workingDirectory
     );
 
     // Then
@@ -213,8 +217,12 @@ class SendNotificationProcessingServiceTest {
     assertEquals(0, result.getProcessedRows());
     assertEquals(1, result.getTotalRows());
     assertEquals(1, result.getOrganizationId());
-    assertNull(result.getErrorDescription());
-    assertNull(result.getDiscardedFileName());
+    assertEquals("Some rows have failed", result.getErrorDescription());
+    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+
+    verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, "PROCESS_EXCEPTION", "Row not processed, notification already exists")
+    ));
   }
 
   private CreateNotificationRequest buildNotificationRequest() {

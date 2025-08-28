@@ -79,7 +79,7 @@ public class SendNotificationProcessingService extends
         // check if exists a send notification with status UPLOADED/COMPLETE/ACCEPTED and if exists skip row
         if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
             && checkSendNotificationAlreadyExists(createNotificationRequest.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
-          errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, "PROCESS_EXCEPTION", "row not processed, notification already exists"));
+          errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, "PROCESS_EXCEPTION", "Row not processed, notification already exists"));
           return false;
         }
 
