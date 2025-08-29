@@ -56,4 +56,9 @@ public class SendNotificationClient {
       return sendApisHolder.getSendNotificationApi(accessToken)
           .startNotification(sendNotificationId, loadFileRequest);
   }
+
+  public void updateNotificationStatus(Long sendNotificationId, String status, String accessToken) {
+    sendApisHolder.getSendNotificationApi(accessToken)
+            .updateNotificationStatus(sendNotificationId, status);
+  }
 }

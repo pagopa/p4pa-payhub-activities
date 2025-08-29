@@ -11,4 +11,5 @@ public interface SendNotificationService {
   CreateNotificationResponse createSendNotification(CreateNotificationRequest createNotificationRequest);
   SendNotificationDTO findSendNotificationByOrgIdAndNav(Long organizationId, String nav);
   StartNotificationResponse startSendNotification(String sendNotificationId, LoadFileRequest loadFileRequest);
+  void updateNotificationStatus(String sendNotificationId, String status);
 }

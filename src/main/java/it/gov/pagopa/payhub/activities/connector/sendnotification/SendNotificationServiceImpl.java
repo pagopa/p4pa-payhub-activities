@@ -40,4 +40,9 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     public StartNotificationResponse startSendNotification(String sendNotificationId, LoadFileRequest loadFileRequest) {
         return sendNotificationClient.startSendNotification(sendNotificationId, loadFileRequest, authnService.getAccessToken());
     }
+
+    @Override
+    public void updateNotificationStatus(String sendNotificationId, String status) {
+        sendNotificationClient.updateNotificationStatus(Long.valueOf(sendNotificationId), status, authnService.getAccessToken());
+    }
 }
