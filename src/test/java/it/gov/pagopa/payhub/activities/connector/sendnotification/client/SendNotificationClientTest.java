@@ -175,4 +175,22 @@ class SendNotificationClientTest {
         Assertions.assertEquals(expectedResponse, result);
     }
 
+    @Test
+    void givenValidRequestWhenUpdateNotificationStatusThenInvokeApi() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long sendNotificationId = 1L;
+        String status = "ERROR";
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+                .thenReturn(sendNotificationApiMock);
+
+        // When
+        client.updateNotificationStatus(sendNotificationId, status, accessToken);
+
+        // Then
+        Mockito.verify(sendApisHolderMock).getSendNotificationApi(accessToken);
+        Mockito.verify(sendNotificationApiMock).updateNotificationStatus(sendNotificationId, status);
+    }
+
 }

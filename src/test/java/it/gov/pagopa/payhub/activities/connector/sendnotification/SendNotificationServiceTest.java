@@ -115,4 +115,22 @@ class SendNotificationServiceTest {
         Assertions.assertSame(expectedResult, result);
     }
 
+    @Test
+    void givenValidRequestWhenUpdateNotificationStatusThenInvokeClient() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "123";
+        String status = "ERROR";
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+        // When
+        service.updateNotificationStatus(sendNotificationId, status);
+
+        // Then
+        Mockito.verify(authnServiceMock).getAccessToken();
+        Mockito.verify(clientMock).updateNotificationStatus(Long.valueOf(sendNotificationId), status, accessToken);
+        Mockito.verifyNoMoreInteractions(clientMock, authnServiceMock);
+    }
+
 }
