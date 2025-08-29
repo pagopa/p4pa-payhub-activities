@@ -53,6 +53,8 @@ class SendNotificationProcessingServiceTest {
 
   private SendNotificationProcessingService service;
 
+  private static final String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
+
   @BeforeEach
   void setUp(){
     service = new SendNotificationProcessingService(
@@ -173,18 +175,19 @@ class SendNotificationProcessingServiceTest {
 
     verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
         new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Error when create notification")
+        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
     ));
   }
 
   @Test
-  void whenProcessSendNotificationThenSendNotificationAlreadyExist(){
+  void whenProcessSendNotificationThenSendNotificationAlreadyExist() throws URISyntaxException {
     // Given
     SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
 
     Long organizationId = 1L;
     String sendNotificationId = "NOTIFICATIONID";
     String nav = "NAV";
+    Path workingDirectory = Path.of(new URI("file:///tmp"));
 
     CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
@@ -201,11 +204,14 @@ class SendNotificationProcessingServiceTest {
     Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId,nav))
         .thenReturn(sendNotificationDTO);
 
+    Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+        .thenReturn("zipFileName.csv");
+
     // When
     SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
         Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
         ingestionFlowFile,
-        Path.of("/tmp")
+        workingDirectory
     );
 
     // Then
@@ -213,9 +219,54 @@ class SendNotificationProcessingServiceTest {
     assertEquals(0, result.getProcessedRows());
     assertEquals(1, result.getTotalRows());
     assertEquals(1, result.getOrganizationId());
-    assertNull(result.getErrorDescription());
-    assertNull(result.getDiscardedFileName());
+    assertEquals("Some rows have failed", result.getErrorDescription());
+    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+
+    verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Row not processed, notification already exists")
+    ));
   }
+
+  @Test
+  void whenProcessSendNotificationThenCreateResponseNull() throws URISyntaxException {
+    // Given
+    SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+    Path workingDirectory = Path.of(new URI("file:///tmp"));
+    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
+
+    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+
+    Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+        .thenReturn(createNotificationRequest);
+
+    Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(
+            createNotificationRequest.getOrganizationId(), "NAV"))
+        .thenReturn(null);
+
+    Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
+        .thenReturn(null);
+
+    Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+        .thenReturn("zipFileName.csv");
+
+    // When
+    SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+        Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
+        ingestionFlowFile,
+        workingDirectory
+    );
+
+    // Then
+    assertEquals(0, result.getProcessedRows());
+    assertEquals(1, result.getTotalRows());
+    assertEquals("Some rows have failed", result.getErrorDescription());
+    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+
+    verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Error while create notification")
+    ));
+  }
+
 
   private CreateNotificationRequest buildNotificationRequest() {
     CreateNotificationRequest createNotificationRequest = new CreateNotificationRequest();
