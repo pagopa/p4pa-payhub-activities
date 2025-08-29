@@ -1,9 +1,10 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentnotification;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -13,7 +14,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -30,25 +30,7 @@ public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidIns
 
     @Override
     public void deletePaidInstallmentsOnPagoPa(DebtPositionDTO debtPositionDTO, Long receiptId) {
-        if (!ORDINARY_DEBT_POSITION_ORIGINS.contains(debtPositionDTO.getDebtPositionOrigin())) return;
-        if (!debtPositionDTO.getFlagPuPagoPaPayment()) return;
-
-        ReceiptDTO receipt = receiptService.getByReceiptId(receiptId);
-
-        if (receipt == null) {
-            log.error("receipt not found for receipt id {}", receiptId);
-            return;
-        }
-
-        Optional<Organization> organization = organizationService.getOrganizationById(debtPositionDTO.getOrganizationId());
-        String brokerFiscalCode = organization.map(Organization::getOrgFiscalCode).orElse(null);
-        Broker broker = brokerService.getBrokerByFiscalCode(brokerFiscalCode);
-
-        if (
-                broker.getGpdKey() != null
-                && broker.getGpdKey().length > 0
-                && !ReceiptOriginType.RECEIPT_PAGOPA.equals(receipt.getReceiptOrigin())
-        ) {
+        if (!isDebtPositionAndReceiptIdValid(debtPositionDTO, receiptId)) {
             return;
         }
 
@@ -59,14 +41,49 @@ public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidIns
                 .findFirst();
 
         if (installment.isEmpty()) {
-            log.error("installment not found for receipt id {}", receiptId);
+            log.info("installment not found for receipt id {}", receiptId);
             return;
         }
 
         installmentService.updateStatusAndSyncStatus(
                 installment.get().getInstallmentId(),
                 InstallmentStatus.CANCELLED,
-                InstallmentSyncStatus.builder().syncStatusFrom(Objects.requireNonNull(installment.get().getSyncStatus()).getSyncStatusTo()).syncStatusTo(InstallmentStatus.UNPAID).build()
+                null
         );
+    }
+
+    private boolean isDebtPositionAndReceiptIdValid(DebtPositionDTO debtPositionDTO, Long receiptId) {
+        if (
+                !ORDINARY_DEBT_POSITION_ORIGINS.contains(debtPositionDTO.getDebtPositionOrigin())
+                        || !debtPositionDTO.getFlagPuPagoPaPayment()
+        ) {
+            return false;
+        }
+
+        ReceiptDTO receipt = receiptService.getByReceiptId(receiptId);
+
+        if (receipt == null) {
+            log.info("receipt not found for receipt id {}", receiptId);
+            return false;
+        }
+
+        Optional<Organization> organization = organizationService.getOrganizationById(debtPositionDTO.getOrganizationId());
+        String brokerFiscalCode = organization.map(Organization::getOrgFiscalCode).orElse(null);
+
+        if (brokerFiscalCode == null) {
+            log.info("brokerFiscalCode not found for organization id {}", debtPositionDTO.getOrganizationId());
+            return false;
+        }
+
+        Broker broker = brokerService.getBrokerByFiscalCode(brokerFiscalCode);
+
+        if (broker == null) {
+            log.info("broker not found with brokerFiscalCode {}", brokerFiscalCode);
+            return false;
+        }
+
+        return !Utilities.isNullOrEmpty(broker.getAcaKey())
+                || (!Utilities.isNullOrEmpty(broker.getGpdKey())
+                && (Utilities.isNullOrEmpty(broker.getGpdKey()) || ReceiptOriginType.RECEIPT_PAGOPA.equals(receipt.getReceiptOrigin())));
     }
 }

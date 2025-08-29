@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentnotification;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

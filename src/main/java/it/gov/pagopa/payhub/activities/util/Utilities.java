@@ -158,4 +158,8 @@ public class Utilities {
     public static String centsAmountToEuroString(Long centsAmount){
         return parseBigDecimalToString(longCentsToBigDecimalEuro(centsAmount));
     }
+
+    public static boolean isNullOrEmpty(byte[] bytes) {
+        return bytes == null || bytes.length == 0;
+    }
 }
