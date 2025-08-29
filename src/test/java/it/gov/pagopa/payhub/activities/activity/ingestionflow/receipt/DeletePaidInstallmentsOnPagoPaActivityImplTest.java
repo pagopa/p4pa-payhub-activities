@@ -12,13 +12,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -40,9 +38,6 @@ class DeletePaidInstallmentsOnPagoPaActivityImplTest {
 
 
     private DeletePaidInstallmentsOnPagoPaActivityImpl activity;
-
-    @TempDir
-    private Path workingDir;
 
     @BeforeEach
     void setUp() {
