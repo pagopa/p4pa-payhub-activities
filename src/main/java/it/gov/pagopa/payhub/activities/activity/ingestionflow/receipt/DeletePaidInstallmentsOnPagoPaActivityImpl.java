@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @Lazy
 @RequiredArgsConstructor
 public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidInstallmentsOnPagoPaActivity {
-    public static final List<DebtPositionOrigin> ORDINARY_DEBT_POSITION_ORIGINS = List.of(DebtPositionOrigin.ORDINARY, DebtPositionOrigin.ORDINARY_SIL, DebtPositionOrigin.SPONTANEOUS, DebtPositionOrigin.SPONTANEOUS_SIL, DebtPositionOrigin.RECEIPT_FILE);
+    private static final List<DebtPositionOrigin> ORDINARY_DEBT_POSITION_ORIGINS = List.of(DebtPositionOrigin.ORDINARY, DebtPositionOrigin.ORDINARY_SIL, DebtPositionOrigin.SPONTANEOUS, DebtPositionOrigin.SPONTANEOUS_SIL, DebtPositionOrigin.RECEIPT_FILE);
 
     private final ReceiptService receiptService;
     private final OrganizationService organizationService;
@@ -82,8 +83,8 @@ public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidIns
             return false;
         }
 
-        return !Utilities.isNullOrEmpty(broker.getAcaKey())
-                || (!Utilities.isNullOrEmpty(broker.getGpdKey())
-                && (Utilities.isNullOrEmpty(broker.getGpdKey()) || ReceiptOriginType.RECEIPT_PAGOPA.equals(receipt.getReceiptOrigin())));
+        return PagoPaInteractionModel.SYNC_ACA.equals(broker.getPagoPaInteractionModel())
+                || (PagoPaInteractionModel.ASYNC_GPD.equals(broker.getPagoPaInteractionModel())
+                && ReceiptOriginType.RECEIPT_PAGOPA.equals(receipt.getReceiptOrigin()));
     }
 }

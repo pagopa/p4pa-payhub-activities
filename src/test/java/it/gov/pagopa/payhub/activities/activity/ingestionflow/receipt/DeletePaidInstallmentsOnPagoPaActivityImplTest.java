@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -190,7 +191,7 @@ class DeletePaidInstallmentsOnPagoPaActivityImplTest {
         Organization organization = new Organization();
         organization.setOrgFiscalCode("123TEST");
         Broker broker = new Broker();
-        broker.setAcaKey("aca".getBytes(StandardCharsets.UTF_8));
+        broker.setPagoPaInteractionModel(PagoPaInteractionModel.SYNC_ACA);
         InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
 
         // When
@@ -216,7 +217,7 @@ class DeletePaidInstallmentsOnPagoPaActivityImplTest {
         Organization organization = new Organization();
         organization.setOrgFiscalCode("123TEST");
         Broker broker = new Broker();
-        broker.setAcaKey("aca".getBytes(StandardCharsets.UTF_8));
+        broker.setPagoPaInteractionModel(PagoPaInteractionModel.SYNC_ACA);
         InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
         installmentDTO.setReceiptId(2L);
 
@@ -243,7 +244,7 @@ class DeletePaidInstallmentsOnPagoPaActivityImplTest {
         Organization organization = new Organization();
         organization.setOrgFiscalCode("123TEST");
         Broker broker = new Broker();
-        broker.setGpdKey("gpd".getBytes(StandardCharsets.UTF_8));
+        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
         InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
 
         // When
@@ -269,7 +270,7 @@ class DeletePaidInstallmentsOnPagoPaActivityImplTest {
         Organization organization = new Organization();
         organization.setOrgFiscalCode("123TEST");
         Broker broker = new Broker();
-        broker.setGpdKey("gpd".getBytes(StandardCharsets.UTF_8));
+        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
         InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
 
         // When
