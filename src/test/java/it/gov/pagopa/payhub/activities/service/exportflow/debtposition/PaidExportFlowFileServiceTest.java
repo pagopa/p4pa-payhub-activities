@@ -223,6 +223,40 @@ class PaidExportFlowFileServiceTest {
     }
 
     @Test
+    void givenNoExportedRows_whenExecuteExport_thenReturnsExportFlowFileResult() throws IOException {
+        Long exportFileId = 1L;
+        PaidExportFile paidExportFile = new PaidExportFile();
+        paidExportFile.setStatus(ExportFileStatus.PROCESSING);
+        paidExportFile.setOrganizationId(690213787104100L);
+        paidExportFile.setFileVersion("v1");
+
+        PagedInstallmentsPaidView pagedInstallmentsPaidView = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
+        pagedInstallmentsPaidView.setContent(Collections.emptyList());
+
+        when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.of(paidExportFile));
+        when(debtPositionsDataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("installmentId"))).thenReturn(pagedInstallmentsPaidView);
+
+        doAnswer(invocation -> {
+            Supplier<List<PaidInstallmentExportFlowFileDTO>> supplier = invocation.getArgument(2);
+            supplier.get();
+            return null;
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(PaidInstallmentExportFlowFileDTO.class), any(), eq("v1"));
+
+        // When
+        ExportFileResult result = paidExportFlowFileService.executeExport(exportFileId);
+
+        // Then
+        assertNotNull(result);
+        assertNull(result.getFileName());
+        assertNull(result.getFilePath());
+        assertEquals(0, result.getExportedRows());
+        assertEquals(LocalDate.now(), result.getExportDate());
+        assertEquals(0L, result.getFileSize());
+
+        verifyNoInteractions(installmentExportFlowFileDTOMapperMock,fileArchiverServiceMock);
+    }
+
+    @Test
     void givenProcessingStatus_whenExecuteExport_thenThrowIllegalStateException() throws IOException {
         Long exportFileId = 1L;
         PaidExportFile paidExportFile = new PaidExportFile();
@@ -248,7 +282,25 @@ class PaidExportFlowFileServiceTest {
         paidExportFile.setOrganizationId(690213787104100L);
         paidExportFile.setFileVersion("v1");
 
+        PagedInstallmentsPaidView pagedInstallmentsPaidView = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
+        List<InstallmentPaidViewDTO> installmentPaidViewDTOList = pagedInstallmentsPaidView.getContent();
+
+        PaidInstallmentExportFlowFileDTO paidInstallmentExportFlowFileDTO = podamFactory.manufacturePojo(PaidInstallmentExportFlowFileDTO.class);
+
         when(exportFileServiceMock.findPaidExportFileById(exportFileId)).thenReturn(Optional.of(paidExportFile));
+        when(debtPositionsDataExportServiceMock.exportPaidInstallments(paidExportFile.getOrganizationId(), paidExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("installmentId"))).thenReturn(pagedInstallmentsPaidView);
+
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(0))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(1))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(2))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(3))).thenReturn(paidInstallmentExportFlowFileDTO);
+        when(installmentExportFlowFileDTOMapperMock.map(installmentPaidViewDTOList.get(4))).thenReturn(paidInstallmentExportFlowFileDTO);
+
+        doAnswer(invocation -> {
+            Supplier<List<PaidInstallmentExportFlowFileDTO>> supplier = invocation.getArgument(2);
+            supplier.get();
+            return null;
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(PaidInstallmentExportFlowFileDTO.class), any(), eq("v1"));
 
         doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
 

@@ -222,6 +222,40 @@ class ReceiptsArchivingExportFileServiceTest {
     }
 
     @Test
+    void givenNoExportedRows_whenExecuteExport_thenReturnsExportFlowFileResult() throws IOException {
+        Long exportFileId = 1L;
+        ReceiptsArchivingExportFile receiptsArchivingExportFile = new ReceiptsArchivingExportFile();
+        receiptsArchivingExportFile.setStatus(ExportFileStatus.PROCESSING);
+        receiptsArchivingExportFile.setOrganizationId(690213787104100L);
+        receiptsArchivingExportFile.setFileVersion("v1");
+
+        PagedReceiptsArchivingView pagedReceiptsArchivingView = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
+        pagedReceiptsArchivingView.setContent(Collections.emptyList());
+
+            when(exportFileServiceMock.findReceiptsArchivingExportFileById(exportFileId)).thenReturn(Optional.of(receiptsArchivingExportFile));
+        when(debtPositionsDataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(), receiptsArchivingExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("receiptId"))).thenReturn(pagedReceiptsArchivingView);
+
+        doAnswer(invocation -> {
+            Supplier<List<ReceiptsArchivingExportFlowFileDTO>> supplier = invocation.getArgument(2);
+            supplier.get();
+            return null;
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(ReceiptsArchivingExportFlowFileDTO.class), any(), eq("v1"));
+
+        // When
+        ExportFileResult result = receiptsArchivingExportFileService.executeExport(exportFileId);
+
+        // Then
+        assertNotNull(result);
+        assertNull(result.getFileName());
+        assertNull(result.getFilePath());
+        assertEquals(0, result.getExportedRows());
+        assertEquals(LocalDate.now(), result.getExportDate());
+        assertEquals(0L, result.getFileSize());
+
+        verifyNoInteractions(receiptsArchivingExportFlowFileDTOMapperMock,fileArchiverServiceMock);
+    }
+
+    @Test
     void givenProcessingStatus_whenExecuteExport_thenThrowIllegalStateException() throws IOException {
         Long exportFileId = 1L;
         ReceiptsArchivingExportFile receiptsArchivingExportFile = new ReceiptsArchivingExportFile();
@@ -247,7 +281,25 @@ class ReceiptsArchivingExportFileServiceTest {
         receiptsArchivingExportFile.setOrganizationId(690213787104100L);
         receiptsArchivingExportFile.setFileVersion("v1");
 
+        PagedReceiptsArchivingView pagedReceiptsArchivingView = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
+        List<ReceiptArchivingView> content = pagedReceiptsArchivingView.getContent();
+
+        ReceiptsArchivingExportFlowFileDTO receiptsArchivingExportFlowFileDTO = podamFactory.manufacturePojo(ReceiptsArchivingExportFlowFileDTO.class);
+
         when(exportFileServiceMock.findReceiptsArchivingExportFileById(exportFileId)).thenReturn(Optional.of(receiptsArchivingExportFile));
+        when(debtPositionsDataExportServiceMock.exportReceiptsArchivingView(receiptsArchivingExportFile.getOrganizationId(), receiptsArchivingExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("receiptId"))).thenReturn(pagedReceiptsArchivingView);
+
+        when(receiptsArchivingExportFlowFileDTOMapperMock.map(content.getFirst())).thenReturn(receiptsArchivingExportFlowFileDTO);
+        when(receiptsArchivingExportFlowFileDTOMapperMock.map(content.get(1))).thenReturn(receiptsArchivingExportFlowFileDTO);
+        when(receiptsArchivingExportFlowFileDTOMapperMock.map(content.get(2))).thenReturn(receiptsArchivingExportFlowFileDTO);
+        when(receiptsArchivingExportFlowFileDTOMapperMock.map(content.get(3))).thenReturn(receiptsArchivingExportFlowFileDTO);
+        when(receiptsArchivingExportFlowFileDTOMapperMock.map(content.get(4))).thenReturn(receiptsArchivingExportFlowFileDTO);
+
+        doAnswer(invocation -> {
+            Supplier<List<ReceiptsArchivingExportFlowFileDTO>> supplier = invocation.getArgument(2);
+            supplier.get();
+            return null;
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(ReceiptsArchivingExportFlowFileDTO.class), any(), eq("v1"));
 
         doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
 
