@@ -61,16 +61,24 @@ public abstract class BaseExportFileService<E,F,D,C> {
 
             Path sharedTargetPath = sharedDirectoryPath.resolve(String.valueOf(organizationId)).resolve(relativeFileFolder);
             Path zipFilePath = resolveZipFilePath(csvFilePath);
-            Long zippedFileSize = createZipArchive(csvFilePath, zipFilePath, sharedTargetPath);
-
-            return ExportFileResult.builder()
-                    .fileName(zipFilePath.getFileName().toString())
-                    .filePath(relativeFileFolder)
-                    .exportedRows(exportedRows[0])
-                    .exportDate(LocalDate.now())
-                    .fileSize(zippedFileSize)
-                    .build();
-
+            if(exportedRows[0]>0){
+                Long zippedFileSize = createZipArchive(csvFilePath, zipFilePath, sharedTargetPath);
+                return ExportFileResult.builder()
+                        .fileName(zipFilePath.getFileName().toString())
+                        .filePath(relativeFileFolder)
+                        .exportedRows(exportedRows[0])
+                        .exportDate(LocalDate.now())
+                        .fileSize(zippedFileSize)
+                        .build();
+            }else{
+                return ExportFileResult.builder()
+                        .fileName(null)
+                        .filePath(null)
+                        .exportedRows(exportedRows[0])
+                        .exportDate(LocalDate.now())
+                        .fileSize(0L)
+                        .build();
+            }
         }else {
             throw new InvalidExportStatusException("The requested ExportFile (%s) has an invalid status %s".formatted(exportFileId, exportStatus));
         }
