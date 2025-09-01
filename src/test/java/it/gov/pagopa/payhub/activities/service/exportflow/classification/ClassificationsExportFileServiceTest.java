@@ -203,11 +203,12 @@ class ClassificationsExportFileServiceTest {
         ClassificationsExportFile classificationsExportFile = podamFactory.manufacturePojo(ClassificationsExportFile.class);
         classificationsExportFile.setOrganizationId(1L);
 
-        when(exportFileServiceMock.findClassificationsExportFileById(classificationsExportFile.getExportFileId())).thenReturn(Optional.of(classificationsExportFile));
+        Long exportFileId = classificationsExportFile.getExportFileId();
+        when(exportFileServiceMock.findClassificationsExportFileById(exportFileId)).thenReturn(Optional.of(classificationsExportFile));
         when(organizationServiceMock.getOrganizationById(classificationsExportFile.getOrganizationId())).thenReturn(Optional.empty());
         //when
         OrganizationNotFoundException ex = assertThrows(OrganizationNotFoundException.class,
-                () -> classificationsExportFileService.getFlagPaymentNotification(classificationsExportFile.getExportFileId()));
+                () -> classificationsExportFileService.getFlagPaymentNotification(exportFileId));
         assertEquals( "Cannot found organization having id: 1", ex.getMessage());
     }
 
@@ -256,6 +257,40 @@ class ClassificationsExportFileServiceTest {
     }
 
     @Test
+    void givenNoExportedRows_whenExecuteExport_thenReturnsExportFlowFileResult() throws IOException {
+        Long exportFileId = 1L;
+        ClassificationsExportFile classificationsExportFile = new ClassificationsExportFile();
+        classificationsExportFile.setStatus(ExportFileStatus.PROCESSING);
+        classificationsExportFile.setOrganizationId(690213787104100L);
+        classificationsExportFile.setFileVersion("v1.3");
+
+        PagedClassificationView pagedClassificationView = podamFactory.manufacturePojo(PagedClassificationView.class);
+        pagedClassificationView.setContent(Collections.emptyList());
+
+        when(exportFileServiceMock.findClassificationsExportFileById(exportFileId)).thenReturn(Optional.of(classificationsExportFile));
+        when(classificationsDataExportServiceMock.exportClassificationView(classificationsExportFile.getOrganizationId(), classificationsExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("classificationId"))).thenReturn(pagedClassificationView);
+
+        doAnswer(invocation -> {
+            Supplier<List<ClassificationsExportFlowFileDTO>> supplier = invocation.getArgument(2);
+            supplier.get();
+            return null;
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(ClassificationsExportFlowFileDTO.class), any(), eq("WITHOUT_NOTIFICATION_v1.3"));
+
+        // When
+        ExportFileResult result = classificationsExportFileService.executeExport(exportFileId);
+
+        // Then
+        assertNotNull(result);
+        assertNull(result.getFileName());
+        assertNull(result.getFilePath());
+        assertEquals(0, result.getExportedRows());
+        assertEquals(LocalDate.now(), result.getExportDate());
+        assertEquals(0L, result.getFileSize());
+
+        verifyNoInteractions(classificationsExportFlowFileDTOMapperMock,fileArchiverServiceMock);
+    }
+
+    @Test
     void givenProcessingStatus_whenExecuteExport_thenThrowIllegalStateException() throws IOException {
         Long exportFileId = 1L;
         ClassificationsExportFile classificationsExportFile = new ClassificationsExportFile();
@@ -281,7 +316,25 @@ class ClassificationsExportFileServiceTest {
         classificationsExportFile.setOrganizationId(690213787104100L);
         classificationsExportFile.setFileVersion("v1.3");
 
+        PagedClassificationView pagedClassificationView = podamFactory.manufacturePojo(PagedClassificationView.class);
+        List<ClassificationViewDTO> content = pagedClassificationView.getContent();
+
+        ClassificationsExportFlowFileDTO classificationsExportFlowFileDTO = podamFactory.manufacturePojo(ClassificationsExportFlowFileDTO.class);
+
         when(exportFileServiceMock.findClassificationsExportFileById(exportFileId)).thenReturn(Optional.of(classificationsExportFile));
+        when(classificationsDataExportServiceMock.exportClassificationView(classificationsExportFile.getOrganizationId(), classificationsExportFile.getOperatorExternalId(), null, 0, pageSize, List.of("classificationId"))).thenReturn(pagedClassificationView);
+
+        when(classificationsExportFlowFileDTOMapperMock.map(content.getFirst())).thenReturn(classificationsExportFlowFileDTO);
+        when(classificationsExportFlowFileDTOMapperMock.map(content.get(1))).thenReturn(classificationsExportFlowFileDTO);
+        when(classificationsExportFlowFileDTOMapperMock.map(content.get(2))).thenReturn(classificationsExportFlowFileDTO);
+        when(classificationsExportFlowFileDTOMapperMock.map(content.get(3))).thenReturn(classificationsExportFlowFileDTO);
+        when(classificationsExportFlowFileDTOMapperMock.map(content.get(4))).thenReturn(classificationsExportFlowFileDTO);
+
+        doAnswer(invocation -> {
+            Supplier<List<ClassificationsExportFlowFileDTO>> supplier = invocation.getArgument(2);
+            supplier.get();
+            return null;
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(ClassificationsExportFlowFileDTO.class), any(), eq("WITHOUT_NOTIFICATION_v1.3"));
 
         doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
 

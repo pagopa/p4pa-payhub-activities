@@ -24,27 +24,22 @@ public class GenerateNoticeService {
         this.ingestionFlowFileService = ingestionFlowFileService;
     }
 
-  public String generateNotices(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices) {
-    String requestId = "PU_" + debtPositionsGenerateNotices.getFirst().getOrganizationId() + "_" + ingestionFlowFileId;
-    log.info("Triggering notice generateNotices for {} debtPositions with requestId {}", debtPositionsGenerateNotices.size(), requestId);
+    public String generateNotices(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices) {
+        String requestId = "PU_" + debtPositionsGenerateNotices.getFirst().getOrganizationId() + "_" + ingestionFlowFileId;
+        log.info("Triggering notice generateNotices for {} debtPositions with requestId {}", debtPositionsGenerateNotices.size(), requestId);
 
-    NoticeRequestMassiveDTO request = NoticeRequestMassiveDTO.builder()
-        .debtPositions(debtPositionsGenerateNotices)
-        .requestId(requestId)
-        .build();
-    GeneratedNoticeMassiveFolderDTO folderDTO = printPaymentNoticeService.generateMassive(request);
+        NoticeRequestMassiveDTO request = NoticeRequestMassiveDTO.builder()
+                .debtPositions(debtPositionsGenerateNotices)
+                .iuvList(iuvListGenerateNotices)
+                .requestId(requestId)
+                .build();
+        GeneratedNoticeMassiveFolderDTO folderDTO = printPaymentNoticeService.generateMassive(request);
 
-    long pdfGenerated = debtPositionsGenerateNotices.stream()
-        .flatMap(debt -> debt.getPaymentOptions().stream())
-        .flatMap(option -> option.getInstallments().stream())
-        .filter(installment -> installment.getStatus() == InstallmentStatus.UNPAID)
-        .count();
-
-    ingestionFlowFileService.updatePdfGenerated(
-        ingestionFlowFileId,
-        pdfGenerated,
-        folderDTO.getFolderId()
-    );
-    return folderDTO.getFolderId();
-  }
+        ingestionFlowFileService.updatePdfGenerated(
+                ingestionFlowFileId,
+                (long) iuvListGenerateNotices.size(),
+                folderDTO.getFolderId()
+        );
+        return folderDTO.getFolderId();
+    }
 }

@@ -29,6 +29,7 @@ public class OrganizationMapper {
         .flagNotifyOutcomePush(dto.getFlagNotifyOutcomePush())
         .flagPaymentNotification(dto.getFlagNotifyOutcomePush())
         .pdndEnabled(false)
+        .flagTreasury(dto.getFlagTreasury())
         .build();
   }
 }

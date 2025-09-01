@@ -125,6 +125,10 @@ public class InstallmentIngestionFlowFileDTO {
     private String legacyPaymentMetadata;
 
     @CsvBindByName(column = "flagGeneraIuv", required = true, profiles = {V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "generateNotice", required = true, profiles = V2_0_ENG)
+    private Boolean generateNotice;
+
+    @CsvBindByName(column = "flagPagamentoPu", required = true, profiles = {V2_0})
     @CsvBindByName(column = "flagPuPagoPaPayment", required = true, profiles = V2_0_ENG)
     private Boolean flagPuPagoPaPayment;
 
@@ -140,7 +144,8 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "numberBeneficiary", profiles = V2_0_ENG)
     private Integer numberBeneficiary;
 
-    @CsvBindAndJoinByName(column = ".*_2", elementType = String.class, profiles = {V1_4, V2_0, V2_0_ENG})
+    @CsvBindAndJoinByName(column = ".*_2", elementType = String.class, profiles = {V2_0, V2_0_ENG})
+    @CsvBindAndJoinByName(column = ".*Secondario", elementType = String.class, profiles = {V1_4})
     private MultiValuedMap<String, String> transfer2;
 
     @CsvBindAndJoinByName(column = ".*_3", elementType = String.class, profiles = {V2_0, V2_0_ENG})

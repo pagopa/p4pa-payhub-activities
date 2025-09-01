@@ -69,4 +69,7 @@ public class OrganizationIngestionFlowFileDTO {
 
   @CsvBindByName(column = "send_api_key")
   private String sendApiKey;
+
+  @CsvBindByName(column = "flag_treasury", required = true)
+  private Boolean flagTreasury;
 }

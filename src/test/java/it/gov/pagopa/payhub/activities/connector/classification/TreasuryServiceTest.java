@@ -89,19 +89,21 @@ class TreasuryServiceTest {
         Long organizationId = 1L;
         String billCode = "BILL123";
         String billYear = "2023";
+        String orgBtCode = "BT123";
+        String orgIstatCode = "ISTAT123";
         String accessToken = "accessToken";
         Long expectedDeletedCount = 1L;
-        when(treasuryClientMock.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken))
+        when(treasuryClientMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken))
                 .thenReturn(expectedDeletedCount);
         when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
-        Long result = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear);
+        Long result = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
 
         // Then
         assertSame(expectedDeletedCount, result);
-        verify(treasuryClientMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYear(organizationId, billCode, billYear, accessToken);
+        verify(treasuryClientMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);
     }
 
     @Test

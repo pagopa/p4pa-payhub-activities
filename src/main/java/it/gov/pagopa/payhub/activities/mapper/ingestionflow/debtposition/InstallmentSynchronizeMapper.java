@@ -25,6 +25,13 @@ import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEnd
 @Lazy
 public class InstallmentSynchronizeMapper {
 
+    private static final List<String> COLUMN_NAMES_ORG_FISCALCODE = List.of("codiceFiscaleEnte", "orgFiscalCode");
+    private static final List<String> COLUMN_NAMES_ORG_NAME = List.of("denominazioneEnte", "orgName");
+    private static final List<String> COLUMN_NAMES_AMOUNT_CENTS = List.of("importoVersamentoEnte", "amount");
+    private static final List<String> COLUMN_NAMES_REMITTANCE_INFORMATION = List.of("causaleVersamentoEnte", "remittanceInformation");
+    private static final List<String> COLUMN_NAMES_IBAN = List.of("ibanAccreditoEnte", "iban");
+    private static final List<String> COLUMN_NAMES_CATEGORY = List.of("codiceTassonomiaEnte", "category", "datiSpecificiRiscossioneEnte");
+
     private final ObjectMapper objectMapper;
 
     public InstallmentSynchronizeMapper(ObjectMapper objectMapper) {
@@ -68,6 +75,7 @@ public class InstallmentSynchronizeMapper {
                 .remittanceInformation(installmentIngestionFlowFileDTO.getRemittanceInformation())
                 .legacyPaymentMetadata(installmentIngestionFlowFileDTO.getLegacyPaymentMetadata())
                 .flagPuPagoPaPayment(installmentIngestionFlowFileDTO.getFlagPuPagoPaPayment())
+                .generateNotice(installmentIngestionFlowFileDTO.getGenerateNotice())
                 .balance(installmentIngestionFlowFileDTO.getBalance())
                 .flagMultibeneficiary(installmentIngestionFlowFileDTO.getFlagMultiBeneficiary())
                 .numberBeneficiary(installmentIngestionFlowFileDTO.getNumberBeneficiary() != null ? installmentIngestionFlowFileDTO.getNumberBeneficiary() : null)
@@ -107,13 +115,20 @@ public class InstallmentSynchronizeMapper {
             throw new IllegalStateException("Missing or empty transfer map for index: " + index);
         }
 
+        List<String> columnSuffixes;
+        if(index != 2){
+            columnSuffixes = List.of("_" + index);
+        } else {
+            columnSuffixes = List.of("_" + index, "Secondario");
+        }
+
         return TransferSynchronizeDTO.builder()
-                .orgFiscalCode(getFirstValue(transferMap, "codiceFiscaleEnte", "orgFiscalCode", index))
-                .orgName(getFirstValue(transferMap, "denominazioneEnte", "orgName", index))
-                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, "importoVersamentoEnte", "amount", index))))
-                .remittanceInformation(getFirstValue(transferMap, "causaleVersamentoEnte", "remittanceInformation", index))
-                .iban(getFirstValue(transferMap, "ibanAccreditoEnte", "iban", index))
-                .category(getFirstValue(transferMap, "codiceTassonomiaEnte", "category", index))
+                .orgFiscalCode(getFirstValue(transferMap, COLUMN_NAMES_ORG_FISCALCODE, columnSuffixes))
+                .orgName(getFirstValue(transferMap, COLUMN_NAMES_ORG_NAME, columnSuffixes))
+                .amountCents(bigDecimalEuroToLongCentsAmount(new BigDecimal(getFirstValue(transferMap, COLUMN_NAMES_AMOUNT_CENTS, columnSuffixes))))
+                .remittanceInformation(getFirstValue(transferMap, COLUMN_NAMES_REMITTANCE_INFORMATION, columnSuffixes))
+                .iban(getFirstValue(transferMap, COLUMN_NAMES_IBAN, columnSuffixes))
+                .category(getFirstValue(transferMap, COLUMN_NAMES_CATEGORY, columnSuffixes))
                 .transferIndex(index)
                 .build();
     }
@@ -129,14 +144,15 @@ public class InstallmentSynchronizeMapper {
         };
     }
 
-    private String getFirstValue(MultiValuedMap<String, String> map, String italianKey, String englishKey, int index) {
-        return Optional.ofNullable(map)
-                .map(m -> m.get(italianKey + "_" + index))
-                .flatMap(values -> values.stream().findFirst())
-                .or(() -> Optional.ofNullable(map)
-                        .map(m -> m.get(englishKey + "_" + index))
-                        .flatMap(values -> values.stream().findFirst()))
-                .orElseThrow(() -> new IllegalArgumentException("Missing required value for keys: %s or %s".formatted(italianKey, englishKey)));
+    private String getFirstValue(MultiValuedMap<String, String> map, List<String> columnNames, List<String> suffixes) {
+        return columnNames.stream()
+                .flatMap(c ->
+                    suffixes.stream()
+                            .map(s -> c + s)
+                )
+                .flatMap(k -> map.get(k).stream())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Missing required value for keys: %s".formatted(columnNames)));
     }
 
 }

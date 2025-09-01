@@ -84,7 +84,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
         DebtPositionDTO debtPosition3 = buildDebtPositionDTO();
         DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
 
-        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition1, debtPosition2, debtPosition3, debtPosition4);
+        List<DebtPositionDTO> debtPositionsExportIuv = List.of(debtPosition1, debtPosition2, debtPosition3, debtPosition4);
+        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition2, debtPosition3, debtPosition4);
+        List<String> iuvListGenerateNotices = List.of("iuv", "iuv", "iuv");
 
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
@@ -129,7 +131,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .iuvFileName(path.getFileName().toString())
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId,  statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
@@ -155,10 +157,10 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
+        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices))
                 .thenReturn("folderId");
 
-        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId))
+        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsExportIuv, ingestionFlowFileId))
                 .thenReturn(path);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
@@ -233,22 +235,24 @@ class SynchronizeIngestedDebtPositionActivityTest {
         DebtPositionDTO debtPosition3 = buildDebtPositionDTO();
         DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
 
-        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition4);
-        debtPosition3.setFlagPuPagoPaPayment(false);
         debtPosition1.setFlagPuPagoPaPayment(false);
+
+        List<DebtPositionDTO> debtPositionsExportIuv = List.of(debtPosition3, debtPosition4);
+        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition4);
+        List<String> iuvListGenerateNotices = List.of("iuv");
 
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
         debtPosition2.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition2.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.UNPAID).build());
         debtPosition3.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
-        debtPosition3.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.INVALID).build());
+        debtPosition3.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
         debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition4.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.DRAFT).syncStatusTo(InstallmentStatus.UNPAID).build());
 
         SyncCompleteDTO iupdSyncStatusUpdateDTO1 = new SyncCompleteDTO(InstallmentStatus.CANCELLED);
         SyncCompleteDTO iupdSyncStatusUpdateDTO2 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
-        SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.INVALID);
+        SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.CANCELLED);
         SyncCompleteDTO iupdSyncStatusUpdateDTO4 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
         WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
@@ -306,9 +310,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
+        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices))
                 .thenReturn("folderId");
-        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId))
+        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsExportIuv, ingestionFlowFileId))
                 .thenReturn(path);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
@@ -325,7 +329,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
         DebtPositionDTO debtPosition3 = buildDebtPositionDTO();
         DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
 
-        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition1, debtPosition2, debtPosition3, debtPosition4);
+        List<DebtPositionDTO> debtPositionsExportIuv = List.of(debtPosition1, debtPosition2, debtPosition3, debtPosition4);
+        List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition2, debtPosition3, debtPosition4);
+        List<String> iuvListGenerateNotices = List.of("iuv", "iuv", "iuv");
 
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.TO_SYNC);
         debtPosition1.getPaymentOptions().getFirst().getInstallments().getFirst().setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.UNPAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
@@ -392,10 +398,10 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowExecutionStatus);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices))
+        Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices))
                 .thenThrow(new IllegalStateException("Broker 1 has not GENERATE_NOTICE apiKey configured!"));
 
-        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsGenerateNotices, ingestionFlowFileId))
+        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsExportIuv, ingestionFlowFileId))
                 .thenReturn(path);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);

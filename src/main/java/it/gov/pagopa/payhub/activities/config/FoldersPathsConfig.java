@@ -54,5 +54,6 @@ public class FoldersPathsConfig {
   @SuperBuilder
   public static class FoldersPaths {
     private String rtFolder;
+    private String sendFileFolder;
   }
 }

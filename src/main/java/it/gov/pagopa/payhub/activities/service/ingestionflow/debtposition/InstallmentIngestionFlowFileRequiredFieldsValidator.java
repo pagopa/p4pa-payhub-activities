@@ -17,6 +17,10 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
             dto.setFlagPuPagoPaPayment(Boolean.TRUE);
         }
 
+        if (dto.getGenerateNotice() == null) {
+            dto.setGenerateNotice(Boolean.TRUE);
+        }
+
         if (dto.getFlagMultiBeneficiary() == null) {
             dto.setFlagMultiBeneficiary(Boolean.FALSE);
         }

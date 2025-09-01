@@ -52,6 +52,25 @@ class ZipFileServiceTest {
 	}
 
 	@Test
+	void testUnzipArchiveWithDirectory() throws IOException {
+		Path outputDir = tempDir.resolve("output");
+		Path zipWithDirectoryFile = tempDir.resolve("test-with-dir.zip");
+
+
+		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipWithDirectoryFile))) {
+			addZipEntry(zos, "file1.txt", "This is the content of file1.");
+			addZipEntry(zos, "file2.txt", "This is the content of file2.");
+
+			zos.putNextEntry(new ZipEntry("subfolder/"));
+			zos.closeEntry();
+
+			addZipEntry(zos, "subfolder/nested-file.txt", "Nested content.");
+		}
+		
+		assertDoesNotThrow(() -> service.unzip(zipWithDirectoryFile, outputDir));
+	}
+
+		@Test
 	void testUnzipWithExcessiveEntries() throws IOException {
 		try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 			for (int i = 0; i < 1100; i++) {

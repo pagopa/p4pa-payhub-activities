@@ -96,6 +96,10 @@ class EmailTemplateResolverServiceTest {
                     new EmailTemplate("INGESTION_RECEIPT_KO_SUBJECT", "INGESTION_RECEIPT_KO_BODY")
             ),
             new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
+                    new EmailTemplate("INGESTION_SEND_NOTIFICATION_OK_SUBJECT", "INGESTION_SEND_NOTIFICATION_OK_BODY"),
+                    new EmailTemplate("INGESTION_SEND_NOTIFICATION_KO_SUBJECT", "INGESTION_SEND_NOTIFICATION_KO_BODY")
+            ),
+            new EmailTemplatesConfiguration.EmailOutcomeBasedTemplates(
                     new EmailTemplate("EXPORT_PAID_OK_SUBJECT", "EXPORT_PAID_OK_BODY"),
                     new EmailTemplate("EXPORT_PAID_KO_SUBJECT", "EXPORT_PAID_KO_BODY")
             ),
