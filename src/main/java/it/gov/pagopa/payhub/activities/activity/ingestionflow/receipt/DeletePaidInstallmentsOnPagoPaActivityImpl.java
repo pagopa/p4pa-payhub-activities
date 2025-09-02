@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -73,7 +74,11 @@ public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidIns
 
         if (pagoPaInteractionModel == PagoPaInteractionModel.SYNC_ACA) {
             updateSyncStatusInstallmentToDelete(installment, debtPositionDTO);
-            acaService.syncInstallmentAca(installment.getIud(), debtPositionDTO);
+            try {
+                acaService.syncInstallmentAca(installment.getIud(), debtPositionDTO);
+            } catch (Exception e) {
+                log.info("Error when deleting installment with id {} on ACA: {}", installment.getInstallmentId(), e.getMessage());
+            }
         } else if (pagoPaInteractionModel == PagoPaInteractionModel.ASYNC_GPD && !ReceiptOriginType.RECEIPT_PAGOPA.equals(receipt.getReceiptOrigin())) {
             updateSyncStatusInstallmentToDelete(installment, debtPositionDTO);
             try {
@@ -87,10 +92,10 @@ public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidIns
     private void updateSyncStatusInstallmentToDelete(InstallmentDTO installmentDTO, DebtPositionDTO debtPositionDTO) {
         debtPositionDTO.getPaymentOptions()
                 .forEach(po -> po.getInstallments().stream()
-                        .filter(inst -> inst.getInstallmentId().equals(installmentDTO.getInstallmentId()))
+                        .filter(inst -> Objects.equals(inst.getInstallmentId(), installmentDTO.getInstallmentId()))
                         .forEach(inst -> {
                             inst.setSyncStatus(InstallmentSyncStatus.builder()
-                                    .syncStatusFrom(inst.getStatus()) //TODO su GPD e ACA ci si aspetta che sia UNPAID o EXPIRED
+                                    .syncStatusFrom(InstallmentStatus.UNPAID)
                                     .syncStatusTo(InstallmentStatus.CANCELLED).build());
                             inst.setStatus(InstallmentStatus.TO_SYNC);
                         }));
