@@ -210,6 +210,7 @@ class DeletePaidInstallmentsOnPagoPaActivityImplTest {
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         ReceiptDTO receiptDTO = new ReceiptDTO();
         receiptDTO.setReceiptId(1L);
+        receiptDTO.setReceiptOrigin(ReceiptOriginType.RECEIPT_PAGOPA);
         Organization organization = new Organization();
         organization.setBrokerId(1L);
         Broker broker = new Broker();

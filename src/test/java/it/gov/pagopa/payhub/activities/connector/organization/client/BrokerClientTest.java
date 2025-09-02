@@ -68,4 +68,22 @@ class BrokerClientTest {
 		// Then
 		assertEquals(expectedBroker, result);
 	}
+
+	@Test
+	void testGetById() {
+		// Given
+		String brokerId = "1";
+		String accessToken = "accessToken";
+		Broker expectedBroker = mock(Broker.class);
+		var brokerEntityControllerApi = mock(it.gov.pagopa.pu.organization.client.generated.BrokerEntityControllerApi.class);
+
+		when(organizationApisHolderMock.getBrokerEntityControllerApi(accessToken)).thenReturn(brokerEntityControllerApi);
+		when(brokerEntityControllerApi.crudGetBroker(brokerId)).thenReturn(expectedBroker);
+
+		// When
+		Broker result = client.getById(Long.valueOf(brokerId), accessToken);
+
+		// Then
+		assertEquals(expectedBroker, result);
+	}
 }
