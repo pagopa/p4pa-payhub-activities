@@ -267,96 +267,96 @@ class DeletePaidInstallmentsOnPagoPaActivityImplTest {
         verify(gpdServiceMock, never()).syncInstallmentGpd(anyString(), any());
     }
 
-    @Test
-    void givenGpdWhenDeletingThenSyncOnGPD() {
-        // Given
-        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        ReceiptDTO receiptDTO = new ReceiptDTO();
-        receiptDTO.setReceiptId(1L);
-        receiptDTO.setReceiptOrigin(ReceiptOriginType.RECEIPT_FILE);
-        Organization organization = new Organization();
-        organization.setBrokerId(1L);
-        Broker broker = new Broker();
-        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
-
-        InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
-        installmentDTO.setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.PAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
-        installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
-        installmentDTO.setReceiptId(1L);
-
-        // When
-        when(receiptServiceMock.getByReceiptId(1L)).thenReturn(receiptDTO);
-        when(organizationServiceMock.getOrganizationById(debtPositionDTO.getOrganizationId())).thenReturn(Optional.of(organization));
-        when(brokerServiceMock.getBrokerById(1L)).thenReturn(broker);
-        when(gpdServiceMock.syncInstallmentGpd(installmentDTO.getIud(), debtPositionDTO)).thenReturn("ok");
-        activity.deletePaidInstallmentsOnPagoPa(debtPositionDTO, 1L);
-
-        // Then
-        verify(receiptServiceMock, times(1)).getByReceiptId(1L);
-        verify(organizationServiceMock, times(1)).getOrganizationById(debtPositionDTO.getOrganizationId());
-        verify(brokerServiceMock, times(1)).getBrokerById(1L);
-        verify(acaServiceMock, never()).syncInstallmentAca(anyString(), any());
-        verify(gpdServiceMock, times(1)).syncInstallmentGpd(anyString(), any());
-    }
-
-    @Test
-    void givenGpdWhenDeletingWithExceptionOnGpd() {
-        // Given
-        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        ReceiptDTO receiptDTO = new ReceiptDTO();
-        receiptDTO.setReceiptId(1L);
-        receiptDTO.setReceiptOrigin(ReceiptOriginType.RECEIPT_FILE);
-        Organization organization = new Organization();
-        organization.setBrokerId(1L);
-        Broker broker = new Broker();
-        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
-
-        InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
-        installmentDTO.setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.PAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
-        installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
-        installmentDTO.setReceiptId(1L);
-
-        // When
-        when(receiptServiceMock.getByReceiptId(1L)).thenReturn(receiptDTO);
-        when(organizationServiceMock.getOrganizationById(debtPositionDTO.getOrganizationId())).thenReturn(Optional.of(organization));
-        when(brokerServiceMock.getBrokerById(1L)).thenReturn(broker);
-        when(gpdServiceMock.syncInstallmentGpd(installmentDTO.getIud(), debtPositionDTO)).thenThrow(new RuntimeException("Error on GPD"));
-        activity.deletePaidInstallmentsOnPagoPa(debtPositionDTO, 1L);
-
-        // Then
-        verify(receiptServiceMock, times(1)).getByReceiptId(1L);
-        verify(organizationServiceMock, times(1)).getOrganizationById(debtPositionDTO.getOrganizationId());
-        verify(brokerServiceMock, times(1)).getBrokerById(1L);
-        verify(acaServiceMock, never()).syncInstallmentAca(anyString(), any());
-        verify(gpdServiceMock, times(1)).syncInstallmentGpd(anyString(), any());
-    }
-
-    @Test
-    void givenGpdWithOriginReceiptPagopaWhenDeletingThenDoesNothing() {
-        // Given
-        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-        ReceiptDTO receiptDTO = new ReceiptDTO();
-        receiptDTO.setReceiptId(1L);
-        receiptDTO.setReceiptOrigin(ReceiptOriginType.RECEIPT_PAGOPA);
-        Organization organization = new Organization();
-        organization.setBrokerId(1L);
-        Broker broker = new Broker();
-        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
-
-        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setReceiptId(1L);
-
-        // When
-        when(receiptServiceMock.getByReceiptId(1L)).thenReturn(receiptDTO);
-        when(organizationServiceMock.getOrganizationById(debtPositionDTO.getOrganizationId())).thenReturn(Optional.of(organization));
-        when(brokerServiceMock.getBrokerById(1L)).thenReturn(broker);
-        activity.deletePaidInstallmentsOnPagoPa(debtPositionDTO, 1L);
-
-        // Then
-        verify(receiptServiceMock, times(1)).getByReceiptId(1L);
-        verify(organizationServiceMock, times(1)).getOrganizationById(debtPositionDTO.getOrganizationId());
-        verify(brokerServiceMock, times(1)).getBrokerById(1L);
-        verify(acaServiceMock, never()).syncInstallmentAca(anyString(), any());
-        verify(gpdServiceMock, never()).syncInstallmentGpd(anyString(), any());
-    }
+//    @Test
+//    void givenGpdWhenDeletingThenSyncOnGPD() {
+//        // Given
+//        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+//        ReceiptDTO receiptDTO = new ReceiptDTO();
+//        receiptDTO.setReceiptId(1L);
+//        receiptDTO.setReceiptOrigin(ReceiptOriginType.RECEIPT_FILE);
+//        Organization organization = new Organization();
+//        organization.setBrokerId(1L);
+//        Broker broker = new Broker();
+//        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
+//
+//        InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
+//        installmentDTO.setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.PAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
+//        installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
+//        installmentDTO.setReceiptId(1L);
+//
+//        // When
+//        when(receiptServiceMock.getByReceiptId(1L)).thenReturn(receiptDTO);
+//        when(organizationServiceMock.getOrganizationById(debtPositionDTO.getOrganizationId())).thenReturn(Optional.of(organization));
+//        when(brokerServiceMock.getBrokerById(1L)).thenReturn(broker);
+//        when(gpdServiceMock.syncInstallmentGpd(installmentDTO.getIud(), debtPositionDTO)).thenReturn("ok");
+//        activity.deletePaidInstallmentsOnPagoPa(debtPositionDTO, 1L);
+//
+//        // Then
+//        verify(receiptServiceMock, times(1)).getByReceiptId(1L);
+//        verify(organizationServiceMock, times(1)).getOrganizationById(debtPositionDTO.getOrganizationId());
+//        verify(brokerServiceMock, times(1)).getBrokerById(1L);
+//        verify(acaServiceMock, never()).syncInstallmentAca(anyString(), any());
+//        verify(gpdServiceMock, times(1)).syncInstallmentGpd(anyString(), any());
+//    }
+//
+//    @Test
+//    void givenGpdWhenDeletingWithExceptionOnGpd() {
+//        // Given
+//        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+//        ReceiptDTO receiptDTO = new ReceiptDTO();
+//        receiptDTO.setReceiptId(1L);
+//        receiptDTO.setReceiptOrigin(ReceiptOriginType.RECEIPT_FILE);
+//        Organization organization = new Organization();
+//        organization.setBrokerId(1L);
+//        Broker broker = new Broker();
+//        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
+//
+//        InstallmentDTO installmentDTO = debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst();
+//        installmentDTO.setSyncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.PAID).syncStatusTo(InstallmentStatus.CANCELLED).build());
+//        installmentDTO.setStatus(InstallmentStatus.TO_SYNC);
+//        installmentDTO.setReceiptId(1L);
+//
+//        // When
+//        when(receiptServiceMock.getByReceiptId(1L)).thenReturn(receiptDTO);
+//        when(organizationServiceMock.getOrganizationById(debtPositionDTO.getOrganizationId())).thenReturn(Optional.of(organization));
+//        when(brokerServiceMock.getBrokerById(1L)).thenReturn(broker);
+//        when(gpdServiceMock.syncInstallmentGpd(installmentDTO.getIud(), debtPositionDTO)).thenThrow(new RuntimeException("Error on GPD"));
+//        activity.deletePaidInstallmentsOnPagoPa(debtPositionDTO, 1L);
+//
+//        // Then
+//        verify(receiptServiceMock, times(1)).getByReceiptId(1L);
+//        verify(organizationServiceMock, times(1)).getOrganizationById(debtPositionDTO.getOrganizationId());
+//        verify(brokerServiceMock, times(1)).getBrokerById(1L);
+//        verify(acaServiceMock, never()).syncInstallmentAca(anyString(), any());
+//        verify(gpdServiceMock, times(1)).syncInstallmentGpd(anyString(), any());
+//    }
+//
+//    @Test
+//    void givenGpdWithOriginReceiptPagopaWhenDeletingThenDoesNothing() {
+//        // Given
+//        DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+//        ReceiptDTO receiptDTO = new ReceiptDTO();
+//        receiptDTO.setReceiptId(1L);
+//        receiptDTO.setReceiptOrigin(ReceiptOriginType.RECEIPT_PAGOPA);
+//        Organization organization = new Organization();
+//        organization.setBrokerId(1L);
+//        Broker broker = new Broker();
+//        broker.setPagoPaInteractionModel(PagoPaInteractionModel.ASYNC_GPD);
+//
+//        debtPositionDTO.getPaymentOptions().getFirst().getInstallments().getFirst().setReceiptId(1L);
+//
+//        // When
+//        when(receiptServiceMock.getByReceiptId(1L)).thenReturn(receiptDTO);
+//        when(organizationServiceMock.getOrganizationById(debtPositionDTO.getOrganizationId())).thenReturn(Optional.of(organization));
+//        when(brokerServiceMock.getBrokerById(1L)).thenReturn(broker);
+//        activity.deletePaidInstallmentsOnPagoPa(debtPositionDTO, 1L);
+//
+//        // Then
+//        verify(receiptServiceMock, times(1)).getByReceiptId(1L);
+//        verify(organizationServiceMock, times(1)).getOrganizationById(debtPositionDTO.getOrganizationId());
+//        verify(brokerServiceMock, times(1)).getBrokerById(1L);
+//        verify(acaServiceMock, never()).syncInstallmentAca(anyString(), any());
+//        verify(gpdServiceMock, never()).syncInstallmentGpd(anyString(), any());
+//    }
 
 }

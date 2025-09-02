@@ -79,14 +79,16 @@ public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidIns
             } catch (Exception e) {
                 log.info("Error when deleting installment with id {} on ACA: {}", installment.getInstallmentId(), e.getMessage());
             }
-        } else if (pagoPaInteractionModel == PagoPaInteractionModel.ASYNC_GPD && !ReceiptOriginType.RECEIPT_PAGOPA.equals(receipt.getReceiptOrigin())) {
-            updateSyncStatusInstallmentToDelete(installment, debtPositionDTO);
-            try {
-                gpdService.syncInstallmentGpd(installment.getIud(), debtPositionDTO);
-            } catch (Exception e) {
-                log.info("Error when deleting installment with id {} on GPD: {}", installment.getInstallmentId(), e.getMessage());
-            }
         }
+        // TODO check if this behavior on GPD is expected
+//        else if (pagoPaInteractionModel == PagoPaInteractionModel.ASYNC_GPD && !ReceiptOriginType.RECEIPT_PAGOPA.equals(receipt.getReceiptOrigin())) {
+//            updateSyncStatusInstallmentToDelete(installment, debtPositionDTO);
+//            try {
+//                gpdService.syncInstallmentGpd(installment.getIud(), debtPositionDTO);
+//            } catch (Exception e) {
+//                log.info("Error when deleting installment with id {} on GPD: {}", installment.getInstallmentId(), e.getMessage());
+//            }
+//        }
     }
 
     private void updateSyncStatusInstallmentToDelete(InstallmentDTO installmentDTO, DebtPositionDTO debtPositionDTO) {
