@@ -72,7 +72,7 @@ public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidIns
 
         PagoPaInteractionModel pagoPaInteractionModel = broker.getPagoPaInteractionModel();
 
-        if (pagoPaInteractionModel == PagoPaInteractionModel.SYNC_ACA) {
+        if (pagoPaInteractionModel == PagoPaInteractionModel.SYNC_ACA && !ReceiptOriginType.RECEIPT_FILE.equals(receipt.getReceiptOrigin())) {
             updateSyncStatusInstallmentToDelete(installment, debtPositionDTO);
             try {
                 acaService.syncInstallmentAca(installment.getIud(), debtPositionDTO);
