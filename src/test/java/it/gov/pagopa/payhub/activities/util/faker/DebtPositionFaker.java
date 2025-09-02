@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionStatus;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public class DebtPositionFaker {
     public static DebtPositionDTO buildDebtPositionDTO(){
         return TestUtils.getPodamFactory().manufacturePojo(DebtPositionDTO.class)
                 .status(DebtPositionStatus.PAID)
+                .debtPositionOrigin(DebtPositionOrigin.ORDINARY)
                 .flagPuPagoPaPayment(true)
                 .debtPositionTypeOrgId(1L)
                 .paymentOptions(List.of(buildPaymentOptionDTO()));

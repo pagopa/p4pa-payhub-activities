@@ -11,4 +11,6 @@ public interface BrokerService {
 	List<Broker> fetchAll();
 
 	Broker getBrokerByFiscalCode(String fiscalCode);
+
+	Broker getBrokerById(Long brokerId);
 }
