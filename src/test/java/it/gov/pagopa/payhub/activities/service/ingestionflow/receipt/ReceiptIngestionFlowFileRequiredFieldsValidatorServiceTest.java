@@ -116,4 +116,22 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         dto.setFiscalCodePA("OTHER");
         assertFalse(receiptIngestionFlowFileRequiredFieldsValidatorService.checkOrganization(flowFile, dto));
     }
+
+    @Test
+    void givenOrgMatchesButFiscalCodePADifferentWhenCheckOrganizationThenReturnFalse() {
+        IngestionFlowFile flowFile = new IngestionFlowFile();
+        flowFile.setOrganizationId(4L);
+
+        Organization org = new Organization();
+        org.setOrgFiscalCode("ORG123");
+
+        ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
+        dto.setOrgFiscalCode("ORG123");
+        dto.setFiscalCodePA("DIFFERENT");
+
+        Mockito.when(organizationServiceMock.getOrganizationById(4L)).thenReturn(Optional.of(org));
+
+        assertFalse(receiptIngestionFlowFileRequiredFieldsValidatorService.checkOrganization(flowFile, dto));
+    }
+
 }
