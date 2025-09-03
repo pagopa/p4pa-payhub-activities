@@ -22,4 +22,8 @@ public class BrokerClient {
 	public Broker getByFiscalCode(String fiscalCode, String accessToken) {
 		return organizationApisHolder.getBrokerSearchControllerApi(accessToken).crudBrokersFindByBrokeredOrgFiscalCode(fiscalCode);
 	}
+
+	public Broker getById(Long brokerId, String accessToken) {
+		return organizationApisHolder.getBrokerEntityControllerApi(accessToken).crudGetBroker(brokerId.toString());
+	}
 }

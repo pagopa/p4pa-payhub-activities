@@ -36,5 +36,11 @@ public class BrokerServiceImpl implements BrokerService {
 		return brokerClient.getByFiscalCode(fiscalCode, authnService.getAccessToken());
 	}
 
+	@Override
+	public Broker getBrokerById(Long brokerId) {
+		log.debug("Get Broker by id: {}", brokerId);
+		return brokerClient.getById(brokerId, authnService.getAccessToken());
+	}
+
 
 }
