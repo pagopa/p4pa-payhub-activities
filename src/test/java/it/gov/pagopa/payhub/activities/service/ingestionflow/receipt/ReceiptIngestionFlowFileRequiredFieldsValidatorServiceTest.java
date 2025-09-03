@@ -64,7 +64,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
     }
 
     @Test
-    void givenFiscalCodePAIsNullWhenCheckOrganizationThenReturnTrueIfOrgFiscalMatches() {
+    void givenFiscalCodePAIsNullWhenIsValidOrganizationThenReturnTrueIfOrgFiscalMatches() {
         IngestionFlowFile flowFile = new IngestionFlowFile();
         flowFile.setOrganizationId(1L);
 
@@ -77,11 +77,11 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(org));
 
-        assertTrue(receiptIngestionFlowFileRequiredFieldsValidatorService.checkOrganization(flowFile, dto));
+        assertTrue(receiptIngestionFlowFileRequiredFieldsValidatorService.isValidOrganization(flowFile, dto));
     }
 
     @Test
-    void givenFiscalCodePAIsBlankWhenCheckOrganizationThenReturnTrueIfOrgFiscalMatches() {
+    void givenFiscalCodePAIsBlankWhenIsValidOrganizationThenReturnTrueIfOrgFiscalMatches() {
         IngestionFlowFile flowFile = new IngestionFlowFile();
         flowFile.setOrganizationId(2L);
 
@@ -94,11 +94,11 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(2L)).thenReturn(Optional.of(org));
 
-        assertTrue(receiptIngestionFlowFileRequiredFieldsValidatorService.checkOrganization(flowFile, dto));
+        assertTrue(receiptIngestionFlowFileRequiredFieldsValidatorService.isValidOrganization(flowFile, dto));
     }
 
     @Test
-    void givenFiscalCodePAIsFilledWhenCheckOrganizationThenReturnTrueOnlyIfBothMatch() {
+    void givenFiscalCodePAIsFilledWhenIsValidOrganizationThenReturnTrueOnlyIfBothMatch() {
         IngestionFlowFile flowFile = new IngestionFlowFile();
         flowFile.setOrganizationId(3L);
 
@@ -111,14 +111,14 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(3L)).thenReturn(Optional.of(org));
 
-        assertTrue(receiptIngestionFlowFileRequiredFieldsValidatorService.checkOrganization(flowFile, dto));
+        assertTrue(receiptIngestionFlowFileRequiredFieldsValidatorService.isValidOrganization(flowFile, dto));
 
         dto.setFiscalCodePA("OTHER");
-        assertFalse(receiptIngestionFlowFileRequiredFieldsValidatorService.checkOrganization(flowFile, dto));
+        assertFalse(receiptIngestionFlowFileRequiredFieldsValidatorService.isValidOrganization(flowFile, dto));
     }
 
     @Test
-    void givenOrgMatchesButFiscalCodePADifferentWhenCheckOrganizationThenReturnFalse() {
+    void givenOrgMatchesButFiscalCodePADifferentWhenIsValidOrganizationThenReturnFalse() {
         IngestionFlowFile flowFile = new IngestionFlowFile();
         flowFile.setOrganizationId(4L);
 
@@ -131,7 +131,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(4L)).thenReturn(Optional.of(org));
 
-        assertFalse(receiptIngestionFlowFileRequiredFieldsValidatorService.checkOrganization(flowFile, dto));
+        assertFalse(receiptIngestionFlowFileRequiredFieldsValidatorService.isValidOrganization(flowFile, dto));
     }
 
 }

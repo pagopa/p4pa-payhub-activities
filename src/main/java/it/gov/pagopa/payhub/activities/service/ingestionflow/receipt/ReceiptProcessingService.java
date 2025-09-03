@@ -68,7 +68,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                                  List<ReceiptErrorDTO> errorList,
                                  IngestionFlowFile ingestionFlowFile) {
         try {
-            if (!requiredFieldsValidatorService.checkOrganization(ingestionFlowFile, receipt)) {
+            if (!requiredFieldsValidatorService.isValidOrganization(ingestionFlowFile, receipt)) {
                 throw new IllegalArgumentException(
                         "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
                 );

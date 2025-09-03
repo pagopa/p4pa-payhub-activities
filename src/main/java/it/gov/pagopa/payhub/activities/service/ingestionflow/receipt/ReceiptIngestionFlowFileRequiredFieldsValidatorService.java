@@ -38,7 +38,7 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
         }
     }
 
-    public boolean checkOrganization(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO receiptIngestionFlowFileDTO) {
+    public boolean isValidOrganization(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO receiptIngestionFlowFileDTO) {
         Long organizationId = ingestionFlowFile.getOrganizationId();
         Organization org = organizationService.getOrganizationById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization with id " + organizationId + " not found."));

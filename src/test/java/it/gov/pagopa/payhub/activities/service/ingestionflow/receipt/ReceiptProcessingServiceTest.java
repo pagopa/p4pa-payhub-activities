@@ -80,7 +80,7 @@ class ReceiptProcessingServiceTest {
     ReceiptIngestionFlowFileDTO dto = mock(ReceiptIngestionFlowFileDTO.class);
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
 
-    Mockito.when(requiredFieldsValidatorServiceMock.checkOrganization(ingestionFlowFile, dto)).thenReturn(true);
+    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto)).thenReturn(true);
     Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
     Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(new ReceiptDTO());
 
@@ -106,7 +106,7 @@ class ReceiptProcessingServiceTest {
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     workingDirectory = Path.of(new URI("file:///tmp"));
 
-    Mockito.when(requiredFieldsValidatorServiceMock.checkOrganization(ingestionFlowFile, dto)).thenReturn(true);
+    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto)).thenReturn(true);
     Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
     Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO))
         .thenThrow(new RuntimeException("Processing error"));
@@ -144,7 +144,7 @@ class ReceiptProcessingServiceTest {
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     workingDirectory = Path.of(new URI("file:///tmp"));
 
-    Mockito.when(requiredFieldsValidatorServiceMock.checkOrganization(ingestionFlowFile, dto))
+    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto))
             .thenReturn(false);
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
             .thenReturn("zipFileName.csv");
