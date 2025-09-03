@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtpositiontype;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.connector.organization.TaxonomyService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
@@ -11,6 +12,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.PagedModelTaxonomy;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -30,14 +32,16 @@ public class DebtPositionTypeProcessingService extends
 
   private final DebtPositionTypeMapper debtPositionTypeMapper;
   private final DebtPositionTypeService debtPositionTypeService;
+  private final TaxonomyService taxonomyService;
 
   public DebtPositionTypeProcessingService(
-      DebtPositionTypeMapper debtPositionTypeMapper,
-      DebtPositionTypeErrorsArchiverService debtPositionTypeErrorsArchiverService,
-      DebtPositionTypeService debtPositionTypeService, OrganizationService organizationService) {
+          DebtPositionTypeMapper debtPositionTypeMapper,
+          DebtPositionTypeErrorsArchiverService debtPositionTypeErrorsArchiverService,
+          DebtPositionTypeService debtPositionTypeService, OrganizationService organizationService, TaxonomyService taxonomyService) {
     super(debtPositionTypeErrorsArchiverService, organizationService);
     this.debtPositionTypeMapper = debtPositionTypeMapper;
     this.debtPositionTypeService = debtPositionTypeService;
+      this.taxonomyService = taxonomyService;
   }
 
 
@@ -93,6 +97,26 @@ public class DebtPositionTypeProcessingService extends
         errorList.add(error);
         return false;
       }
+
+      String category = debtPositionTypeDTO.getTaxonomyCode();
+      try {
+        String organizationType = category.substring(0, 2);
+        String macroAreaCode = category.substring(2, 4);
+        String serviceTypeCode = category.substring(4, 7);
+        String collectionReason = category.substring(7, 9);
+        PagedModelTaxonomy pagedModelTaxonomy = taxonomyService.getTaxonomies(organizationType, macroAreaCode, serviceTypeCode, collectionReason,
+                0, 5, null);
+
+        if (pagedModelTaxonomy == null || pagedModelTaxonomy.getEmbedded() == null || CollectionUtils.isEmpty(pagedModelTaxonomy.getEmbedded().getTaxonomies())) {
+          log.error("The category code " + debtPositionTypeDTO.getTaxonomyCode() + " does not exist in the archive");
+          return false;
+        }
+
+      } catch (IndexOutOfBoundsException exception) {
+        log.error("The category code " + debtPositionTypeDTO.getTaxonomyCode() + " does not meet the required length or format");
+        return false;
+      }
+
 
       debtPositionTypeService.createDebtPositionType(debtPositionTypeMapper.map(debtPositionTypeDTO, ingestionFlowFileResult.getBrokerId()));
       return true;
