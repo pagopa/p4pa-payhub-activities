@@ -163,9 +163,9 @@ class ReceiptProcessingServiceTest {
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-    verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."),
-            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Processing error")
-    )));
+    verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
+            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA).")
+    ));
   }
 }
