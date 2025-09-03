@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidatorService.setDefaultValues;
 
 @Service
 @Lazy
@@ -28,14 +28,16 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
 
     private final ReceiptService receiptService;
     private final ReceiptMapper receiptMapper;
+    private final ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService;
 
     public ReceiptProcessingService(ReceiptMapper receiptMapper,
                                     ReceiptErrorsArchiverService receiptErrorsArchiverService,
                                     ReceiptService receiptService,
-                                    OrganizationService organizationService) {
+                                    OrganizationService organizationService, ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService) {
         super(receiptErrorsArchiverService, organizationService);
         this.receiptService = receiptService;
         this.receiptMapper = receiptMapper;
+        this.requiredFieldsValidatorService = requiredFieldsValidatorService;
     }
 
     /**
@@ -66,6 +68,11 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                                  List<ReceiptErrorDTO> errorList,
                                  IngestionFlowFile ingestionFlowFile) {
         try {
+            if (!requiredFieldsValidatorService.isValidOrganization(ingestionFlowFile, receipt)) {
+                throw new IllegalArgumentException(
+                        "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
+                );
+            }
             setDefaultValues(receipt);
             ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
             receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
