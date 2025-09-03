@@ -53,13 +53,16 @@ class ReceiptProcessingServiceTest {
   @Mock
   private OrganizationService organizationServiceMock;
 
+  @Mock
+  private ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorServiceMock;
+
   private ReceiptProcessingService service;
 
   private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
   @BeforeEach
   void setUp() {
-    service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock);
+    service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, requiredFieldsValidatorServiceMock);
   }
 
   @AfterEach
@@ -71,12 +74,13 @@ class ReceiptProcessingServiceTest {
   }
 
   @Test
-  void processReceiptWithNoErrors() {
+  void whenProcessReceiptThenOk() {
     //given
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     ReceiptIngestionFlowFileDTO dto = mock(ReceiptIngestionFlowFileDTO.class);
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
 
+    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto)).thenReturn(true);
     Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
     Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(new ReceiptDTO());
 
@@ -94,7 +98,7 @@ class ReceiptProcessingServiceTest {
   }
   
   @Test
-  void givenThrowExceptionWhenProcessPaymentNotificationThenAddError() throws URISyntaxException {
+  void givenIncorrectDataWhenProcessReceiptThenError() throws URISyntaxException {
     // Given
     ReceiptIngestionFlowFileDTO dto = mock(ReceiptIngestionFlowFileDTO.class);
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
@@ -102,6 +106,7 @@ class ReceiptProcessingServiceTest {
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     workingDirectory = Path.of(new URI("file:///tmp"));
 
+    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto)).thenReturn(true);
     Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
     Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO))
         .thenThrow(new RuntimeException("Processing error"));
@@ -129,5 +134,38 @@ class ReceiptProcessingServiceTest {
             new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
             new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Processing error")
     )));
+  }
+
+  @Test
+  void givenIncorrectFiscalCodeWhenProcessReceiptThenAddError() throws URISyntaxException {
+    // Given
+    ReceiptIngestionFlowFileDTO dto = mock(ReceiptIngestionFlowFileDTO.class);
+
+    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    workingDirectory = Path.of(new URI("file:///tmp"));
+
+    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto))
+            .thenReturn(false);
+    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+            .thenReturn("zipFileName.csv");
+
+    // When
+    ReceiptIngestionFlowFileResult result = service.processReceipts(
+            Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
+            ingestionFlowFile,
+            workingDirectory
+    );
+
+    // Then
+    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+    assertEquals(2, result.getTotalRows());
+    assertEquals(0, result.getProcessedRows());
+    assertEquals("Some rows have failed", result.getErrorDescription());
+    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+
+    verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
+            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA).")
+    ));
   }
 }
