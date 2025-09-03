@@ -126,7 +126,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         org.setOrgFiscalCode("ORG123");
 
         ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
-        dto.setOrgFiscalCode("ORG123");
+        dto.setOrgFiscalCode("ORG1234");
         dto.setFiscalCodePA("DIFFERENT");
 
         Mockito.when(organizationServiceMock.getOrganizationById(4L)).thenReturn(Optional.of(org));
