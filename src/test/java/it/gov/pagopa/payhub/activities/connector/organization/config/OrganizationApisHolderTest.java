@@ -74,4 +74,41 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
             new ParameterizedTypeReference<>() {},
             organizationApisHolder::unload);
 	}
+
+    @Test
+    void whenGetTaxonomyCodeDtoSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> organizationApisHolder.getTaxonomySearchControllerApi(accessToken)
+                        .crudTaxonomiesFindByTaxonomyCode("TAXONOMYCODE"),
+                new ParameterizedTypeReference<>() {},
+                organizationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetTaxonomyApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> organizationApisHolder.getTaxonomyApi(accessToken)
+                        .syncTaxonomies(),
+                new ParameterizedTypeReference<>() {},
+                organizationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetBrokerSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> organizationApisHolder.getBrokerSearchControllerApi(accessToken)
+                        .crudBrokersFindByBrokeredOrganizationId("ORGID"),
+                new ParameterizedTypeReference<>() {},
+                organizationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetOrganizationEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
+                        .crudGetOrganization("ORGID"),
+                new ParameterizedTypeReference<>() {},
+                organizationApisHolder::unload);
+    }
+
 }
