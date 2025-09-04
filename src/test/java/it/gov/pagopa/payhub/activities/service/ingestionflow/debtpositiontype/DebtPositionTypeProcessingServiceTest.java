@@ -323,4 +323,63 @@ class DebtPositionTypeProcessingServiceTest {
     );
     Mockito.verifyNoInteractions(mapperMock);
   }
+
+  @Test
+  void processDebtPositionTypeWithInvalidTaxonomyCodeFormat() {
+    // Given
+    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    DebtPositionTypeIngestionFlowFileDTO dto = DebtPositionTypeIngestionFlowFileDTO.builder()
+        .brokerCf("brokerFC")
+        .debtPositionTypeCode("CODE")
+        .description("DESCRIPTION")
+        .orgType("TYPE")
+        .macroArea("AREA")
+        .serviceType("SERVICE")
+        .collectingReason("REASON")
+        .taxonomyCode("SHORT")
+        .flagAnonymousFiscalCode(false)
+        .flagMandatoryDueDate(false)
+        .flagNotifyIo(false)
+        .ioTemplateMessage("MESSAGE")
+        .build();
+    Organization orgFromService = Organization.builder()
+        .brokerId(1L)
+        .orgFiscalCode("brokerFC")
+        .ipaCode("ipaCode")
+        .orgName("orgName")
+        .status(OrganizationStatus.ACTIVE)
+        .flagNotifyIo(true)
+        .flagPaymentNotification(true)
+        .flagNotifyOutcomePush(true)
+        .pdndEnabled(false)
+        .flagTreasury(false)
+        .build();
+    Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+        .thenReturn(Optional.of(orgFromService));
+    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+        .thenReturn(null);
+    // When
+    DebtPositionTypeIngestionFlowFileResult result = service.processDebtPositionType(
+        Stream.of(dto).iterator(), List.of(),
+        ingestionFlowFile, workingDirectory);
+    // Then
+    Assertions.assertEquals(0, result.getProcessedRows());
+    Assertions.assertEquals(1, result.getTotalRows());
+
+    Assertions.assertNull(result.getDiscardedFileName());
+    Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.argThat(errorList -> {
+      if (errorList == null || errorList.size() != 1) return false;
+      DebtPositionTypeErrorDTO error = errorList.get(0);
+      return "INVALID_TAXONOMY_CODE_FORMAT".equals(error.getErrorCode()) &&
+             "The category code does not meet the required length or format".equals(error.getErrorMessage()) &&
+             error.getRowNumber() == 1 &&
+             ingestionFlowFile.getFileName().equals(error.getFileName()) &&
+             "CODE".equals(error.getDebtPositionTypeCode()) &&
+             "brokerFC".equals(error.getBrokerCf());
+    }));
+    Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
+    Mockito.verify(debtPositionTypeServiceMock).getByMainFields(Mockito.any(), Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+    Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
+    Mockito.verifyNoInteractions(mapperMock);
+  }
 }

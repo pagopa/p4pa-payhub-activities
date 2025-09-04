@@ -114,6 +114,11 @@ public class DebtPositionTypeProcessingService extends
 
       } catch (IndexOutOfBoundsException exception) {
         log.error("The category code " + debtPositionTypeDTO.getTaxonomyCode() + " does not meet the required length or format");
+        DebtPositionTypeErrorDTO error = new DebtPositionTypeErrorDTO(
+            ingestionFlowFile.getFileName(), debtPositionTypeDTO.getDebtPositionTypeCode(),
+            debtPositionTypeDTO.getBrokerCf(), lineNumber, "INVALID_TAXONOMY_CODE_FORMAT",
+            "The category code does not meet the required length or format");
+        errorList.add(error);
         return false;
       }
 
@@ -145,4 +150,3 @@ public class DebtPositionTypeProcessingService extends
         .build();
   }
 }
-
