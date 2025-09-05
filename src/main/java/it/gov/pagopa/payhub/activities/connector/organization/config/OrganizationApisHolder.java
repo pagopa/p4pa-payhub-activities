@@ -19,7 +19,6 @@ public class OrganizationApisHolder {
     private final OrganizationEntityControllerApi organizationEntityControllerApi;
     private final OrganizationApi organizationApi;
     private final TaxonomyApi taxonomyApi;
-    private final TaxonomySearchControllerApi taxonomySearchControllerApi;
     private final OrganizationSilServiceApi orgSilServiceApi;
     private final OrgSilServiceSearchControllerApi orgSilServiceSearchControllerApi;
 
@@ -44,7 +43,6 @@ public class OrganizationApisHolder {
         this.organizationSearchControllerApi = new OrganizationSearchControllerApi(apiClient);
         this.organizationEntityControllerApi = new OrganizationEntityControllerApi(apiClient);
         this.taxonomyApi = new TaxonomyApi(apiClient);
-        this.taxonomySearchControllerApi = new TaxonomySearchControllerApi(apiClient);
         this.organizationApi = new OrganizationApi(apiClient);
         this.orgSilServiceApi = new OrganizationSilServiceApi(apiClient);
         this.orgSilServiceSearchControllerApi = new OrgSilServiceSearchControllerApi(apiClient);
@@ -79,13 +77,6 @@ public class OrganizationApisHolder {
      */
     public TaxonomyApi getTaxonomyApi(String accessToken){
         return getApi(accessToken, taxonomyApi);
-    }
-
-    /**
-     * It will return a {@link TaxonomySearchControllerApi} instrumented with the provided accessToken. Use null if auth is not required.
-     */
-    public TaxonomySearchControllerApi getTaxonomySearchControllerApi(String accessToken){
-        return getApi(accessToken, taxonomySearchControllerApi);
     }
 
     /**

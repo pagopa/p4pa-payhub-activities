@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtpositiontype;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
-import it.gov.pagopa.payhub.activities.connector.organization.TaxonomyService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
@@ -13,7 +12,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionTy
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedModelDebtPositionTypeEmbedded;
-import it.gov.pagopa.pu.organization.dto.generated.*;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -57,14 +57,12 @@ class DebtPositionTypeProcessingServiceTest {
   private OrganizationService organizationServiceMock;
 
   @Mock
-  private TaxonomyService taxonomyServiceMock;
-
   private DebtPositionTypeProcessingService service;
 
   @BeforeEach
   void setUp() {
     service = new DebtPositionTypeProcessingService(mapperMock, errorsArchiverServiceMock,
-        debtPositionTypeServiceMock, organizationServiceMock, taxonomyServiceMock);
+        debtPositionTypeServiceMock, organizationServiceMock);
   }
 
    @AfterEach
@@ -73,28 +71,15 @@ class DebtPositionTypeProcessingServiceTest {
          mapperMock,
          debtPositionTypeServiceMock,
          errorsArchiverServiceMock,
-         organizationServiceMock,
-         taxonomyServiceMock);
+         organizationServiceMock);
    }
+
 
   @Test
   void processDebtPositionTypeWithNoErrors() {
     // Given
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    DebtPositionTypeIngestionFlowFileDTO dto = DebtPositionTypeIngestionFlowFileDTO.builder()
-        .brokerCf("brokerFC")
-        .debtPositionTypeCode("CODE")
-        .description("DESCRIPTION")
-        .orgType("TYPE")
-        .macroArea("AREA")
-        .serviceType("SERVICE")
-        .collectingReason("REASON")
-        .taxonomyCode("9/0101011/R/") // valore lungo e valido
-        .flagAnonymousFiscalCode(false)
-        .flagMandatoryDueDate(false)
-        .flagNotifyIo(false)
-        .ioTemplateMessage("MESSAGE")
-        .build();
+    DebtPositionTypeIngestionFlowFileDTO dto = mock(DebtPositionTypeIngestionFlowFileDTO.class);
     Organization orgFromService = Organization.builder()
         .brokerId(1L)
         .orgFiscalCode("brokerFC")
@@ -115,7 +100,7 @@ class DebtPositionTypeProcessingServiceTest {
         .macroArea("AREA")
         .serviceType("SERVICE")
         .collectingReason("REASON")
-        .taxonomyCode("9/0101011/R/")
+        .taxonomyCode("TAX")
         .flagNotifyIo(false)
         .flagAnonymousFiscalCode(false)
         .flagMandatoryDueDate(false)
@@ -141,14 +126,6 @@ class DebtPositionTypeProcessingServiceTest {
         .thenReturn(Optional.of(orgFromService));
     Mockito.when(mapperMock.map(dto, orgFromService.getBrokerId())).thenReturn(mappedDebtPosType);
     Mockito.when(debtPositionTypeServiceMock.createDebtPositionType(mappedDebtPosType)).thenReturn(createdDebtPosType);
-    Taxonomy taxonomy = new Taxonomy();
-    taxonomy.setOrganizationType("9/");
-    taxonomy.setMacroAreaCode("0101");
-    taxonomy.setServiceTypeCode("11/");
-    taxonomy.setCollectionReason("R/");
-    PagedModelTaxonomy pagedModelTaxonomy = new PagedModelTaxonomy();
-    pagedModelTaxonomy.embedded(new PagedModelTaxonomyEmbedded(List.of(taxonomy)));
-    Mockito.when(taxonomyServiceMock.getTaxonomies(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(pagedModelTaxonomy);
 
     // When
     DebtPositionTypeIngestionFlowFileResult result = service.processDebtPositionType(
@@ -195,18 +172,6 @@ class DebtPositionTypeProcessingServiceTest {
 
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
         .thenReturn("zipFileName.csv");
-
-    String taxonomyCode = debtPositionTypeIngestionFlowFileDTO.getTaxonomyCode();
-    Taxonomy taxonomy = new Taxonomy();
-    taxonomy.setOrganizationType(taxonomyCode.substring(0, 2));
-    taxonomy.setMacroAreaCode(taxonomyCode.substring(2, 4));
-    taxonomy.setServiceTypeCode(taxonomyCode.substring(4, 7));
-    taxonomy.setCollectionReason(taxonomyCode.substring(7, 9));
-
-
-    PagedModelTaxonomy pagedModelTaxonomy = new PagedModelTaxonomy();
-    pagedModelTaxonomy.embedded(new PagedModelTaxonomyEmbedded(List.of(taxonomy)));
-    Mockito.when(taxonomyServiceMock.getTaxonomies(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(pagedModelTaxonomy);
 
     // When
     DebtPositionTypeIngestionFlowFileResult result = service.processDebtPositionType(
@@ -321,65 +286,6 @@ class DebtPositionTypeProcessingServiceTest {
     Mockito.verify(debtPositionTypeServiceMock).getByMainFields(
         Mockito.any(), Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()
     );
-    Mockito.verifyNoInteractions(mapperMock);
-  }
-
-  @Test
-  void processDebtPositionTypeWithInvalidTaxonomyCodeFormat() {
-    // Given
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    DebtPositionTypeIngestionFlowFileDTO dto = DebtPositionTypeIngestionFlowFileDTO.builder()
-        .brokerCf("brokerFC")
-        .debtPositionTypeCode("CODE")
-        .description("DESCRIPTION")
-        .orgType("TYPE")
-        .macroArea("AREA")
-        .serviceType("SERVICE")
-        .collectingReason("REASON")
-        .taxonomyCode("SHORT")
-        .flagAnonymousFiscalCode(false)
-        .flagMandatoryDueDate(false)
-        .flagNotifyIo(false)
-        .ioTemplateMessage("MESSAGE")
-        .build();
-    Organization orgFromService = Organization.builder()
-        .brokerId(1L)
-        .orgFiscalCode("brokerFC")
-        .ipaCode("ipaCode")
-        .orgName("orgName")
-        .status(OrganizationStatus.ACTIVE)
-        .flagNotifyIo(true)
-        .flagPaymentNotification(true)
-        .flagNotifyOutcomePush(true)
-        .pdndEnabled(false)
-        .flagTreasury(false)
-        .build();
-    Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
-        .thenReturn(Optional.of(orgFromService));
-    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-        .thenReturn(null);
-    // When
-    DebtPositionTypeIngestionFlowFileResult result = service.processDebtPositionType(
-        Stream.of(dto).iterator(), List.of(),
-        ingestionFlowFile, workingDirectory);
-    // Then
-    Assertions.assertEquals(0, result.getProcessedRows());
-    Assertions.assertEquals(1, result.getTotalRows());
-
-    Assertions.assertNull(result.getDiscardedFileName());
-    Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.argThat(errorList -> {
-      if (errorList == null || errorList.size() != 1) return false;
-      DebtPositionTypeErrorDTO error = errorList.get(0);
-      return "INVALID_TAXONOMY_CODE_FORMAT".equals(error.getErrorCode()) &&
-             "The category code does not meet the required length or format".equals(error.getErrorMessage()) &&
-             error.getRowNumber() == 1 &&
-             ingestionFlowFile.getFileName().equals(error.getFileName()) &&
-             "CODE".equals(error.getDebtPositionTypeCode()) &&
-             "brokerFC".equals(error.getBrokerCf());
-    }));
-    Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-    Mockito.verify(debtPositionTypeServiceMock).getByMainFields(Mockito.any(), Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-    Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
     Mockito.verifyNoInteractions(mapperMock);
   }
 }
