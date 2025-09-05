@@ -155,6 +155,11 @@ class IudClassificationActivityTest {
                         .build();
 
         assertEquals(expectedIudClassificationActivityResult, iudClassificationActivityResult);
+        Mockito.verify(transferClassificationStoreServiceMock, Mockito.times(1)).saveIudClassifications(
+            Mockito.any(), Mockito.anyList()
+        );
+        Mockito.verify(paymentNotificationServiceMock, Mockito.times(1)).getByOrgIdAndIud(ORGANIZATIONID, IUD);
+        Mockito.verifyNoMoreInteractions(installmentServiceMock, transferServiceMock, transferClassificationStoreServiceMock);
     }
 
 
@@ -216,4 +221,3 @@ class IudClassificationActivityTest {
 
 
 }
-

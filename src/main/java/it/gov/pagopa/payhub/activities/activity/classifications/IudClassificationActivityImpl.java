@@ -48,6 +48,9 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
     List<InstallmentNoPII> installmentsList = installment.getEmbedded().getInstallmentNoPIIs();
     if (installmentsList == null || installmentsList.isEmpty()) {
       log.info("No installments found for organization id {} and iud {}", organizationId,iud);
+
+      saveClassification(organizationId, iud);
+
       return IudClassificationActivityResult.builder()
           .organizationId(organizationId)
           .iud(iud)
