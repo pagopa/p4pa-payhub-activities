@@ -71,7 +71,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                 throw new OrganizationIpaCodeNotMatchException(errorMessage);
             }
 
-            Organization organization = organizationService.getOrganizationByIpaCode(ipa).orElseThrow(() -> {;
+            Organization organization = organizationService.getOrganizationByIpaCode(ipa).orElseThrow(() -> {
                 String errorMessage = String.format("No organization found for IPA code %s", ipa);
                 log.error(errorMessage);
                 return new OrganizationIpaCodeNotMatchException(errorMessage);
