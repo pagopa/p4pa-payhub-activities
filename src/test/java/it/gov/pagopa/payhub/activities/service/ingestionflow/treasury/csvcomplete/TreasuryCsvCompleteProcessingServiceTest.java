@@ -208,4 +208,77 @@ class TreasuryCsvCompleteProcessingServiceTest {
         Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
         Mockito.verify(treasuryService, Mockito.never()).insert(Mockito.any());
     }
+
+    @Test
+    void processTreasuryCsvCompleteWithOrganizationNotFound() {
+        String ipa = "IPA123";
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(1L);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
+        dto.setBillYear("2025");
+        dto.setIuf("IUF12345");
+        dto.setIuv("IUV12345");
+        dto.setOrganizationIpaCode(ipa);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(Optional.empty());
+
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
+                Stream.of(dto).iterator(), List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(0L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
+    }
+
+    @Test
+    void processTreasuryCsvCompleteWithExistingTreasurySameBillCodeAndYear() {
+        String ipa = "IPA123";
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(1L);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
+        dto.setBillYear("2025");
+        dto.setIuf("IUF12345");
+        dto.setIuv("IUV12345");
+        dto.setOrganizationIpaCode(ipa);
+        dto.setBillCode("BILL123");
+
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(organizationOptional);
+
+        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
+        existingTreasuryIuf.setIuf("IUF12345");
+        existingTreasuryIuf.setBillCode("BILL123");
+        existingTreasuryIuf.setBillYear("2025");
+        Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, "IUF12345")).thenReturn(existingTreasuryIuf);
+
+        Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
+        mappedNotification.setIuf("IUF12345");
+        mappedNotification.setTreasuryId("TREASURY_ID_1");
+        Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
+        Mockito.when(treasuryService.insert(mappedNotification)).thenReturn(mappedNotification);
+
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
+                Stream.of(dto).iterator(), List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(1L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(1, result.getIuf2TreasuryIdMap().size());
+        Mockito.verify(mapperMock).map(dto, ingestionFlowFile);
+        Mockito.verify(treasuryService).insert(mappedNotification);
+    }
 }
