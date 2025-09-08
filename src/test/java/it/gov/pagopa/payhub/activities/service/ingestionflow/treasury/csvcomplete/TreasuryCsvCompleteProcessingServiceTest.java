@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -72,9 +71,11 @@ class TreasuryCsvCompleteProcessingServiceTest {
 
         Organization organization = new Organization();
         organization.setIpaCode(ipa + "_WRONG");
+        Long orgId = ingestionFlowFile.getOrganizationId();
+        organization.setOrganizationId(orgId);
         Optional<Organization> organizationOptional = Optional.of(organization);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
@@ -93,7 +94,8 @@ class TreasuryCsvCompleteProcessingServiceTest {
         String ipa = "IPA123";
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        organization.setOrganizationId(1L);
+        Long orgId = 1L;
+        organization.setOrganizationId(orgId);
         Optional<Organization> organizationOptional = Optional.of(organization);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
@@ -103,9 +105,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         dto.setIuv("IUV12345");
         dto.setOrganizationIpaCode(ipa);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(organizationOptional);
-        Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, "IUF12345")).thenReturn(null);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
 
         Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
         mappedNotification.setIuf("IUF12345");
@@ -130,7 +130,8 @@ class TreasuryCsvCompleteProcessingServiceTest {
         String ipa = "IPA123";
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        organization.setOrganizationId(1L);
+        Long orgId = 1L;
+        organization.setOrganizationId(orgId);
         Optional<Organization> organizationOptional = Optional.of(organization);
 
         TreasuryCsvCompleteIngestionFlowFileDTO paymentNotificationIngestionFlowFileDTO = TestUtils.getPodamFactory().manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
@@ -139,8 +140,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         paymentNotificationIngestionFlowFileDTO.setIuf("IUF12345");
         paymentNotificationIngestionFlowFileDTO.setIuv("IUV12345");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         workingDirectory = Path.of(new URI("file:///tmp"));
@@ -190,8 +190,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         dto.setIuf("IUF12345");
         dto.setIuv("IUV12345");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
 
         TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
         existingTreasuryIuf.setIuf("IUF12345");
@@ -210,35 +209,6 @@ class TreasuryCsvCompleteProcessingServiceTest {
     }
 
     @Test
-    void processTreasuryCsvCompleteWithOrganizationNotFound() {
-        String ipa = "IPA123";
-        Organization organization = new Organization();
-        organization.setIpaCode(ipa);
-        organization.setOrganizationId(1L);
-        Optional<Organization> organizationOptional = Optional.of(organization);
-
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
-        dto.setBillYear("2025");
-        dto.setIuf("IUF12345");
-        dto.setIuv("IUV12345");
-        dto.setOrganizationIpaCode(ipa);
-
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(Optional.empty());
-
-        TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
-                Stream.of(dto).iterator(), List.of(),
-                ingestionFlowFile, workingDirectory);
-
-        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-        Assertions.assertEquals(0L, result.getProcessedRows());
-        Assertions.assertEquals(1L, result.getTotalRows());
-        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
-        Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-    }
-
-    @Test
     void processTreasuryCsvCompleteWithExistingTreasurySameBillCodeAndYear() {
         String ipa = "IPA123";
         Organization organization = new Organization();
@@ -254,8 +224,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         dto.setOrganizationIpaCode(ipa);
         dto.setBillCode("BILL123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
 
         TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
         existingTreasuryIuf.setIuf("IUF12345");
@@ -298,8 +267,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         dto.setOrganizationIpaCode(ipa);
         dto.setBillCode("BILL123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode(ipa)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
 
         TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
         existingTreasuryIuf.setIuf("IUF12345");

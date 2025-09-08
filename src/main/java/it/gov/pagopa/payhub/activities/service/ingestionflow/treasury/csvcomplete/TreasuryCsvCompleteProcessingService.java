@@ -12,7 +12,6 @@ import it.gov.pagopa.payhub.activities.exception.organization.OrganizationIpaCod
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -71,13 +70,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                 throw new OrganizationIpaCodeNotMatchException(errorMessage);
             }
 
-            Organization organization = organizationService.getOrganizationByIpaCode(ipa).orElseThrow(() -> {
-                String errorMessage = String.format("No organization found for IPA code %s", ipa);
-                log.error(errorMessage);
-                return new OrganizationIpaCodeNotMatchException(errorMessage);
-            });
-
-            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(organization.getOrganizationId(), row.getIuf());
+            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
 
             if(existingTreasury != null) {
                 boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
