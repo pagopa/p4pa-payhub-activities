@@ -82,7 +82,7 @@ class ReceiptPagopaNotifySilActivityTest {
 
     DebtPositionTypeOrg debtPositionTypeOrgMixed = new DebtPositionTypeOrg();
     debtPositionTypeOrgMixed.setCode("MIXED");
-    debtPositionTypeOrg.setDebtPositionTypeId(-2L);
+    debtPositionTypeOrgMixed.setDebtPositionTypeId(-2L);
     debtPositionTypeOrgMixed.setNotifyOutcomePushOrgSilServiceId(2L);
 
     List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO(), mixedInstallment);
