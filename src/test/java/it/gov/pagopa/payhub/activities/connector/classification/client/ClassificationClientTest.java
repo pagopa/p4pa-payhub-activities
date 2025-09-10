@@ -1,12 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
-import it.gov.pagopa.payhub.activities.connector.classification.mapper.ClassificationRequestMapper;
-import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
-import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
-import it.gov.pagopa.pu.classification.dto.generated.ClassificationRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,18 +22,16 @@ class ClassificationClientTest {
 
     @Mock
     private ClassificationApisHolder classificationApisHolderMock;
-    @Mock
-    private ClassificationRequestMapper mapperMock;
 
     private ClassificationClient classificationClient;
 
     @BeforeEach
     void setUp() {
-        classificationClient = new ClassificationClient(classificationApisHolderMock, mapperMock);
+        classificationClient = new ClassificationClient(classificationApisHolderMock);
     }
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(classificationApisHolderMock, mapperMock);
+        Mockito.verifyNoMoreInteractions(classificationApisHolderMock);
     }
 
 
