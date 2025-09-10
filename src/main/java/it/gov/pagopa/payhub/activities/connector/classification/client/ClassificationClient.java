@@ -25,11 +25,6 @@ public class ClassificationClient {
                 .saveAll2(classificationList);
     }
 
-    public Classification save(Classification classificationDTO, String accessToken) {
-        return classificationApisHolder.getClassificationEntityControllerApi(accessToken)
-                .crudCreateClassification(mapper.map(classificationDTO));
-    }
-
     public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification);

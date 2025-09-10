@@ -60,25 +60,6 @@ class ClassificationClientTest {
                 .saveAll2(classificationList);
     }
 
-    @Test
-    void testSave() {
-        // Given
-        Classification classification = ClassificationFaker.buildClassificationDTO();
-        String accessToken = "accessToken";
-        Classification expectedResponse = new Classification();
-        ClassificationEntityControllerApi mockApi = mock(ClassificationEntityControllerApi.class);
-        when(mapperMock.map(classification)).thenReturn(mock(ClassificationRequestBody.class));
-        when(classificationApisHolderMock.getClassificationEntityControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudCreateClassification(any())).thenReturn(expectedResponse);
-
-        // When
-        Classification result = classificationClient.save(classification, accessToken);
-
-        // Then
-        assertEquals(expectedResponse, result);
-        verify(classificationApisHolderMock.getClassificationEntityControllerApi(accessToken), times(1))
-                .crudCreateClassification(any());
-    }
 
     @Test
     void testDeleteByOrganizationIdAndIufAndLabel() {

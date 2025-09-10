@@ -9,9 +9,7 @@ import java.util.List;
 
 public interface ClassificationService {
     Integer saveAll(List<Classification> classificationDTOList);
-    Classification save(Classification classificationDTO);
     Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification);
     Long deleteBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
     Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification);
-
 }
