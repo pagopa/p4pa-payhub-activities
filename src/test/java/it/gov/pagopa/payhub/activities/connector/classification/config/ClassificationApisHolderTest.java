@@ -48,14 +48,6 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
 
 //region Classification entity
     @Test
-    void whenGetClassificationEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
-        assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getClassificationEntityControllerApi(accessToken)
-                            .crudCreateClassification(new ClassificationRequestBody()),
-                new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
-    }
-    @Test
     void whenGetClassificationEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)

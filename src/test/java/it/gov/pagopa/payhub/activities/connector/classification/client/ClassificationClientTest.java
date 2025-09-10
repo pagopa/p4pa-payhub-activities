@@ -1,12 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
-import it.gov.pagopa.payhub.activities.connector.classification.mapper.ClassificationRequestMapper;
-import it.gov.pagopa.payhub.activities.util.faker.ClassificationFaker;
-import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
-import it.gov.pagopa.pu.classification.dto.generated.ClassificationRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,18 +22,16 @@ class ClassificationClientTest {
 
     @Mock
     private ClassificationApisHolder classificationApisHolderMock;
-    @Mock
-    private ClassificationRequestMapper mapperMock;
 
     private ClassificationClient classificationClient;
 
     @BeforeEach
     void setUp() {
-        classificationClient = new ClassificationClient(classificationApisHolderMock, mapperMock);
+        classificationClient = new ClassificationClient(classificationApisHolderMock);
     }
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(classificationApisHolderMock, mapperMock);
+        Mockito.verifyNoMoreInteractions(classificationApisHolderMock);
     }
 
 
@@ -60,25 +54,6 @@ class ClassificationClientTest {
                 .saveAll2(classificationList);
     }
 
-    @Test
-    void testSave() {
-        // Given
-        Classification classification = ClassificationFaker.buildClassificationDTO();
-        String accessToken = "accessToken";
-        Classification expectedResponse = new Classification();
-        ClassificationEntityControllerApi mockApi = mock(ClassificationEntityControllerApi.class);
-        when(mapperMock.map(classification)).thenReturn(mock(ClassificationRequestBody.class));
-        when(classificationApisHolderMock.getClassificationEntityControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.crudCreateClassification(any())).thenReturn(expectedResponse);
-
-        // When
-        Classification result = classificationClient.save(classification, accessToken);
-
-        // Then
-        assertEquals(expectedResponse, result);
-        verify(classificationApisHolderMock.getClassificationEntityControllerApi(accessToken), times(1))
-                .crudCreateClassification(any());
-    }
 
     @Test
     void testDeleteByOrganizationIdAndIufAndLabel() {

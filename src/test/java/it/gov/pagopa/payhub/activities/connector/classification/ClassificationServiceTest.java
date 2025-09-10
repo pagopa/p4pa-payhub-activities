@@ -61,26 +61,6 @@ class ClassificationServiceTest {
     }
 
     @Test
-    void testSave() {
-        // Given
-        Classification classification = new Classification();
-        Classification expectedResponse = new Classification();
-        String accessToken = "accessToken";
-
-        when(classificationClientMock.save(classification, accessToken)).thenReturn(expectedResponse);
-        Mockito.when(authnServiceMock.getAccessToken())
-                .thenReturn(accessToken);
-
-        // When
-        Classification result = classificationService.save(classification);
-
-        // Then
-        assertEquals(expectedResponse, result);
-        verify(classificationClientMock, times(1)).save(classification, accessToken);
-
-    }
-
-    @Test
     void testDeleteByOrganizationIdAndIufAndLabel() {
         // Given
         Long organizationId = 1L;

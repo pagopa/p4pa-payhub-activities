@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
-import it.gov.pagopa.payhub.activities.connector.classification.mapper.ClassificationRequestMapper;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import org.springframework.context.annotation.Lazy;
@@ -12,22 +11,15 @@ import java.util.List;
 @Lazy
 @Service
 public class ClassificationClient {
-
     private final ClassificationApisHolder classificationApisHolder;
-    private final ClassificationRequestMapper mapper;
 
-    public ClassificationClient(ClassificationApisHolder classificationApisHolder, ClassificationRequestMapper mapper) {
+    public ClassificationClient(ClassificationApisHolder classificationApisHolder) {
         this.classificationApisHolder = classificationApisHolder;
-        this.mapper = mapper;
+
     }
     public Integer saveAll(List<Classification> classificationList, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .saveAll2(classificationList);
-    }
-
-    public Classification save(Classification classificationDTO, String accessToken) {
-        return classificationApisHolder.getClassificationEntityControllerApi(accessToken)
-                .crudCreateClassification(mapper.map(classificationDTO));
     }
 
     public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification, String accessToken) {

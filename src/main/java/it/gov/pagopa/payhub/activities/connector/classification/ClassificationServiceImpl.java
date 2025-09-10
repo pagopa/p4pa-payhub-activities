@@ -30,11 +30,6 @@ public class ClassificationServiceImpl implements ClassificationService {
     }
 
     @Override
-    public Classification save(Classification classificationDTO) {
-        return classificationClient.save(classificationDTO, authnService.getAccessToken());
-    }
-
-    @Override
     public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification) {
         return classificationClient.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification, authnService.getAccessToken());
     }
