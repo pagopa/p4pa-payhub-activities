@@ -77,14 +77,14 @@ class ReceiptPagopaNotifySilActivityTest {
     debtPositionTypeOrg.setDebtPositionTypeId(1L);
     debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(2L);
 
-    InstallmentDTO installlmentMixed = buildInstallmentDTO();
-    installlmentMixed.setInstallmentId(2L);
+    InstallmentDTO mixedInstallment = buildInstallmentDTO();
+    mixedInstallment .setInstallmentId(2L);
 
     DebtPositionTypeOrg debtPositionTypeOrgMixed = new DebtPositionTypeOrg();
-    debtPositionTypeOrgMixed.setDebtPositionTypeId(-2L);
+    debtPositionTypeOrgMixed.setCode("MIXED");
     debtPositionTypeOrgMixed.setNotifyOutcomePushOrgSilServiceId(2L);
 
-    List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO(), installlmentMixed);
+    List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO(), mixedInstallment);
 
     Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
         Optional.of(organization));

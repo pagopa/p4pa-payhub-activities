@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 @Lazy
 @Component
 public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySilActivity {
-  private static final Long DEBT_POSITION_TYPE_MIXED = -2L;
-
   private final OrganizationService organizationService;
   private final DebtPositionTypeOrgService debtPositionTypeOrgService;
   private final PuSilService puSilService;
@@ -43,7 +41,9 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
   @Override
   public InstallmentDTO notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     log.info("Notify receipt to SIL by receiptId {}", receiptDTO.getReceiptId());
-    InstallmentDTO installmentToEmail = null;
+    InstallmentDTO mixedInstallment = null;
+    InstallmentDTO lastNotifiedInstallment = null;
+
     Organization organization = organizationService.getOrganizationByFiscalCode(receiptDTO.getOrgFiscalCode())
         .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptDTO.getOrgFiscalCode() + " not found"));
 
@@ -54,20 +54,23 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
         DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
             .getDebtPositionTypeOrgByInstallmentId(installment.getInstallmentId());
 
+        if ("MIXED".equals(debtPositionTypeOrg.getCode())) {
+          mixedInstallment = installment;
+        }
+
         // ignoring technical debt position types
         if(debtPositionTypeOrg.getDebtPositionTypeId() > 0) {
           if (debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId() != null) {
             puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installment, organization.getIpaCode());
+            lastNotifiedInstallment = installment;
           } else {
             log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
                 debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
           }
         }
-        // set installment to return to WF and send via email
-        if (DEBT_POSITION_TYPE_MIXED.equals(debtPositionTypeOrg.getDebtPositionTypeId()))
-          installmentToEmail = installment;
       }
     }
-    return installmentToEmail;
+    // priority to MIXED, otherwise return lastNotifiedInstallment
+    return mixedInstallment != null ? mixedInstallment : lastNotifiedInstallment;
   }
 }
