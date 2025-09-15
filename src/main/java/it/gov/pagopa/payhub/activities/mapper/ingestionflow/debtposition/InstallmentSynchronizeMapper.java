@@ -99,8 +99,9 @@ public class InstallmentSynchronizeMapper {
 
     private List<TransferSynchronizeDTO> buildAdditionalTransferList(InstallmentIngestionFlowFileDTO dto) {
         int nBeneficiary = Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1);
-        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 2) {
-            return IntStream.rangeClosed(2, nBeneficiary)
+        boolean existsFirstTransfer = dto.getTransfer1() != null;
+        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 1) {
+            return IntStream.rangeClosed(existsFirstTransfer ? 1 : 2, nBeneficiary)
                     .mapToObj(index -> createTransfer(dto, index))
                     .toList();
         }
@@ -136,6 +137,7 @@ public class InstallmentSynchronizeMapper {
 
     private MultiValuedMap<String, String> getTransferMapByIndex(InstallmentIngestionFlowFileDTO dto, int index) {
         return switch (index) {
+            case 1 -> dto.getTransfer1();
             case 2 -> dto.getTransfer2();
             case 3 -> dto.getTransfer3();
             case 4 -> dto.getTransfer4();
