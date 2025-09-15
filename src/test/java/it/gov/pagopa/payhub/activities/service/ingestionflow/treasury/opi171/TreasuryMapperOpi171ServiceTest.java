@@ -13,6 +13,7 @@ import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.InformazioniContoEvidenza;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.TestataMessaggio;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -70,13 +71,15 @@ class TreasuryMapperOpi171ServiceTest {
         assertEquals(CITY, treasuryDTO.getPspCity());
         assertEquals(FISCAL_CODE, treasuryDTO.getPspFiscalCode());
         assertEquals(VAT_NUMBER, treasuryDTO.getPspVatNumber());
+        assertEquals(TreasuryOrigin.TREASURY_OPI, treasuryDTO.getTreasuryOrigin());
+
         TestUtils.checkNotNullFields(treasuryDTO,
                 "treasuryId","updateOperatorExternalId","updateTraceId","iuv","accountCode","domainIdCode",
                 "transactionTypeCode","remittanceCode","documentYear","sealCode",
                 "pspFirstName","abiCode","cabCode","ibanCode","accountRegistryCode",
                 "provisionalAe","provisionalCode","accountTypeCode","processCode",
                 "executionPgCode","transferPgCode","processPgNumber","regularized",
-                "links"
+                "checkNumber", "clientReference", "bankReference", "links"
         );
 
     }
@@ -102,6 +105,7 @@ class TreasuryMapperOpi171ServiceTest {
         assertEquals("1", treasuryDTO.getBillCode());
         assertEquals(ORG_BT_CODE_DEFAULT, treasuryDTO.getOrgBtCode());
         assertEquals(ORG_ISTAT_CODE_DEFAULT, treasuryDTO.getOrgIstatCode());
+        assertEquals(TreasuryOrigin.TREASURY_OPI, treasuryDTO.getTreasuryOrigin());
 
         TestUtils.checkNotNullFields(treasuryDTO,
                 "treasuryId", "updateOperatorExternalId", "updateTraceId", "iuv", "accountCode", "domainIdCode",
@@ -109,7 +113,7 @@ class TreasuryMapperOpi171ServiceTest {
                 "pspFirstName", "abiCode", "cabCode", "ibanCode", "accountRegistryCode",
                 "provisionalAe", "provisionalCode", "accountTypeCode", "processCode",
                 "executionPgCode", "transferPgCode", "processPgNumber", "regularized",
-                "links"
+                "checkNumber", "clientReference", "bankReference", "links"
         );
     }
 

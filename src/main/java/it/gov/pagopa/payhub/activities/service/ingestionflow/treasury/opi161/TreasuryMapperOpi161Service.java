@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi161.InformazioniContoEvidenza;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,7 @@ public class TreasuryMapperOpi161Service implements TreasuryMapperService<Flusso
                             .pspCity(cliente.getLocalitaCliente())
                             .pspFiscalCode(cliente.getCodiceFiscaleCliente())
                             .pspVatNumber(cliente.getPartitaIvaCliente())
+                            .treasuryOrigin(TreasuryOrigin.TREASURY_OPI)
                             .build();
 
                     TreasuryOperationEnum operation = "ESEGUITO".equals(movContoEvidenza.getTipoOperazione())

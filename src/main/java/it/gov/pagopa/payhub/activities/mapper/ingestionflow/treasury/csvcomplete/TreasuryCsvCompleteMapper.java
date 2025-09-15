@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplet
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -80,6 +81,7 @@ public class TreasuryCsvCompleteMapper {
                 .actualSuspensionDate(actualSuspensionDate)
                 .managementProvisionalCode(dto.getManagementProvisionalCode())
                 .endToEndId(dto.getEndToEndCode())
+                .treasuryOrigin(TreasuryOrigin.TREASURY_CSV_COMPLETE)
                 .build();
     }
 
