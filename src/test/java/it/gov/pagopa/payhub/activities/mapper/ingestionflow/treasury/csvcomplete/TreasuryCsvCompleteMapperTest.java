@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplet
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,9 @@ class TreasuryCsvCompleteMapperTest {
         var result = treasuryCsvCompleteMapper.map(dto, ingestionFlowFile);
 
         Assertions.assertNotNull(result);
+        assertEquals(TreasuryOrigin.TREASURY_CSV_COMPLETE, result.getTreasuryOrigin());
         checkNotNullFields(result, "creationDate","updateDate","updateTraceId","treasuryId","updateOperatorExternalId", "links",
-                "receptionDate", "actualSuspensionDate", "regionValueDate");
+                "receptionDate", "actualSuspensionDate", "regionValueDate", "checkNumber", "clientReference", "bankReference");
     }
 
     @Test
@@ -67,6 +69,8 @@ class TreasuryCsvCompleteMapperTest {
         Assertions.assertNotNull(result);
         assertEquals(ORG_BT_CODE_DEFAULT, result.getOrgBtCode());
         assertEquals(ORG_ISTAT_CODE_DEFAULT, result.getOrgIstatCode());
-        checkNotNullFields(result, "creationDate","updateDate","updateTraceId","treasuryId","updateOperatorExternalId", "links");
+        assertEquals(TreasuryOrigin.TREASURY_CSV_COMPLETE, result.getTreasuryOrigin());
+        checkNotNullFields(result, "creationDate","updateDate","updateTraceId","treasuryId","updateOperatorExternalId", "links",
+                "checkNumber", "clientReference", "bankReference");
     }
 }

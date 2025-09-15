@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa;
 import it.gov.pagopa.payhub.activities.xsd.treasury.opi171.InformazioniContoEvidenza;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 
 import java.time.OffsetDateTime;
@@ -68,6 +69,7 @@ public class TreasuryMapperOpi171Service implements TreasuryMapperService<Flusso
                             .pspCity(cliente.getLocalitaCliente())
                             .pspFiscalCode(cliente.getCodiceFiscaleCliente())
                             .pspVatNumber(cliente.getPartitaIvaCliente())
+                            .treasuryOrigin(TreasuryOrigin.TREASURY_OPI)
                             .build();
 
                     TreasuryOperationEnum operation = "ESEGUITO".equals(movContoEvidenza.getTipoOperazione())
