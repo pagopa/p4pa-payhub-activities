@@ -97,7 +97,10 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
                 "singlePaymentOutcomeDateTime",
                 "uniqueCollectionIdentifier",
                 "signatureType",
-                "receiptAttachmentTest"
+                "receiptAttachmentTest",
+                "codIun",
+                "notificationDate",
+                "notificationFeeCents"
         );
     }
 
