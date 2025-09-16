@@ -100,10 +100,9 @@ public class InstallmentSynchronizeMapper {
 
     private List<TransferSynchronizeDTO> buildAdditionalTransferList(InstallmentIngestionFlowFileDTO dto) {
         int nBeneficiary = Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1);
-        boolean existsFirstTransfer = dto.getTransfer1() != null;
         List<TransferSynchronizeDTO> additionalTransfers = new ArrayList<>();
 
-        if (existsFirstTransfer) {
+        if (dto.getTransfer1() != null) {
             additionalTransfers.add(createTransfer(dto, 1));
         }
         if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 2) {
