@@ -37,6 +37,7 @@ class InstallmentSynchronizeMapperTest {
     void givenMapThenOk() {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setExecutionConfig(null);
+        installmentIngestionFlowFileDTO.setTransfer1(null);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
 
@@ -55,7 +56,7 @@ class InstallmentSynchronizeMapperTest {
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
 
-        assertEquals(4, Objects.requireNonNull(result.getAdditionalTransfers()).size());
+        assertEquals(5, Objects.requireNonNull(result.getAdditionalTransfers()).size());
         assertEquals(NullNode.instance, result.getExecutionConfig());
         checkNotNullFields(result);
     }
@@ -82,6 +83,7 @@ class InstallmentSynchronizeMapperTest {
         expected.setAdditionalTransfers(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setTransfer1(null);
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(false);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
@@ -98,6 +100,7 @@ class InstallmentSynchronizeMapperTest {
         expected.setAdditionalTransfers(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setTransfer1(null);
         installmentIngestionFlowFileDTO.setNumberBeneficiary(null);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
@@ -114,6 +117,7 @@ class InstallmentSynchronizeMapperTest {
         expected.setAdditionalTransfers(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setTransfer1(null);
         installmentIngestionFlowFileDTO.setNumberBeneficiary(1);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
