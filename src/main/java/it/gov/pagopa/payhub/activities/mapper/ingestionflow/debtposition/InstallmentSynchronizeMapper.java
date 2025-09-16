@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -100,14 +101,18 @@ public class InstallmentSynchronizeMapper {
     private List<TransferSynchronizeDTO> buildAdditionalTransferList(InstallmentIngestionFlowFileDTO dto) {
         int nBeneficiary = Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1);
         boolean existsFirstTransfer = dto.getTransfer1() != null;
-        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 1) {
-            return IntStream.rangeClosed(existsFirstTransfer ? 1 : 2, nBeneficiary)
-                    .mapToObj(index -> createTransfer(dto, index))
-                    .toList();
-        }
-        return List.of();
-    }
+        List<TransferSynchronizeDTO> additionalTransfers = new ArrayList<>();
 
+        if (existsFirstTransfer) {
+            additionalTransfers.add(createTransfer(dto, 1));
+        }
+        if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 2) {
+            additionalTransfers.addAll(IntStream.rangeClosed(2, nBeneficiary)
+                    .mapToObj(index -> createTransfer(dto, index))
+                    .toList());
+        }
+        return additionalTransfers;
+    }
 
     private TransferSynchronizeDTO createTransfer(InstallmentIngestionFlowFileDTO dto, int index) {
         MultiValuedMap<String, String> transferMap = getTransferMapByIndex(dto, index);
