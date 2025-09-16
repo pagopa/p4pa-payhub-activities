@@ -74,7 +74,10 @@ public class InstallmentExportFlowFileDTOMapper {
                 .balance(installmentPaidViewDTO.getBalance())
                 .orgFiscalCode(installmentPaidViewDTO.getOrgFiscalCode())
                 .orgName(installmentPaidViewDTO.getCompanyName())
-                .dueTaxonomicCode(installmentPaidViewDTO.getCategory());
+                .dueTaxonomicCode(installmentPaidViewDTO.getCategory())
+                .codIun(installmentPaidViewDTO.getIun())
+                .notificationDate(installmentPaidViewDTO.getNotificationDate())
+                .notificationFeeCents(installmentPaidViewDTO.getNotificationFeeCents());
 
         if (MARCA_BOLLO.equals(installmentPaidViewDTO.getCode())) {
             builder.receiptAttachmentType(RECEIPT_ATTACHMENT_TYPE)
