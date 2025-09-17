@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csv.TreasuryCsvMapper;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -46,12 +45,9 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             List<CsvException> readerException,
             IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
         List<TreasuryCsvErrorDTO> errorList = new ArrayList<>();
-        TreasuryCsvIngestionFlowFileResult ingestionFlowFileResult = new TreasuryCsvIngestionFlowFileResult();
+        TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
-
-        String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
-        ingestionFlowFileResult.setIpaCode(ipaCode);
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
@@ -59,12 +55,11 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
 
     @Override
     protected boolean consumeRow(long lineNumber, TreasuryCsvIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryCsvErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
-        TreasuryCsvIngestionFlowFileResult treasuryCsvIngestionFlowFileResult = (TreasuryCsvIngestionFlowFileResult) ingestionFlowFileResult;
-        String ipa = treasuryCsvIngestionFlowFileResult.getIpaCode();
+        String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         String rowIuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
         try {
-            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvIngestionFlowFileResult.getOrganizationId(), rowIuf);
+            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
 
             if(existingTreasury != null) {
                 boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
@@ -85,7 +80,7 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             Treasury treasury = treasuryService.insert(
                     treasuryCsvMapper.map(row, ingestionFlowFile));
 
-            treasuryCsvIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
+            ingestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
             return true;
         } catch (Exception e) {
             log.error("Error processing treasury csv with iuf {}: {}",

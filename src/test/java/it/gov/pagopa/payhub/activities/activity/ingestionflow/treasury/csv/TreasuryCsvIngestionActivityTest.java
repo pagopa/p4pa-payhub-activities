@@ -77,7 +77,7 @@ class TreasuryCsvIngestionActivityTest {
         );
     }
 
-    private TreasuryIufIngestionFlowFileResult buildTreasuryCsvIngestionFlowFileResult() {
+    private TreasuryIufIngestionFlowFileResult buildTreasuryIufIngestionFlowFileResult() {
         return TreasuryIufIngestionFlowFileResult.builder()
                 .organizationId(10L)
                 .processedRows(20L)
@@ -151,12 +151,12 @@ class TreasuryCsvIngestionActivityTest {
                 });
 
         Mockito.when(treasuryCsvProcessingServiceMock.processTreasuryCsv(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
-                .thenReturn(buildTreasuryCsvIngestionFlowFileResult());
+                .thenReturn(buildTreasuryIufIngestionFlowFileResult());
 
         TreasuryIufIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
         Assertions.assertEquals(
-                buildTreasuryCsvIngestionFlowFileResult(),
+                buildTreasuryIufIngestionFlowFileResult(),
                 result);
         Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
         Assertions.assertFalse(filePath.toFile().exists());
