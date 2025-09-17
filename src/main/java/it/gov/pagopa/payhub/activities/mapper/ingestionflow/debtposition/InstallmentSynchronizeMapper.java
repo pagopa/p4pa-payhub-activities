@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
-import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
+import static it.gov.pagopa.payhub.activities.util.Utilities.*;
 
 @Service
 @Lazy
@@ -102,7 +101,7 @@ public class InstallmentSynchronizeMapper {
         int nBeneficiary = Optional.ofNullable(dto.getNumberBeneficiary()).orElse(1);
         List<TransferSynchronizeDTO> additionalTransfers = new ArrayList<>();
 
-        if (dto.getTransfer1() != null) {
+        if (dto.getTransfer1() != null && hasAllValues(dto.getTransfer1())) {
             additionalTransfers.add(createTransfer(dto, 1));
         }
         if (Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) && nBeneficiary >= 2) {
