@@ -106,6 +106,10 @@ dependencies {
 	implementation("com.google.guava:guava:$guavaVersion")
 	//openCsv
 	implementation("com.opencsv:opencsv:$openCsvVersion")
+	//XSL POI
+	implementation("org.apache.poi:poi:5.4.1")
+	implementation("org.apache.poi:poi-ooxml:5.4.1")
+	implementation("org.apache.poi:poi-ooxml-schemas:4.1.2")
 
 
 	//jaxb
