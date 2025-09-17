@@ -2,9 +2,13 @@ package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.LocalDateIntervalFilter;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -17,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -159,5 +164,45 @@ class UtilitiesTest {
         assertNotNull(result);
         assertNull(result.getFrom());
         assertNull(result.getTo());
+    }
+
+    @Test
+    void givenEmptyMapWhenHasAllValuesThenReturnFalse() {
+        MultiValuedMap<String, String> map = new ArrayListValuedHashMap<>();
+        assertFalse(Utilities.hasAllValues(map));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMapsForHasAllValues")
+    void givenMapWhenHasAllValuesThenReturnExpected(MultiValuedMap<String, String> map, boolean expected) {
+        assertEquals(expected, Utilities.hasAllValues(map));
+    }
+
+    private static Stream<Arguments> provideMapsForHasAllValues() {
+        MultiValuedMap<String, String> emptyMap = new ArrayListValuedHashMap<>();
+
+        MultiValuedMap<String, String> allNullValues = new ArrayListValuedHashMap<>();
+        allNullValues.put("key1", null);
+        allNullValues.put("key2", null);
+
+        MultiValuedMap<String, String> oneNullValue = new ArrayListValuedHashMap<>();
+        oneNullValue.put("key1", "value1");
+        oneNullValue.put("key2", null);
+
+        MultiValuedMap<String, String> oneBlankValue = new ArrayListValuedHashMap<>();
+        oneBlankValue.put("key1", "value1");
+        oneBlankValue.put("key2", "  ");
+
+        MultiValuedMap<String, String> allValues = new ArrayListValuedHashMap<>();
+        allValues.put("key1", "value1");
+        allValues.put("key2", "value2");
+
+        return Stream.of(
+                Arguments.of(emptyMap, false),
+                Arguments.of(allNullValues, false),
+                Arguments.of(oneNullValue, false),
+                Arguments.of(oneBlankValue, false),
+                Arguments.of(allValues, true)
+        );
     }
 }
