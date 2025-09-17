@@ -38,11 +38,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-public class TreasuryCsvIngestionActivityTest {
+class TreasuryCsvIngestionActivityTest {
     @Mock
     private CsvService csvServiceMock;
     @Mock
-    private TreasuryCsvProcessingService treasuryCsvProcessingService;
+    private TreasuryCsvProcessingService treasuryCsvProcessingServiceMock;
     @Mock
     private IngestionFlowFileService ingestionFlowFileServiceMock;
     @Mock
@@ -62,7 +62,7 @@ public class TreasuryCsvIngestionActivityTest {
                 ingestionFlowFileRetrieverServiceMock,
                 fileArchiverServiceMock,
                 csvServiceMock,
-                treasuryCsvProcessingService
+                treasuryCsvProcessingServiceMock
         );
     }
 
@@ -73,7 +73,7 @@ public class TreasuryCsvIngestionActivityTest {
                 ingestionFlowFileRetrieverServiceMock,
                 fileArchiverServiceMock,
                 csvServiceMock,
-                treasuryCsvProcessingService
+                treasuryCsvProcessingServiceMock
         );
     }
 
@@ -150,7 +150,7 @@ public class TreasuryCsvIngestionActivityTest {
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(treasuryCsvProcessingService.processTreasuryCsv(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(treasuryCsvProcessingServiceMock.processTreasuryCsv(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenReturn(buildTreasuryCsvIngestionFlowFileResult());
 
         TreasuryIufIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
@@ -188,7 +188,7 @@ public class TreasuryCsvIngestionActivityTest {
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(treasuryCsvProcessingService.processTreasuryCsv(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(treasuryCsvProcessingServiceMock.processTreasuryCsv(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
                 .thenThrow(new RestClientException("Error"));
 
         assertThrows(InvalidIngestionFileException.class, () -> activity.processFile(ingestionFlowFileId));

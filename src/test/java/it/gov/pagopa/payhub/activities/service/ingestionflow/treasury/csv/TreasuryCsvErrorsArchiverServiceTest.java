@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
-public class TreasuryCsvErrorsArchiverServiceTest {
+class TreasuryCsvErrorsArchiverServiceTest {
     @Mock
     private FileArchiverService fileArchiverServiceMock;
 
@@ -43,6 +44,14 @@ public class TreasuryCsvErrorsArchiverServiceTest {
     @BeforeEach
     void setUp() {
         service = new TreasuryCsvErrorsArchiverService(sharedDirectory, errorFolder, fileArchiverServiceMock, csvServiceMock);
+    }
+
+    @AfterEach
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
+                fileArchiverServiceMock,
+                csvServiceMock
+        );
     }
 
     @Test

@@ -1,8 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv;
 
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvCustomBindByName;
-import it.gov.pagopa.payhub.activities.util.EuroToCentsConverter;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -38,8 +36,8 @@ public class TreasuryCsvIngestionFlowFileDTO {
     @CsvBindByName(column = "descrizione_causale", required = true)
     private String remittanceDescription;
 
-    @CsvCustomBindByName(column = "importo_provvisorio", converter = EuroToCentsConverter.class, required = true)
-    private Long billAmountCents;
+    @CsvBindByName(column = "importo_provvisorio", required = true)
+    private String billAmount;
 
     @CsvBindByName(column = "valuta_ente")
     private String regionValueDate;

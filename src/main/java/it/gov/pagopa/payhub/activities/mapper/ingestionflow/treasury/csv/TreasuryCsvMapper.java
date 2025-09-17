@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -24,8 +25,10 @@ public class TreasuryCsvMapper {
             regionValueDate = LocalDate.parse(dto.getRegionValueDate(), DateTimeFormatter.ISO_LOCAL_DATE);
         }
 
+        Long billAmountCents = (new BigDecimal(dto.getBillAmount().replace(',', '.'))).multiply(BigDecimal.valueOf(100)).longValue();
+
         return Treasury.builder()
-                .billAmountCents(dto.getBillAmountCents())
+                .billAmountCents(billAmountCents)
                 .billYear(dto.getBillYear())
                 .billCode(dto.getBillCode())
                 .billDate(billDate)
