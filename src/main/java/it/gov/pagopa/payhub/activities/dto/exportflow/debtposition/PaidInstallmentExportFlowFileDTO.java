@@ -181,5 +181,13 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "cod_tassonomico_dovuto_pa1" )
     @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2})
     private String dueTaxonomicCode;
-
+    @CsvBindByName(column = "codIun" )
+    @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3})
+    private String codIun;
+    @CsvBindByName(column = "dataNotifica" )
+    @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3})
+    private OffsetDateTime notificationDate;
+    @CsvBindByName(column = "costoNotifica" )
+    @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3})
+    private Long notificationFeeCents;
 }
