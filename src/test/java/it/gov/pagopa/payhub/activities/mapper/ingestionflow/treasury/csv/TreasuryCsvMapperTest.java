@@ -58,5 +58,12 @@ class TreasuryCsvMapperTest {
         assertEquals(1, result.getIngestionFlowFileId());
         assertEquals(TreasuryUtils.getIdentificativo(dto.getRemittanceDescription(), TreasuryUtils.IUF), result.getIuf());
         assertEquals(123, result.getOrganizationId());
+
+        TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateTraceId", "treasuryId", "updateOperatorExternalId", "links",
+                "receptionDate", "actualSuspensionDate", "regionValueDate", "checkNumber", "clientReference", "bankReference", "iuv", "accountCode",
+                "domainIdCode", "transactionTypeCode", "remittanceCode", "documentYear", "documentCode", "sealCode", "pspFirstName", "pspAddress",
+                "pspPostalCode", "pspCity", "pspFiscalCode", "pspVatNumber", "abiCode", "cabCode", "ibanCode", "accountRegistryCode", "provisionalAe",
+                "provisionalCode", "accountTypeCode", "processCode", "executionPgCode", "transferPgCode", "processPgNumber", "managementProvisionalCode",
+                "endToEndId", "regularized");
     }
 }

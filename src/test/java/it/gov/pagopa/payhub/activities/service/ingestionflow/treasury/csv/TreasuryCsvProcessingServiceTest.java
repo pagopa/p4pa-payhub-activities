@@ -323,6 +323,6 @@ class TreasuryCsvProcessingServiceTest {
         Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any());
         Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
         verify(errorsArchiverServiceMock, Mockito.times(2)).writeErrors(Mockito.eq(workingDirectoryMock), Mockito.eq(ingestionFlowFile), Mockito.anyList());
-        verify(errorsArchiverServiceMock, Mockito.times(2)).archiveErrorFiles(Mockito.eq(workingDirectoryMock), Mockito.eq(ingestionFlowFile));
+        verify(errorsArchiverServiceMock, Mockito.times(2)).archiveErrorFiles(workingDirectoryMock, ingestionFlowFile);
     }
 }
