@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.LocalDateIntervalFilter;
+import org.apache.commons.collections4.MultiValuedMap;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -157,5 +158,10 @@ public class Utilities {
 
     public static String centsAmountToEuroString(Long centsAmount){
         return parseBigDecimalToString(longCentsToBigDecimalEuro(centsAmount));
+    }
+
+    public static boolean hasAllValues(MultiValuedMap<String, String> map) {
+        return !map.isEmpty() && map.entries().stream()
+                .allMatch(e -> e.getValue() != null && !e.getValue().isBlank());
     }
 }

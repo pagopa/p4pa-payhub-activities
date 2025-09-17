@@ -149,4 +149,24 @@ class InstallmentSynchronizeMapperTest {
 
         assertEquals(String.format("Invalid execution config value: [%s] ", installmentIngestionFlowFileDTO.getExecutionConfig()), exception.getMessage());
     }
+
+    @Test
+    void givenTransfer1WithSomeNullValuesThenShouldNotAddToAdditionalTransfers() {
+        InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
+
+        MultiValuedMap<String, String> transfer1 = new ArrayListValuedHashMap<>();
+        transfer1.put("codiceFiscaleEnte_1", "codiceFiscaleEnte");
+        transfer1.put("denominazioneEnte_1", null);
+        transfer1.put("ibanAccreditoEnte_1", "ibanAccreditoEnte");
+        transfer1.put("causaleVersamentoEnte_1", "causaleVersamentoEnte1");
+        transfer1.put("importoVersamentoEnte_1", "1");
+        transfer1.put("codiceTassonomiaEnte_1", "codiceTassonomiaEnte");
+
+        dto.setTransfer1(transfer1);
+
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(dto, 1L, 1L, 1L, FILENAME);
+
+        assertTrue(result.getAdditionalTransfers().stream().noneMatch(t -> "causaleVersamentoEnte1".equals(t.getRemittanceInformation())));
+    }
+
 }
