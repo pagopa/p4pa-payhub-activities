@@ -1,40 +1,40 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls.TreasuryXlsRowMapper;
-import lombok.extern.slf4j.Slf4j;
+import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls.XlsRowMapper;
 import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.record.Record;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 
-public class TreasuryXlsIterator implements Closeable, Iterator<TreasuryXlsIngestionFlowFileDTO> {
+public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
 
 	private final POIFSFileSystem poifsFileSystem;
 	private final DocumentInputStream documentInputStream;
 	private final RecordFactoryInputStream recordFactoryInputStream;
 
-	private TreasuryXlsRowMapper mapper;
+	private XlsRowMapper<DTO> mapper;
+	private final Function<List<String>,XlsRowMapper<DTO>> mapperBuildFunction;
 	private int headerCount = -1;
 
 	private SSTRecord excelStringList;
 
 	private final Map<Integer, String> rowBuffer = new TreeMap<>();
+	private int rowNum = -1;
 	private int currentRow = -1;
 	private boolean pendingRowReady = false;
 	private List<String> pendingRow;
 
-	public TreasuryXlsIterator(Path file) throws IOException {
+	public XlsIterator(Path file, Function<List<String>,XlsRowMapper<DTO>> mapperBuildFunction) throws IOException {
 		this.poifsFileSystem = new POIFSFileSystem(file.toFile(), true);
 		this.documentInputStream = poifsFileSystem.createDocumentInputStream("Workbook");
 		this.recordFactoryInputStream = new RecordFactoryInputStream(documentInputStream, false);
+		this.mapperBuildFunction = mapperBuildFunction;
 	}
 
 	@Override
@@ -51,9 +51,13 @@ public class TreasuryXlsIterator implements Closeable, Iterator<TreasuryXlsInges
 	}
 
 	@Override
-	public TreasuryXlsIngestionFlowFileDTO next() {
+	public DTO next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+
 		if(mapper==null) {
-			prepareMapper();
+			buildMapper();
 		}
 
 		Optional<List<String>> nextRow = readNextRow();
@@ -63,13 +67,13 @@ public class TreasuryXlsIterator implements Closeable, Iterator<TreasuryXlsInges
 			return mapper.map(handleLastLine()); //For last row readNextRow will return Optional.empty()
 	}
 
-	private void prepareMapper() {
+	private void buildMapper() {
 		List<String> headers = this.readNextRow()
 				.orElseThrow(
 						() -> new IllegalStateException("Headers not found, cannot create mapper for Treasury .xsl file")
 				);
 		headerCount = headers.size();
-		mapper = new TreasuryXlsRowMapper(headers);
+		mapper = this.mapperBuildFunction.apply(headers);
 	}
 
 	private Optional<List<String>> readNextRow() {
@@ -99,9 +103,8 @@ public class TreasuryXlsIterator implements Closeable, Iterator<TreasuryXlsInges
 
 	private void processRecord(Record record) {
 		switch (record.getSid()) {
-			// the BOFRecord can represent either the beginning of a sheet or the workbook
-			case RowRecord.sid: //TODO understand if we are interested in the row count, arrives before headers and row
-				RowRecord rowrec = (RowRecord) record;
+			case RowRecord.sid:
+				rowNum++;
 				break;
 			case NumberRecord.sid: //number record
 				NumberRecord numrec = (NumberRecord) record;
