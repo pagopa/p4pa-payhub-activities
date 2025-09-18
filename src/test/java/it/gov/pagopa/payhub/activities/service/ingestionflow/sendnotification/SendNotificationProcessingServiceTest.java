@@ -1,9 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.sendnotification;
 
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificationService;
@@ -12,22 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotifi
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import it.gov.pagopa.pu.sendnotification.dto.generated.Attachment;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
-import it.gov.pagopa.pu.sendnotification.dto.generated.Document;
-import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
-import it.gov.pagopa.pu.sendnotification.dto.generated.PagoPa;
-import it.gov.pagopa.pu.sendnotification.dto.generated.Payment;
-import it.gov.pagopa.pu.sendnotification.dto.generated.Recipient;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.StartNotificationResponse;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Stream;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +17,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationProcessingServiceTest {
@@ -104,7 +95,7 @@ class SendNotificationProcessingServiceTest {
         .thenReturn(sendNotificationDTO);
 
     Mockito.doNothing().when(sendNotificationFileHandlerServiceMock)
-        .moveAllFilesToSendFolder(organizationId, sendNotificationId, "filePathName/NAV");
+        .moveAllFilesToSendFolder(organizationId, sendNotificationId, "filePathName/1");
 
     Mockito.when(sendNotificationServiceMock.startSendNotification(sendNotificationId,
         new LoadFileRequest("DIGEST","ATTACHMENT.pdf"))).thenReturn(new StartNotificationResponse());
