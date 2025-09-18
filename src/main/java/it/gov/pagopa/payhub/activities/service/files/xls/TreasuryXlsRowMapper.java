@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls;
+package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
 import org.apache.poi.ss.usermodel.DateUtil;

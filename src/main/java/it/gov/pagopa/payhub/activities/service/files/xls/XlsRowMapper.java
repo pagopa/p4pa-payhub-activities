@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls;
+package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import java.util.List;
 import java.util.Map;

@@ -1,6 +1,5 @@
-package it.gov.pagopa.payhub.activities.service.files;
+package it.gov.pagopa.payhub.activities.service.files.xls;
 
-import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls.XlsRowMapper;
 import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.record.Record;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;

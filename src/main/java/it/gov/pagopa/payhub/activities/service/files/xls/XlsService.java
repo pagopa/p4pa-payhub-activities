@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.service.files;
+package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
