@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -67,39 +66,40 @@ class SendNotificationMapperTest {
 
     CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
 
-    Assertions.assertNotNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getPagoPa());
+    Assertions.assertNotNull(result.getRecipients().getFirst().getPayments().getFirst().getPagoPa());
     Assertions.assertNull(result.getRecipients().getFirst().getPayments().getFirst().getPagoPa().getAttachment());
   }
 
   @Test
-  void givenIndexOutOfRangeThenPrivateMethodsReturnNull() throws Exception {
-    SendNotificationIngestionFlowFileDTO dto = new SendNotificationIngestionFlowFileDTO();
+  void givenOnlyF24WhenBuildRequestThenPagoPaIsNullButF24Present() {
+    SendNotificationIngestionFlowFileDTO dto = buildFullDto(true, false, true);
 
-    Method getPaymentByIndex = SendNotificationMapper.class.getDeclaredMethod("getPaymentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
-    getPaymentByIndex.setAccessible(true);
+    CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
 
-    Method getAttachmentByIndex = SendNotificationMapper.class.getDeclaredMethod("getAttachmentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
-    getAttachmentByIndex.setAccessible(true);
-
-    Method getF24PaymentByIndex = SendNotificationMapper.class.getDeclaredMethod("getF24PaymentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
-    getF24PaymentByIndex.setAccessible(true);
-
-    Method getMetadataAttachmentByIndex = SendNotificationMapper.class.getDeclaredMethod("getMetadataAttachmentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
-    getMetadataAttachmentByIndex.setAccessible(true);
-
-    Method getDocumentByIndex = SendNotificationMapper.class.getDeclaredMethod("getDocumentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
-    getDocumentByIndex.setAccessible(true);
-
-    int[] invalidIndexes = {6, 7, 10};
-    for (int idx : invalidIndexes) {
-      Assertions.assertNull(getPaymentByIndex.invoke(mapper, dto, idx));
-      Assertions.assertNull(getAttachmentByIndex.invoke(mapper, dto, idx));
-      Assertions.assertNull(getF24PaymentByIndex.invoke(mapper, dto, idx));
-      Assertions.assertNull(getMetadataAttachmentByIndex.invoke(mapper, dto, idx));
-      Assertions.assertNull(getDocumentByIndex.invoke(mapper, dto, idx));
-    }
+    Assertions.assertNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getPagoPa());
+    Assertions.assertNotNull(result.getRecipients().getFirst().getPayments().getFirst().getF24());
   }
 
+  @Test
+  void givenPagoPaAndF24WhenBuildRequestThenBothArePresent() {
+    SendNotificationIngestionFlowFileDTO dto = buildFullDto(true, true, true);
+
+    CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+    Assertions.assertNotNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getPagoPa());
+    Assertions.assertNotNull(result.getRecipients().getFirst().getPayments().getFirst().getF24());
+  }
+
+  @Test
+  void givenEmptyPagoPaMapWhenBuildRequestThenPagoPaIsNullAndF24StillBuilt() {
+    SendNotificationIngestionFlowFileDTO dto = buildFullDto(true, true, true);
+    dto.getPayment().clear();
+
+    CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+    Assertions.assertNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getPagoPa());
+    Assertions.assertNotNull(result.getRecipients().getFirst().getPayments().getFirst().getF24());
+  }
 
   private SendNotificationIngestionFlowFileDTO buildFullDto(boolean includeDigital, boolean includePagoPa, boolean includeF24) {
     SendNotificationIngestionFlowFileDTO dto = new SendNotificationIngestionFlowFileDTO();

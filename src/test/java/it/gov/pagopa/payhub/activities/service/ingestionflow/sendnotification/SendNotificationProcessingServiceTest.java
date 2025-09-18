@@ -21,6 +21,7 @@ import org.springframework.web.client.RestClientException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -258,6 +259,29 @@ class SendNotificationProcessingServiceTest {
     ));
   }
 
+  @Test
+  void givenSendNotificationDTONullWhenConsumeRowThenSkipMoveFiles() {
+    // given
+    CreateNotificationRequest request = buildNotificationRequest();
+    request.getRecipients().getFirst().setPayments(null);
+    CreateNotificationResponse response = new CreateNotificationResponse();
+    String sendNotificationId = "NOTIFICATIONID";
+    response.setSendNotificationId(sendNotificationId);
+
+    Mockito.when(mapperMock.buildCreateNotificationRequest(Mockito.any()))
+            .thenReturn(request);
+    Mockito.when(sendNotificationServiceMock.createSendNotification(request))
+            .thenReturn(response);
+    Mockito.when(sendNotificationServiceMock.getSendNotification(Mockito.any()))
+            .thenReturn(null);
+
+    // when
+    boolean result = service.consumeRow(1L, new SendNotificationIngestionFlowFileDTO(),
+            new SendNotificationIngestionFlowFileResult(), new ArrayList<>(), buildIngestionFlowFile());
+
+    // then
+    assertTrue(result);
+  }
 
   private CreateNotificationRequest buildNotificationRequest() {
     CreateNotificationRequest createNotificationRequest = new CreateNotificationRequest();
@@ -269,6 +293,7 @@ class SendNotificationProcessingServiceTest {
     attachment.setFileName("ATTACHMENT.pdf");
     attachment.setContentType("content/pdf");
     payment.setPagoPa(new PagoPa("NAV","TAXID",true, attachment));
+    payment.setF24(new F24Payment("titleF24", true, attachment));
     recipient.setPayments(List.of(payment));
     Document document = new Document();
     document.setDigest("DIGEST");
