@@ -46,6 +46,7 @@ public class InstallmentIngestionFlowFileDTOFaker {
                 .balance("balance")
                 .flagMultiBeneficiary(true)
                 .numberBeneficiary(5)
+                .transfer1(buildTransferData(1))
                 .transfer2(buildTransferData(2))
                 .transfer3(buildTransferData(3))
                 .transfer4(buildTransferData(4))

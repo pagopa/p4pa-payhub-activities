@@ -37,6 +37,7 @@ class InstallmentSynchronizeMapperTest {
     void givenMapThenOk() {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         installmentIngestionFlowFileDTO.setExecutionConfig(null);
+        installmentIngestionFlowFileDTO.setTransfer1(null);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
 
@@ -55,7 +56,7 @@ class InstallmentSynchronizeMapperTest {
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
 
-        assertEquals(4, Objects.requireNonNull(result.getAdditionalTransfers()).size());
+        assertEquals(5, Objects.requireNonNull(result.getAdditionalTransfers()).size());
         assertEquals(NullNode.instance, result.getExecutionConfig());
         checkNotNullFields(result);
     }
@@ -82,6 +83,7 @@ class InstallmentSynchronizeMapperTest {
         expected.setAdditionalTransfers(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setTransfer1(null);
         installmentIngestionFlowFileDTO.setFlagMultiBeneficiary(false);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
@@ -98,6 +100,7 @@ class InstallmentSynchronizeMapperTest {
         expected.setAdditionalTransfers(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setTransfer1(null);
         installmentIngestionFlowFileDTO.setNumberBeneficiary(null);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
@@ -114,6 +117,7 @@ class InstallmentSynchronizeMapperTest {
         expected.setAdditionalTransfers(Collections.emptyList());
 
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
+        installmentIngestionFlowFileDTO.setTransfer1(null);
         installmentIngestionFlowFileDTO.setNumberBeneficiary(1);
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, FILENAME);
@@ -145,4 +149,24 @@ class InstallmentSynchronizeMapperTest {
 
         assertEquals(String.format("Invalid execution config value: [%s] ", installmentIngestionFlowFileDTO.getExecutionConfig()), exception.getMessage());
     }
+
+    @Test
+    void givenTransfer1WithSomeNullValuesThenShouldNotAddToAdditionalTransfers() {
+        InstallmentIngestionFlowFileDTO dto = buildInstallmentIngestionFlowFileDTO();
+
+        MultiValuedMap<String, String> transfer1 = new ArrayListValuedHashMap<>();
+        transfer1.put("codiceFiscaleEnte_1", "codiceFiscaleEnte");
+        transfer1.put("denominazioneEnte_1", null);
+        transfer1.put("ibanAccreditoEnte_1", "ibanAccreditoEnte");
+        transfer1.put("causaleVersamentoEnte_1", "causaleVersamentoEnte1");
+        transfer1.put("importoVersamentoEnte_1", "1");
+        transfer1.put("codiceTassonomiaEnte_1", "codiceTassonomiaEnte");
+
+        dto.setTransfer1(transfer1);
+
+        InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(dto, 1L, 1L, 1L, FILENAME);
+
+        assertTrue(result.getAdditionalTransfers().stream().noneMatch(t -> "causaleVersamentoEnte1".equals(t.getRemittanceInformation())));
+    }
+
 }

@@ -52,6 +52,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .flagMultibeneficiary(true)
                 .numberBeneficiary(5)
                 .additionalTransfers(List.of(
+                        buildTransferSynchronizeDTO(1),
                         buildTransferSynchronizeDTO(2),
                         buildTransferSynchronizeDTO(3),
                         buildTransferSynchronizeDTO(4),
@@ -62,7 +63,7 @@ public class InstallmentSynchronizeDTOFaker {
                 .build();
     }
 
-    private static TransferSynchronizeDTO buildTransferSynchronizeDTO(int index) {
+    public static TransferSynchronizeDTO buildTransferSynchronizeDTO(int index) {
         return TransferSynchronizeDTO.builder()
                 .orgFiscalCode("codiceFiscaleEnte_" + index)
                 .orgName("denominazioneEnte_" + index)
