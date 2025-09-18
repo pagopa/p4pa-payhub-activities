@@ -10,16 +10,16 @@ import java.util.function.Function;
 
 @Service
 @Slf4j
-public class XlsService<DTO, O> {
+public class XlsService<D, O> {
 
-	private final Function<Path, XlsIterator<DTO>> xlsIteratorBuilder;
+	private final Function<Path, XlsIterator<D>> xlsIteratorBuilder;
 
-	public XlsService(Function<Path, XlsIterator<DTO>> xlsIteratorBuilder) {
+	public XlsService(Function<Path, XlsIterator<D>> xlsIteratorBuilder) {
 		this.xlsIteratorBuilder = xlsIteratorBuilder;
 	}
 
-	public O readXls(Path xlsFilePath, Function<Iterator<DTO>, O> rowProcessor) throws IOException {
-		try(XlsIterator<DTO> xlsIterator = xlsIteratorBuilder.apply(xlsFilePath)) {
+	public O readXls(Path xlsFilePath, Function<Iterator<D>, O> rowProcessor) throws IOException {
+		try(XlsIterator<D> xlsIterator = xlsIteratorBuilder.apply(xlsFilePath)) {
 			return rowProcessor.apply(xlsIterator);
 		} catch (Exception e) {
 			throw new IOException("Error while reading xsl file \"%s\": %s".formatted(xlsFilePath, e.getMessage()), e);

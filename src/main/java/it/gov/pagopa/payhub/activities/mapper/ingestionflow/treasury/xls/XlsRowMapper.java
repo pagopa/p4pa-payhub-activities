@@ -6,13 +6,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public abstract class XlsRowMapper<DTO> {
+public abstract class XlsRowMapper<D> {
 
-	public abstract DTO map(List<String> cells);
+	public abstract D map(List<String> cells);
 
 	protected final Map<String, Integer> headerToIndex;
 
-	public XlsRowMapper(List<String> headers) {
+	protected XlsRowMapper(List<String> headers) {
 		this.headerToIndex = IntStream.range(0, headers.size())
 				.boxed()
 				.collect(Collectors.toMap(headers::get, i -> i));

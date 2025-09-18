@@ -5,6 +5,8 @@ import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.record.Record;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -12,14 +14,15 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 
-public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
+public class XlsIterator<D> implements Closeable, Iterator<D> {
 
+	private static final Logger log = LoggerFactory.getLogger(XlsIterator.class);
 	private final POIFSFileSystem poifsFileSystem;
 	private final DocumentInputStream documentInputStream;
 	private final RecordFactoryInputStream recordFactoryInputStream;
 
-	private XlsRowMapper<DTO> mapper;
-	private final Function<List<String>,XlsRowMapper<DTO>> mapperBuildFunction;
+	private XlsRowMapper<D> mapper;
+	private final Function<List<String>,XlsRowMapper<D>> mapperBuildFunction;
 	private int headerCount = -1;
 
 	private SSTRecord excelStringList;
@@ -30,7 +33,7 @@ public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
 	private boolean pendingRowReady = false;
 	private List<String> pendingRow;
 
-	public XlsIterator(Path file, Function<List<String>,XlsRowMapper<DTO>> mapperBuildFunction) throws IOException {
+	public XlsIterator(Path file, Function<List<String>,XlsRowMapper<D>> mapperBuildFunction) throws IOException {
 		this.poifsFileSystem = new POIFSFileSystem(file.toFile(), true);
 		this.documentInputStream = poifsFileSystem.createDocumentInputStream("Workbook");
 		this.recordFactoryInputStream = new RecordFactoryInputStream(documentInputStream, false);
@@ -41,7 +44,9 @@ public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
 	public void close() throws IOException {
 		try {
 			documentInputStream.close();
-		} catch (Exception ignore) {}
+		} catch (Exception e) {
+			log.warn("Error in closing documentInputStream", e);
+		}
 		poifsFileSystem.close();
 	}
 
@@ -51,7 +56,7 @@ public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
 	}
 
 	@Override
-	public DTO next() {
+	public D next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
@@ -77,9 +82,9 @@ public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
 	}
 
 	private Optional<List<String>> readNextRow() {
-		Record record;
-		while((record = recordFactoryInputStream.nextRecord()) != null) {
-			processRecord(record);
+		Record eventRecord;
+		while((eventRecord = recordFactoryInputStream.nextRecord()) != null) {
+			processEventRecord(eventRecord);
 			if(pendingRowReady) {
 				return Optional.of(flushPending());
 			}
@@ -97,17 +102,17 @@ public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
 			currentRow = -1;
 			return out;
 		} else {
-			return null;
+			return Collections.emptyList();
 		}
 	}
 
-	private void processRecord(Record record) {
-		switch (record.getSid()) {
+	private void processEventRecord(Record eventRecord) {
+		switch (eventRecord.getSid()) {
 			case RowRecord.sid:
 				rowNum++;
 				break;
 			case NumberRecord.sid: //number record
-				NumberRecord numrec = (NumberRecord) record;
+				NumberRecord numrec = (NumberRecord) eventRecord;
 				addCell(
 						numrec.getRow(),
 						numrec.getColumn(),
@@ -116,16 +121,18 @@ public class XlsIterator<DTO> implements Closeable, Iterator<DTO> {
 				break;
 			// SSTRecords store an array of unique strings used in Excel.
 			case SSTRecord.sid: //full list of string in .xsl file as an "array"
-				excelStringList = (SSTRecord) record;
+				excelStringList = (SSTRecord) eventRecord;
 				break;
 			case LabelSSTRecord.sid: //index of string related to previuous received (SSTRecord) record, with "full list of string in .xsl file as an array"
-				LabelSSTRecord lrec = (LabelSSTRecord) record;
+				LabelSSTRecord lrec = (LabelSSTRecord) eventRecord;
 				addCell(
 						lrec.getRow(),
 						lrec.getColumn(),
 						excelStringList.getString(lrec.getSSTIndex()).getString()
 				);
 				break;
+			default:
+				break; // not interested in other events
 		}
 	}
 
