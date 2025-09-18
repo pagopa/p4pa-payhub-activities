@@ -1,11 +1,7 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
-
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationMapperTest {
@@ -60,6 +61,14 @@ class SendNotificationMapperTest {
     attachment.put("attachmentFileName_1", "file.pdf");
     attachment.put("attachmentDigest_1", "xxxyyyzzz");
     attachment.put("attachmentContentType_1", "application/pdf");
+    // F24Payment and metadataAttachment
+    MultiValuedMap<String, String> f24Payment = new ArrayListValuedHashMap<>();
+    f24Payment.put("paymentF24Title_", "f24Title");
+    f24Payment.put("paymentF24ApplyCost_", "true");
+    MultiValuedMap<String, String> metadataAttachment = new ArrayListValuedHashMap<>();
+    metadataAttachment.put("metadataAttachmentFileName_", "file.pdf");
+    metadataAttachment.put("metadataAttachmentDigest_", "xxxyyyzzz");
+    metadataAttachment.put("metadataAttachmentContentType_", "application/pdf");
     dto.setPayment(payment);
     dto.setAttachment(attachment);
     // Document
