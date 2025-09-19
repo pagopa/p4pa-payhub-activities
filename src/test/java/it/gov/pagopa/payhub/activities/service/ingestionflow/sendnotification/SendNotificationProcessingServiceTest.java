@@ -13,6 +13,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,8 +23,8 @@ import org.springframework.web.client.RestClientException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
@@ -32,276 +34,376 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class SendNotificationProcessingServiceTest {
 
-  @Mock
-  private SendNotificationErrorArchiverService sendNotificationErrorArchiverServiceMock;
-  @Mock
-  private SendNotificationService sendNotificationServiceMock;
-  @Mock
-  private SendNotificationMapper mapperMock;
-  @Mock
-  private OrganizationService organizationServiceMock;
-  @Mock
-  private SendNotificationFileHandlerService sendNotificationFileHandlerServiceMock;
+    @Mock
+    private SendNotificationErrorArchiverService sendNotificationErrorArchiverServiceMock;
+    @Mock
+    private SendNotificationService sendNotificationServiceMock;
+    @Mock
+    private SendNotificationMapper mapperMock;
+    @Mock
+    private OrganizationService organizationServiceMock;
+    @Mock
+    private SendNotificationFileHandlerService sendNotificationFileHandlerServiceMock;
 
-  private SendNotificationProcessingService service;
+    private SendNotificationProcessingService service;
 
-  private static final String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
+    private static final String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
 
-  @BeforeEach
-  void setUp(){
-    service = new SendNotificationProcessingService(
-        sendNotificationErrorArchiverServiceMock,
-        sendNotificationServiceMock,
-        organizationServiceMock,
-        mapperMock,
-        sendNotificationFileHandlerServiceMock
-    );
-  }
+    @BeforeEach
+    void setUp() {
+        service = new SendNotificationProcessingService(
+                sendNotificationErrorArchiverServiceMock,
+                sendNotificationServiceMock,
+                organizationServiceMock,
+                mapperMock,
+                sendNotificationFileHandlerServiceMock
+        );
+    }
 
-  @AfterEach
-  void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(
-        sendNotificationErrorArchiverServiceMock,
-        mapperMock,
-        sendNotificationErrorArchiverServiceMock,
-        sendNotificationServiceMock,
-        sendNotificationFileHandlerServiceMock);
-  }
+    @AfterEach
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
+                sendNotificationErrorArchiverServiceMock,
+                mapperMock,
+                sendNotificationErrorArchiverServiceMock,
+                sendNotificationServiceMock,
+                sendNotificationFileHandlerServiceMock);
+    }
 
-  @Test
-  void whenProcessSendNotificationThenSuccess(){
-    // Given
-    SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "2", "3"})
+    void whenProcessSendNotificationThenSuccess(String index) {
+        // Given
+        SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
 
-    Long organizationId = 1L;
-    String sendNotificationId = "NOTIFICATIONID";
-    String nav = "NAV";
+        Long organizationId = 1L;
+        String sendNotificationId = "NOTIFICATIONID";
+        String nav = "NAV";
 
-    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
+        CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
-    CreateNotificationResponse response = new CreateNotificationResponse();
-    response.setSendNotificationId(sendNotificationId);
+        CreateNotificationResponse response = new CreateNotificationResponse();
+        response.setSendNotificationId(sendNotificationId);
 
-    SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
-    sendNotificationDTO.sendNotificationId(sendNotificationId);
-    sendNotificationDTO.setStatus(NotificationStatus.WAITING_FILE);
-    sendNotificationDTO.setOrganizationId(organizationId);
+        SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+        sendNotificationDTO.sendNotificationId(sendNotificationId);
+        sendNotificationDTO.setStatus(NotificationStatus.WAITING_FILE);
+        sendNotificationDTO.setOrganizationId(organizationId);
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 
-    Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
-        .thenReturn(createNotificationRequest);
+        if (Objects.equals(index, "1")) {
+            Objects.requireNonNull(createNotificationRequest.getRecipients().getFirst().getPayments()).getFirst().getPagoPa().setAttachment(null);
+        } else if (Objects.equals(index, "2")) {
+            Objects.requireNonNull(createNotificationRequest.getRecipients().getFirst().getPayments()).getFirst().setF24(null);
+        }
 
-    Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId,nav))
-        .thenReturn(sendNotificationDTO);
+        Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+                .thenReturn(createNotificationRequest);
 
-    Mockito.doNothing().when(sendNotificationFileHandlerServiceMock)
-        .moveAllFilesToSendFolder(organizationId, sendNotificationId, "filePathName/1");
+        Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
+                .thenReturn(sendNotificationDTO);
 
-    Mockito.when(sendNotificationServiceMock.startSendNotification(sendNotificationId,
-        new LoadFileRequest("DIGEST","ATTACHMENT.pdf"))).thenReturn(new StartNotificationResponse());
+        Mockito.doNothing().when(sendNotificationFileHandlerServiceMock)
+                .moveAllFilesToSendFolder(organizationId, sendNotificationId, "filePathName/1");
 
-    Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
-        .thenReturn(response);
+        Mockito.when(sendNotificationServiceMock.startSendNotification(sendNotificationId,
+                new LoadFileRequest("DIGEST", "ATTACHMENT.pdf"))).thenReturn(new StartNotificationResponse());
 
-    Mockito.when(sendNotificationServiceMock.getSendNotification("NOTIFICATIONID"))
-        .thenReturn(sendNotificationDTO);
+        Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
+                .thenReturn(response);
 
-    // When
-    SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
-        Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
-        ingestionFlowFile,
-        Path.of("/tmp")
-    );
+        Mockito.when(sendNotificationServiceMock.getSendNotification("NOTIFICATIONID"))
+                .thenReturn(sendNotificationDTO);
 
-    // Then
-    assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
-    assertEquals(1, result.getProcessedRows());
-    assertEquals(1, result.getTotalRows());
-    assertEquals(1, result.getOrganizationId());
-    assertNull(result.getErrorDescription());
-    assertNull(result.getDiscardedFileName());
-  }
+        // When
+        SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
+                ingestionFlowFile,
+                Path.of("/tmp")
+        );
 
-  @Test
-  void givenThrowExceptionWhenSendNotificationThenAddError() throws URISyntaxException {
-    // Given
-    SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
-    Long organizationId = 1L;
-    String nav = "NAV";
+        // Then
+        assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+        assertEquals(1, result.getProcessedRows());
+        assertEquals(1, result.getTotalRows());
+        assertEquals(1, result.getOrganizationId());
+        assertNull(result.getErrorDescription());
+        assertNull(result.getDiscardedFileName());
+    }
 
-    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
+    @Test
+    void givenThrowExceptionWhenSendNotificationThenAddError() throws URISyntaxException {
+        // Given
+        SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+        Long organizationId = 1L;
+        String nav = "NAV";
 
-    SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
-    sendNotificationDTO.sendNotificationId("NOTIFICATIONID");
-    sendNotificationDTO.setStatus(NotificationStatus.WAITING_FILE);
-    sendNotificationDTO.setOrganizationId(organizationId);
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
-    Path workingDirectory = Path.of(new URI("file:///tmp"));
+        SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+        sendNotificationDTO.sendNotificationId("NOTIFICATIONID");
+        sendNotificationDTO.setStatus(NotificationStatus.WAITING_FILE);
+        sendNotificationDTO.setOrganizationId(organizationId);
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 
-    Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
-        .thenReturn(createNotificationRequest);
+        Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-    Mockito.doThrow(new RestClientException("Notification Not Found"))
-        .when(sendNotificationServiceMock).findSendNotificationByOrgIdAndNav(organizationId,nav);
+        Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+                .thenReturn(createNotificationRequest);
 
-    Mockito.doThrow(new RestClientException("Error when create notification"))
-        .when(sendNotificationServiceMock).createSendNotification(createNotificationRequest);
+        Mockito.doThrow(new RestClientException("Notification Not Found"))
+                .when(sendNotificationServiceMock).findSendNotificationByOrgIdAndNav(organizationId, nav);
 
-    Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-        .thenReturn("zipFileName.csv");
+        Mockito.doThrow(new RestClientException("Error when create notification"))
+                .when(sendNotificationServiceMock).createSendNotification(createNotificationRequest);
 
-    // When
-    SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
-        Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
-        ingestionFlowFile,
-        workingDirectory
-    );
+        Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
-    // Then
-    assertEquals(0, result.getProcessedRows());
-    assertEquals(2, result.getTotalRows());
-    assertEquals("Some rows have failed", result.getErrorDescription());
-    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+        // When
+        SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                ingestionFlowFile,
+                workingDirectory
+        );
 
-    verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
-    ));
-  }
+        // Then
+        assertEquals(0, result.getProcessedRows());
+        assertEquals(2, result.getTotalRows());
+        assertEquals("Some rows have failed", result.getErrorDescription());
+        assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-  @Test
-  void whenProcessSendNotificationThenSendNotificationAlreadyExist() throws URISyntaxException {
-    // Given
-    SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+        verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
+        ));
+    }
 
-    Long organizationId = 1L;
-    String sendNotificationId = "NOTIFICATIONID";
-    String nav = "NAV";
-    Path workingDirectory = Path.of(new URI("file:///tmp"));
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "2", "3"})
+    void whenProcessSendNotificationThenSendNotificationAlreadyExist(String index) throws URISyntaxException {
+        // Given
+        SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
 
-    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
+        Long organizationId = 1L;
+        String sendNotificationId = "NOTIFICATIONID";
+        String nav = "NAV";
+        Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-    SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
-    sendNotificationDTO.sendNotificationId(sendNotificationId);
-    sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
-    sendNotificationDTO.setOrganizationId(organizationId);
+        CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+        sendNotificationDTO.sendNotificationId(sendNotificationId);
+        sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
+        if (Objects.equals(index, "1")) {
+            sendNotificationDTO.setStatus(NotificationStatus.UPLOADED);
+        } else if (Objects.equals(index, "2")) {
+            sendNotificationDTO.setStatus(NotificationStatus.COMPLETE);
+        }
+        sendNotificationDTO.setOrganizationId(organizationId);
 
-    Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
-        .thenReturn(createNotificationRequest);
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 
-    Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId,nav))
-        .thenReturn(sendNotificationDTO);
+        Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+                .thenReturn(createNotificationRequest);
 
-    Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-        .thenReturn("zipFileName.csv");
+        Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
+                .thenReturn(sendNotificationDTO);
 
-    // When
-    SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
-        Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
-        ingestionFlowFile,
-        workingDirectory
-    );
+        Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
-    // Then
-    assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
-    assertEquals(0, result.getProcessedRows());
-    assertEquals(1, result.getTotalRows());
-    assertEquals(1, result.getOrganizationId());
-    assertEquals("Some rows have failed", result.getErrorDescription());
-    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+        // When
+        SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
+                ingestionFlowFile,
+                workingDirectory
+        );
 
-    verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Row not processed, notification already exists")
-    ));
-  }
+        // Then
+        assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+        assertEquals(0, result.getProcessedRows());
+        assertEquals(1, result.getTotalRows());
+        assertEquals(1, result.getOrganizationId());
+        assertEquals("Some rows have failed", result.getErrorDescription());
+        assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-  @Test
-  void whenProcessSendNotificationThenCreateResponseNull() throws URISyntaxException {
-    // Given
-    SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
-    Path workingDirectory = Path.of(new URI("file:///tmp"));
-    CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
+        verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Row not processed, notification already exists")
+        ));
+    }
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    @Test
+    void whenProcessSendNotificationThenCreateResponseNull() throws URISyntaxException {
+        // Given
+        SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+        Path workingDirectory = Path.of(new URI("file:///tmp"));
+        CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
-    Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
-        .thenReturn(createNotificationRequest);
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 
-    Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(
-            createNotificationRequest.getOrganizationId(), "NAV"))
-        .thenReturn(null);
+        Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+                .thenReturn(createNotificationRequest);
 
-    Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
-        .thenReturn(null);
+        Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(
+                        createNotificationRequest.getOrganizationId(), "NAV"))
+                .thenReturn(null);
 
-    Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-        .thenReturn("zipFileName.csv");
+        Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
+                .thenReturn(null);
 
-    // When
-    SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
-        Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
-        ingestionFlowFile,
-        workingDirectory
-    );
+        Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
-    // Then
-    assertEquals(0, result.getProcessedRows());
-    assertEquals(1, result.getTotalRows());
-    assertEquals("Some rows have failed", result.getErrorDescription());
-    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+        // When
+        SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
+                ingestionFlowFile,
+                workingDirectory
+        );
 
-    verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-        new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Error while create notification")
-    ));
-  }
+        // Then
+        assertEquals(0, result.getProcessedRows());
+        assertEquals(1, result.getTotalRows());
+        assertEquals("Some rows have failed", result.getErrorDescription());
+        assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-  @Test
-  void givenSendNotificationDTONullWhenConsumeRowThenSkipMoveFiles() {
-    // given
-    CreateNotificationRequest request = buildNotificationRequest();
-    request.getRecipients().getFirst().setPayments(null);
-    CreateNotificationResponse response = new CreateNotificationResponse();
-    String sendNotificationId = "NOTIFICATIONID";
-    response.setSendNotificationId(sendNotificationId);
+        verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Error while create notification")
+        ));
+    }
 
-    Mockito.when(mapperMock.buildCreateNotificationRequest(Mockito.any()))
-            .thenReturn(request);
-    Mockito.when(sendNotificationServiceMock.createSendNotification(request))
-            .thenReturn(response);
-    Mockito.when(sendNotificationServiceMock.getSendNotification(Mockito.any()))
-            .thenReturn(null);
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "2"})
+    void givenSendNotificationDTONullWhenProcessSendNotificationThenSkipMoveFiles(String index) {
+        // given
+        SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+        CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
 
-    // when
-    boolean result = service.consumeRow(1L, new SendNotificationIngestionFlowFileDTO(),
-            new SendNotificationIngestionFlowFileResult(), new ArrayList<>(), buildIngestionFlowFile());
+        Long organizationId = 1L;
+        String sendNotificationId = "NOTIFICATIONID";
+        String nav = "NAV";
 
-    // then
-    assertTrue(result);
-  }
+        CreateNotificationRequest request = buildNotificationRequest();
+        if (Objects.equals(index, "1")) {
+            request.getRecipients().getFirst().setPayments(null);
+        } else {
+            request.getRecipients().getFirst().getPayments().getFirst().setPagoPa(null);
+        }
+        CreateNotificationResponse response = new CreateNotificationResponse();
+        response.setSendNotificationId(sendNotificationId);
 
-  private CreateNotificationRequest buildNotificationRequest() {
-    CreateNotificationRequest createNotificationRequest = new CreateNotificationRequest();
-    createNotificationRequest.setOrganizationId(1L);
-    Recipient recipient = new Recipient();
-    Payment payment = new Payment();
-    Attachment attachment = new Attachment();
-    attachment.setDigest("DIGEST");
-    attachment.setFileName("ATTACHMENT.pdf");
-    attachment.setContentType("content/pdf");
-    payment.setPagoPa(new PagoPa("NAV","TAXID",true, attachment));
-    payment.setF24(new F24Payment("titleF24", true, attachment));
-    recipient.setPayments(List.of(payment));
-    Document document = new Document();
-    document.setDigest("DIGEST");
-    document.setFileName("ATTACHMENT.pdf");
-    document.setContentType("content/pdf");
-    createNotificationRequest.setDocuments(List.of(document));
-    createNotificationRequest.setRecipients(List.of(recipient));
+        SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+        sendNotificationDTO.sendNotificationId(sendNotificationId);
+        sendNotificationDTO.setStatus(NotificationStatus.WAITING_FILE);
+        sendNotificationDTO.setOrganizationId(organizationId);
 
-    return createNotificationRequest;
-  }
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+
+        Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+                .thenReturn(createNotificationRequest);
+
+        Mockito.when(sendNotificationServiceMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
+                .thenReturn(sendNotificationDTO);
+
+        Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
+                .thenReturn(response);
+
+        Mockito.when(sendNotificationServiceMock.getSendNotification(sendNotificationId))
+                .thenReturn(null);
+
+        // When
+        SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
+                ingestionFlowFile,
+                Path.of("/tmp")
+        );
+
+        // Then
+        assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+        assertEquals(1, result.getProcessedRows());
+        assertEquals(1, result.getTotalRows());
+        assertEquals(1, result.getOrganizationId());
+        assertNull(result.getErrorDescription());
+        assertNull(result.getDiscardedFileName());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "2"})
+    void givenNullPaymentsWhenProcessSendNotificationThenSuccess(String index) {
+        // Given
+        SendNotificationIngestionFlowFileDTO sendNotificationIngestionFlowFileDTO = new SendNotificationIngestionFlowFileDTO();
+
+        Long organizationId = 1L;
+        String sendNotificationId = "NOTIFICATIONID";
+
+        CreateNotificationRequest createNotificationRequest = buildNotificationRequest();
+        if (Objects.equals(index, "1")) {
+            createNotificationRequest.getRecipients().getFirst().setPayments(null);
+        } else if (Objects.equals(index, "2")) {
+            Objects.requireNonNull(createNotificationRequest.getRecipients().getFirst().getPayments()).getFirst().setPagoPa(null);
+            Mockito.doNothing().when(sendNotificationFileHandlerServiceMock)
+                    .moveAllFilesToSendFolder(organizationId, sendNotificationId, "filePathName/1");
+        }
+
+        CreateNotificationResponse response = new CreateNotificationResponse();
+        response.setSendNotificationId(sendNotificationId);
+
+        SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+        sendNotificationDTO.sendNotificationId(sendNotificationId);
+        sendNotificationDTO.setStatus(NotificationStatus.WAITING_FILE);
+        sendNotificationDTO.setOrganizationId(organizationId);
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+
+        Mockito.when(mapperMock.buildCreateNotificationRequest(sendNotificationIngestionFlowFileDTO))
+                .thenReturn(createNotificationRequest);
+
+        Mockito.when(sendNotificationServiceMock.startSendNotification(sendNotificationId,
+                new LoadFileRequest("DIGEST", "ATTACHMENT.pdf"))).thenReturn(new StartNotificationResponse());
+
+        Mockito.when(sendNotificationServiceMock.createSendNotification(createNotificationRequest))
+                .thenReturn(response);
+
+        Mockito.when(sendNotificationServiceMock.getSendNotification("NOTIFICATIONID"))
+                .thenReturn(sendNotificationDTO);
+
+        // When
+        SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(),
+                ingestionFlowFile,
+                Path.of("/tmp")
+        );
+
+        // Then
+        assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+        assertEquals(1, result.getProcessedRows());
+        assertEquals(1, result.getTotalRows());
+        assertEquals(1, result.getOrganizationId());
+        assertNull(result.getErrorDescription());
+        assertNull(result.getDiscardedFileName());
+    }
+
+    private CreateNotificationRequest buildNotificationRequest() {
+        CreateNotificationRequest createNotificationRequest = new CreateNotificationRequest();
+        createNotificationRequest.setOrganizationId(1L);
+        Recipient recipient = new Recipient();
+        Payment payment = new Payment();
+        Attachment attachment = new Attachment();
+        attachment.setDigest("DIGEST");
+        attachment.setFileName("ATTACHMENT.pdf");
+        attachment.setContentType("content/pdf");
+        payment.setPagoPa(new PagoPa("NAV", "TAXID", true, attachment));
+        payment.setF24(new F24Payment("titleF24", true, attachment));
+        recipient.setPayments(List.of(payment));
+        Document document = new Document();
+        document.setDigest("DIGEST");
+        document.setFileName("ATTACHMENT.pdf");
+        document.setContentType("content/pdf");
+        createNotificationRequest.setDocuments(List.of(document));
+        createNotificationRequest.setRecipients(List.of(recipient));
+
+        return createNotificationRequest;
+    }
 }
