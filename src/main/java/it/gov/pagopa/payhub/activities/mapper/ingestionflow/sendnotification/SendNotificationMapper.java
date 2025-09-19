@@ -167,11 +167,11 @@ public class SendNotificationMapper {
 
     private MultiValuedMap<String, String> getF24PaymentByIndex(SendNotificationIngestionFlowFileDTO dto, int index) {
         return switch (index) {
-            case 1 -> dto.getPaymentF241();
-            case 2 -> dto.getPaymentF242();
-            case 3 -> dto.getPaymentF243();
-            case 4 -> dto.getPaymentF244();
-            case 5 -> dto.getPaymentF245();
+            case 1 -> dto.getF24Payment1();
+            case 2 -> dto.getF24Payment2();
+            case 3 -> dto.getF24Payment3();
+            case 4 -> dto.getF24Payment4();
+            case 5 -> dto.getF24Payment5();
             default -> null;
         };
     }

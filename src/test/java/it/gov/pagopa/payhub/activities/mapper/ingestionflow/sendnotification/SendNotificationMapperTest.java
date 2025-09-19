@@ -55,7 +55,7 @@ class SendNotificationMapperTest {
     void givenNoPagoPaNoF24ThenPaymentsListEmpty() {
         SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
         dto.setPayment(null);
-        dto.setPaymentF241(null);
+        dto.setF24Payment1(null);
 
         CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
 
@@ -65,7 +65,7 @@ class SendNotificationMapperTest {
     @Test
     void givenPagoPaWithoutAttachmentThenBuildPagoPaStillWorks() {
         SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
-        dto.setPaymentF241(null);
+        dto.setF24Payment1(null);
         dto.setAttachment(null);
 
         CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
