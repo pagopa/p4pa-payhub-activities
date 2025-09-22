@@ -61,7 +61,7 @@ public class SendNotificationFaker {
                     put("attachmentDigest_1", "xxxyyyzzz");
                     put("attachmentContentType_1", "application/pdf");
                 }})
-                .paymentF241(new ArrayListValuedHashMap<>() {{
+                .f24Payment1(new ArrayListValuedHashMap<>() {{
                     put("paymentF24Title_1", "f24Title");
                     put("paymentF24ApplyCost_1", "true");
                 }})
