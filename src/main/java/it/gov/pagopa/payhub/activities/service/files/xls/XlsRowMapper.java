@@ -18,11 +18,11 @@ public abstract class XlsRowMapper<D> {
 				.collect(Collectors.toMap(headers::get, i -> i));
 	}
 
-	int getHeaderIndex(String header) {
+	protected int getHeaderIndex(String header) {
 		return this.headerToIndex.get(header);
 	}
 
-	<T> T mapOrElse(List<String> cells, Integer index, Function<String, T> mapper, T defaultValue) {
+	protected <T> T mapOrElse(List<String> cells, Integer index, Function<String, T> mapper, T defaultValue) {
 		String raw = null;
 		if (index!=null && index < cells.size()) {
 			raw = cells.get(index);
@@ -31,6 +31,18 @@ public abstract class XlsRowMapper<D> {
 			return mapper.apply(raw);
 		} else {
 			return defaultValue;
+		}
+	}
+
+	protected <T> T map(List<String> cells, String fieldName, Integer index, Function<String, T> mapper) {
+		String raw = null;
+		if (index!=null && index < cells.size()) {
+			raw = cells.get(index);
+		}
+		if(raw != null) {
+			return mapper.apply(raw);
+		} else {
+			throw new IllegalStateException("Field with name \"%s\" must not be null".formatted(fieldName));
 		}
 	}
 

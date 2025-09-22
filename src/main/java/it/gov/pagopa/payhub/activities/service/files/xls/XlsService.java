@@ -1,20 +1,15 @@
 package it.gov.pagopa.payhub.activities.service.files.xls;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.function.Function;
 
-@Service
-@Slf4j
-public class XlsService<D, O> {
+public abstract class XlsService<D, O> {
 
 	private final Function<Path, XlsIterator<D>> xlsIteratorBuilder;
 
-	public XlsService(Function<Path, XlsIterator<D>> xlsIteratorBuilder) {
+	protected XlsService(Function<Path, XlsIterator<D>> xlsIteratorBuilder) {
 		this.xlsIteratorBuilder = xlsIteratorBuilder;
 	}
 

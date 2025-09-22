@@ -1,0 +1,134 @@
+package it.gov.pagopa.payhub.activities.service.files.xls;
+
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@ExtendWith(MockitoExtension.class)
+class TreasuryXlsServiceTest {
+
+	private final TreasuryXlsServiceImpl sut = new TreasuryXlsServiceImpl();
+
+	@Test
+	public void givenFileWithNoErrorWhenReadXlsThenAllRowsHaveBeenProcessedSuccessfully() throws IOException {
+		//GIVEN
+		Map<String, String> iuf2TreasuryIdMap = new HashMap<>();
+		AtomicInteger errorCount = new AtomicInteger(0);
+		//WHEN
+		TreasuryIufIngestionFlowFileResult result = sut.readXls(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_ALL_RECORDS_OK_0001.xls"),
+				iter -> {
+					TreasuryIufIngestionFlowFileResult res = new TreasuryIufIngestionFlowFileResult();
+					while(iter.hasNext()) {
+						try {
+							TreasuryXlsIngestionFlowFileDTO next = iter.next();
+							String iuf = TreasuryUtils.getIdentificativo(next.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
+							iuf2TreasuryIdMap.put(iuf, null);
+						} catch (Exception e){
+							errorCount.incrementAndGet();
+						}
+					}
+					res.setTotalRows(iuf2TreasuryIdMap.size());
+					res.setIuf2TreasuryIdMap(iuf2TreasuryIdMap);
+					return res;
+				}
+		);
+		//THEN
+		Assertions.assertEquals(5,result.getIuf2TreasuryIdMap().size());
+		Assertions.assertEquals(0, errorCount.get());
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072600"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072601"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072602"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072603"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072604"));
+	}
+
+	@Test
+	public void givenFileWithSomeErrorWhenReadXlsThenNotAllRowsHaveBeenProcessedSuccessfully() throws IOException {
+		//GIVEN
+		Map<String, String> iuf2TreasuryIdMap = new HashMap<>();
+		AtomicInteger errorCount = new AtomicInteger(0);
+		List<Exception> errors = new ArrayList<>();
+		//WHEN
+		TreasuryIufIngestionFlowFileResult result = sut.readXls(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_WITH_ERRORS_0002.xls"),
+				iter -> {
+					TreasuryIufIngestionFlowFileResult res = new TreasuryIufIngestionFlowFileResult();
+					while(iter.hasNext()) {
+						try {
+							TreasuryXlsIngestionFlowFileDTO next = iter.next();
+							String iuf = TreasuryUtils.getIdentificativo(next.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
+							iuf2TreasuryIdMap.put(iuf, null);
+						} catch (Exception e){
+							errorCount.incrementAndGet();
+							errors.add(e);
+						}
+					}
+					res.setTotalRows(iuf2TreasuryIdMap.size());
+					res.setIuf2TreasuryIdMap(iuf2TreasuryIdMap);
+					return res;
+				}
+		);
+		//THEN
+		Assertions.assertEquals(1,result.getIuf2TreasuryIdMap().size());
+		Assertions.assertEquals(5, errorCount.get());
+		Assertions.assertEquals(5, errors.size());
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072604"));
+		Assertions.assertEquals(IllegalStateException.class, errors.get(0).getClass());
+		Assertions.assertEquals("Field with name \"DATA CONTABILE\" must not be null", errors.get(0).getMessage());
+		Assertions.assertEquals(NumberFormatException.class, errors.get(1).getClass());
+		Assertions.assertEquals("For input string: \"amount\"", errors.get(1).getMessage());
+		Assertions.assertEquals(NumberFormatException.class, errors.get(2).getClass());
+		Assertions.assertEquals("For input string: \"data\"", errors.get(2).getMessage());
+		Assertions.assertEquals(IllegalStateException.class, errors.get(3).getClass());
+		Assertions.assertEquals("Field with name \"DESCRIZIONE ESTESA\" must not be null", errors.get(3).getMessage());
+		Assertions.assertEquals(IllegalStateException.class, errors.get(4).getClass());
+		Assertions.assertEquals("Field with name \"IMPORTO\" must not be null", errors.get(4).getMessage());
+	}
+
+	@Test
+	public void givenFileWithSwappedHeadersWhenReadXlsThenAllRowsHaveBeenProcessedSuccessfully() throws IOException {
+		//GIVEN
+		Map<String, String> iuf2TreasuryIdMap = new HashMap<>();
+		AtomicInteger errorCount = new AtomicInteger(0);
+		//WHEN
+		TreasuryIufIngestionFlowFileResult result = sut.readXls(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_WITH_SWAPPED_HEADERS_0003.xls"),
+				iter -> {
+					TreasuryIufIngestionFlowFileResult res = new TreasuryIufIngestionFlowFileResult();
+					while(iter.hasNext()) {
+						try {
+							TreasuryXlsIngestionFlowFileDTO next = iter.next();
+							String iuf = TreasuryUtils.getIdentificativo(next.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
+							iuf2TreasuryIdMap.put(iuf, null);
+						} catch (Exception e){
+							errorCount.incrementAndGet();
+						}
+					}
+					res.setTotalRows(iuf2TreasuryIdMap.size());
+					res.setIuf2TreasuryIdMap(iuf2TreasuryIdMap);
+					return res;
+				}
+		);
+		//THEN
+		Assertions.assertEquals(5,result.getIuf2TreasuryIdMap().size());
+		Assertions.assertEquals(0, errorCount.get());
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072600"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072601"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072602"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072603"));
+		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072604"));
+	}
+}

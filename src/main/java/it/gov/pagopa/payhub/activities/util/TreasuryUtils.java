@@ -21,6 +21,8 @@ public class TreasuryUtils {
           "LGPE - RIVERSAMENTO",
           "L GPE-RIVERSAMENTO"
   );
+  static final String DESCRIZIONE_ORDINANTE = "\\s*D\\s*e\\s*s\\s*c\\s*r\\s*i\\s*z\\s*i\\s*o\\s*n\\s*e\\s*O\\s*r\\s*d\\s*i\\s*n\\s*a\\s*n\\s*t\\s*e\\s*:";
+  static final String SEPARATORE_DUE_PUNTI = "[:]";
 
   public static String getIdentificativo(String value, final String type) {
     if (StringUtils.isBlank(value)) {
@@ -57,6 +59,21 @@ public class TreasuryUtils {
       }
     }
     return true;
+  }
+
+  public static String getPspLastName(final String value) {
+    return getDescrizioneOrdinante(value);
+  }
+
+  private static String getDescrizioneOrdinante(final String value) {
+
+    String regexString = DESCRIZIONE_ORDINANTE + "(.*?)" + SEPARATORE_DUE_PUNTI;
+    Pattern pattern = Pattern.compile(regexString);
+    Matcher matcher = pattern.matcher(value);
+    while (matcher.find()) {
+      return matcher.group(1).trim();
+    }
+    return null;
   }
 
   private static String elaboraIUF(String value, int indexIUF, boolean acc, String patternString) {
