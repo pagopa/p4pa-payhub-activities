@@ -36,7 +36,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         Treasury treasury = treasuryService.getById(treasuryId);
 
         if (treasury.getBillAmountCents() < 0) {
-            log.info("Skipping IUF Classification for organization id {} and iuf {} due to negative bill amount cents", organizationId, iuf);
+            log.info("Skipping IUF Classification for organization id {} and iuf {} due to negative bill amount cents in treasury with treasury id {}", organizationId, iuf, treasuryId);
             return IufClassificationActivityResult.builder()
                     .organizationId(organizationId)
                     .transfers2classify(Collections.emptyList())
