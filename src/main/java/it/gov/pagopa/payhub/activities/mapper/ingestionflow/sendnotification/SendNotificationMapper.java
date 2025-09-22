@@ -92,8 +92,8 @@ public class SendNotificationMapper {
 
     private F24Payment buildF24(MultiValuedMap<String, String> paymentMap, MultiValuedMap<String, String> metadataAttachmentMap, int index) {
         F24Payment f24 = new F24Payment();
-        f24.setTitle(getFirstValue(paymentMap, "paymentF24Title_" + index));
-        f24.setApplyCost(Boolean.valueOf(getFirstValue(paymentMap, "paymentF24ApplyCost_" + index)));
+        f24.setTitle(getFirstValue(paymentMap, "f24PaymentTitle_" + index));
+        f24.setApplyCost(Boolean.valueOf(getFirstValue(paymentMap, "f24PaymentApplyCost_" + index)));
 
         if (metadataAttachmentMap != null) {
             f24.setMetadataAttachment(buildMetadataAttachment(metadataAttachmentMap, index));

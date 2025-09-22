@@ -62,8 +62,8 @@ public class SendNotificationFaker {
                     put("attachmentContentType_1", "application/pdf");
                 }})
                 .f24Payment1(new ArrayListValuedHashMap<>() {{
-                    put("paymentF24Title_1", "f24Title");
-                    put("paymentF24ApplyCost_1", "true");
+                    put("f24PaymentTitle_1", "f24Title");
+                    put("f24PaymentApplyCost_1", "true");
                 }})
                 .metadataAttachment1(new ArrayListValuedHashMap<>() {{
                     put("metadataAttachmentFileName_1", "file.pdf");
