@@ -76,7 +76,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
         List<Treasury> deleteTreasuries = result.get(TreasuryOperationEnum.DELETE);
         if (deleteTreasuries != null) {
             for (Treasury treasuryDTO : deleteTreasuries) {
-                Long rowDeleted = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(
+                Integer rowDeleted = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(
                         treasuryDTO.getOrganizationId(),
                         treasuryDTO.getBillCode(),
                         treasuryDTO.getBillYear(),

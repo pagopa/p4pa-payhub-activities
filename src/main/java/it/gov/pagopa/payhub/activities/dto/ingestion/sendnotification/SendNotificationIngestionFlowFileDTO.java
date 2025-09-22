@@ -3,13 +3,14 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification;
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.MultiValuedMap;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -110,6 +111,36 @@ public class SendNotificationIngestionFlowFileDTO {
 
   @CsvBindAndJoinByName(column = "attachment.*_5", elementType = String.class)
   private MultiValuedMap<String, String> attachment5;
+
+  @CsvBindAndJoinByName(column = "f24Payment.*_1", elementType = String.class)
+  private MultiValuedMap<String, String> f24Payment1;
+
+  @CsvBindAndJoinByName(column = "metadataAttachment.*_1", elementType = String.class)
+  private MultiValuedMap<String, String> metadataAttachment1;
+
+  @CsvBindAndJoinByName(column = "f24Payment.*_2", elementType = String.class)
+  private MultiValuedMap<String, String> f24Payment2;
+
+  @CsvBindAndJoinByName(column = "metadataAttachment.*_2", elementType = String.class)
+  private MultiValuedMap<String, String> metadataAttachment2;
+
+  @CsvBindAndJoinByName(column = "f24Payment.*_3", elementType = String.class)
+  private MultiValuedMap<String, String> f24Payment3;
+
+  @CsvBindAndJoinByName(column = "metadataAttachment.*_3", elementType = String.class)
+  private MultiValuedMap<String, String> metadataAttachment3;
+
+  @CsvBindAndJoinByName(column = "f24Payment.*_4", elementType = String.class)
+  private MultiValuedMap<String, String> f24Payment4;
+
+  @CsvBindAndJoinByName(column = "metadataAttachment.*_4", elementType = String.class)
+  private MultiValuedMap<String, String> metadataAttachment4;
+
+  @CsvBindAndJoinByName(column = "f24Payment.*_5", elementType = String.class)
+  private MultiValuedMap<String, String> f24Payment5;
+
+  @CsvBindAndJoinByName(column = "metadataAttachment.*_5", elementType = String.class)
+  private MultiValuedMap<String, String> metadataAttachment5;
 
   @CsvBindAndJoinByName(column = "document.*_1", elementType = String.class, required = true)
   private MultiValuedMap<String, String> document;

@@ -1,77 +1,123 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
-
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
+
+import static it.gov.pagopa.payhub.activities.util.faker.SendNotificationFaker.buildSendNotificationIngestionFlowFileDTO;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationMapperTest {
 
-  private SendNotificationMapper mapper;
+    private SendNotificationMapper mapper;
 
-  @BeforeEach
-  void setup() {
-    mapper = new SendNotificationMapper();
-  }
+    @BeforeEach
+    void setup() {
+        mapper = new SendNotificationMapper();
+    }
 
-  @Test
-  void givenMapThenOk() {
-    // Given
-    SendNotificationIngestionFlowFileDTO dto = new SendNotificationIngestionFlowFileDTO();
+    @Test
+    void givenFullDtoWhenBuildRequestThenAllFieldsMapped() {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
 
-    dto.setOrganizationId(1L);
-    dto.setPaProtocolNumber("prot-123");
-    dto.setNotificationFeePolicy("DELIVERY_MODE");
-    dto.setPhysicalCommunicationType("AR_REGISTERED_LETTER");
-    dto.setSenderDenomination("Test Denom");
-    dto.setSenderTaxId("ABC123");
-    dto.setAmount(new BigDecimal("12.50"));
-    dto.setPaymentExpirationDate(LocalDate.now().plusDays(1));
-    dto.setTaxonomyCode("TAX001");
-    dto.setPaFee(10);
-    dto.setVat(20);
-    dto.setPagoPaIntMode("NONE");
-    dto.setRecipientType("PF");
-    dto.setTaxId("TAXID123");
-    dto.setDenomination("Mario Rossi");
-    dto.setAddress("Via Roma 1");
-    dto.setZip("00100");
-    dto.setMunicipality("Roma");
-    dto.setProvince("RM");
-    // digital domicile
-    dto.setDigitalDomicileAddress("a@b.it");
-    dto.setDigitalDomicileType("PEC");
-    // Payment and attachment
-    MultiValuedMap<String, String> payment = new ArrayListValuedHashMap<>();
-    payment.put("paymentNoticeCode_1", "1234567890");
-    payment.put("paymentCreditorTaxId_1", "987654321");
-    payment.put("paymentApplyCost_1", "true");
-    MultiValuedMap<String, String> attachment = new ArrayListValuedHashMap<>();
-    attachment.put("attachmentFileName_1", "file.pdf");
-    attachment.put("attachmentDigest_1", "xxxyyyzzz");
-    attachment.put("attachmentContentType_1", "application/pdf");
-    dto.setPayment(payment);
-    dto.setAttachment(attachment);
-    // Document
-    MultiValuedMap<String, String> document = new ArrayListValuedHashMap<>();
-    document.put("documentFileName_1", "doc.pdf");
-    document.put("documentDigest_1", "digest123");
-    document.put("documentContentType_1", "application/pdf");
-    dto.setDocument(document);
-    // When
-    CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
-    // Then
-    Assertions.assertNotNull(result);
-    checkNotNullFields(result);
-  }
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+        Assertions.assertNotNull(result);
+        TestUtils.checkNotNullFields(result);
+    }
+
+    @Test
+    void givenNoDigitalDomicileWhenBuildRequestThenRecipientHasNoDigitalAddress() {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
+        dto.setDigitalDomicileAddress(null);
+        dto.setDigitalDomicileType(null);
+
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+        Assertions.assertNull(result.getRecipients().getFirst().getDigitalDomicile());
+    }
+
+    @Test
+    void givenNoPagoPaNoF24ThenPaymentsListEmpty() {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
+        dto.setPayment(null);
+        dto.setF24Payment1(null);
+
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+        Assertions.assertTrue(result.getRecipients().getFirst().getPayments().isEmpty());
+    }
+
+    @Test
+    void givenPagoPaWithoutAttachmentThenBuildPagoPaStillWorks() {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
+        dto.setF24Payment1(null);
+        dto.setAttachment(null);
+
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+        Assertions.assertNotNull(result.getRecipients().getFirst().getPayments().getFirst().getPagoPa());
+        Assertions.assertNull(result.getRecipients().getFirst().getPayments().getFirst().getPagoPa().getAttachment());
+    }
+
+    @Test
+    void givenOnlyF24WhenBuildRequestThenPagoPaIsNullButF24Present() {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
+        dto.setPayment(null);
+        dto.setMetadataAttachment1(null);
+
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+        Assertions.assertNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getPagoPa());
+        Assertions.assertNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getF24().getMetadataAttachment());
+        Assertions.assertNotNull(result.getRecipients().getFirst().getPayments().getFirst().getF24());
+    }
+
+    @Test
+    void givenDocumentEmptyWhenBuildRequestThenMapDocumentIsNull() {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
+        dto.setDocument(new ArrayListValuedHashMap<>());
+
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+        Assertions.assertEquals(result.getDocuments(), List.of());
+        TestUtils.checkNotNullFields(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1", "2", "3", "4", "5"})
+    void givenIndexOutOfRangeWhenGetPaymentByIndexThenReturnNull(String index) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
+
+        Method method = SendNotificationMapper.class.getDeclaredMethod("getPaymentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
+        if (Objects.equals(index, "2")) {
+            method = SendNotificationMapper.class.getDeclaredMethod("getAttachmentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
+        } else if (Objects.equals(index, "3")) {
+            method = SendNotificationMapper.class.getDeclaredMethod("getF24PaymentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
+        } else if (Objects.equals(index, "4")) {
+            method = SendNotificationMapper.class.getDeclaredMethod("getMetadataAttachmentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
+        } else if (Objects.equals(index, "5")) {
+            method = SendNotificationMapper.class.getDeclaredMethod("getDocumentByIndex", SendNotificationIngestionFlowFileDTO.class, int.class);
+        }
+        method.setAccessible(true);
+
+        MultiValuedMap<String, String> result = (MultiValuedMap<String, String>) method.invoke(mapper, dto, 6);
+
+        Assertions.assertNull(result);
+    }
+
 }

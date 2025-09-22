@@ -16,29 +16,29 @@ import lombok.NoArgsConstructor;
 public class TreasuryCsvIngestionFlowFileDTO {
 
     @Pattern(regexp = "^\\d{4}$", message = "The year must be 4 digits long")
-    @CsvBindByName(column = "esercizio", required = true)
+    @CsvBindByName(column = "ESERCIZIO", required = true)
     private String billYear;
 
     @Size(max=7)
-    @CsvBindByName(column = "n_provvisorio", required = true)
+    @CsvBindByName(column = "N.PROVV.", required = true)
     private String billCode;
 
     @Size(max=10)
-    @CsvBindByName(column = "data_esecuzione", required = true)
+    @CsvBindByName(column = "DATA ESEC.", required = true)
     private String billDate;
 
     @Size(max=255)
-    @CsvBindByName(column = "anagrafica_cliente", required = true)
+    @CsvBindByName(column = "ANAGRAFICA CLIENTE", required = true)
     private String pspLastName;
 
     @NotNull
     @Size(max=255)
-    @CsvBindByName(column = "descrizione_causale", required = true)
+    @CsvBindByName(column = "DESCRIZIONE CAUSALE", required = true)
     private String remittanceDescription;
 
-    @CsvBindByName(column = "importo_provvisorio", required = true)
+    @CsvBindByName(column = "IMPORTO PROVVISORIO", required = true)
     private String billAmount;
 
-    @CsvBindByName(column = "valuta_ente")
+    @CsvBindByName(column = "VALUTA ENTE")
     private String regionValueDate;
 }

@@ -62,13 +62,13 @@ class ClassificationClientTest {
         String iuf = "IUF123";
         ClassificationsEnum classification = ClassificationsEnum.RT_IUF;
         String accessToken = "accessToken";
-        Long expectedResponse = 1L;
+        Integer expectedResponse = 1;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
         when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification)).thenReturn(expectedResponse);
 
         // When
-        Long result = classificationClient.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification, accessToken);
+        Integer result = classificationClient.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
@@ -84,13 +84,13 @@ class ClassificationClientTest {
         String iur = "IUR123";
         int transferIndex = 0;
         String accessToken = "accessToken";
-        Long expectedResponse = 1L;
+        Integer expectedResponse = 1;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
         when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex)).thenReturn(expectedResponse);
 
         // When
-        Long result = classificationClient.deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex, accessToken);
+        Integer result = classificationClient.deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
@@ -105,13 +105,13 @@ class ClassificationClientTest {
         String iud = "IUD123";
         ClassificationsEnum classification = ClassificationsEnum.RT_IUF;
         String accessToken = "accessToken";
-        Long expectedResponse = 1L;
+        Integer expectedResponse = 1;
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
         when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification)).thenReturn(expectedResponse);
 
         // When
-        Long result = classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken);
+        Integer result = classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);

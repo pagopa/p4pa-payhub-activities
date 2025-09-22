@@ -46,7 +46,7 @@ public class TreasuryClient {
                 .crudCreateTreasury(mapper.map(treasury));
     }
 
-    public Long deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(Long organizationId, String billCode, String billYear, String orgBtCode, String orgIstatCode, String accessToken) {
+    public Integer deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(Long organizationId, String billCode, String billYear, String orgBtCode, String orgIstatCode, String accessToken) {
         return classificationApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
     }
