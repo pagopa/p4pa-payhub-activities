@@ -110,7 +110,7 @@ class TransferClassificationActivityImplTest {
 
 	@Test
 	void classificationSuccess() {
-		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
+		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1);
 		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(transferDTO);
 		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.ofNullable(installmentDTO));
 		when(paymentNotificationServiceMock.getByOrgIdAndIud(transferSemanticKeyDTO.getOrgId(), installmentDTO.getIud())).thenReturn(paymentNotificationDTO);
@@ -132,7 +132,7 @@ class TransferClassificationActivityImplTest {
 
 	@Test
 	void whenPaymentsReportingIsEmptyShouldNotCallTreasury() {
-		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
+		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1);
 		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(transferDTO);
 		when(installmentServiceMock.getInstallmentById(transferDTO.getInstallmentId())).thenReturn(Optional.ofNullable(installmentDTO));
 		when(paymentNotificationServiceMock.getByOrgIdAndIud(transferSemanticKeyDTO.getOrgId(), installmentDTO.getIud())).thenReturn(paymentNotificationDTO);
@@ -152,7 +152,7 @@ class TransferClassificationActivityImplTest {
 
 	@Test
 	void whenTransferIsNullShouldNotCallPaymentNotification() {
-		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
+		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1);
 		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(null);
 		when(paymentsReportingServiceMock.getByTransferSemanticKey(transferSemanticKeyDTO)).thenReturn(paymentsReportingDTO);
 		when(treasuryServiceMock.getByOrganizationIdAndIuf(ORGANIZATION, IUF)).thenReturn(treasuryIuf);
@@ -166,7 +166,7 @@ class TransferClassificationActivityImplTest {
 	@Test
 	void whenTransferHasDifferentOriginThenNotCreateClassification() {
 		organization.setOrganizationId(999L);
-		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1L);
+		when(classificationServiceMock.deleteBySemanticKey(transferSemanticKeyDTO)).thenReturn(1);
 		when(transferServiceMock.findBySemanticKey(transferSemanticKeyDTO, installmentStatusSet)).thenReturn(transferDTO);
 		when(organizationServiceMock.getOrganizationByFiscalCode(transferDTO.getOrgFiscalCode())).thenReturn(Optional.of(organization));
 

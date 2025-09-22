@@ -16,7 +16,7 @@ public class ClearClassifyIudActivityImpl implements ClearClassifyIudActivity {
         this.classificationService = classificationService;
     }
 
-    public Long deleteClassificationByIud(Long organizationId, String iud) {
+    public Integer deleteClassificationByIud(Long organizationId, String iud) {
         log.info("Deleting classification IUD_NO_RT for organization id: {} and iud: {}", organizationId, iud);
         return classificationService.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, ClassificationsEnum.IUD_NO_RT);
     }

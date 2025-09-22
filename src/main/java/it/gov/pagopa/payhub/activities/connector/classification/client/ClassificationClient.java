@@ -22,17 +22,17 @@ public class ClassificationClient {
                 .saveAll2(classificationList);
     }
 
-    public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification, String accessToken) {
+    public Integer deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification);
     }
 
-    public Long deleteByOrganizationIdAndIuvAndIurAndTransferIndex(Long organizationId, String iuv,String iur,  int transferIndex, String accessToken) {
+    public Integer deleteByOrganizationIdAndIuvAndIurAndTransferIndex(Long organizationId, String iuv,String iur,  int transferIndex, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
     }
 
-    public Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification, String accessToken) {
+    public Integer deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
     }

@@ -92,14 +92,14 @@ class TreasuryServiceTest {
         String orgBtCode = "BT123";
         String orgIstatCode = "ISTAT123";
         String accessToken = "accessToken";
-        Long expectedDeletedCount = 1L;
+        Integer expectedDeletedCount = 1;
         when(treasuryClientMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken))
                 .thenReturn(expectedDeletedCount);
         when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
-        Long result = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
+        Integer result = treasuryService.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
 
         // Then
         assertSame(expectedDeletedCount, result);

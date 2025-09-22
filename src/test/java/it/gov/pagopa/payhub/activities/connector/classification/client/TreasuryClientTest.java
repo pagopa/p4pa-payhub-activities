@@ -152,13 +152,13 @@ class TreasuryClientTest {
         String orgBtCode = "BT123";
         String orgIstatCode = "ISTAT123";
         String accessToken = "accessToken";
-        Long expectedDeletedCount = 1L;
+        Integer expectedDeletedCount = 1;
         TreasuryEntityExtendedControllerApi mockApi = mock(TreasuryEntityExtendedControllerApi.class);
         when(classificationApisHolderMock.getTreasuryEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode)).thenReturn(expectedDeletedCount);
 
         // When
-        Long result = treasuryClient.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);
+        Integer result = treasuryClient.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);
 
         // Then
         assertEquals(expectedDeletedCount, result);
