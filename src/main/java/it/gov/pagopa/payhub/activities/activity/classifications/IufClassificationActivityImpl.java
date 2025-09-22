@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +32,16 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     @Override
     public IufClassificationActivityResult classifyIuf(Long organizationId, String treasuryId, String iuf) {
         log.info("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
+
+        Treasury treasury = treasuryService.getById(treasuryId);
+
+        if (treasury.getBillAmountCents() < 0) {
+            log.info("Skipping IUF Classification for organization id {} and iuf {} due to negative bill amount cents in treasury with treasury id {}", organizationId, iuf, treasuryId);
+            return IufClassificationActivityResult.builder()
+                    .organizationId(organizationId)
+                    .transfers2classify(Collections.emptyList())
+                    .build();
+        }
 
         List<Transfer2ClassifyDTO> transfers2classify =
             Objects.requireNonNull(paymentsReportingService.getByOrganizationIdAndIuf(organizationId, iuf).getEmbedded()).getPaymentsReportings()
