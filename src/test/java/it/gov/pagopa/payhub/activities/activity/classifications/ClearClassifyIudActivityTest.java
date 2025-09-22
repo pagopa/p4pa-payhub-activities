@@ -34,7 +34,7 @@ class ClearClassifyIudActivityTest {
 	@Test
 	void whenDeleteClassificationFailedThenReturnZero() {
 		when(classificationServiceMock.deleteByOrganizationIdAndIudAndLabel(ORGANIZATION_ID, IUD, ClassificationsEnum.IUD_NO_RT))
-			.thenReturn(0L);
-		assertEquals(0L, activity.deleteClassificationByIud(ORGANIZATION_ID, IUD));
+			.thenReturn(0);
+		assertEquals(0, activity.deleteClassificationByIud(ORGANIZATION_ID, IUD));
 	}
 }

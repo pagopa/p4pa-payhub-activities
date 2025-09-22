@@ -190,7 +190,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(errorDTOS);
         when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
-        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(1L);
+        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(1);
 
         // When
         Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
@@ -232,7 +232,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(true);
         when(getValidatorServiceMock().validateData(unmarshalledObject, ingestionFlowFileDTO.getFileName())).thenReturn(errorDTOS);
         when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(resultMap);
-        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(0L);
+        when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(0);
 
         // When
         Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);

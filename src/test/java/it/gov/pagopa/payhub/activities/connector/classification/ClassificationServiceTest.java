@@ -66,7 +66,7 @@ class ClassificationServiceTest {
         Long organizationId = 1L;
         String iuf = "IUF123";
         ClassificationsEnum classification = ClassificationsEnum.RT_NO_IUF;
-        Long expectedResponse = 1L;
+        Integer expectedResponse = 1;
         String accessToken = "accessToken";
 
         when(classificationClientMock.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification, accessToken)).thenReturn(expectedResponse);
@@ -74,7 +74,7 @@ class ClassificationServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        Long result = classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification);
+        Integer result = classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification);
 
         // Then
         assertEquals(expectedResponse, result);
@@ -85,7 +85,7 @@ class ClassificationServiceTest {
     void testDeleteBySemanticKey() {
         // Given
         TransferSemanticKeyDTO transferSemanticKeyDTO = new TransferSemanticKeyDTO(1L, "IUV123", "IUR123", 0);
-        Long expectedResponse = 1L;
+        Integer expectedResponse = 1;
         String accessToken = "accessToken";
         Long organizationId = transferSemanticKeyDTO.getOrgId();
         String iuv = transferSemanticKeyDTO.getIuv();
@@ -98,7 +98,7 @@ class ClassificationServiceTest {
                 .thenReturn(accessToken);
 
         // When
-        Long result = classificationService.deleteBySemanticKey(transferSemanticKeyDTO);
+        Integer result = classificationService.deleteBySemanticKey(transferSemanticKeyDTO);
 
         // Then
         assertEquals(expectedResponse, result);
@@ -111,7 +111,7 @@ class ClassificationServiceTest {
         Long organizationId = 1L;
         String iud = "IUD123";
         ClassificationsEnum classification = ClassificationsEnum.RT_NO_IUF;
-        Long expectedResponse = 1L;
+        Integer expectedResponse = 1;
         String accessToken = "accessToken";
 
         when(classificationClientMock.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken)).thenReturn(expectedResponse);
@@ -119,7 +119,7 @@ class ClassificationServiceTest {
             .thenReturn(accessToken);
 
         // When
-        Long result = classificationService.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
+        Integer result = classificationService.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
 
         // Then
         assertEquals(expectedResponse, result);

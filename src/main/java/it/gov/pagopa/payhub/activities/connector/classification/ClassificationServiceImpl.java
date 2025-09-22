@@ -30,12 +30,12 @@ public class ClassificationServiceImpl implements ClassificationService {
     }
 
     @Override
-    public Long deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification) {
+    public Integer deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification) {
         return classificationClient.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, classification, authnService.getAccessToken());
     }
 
     @Override
-    public Long deleteBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO) {
+    public Integer deleteBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO) {
         Long organizationId = transferSemanticKeyDTO.getOrgId();
         String iuv = transferSemanticKeyDTO.getIuv();
         String iur = transferSemanticKeyDTO.getIur();
@@ -44,7 +44,7 @@ public class ClassificationServiceImpl implements ClassificationService {
     }
 
     @Override
-    public Long deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification) {
+    public Integer deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification) {
         return classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, authnService.getAccessToken());
     }
 }
