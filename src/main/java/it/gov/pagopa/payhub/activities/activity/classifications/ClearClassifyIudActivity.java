@@ -16,5 +16,5 @@ public interface ClearClassifyIudActivity {
 	 * @return boolean true if success deletion or exception
 	 */
 	@ActivityMethod
-	Long deleteClassificationByIud(Long organizationId, String iud);
+    Integer deleteClassificationByIud(Long organizationId, String iud);
 }

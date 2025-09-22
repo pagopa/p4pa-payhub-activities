@@ -16,7 +16,7 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
         this.classificationService = classificationService;
     }
 
-    public Long deleteClassificationByIuf(Long organizationId, String iuf) {
+    public Integer deleteClassificationByIuf(Long organizationId, String iuf) {
         log.info("Deleting classification TES_NO_MATCH for organization id: {} and iuf: {}", organizationId,iuf);
         return classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, ClassificationsEnum.TES_NO_MATCH);
     }

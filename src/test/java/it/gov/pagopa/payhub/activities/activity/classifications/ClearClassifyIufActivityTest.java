@@ -33,8 +33,8 @@ class ClearClassifyIufActivityTest {
 
     @Test
     void deleteClassificationFailed() {
-        when(classificationService.deleteByOrganizationIdAndIufAndLabel(ORGANIZATION, IUF, ClassificationsEnum.TES_NO_MATCH)).thenReturn(0L);
-        assertEquals(0L,clearClassifyIufActivity.deleteClassificationByIuf(ORGANIZATION,IUF));
+        when(classificationService.deleteByOrganizationIdAndIufAndLabel(ORGANIZATION, IUF, ClassificationsEnum.TES_NO_MATCH)).thenReturn(0);
+        assertEquals(0,clearClassifyIufActivity.deleteClassificationByIuf(ORGANIZATION,IUF));
     }
 
 }
