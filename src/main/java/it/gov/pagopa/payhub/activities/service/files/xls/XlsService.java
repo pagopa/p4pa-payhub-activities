@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.files.xls;
 
-import java.io.IOException;
+import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryXlsInvalidFileException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.function.Function;
@@ -13,11 +13,11 @@ public abstract class XlsService<D, O> {
 		this.xlsIteratorBuilder = xlsIteratorBuilder;
 	}
 
-	public O readXls(Path xlsFilePath, Function<Iterator<D>, O> rowProcessor) throws IOException {
+	public O readXls(Path xlsFilePath, Function<Iterator<D>, O> rowProcessor) {
 		try(XlsIterator<D> xlsIterator = xlsIteratorBuilder.apply(xlsFilePath)) {
 			return rowProcessor.apply(xlsIterator);
 		} catch (Exception e) {
-			throw new IOException("Error while reading xsl file \"%s\": %s".formatted(xlsFilePath, e.getMessage()), e);
+			throw new TreasuryXlsInvalidFileException("Cannot parse treasury Xls file \"%s\"".formatted(xlsFilePath.getFileName()), e);
 		}
 	}
 

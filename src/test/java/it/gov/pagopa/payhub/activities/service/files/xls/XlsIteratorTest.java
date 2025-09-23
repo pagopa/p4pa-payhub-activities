@@ -29,7 +29,7 @@ class XlsIteratorTest {
 	private final List<String> row5 = List.of("02012","02021","000101059865","EUR","45496.0","45496.0","14.34","-","48BO","","0920299486000106","","Data Ordine: 23/07/2024; Descr","Data Ordine: 21/07/2024; Descrizione Ordinante: FIDEURAM INTESA SANPAOLO PRIVATE BANKING SPA                          PIAZZA SAN :BI2:FIBKITMMXXX :BE1:IPA TEST 2 :IB1:IT13R0200802017000101059865 :IB2:IT52Q0329620095000063193091 :TID:1001241280000102 :DTE:240507 :DTN:IPA TEST 2 :ERI:EUR 000000000019312 :IM2:000000000019312 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072604 :SEC:CASH :OR1:FIDEURAM INTESA SANPAO LO PRIVATE BA NKING SPA PIAZZA SAN CARLO 156 10121 TORINO T :TR1:INTESASANPAOLO CBILL PUBBLICA AMM");
 
 	@BeforeAll
-	public static void startup() throws IOException {
+	static void startup() throws IOException {
 		sut = new XlsIterator<>(
 				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_ALL_RECORDS_OK_0001.xls"),
 				l -> mapperMock
@@ -37,7 +37,7 @@ class XlsIteratorTest {
 	}
 
 	@AfterEach
-	public void clearMock() {
+	void clearMock() {
 		Mockito.clearInvocations(mapperMock);
 	}
 

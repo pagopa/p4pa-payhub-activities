@@ -2,13 +2,13 @@ package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryXlsInvalidFileException;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ class TreasuryXlsServiceTest {
 	private final TreasuryXlsServiceImpl sut = new TreasuryXlsServiceImpl();
 
 	@Test
-	public void givenFileWithNoErrorWhenReadXlsThenAllRowsHaveBeenProcessedSuccessfully() throws IOException {
+	void givenFileWithNoErrorWhenReadXlsThenAllRowsHaveBeenProcessedSuccessfully() {
 		//GIVEN
 		Map<String, String> iuf2TreasuryIdMap = new HashMap<>();
 		AtomicInteger errorCount = new AtomicInteger(0);
@@ -56,7 +56,7 @@ class TreasuryXlsServiceTest {
 	}
 
 	@Test
-	public void givenFileWithSomeErrorWhenReadXlsThenNotAllRowsHaveBeenProcessedSuccessfully() throws IOException {
+	void givenFileWithSomeErrorWhenReadXlsThenNotAllRowsHaveBeenProcessedSuccessfully() {
 		//GIVEN
 		Map<String, String> iuf2TreasuryIdMap = new HashMap<>();
 		AtomicInteger errorCount = new AtomicInteger(0);
@@ -99,7 +99,7 @@ class TreasuryXlsServiceTest {
 	}
 
 	@Test
-	public void givenFileWithSwappedHeadersWhenReadXlsThenAllRowsHaveBeenProcessedSuccessfully() throws IOException {
+	void givenFileWithSwappedHeadersWhenReadXlsThenAllRowsHaveBeenProcessedSuccessfully() {
 		//GIVEN
 		Map<String, String> iuf2TreasuryIdMap = new HashMap<>();
 		AtomicInteger errorCount = new AtomicInteger(0);
@@ -130,5 +130,16 @@ class TreasuryXlsServiceTest {
 		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072602"));
 		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072603"));
 		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072604"));
+	}
+
+	@Test
+	void givenInvalidFileWhenReadXlsThenThrowTreasuryXlsInvalidFileException() {
+		//WHEN
+		TreasuryXlsInvalidFileException ex = Assertions.assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.readXls(
+				Path.of("src/test/resources/treasury/xls/invalid_file.xls"),
+				iter -> null
+		));
+		//THEN
+		Assertions.assertEquals("Cannot parse treasury Xls file \"invalid_file.xls\"", ex.getMessage());
 	}
 }
