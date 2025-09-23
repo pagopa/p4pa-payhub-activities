@@ -16,7 +16,7 @@ public class TreasuryPosteMapper {
 
   public static final String POSTE_PSP_LAST_NAME = "POSTE ITALIANE SPA";
 
-  public Treasury map(TreasuryPosteIngestionFlowFileDTO dto, String iban, LocalDate billDate, IngestionFlowFile ingestionFlowFile) {
+  public Treasury map(TreasuryPosteIngestionFlowFileDTO dto, String iban, String iuf, String billCode, LocalDate billDate, IngestionFlowFile ingestionFlowFile) {
     LocalDate regionValueDate = null;
     if (dto.getRegionValueDate() != null) {
       regionValueDate = LocalDate.parse(dto.getRegionValueDate(), DateTimeFormatter.ISO_LOCAL_DATE);
@@ -29,10 +29,10 @@ public class TreasuryPosteMapper {
         .remittanceCode(dto.getRemittanceCode())
         .billAmountCents(dto.getDebitBillAmountCents() != null ? dto.getDebitBillAmountCents() : dto.getCreditBillAmountCents())
         .remittanceDescription(dto.getRemittanceDescription())
-        .iuf(dto.getIuf())
+        .iuf(iuf)
         .pspLastName(POSTE_PSP_LAST_NAME)
-        .billCode(dto.getBillCode())
-        .billYear(dto.getBillYear())
+        .billCode(billCode)
+        .billYear(String.valueOf(billDate.getYear()))
         .orgIstatCode(ORG_ISTAT_CODE_DEFAULT)
         .orgBtCode(ORG_BT_CODE_DEFAULT)
         .organizationId(ingestionFlowFile.getOrganizationId())

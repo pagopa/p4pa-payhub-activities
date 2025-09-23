@@ -37,10 +37,4 @@ public class TreasuryPosteIngestionFlowFileDTO {
   @CsvBindByPosition(position = 8)
   private String remittanceDescription;
 
-  @Size(max = 35)
-  private String iuf;
-  private String billCode;
-  @Size(max = 4)
-  private String billYear;
-
 }

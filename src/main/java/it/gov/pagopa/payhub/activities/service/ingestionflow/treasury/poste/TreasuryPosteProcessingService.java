@@ -58,28 +58,29 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
   }
 
   @Override
-  protected boolean consumeRow(long lineNumber, TreasuryPosteIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryPosteErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
-    row.setIuf(TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF));
-    row.setBillCode("P000000");  // TODO: discussion on https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1776484733/Import+Tesoreria?focusedCommentId=1981284368
-    
+  protected boolean consumeRow(long lineNumber, TreasuryPosteIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryPosteErrorDTO> errorList,
+      IngestionFlowFile ingestionFlowFile) {
+    String iuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
+    String billCode = "P000000";  // TODO: discussion on https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1776484733/Import+Tesoreria?focusedCommentId=1981284368
+
     LocalDate billDate = LocalDate.parse(row.getBillDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-    row.setBillYear(String.valueOf(billDate));
-    
+    String billYear = String.valueOf(billDate.getYear());
+
     TreasuryPosteIngestionFlowFileResult treasuryPosteIngestionFlowFileResult = (TreasuryPosteIngestionFlowFileResult) ingestionFlowFileResult;
     String iban = treasuryPosteIngestionFlowFileResult.getIban();
-    
-    try {
-      TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
 
-      if(existingTreasury != null) {
-        boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
+    try {
+      TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), iuf);
+
+      if (existingTreasury != null) {
+        boolean treasuryMatch = !existingTreasury.getBillCode().equals(billCode) || !existingTreasury.getBillYear().equals(billYear);
         if (treasuryMatch) {
           String errorMessage = String.format(
               "IUF %s already associated to another treasury for organization with IPA code %s",
-              row.getIuf(), iban);
+              iuf, iban);
           log.error(errorMessage);
           TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(
-              ingestionFlowFile.getFileName(), row.getIuf(),
+              ingestionFlowFile.getFileName(), iuf,
               lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
           errorList.add(error);
           return false;
@@ -87,16 +88,16 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
       }
 
       Treasury treasury = treasuryService.insert(
-          treasuryPosteMapper.map(row, iban, billDate, ingestionFlowFile));
+          treasuryPosteMapper.map(row, iban, iuf, billCode, billDate, ingestionFlowFile));
 
       treasuryPosteIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
       return true;
     } catch (Exception e) {
       log.error("Error processing treasury poste with row.getIuf() {}: {}",
-          row.getIuf(),
+          iuf,
           e.getMessage());
       TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(
-          ingestionFlowFile.getFileName(), row.getIuf(),
+          ingestionFlowFile.getFileName(), iuf,
           lineNumber, "PROCESS_EXCEPTION", e.getMessage());
       errorList.add(error);
       log.info("Current error list size after handleProcessingError: {}", errorList.size());

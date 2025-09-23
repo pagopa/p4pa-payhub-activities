@@ -23,8 +23,6 @@ public class Utilities {
 
     public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
-    private static final String IBAN_REGEX = "(IT\\d{2}\\w\\d{3}\\w\\d{4}\\w\\d{12})";
-    private static final Pattern IBAN_PATTERN = Pattern.compile(IBAN_REGEX);
     public static final int IBAN_LENGTH = 27;
     public static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
     private static final DatatypeFactory DATATYPE_FACTORY_XML_GREGORIAN_CALENDAR;
@@ -40,25 +38,6 @@ public class Utilities {
     public static boolean isValidEmail(final String email) {
         Matcher matcher = EMAIL_PATTERN.matcher(email);
         return matcher.matches();
-    }
-
-    /**
-     * Extracts the Italian IBAN from a given string using a regular expression.
-     *
-     * @param input The string containing the IBAN.
-     * @return The extracted IBAN string, or null if no valid IBAN is found.
-     */
-    public static String extractIban(String input) {
-        if (input == null || input.isEmpty()) {
-            return null;
-        }
-
-        Matcher matcher = IBAN_PATTERN.matcher(input);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-
-        return null;
     }
 
     public static boolean isValidIban(String iban) {

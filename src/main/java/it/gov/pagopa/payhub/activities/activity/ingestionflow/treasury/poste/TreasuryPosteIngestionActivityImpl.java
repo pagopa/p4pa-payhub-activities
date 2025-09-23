@@ -10,7 +10,6 @@ import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.poste.TreasuryPosteProcessingService;
-import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import java.nio.charset.StandardCharsets;
@@ -65,7 +64,7 @@ public class TreasuryPosteIngestionActivityImpl
 
     try {
       String firstLine = Files.asCharSource(filePath.toFile(), StandardCharsets.UTF_8).readFirstLine();
-      String iban = Utilities.extractIban(firstLine);
+      String iban = firstLine != null ? firstLine.split(";")[1] : null;
 
       return csvService.readCsvPositionalColumn(filePath,
           TreasuryPosteIngestionFlowFileDTO.class,
