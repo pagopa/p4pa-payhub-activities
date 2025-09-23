@@ -1,5 +1,12 @@
 package it.gov.pagopa.payhub.activities.service.files.xls;
 
+import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Getter
 public enum TreasuryXlsHeadersEnum {
 	ABI("ABI"),
 	CAB("CAB"),
@@ -22,7 +29,9 @@ public enum TreasuryXlsHeadersEnum {
 		this.value = value;
 	}
 
-	public String getValue() {
-		return value;
+	public static List<String> getHeaders() {
+		return Arrays.stream(TreasuryXlsHeadersEnum.values())
+				.map(TreasuryXlsHeadersEnum::getValue)
+				.collect(Collectors.toList());
 	}
 }

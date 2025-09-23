@@ -1,28 +1,30 @@
 package it.gov.pagopa.payhub.activities.service.files.xls;
 
+import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryXlsInvalidFileException;
 import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.record.Record;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class XlsIterator<D> implements Closeable, Iterator<D> {
 
-	private static final Logger log = LoggerFactory.getLogger(XlsIterator.class);
+	private final Path filePath;
 	private final POIFSFileSystem poifsFileSystem;
 	private final DocumentInputStream documentInputStream;
 	private final RecordFactoryInputStream recordFactoryInputStream;
 
 	private XlsRowMapper<D> mapper;
 	private final Function<List<String>,XlsRowMapper<D>> mapperBuildFunction;
-	private int headerCount = -1;
+
+	private final List<String> requiredHeaderList;
+	private int headersCount = -1;
 
 	private SSTRecord excelStringList;
 
@@ -32,8 +34,10 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	private boolean pendingRowReady = false;
 	private List<String> pendingRow;
 
-	public XlsIterator(Path file, Function<List<String>,XlsRowMapper<D>> mapperBuildFunction) throws IOException {
-		this.poifsFileSystem = new POIFSFileSystem(file.toFile(), true);
+	public XlsIterator(Path filePath, List<String> requiredHeaderList, Function<List<String>, XlsRowMapper<D>> mapperBuildFunction) throws IOException {
+		this.filePath = filePath;
+		this.requiredHeaderList = requiredHeaderList;
+		this.poifsFileSystem = new POIFSFileSystem(filePath.toFile(), true);
 		this.documentInputStream = poifsFileSystem.createDocumentInputStream("Workbook");
 		this.recordFactoryInputStream = new RecordFactoryInputStream(documentInputStream, false);
 		this.mapperBuildFunction = mapperBuildFunction;
@@ -41,11 +45,7 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 
 	@Override
 	public void close() throws IOException {
-		try {
-			documentInputStream.close();
-		} catch (Exception e) {
-			log.warn("Error in closing documentInputStream", e);
-		}
+		documentInputStream.close();
 		poifsFileSystem.close();
 	}
 
@@ -65,18 +65,22 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 		}
 
 		Optional<List<String>> nextRow = readNextRow();
-		if (nextRow.isPresent())
-			return mapper.map(nextRow.get());
-		else
-			return mapper.map(handleLastLine()); //For last row readNextRow will return Optional.empty()
+		return nextRow
+				.map(strings -> mapper.map(strings))
+				.orElse(null);
 	}
 
 	private void buildMapper() {
 		List<String> headers = this.readNextRow()
 				.orElseThrow(
-						() -> new IllegalStateException("Headers not found, cannot create mapper for Treasury .xsl file")
+						() -> new TreasuryXlsInvalidFileException("Headers not found in empty file \"%s\", cannot create mapper".formatted(filePath.getFileName()), null)
 				);
-		headerCount = headers.size();
+		if(!headers.containsAll(requiredHeaderList)) {
+			String missingHeaders = requiredHeaderList.stream()
+					.filter(h -> !headers.contains(h))
+					.collect(Collectors.joining(", "));
+			throw new TreasuryXlsInvalidFileException("Missing headers in file \"%s\", cannot create mapper: %s".formatted(filePath.getFileName(), missingHeaders), null);
+		}
 		mapper = this.mapperBuildFunction.apply(headers);
 	}
 
@@ -85,24 +89,15 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 		while((eventRecord = recordFactoryInputStream.nextRecord()) != null) {
 			processEventRecord(eventRecord);
 			if(pendingRowReady) {
-				return Optional.of(flushPending());
+				return Optional.of(flushPendingRow());
 			}
 		}
 		//For last row while loop will terminate before a pending row is ready
-		return Optional.empty();
-	}
-
-	private List<String> handleLastLine() {
 		if(!rowBuffer.isEmpty()) {
-			List<String> out = buildRow(rowBuffer);
-			rowBuffer.clear();
-			pendingRow = null;
-			pendingRowReady = false;
-			currentRow = -1;
-			return out;
-		} else {
-			return Collections.emptyList();
+			preparePendingRow();
+			return Optional.of(flushPendingRow());
 		}
+		return Optional.empty();
 	}
 
 	private void processEventRecord(Record eventRecord) {
@@ -138,16 +133,20 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	private void addCell(int row, int column, String value) {
 		if (row != currentRow) {
 			if( currentRow != -1 && !rowBuffer.isEmpty()) {
-				pendingRow = buildRow(rowBuffer);
-				pendingRowReady = true;
-				rowBuffer.clear();
+				preparePendingRow();
 			}
 			currentRow = row;
 		}
 		rowBuffer.put(column, value == null ? "" : value);
 	}
 
-	private List<String> flushPending() {
+	private void preparePendingRow() {
+		pendingRow = buildRow(rowBuffer);
+		pendingRowReady = true;
+		rowBuffer.clear();
+	}
+
+	private List<String> flushPendingRow() {
 		List<String> out = pendingRow;
 		pendingRowReady = false;
 		pendingRow = null;
@@ -161,10 +160,10 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	}
 
 	private int computeHeaderCount() {
-		if(headerCount==-1) {
-			headerCount = rowBuffer.size();
+		if(headersCount==-1) {
+			headersCount = rowBuffer.size();
 		}
-		return headerCount;
+		return headersCount;
 	}
 
 }

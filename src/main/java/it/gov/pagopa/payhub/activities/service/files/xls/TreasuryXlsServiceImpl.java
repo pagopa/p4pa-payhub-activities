@@ -6,8 +6,6 @@ import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryXlsInvalidFile
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @Lazy
 @Service
 public class TreasuryXlsServiceImpl extends XlsService<TreasuryXlsIngestionFlowFileDTO, TreasuryIufIngestionFlowFileResult> {
@@ -15,10 +13,15 @@ public class TreasuryXlsServiceImpl extends XlsService<TreasuryXlsIngestionFlowF
 	public TreasuryXlsServiceImpl() {
 		super(filePath -> {
 			try {
-				return new XlsIterator<>(filePath, TreasuryXlsRowMapper::new);
+				return new XlsIterator<>(
+						filePath,
+						TreasuryXlsHeadersEnum.getHeaders(),
+						TreasuryXlsRowMapper::new
+				);
 			} catch (Exception e) {
 				throw new TreasuryXlsInvalidFileException("Cannot parse treasury Xls file \"%s\"".formatted(filePath.getFileName()), e);
 			}
 		});
 	}
+
 }

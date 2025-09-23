@@ -30,7 +30,7 @@ class TreasuryXlsServiceTest {
 		AtomicInteger errorCount = new AtomicInteger(0);
 		//WHEN
 		TreasuryIufIngestionFlowFileResult result = sut.readXls(
-				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_ALL_RECORDS_OK_0001.xls"),
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_1_XLS_ALL_RECORDS_OK.xls"),
 				iter -> {
 					TreasuryIufIngestionFlowFileResult res = new TreasuryIufIngestionFlowFileResult();
 					while(iter.hasNext()) {
@@ -65,7 +65,7 @@ class TreasuryXlsServiceTest {
 		List<Exception> errors = new ArrayList<>();
 		//WHEN
 		TreasuryIufIngestionFlowFileResult result = sut.readXls(
-				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_WITH_ERRORS_0002.xls"),
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_2_XLS_WITH_ERRORS.xls"),
 				iter -> {
 					TreasuryIufIngestionFlowFileResult res = new TreasuryIufIngestionFlowFileResult();
 					while(iter.hasNext()) {
@@ -107,7 +107,7 @@ class TreasuryXlsServiceTest {
 		AtomicInteger errorCount = new AtomicInteger(0);
 		//WHEN
 		TreasuryIufIngestionFlowFileResult result = sut.readXls(
-				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_WITH_SWAPPED_HEADERS_0003.xls"),
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_3_XLS_WITH_SWAPPED_HEADERS.xls"),
 				iter -> {
 					TreasuryIufIngestionFlowFileResult res = new TreasuryIufIngestionFlowFileResult();
 					while(iter.hasNext()) {
@@ -136,11 +136,16 @@ class TreasuryXlsServiceTest {
 
 	@Test
 	void givenInvalidFileWhenReadXlsThenThrowTreasuryXlsInvalidFileException() {
+		//GIVEN
+		Path path = Path.of("src/test/resources/treasury/xls/invalid_file.xls");
 		//WHEN
-		TreasuryXlsInvalidFileException ex = Assertions.assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.readXls(
-				Path.of("src/test/resources/treasury/xls/invalid_file.xls"),
-				iter -> null
-		));
+		TreasuryXlsInvalidFileException ex = Assertions.assertThrows(
+				TreasuryXlsInvalidFileException.class,
+				() -> sut.readXls(
+						path,
+						iter -> new TreasuryIufIngestionFlowFileResult()
+				)
+		);
 		//THEN
 		Assertions.assertEquals("Cannot parse treasury Xls file \"invalid_file.xls\"", ex.getMessage());
 	}

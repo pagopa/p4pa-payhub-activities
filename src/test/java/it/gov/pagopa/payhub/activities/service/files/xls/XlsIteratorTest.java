@@ -1,14 +1,14 @@
 package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryXlsInvalidFileException;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +31,8 @@ class XlsIteratorTest {
 	@BeforeAll
 	static void startup() throws IOException {
 		sut = new XlsIterator<>(
-				Path.of("src/test/resources/treasury/xls/IPA_TEST_XLS_ALL_RECORDS_OK_0001.xls"),
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_1_XLS_ALL_RECORDS_OK.xls"),
+				TreasuryXlsHeadersEnum.getHeaders(),
 				l -> mapperMock
 		);
 	}
@@ -159,6 +160,54 @@ class XlsIteratorTest {
 	void givenStreamIsAlreadyClosedWhenCloseThenNothingIsThrown() {
 		//WHEN, THEN
 		Assertions.assertDoesNotThrow(() -> sut.close());
+	}
+
+	@Test
+	@Order(11)
+	void givenFileWithNoHeadersWhenNextThenThrowTreasuryXlsInvalidFileException() throws IOException {
+		//GIVEN
+		sut = new XlsIterator<>(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_4_XLS_WITH_NO_HEADERS.xls"),
+				TreasuryXlsHeadersEnum.getHeaders(),
+				l -> mapperMock
+		);
+		// WHEN, THEN
+		TreasuryXlsInvalidFileException ex = assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.next());
+		String expectedMissingHeaders = String.join(", ", TreasuryXlsHeadersEnum.getHeaders());
+		Assertions.assertEquals("Missing headers in file \"IPA_TEST_4_XLS_WITH_NO_HEADERS.xls\", cannot create mapper: %s".formatted(expectedMissingHeaders), ex.getMessage());
+		sut.close();
+	}
+
+	@Test
+	@Order(12)
+	void givenEmptyFileWhenNextThenThrowTreasuryXlsInvalidFileException() throws IOException {
+		//GIVEN
+		sut = new XlsIterator<>(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_5_XLS_EMPTY.xls"),
+				TreasuryXlsHeadersEnum.getHeaders(),
+				l -> mapperMock
+		);
+		// WHEN, THEN
+		TreasuryXlsInvalidFileException ex = assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.next());
+
+		Assertions.assertEquals("Headers not found in empty file \"IPA_TEST_5_XLS_EMPTY.xls\", cannot create mapper", ex.getMessage());
+		sut.close();
+	}
+
+	@Test
+	@Order(13)
+	void givenFileWithNoDataWhenNextThenThrowTreasuryXlsInvalidFileException() throws IOException {
+		//GIVEN
+		sut = new XlsIterator<>(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_6_XLS_WITH_ONLY_HEADERS.xls"),
+				TreasuryXlsHeadersEnum.getHeaders(),
+				l -> mapperMock
+		);
+		Mockito.when(mapperMock.map(Mockito.eq(new ArrayList<>()))).thenReturn(null);
+		// WHEN, THEN
+		TreasuryXlsIngestionFlowFileDTO next = sut.next();
+		Assertions.assertNull(next);
+		sut.close();
 	}
 
 }
