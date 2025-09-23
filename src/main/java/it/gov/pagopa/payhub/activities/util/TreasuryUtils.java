@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +23,7 @@ public class TreasuryUtils {
           "LGPE - RIVERSAMENTO",
           "L GPE-RIVERSAMENTO"
   );
-  static final Pattern DESCRIZIONE_ORDINANTE_PATTERN = Pattern.compile("\\s*D\\s*e\\s*s\\s*c\\s*r\\s*i\\s*z\\s*i\\s*o\\s*n\\s*e\\s*O\\s*r\\s*d\\s*i\\s*n\\s*a\\s*n\\s*t\\s*e\\s*:(.*?):");
+  static final Pattern DESCRIZIONE_ORDINANTE_PATTERN = Pattern.compile("Descrizione\\s*Ordinante\\s*:([^:]+):");
 
   public static String getIdentificativo(String value, final String type) {
     if (StringUtils.isBlank(value)) {
@@ -65,11 +67,16 @@ public class TreasuryUtils {
   }
 
   private static String getDescrizioneOrdinante(final String value) {
-    Matcher matcher = DESCRIZIONE_ORDINANTE_PATTERN.matcher(value);
-    if (matcher.find()) {
-      return matcher.group(1).trim();
+    if (StringUtils.isBlank(value)) {
+      return null;
     }
-    return null;
+
+    String pspLastName = null;
+    Matcher matcher = DESCRIZIONE_ORDINANTE_PATTERN.matcher(value);
+    if (matcher.find() && !matcher.group(1).isBlank()) {
+      pspLastName = matcher.group(1).trim();
+    }
+    return pspLastName;
   }
 
   private static String elaboraIUF(String value, int indexIUF, boolean acc, String patternString) {
@@ -107,5 +114,11 @@ public class TreasuryUtils {
       }
     }
     return null;
+  }
+
+  public static String getBillCode(LocalDate billDate, String iuf) {
+    // TODO: P4ADEV-3861
+    String dayAndMonth = billDate.format(DateTimeFormatter.ofPattern("ddMM"));
+    return dayAndMonth + iuf.substring(iuf.length() - 6);
   }
 }

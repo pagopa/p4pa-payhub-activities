@@ -21,6 +21,20 @@ class TreasuryUtilsTest {
     }
 
     @Test
+    void testGetIdentificativo_withValidXlsIUF() {
+        // Given
+        String input = "Data Ordine: 01/01/2020; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM";
+        String type = TreasuryUtils.IUF;
+
+        // When
+        String result = TreasuryUtils.getIdentificativo(input, type);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("2024-07-26PPAYITR1XXX-S2024072601", result);
+    }
+
+    @Test
     void testGetIdentificativo_withInvalidIUF() {
         // Given
         String input = "INVALID STRING";
@@ -80,5 +94,54 @@ class TreasuryUtilsTest {
 
         // Then
         assertFalse(result);
+    }
+
+    @Test
+    void testGetPspLastName_withValidXlsTreasury() {
+        // Given
+        String input = "Data Ordine: 01/01/2020; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM";
+
+        // When
+        String result = TreasuryUtils.getPspLastName(input);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("XYZ PRIVATE BANKING SPA                          PIAZZA SAN", result);
+    }
+
+    @Test
+    void testGetPspLastName_withInvalidXlsTreasury_emptyPspLastName_returnNull() {
+        // Given
+        String input = "Data Ordine: 01/01/2020; Descrizione Ordinante::BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM";
+
+        // When
+        String result = TreasuryUtils.getPspLastName(input);
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void testGetPspLastName_withInvalidXlsTreasury_blankPspLastName_returnNull() {
+        // Given
+        String input = "Data Ordine: 01/01/2020; Descrizione Ordinante:   :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM";
+
+        // When
+        String result = TreasuryUtils.getPspLastName(input);
+
+        // Then
+        assertNull(result);
+    }
+
+    @Test
+    void testGetPspLastName_withInvalidXlsTreasury_emptyExtendedRemittanceDescription_returnNull() {
+        // Given
+        String input = "";
+
+        // When
+        String result = TreasuryUtils.getPspLastName(input);
+
+        // Then
+        assertNull(result);
     }
 }

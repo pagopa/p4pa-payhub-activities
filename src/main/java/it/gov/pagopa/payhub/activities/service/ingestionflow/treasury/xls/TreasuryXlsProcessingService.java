@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,12 +44,13 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
 	protected boolean consumeRow(long lineNumber, TreasuryXlsIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryXlsErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
 		String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
 		String rowIuf = TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
+		LocalDate billDate = row.getBillDate();
 
 		try {
 			TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
 
 			if(existingTreasury != null) {
-				boolean treasuryNotMatch = !existingTreasury.getBillCode().equals("XLS_" + rowIuf) || !existingTreasury.getBillYear().equals(String.valueOf(row.getBillDate().getYear()));
+				boolean treasuryNotMatch = !existingTreasury.getBillCode().equals(TreasuryUtils.getBillCode(billDate, rowIuf)) || !existingTreasury.getBillYear().equals(String.valueOf(billDate.getYear()));
 				if (treasuryNotMatch) {
 					String errorMessage = String.format(
 							"IUF %s already associated to another treasury for organization with IPA code %s",

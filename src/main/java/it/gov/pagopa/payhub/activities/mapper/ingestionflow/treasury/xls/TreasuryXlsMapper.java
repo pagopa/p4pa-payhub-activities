@@ -33,7 +33,7 @@ public class TreasuryXlsMapper {
                 .remittanceDescription(dto.getRemittanceDescription())
                 .iuf(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF))
                 .pspLastName(TreasuryUtils.getPspLastName(dto.getExtendedRemittanceDescription()))
-                .billCode("XLS_" + TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)) //TODO capire come andarlo a creare
+                .billCode(TreasuryUtils.getBillCode(dto.getBillDate(), TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)))
                 .orgIstatCode(ORG_ISTAT_CODE_DEFAULT)
                 .orgBtCode(ORG_BT_CODE_DEFAULT)
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
