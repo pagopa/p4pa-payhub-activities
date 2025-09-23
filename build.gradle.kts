@@ -3,14 +3,14 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.5.5"
+	id("org.springframework.boot") version "3.5.6"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.sonarqube") version "6.2.0.5505"
+	id("org.sonarqube") version "6.3.1.5724"
 	`java-library`
 	`maven-publish`
 	jacoco
-	id("com.intershop.gradle.jaxb") version "7.0.1"
-	id("org.openapi.generator") version "7.13.0"
+	id("com.intershop.gradle.jaxb") version "7.0.2"
+	id("org.openapi.generator") version "7.15.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -59,19 +59,18 @@ tasks.jacocoTestReport {
 apply(plugin = "maven-publish")
 
 val janinoVersion = "3.1.12"
-val hibernateValidatorVersion = "8.0.2.Final"
-val commonsCompressVersion = "1.27.1"
-val commonsLang3Version = "3.17.0"
-val commonsTextVersion = "1.13.1"
-val activationVersion = "2.1.3"
+val commonsCompressVersion = "1.28.0"
+val commonsLang3Version = "3.18.0"
+val commonsTextVersion = "1.14.0"
+val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "4.0.2"
-val jsoupVersion = "1.20.1"
+val jsoupVersion = "1.21.2"
 val openApiToolsVersion = "0.2.6"
-val temporalVersion = "1.29.0"
-val protobufJavaVersion = "4.31.1"
-val guavaVersion = "33.4.8-jre"
-val openCsvVersion = "5.11"
+val temporalVersion = "1.31.0"
+val protobufJavaVersion = "4.32.1"
+val guavaVersion = "33.5.0-jre"
+val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
 val httpClientVersion = "5.5"
@@ -82,10 +81,10 @@ val apachePoiOoxmlSchemaVersion = "4.1.2"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.codehaus.janino:janino:$janinoVersion")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-	implementation("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
 	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
 	implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
 	implementation("org.apache.commons:commons-text:$commonsTextVersion")
