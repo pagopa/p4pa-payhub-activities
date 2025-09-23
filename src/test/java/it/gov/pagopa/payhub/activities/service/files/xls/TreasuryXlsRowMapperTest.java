@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,5 +119,15 @@ class TreasuryXlsRowMapperTest {
 		//WHEN, THEN
 		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values));
 		Assertions.assertEquals("Error in parsing Long from value \"Long\" for Xls cell \"%s\"".formatted(TreasuryXlsHeadersEnum.IMPORTO.getValue()), ex.getMessage());
+	}
+
+	@Test
+	void givenNullTreasuryXlsWhenMappingThenNull() {
+		//GIVEN
+		List<String> values = Collections.emptyList();
+		//WHEN
+		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(values);
+		//THEN
+		Assertions.assertNull(actualResult);
 	}
 }

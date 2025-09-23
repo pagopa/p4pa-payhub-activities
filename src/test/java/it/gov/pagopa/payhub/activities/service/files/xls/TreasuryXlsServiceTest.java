@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,5 +143,24 @@ class TreasuryXlsServiceTest {
 		));
 		//THEN
 		Assertions.assertEquals("Cannot parse treasury Xls file \"invalid_file.xls\"", ex.getMessage());
+	}
+
+	@Test
+	void givenEmptyFileWhenReadXlsThenThrowTreasuryXlsInvalidFileException() throws IOException {
+		//GIVEN
+		Path workingDirectory = Path.of("build", "test");
+		Files.createDirectories(workingDirectory);
+		Path emptyFile = Files.createTempFile(workingDirectory, "empty", ".xls");
+		try {
+			//WHEN
+			TreasuryXlsInvalidFileException ex = Assertions.assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.readXls(
+					emptyFile,
+					iter -> null
+			));
+			//THEN
+			Assertions.assertEquals("Cannot parse treasury Xls file \"%s\"".formatted(emptyFile.getFileName()), ex.getMessage());
+		} finally {
+			Files.delete(emptyFile);
+		}
 	}
 }

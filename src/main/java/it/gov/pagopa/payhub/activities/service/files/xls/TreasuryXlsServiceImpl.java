@@ -16,7 +16,7 @@ public class TreasuryXlsServiceImpl extends XlsService<TreasuryXlsIngestionFlowF
 		super(filePath -> {
 			try {
 				return new XlsIterator<>(filePath, TreasuryXlsRowMapper::new);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new TreasuryXlsInvalidFileException("Cannot parse treasury Xls file \"%s\"".formatted(filePath.getFileName()), e);
 			}
 		});
