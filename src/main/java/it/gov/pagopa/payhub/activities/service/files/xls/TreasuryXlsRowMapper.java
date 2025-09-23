@@ -23,7 +23,7 @@ public class TreasuryXlsRowMapper extends XlsRowMapper<TreasuryXlsIngestionFlowF
 				.accountCode(mapOrElse(cells, this.getHeaderIndex(TreasuryXlsHeadersEnum.CONTO.getValue()), String::trim, null))
 				.currency(mapOrElse(cells, this.getHeaderIndex(TreasuryXlsHeadersEnum.DIVISA.getValue()), String::trim, null))
 				.billDate(map(cells, TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue(), this.getHeaderIndex(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), this::parseLocalDate))
-				.regionValueDate(mapOrElse(cells, this.getHeaderIndex(TreasuryXlsHeadersEnum.DATA_VALUTA.getValue()), this::parseLocalDate, null))
+				.regionValueDate(mapOrElse(cells, TreasuryXlsHeadersEnum.DATA_VALUTA.getValue(), this.getHeaderIndex(TreasuryXlsHeadersEnum.DATA_VALUTA.getValue()), this::parseLocalDate, null))
 				.billAmountCents(map(cells, TreasuryXlsHeadersEnum.IMPORTO.getValue(), this.getHeaderIndex(TreasuryXlsHeadersEnum.IMPORTO.getValue()), this::parseLong))
 				.sign(mapOrElse(cells, this.getHeaderIndex(TreasuryXlsHeadersEnum.SEGNO.getValue()), String::trim, null))
 				.remittanceCode(mapOrElse(cells, this.getHeaderIndex(TreasuryXlsHeadersEnum.CAUSALE.getValue()), String::trim, null))
@@ -35,11 +35,25 @@ public class TreasuryXlsRowMapper extends XlsRowMapper<TreasuryXlsIngestionFlowF
 				.build();
 	}
 
-	private LocalDate parseLocalDate(String s) {
-		return DateUtil.getLocalDateTime(Double.parseDouble(s.trim())).toLocalDate();
+	private LocalDate parseLocalDate(String key, String value) {
+		try {
+			return DateUtil.getLocalDateTime(Double.parseDouble(value.trim())).toLocalDate();
+		} catch (Exception e) {
+			String errorMessage = key!=null && !key.isBlank() ?
+					"Error in parsing LocalDate from value \"%s\" for Xls cell \"%s\"".formatted(value, key) :
+					"Error in parsing LocalDate from value \"%s\"".formatted(value);
+			throw new IllegalStateException(errorMessage, e);
+		}
 	}
 
-	private Long parseLong(String s) {
-		return (long) (Double.parseDouble(s.trim())*100);
+	private Long parseLong(String key, String value) {
+		try {
+			return (long) (Double.parseDouble(value.trim())*100);
+		} catch (Exception e) {
+			String errorMessage = key!=null && !key.isBlank() ?
+					"Error in parsing Long from value \"%s\" for Xls cell \"%s\"".formatted(value, key) :
+					"Error in parsing Long from value \"%s\"".formatted(value);
+			throw new IllegalStateException(errorMessage, e);
+		}
 	}
 }
