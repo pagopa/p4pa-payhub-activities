@@ -89,7 +89,7 @@ class TreasuryXlsProcessingServiceTest {
 		IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 		TreasuryXlsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto.setBillDate(LOCAL_DATE_2025);
-		dto.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011501");
+		dto.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072600 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 		dto.setBillAmountCents(1235L);
 		dto.setRegionValueDate(LOCAL_DATE_2025);
 
@@ -133,7 +133,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		TreasuryXlsIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto.setBillDate(LOCAL_DATE_2025);
-		dto.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011501");
+		dto.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072600 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 		dto.setBillAmountCents(1235L);
 		dto.setRegionValueDate(LOCAL_DATE_2025);
 
@@ -185,7 +185,7 @@ class TreasuryXlsProcessingServiceTest {
 		IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 		TreasuryXlsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto.setBillDate(LOCAL_DATE_2025);
-		dto.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011501");
+		dto.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072600 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 		dto.setBillAmountCents(1235L);
 		dto.setRegionValueDate(LOCAL_DATE_2025);
 
@@ -227,13 +227,13 @@ class TreasuryXlsProcessingServiceTest {
 		IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 		TreasuryXlsIngestionFlowFileDTO dto1 = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto1.setBillDate(LOCAL_DATE_2025);
-		dto1.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011501");
+		dto1.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072600 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 		TreasuryXlsIngestionFlowFileDTO dto2 = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto2.setBillDate(LOCAL_DATE_2025);
-		dto2.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011502");
+		dto2.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 		TreasuryXlsIngestionFlowFileDTO dto3 = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto3.setBillDate(LOCAL_DATE_2025);
-		dto3.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011503");
+		dto3.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072602 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 
 		Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
 
@@ -292,7 +292,7 @@ class TreasuryXlsProcessingServiceTest {
 		IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
 		TreasuryXlsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto.setBillDate(LOCAL_DATE_2025);
-		dto.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011501");
+		dto.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072600 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 		dto.setBillAmountCents(1235L);
 		dto.setRegionValueDate(LOCAL_DATE_2025);
 
@@ -336,21 +336,22 @@ class TreasuryXlsProcessingServiceTest {
 		Optional<Organization> organizationOptional = Optional.of(organization);
 
 		IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+
 		TreasuryXlsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
 		dto.setBillDate(LOCAL_DATE_2025);
-		dto.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011501");
+		dto.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072600 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
 		dto.setBillAmountCents(1235L);
 		dto.setRegionValueDate(LOCAL_DATE_2025);
 
 		Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
 
-		String iuf = TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
+		String iuf1 = TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
 
-		TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
-		existingTreasuryIuf.setIuf(iuf);
-		existingTreasuryIuf.setBillCode("BILL999");
-		existingTreasuryIuf.setBillYear("2020");
-		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+		TreasuryIuf existingTreasuryIuf1 = new TreasuryIuf();
+		existingTreasuryIuf1.setIuf(iuf1);
+		existingTreasuryIuf1.setBillCode("XLS_" + iuf1);
+		existingTreasuryIuf1.setBillYear("2020");
+		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf1)).thenReturn(existingTreasuryIuf1);
 
 		TreasuryIufIngestionFlowFileResult result = service.processTreasuryXls(
 				Stream.of(dto).iterator(),
@@ -367,16 +368,18 @@ class TreasuryXlsProcessingServiceTest {
 		Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
 
 		TreasuryXlsIngestionFlowFileDTO dto2 = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
-		dto.setBillDate(LOCAL_DATE_2026);
-		dto.setExtendedRemittanceDescription("/PUR/LGPE-RIVERSAMENTO/URI/2025-01-15QWERTY-S2025011501");
-		dto.setBillAmountCents(1235L);
-		dto.setRegionValueDate(LOCAL_DATE_2026);
+		dto2.setBillDate(LOCAL_DATE_2026);
+		dto2.setExtendedRemittanceDescription("Data Ordine: 21/07/2024; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM");
+		dto2.setBillAmountCents(1235L);
+		dto2.setRegionValueDate(LOCAL_DATE_2026);
+
+		String iuf2 = TreasuryUtils.getIdentificativo(dto2.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
 
 		TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
-		existingTreasuryIuf2.setIuf(iuf);
-		existingTreasuryIuf2.setBillCode("BILL123");
+		existingTreasuryIuf2.setIuf(iuf2);
+		existingTreasuryIuf2.setBillCode("XLS_" + iuf1); //TODO BILL-CODE CONSTRUCTION
 		existingTreasuryIuf2.setBillYear("2025");
-		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf2);
+		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf2)).thenReturn(existingTreasuryIuf2);
 
 		TreasuryIufIngestionFlowFileResult result2 = service.processTreasuryXls(
 				Stream.of(dto2).iterator(),
