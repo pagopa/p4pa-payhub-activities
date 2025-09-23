@@ -27,7 +27,7 @@ public class TreasuryPosteMapper {
         .billDate(billDate)
         .regionValueDate(regionValueDate)
         .remittanceCode(dto.getRemittanceCode())
-        .billAmountCents(dto.getDebitBillAmountCents() != null ? dto.getDebitBillAmountCents() : dto.getCreditBillAmountCents())
+        .billAmountCents(dto.getDebitBillAmountCents() != null ? -(dto.getDebitBillAmountCents()) : dto.getCreditBillAmountCents())
         .remittanceDescription(dto.getRemittanceDescription())
         .iuf(iuf)
         .pspLastName(POSTE_PSP_LAST_NAME)
