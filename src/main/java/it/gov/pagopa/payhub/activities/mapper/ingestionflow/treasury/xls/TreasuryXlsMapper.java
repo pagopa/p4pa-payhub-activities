@@ -43,7 +43,7 @@ public class TreasuryXlsMapper {
     }
 
     private static long multiplyAmountBySing(TreasuryXlsIngestionFlowFileDTO dto) {
-        return dto.getBillAmountCents() * ("-".equals(dto.getSign()) ? -1 : 1);
+        return "-".equals(dto.getSign()) ? -dto.getBillAmountCents() : dto.getBillAmountCents();
     }
 
     private String extractYear(LocalDate localDate) {

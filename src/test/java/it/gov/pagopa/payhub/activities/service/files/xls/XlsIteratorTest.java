@@ -27,6 +27,8 @@ class XlsIteratorTest {
 	private final List<String> row3 = List.of("02010","02019","000101059865","EUR","45496.0","45496.0","12.34","+","48BO","","0920299486000106","","Data Ordine: 23/07/2024; Descr","Data Ordine: 21/07/2024; Descrizione Ordinante: FIDEURAM INTESA SANPAOLO PRIVATE BANKING SPA                          PIAZZA SAN :BI2:FIBKITMMXXX :BE1:IPA TEST 2 :IB1:IT13R0200802017000101059865 :IB2:IT52Q0329620095000063193091 :TID:1001241280000102 :DTE:240507 :DTN:IPA TEST 2 :ERI:EUR 000000000019312 :IM2:000000000019312 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072602 :SEC:CASH :OR1:FIDEURAM INTESA SANPAO LO PRIVATE BA NKING SPA PIAZZA SAN CARLO 156 10121 TORINO T :TR1:INTESASANPAOLO CBILL PUBBLICA AMM");
 	private final List<String> row4 = List.of("02011","02020","000101059865","EUR","45496.0","45496.0","13.34","+","48BO","","0920299486000106","","Data Ordine: 23/07/2024; Descr","Data Ordine: 21/07/2024; Descrizione Ordinante: FIDEURAM INTESA SANPAOLO PRIVATE BANKING SPA                          PIAZZA SAN :BI2:FIBKITMMXXX :BE1:IPA TEST 2 :IB1:IT13R0200802017000101059865 :IB2:IT52Q0329620095000063193091 :TID:1001241280000102 :DTE:240507 :DTN:IPA TEST 2 :ERI:EUR 000000000019312 :IM2:000000000019312 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072603 :SEC:CASH :OR1:FIDEURAM INTESA SANPAO LO PRIVATE BA NKING SPA PIAZZA SAN CARLO 156 10121 TORINO T :TR1:INTESASANPAOLO CBILL PUBBLICA AMM");
 	private final List<String> row5 = List.of("02012","02021","000101059865","EUR","45496.0","45496.0","14.34","-","48BO","","0920299486000106","","Data Ordine: 23/07/2024; Descr","Data Ordine: 21/07/2024; Descrizione Ordinante: FIDEURAM INTESA SANPAOLO PRIVATE BANKING SPA                          PIAZZA SAN :BI2:FIBKITMMXXX :BE1:IPA TEST 2 :IB1:IT13R0200802017000101059865 :IB2:IT52Q0329620095000063193091 :TID:1001241280000102 :DTE:240507 :DTN:IPA TEST 2 :ERI:EUR 000000000019312 :IM2:000000000019312 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072604 :SEC:CASH :OR1:FIDEURAM INTESA SANPAO LO PRIVATE BA NKING SPA PIAZZA SAN CARLO 156 10121 TORINO T :TR1:INTESASANPAOLO CBILL PUBBLICA AMM");
+	private final List<String> row1_test14 = List.of("02008","02017","000101059865","EUR","45494.0","45494.0","12.34","+","48BO","","Data Ordine: 21/07/2024; Descrizione Ordinante: FIDEURAM INTESA SANPAOLO PRIVATE BANKING SPA                          PIAZZA SAN :BI2:FIBKITMMXXX :BE1:IPA TEST 2 :IB1:IT13R0200802017000101059865 :IB2:IT52Q0329620095000063193091 :TID:1001241280000102 :DTE:240507 :DTN:IPA TEST 2 :ERI:EUR 000000000019312 :IM2:000000000019312 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072600 :SEC:CASH :OR1:FIDEURAM INTESA SANPAO LO PRIVATE BA NKING SPA PIAZZA SAN CARLO 156 10121 TORINO T :TR1:INTESASANPAOLO CBILL PUBBLICA AMM","Data Ordine: 21/07/2024; Descr","0920299486000106","");
+	private final List<String> row3_test14 = List.of("02010","02019","000101059865","EUR","45496.0","45496.0","12.34","+","48BO","","Data Ordine: 21/07/2024; Descrizione Ordinante: FIDEURAM INTESA SANPAOLO PRIVATE BANKING SPA                          PIAZZA SAN :BI2:FIBKITMMXXX :BE1:IPA TEST 2 :IB1:IT13R0200802017000101059865 :IB2:IT52Q0329620095000063193091 :TID:1001241280000102 :DTE:240507 :DTN:IPA TEST 2 :ERI:EUR 000000000019312 :IM2:000000000019312 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072602 :SEC:CASH :OR1:FIDEURAM INTESA SANPAO LO PRIVATE BA NKING SPA PIAZZA SAN CARLO 156 10121 TORINO T :TR1:INTESASANPAOLO CBILL PUBBLICA AMM","","","");
 
 	@BeforeAll
 	static void startup() throws IOException {
@@ -203,10 +205,63 @@ class XlsIteratorTest {
 				TreasuryXlsHeadersEnum.getHeaders(),
 				l -> mapperMock
 		);
-		Mockito.when(mapperMock.map(Mockito.eq(new ArrayList<>()))).thenReturn(null);
+		Mockito.when(mapperMock.map(new ArrayList<>())).thenReturn(null);
 		// WHEN, THEN
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		Assertions.assertNull(next);
+		sut.close();
+	}
+
+	@Test
+	@Order(14)
+	void givenFileWithIncompleteRowWhenNextThenThrowTreasuryXlsInvalidFileException() throws IOException {
+		//GIVEN
+		Mockito.when(mapperMock.map(Mockito.anyList()))
+				.thenReturn(new TreasuryXlsIngestionFlowFileDTO());
+		sut = new XlsIterator<>(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_7_XLS_WITH_INCOMPLETE_ROW.xls"),
+				TreasuryXlsHeadersEnum.getHeaders(),
+				l -> mapperMock
+		);
+
+		// WHEN
+		TreasuryXlsIngestionFlowFileDTO next = sut.next();
+		//THEN
+		Assertions.assertNotNull(next);
+		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		List<String> list = argumentCaptor.getValue();
+		Assertions.assertEquals(row1_test14, list);
+
+		Mockito.clearInvocations(mapperMock);
+
+		// WHEN
+		next = sut.next();
+		//THEN
+		Assertions.assertNotNull(next);
+		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		list = argumentCaptor.getValue();
+		Assertions.assertEquals(row3_test14, list);
+
+		sut.close();
+	}
+
+	@Test
+	@Order(15)
+	void givenFileWithMissingColumnWhenNextThenThrowTreasuryXlsInvalidFileException() throws IOException {
+		//GIVEN
+		sut = new XlsIterator<>(
+				Path.of("src/test/resources/treasury/xls/IPA_TEST_8_XLS_WITH_MISSING_COLUMN.xls"),
+				TreasuryXlsHeadersEnum.getHeaders(),
+				l -> mapperMock
+		);
+		Mockito.when(mapperMock.map(new ArrayList<>())).thenReturn(null);
+		// WHEN, THEN
+		TreasuryXlsInvalidFileException ex = assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.next());
+		String expectedMissingHeaders = String.join(", ", List.of(
+				TreasuryXlsHeadersEnum.ABI.getValue(),
+				TreasuryXlsHeadersEnum.CAB.getValue()
+		));
+		Assertions.assertEquals("Missing headers in file \"IPA_TEST_8_XLS_WITH_MISSING_COLUMN.xls\", cannot create mapper: %s".formatted(expectedMissingHeaders), ex.getMessage());
 		sut.close();
 	}
 

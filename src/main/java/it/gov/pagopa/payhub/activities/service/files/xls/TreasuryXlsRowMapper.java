@@ -39,10 +39,7 @@ public class TreasuryXlsRowMapper extends XlsRowMapper<TreasuryXlsIngestionFlowF
 		try {
 			return DateUtil.getLocalDateTime(Double.parseDouble(value.trim())).toLocalDate();
 		} catch (Exception e) {
-			String errorMessage = key!=null && !key.isBlank() ?
-					"Error in parsing LocalDate from value \"%s\" for Xls cell \"%s\"".formatted(value, key) :
-					"Error in parsing LocalDate from value \"%s\"".formatted(value);
-			throw new IllegalStateException(errorMessage, e);
+			throw new IllegalStateException("Error in parsing LocalDate from value \"%s\" for Xls cell \"%s\"".formatted(value, key), e);
 		}
 	}
 
@@ -50,10 +47,7 @@ public class TreasuryXlsRowMapper extends XlsRowMapper<TreasuryXlsIngestionFlowF
 		try {
 			return (long) (Double.parseDouble(value.trim())*100);
 		} catch (Exception e) {
-			String errorMessage = key!=null && !key.isBlank() ?
-					"Error in parsing Long from value \"%s\" for Xls cell \"%s\"".formatted(value, key) :
-					"Error in parsing Long from value \"%s\"".formatted(value);
-			throw new IllegalStateException(errorMessage, e);
+			throw new IllegalStateException("Error in parsing Long from value \"%s\" for Xls cell \"%s\"".formatted(value, key), e);
 		}
 	}
 }

@@ -89,15 +89,15 @@ class TreasuryXlsServiceTest {
 		Assertions.assertEquals(5, errors.size());
 		Assertions.assertTrue(iuf2TreasuryIdMap.containsKey("2024-07-26PPAYITR1XXX-S2024072604"));
 		Assertions.assertEquals(IllegalStateException.class, errors.get(0).getClass());
-		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), errors.get(0).getMessage());
+		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), errors.get(0).getMessage());
 		Assertions.assertEquals(IllegalStateException.class, errors.get(1).getClass());
 		Assertions.assertEquals("Error in parsing Long from value \"amount\" for Xls cell \"%s\"".formatted(TreasuryXlsHeadersEnum.IMPORTO.getValue()), errors.get(1).getMessage());
 		Assertions.assertEquals(IllegalStateException.class, errors.get(2).getClass());
 		Assertions.assertEquals("Error in parsing LocalDate from value \"data\" for Xls cell \"%s\"".formatted(TreasuryXlsHeadersEnum.DATA_VALUTA.getValue()), errors.get(2).getMessage());
 		Assertions.assertEquals(IllegalStateException.class, errors.get(3).getClass());
-		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null".formatted(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), errors.get(3).getMessage());
+		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), errors.get(3).getMessage());
 		Assertions.assertEquals(IllegalStateException.class, errors.get(4).getClass());
-		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null".formatted(TreasuryXlsHeadersEnum.IMPORTO.getValue()), errors.get(4).getMessage());
+		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.IMPORTO.getValue()), errors.get(4).getMessage());
 	}
 
 	@Test

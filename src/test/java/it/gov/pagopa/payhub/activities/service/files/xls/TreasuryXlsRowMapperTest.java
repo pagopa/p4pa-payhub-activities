@@ -56,7 +56,38 @@ class TreasuryXlsRowMapperTest {
 	}
 
 	@Test
-	void givenOnlyRequiredTreasuryXlsCellsWhenMappingThenOK() {
+	void givenNullNotRequiredFieldsWhenMappingThenOK() {
+		//GIVEN
+		List<String> values = Arrays.asList(new String[headers.size()]);
+		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), "45427.0");
+		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
+		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
+		//WHEN
+		TreasuryXlsIngestionFlowFileDTO result = sut.map(values);
+		//THEN
+		Assertions.assertNull(result.getAbiCode());
+		Assertions.assertNull(result.getCabCode());
+		Assertions.assertNull(result.getAccountCode());
+		Assertions.assertNull(result.getCurrency());
+		Assertions.assertNull(result.getSign());
+		Assertions.assertNull(result.getRemittanceCode());
+		Assertions.assertNull(result.getCheckNumber());
+		Assertions.assertNull(result.getBankReference());
+		Assertions.assertNull(result.getClientReference());
+		Assertions.assertNull(result.getRemittanceDescription());
+		Assertions.assertEquals(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value", result.getExtendedRemittanceDescription());
+		Assertions.assertEquals(LOCAL_DATE_2024, result.getBillDate());
+		Assertions.assertNull(result.getRegionValueDate());
+		Assertions.assertEquals(1235L, result.getBillAmountCents());
+
+		TestUtils.checkNotNullFields(result, "abiCode", "cabCode", "accountCode", "currency", "sign",
+				"remittanceCode", "checkNumber", "bankReference", "clientReference", "remittanceDescription",
+				"regionValueDate"
+		);
+	}
+
+	@Test
+	void givenEmptyNotRequiredFieldsWhenMappingThenOK() {
 		//GIVEN
 		List<String> values = headers.stream().map(s -> "").collect(Collectors.toCollection(ArrayList::new));
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), "45427.0");
@@ -87,14 +118,26 @@ class TreasuryXlsRowMapperTest {
 	}
 
 	@Test
-	void givenNotAllRequiredTreasuryXlsCellsWhenMappingThenKO() {
+	void givenEmptyRequiredTreasuryXlsCellsWhenMappingThenKO() {
+		//GIVEN
+		List<String> values = headers.stream().map(s -> "").collect(Collectors.toCollection(ArrayList::new));
+		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
+		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), null);
+		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
+		//WHEN, THEN
+		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values));
+		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
+	}
+
+	@Test
+	void givenNullRequiredTreasuryXlsCellsWhenMappingThenKO() {
 		//GIVEN
 		List<String> values = headers.stream().map(s -> "").collect(Collectors.toCollection(ArrayList::new));
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
 		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values));
-		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
+		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
 	}
 
 	@Test
@@ -122,12 +165,19 @@ class TreasuryXlsRowMapperTest {
 	}
 
 	@Test
-	void givenNullTreasuryXlsWhenMappingThenNull() {
-		//GIVEN
-		List<String> values = Collections.emptyList();
+	void givenEmptyListTreasuryXlsWhenMappingThenNull() {
 		//WHEN
-		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(values);
+		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(Collections.emptyList());
 		//THEN
 		Assertions.assertNull(actualResult);
 	}
+
+	@Test
+	void givenNullListTreasuryXlsWhenMappingThenNull() {
+		//WHEN
+		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(null);
+		//THEN
+		Assertions.assertNull(actualResult);
+	}
+
 }

@@ -32,10 +32,7 @@ public abstract class XlsRowMapper<D> {
 	}
 
 	private <T> T mapOrElse(List<String> cells, Integer index, BiFunction<String, String, T> biFunction, String cellName, T defaultValue) {
-		String cellValue = null;
-		if (index!=null && index < cells.size()) {
-			cellValue = cells.get(index);
-		}
+		String cellValue = cells.get(index);
 		if(cellValue != null && !cellValue.isBlank()) {
 			return biFunction.apply(cellName, cellValue);
 		} else {
@@ -52,14 +49,11 @@ public abstract class XlsRowMapper<D> {
 	}
 
 	private <T> T map(List<String> cells, Integer index, BiFunction<String, String, T> biFunction, String cellName) {
-		String cellValue = null;
-		if (index!=null && index < cells.size()) {
-			cellValue = cells.get(index);
-		}
+		String cellValue =  cells.get(index);
 		if(cellValue != null && !cellValue.isBlank()) {
 			return biFunction.apply(cellName, cellValue);
 		} else {
-			throw new IllegalStateException("Xls Cell with name \"%s\" must not be null".formatted(cellName));
+			throw new IllegalStateException("Xls Cell with name \"%s\" must not be null or blank".formatted(cellName));
 		}
 	}
 
