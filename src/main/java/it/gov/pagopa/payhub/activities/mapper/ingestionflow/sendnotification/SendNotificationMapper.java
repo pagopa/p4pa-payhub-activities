@@ -62,8 +62,8 @@ public class SendNotificationMapper {
                     MultiValuedMap<String, String> f24Map = getF24PaymentByIndex(dto, i);
                     MultiValuedMap<String, String> metadataAttachmentMap = getMetadataAttachmentByIndex(dto, i);
 
-                    boolean hasPagoPa = pagoPaMap != null && !pagoPaMap.isEmpty();
-                    boolean hasF24 = f24Map != null && !f24Map.isEmpty();
+                    boolean hasPagoPa = isValidMap(pagoPaMap);
+                    boolean hasF24 = isValidMap(f24Map);
 
                     if (!hasPagoPa && !hasF24) {
                         return null;
@@ -198,4 +198,11 @@ public class SendNotificationMapper {
         };
     }
 
+    private boolean isValidMap(MultiValuedMap<String, String> map) {
+        if (map == null || map.isEmpty()) {
+            return false;
+        }
+        return map.entries().stream()
+                .allMatch(e -> e.getValue() != null && !e.getValue().isBlank());
+    }
 }
