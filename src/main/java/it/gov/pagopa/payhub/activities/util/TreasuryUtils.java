@@ -21,8 +21,7 @@ public class TreasuryUtils {
           "LGPE - RIVERSAMENTO",
           "L GPE-RIVERSAMENTO"
   );
-  static final String DESCRIZIONE_ORDINANTE = "\\s*D\\s*e\\s*s\\s*c\\s*r\\s*i\\s*z\\s*i\\s*o\\s*n\\s*e\\s*O\\s*r\\s*d\\s*i\\s*n\\s*a\\s*n\\s*t\\s*e\\s*:";
-  static final String SEPARATORE_DUE_PUNTI = "[:]";
+  static final Pattern DESCRIZIONE_ORDINANTE_PATTERN = Pattern.compile("\\s*D\\s*e\\s*s\\s*c\\s*r\\s*i\\s*z\\s*i\\s*o\\s*n\\s*e\\s*O\\s*r\\s*d\\s*i\\s*n\\s*a\\s*n\\s*t\\s*e\\s*:(.*?):");
 
   public static String getIdentificativo(String value, final String type) {
     if (StringUtils.isBlank(value)) {
@@ -66,11 +65,8 @@ public class TreasuryUtils {
   }
 
   private static String getDescrizioneOrdinante(final String value) {
-
-    String regexString = DESCRIZIONE_ORDINANTE + "(.*?)" + SEPARATORE_DUE_PUNTI;
-    Pattern pattern = Pattern.compile(regexString);
-    Matcher matcher = pattern.matcher(value);
-    while (matcher.find()) {
+    Matcher matcher = DESCRIZIONE_ORDINANTE_PATTERN.matcher(value);
+    if (matcher.find()) {
       return matcher.group(1).trim();
     }
     return null;
