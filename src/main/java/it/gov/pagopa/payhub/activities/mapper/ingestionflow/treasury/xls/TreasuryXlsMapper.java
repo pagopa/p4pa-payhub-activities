@@ -25,7 +25,7 @@ public class TreasuryXlsMapper {
                 .billDate(dto.getBillDate())
                 .billYear(extractYear(dto.getBillDate()))
                 .regionValueDate(dto.getRegionValueDate())
-                .billAmountCents(multiplyAmountBySing(dto))
+                .billAmountCents(getBillAmountCents(dto))
                 .remittanceCode(dto.getRemittanceCode())
                 .checkNumber(dto.getCheckNumber())
                 .bankReference(dto.getBankReference())
@@ -33,7 +33,7 @@ public class TreasuryXlsMapper {
                 .remittanceDescription(dto.getRemittanceDescription())
                 .iuf(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF))
                 .pspLastName(TreasuryUtils.getPspLastName(dto.getExtendedRemittanceDescription()))
-                .billCode(TreasuryUtils.getBillCode(dto.getBillDate(), TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)))
+                .billCode(TreasuryUtils.generateBillCode(dto.getBillDate(), TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)))
                 .orgIstatCode(ORG_ISTAT_CODE_DEFAULT)
                 .orgBtCode(ORG_BT_CODE_DEFAULT)
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
@@ -42,7 +42,7 @@ public class TreasuryXlsMapper {
                 .build();
     }
 
-    private static long multiplyAmountBySing(TreasuryXlsIngestionFlowFileDTO dto) {
+    private static long getBillAmountCents(TreasuryXlsIngestionFlowFileDTO dto) {
         return "-".equals(dto.getSign()) ? -dto.getBillAmountCents() : dto.getBillAmountCents();
     }
 

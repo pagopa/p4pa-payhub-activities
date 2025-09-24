@@ -246,7 +246,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
 		existingTreasuryIuf.setIuf(iuf);
-		existingTreasuryIuf.setBillCode(TreasuryUtils.getBillCode(dto.getBillDate(), iuf));
+		existingTreasuryIuf.setBillCode(TreasuryUtils.generateBillCode(dto.getBillDate(), iuf));
 		existingTreasuryIuf.setBillYear("2025");
 		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
 
@@ -291,7 +291,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		TreasuryIuf existingTreasuryIuf1 = new TreasuryIuf();
 		existingTreasuryIuf1.setIuf(iuf);
-		existingTreasuryIuf1.setBillCode(TreasuryUtils.getBillCode(LOCAL_DATE_2025.minusDays(1), iuf)); //different bill code
+		existingTreasuryIuf1.setBillCode(TreasuryUtils.generateBillCode(LOCAL_DATE_2025.minusDays(1), iuf)); //different bill code
 		existingTreasuryIuf1.setBillYear(String.valueOf(LOCAL_DATE_2025.getYear()));
 		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf1);
 
@@ -309,7 +309,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
 		existingTreasuryIuf2.setIuf(iuf);
-		existingTreasuryIuf2.setBillCode(TreasuryUtils.getBillCode(LOCAL_DATE_2025, iuf));
+		existingTreasuryIuf2.setBillCode(TreasuryUtils.generateBillCode(LOCAL_DATE_2025, iuf));
 		existingTreasuryIuf2.setBillYear(String.valueOf(LOCAL_DATE_2026.getYear()));  //different bill year
 		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf2);
 
@@ -351,7 +351,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
 		existingTreasuryIuf.setIuf(iuf);
-		existingTreasuryIuf.setBillCode(TreasuryUtils.getBillCode(LOCAL_DATE_2026, iuf));
+		existingTreasuryIuf.setBillCode(TreasuryUtils.generateBillCode(LOCAL_DATE_2026, iuf));
 		existingTreasuryIuf.setBillYear(String.valueOf(LOCAL_DATE_2026.getYear()));
 		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
 

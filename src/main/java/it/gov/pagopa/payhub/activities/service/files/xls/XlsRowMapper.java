@@ -23,6 +23,10 @@ public abstract class XlsRowMapper<D> {
 		return this.headerToIndex.get(header);
 	}
 
+	protected String mapString(List<String> cells, Integer index) {
+		return mapOrElse(cells, index, String::trim, null);
+	}
+
 	protected <T> T mapOrElse(List<String> cells, Integer index, Function<String, T> mapper, T defaultValue) {
 		return mapOrElse(cells, index, (ignored, cellValue) -> mapper.apply(cellValue), null, defaultValue);
 	}

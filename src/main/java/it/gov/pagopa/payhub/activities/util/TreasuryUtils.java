@@ -25,6 +25,8 @@ public class TreasuryUtils {
   );
   static final Pattern DESCRIZIONE_ORDINANTE_PATTERN = Pattern.compile("Descrizione\\s*Ordinante\\s*:([^:]+):");
 
+  public static final DateTimeFormatter BILL_CODE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("ddMM");
+
   public static String getIdentificativo(String value, final String type) {
     if (StringUtils.isBlank(value)) {
       return null;
@@ -116,9 +118,10 @@ public class TreasuryUtils {
     return null;
   }
 
-  public static String getBillCode(LocalDate billDate, String iuf) {
+  /** Utility function to generate a billCode if not present as input */
+  public static String generateBillCode(LocalDate billDate, String iuf) {
     // TODO: P4ADEV-3861
-    String dayAndMonth = billDate.format(DateTimeFormatter.ofPattern("ddMM"));
+    String dayAndMonth = billDate.format(BILL_CODE_DATE_TIME_FORMATTER);
     return dayAndMonth + iuf.substring(iuf.length() - 6);
   }
 }
