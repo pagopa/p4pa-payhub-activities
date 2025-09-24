@@ -1,10 +1,11 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import org.apache.commons.lang3.StringUtils;
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 public class TreasuryUtils {
   private TreasuryUtils() {}
@@ -94,5 +95,11 @@ public class TreasuryUtils {
       }
     }
     return null;
+  }
+
+  public static String getBillCode(LocalDate billDate, String iuf) {
+    // TODO: P4ADEV-3861
+    String dayAndMonth = billDate.format(DateTimeFormatter.ofPattern("ddMM"));
+    return dayAndMonth + iuf.substring(iuf.length() - 6);
   }
 }

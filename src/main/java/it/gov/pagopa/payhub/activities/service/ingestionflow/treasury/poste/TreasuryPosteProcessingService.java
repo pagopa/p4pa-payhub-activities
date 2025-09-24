@@ -61,9 +61,9 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
   protected boolean consumeRow(long lineNumber, TreasuryPosteIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryPosteErrorDTO> errorList,
       IngestionFlowFile ingestionFlowFile) {
     String iuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
-    String billCode = "P000000";  // TODO: discussion on https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1776484733/Import+Tesoreria?focusedCommentId=1981284368
 
     LocalDate billDate = LocalDate.parse(row.getBillDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+    String billCode = TreasuryUtils.getBillCode(billDate, iuf);
     String billYear = String.valueOf(billDate.getYear());
 
     TreasuryPosteIngestionFlowFileResult treasuryPosteIngestionFlowFileResult = (TreasuryPosteIngestionFlowFileResult) ingestionFlowFileResult;
