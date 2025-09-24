@@ -131,11 +131,11 @@ class TreasuryUtilsTest {
 
 
     @Test
-    void testGetBillCode() {
+    void testGenerateBillCode() {
         LocalDate billDate = LocalDate.of(2025, 9, 23);
         String iuf = "2025-09-23BPPIITRRXXX-000038102790";
 
-        String result = TreasuryUtils.getBillCode(billDate, iuf);
+        String result = TreasuryUtils.generateBillCode(billDate, iuf);
 
         assertEquals("2309102790", result);
     }
