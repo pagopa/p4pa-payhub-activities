@@ -2,10 +2,6 @@ package it.gov.pagopa.payhub.activities.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import org.apache.commons.lang3.StringUtils;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
