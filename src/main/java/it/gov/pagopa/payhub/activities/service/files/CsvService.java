@@ -1,27 +1,36 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
+import static com.opencsv.enums.CSVReaderNullFieldIndicator.EMPTY_SEPARATORS;
+
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;
-import com.opencsv.bean.*;
+import com.opencsv.bean.ColumnPositionMappingStrategy;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.opencsv.bean.MappingStrategy;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
-
-import static com.opencsv.enums.CSVReaderNullFieldIndicator.EMPTY_SEPARATORS;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 @Lazy
 @Service
@@ -156,31 +165,82 @@ public class CsvService {
      * @param csvFilePath  The path to the CSV file to read.
      * @param typeClass    The class type to map each row of the CSV to.
      * @param rowProcessor A function that processes the iterator and returns a result.
+     * @param csvProfile The profile to be used for the CSV mapping strategy.
+     * @param strategy The mapping strategy to be used.
+     * @param skipLines The number of lines to skip before processing the data.
      * @return The result produced by the row processor.
      * @throws IOException If an error occurs while reading the file.
      */
-    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String cvsProfile) throws IOException {
+    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile, MappingStrategy<T> strategy, int skipLines) throws IOException {
         try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
 
-            HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
-            strategy.setProfile(cvsProfile);
-            strategy.setType(typeClass);
-
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
-                    .withType(typeClass)
-                    .withProfile(cvsProfile)
-                    .withMappingStrategy(strategy)
-                    .withSeparator(separator)
-                    .withQuoteChar(quoteChar)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .withFieldAsNull(EMPTY_SEPARATORS)
-                    .withThrowExceptions(false)
-                    .build();
+                .withType(typeClass)
+                .withProfile(csvProfile)
+                .withMappingStrategy(strategy)
+                .withSeparator(separator)
+                .withQuoteChar(quoteChar)
+                .withIgnoreLeadingWhiteSpace(true)
+                .withFieldAsNull(EMPTY_SEPARATORS)
+                .withThrowExceptions(false)
+                .withSkipLines(skipLines)
+                .build();
 
             return rowProcessor.apply(csvToBean.iterator(), csvToBean.getCapturedExceptions());
 
         } catch (Exception e) {
             throw new IOException("Error while reading csv file: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Reads a CSV file with header-based binding and processes it using a provided row processor.
+     *
+     * <p>This method configures a {@link HeaderColumnNameMappingStrategy} to automatically bind CSV columns to a DTO based on matching header names. It then delegates the
+     * file reading and processing to the core {@code readCsv} method.</p>
+     *
+     * <p>This approach is ideal for CSV files that contain a header row where the column names are consistent with the DTO field names.</p>
+     *
+     * @param <T>          The generic type of the DTO to which CSV rows will be mapped.
+     * @param <R>          The type of the result returned by the processing function.
+     * @param csvFilePath  The path to the CSV file to read.
+     * @param typeClass    The class type to map each row of the CSV to.
+     * @param rowProcessor A function that processes the iterator and returns a result.
+     * @param csvProfile   The profile to be used for the CSV mapping strategy.
+     * @return The result produced by the row processor.
+     * @throws IOException If an error occurs while reading the file.
+     */
+    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile) throws IOException {
+        HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
+        strategy.setProfile(csvProfile);
+        strategy.setType(typeClass);
+
+        return readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, 0);
+    }
+
+    /**
+     * Reads a CSV file with positional binding and processes it using a provided row processor.
+     *
+     * <p>This method configures a {@link ColumnPositionMappingStrategy} to bind CSV columns to a DTO based on their position (index). It then delegates the
+     * file reading and processing to the core {@code readCsv} method.</p>
+     *
+     * <p>This approach is ideal for CSV files that do not contain a header row or where the column order is guaranteed.</p>
+     *
+     * @param <T>          The generic type of the DTO to which CSV rows will be mapped.
+     * @param <R>          The type of the result returned by the processing function.
+     * @param csvFilePath  The path to the CSV file to read.
+     * @param typeClass    The class type to map each row of the CSV to.
+     * @param rowProcessor A function that processes the iterator and returns a result.
+     * @param csvProfile   The profile to be used for the CSV mapping strategy.
+     * @param skipLines    The number of lines to skip before processing the data.
+     * @return The result produced by the row processor.
+     * @throws IOException If an error occurs while reading the file.
+     */
+    public <T, R> R readCsvPositionalColumn(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile, int skipLines) throws IOException {
+        ColumnPositionMappingStrategy<T> strategy = new ColumnPositionMappingStrategy<>();
+        strategy.setProfile(csvProfile);
+        strategy.setType(typeClass);
+
+        return readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, skipLines);
     }
 }

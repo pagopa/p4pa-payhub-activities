@@ -1,12 +1,11 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 public class TreasuryUtils {
   private TreasuryUtils() {}
