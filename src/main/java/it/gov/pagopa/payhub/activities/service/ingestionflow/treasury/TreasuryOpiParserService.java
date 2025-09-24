@@ -45,6 +45,7 @@ public class TreasuryOpiParserService {
         return Pair.of(
                 newTreasuries.getLeft(),
                 newTreasuries.getRight().stream()
+                        .filter(treasury -> treasury.getIuf() != null)
                         .collect(Collectors.toMap(
                                 Treasury::getIuf,
                                 treasury -> Objects.requireNonNull(treasuryService.insert(treasury).getTreasuryId())
