@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,6 +57,7 @@ class IufClassificationActivityTest {
 
     @Test
     void givenReportedTransferWhenClassifyIufThenOk() {
+        Treasury treasury = TreasuryFaker.buildTreasuryDTO();
         CollectionModelPaymentsReporting expectedCollectionModelPaymentsReporting = PaymentsReportingFaker.buildCollectionModelPaymentsReporting();
 
         List<PaymentsReporting> expectedPaymentsReportingS =expectedCollectionModelPaymentsReporting.getEmbedded().getPaymentsReportings();
@@ -78,6 +80,7 @@ class IufClassificationActivityTest {
                         .transfers2classify(expectedTransfer2ClassifyDTOS)
                         .build();
 
+        when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
         when(paymentsReportingServiceMock.getByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
                 .thenReturn(expectedCollectionModelPaymentsReporting);
 
@@ -114,6 +117,24 @@ class IufClassificationActivityTest {
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
         Mockito.verify(transferClassificationStoreService).saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_MATCH));
+    }
+
+    @Test
+    void givenNegativeBillAmountWhenClassifyIufThenSkipClassification() {
+        Treasury treasury = TreasuryFaker.buildTreasuryDTO();
+        treasury.setBillAmountCents(-1L);
+
+        IufClassificationActivityResult expectedResult = IufClassificationActivityResult.builder()
+                .organizationId(ORGANIZATIONID)
+                .transfers2classify(Collections.emptyList())
+                .build();
+
+        when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
+
+        IufClassificationActivityResult actualResult =
+                iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, IUF);
+
+        assertEquals(expectedResult, actualResult);
     }
 }
 

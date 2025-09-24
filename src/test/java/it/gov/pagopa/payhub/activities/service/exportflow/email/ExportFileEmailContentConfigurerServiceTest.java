@@ -8,8 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.*;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -64,16 +66,26 @@ class ExportFileEmailContentConfigurerServiceTest {
         organization.setOrgName("orgName");
 
         Mockito.when(emailTemplatesConfigurationMock.getExportMailTextKo()).thenReturn("EXPORT_KO");
+
         //when
-        Map<String, String> result = exportFileEmailContentConfigurerService.configureParams(exportFile, organization, false);
         //then
-        Assertions.assertNotNull(result);
-        Assertions.assertNull(result.get("exportUrl"));
-        Assertions.assertNull(result.get("fileName"));
-        Assertions.assertEquals("orgName",result.get("entityName"));
-        Assertions.assertEquals("EXPORT_KO", result.get("mailText"));
-        Assertions.assertEquals("classificazione", result.get("exportFileType"));
-        Assertions.assertEquals(MAILDATETIMEFORMATTER.format(LocalDateTime.now()), result.get("currentDate"));
+        LocalDateTime fixedDateTime = LocalDateTime.of(2023, 1, 1, 10, 15, 30);
+        try (MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class)) {
+            mockedLocalDateTime.when(LocalDateTime::now).thenReturn(fixedDateTime);
+
+            // when
+            Map<String, String> result = exportFileEmailContentConfigurerService
+                    .configureParams(exportFile, organization, false);
+
+            // then
+            Assertions.assertNotNull(result);
+            Assertions.assertNull(result.get("exportUrl"));
+            Assertions.assertNull(result.get("fileName"));
+            Assertions.assertEquals("orgName", result.get("entityName"));
+            Assertions.assertEquals("EXPORT_KO", result.get("mailText"));
+            Assertions.assertEquals("classificazione", result.get("exportFileType"));
+            Assertions.assertEquals(MAILDATETIMEFORMATTER.format(fixedDateTime), result.get("currentDate"));
+        }
     }
 
     @ParameterizedTest

@@ -120,4 +120,22 @@ class SendNotificationMapperTest {
         Assertions.assertNull(result);
     }
 
+    @Test
+    void givenPagoPaWithNullF24WithNullThenPaymentsListEmpty() {
+        SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
+        dto.setPayment((new ArrayListValuedHashMap<>() {{
+            put("paymentNoticeCode_1", null);
+            put("paymentCreditorTaxId_1", null);
+            put("paymentApplyCost_1", null);
+        }}));
+        dto.setF24Payment1((new ArrayListValuedHashMap<>() {{
+            put("f24PaymentTitle_1", null);
+            put("f24PaymentApplyCost_1", null);
+        }}));
+
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+
+        Assertions.assertTrue(result.getRecipients().getFirst().getPayments().isEmpty());
+    }
+
 }
