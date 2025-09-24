@@ -64,7 +64,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
     String iuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
     LocalDate billDate = LocalDate.parse(row.getBillDate(), POSTE_DATE_FORMAT);
-    String billCode = TreasuryUtils.getBillCode(billDate, iuf);
+    String billCode = TreasuryUtils.generateBillCode(billDate, iuf);
     String billYear = String.valueOf(billDate.getYear());
 
     TreasuryPosteIngestionFlowFileResult treasuryPosteIngestionFlowFileResult = (TreasuryPosteIngestionFlowFileResult) ingestionFlowFileResult;
