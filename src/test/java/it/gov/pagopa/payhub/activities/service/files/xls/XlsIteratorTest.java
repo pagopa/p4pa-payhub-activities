@@ -57,13 +57,13 @@ class XlsIteratorTest {
 	@Order(2)
 	void givenFileIsNotFinishedWhenNextThenReturnRow1() {
 		//GIVEN
-		Mockito.when(mapperMock.map(Mockito.anyList()))
+		Mockito.when(mapperMock.map(Mockito.anyList(), Mockito.anyInt()))
 				.thenReturn(new TreasuryXlsIngestionFlowFileDTO());
 		//WHEN
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		//THEN
 		Assertions.assertNotNull(next);
-		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		Mockito.verify(mapperMock).map(argumentCaptor.capture(), Mockito.anyInt());
 		List<String> list = argumentCaptor.getValue();
 		Assertions.assertEquals(row1, list);
 	}
@@ -72,13 +72,13 @@ class XlsIteratorTest {
 	@Order(3)
 	void givenFileIsNotFinishedWhenNextThenReturnRow2() {
 		//GIVEN
-		Mockito.when(mapperMock.map(Mockito.anyList()))
+		Mockito.when(mapperMock.map(Mockito.anyList(), Mockito.anyInt()))
 				.thenReturn(new TreasuryXlsIngestionFlowFileDTO());
 		//WHEN
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		//THEN
 		Assertions.assertNotNull(next);
-		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		Mockito.verify(mapperMock).map(argumentCaptor.capture(), Mockito.anyInt());
 		List<String> list = argumentCaptor.getValue();
 		Assertions.assertEquals(row2, list);
 	}
@@ -87,13 +87,13 @@ class XlsIteratorTest {
 	@Order(4)
 	void givenFileIsNotFinishedWhenNextThenReturnRow3() {
 		//GIVEN
-		Mockito.when(mapperMock.map(Mockito.anyList()))
+		Mockito.when(mapperMock.map(Mockito.anyList(), Mockito.anyInt()))
 				.thenReturn(new TreasuryXlsIngestionFlowFileDTO());
 		//WHEN
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		//THEN
 		Assertions.assertNotNull(next);
-		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		Mockito.verify(mapperMock).map(argumentCaptor.capture(), Mockito.anyInt());
 		List<String> list = argumentCaptor.getValue();
 		Assertions.assertEquals(row3, list);
 	}
@@ -102,13 +102,13 @@ class XlsIteratorTest {
 	@Order(5)
 	void givenFileIsNotFinishedWhenNextThenReturnRow4() {
 		//GIVEN
-		Mockito.when(mapperMock.map(Mockito.anyList()))
+		Mockito.when(mapperMock.map(Mockito.anyList(), Mockito.anyInt()))
 				.thenReturn(new TreasuryXlsIngestionFlowFileDTO());
 		//WHEN
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		//THEN
 		Assertions.assertNotNull(next);
-		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		Mockito.verify(mapperMock).map(argumentCaptor.capture(), Mockito.anyInt());
 		List<String> list = argumentCaptor.getValue();
 		Assertions.assertEquals(row4, list);
 	}
@@ -117,13 +117,13 @@ class XlsIteratorTest {
 	@Order(6)
 	void givenFileIsNotFinishedWhenNextThenReturnRow5() {
 		//GIVEN
-		Mockito.when(mapperMock.map(Mockito.anyList()))
+		Mockito.when(mapperMock.map(Mockito.anyList(), Mockito.anyInt()))
 				.thenReturn(new TreasuryXlsIngestionFlowFileDTO());
 		//WHEN
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		//THEN
 		Assertions.assertNotNull(next);
-		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		Mockito.verify(mapperMock).map(argumentCaptor.capture(), Mockito.anyInt());
 		List<String> list = argumentCaptor.getValue();
 		Assertions.assertEquals(row5, list);
 	}
@@ -205,7 +205,7 @@ class XlsIteratorTest {
 				TreasuryXlsHeadersEnum.getHeaders(),
 				l -> mapperMock
 		);
-		Mockito.when(mapperMock.map(new ArrayList<>())).thenReturn(null);
+		Mockito.when(mapperMock.map(Mockito.eq(new ArrayList<>()), Mockito.anyInt())).thenReturn(null);
 		// WHEN, THEN
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		Assertions.assertNull(next);
@@ -216,7 +216,7 @@ class XlsIteratorTest {
 	@Order(14)
 	void givenFileWithIncompleteRowWhenNextThenThrowTreasuryXlsInvalidFileException() throws IOException {
 		//GIVEN
-		Mockito.when(mapperMock.map(Mockito.anyList()))
+		Mockito.when(mapperMock.map(Mockito.anyList(), Mockito.anyInt()))
 				.thenReturn(new TreasuryXlsIngestionFlowFileDTO());
 		sut = new XlsIterator<>(
 				Path.of("src/test/resources/treasury/xls/IPA_TEST_7_XLS_WITH_INCOMPLETE_ROW.xls"),
@@ -228,7 +228,7 @@ class XlsIteratorTest {
 		TreasuryXlsIngestionFlowFileDTO next = sut.next();
 		//THEN
 		Assertions.assertNotNull(next);
-		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		Mockito.verify(mapperMock).map(argumentCaptor.capture(), Mockito.anyInt());
 		List<String> list = argumentCaptor.getValue();
 		Assertions.assertEquals(row1Test14, list);
 
@@ -238,7 +238,7 @@ class XlsIteratorTest {
 		next = sut.next();
 		//THEN
 		Assertions.assertNotNull(next);
-		Mockito.verify(mapperMock).map(argumentCaptor.capture());
+		Mockito.verify(mapperMock).map(argumentCaptor.capture(), Mockito.anyInt());
 		list = argumentCaptor.getValue();
 		Assertions.assertEquals(row3Test14, list);
 
@@ -254,7 +254,7 @@ class XlsIteratorTest {
 				TreasuryXlsHeadersEnum.getHeaders(),
 				l -> mapperMock
 		);
-		Mockito.when(mapperMock.map(new ArrayList<>())).thenReturn(null);
+		Mockito.when(mapperMock.map(Mockito.eq(new ArrayList<>()), Mockito.anyInt())).thenReturn(null);
 		// WHEN, THEN
 		TreasuryXlsInvalidFileException ex = assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.next());
 		String expectedMissingHeaders = String.join(", ", List.of(

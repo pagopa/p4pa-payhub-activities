@@ -32,7 +32,7 @@ public class TreasuryXlsMapper {
                 .clientReference(dto.getClientReference())
                 .remittanceDescription(dto.getRemittanceDescription())
                 .iuf(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF))
-                .pspLastName(TreasuryUtils.getPspLastName(dto.getExtendedRemittanceDescription()))
+                .pspLastName(getPspLastName(dto.getExtendedRemittanceDescription()))
                 .billCode(TreasuryUtils.generateBillCode(dto.getBillDate(), TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)))
                 .orgIstatCode(ORG_ISTAT_CODE_DEFAULT)
                 .orgBtCode(ORG_BT_CODE_DEFAULT)
@@ -48,5 +48,9 @@ public class TreasuryXlsMapper {
 
     private String extractYear(LocalDate localDate) {
         return String.valueOf(localDate.getYear());
+    }
+
+    public static String getPspLastName(final String extendedRemittanceDescription) {
+        return TreasuryUtils.getRemitterDescription(extendedRemittanceDescription);
     }
 }

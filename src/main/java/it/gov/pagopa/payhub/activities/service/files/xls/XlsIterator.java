@@ -30,8 +30,7 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	private SSTRecord excelStringList;
 
 	private final Map<Integer, String> rowBuffer = new TreeMap<>();
-	private int rowNum = -1;
-	private int currentRow = -1;
+	private int currentRowIndex = -1;
 	private boolean pendingRowReady = false;
 	private List<String> pendingRow;
 
@@ -67,7 +66,7 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 
 		Optional<List<String>> nextRow = readNextRow();
 		return nextRow
-				.map(strings -> mapper.map(strings))
+				.map(rowCells -> mapper.map(rowCells, currentRowIndex - 1)) // -1 is needed because map row N when read first cell of row N+1
 				.orElse(null);
 	}
 
@@ -103,9 +102,6 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 
 	private void processEventRecord(Record eventRecord) {
 		switch (eventRecord.getSid()) {
-			case RowRecord.sid:
-				rowNum++;
-				break;
 			case NumberRecord.sid: //number record
 				NumberRecord numrec = (NumberRecord) eventRecord;
 				addCell(
@@ -132,11 +128,11 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	}
 
 	private void addCell(int row, int column, String value) {
-		if (row != currentRow) {
+		if (row != currentRowIndex) {
 			if(!rowBuffer.isEmpty()) {
 				preparePendingRow();
 			}
-			currentRow = row;
+			currentRowIndex = row;
 		}
 		rowBuffer.put(column, value);
 	}

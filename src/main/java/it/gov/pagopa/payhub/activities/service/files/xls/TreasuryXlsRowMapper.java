@@ -15,7 +15,7 @@ public class TreasuryXlsRowMapper extends XlsRowMapper<TreasuryXlsIngestionFlowF
 	}
 
 	@Override
-	public TreasuryXlsIngestionFlowFileDTO map(List<String> cells) {
+	public TreasuryXlsIngestionFlowFileDTO map(List<String> cells, int rowIndex) {
 		if(cells == null || cells.isEmpty()) {
 			return null;
 		}

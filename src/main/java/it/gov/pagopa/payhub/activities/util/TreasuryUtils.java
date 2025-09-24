@@ -64,11 +64,7 @@ public class TreasuryUtils {
     return true;
   }
 
-  public static String getPspLastName(final String value) {
-    return getDescrizioneOrdinante(value);
-  }
-
-  private static String getDescrizioneOrdinante(final String value) {
+  public static String getRemitterDescription(final String value) {
     if (StringUtils.isBlank(value)) {
       return null;
     }

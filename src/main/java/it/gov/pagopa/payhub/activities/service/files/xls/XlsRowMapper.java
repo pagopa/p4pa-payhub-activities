@@ -9,7 +9,12 @@ import java.util.stream.IntStream;
 
 public abstract class XlsRowMapper<D> {
 
-	public abstract D map(List<String> cells);
+	/**
+	 * @param cells list of string values of row to map
+	 * @param rowIndex 0-based index of row to map
+	 * @return entity built by mapping the string value contained in parameter cells
+	 */
+	public abstract D map(List<String> cells, int rowIndex);
 
 	protected final Map<String, Integer> headerToIndex;
 

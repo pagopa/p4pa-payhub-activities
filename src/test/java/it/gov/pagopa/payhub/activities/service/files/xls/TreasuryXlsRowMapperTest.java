@@ -32,7 +32,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DATA_VALUTA.getValue()), "45427.0");
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
 		//WHEN
-		TreasuryXlsIngestionFlowFileDTO result = sut.map(values);
+		TreasuryXlsIngestionFlowFileDTO result = sut.map(values, 0);
 		//THEN
 		Assertions.assertEquals(TreasuryXlsHeadersEnum.ABI.getValue() + "_value", result.getAbiCode());
 		Assertions.assertEquals(TreasuryXlsHeadersEnum.CAB.getValue() + "_value", result.getCabCode());
@@ -63,7 +63,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN
-		TreasuryXlsIngestionFlowFileDTO result = sut.map(values);
+		TreasuryXlsIngestionFlowFileDTO result = sut.map(values, 0);
 		//THEN
 		Assertions.assertNull(result.getAbiCode());
 		Assertions.assertNull(result.getCabCode());
@@ -94,7 +94,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN
-		TreasuryXlsIngestionFlowFileDTO result = sut.map(values);
+		TreasuryXlsIngestionFlowFileDTO result = sut.map(values, 0);
 		//THEN
 		Assertions.assertNull(result.getAbiCode());
 		Assertions.assertNull(result.getCabCode());
@@ -125,7 +125,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), null);
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
-		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values));
+		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
 		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
 	}
 
@@ -136,7 +136,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
-		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values));
+		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
 		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
 	}
 
@@ -148,7 +148,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "12.35");
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
-		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values));
+		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
 		Assertions.assertEquals("Error in parsing LocalDate from value \"LocalDate\" for Xls cell \"%s\"".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
 	}
 
@@ -160,14 +160,14 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.IMPORTO.getValue()), "Long");
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
-		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values));
+		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
 		Assertions.assertEquals("Error in parsing Long from value \"Long\" for Xls cell \"%s\"".formatted(TreasuryXlsHeadersEnum.IMPORTO.getValue()), ex.getMessage());
 	}
 
 	@Test
 	void givenEmptyListTreasuryXlsWhenMappingThenNull() {
 		//WHEN
-		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(Collections.emptyList());
+		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(Collections.emptyList(), 0);
 		//THEN
 		Assertions.assertNull(actualResult);
 	}
@@ -175,7 +175,7 @@ class TreasuryXlsRowMapperTest {
 	@Test
 	void givenNullListTreasuryXlsWhenMappingThenNull() {
 		//WHEN
-		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(null);
+		TreasuryXlsIngestionFlowFileDTO actualResult = sut.map(null, 0);
 		//THEN
 		Assertions.assertNull(actualResult);
 	}
