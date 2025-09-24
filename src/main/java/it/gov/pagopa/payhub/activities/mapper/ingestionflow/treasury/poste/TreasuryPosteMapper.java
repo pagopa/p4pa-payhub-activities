@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TreasuryPosteMapper {
-
   public static final String POSTE_PSP_LAST_NAME = "POSTE ITALIANE SPA";
+  public static final DateTimeFormatter POSTE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
   public Treasury map(TreasuryPosteIngestionFlowFileDTO dto, String iban, String iuf, String billCode, LocalDate billDate, IngestionFlowFile ingestionFlowFile) {
     LocalDate regionValueDate = null;
     if (dto.getRegionValueDate() != null) {
-      regionValueDate = LocalDate.parse(dto.getRegionValueDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+      regionValueDate = LocalDate.parse(dto.getRegionValueDate(), POSTE_DATE_FORMAT);
     }
 
     return Treasury.builder()

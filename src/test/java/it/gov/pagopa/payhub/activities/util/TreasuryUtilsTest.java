@@ -1,8 +1,13 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalDate;
+import org.junit.jupiter.api.Test;
 
 class TreasuryUtilsTest {
 
@@ -80,5 +85,15 @@ class TreasuryUtilsTest {
 
         // Then
         assertFalse(result);
+    }
+
+    @Test
+    void testGetBillCode() {
+        LocalDate billDate = LocalDate.of(2025, 9, 23);
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+
+        String result = TreasuryUtils.getBillCode(billDate, iuf);
+
+        assertEquals("2309102790", result);
     }
 }

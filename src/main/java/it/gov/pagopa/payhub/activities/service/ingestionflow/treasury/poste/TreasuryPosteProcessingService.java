@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.poste;
 
+import static it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper.POSTE_DATE_FORMAT;
+
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
@@ -15,7 +17,6 @@ import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -62,7 +63,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
       IngestionFlowFile ingestionFlowFile) {
     String iuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
-    LocalDate billDate = LocalDate.parse(row.getBillDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+    LocalDate billDate = LocalDate.parse(row.getBillDate(), POSTE_DATE_FORMAT);
     String billCode = TreasuryUtils.getBillCode(billDate, iuf);
     String billYear = String.valueOf(billDate.getYear());
 
@@ -93,7 +94,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
       treasuryPosteIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
       return true;
     } catch (Exception e) {
-      log.error("Error processing treasury poste with row.getIuf() {}: {}",
+      log.error("Error processing treasury poste with iuf {}: {}",
           iuf,
           e.getMessage());
       TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(
