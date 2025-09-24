@@ -25,6 +25,9 @@ public class TestUtils {
 
     public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
     public static final LocalDate LOCALDATE = LocalDate.of(2024, 5, 15);
+    public static final LocalDate LOCAL_DATE_2024 = LOCALDATE;
+    public static final LocalDate LOCAL_DATE_2025 = LOCAL_DATE_2024.plusYears(1);
+    public static final LocalDate LOCAL_DATE_2026 = LOCAL_DATE_2025.plusYears(1);
     public static final LocalDateTime LOCALDATETIME = LocalDateTime.of(LOCALDATE, LocalTime.of(10, 30, 0));
     public static final OffsetDateTime OFFSETDATETIME = ZonedDateTime.of(LOCALDATETIME, ZONEID).toOffsetDateTime();
 
