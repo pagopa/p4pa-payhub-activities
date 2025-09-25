@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidatorService.setDefaultValues;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidatorService.validateIuvMatchesCreditorReferenceId;
 
 @Service
 @Lazy
@@ -73,6 +74,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                         "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
                 );
             }
+            validateIuvMatchesCreditorReferenceId(receipt);
             setDefaultValues(receipt);
             ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
             receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
