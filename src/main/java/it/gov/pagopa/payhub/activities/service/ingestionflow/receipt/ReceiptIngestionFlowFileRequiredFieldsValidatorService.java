@@ -54,4 +54,11 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
         return orgFiscalCode.equals(receiptOrgFiscalCode) && orgFiscalCode.equals(receiptFiscalCodePA);
     }
 
+    public static void validateIuvMatchesCreditorReferenceId(ReceiptIngestionFlowFileDTO dto) {
+        if (!dto.getIuv().equals(dto.getCreditorReferenceId())) {
+            throw new IllegalArgumentException(
+                    String.format("codIuv and identificativoUnivocoVersamento must be equal, but found iuv='%s' and creditorReferenceId='%s'",
+                            dto.getIuv(), dto.getCreditorReferenceId()));
+        }
+    }
 }
