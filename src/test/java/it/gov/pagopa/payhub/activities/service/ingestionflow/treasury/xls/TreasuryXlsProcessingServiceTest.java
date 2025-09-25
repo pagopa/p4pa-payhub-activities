@@ -289,7 +289,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		String iuf = TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
 
-		TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
+		TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf(); // TODO: P4ADEV-3861 re-add test case for different billCode for same iuf
 		existingTreasuryIuf2.setIuf(iuf);
 		existingTreasuryIuf2.setBillCode(TreasuryUtils.generateBillCode(iuf));
 		existingTreasuryIuf2.setBillYear(String.valueOf(LOCAL_DATE_2026.getYear()));  //different bill year
