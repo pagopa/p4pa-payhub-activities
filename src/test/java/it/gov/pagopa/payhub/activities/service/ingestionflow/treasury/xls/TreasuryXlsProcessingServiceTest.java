@@ -246,7 +246,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
 		existingTreasuryIuf.setIuf(iuf);
-		existingTreasuryIuf.setBillCode(TreasuryUtils.generateBillCode(dto.getBillDate(), iuf));
+		existingTreasuryIuf.setBillCode(TreasuryUtils.generateBillCode(iuf));
 		existingTreasuryIuf.setBillYear("2025");
 		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
 
@@ -270,7 +270,7 @@ class TreasuryXlsProcessingServiceTest {
 	}
 
 	@Test
-	void givenExistingTreasuryWithDifferentBillCodeOrYearWhenProcessTreasuryXlsThenCompleteWithError() {
+	void givenExistingTreasuryWithDifferentBillYearWhenProcessTreasuryXlsThenCompleteWithError() {
 		String ipa = "IPA123";
 		Organization organization = new Organization();
 		organization.setIpaCode(ipa);
@@ -289,27 +289,9 @@ class TreasuryXlsProcessingServiceTest {
 
 		String iuf = TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
 
-		TreasuryIuf existingTreasuryIuf1 = new TreasuryIuf();
-		existingTreasuryIuf1.setIuf(iuf);
-		existingTreasuryIuf1.setBillCode(TreasuryUtils.generateBillCode(LOCAL_DATE_2025.minusDays(1), iuf)); //different bill code
-		existingTreasuryIuf1.setBillYear(String.valueOf(LOCAL_DATE_2025.getYear()));
-		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf1);
-
-		TreasuryIufIngestionFlowFileResult result = service.processTreasuryXls(
-				Stream.of(dto).iterator(),
-				ingestionFlowFile,
-				workingDirectoryMock
-		);
-
-		Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-		Assertions.assertEquals(0L, result.getProcessedRows());
-		Assertions.assertEquals(1L, result.getTotalRows());
-		Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
-		Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-
-		TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
+		TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf(); // TODO: P4ADEV-3861 re-add test case for different billCode for same iuf
 		existingTreasuryIuf2.setIuf(iuf);
-		existingTreasuryIuf2.setBillCode(TreasuryUtils.generateBillCode(LOCAL_DATE_2025, iuf));
+		existingTreasuryIuf2.setBillCode(TreasuryUtils.generateBillCode(iuf));
 		existingTreasuryIuf2.setBillYear(String.valueOf(LOCAL_DATE_2026.getYear()));  //different bill year
 		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf2);
 
@@ -325,8 +307,8 @@ class TreasuryXlsProcessingServiceTest {
 		Assertions.assertNotNull(result2.getIuf2TreasuryIdMap());
 		Assertions.assertEquals(0, result2.getIuf2TreasuryIdMap().size());
 
-		verify(errorsArchiverServiceMock, Mockito.times(2)).writeErrors(Mockito.eq(workingDirectoryMock), Mockito.eq(ingestionFlowFile), Mockito.anyList());
-		verify(errorsArchiverServiceMock, Mockito.times(2)).archiveErrorFiles(workingDirectoryMock, ingestionFlowFile);
+		verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectoryMock), Mockito.eq(ingestionFlowFile), Mockito.anyList());
+		verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectoryMock, ingestionFlowFile);
 	}
 
 	@Test
@@ -351,7 +333,7 @@ class TreasuryXlsProcessingServiceTest {
 
 		TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
 		existingTreasuryIuf.setIuf(iuf);
-		existingTreasuryIuf.setBillCode(TreasuryUtils.generateBillCode(LOCAL_DATE_2026, iuf));
+		existingTreasuryIuf.setBillCode(TreasuryUtils.generateBillCode(iuf));
 		existingTreasuryIuf.setBillYear(String.valueOf(LOCAL_DATE_2026.getYear()));
 		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
 

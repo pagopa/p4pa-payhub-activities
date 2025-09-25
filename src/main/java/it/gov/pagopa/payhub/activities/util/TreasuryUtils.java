@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,8 +21,6 @@ public class TreasuryUtils {
           "L GPE-RIVERSAMENTO"
   );
   static final Pattern DESCRIZIONE_ORDINANTE_PATTERN = Pattern.compile("Descrizione\\s*Ordinante\\s*:([^:]+):");
-
-  public static final DateTimeFormatter BILL_CODE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("ddMM");
 
   public static String getIdentificativo(String value, final String type) {
     if (StringUtils.isBlank(value)) {
@@ -114,9 +110,8 @@ public class TreasuryUtils {
   }
 
   /** Utility function to generate a billCode if not present as input */
-  public static String generateBillCode(LocalDate billDate, String iuf) {
+  public static String generateBillCode(String iuf) {
     // TODO: P4ADEV-3861
-    String dayAndMonth = billDate.format(BILL_CODE_DATE_TIME_FORMATTER);
-    return dayAndMonth + iuf.substring(iuf.length() - 6);
+    return iuf.substring(iuf.length() - 7);
   }
 }

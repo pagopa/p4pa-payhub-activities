@@ -67,7 +67,7 @@ class TreasuryXlsMapperTest {
 		assertEquals("Data Ordine: 01/01/2020; Descr", result.getRemittanceDescription());
 		assertEquals(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF), result.getIuf());
 		assertEquals(TreasuryUtils.getRemitterDescription(dto.getExtendedRemittanceDescription()), result.getPspLastName());
-		assertEquals(TreasuryUtils.generateBillCode(dto.getBillDate(), TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)), result.getBillCode());
+		assertEquals(TreasuryUtils.generateBillCode(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)), result.getBillCode());
 		assertEquals(ORG_ISTAT_CODE_DEFAULT, result.getOrgIstatCode());
 		assertEquals(ORG_BT_CODE_DEFAULT, result.getOrgBtCode());
 		assertEquals(1, result.getIngestionFlowFileId());
@@ -124,7 +124,7 @@ class TreasuryXlsMapperTest {
 		assertEquals("Data Ordine: 01/01/2020; Descr", result.getRemittanceDescription());
 		assertEquals(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF), result.getIuf());
 		assertEquals(TreasuryUtils.getRemitterDescription(dto.getExtendedRemittanceDescription()), result.getPspLastName());
-		assertEquals(TreasuryUtils.generateBillCode(dto.getBillDate(), TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)), result.getBillCode());
+		assertEquals(TreasuryUtils.generateBillCode(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)), result.getBillCode());
 		assertEquals(ORG_ISTAT_CODE_DEFAULT, result.getOrgIstatCode());
 		assertEquals(ORG_BT_CODE_DEFAULT, result.getOrgBtCode());
 		assertEquals(1, result.getIngestionFlowFileId());
