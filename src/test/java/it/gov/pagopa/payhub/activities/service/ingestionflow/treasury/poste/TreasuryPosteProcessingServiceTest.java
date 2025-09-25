@@ -236,7 +236,7 @@ class TreasuryPosteProcessingServiceTest {
     TreasuryPosteIngestionFlowFileDTO dto2 = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
     dto2.setBillDate(dateString);
     dto2.setRegionValueDate(dateString);
-    dto2.setCreditBillAmountCents(null);
+    dto2.setCreditBillAmount(null);
     dto2.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
 
     TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
