@@ -1,8 +1,15 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalDate;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TreasuryUtilsTest {
 
@@ -18,6 +25,20 @@ class TreasuryUtilsTest {
         // Then
         assertNotNull(result);
         assertEquals("2023-01-01ABC123", result);
+    }
+
+    @Test
+    void testGetIdentificativo_withValidXlsIUF() {
+        // Given
+        String input = "Data Ordine: 01/01/2020; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM";
+        String type = TreasuryUtils.IUF;
+
+        // When
+        String result = TreasuryUtils.getIdentificativo(input, type);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("2024-07-26PPAYITR1XXX-S2024072601", result);
     }
 
     @Test
@@ -80,5 +101,42 @@ class TreasuryUtilsTest {
 
         // Then
         assertFalse(result);
+    }
+
+    @Test
+    void testGetRemitterDescription_withValidExtendedRemittanceDescription() {
+        // Given
+        String input = "Data Ordine: 01/01/2020; Descrizione Ordinante: XYZ PRIVATE BANKING SPA                          PIAZZA SAN :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM";
+
+        // When
+        String result = TreasuryUtils.getRemitterDescription(input);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("XYZ PRIVATE BANKING SPA                          PIAZZA SAN", result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "Data Ordine: 01/01/2020; Descrizione Ordinante::BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM",
+            "Data Ordine: 01/01/2020; Descrizione Ordinante:   :BI2:ABCKITYYXXX :BE1:IPA TEST 2 :IB1:IT1234567890123456789012345 :IB2:IT1234567890123456789012346 :TID:1234567890123456 :DTE:123456 :DTN:IPA TEST 2 :ERI:EUR 000000000012345 :IM2:000000000012345 :MA2:EU R :RI3:/PUR/LGPE-RIVERSAMENTO/URI/2024-07-26PPAYITR1XXX-S2024072601 :SEC:CASH :OR1:XYZ PRIVATE BANKING SPA PIAZZA SAN  123 00123 TORINO T :TR1:XYZ CBILL PUBBLICA AMM",
+            ""
+    })
+    void testGetRemitterDescription_withInvalidExtendedRemittanceDescription_returnNull(String input) {
+        // When
+        String result = TreasuryUtils.getRemitterDescription(input);
+        // Then
+        assertNull(result);
+    }
+
+
+    @Test
+    void testGenerateBillCode() {
+        LocalDate billDate = LocalDate.of(2025, 9, 23);
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+
+        String result = TreasuryUtils.generateBillCode(billDate, iuf);
+
+        assertEquals("2309102790", result);
     }
 }
