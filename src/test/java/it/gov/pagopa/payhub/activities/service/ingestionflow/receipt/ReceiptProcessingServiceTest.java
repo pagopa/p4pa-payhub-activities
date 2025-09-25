@@ -32,7 +32,6 @@ import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,7 +76,9 @@ class ReceiptProcessingServiceTest {
   void whenProcessReceiptThenOk() {
     //given
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    ReceiptIngestionFlowFileDTO dto = mock(ReceiptIngestionFlowFileDTO.class);
+    ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+    dto.setIuv("IUV");
+    dto.setCreditorReferenceId("IUV");
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
 
     Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto)).thenReturn(true);
@@ -100,7 +101,9 @@ class ReceiptProcessingServiceTest {
   @Test
   void givenIncorrectDataWhenProcessReceiptThenError() throws URISyntaxException {
     // Given
-    ReceiptIngestionFlowFileDTO dto = mock(ReceiptIngestionFlowFileDTO.class);
+    ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+    dto.setIuv("IUV");
+    dto.setCreditorReferenceId("IUV");
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
@@ -139,7 +142,7 @@ class ReceiptProcessingServiceTest {
   @Test
   void givenIncorrectFiscalCodeWhenProcessReceiptThenAddError() throws URISyntaxException {
     // Given
-    ReceiptIngestionFlowFileDTO dto = mock(ReceiptIngestionFlowFileDTO.class);
+    ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     workingDirectory = Path.of(new URI("file:///tmp"));

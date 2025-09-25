@@ -16,6 +16,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 import java.util.Optional;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidatorService.setDefaultValues;
+import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidatorService.validateIuvMatchesCreditorReferenceId;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -132,6 +133,15 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         Mockito.when(organizationServiceMock.getOrganizationById(4L)).thenReturn(Optional.of(org));
 
         assertFalse(receiptIngestionFlowFileRequiredFieldsValidatorService.isValidOrganization(flowFile, dto));
+    }
+
+    @Test
+    void givenDifferentIuvAndCreditorReferenceIdWhenValidateIuvMatchesCreditorReferenceIdThenThrowException() {
+        ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
+        dto.setIuv("IUV");
+        dto.setCreditorReferenceId("DIFFERENT");
+
+        assertThrows(IllegalArgumentException.class, () ->validateIuvMatchesCreditorReferenceId(dto));
     }
 
 }
