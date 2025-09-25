@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -132,11 +131,11 @@ class TreasuryUtilsTest {
 
     @Test
     void testGenerateBillCode() {
-        LocalDate billDate = LocalDate.of(2025, 9, 23);
         String iuf = "2025-09-23BPPIITRRXXX-000038102790";
 
-        String result = TreasuryUtils.generateBillCode(billDate, iuf);
+        String result = TreasuryUtils.generateBillCode(iuf);
 
-        assertEquals("2309102790", result);
+        String expectedBillCode = "8102790";
+        assertEquals(expectedBillCode, result);
     }
 }

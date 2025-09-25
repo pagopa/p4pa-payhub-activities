@@ -63,7 +63,7 @@ class TreasuryPosteProcessingServiceTest {
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = "2309102790";
+    String billCode = "8102790";
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
@@ -94,7 +94,7 @@ class TreasuryPosteProcessingServiceTest {
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = "2309102790";
+    String billCode = "8102790";
 
     TreasuryPosteIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
     dto.setBillDate(dateString);
@@ -168,7 +168,7 @@ class TreasuryPosteProcessingServiceTest {
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = "2309102790";
+    String billCode = "8102790";
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
@@ -206,7 +206,7 @@ class TreasuryPosteProcessingServiceTest {
     String iban = "IT84K0760101000000010123456";
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
-    String billCode = "2309102790";
+    String billCode = "8102790";
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
