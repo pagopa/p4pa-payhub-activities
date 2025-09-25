@@ -270,7 +270,7 @@ class TreasuryXlsProcessingServiceTest {
 	}
 
 	@Test
-	void givenExistingTreasuryWithDifferentBillCodeOrYearWhenProcessTreasuryXlsThenCompleteWithError() {
+	void givenExistingTreasuryWithDifferentBillYearWhenProcessTreasuryXlsThenCompleteWithError() {
 		String ipa = "IPA123";
 		Organization organization = new Organization();
 		organization.setIpaCode(ipa);
@@ -288,27 +288,6 @@ class TreasuryXlsProcessingServiceTest {
 		Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
 
 		String iuf = TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
-
-		// TODO: P4ADEV-3861 uncomment test if bill code can be different for same iuf
-		/*
-		TreasuryIuf existingTreasuryIuf1 = new TreasuryIuf();
-		existingTreasuryIuf1.setIuf(iuf);
-		existingTreasuryIuf1.setBillCode(TreasuryUtils.generateBillCode(iuf)); //different bill code
-		existingTreasuryIuf1.setBillYear(String.valueOf(LOCAL_DATE_2025.getYear()));
-		Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf1);
-
-		TreasuryIufIngestionFlowFileResult result = service.processTreasuryXls(
-				Stream.of(dto).iterator(),
-				ingestionFlowFile,
-				workingDirectoryMock
-		);
-
-		Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-		Assertions.assertEquals(0L, result.getProcessedRows());
-		Assertions.assertEquals(1L, result.getTotalRows());
-		Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
-		Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-		*/
 
 		TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
 		existingTreasuryIuf2.setIuf(iuf);
