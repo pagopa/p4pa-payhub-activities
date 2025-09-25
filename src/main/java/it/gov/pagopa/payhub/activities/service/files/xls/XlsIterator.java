@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class XlsIterator<D> implements Closeable, Iterator<D> {
 
