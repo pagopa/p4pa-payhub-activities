@@ -50,7 +50,7 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
 			TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
 
 			if(existingTreasury != null) {
-				boolean treasuryNotMatch = !existingTreasury.getBillCode().equals(TreasuryUtils.generateBillCode(billDate, rowIuf)) || !existingTreasury.getBillYear().equals(String.valueOf(billDate.getYear()));
+				boolean treasuryNotMatch = !existingTreasury.getBillCode().equals(TreasuryUtils.generateBillCode(rowIuf)) || !existingTreasury.getBillYear().equals(String.valueOf(billDate.getYear()));
 				if (treasuryNotMatch) {
 					String errorMessage = String.format(
 							"IUF %s already associated to another treasury for organization with IPA code %s",

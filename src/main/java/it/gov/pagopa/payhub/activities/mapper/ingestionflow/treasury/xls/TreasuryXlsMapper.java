@@ -33,7 +33,7 @@ public class TreasuryXlsMapper {
                 .remittanceDescription(dto.getRemittanceDescription())
                 .iuf(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF))
                 .pspLastName(getPspLastName(dto.getExtendedRemittanceDescription()))
-                .billCode(TreasuryUtils.generateBillCode(dto.getBillDate(), TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)))
+                .billCode(TreasuryUtils.generateBillCode(TreasuryUtils.getIdentificativo(dto.getExtendedRemittanceDescription(), TreasuryUtils.IUF)))
                 .orgIstatCode(ORG_ISTAT_CODE_DEFAULT)
                 .orgBtCode(ORG_BT_CODE_DEFAULT)
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
