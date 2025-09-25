@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste;
 import com.opencsv.bean.CsvBindByPosition;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,10 +29,10 @@ public class TreasuryPosteIngestionFlowFileDTO {
   private String remittanceCode;
 
   @CsvBindByPosition(position = 5)
-  private Long debitBillAmountCents;
+  private BigDecimal debitBillAmount;
 
   @CsvBindByPosition(position = 6)
-  private Long creditBillAmountCents;
+  private BigDecimal creditBillAmount;
 
   @Size(max = 255)
   @CsvBindByPosition(position = 8)

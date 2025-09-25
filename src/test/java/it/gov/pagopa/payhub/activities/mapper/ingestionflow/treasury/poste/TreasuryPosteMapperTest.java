@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPost
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,8 +35,8 @@ class TreasuryPosteMapperTest {
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(
         TreasuryPosteIngestionFlowFileDTO.class);
     dto.setRegionValueDate(LOCALDATE.format(POSTE_DATE_FORMAT));
-    dto.setDebitBillAmountCents(50L);
-    dto.setCreditBillAmountCents(null);
+    dto.setDebitBillAmount(BigDecimal.valueOf(50L));
+    dto.setCreditBillAmount(null);
 
     IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
     ingestionFlowFile.setOrganizationId(123L);
@@ -44,7 +45,7 @@ class TreasuryPosteMapperTest {
 
     Assertions.assertNotNull(result);
     assertEquals(TreasuryOrigin.TREASURY_POSTE, result.getTreasuryOrigin());
-    assertEquals(-50L, result.getBillAmountCents());
+    assertEquals(-5000L, result.getBillAmountCents());
     checkNotNullFields(result, "creationDate", "updateDate", "updateTraceId", "treasuryId", "updateOperatorExternalId", "links", "iuv", "domainIdCode",
         "receptionDate", "actualSuspensionDate", "checkNumber", "clientReference", "bankReference", "transactionTypeCode", "documentYear", "documentCode", "sealCode", "pspFirstName", "pspAddress",
         "pspPostalCode", "pspCity", "pspFiscalCode", "pspVatNumber", "abiCode", "cabCode", "ibanCode", "accountRegistryCode", "provisionalAe", "provisionalCode", "accountTypeCode", "processCode", "executionPgCode",
@@ -60,8 +61,8 @@ class TreasuryPosteMapperTest {
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(
         TreasuryPosteIngestionFlowFileDTO.class);
     dto.setRegionValueDate(LOCALDATE.format(POSTE_DATE_FORMAT));
-    dto.setDebitBillAmountCents(null);
-    dto.setCreditBillAmountCents(50L);
+    dto.setDebitBillAmount(null);
+    dto.setCreditBillAmount(BigDecimal.valueOf(50L));
 
     IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
     ingestionFlowFile.setOrganizationId(123L);
@@ -70,7 +71,7 @@ class TreasuryPosteMapperTest {
 
     Assertions.assertNotNull(result);
     assertEquals(TreasuryOrigin.TREASURY_POSTE, result.getTreasuryOrigin());
-    assertEquals(50L, result.getBillAmountCents());
+    assertEquals(5000L, result.getBillAmountCents());
     checkNotNullFields(result, "creationDate", "updateDate", "updateTraceId", "treasuryId", "updateOperatorExternalId", "links", "iuv", "domainIdCode",
         "receptionDate", "actualSuspensionDate", "checkNumber", "clientReference", "bankReference", "transactionTypeCode", "documentYear", "documentCode", "sealCode", "pspFirstName", "pspAddress",
         "pspPostalCode", "pspCity", "pspFiscalCode", "pspVatNumber", "abiCode", "cabCode", "ibanCode", "accountRegistryCode", "provisionalAe", "provisionalCode", "accountTypeCode", "processCode", "executionPgCode",

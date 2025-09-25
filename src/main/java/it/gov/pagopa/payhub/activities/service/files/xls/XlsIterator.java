@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class XlsIterator<D> implements Closeable, Iterator<D> {
 
@@ -151,9 +150,8 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	}
 
 	private List<String> buildRow(Map<Integer, String> rowBuffer) {
-	 	List<String> cells = Arrays.asList(new String[computeHeaderCount()]);
+	 	List<String> cells = new ArrayList<>(Collections.nCopies(computeHeaderCount(), ""));
 		rowBuffer.forEach(cells::set);
-		IntStream.range(0, computeHeaderCount()-rowBuffer.size()).forEach(i -> cells.set(rowBuffer.size() + i, ""));
 		return cells;
 	}
 

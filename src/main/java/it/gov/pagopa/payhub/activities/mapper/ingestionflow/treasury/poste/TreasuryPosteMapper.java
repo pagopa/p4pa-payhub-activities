@@ -2,11 +2,13 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
+import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteIngestionFlowFileDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class TreasuryPosteMapper {
         .billDate(billDate)
         .regionValueDate(regionValueDate)
         .remittanceCode(dto.getRemittanceCode())
-        .billAmountCents(dto.getDebitBillAmountCents() != null ? -(dto.getDebitBillAmountCents()) : dto.getCreditBillAmountCents())
+        .billAmountCents(getBillAmountCents(dto))
         .remittanceDescription(dto.getRemittanceDescription())
         .iuf(iuf)
         .pspLastName(POSTE_PSP_LAST_NAME)
@@ -39,6 +41,11 @@ public class TreasuryPosteMapper {
         .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
         .treasuryOrigin(TreasuryOrigin.TREASURY_POSTE)
         .build();
+  }
+
+  private Long getBillAmountCents(TreasuryPosteIngestionFlowFileDTO dto) {
+    BigDecimal billAmount = dto.getDebitBillAmount() != null ? dto.getDebitBillAmount().negate() : dto.getCreditBillAmount();
+    return bigDecimalEuroToLongCentsAmount(billAmount);
   }
 
 }
