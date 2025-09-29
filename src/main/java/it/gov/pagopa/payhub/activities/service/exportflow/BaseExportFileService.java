@@ -64,6 +64,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
             if(exportedRows[0]>0){
                 Long zippedFileSize = createZipArchive(csvFilePath, zipFilePath, sharedTargetPath);
                 return ExportFileResult.builder()
+                        .organizationId(organizationId)
                         .fileName(zipFilePath.getFileName().toString())
                         .filePath(relativeFileFolder)
                         .exportedRows(exportedRows[0])
@@ -72,6 +73,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
                         .build();
             }else{
                 return ExportFileResult.builder()
+                        .organizationId(organizationId)
                         .fileName(null)
                         .filePath(null)
                         .exportedRows(exportedRows[0])
