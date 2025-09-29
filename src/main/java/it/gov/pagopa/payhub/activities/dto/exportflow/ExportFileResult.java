@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ExportFileResult {
+    /** Organization ID */
+    private Long organizationId;
     /** File path */
     private String filePath;
     /** File name */
