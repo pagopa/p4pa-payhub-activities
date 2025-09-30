@@ -60,7 +60,7 @@ apply(plugin = "maven-publish")
 
 val janinoVersion = "3.1.12"
 val commonsCompressVersion = "1.28.0"
-val commonsLang3Version = "3.18.0"
+val commonsLang3Version = "3.19.0"
 val commonsTextVersion = "1.14.0"
 val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.5"
@@ -69,6 +69,7 @@ val jsoupVersion = "1.21.2"
 val openApiToolsVersion = "0.2.6"
 val temporalVersion = "1.31.0"
 val protobufJavaVersion = "4.32.1"
+val grpcBomVersion = "1.75.0"
 val guavaVersion = "33.5.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
@@ -101,9 +102,13 @@ dependencies {
 	//temporal
 	implementation("io.temporal:temporal-sdk:$temporalVersion"){
 		exclude(group = "com.google.protobuf", module = "protobuf-java")
-		exclude(group = "com.google.guava", module = "guava")
-	}
-	implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
+        exclude(group = "com.google.protobuf", module = "protobuf-java-util")
+        exclude(group = "io.grpc", module = "grpc-bom")
+        exclude(group = "com.google.guava", module = "guava")
+    }
+    implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
+    implementation("com.google.protobuf:protobuf-java-util:${protobufJavaVersion}")
+    implementation(platform("io.grpc:grpc-bom:${grpcBomVersion}"))
 	implementation("com.google.guava:guava:$guavaVersion")
 	//openCsv
 	implementation("com.opencsv:opencsv:$openCsvVersion")
