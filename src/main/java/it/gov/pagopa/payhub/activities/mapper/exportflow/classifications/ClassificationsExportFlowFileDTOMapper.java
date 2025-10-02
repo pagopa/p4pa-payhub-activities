@@ -107,8 +107,6 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresIuf(retrievedObject.getTresIuf())
                 .tresIuv(retrievedObject.getTresIuv())
                 .tresAcquisitionDateT(retrievedObject.getTresCreationDate())
-                .tresBillYear(treasuryOrigin != TreasuryOrigin.TREASURY_XLS ? retrievedObject.getTresBillYear() : null)
-                .tresBillCode(treasuryOrigin != TreasuryOrigin.TREASURY_XLS ? retrievedObject.getTresBillCode() : null)
                 .domainUniqueId(retrievedObject.getTresDomainIdCode())
                 .tresReceiptDate(retrievedObject.getTresReceptionDate())
                 .tresDocumentYear(retrievedObject.getTresDocumentYear())
@@ -118,6 +116,12 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresActualSuspensionDate(retrievedObject.getTresActualSuspensionDate())
                 .tresManagementProvisionalCode(retrievedObject.getTresManagementProvisionalCode())
                 .lastClassificationDate(retrievedObject.getLastClassificationDate());
+
+        if (!TreasuryOrigin.TREASURY_XLS.equals(treasuryOrigin)) {
+            classificationsExportFlowFileDTOBuilder
+                    .tresBillYear(retrievedObject.getTresBillYear())
+                    .tresBillCode(retrievedObject.getTresBillCode());
+        }
 
         return classificationsExportFlowFileDTOBuilder.build();
     }
