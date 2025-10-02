@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.classifications.Classifica
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,8 @@ public class ClassificationsExportFlowFileDTOMapper {
 
         PersonDTO payer = retrievedObject.getRecPayer();
         PersonDTO debtor = retrievedObject.getRecDebtor();
+
+        TreasuryOrigin treasuryOrigin = retrievedObject.getTresOrigin();
 
         ClassificationsExportFlowFileDTO.ClassificationsExportFlowFileDTOBuilder classificationsExportFlowFileDTOBuilder = ClassificationsExportFlowFileDTO.builder()
                 .recFileName(retrievedObject.getRecFileName())
@@ -104,8 +107,8 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresIuf(retrievedObject.getTresIuf())
                 .tresIuv(retrievedObject.getTresIuv())
                 .tresAcquisitionDateT(retrievedObject.getTresCreationDate())
-                .tresBillYear(retrievedObject.getTresBillYear())
-                .tresBillCode(retrievedObject.getTresBillCode())
+                .tresBillYear(treasuryOrigin != TreasuryOrigin.TREASURY_XLS ? retrievedObject.getTresBillYear() : null)
+                .tresBillCode(treasuryOrigin != TreasuryOrigin.TREASURY_XLS ? retrievedObject.getTresBillCode() : null)
                 .domainUniqueId(retrievedObject.getTresDomainIdCode())
                 .tresReceiptDate(retrievedObject.getTresReceptionDate())
                 .tresDocumentYear(retrievedObject.getTresDocumentYear())
