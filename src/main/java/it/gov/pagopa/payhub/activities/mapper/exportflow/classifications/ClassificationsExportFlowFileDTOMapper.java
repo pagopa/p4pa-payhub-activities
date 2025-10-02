@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.classifications.Classifica
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,8 @@ public class ClassificationsExportFlowFileDTOMapper {
 
         PersonDTO payer = retrievedObject.getRecPayer();
         PersonDTO debtor = retrievedObject.getRecDebtor();
+
+        TreasuryOrigin treasuryOrigin = retrievedObject.getTresOrigin();
 
         ClassificationsExportFlowFileDTO.ClassificationsExportFlowFileDTOBuilder classificationsExportFlowFileDTOBuilder = ClassificationsExportFlowFileDTO.builder()
                 .recFileName(retrievedObject.getRecFileName())
@@ -104,8 +107,6 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresIuf(retrievedObject.getTresIuf())
                 .tresIuv(retrievedObject.getTresIuv())
                 .tresAcquisitionDateT(retrievedObject.getTresCreationDate())
-                .tresBillYear(retrievedObject.getTresBillYear())
-                .tresBillCode(retrievedObject.getTresBillCode())
                 .domainUniqueId(retrievedObject.getTresDomainIdCode())
                 .tresReceiptDate(retrievedObject.getTresReceptionDate())
                 .tresDocumentYear(retrievedObject.getTresDocumentYear())
@@ -115,6 +116,12 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresActualSuspensionDate(retrievedObject.getTresActualSuspensionDate())
                 .tresManagementProvisionalCode(retrievedObject.getTresManagementProvisionalCode())
                 .lastClassificationDate(retrievedObject.getLastClassificationDate());
+
+        if (!TreasuryOrigin.TREASURY_XLS.equals(treasuryOrigin)) {
+            classificationsExportFlowFileDTOBuilder
+                    .tresBillYear(retrievedObject.getTresBillYear())
+                    .tresBillCode(retrievedObject.getTresBillCode());
+        }
 
         return classificationsExportFlowFileDTOBuilder.build();
     }

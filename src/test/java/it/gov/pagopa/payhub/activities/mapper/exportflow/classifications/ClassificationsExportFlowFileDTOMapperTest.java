@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.jemos.podam.api.PodamFactory;
@@ -121,6 +122,73 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertNull(result.getDebtorProvince());
         assertNull(result.getDebtorNation());
         assertNull(result.getDebtorEmail());
+    }
+
+    @Test
+    void givenClassificationViewDTOWithTresOriginXLSWhenMapThenReturnClassificationsExportFlowFileDTO() {
+        ClassificationViewDTO classificationViewDTO = podamFactory.manufacturePojo(ClassificationViewDTO.class);
+        classificationViewDTO.setTresOrigin(TreasuryOrigin.TREASURY_XLS);
+
+        ClassificationsExportFlowFileDTO result = classificationsExportFlowFileDTOMapper.map(classificationViewDTO);
+
+        assertNotNull(result);
+        TestUtils.checkNotNullFields(result,
+                "objectVersion",
+                "requestingStationId",
+                "institutionAttOperatingUnitCode",
+                "institutionAttOperatingUnitName",
+                "institutionAttAddress",
+                "institutionAttCivicNumber",
+                "institutionAttPostalCode",
+                "institutionAttCity",
+                "institutionAttProvince",
+                "institutionAttCountry",
+                "beneficiaryOperatingUnitCode",
+                "beneficiaryOperatingUnitName",
+                "beneficiaryAddress",
+                "beneficiaryCivicNumber",
+                "beneficiaryPostalCode",
+                "beneficiaryCity",
+                "beneficiaryProvince",
+                "beneficiaryCountry",
+                "dueTypeCode",
+                "objectVersionR",
+                "currencyCode",
+                "signCode",
+                "checkNumber",
+                "bankReferenceCode",
+                "clientReferenceCode",
+                "orderDate",
+                "completenessClassification",
+                "dueTypeCodePa1",
+                "dueTypeDescriptionPa1",
+                "taxonomicCodePa1",
+                "fiscalCodePa1",
+                "namePa1",
+                "payNoticeIud",
+                "payNoticeIuv",
+                "payNoticePaymentExecutionDate",
+                "payNoticePaymentType",
+                "singlePaymentAmountI",
+                "payerUniqueIdTypeI",
+                "payerUniqueIdCodeI",
+                "payerFullNameI",
+                "payerAddressI",
+                "payerCivicNumberI",
+                "payerPostalCodeI",
+                "payerLocationI",
+                "payerProvinceI",
+                "payerCountryI",
+                "payerEmailI",
+                "payNoticePaCommission",
+                "payNoticeRemittanceInformation",
+                "payNoticeTransferCategory",
+                "payNoticeDebtPositionTypeOrgCode",
+                "payNoticeBalance",
+                "acquisitionDateI",
+                "tresBillYear",
+                "tresBillCode"
+        );
     }
 
     public static void allFieldsAssertions(ClassificationViewDTO classificationViewDTO, ClassificationsExportFlowFileDTO result){
