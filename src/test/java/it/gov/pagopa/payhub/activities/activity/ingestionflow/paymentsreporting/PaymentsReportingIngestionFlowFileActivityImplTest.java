@@ -118,7 +118,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 
 		PaymentsReportingIngestionFlowFileActivityResult expected =
 			PaymentsReportingIngestionFlowFileActivityResult.builder()
-					.fileVersion("1.0.3")
+					.fileVersion("1.0")
 					.iuf("idFlow")
 					.organizationId(organizationId)
 					.transfers(List.of(paymentsReportingTransferDTO))

@@ -34,7 +34,6 @@ import java.util.function.BiFunction;
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -131,6 +130,7 @@ class TreasuryCsvIngestionActivityTest {
         ingestionFlowFileDTO.setOrganizationId(organizationId);
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV);
+        ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<TreasuryCsvIngestionFlowFileDTO> iterator = buildTreasuryCsvIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
 
@@ -144,7 +144,7 @@ class TreasuryCsvIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(TreasuryCsvIngestionFlowFileDTO.class), any(), isNull()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(TreasuryCsvIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<TreasuryCsvIngestionFlowFileDTO>, List<CsvException>, TreasuryIufIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
@@ -170,6 +170,7 @@ class TreasuryCsvIngestionActivityTest {
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setOrganizationId(organizationId);
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV);
+        ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<TreasuryCsvIngestionFlowFileDTO> iterator = buildTreasuryCsvIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
 
@@ -182,7 +183,7 @@ class TreasuryCsvIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(TreasuryCsvIngestionFlowFileDTO.class), any(), isNull()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(TreasuryCsvIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<TreasuryCsvIngestionFlowFileDTO>, List<CsvException>, TreasuryIufIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
