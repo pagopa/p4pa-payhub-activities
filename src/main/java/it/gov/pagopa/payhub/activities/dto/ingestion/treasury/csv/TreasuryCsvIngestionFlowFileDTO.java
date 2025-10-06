@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvIngestionFlowFileVersions.V1_0;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,29 +18,29 @@ import lombok.NoArgsConstructor;
 public class TreasuryCsvIngestionFlowFileDTO {
 
     @Pattern(regexp = "^\\d{4}$", message = "The year must be 4 digits long")
-    @CsvBindByName(column = "ESERCIZIO", required = true)
+    @CsvBindByName(column = "ESERCIZIO", required = true, profiles = {V1_0})
     private String billYear;
 
     @Size(max=7)
-    @CsvBindByName(column = "N.PROVV.", required = true)
+    @CsvBindByName(column = "N.PROVV.", required = true, profiles = {V1_0})
     private String billCode;
 
     @Size(max=10)
-    @CsvBindByName(column = "DATA ESEC.", required = true)
+    @CsvBindByName(column = "DATA ESEC.", required = true, profiles = {V1_0})
     private String billDate;
 
     @Size(max=255)
-    @CsvBindByName(column = "ANAGRAFICA CLIENTE", required = true)
+    @CsvBindByName(column = "ANAGRAFICA CLIENTE", required = true, profiles = {V1_0})
     private String pspLastName;
 
     @NotNull
     @Size(max=255)
-    @CsvBindByName(column = "DESCRIZIONE CAUSALE", required = true)
+    @CsvBindByName(column = "DESCRIZIONE CAUSALE", required = true, profiles = {V1_0})
     private String remittanceDescription;
 
-    @CsvBindByName(column = "IMPORTO PROVVISORIO", required = true)
+    @CsvBindByName(column = "IMPORTO PROVVISORIO", required = true, profiles = {V1_0})
     private String billAmount;
 
-    @CsvBindByName(column = "VALUTA ENTE")
+    @CsvBindByName(column = "VALUTA ENTE", profiles = {V1_0})
     private String regionValueDate;
 }

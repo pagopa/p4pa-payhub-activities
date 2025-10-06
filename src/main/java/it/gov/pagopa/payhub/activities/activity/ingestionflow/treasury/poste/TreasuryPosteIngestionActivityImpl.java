@@ -12,12 +12,13 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.poste.TreasuryPosteProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.List;
 
 @Slf4j
 @Lazy
@@ -70,12 +71,12 @@ public class TreasuryPosteIngestionActivityImpl
           TreasuryPosteIngestionFlowFileDTO.class,
           (csvIterator, readerException) ->
               treasuryPosteProcessingService.processTreasuryPoste(csvIterator, iban, readerException, ingestionFlowFileDTO, workingDirectory),
-          null, 1);
+              ingestionFlowFileDTO.getFileVersion(), 1);
 
     } catch (Exception e) {
-      log.error("Error processing file {}: {}", filePath, e.getMessage(), e);
-      throw new InvalidIngestionFileException(
-          String.format("Error processing file %s: %s", filePath, e.getMessage()));
+
+      log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
+      throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));
     }
   }
 }

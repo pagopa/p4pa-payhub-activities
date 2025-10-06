@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryXlsInvalidFileException;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import org.junit.jupiter.api.Assertions;

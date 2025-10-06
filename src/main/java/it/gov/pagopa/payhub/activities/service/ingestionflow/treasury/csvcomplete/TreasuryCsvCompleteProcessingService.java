@@ -52,6 +52,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);
+        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;

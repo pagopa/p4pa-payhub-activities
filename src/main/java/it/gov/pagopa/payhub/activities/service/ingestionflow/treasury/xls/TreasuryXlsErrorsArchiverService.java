@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.xls;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsErrorDTO;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;

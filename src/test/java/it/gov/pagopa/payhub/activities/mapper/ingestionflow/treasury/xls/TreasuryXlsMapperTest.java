@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls;
 
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
@@ -15,7 +15,7 @@ import uk.co.jemos.podam.api.PodamFactory;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_BT_CODE_DEFAULT;
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService.ORG_ISTAT_CODE_DEFAULT;
-import static it.gov.pagopa.payhub.activities.util.TestUtils.*;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCAL_DATE_2024;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)

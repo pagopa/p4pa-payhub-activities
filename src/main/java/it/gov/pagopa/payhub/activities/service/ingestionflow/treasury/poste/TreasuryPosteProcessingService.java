@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.poste;
 
-import static it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper.POSTE_DATE_FORMAT;
-
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
@@ -15,15 +13,18 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
+
+import static it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper.POSTE_DATE_FORMAT;
 
 @Service
 @Lazy
@@ -53,6 +54,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
     ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
     ingestionFlowFileResult.setIban(iban);
     ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
+    ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
     process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
     return ingestionFlowFileResult;
