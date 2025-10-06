@@ -105,6 +105,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 			.fileName("valid-file.zip")
 			.filePathName(workingDir.toString())
 			.ingestionFlowFileType(FLOW_FILE_TYPE)
+			.fileVersion("1.0")
 			.organizationId(organizationId);
 
 		Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
