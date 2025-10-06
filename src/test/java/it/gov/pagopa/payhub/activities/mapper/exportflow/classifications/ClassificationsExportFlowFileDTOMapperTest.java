@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.classification.dto.generated.ClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -24,7 +25,7 @@ class ClassificationsExportFlowFileDTOMapperTest {
         podamFactory = new PodamFactoryImpl();
     }
 
-    @Test
+    @RepeatedTest(100)
     void givenClassificationViewDTOWhenMapThenReturnClassificationsExportFlowFileDTO() {
         //given
         ClassificationViewDTO classificationViewDTO = podamFactory.manufacturePojo(ClassificationViewDTO.class);
@@ -65,7 +66,6 @@ class ClassificationsExportFlowFileDTOMapperTest {
                 "taxonomicCodePa1",
                 "fiscalCodePa1",
                 "namePa1",
-
                 "payNoticeIud",
                 "payNoticeIuv",
                 "payNoticePaymentExecutionDate",
@@ -86,7 +86,9 @@ class ClassificationsExportFlowFileDTOMapperTest {
                 "payNoticeTransferCategory",
                 "payNoticeDebtPositionTypeOrgCode",
                 "payNoticeBalance",
-                "acquisitionDateI"
+                "acquisitionDateI",
+                "tresBillYear",
+                "tresBillCode"
                 );
         allFieldsAssertions(classificationViewDTO, result);
     }
@@ -274,8 +276,10 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertEquals(classificationViewDTO.getTresIuf(), result.getTresIuf());
         assertEquals(classificationViewDTO.getTresIuv(), result.getTresIuv());
         assertEquals(classificationViewDTO.getTresCreationDate(), result.getTresAcquisitionDateT());
-        assertEquals(classificationViewDTO.getTresBillYear(), result.getTresBillYear());
-        assertEquals(classificationViewDTO.getTresBillCode(), result.getTresBillCode());
+        if (!TreasuryOrigin.TREASURY_XLS.equals(classificationViewDTO.getTresOrigin())) {
+            assertEquals(classificationViewDTO.getTresBillYear(), result.getTresBillYear());
+            assertEquals(classificationViewDTO.getTresBillCode(), result.getTresBillCode());
+        }
         assertEquals(classificationViewDTO.getTresDomainIdCode(), result.getDomainUniqueId());
         assertEquals(classificationViewDTO.getTresReceptionDate(), result.getTresReceiptDate());
         assertEquals(classificationViewDTO.getTresDocumentYear(), result.getTresDocumentYear());
