@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.xls;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls.TreasuryXlsIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls.TreasuryXlsMapper;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
@@ -27,10 +27,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static it.gov.pagopa.payhub.activities.util.TestUtils.*;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCAL_DATE_2025;
+import static it.gov.pagopa.payhub.activities.util.TestUtils.LOCAL_DATE_2026;
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)

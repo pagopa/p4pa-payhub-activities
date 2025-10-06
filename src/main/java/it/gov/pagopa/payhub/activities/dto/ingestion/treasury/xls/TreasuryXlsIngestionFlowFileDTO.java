@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.dto.ingestion.treasury.Xls;
+package it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

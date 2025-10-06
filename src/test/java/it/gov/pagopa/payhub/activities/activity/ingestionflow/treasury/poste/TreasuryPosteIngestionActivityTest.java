@@ -1,13 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury.poste;
 
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.doReturn;
-
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
@@ -20,13 +12,6 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.poste.Trea
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +23,19 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 import uk.co.jemos.podam.api.PodamFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
+import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class TreasuryPosteIngestionActivityTest {
@@ -112,6 +110,7 @@ class TreasuryPosteIngestionActivityTest {
     ingestionFlowFileDTO.setOrganizationId(organizationId);
     ingestionFlowFileDTO.setFilePathName(workingDir.toString());
     ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.TREASURY_POSTE);
+    ingestionFlowFileDTO.setFileVersion("1.0");
     Iterator<TreasuryPosteIngestionFlowFileDTO> iterator = buildTreasuryPosteIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
 
@@ -125,7 +124,7 @@ class TreasuryPosteIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsvPositionalColumn(eq(filePath), eq(TreasuryPosteIngestionFlowFileDTO.class), any(), isNull(), eq(1)))
+    Mockito.when(csvServiceMock.readCsvPositionalColumn(eq(filePath), eq(TreasuryPosteIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion()), eq(1)))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<TreasuryPosteIngestionFlowFileDTO>, List<CsvException>, TreasuryIufIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
@@ -155,6 +154,7 @@ class TreasuryPosteIngestionActivityTest {
     ingestionFlowFileDTO.setFilePathName(workingDir.toString());
     ingestionFlowFileDTO.setOrganizationId(organizationId);
     ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.TREASURY_POSTE);
+    ingestionFlowFileDTO.setFileVersion("1.0");
     Iterator<TreasuryPosteIngestionFlowFileDTO> iterator = buildTreasuryPosteIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
 
@@ -167,7 +167,7 @@ class TreasuryPosteIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsvPositionalColumn(eq(filePath), eq(TreasuryPosteIngestionFlowFileDTO.class), any(), isNull(), eq(1)))
+    Mockito.when(csvServiceMock.readCsvPositionalColumn(eq(filePath), eq(TreasuryPosteIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion()), eq(1)))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<TreasuryPosteIngestionFlowFileDTO>, List<CsvException>, TreasuryIufIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);

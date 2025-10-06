@@ -47,6 +47,7 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
         List<TreasuryCsvErrorDTO> errorList = new ArrayList<>();
         TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
+        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
