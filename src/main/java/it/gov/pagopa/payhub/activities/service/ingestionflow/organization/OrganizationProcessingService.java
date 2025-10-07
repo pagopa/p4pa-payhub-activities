@@ -34,10 +34,10 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     public OrganizationProcessingService(
             OrganizationMapper organizationMapper,
             OrganizationErrorsArchiverService organizationErrorsArchiverService,
-        OrganizationService organizationService, OrganizationApiService organizationApiService) {
+            OrganizationService organizationService, OrganizationApiService organizationApiService) {
         super(organizationErrorsArchiverService, organizationService);
         this.organizationMapper = organizationMapper;
-      this.organizationApiService = organizationApiService;
+        this.organizationApiService = organizationApiService;
     }
 
     public OrganizationIngestionFlowFileResult processOrganization(
@@ -56,6 +56,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
         }
         ingestionFlowFileResult.setBrokerId(organizationBroker.get().getBrokerId());
         ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.get().getOrgFiscalCode());
+        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
@@ -67,8 +68,8 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             if (!ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())) {
                 log.error("Broker with fiscal code {} not master for organization whit fiscal code {}", organizationDTO.getBrokerCf(), organizationDTO.getOrgFiscalCode());
                 OrganizationErrorDTO error = new OrganizationErrorDTO(
-                    ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                    lineNumber, "BROKER_NOT_MATCHED", "Broker not matched");
+                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
+                        lineNumber, "BROKER_NOT_MATCHED", "Broker not matched");
                 errorList.add(error);
                 return false;
             }
@@ -76,14 +77,14 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             Optional<Organization> existingOrg = organizationService.getOrganizationByFiscalCode(organizationDTO.getOrgFiscalCode());
             if (existingOrg.isPresent()) {
                 OrganizationErrorDTO error = new OrganizationErrorDTO(
-                    ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                    lineNumber, "ORGANIZATION_ALREADY_EXISTS", "Organization already exists");
+                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
+                        lineNumber, "ORGANIZATION_ALREADY_EXISTS", "Organization already exists");
                 errorList.add(error);
                 return false;
             }
 
             Organization organizationCreated = organizationService.createOrganization(
-                organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
+                    organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
 
             saveApiKeys(organizationCreated.getOrganizationId(), organizationDTO);
             return true;
@@ -91,8 +92,8 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
         } catch (Exception e) {
             log.error("Error processing organization with ipa code {}: {}", organizationDTO.getIpaCode(), e.getMessage());
             OrganizationErrorDTO error = new OrganizationErrorDTO(
-                ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
+                    lineNumber, "PROCESS_EXCEPTION", e.getMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;
@@ -114,12 +115,12 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
         saveApiKeyIfPresent(organizationId, KeyTypeEnum.SEND, organizationDTO.getSendApiKey());
     }
 
-     private void saveApiKeyIfPresent(Long organizationId, KeyTypeEnum keyType, String apiKey) {
+    private void saveApiKeyIfPresent(Long organizationId, KeyTypeEnum keyType, String apiKey) {
         if (!StringUtils.isEmpty(apiKey)) {
             OrganizationApiKeys apiKeys = OrganizationApiKeys.builder()
-                .keyType(keyType)
-                .apiKey(apiKey)
-                .build();
+                    .keyType(keyType)
+                    .apiKey(apiKey)
+                    .build();
             organizationApiService.encryptAndSaveApiKey(organizationId, apiKeys);
         }
     }
