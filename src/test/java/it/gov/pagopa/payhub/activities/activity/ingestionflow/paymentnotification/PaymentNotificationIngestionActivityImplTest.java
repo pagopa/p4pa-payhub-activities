@@ -86,6 +86,7 @@ class PaymentNotificationIngestionActivityImplTest {
         ingestionFlowFileDTO.setOrganizationId(organizationId);
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION);
+        ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<PaymentNotificationIngestionFlowFileDTO> iterator = buildPaymentNotificationIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
 
@@ -98,7 +99,7 @@ class PaymentNotificationIngestionActivityImplTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(PaymentNotificationIngestionFlowFileDTO.class), any(), isNull()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(PaymentNotificationIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<PaymentNotificationIngestionFlowFileDTO>, List<CsvException>, PaymentNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
@@ -128,6 +129,7 @@ class PaymentNotificationIngestionActivityImplTest {
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setOrganizationId(organizationId);
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION);
+        ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<PaymentNotificationIngestionFlowFileDTO> iterator = buildPaymentNotificationIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
 
@@ -140,7 +142,7 @@ class PaymentNotificationIngestionActivityImplTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(PaymentNotificationIngestionFlowFileDTO.class), any(), isNull()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(PaymentNotificationIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<PaymentNotificationIngestionFlowFileDTO>, List<CsvException>, PaymentNotificationIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);

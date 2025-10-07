@@ -23,44 +23,44 @@ import java.util.List;
 @Component
 public class PaymentNotificationIngestionActivityImpl extends BaseIngestionFlowFileActivity<PaymentNotificationIngestionFlowFileResult> implements PaymentNotificationIngestionActivity {
 
-  private final CsvService csvService;
-  private final PaymentNotificationProcessingService paymentNotificationProcessingService;
+    private final CsvService csvService;
+    private final PaymentNotificationProcessingService paymentNotificationProcessingService;
 
-  protected PaymentNotificationIngestionActivityImpl(
-      IngestionFlowFileService ingestionFlowFileService,
-      IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
-      FileArchiverService fileArchiverService,
-      CsvService csvService,
-      PaymentNotificationProcessingService paymentNotificationProcessingService) {
-    super(ingestionFlowFileService, ingestionFlowFileRetrieverService,
-        fileArchiverService);
-    this.csvService = csvService;
-    this.paymentNotificationProcessingService = paymentNotificationProcessingService;
-  }
-
-  @Override
-  protected IngestionFlowFileTypeEnum getHandledIngestionFlowFileType() {
-    return IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION;
-  }
-
-  @Override
-  protected PaymentNotificationIngestionFlowFileResult handleRetrievedFiles(
-      List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
-    Path filePath = retrievedFiles.getFirst();
-    Path workingDirectory = filePath.getParent();
-    log.info("Processing file: {}", filePath);
-
-    try {
-      return csvService.readCsv(filePath,
-          PaymentNotificationIngestionFlowFileDTO.class, (csvIterator, readerException) ->
-              paymentNotificationProcessingService.processPaymentNotification(csvIterator, readerException,
-                  ingestionFlowFileDTO, workingDirectory), null);
-    } catch (Exception e) {
-      log.error("Error processing file {}: {}", filePath, e.getMessage(), e);
-      throw new InvalidIngestionFileException(String.format("Error processing file %s: %s", filePath, e.getMessage()));
+    protected PaymentNotificationIngestionActivityImpl(
+            IngestionFlowFileService ingestionFlowFileService,
+            IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
+            FileArchiverService fileArchiverService,
+            CsvService csvService,
+            PaymentNotificationProcessingService paymentNotificationProcessingService) {
+        super(ingestionFlowFileService, ingestionFlowFileRetrieverService,
+                fileArchiverService);
+        this.csvService = csvService;
+        this.paymentNotificationProcessingService = paymentNotificationProcessingService;
     }
 
-  }
+    @Override
+    protected IngestionFlowFileTypeEnum getHandledIngestionFlowFileType() {
+        return IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION;
+    }
+
+    @Override
+    protected PaymentNotificationIngestionFlowFileResult handleRetrievedFiles(
+            List<Path> retrievedFiles, IngestionFlowFile ingestionFlowFileDTO) {
+        Path filePath = retrievedFiles.getFirst();
+        Path workingDirectory = filePath.getParent();
+        log.info("Processing file: {}", filePath);
+
+        try {
+            return csvService.readCsv(filePath,
+                    PaymentNotificationIngestionFlowFileDTO.class, (csvIterator, readerException) ->
+                            paymentNotificationProcessingService.processPaymentNotification(csvIterator, readerException,
+                                    ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
+        } catch (Exception e) {
+            log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
+            throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));
+        }
+
+    }
 
 
 }
