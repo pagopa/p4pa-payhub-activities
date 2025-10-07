@@ -47,7 +47,7 @@ public class AssessmentsRegistryProcessingService extends
         List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
 
         AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsRegistryIngestionFlowFileResult();
-        ingestionFlowFileResult.setFileVersion("1.0");
+        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());

@@ -45,7 +45,6 @@ public class AssessmentsProcessingService extends
     private final ReceiptService receiptService;
 
 
-
     public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper, InstallmentService installmentService, ReceiptService receiptService) {
         super(errorArchiverService, organizationService);
         this.assessmentsService = assessmentsService;
@@ -63,7 +62,7 @@ public class AssessmentsProcessingService extends
         List<AssessmentsErrorDTO> errorList = new ArrayList<>();
 
         AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
-        ingestionFlowFileResult.setFileVersion("1.0");
+        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
@@ -94,10 +93,10 @@ public class AssessmentsProcessingService extends
 
             }
 
-            Optional <Organization> organizationOptional = organizationService.getOrganizationByIpaCode(row.getOrganizationIpaCode());
+            Optional<Organization> organizationOptional = organizationService.getOrganizationByIpaCode(row.getOrganizationIpaCode());
             Organization organization = null;
 
-            if(organizationOptional.isEmpty()) {
+            if (organizationOptional.isEmpty()) {
                 log.error("Organization with IPA code {} does not exist", row.getOrganizationIpaCode());
                 String errorMessage = String.format(
                         "Organization with IPA code %s does not exist", row.getOrganizationIpaCode());
@@ -106,13 +105,12 @@ public class AssessmentsProcessingService extends
                         row.getOrganizationIpaCode(), "ORGANIZATION_IPA_DOES_NOT_EXISTS", errorMessage);
                 errorList.add(error);
                 return false;
-            }
-            else
+            } else
                 organization = organizationOptional.get();
 
             CollectionModelInstallmentNoPII collectionInstallment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organization.getOrganizationId(),
-            row.getIud(),List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED));
-            if(collectionInstallment.getEmbedded().getInstallmentNoPIIs().isEmpty()) {
+                    row.getIud(), List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED));
+            if (collectionInstallment.getEmbedded().getInstallmentNoPIIs().isEmpty()) {
                 log.error("Debt position with IUD {} not found for organization {}", row.getIud(), organization.getOrganizationId());
                 String errorMessage = String.format(
                         "Debt position with IUD %s not found for organization %s", row.getIud(), organization.getOrganizationId());
@@ -127,7 +125,7 @@ public class AssessmentsProcessingService extends
 
             ReceiptDTO receiptDTO = receiptService.getByReceiptId(installmentNoPII.getReceiptId());
 
-            Optional <Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(organization.getOrganizationId(),
+            Optional<Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(organization.getOrganizationId(),
                     row.getDebtPositionTypeOrgCode(), row.getAssessmentName());
 
             Assessments assessments = null;
@@ -144,7 +142,7 @@ public class AssessmentsProcessingService extends
                         .build();
 
                 assessments = assessmentsService.createAssessment(assessmentsRequestBody);
-            }else
+            } else
                 assessments = assessmentsOptional.get();
 
             AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(row, organization.getOrganizationId(), assessments.getAssessmentId(), receiptDTO);

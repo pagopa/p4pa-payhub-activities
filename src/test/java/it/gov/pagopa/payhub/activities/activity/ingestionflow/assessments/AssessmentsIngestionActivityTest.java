@@ -84,6 +84,7 @@ class AssessmentsIngestionActivityTest {
         ingestionFlowFileDTO.setOrganizationId(organizationId);
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS);
+        ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<AssessmentsIngestionFlowFileDTO> iterator = buildAssessmentsIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
 
@@ -96,7 +97,7 @@ class AssessmentsIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsIngestionFlowFileDTO.class), any(), isNull()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<AssessmentsIngestionFlowFileDTO>, List<CsvException>, AssessmentsIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
@@ -126,6 +127,7 @@ class AssessmentsIngestionActivityTest {
         ingestionFlowFileDTO.setFilePathName(workingDir.toString());
         ingestionFlowFileDTO.setOrganizationId(organizationId);
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS);
+        ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<AssessmentsIngestionFlowFileDTO> iterator = buildAssessmentsIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
 
@@ -138,7 +140,7 @@ class AssessmentsIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsIngestionFlowFileDTO.class), any(), isNull()))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<AssessmentsIngestionFlowFileDTO>, List<CsvException>, AssessmentsIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);

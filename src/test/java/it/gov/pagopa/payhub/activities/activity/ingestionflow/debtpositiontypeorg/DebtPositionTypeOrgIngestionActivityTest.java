@@ -97,7 +97,7 @@ class DebtPositionTypeOrgIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), isNull()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<DebtPositionTypeOrgIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeOrgIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
@@ -127,6 +127,7 @@ class DebtPositionTypeOrgIngestionActivityTest {
     ingestionFlowFileDTO.setFilePathName(workingDir.toString());
     ingestionFlowFileDTO.setOrganizationId(organizationId);
     ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE_ORG);
+    ingestionFlowFileDTO.setFileVersion("1.0");
     Iterator<DebtPositionTypeOrgIngestionFlowFileDTO> iterator = buildDebtPositionTypeOrgIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
 
@@ -139,7 +140,7 @@ class DebtPositionTypeOrgIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), isNull()))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<DebtPositionTypeOrgIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeOrgIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
