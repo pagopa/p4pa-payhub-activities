@@ -34,6 +34,7 @@ public class AssessmentsDetailMapper {
                 .assessmentCode(dto.getAssessmentCode())
                 .amountCents(dto.getAmountCents())
                 .amountSubmitted(dto.getAmountSubmitted())
+                .receiptId(receiptDTO.getReceiptId())
                 .paymentDateTime(receiptDTO.getPaymentDateTime())
                 .build();
     }
