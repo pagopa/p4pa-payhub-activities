@@ -8,7 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +34,7 @@ class ClearClassifyIufActivityTest {
 
     @Test
     void deleteClassificationFailed() {
-        when(classificationService.deleteByOrganizationIdAndIufAndLabel(ORGANIZATION, IUF, ClassificationsEnum.TES_NO_MATCH)).thenReturn(0);
+        when(classificationService.deleteByOrganizationIdAndIufAndLabel(ORGANIZATION, IUF, ClassificationsEnum.TES_NO_IUF_OR_IUV)).thenReturn(0);
         assertEquals(0,clearClassifyIufActivity.deleteClassificationByIuf(ORGANIZATION,IUF));
     }
 
