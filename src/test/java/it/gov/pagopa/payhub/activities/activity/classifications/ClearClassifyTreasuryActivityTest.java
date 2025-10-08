@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ClearClassifyTransferActivityTest {
+class ClearClassifyTreasuryActivityTest {
     private static final Long ORGANIZATION = 1L;
     private static final String TREASURY_ID = "TREASURY_ID";
 
