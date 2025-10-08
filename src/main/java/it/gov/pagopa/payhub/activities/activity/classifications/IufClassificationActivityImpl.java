@@ -76,7 +76,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
         log.debug("retrieving treasury from ID {}", treasuryId);
         Treasury treasury = treasuryService.getById(treasuryId);
 
-        log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} - iuf: {}", organizationId, treasuryId, iuf);
-        transferClassificationStoreService.saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_MATCH));
+        log.debug("Saving classification TES_NO_IUF_OR_IUV for organizationId: {} - treasuryId: {} - iuf: {}", organizationId, treasuryId, iuf);
+        transferClassificationStoreService.saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_IUF_OR_IUV));
     }
 }
