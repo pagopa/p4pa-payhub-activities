@@ -125,4 +125,24 @@ class ClassificationServiceTest {
         assertEquals(expectedResponse, result);
         verify(classificationClientMock, times(1)).deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, accessToken);
     }
+
+    @Test
+    void testDeleteByOrganizationIdAndTreasuryId() {
+        // Given
+        Long organizationId = 1L;
+        String treasuryId = "TREASURY123";
+        Integer expectedResponse = 1;
+        String accessToken = "accessToken";
+
+        when(classificationClientMock.deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId, accessToken)).thenReturn(expectedResponse);
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        // When
+        Integer result = classificationService.deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationClientMock, times(1)).deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId, accessToken);
+    }
 }

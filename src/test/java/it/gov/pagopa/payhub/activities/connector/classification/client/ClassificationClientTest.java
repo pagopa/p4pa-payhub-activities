@@ -118,4 +118,24 @@ class ClassificationClientTest {
         verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
             .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
 	}
+
+    @Test
+    void testDeleteByOrganizationIdAndTreasuryId() {
+        // Given
+        Long organizationId = 1L;
+        String treasuryId = "TREASURY123";
+        String accessToken = "accessToken";
+        Integer expectedResponse = 1;
+        ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId)).thenReturn(expectedResponse);
+
+        // When
+        Integer result = classificationClient.deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+                .deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
+    }
 }
