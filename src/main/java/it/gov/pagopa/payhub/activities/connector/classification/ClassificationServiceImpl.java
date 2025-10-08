@@ -47,4 +47,9 @@ public class ClassificationServiceImpl implements ClassificationService {
     public Integer deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification) {
         return classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, authnService.getAccessToken());
     }
+
+    @Override
+    public Integer deleteByOrganizationIdAndTreasuryId(Long organizationId, String treasuryId) {
+        return classificationClient.deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId, authnService.getAccessToken());
+    }
 }
