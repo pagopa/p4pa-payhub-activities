@@ -116,7 +116,7 @@ class IufClassificationActivityTest {
 
         assertEquals(iufClassificationActivityResult,expectedIufClassificationActivityResult);
 
-        Mockito.verify(transferClassificationStoreService).saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_MATCH));
+        Mockito.verify(transferClassificationStoreService).saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_IUF_OR_IUV));
     }
 
     @Test
