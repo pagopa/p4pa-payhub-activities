@@ -71,21 +71,24 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                 throw new OrganizationIpaCodeNotMatchException(errorMessage);
             }
 
-            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
+            TreasuryIuf existingTreasury = null;
 
-            if(existingTreasury != null) {
-                boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
-                if (treasuryMatch) {
-                    String errorMessage = String.format(
-                            "IUF %s already associated to another treasury for organization with IPA code %s",
-                            row.getIuf(), ipa);
-                    log.error(errorMessage);
-                    TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(
-                            ingestionFlowFile.getFileName(),
-                            row.getIuv(), row.getIuf(),
-                            lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
-                    errorList.add(error);
-                    return false;
+            if(row.getIuf()!= null) {
+                existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
+                if(existingTreasury != null) {
+                    boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
+                    if (treasuryMatch) {
+                        String errorMessage = String.format(
+                                "IUF %s already associated to another treasury for organization with IPA code %s",
+                                row.getIuf(), ipa);
+                        log.error(errorMessage);
+                        TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(
+                                ingestionFlowFile.getFileName(),
+                                row.getIuv(), row.getIuf(),
+                                lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
+                        errorList.add(error);
+                        return false;
+                    }
                 }
             }
 
