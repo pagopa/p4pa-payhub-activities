@@ -19,9 +19,6 @@ public class ClearClassifyIufActivityImpl implements ClearClassifyIufActivity {
     @Override
     public Integer deleteClassificationByIuf(Long organizationId, String iuf) {
         log.info("Deleting classification TES_NO_IUF_OR_IUV for organization id: {} and iuf: {}", organizationId,iuf);
-        Integer tesNoIufOrIudDeleted =classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, ClassificationsEnum.TES_NO_IUF_OR_IUV);
-        log.info("Deleting classification TES_NO_MATCH for organization id: {} and iuf: {}", organizationId,iuf);
-        Integer tesNoMatchDeleted = classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, ClassificationsEnum.TES_NO_MATCH);
-        return tesNoIufOrIudDeleted + tesNoMatchDeleted;
+        return classificationService.deleteByOrganizationIdAndIufAndLabel(organizationId, iuf, ClassificationsEnum.TES_NO_IUF_OR_IUV);
     }
 }
