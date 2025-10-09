@@ -12,4 +12,5 @@ public interface ClassificationService {
     Integer deleteByOrganizationIdAndIufAndLabel(Long organizationId, String iuf, ClassificationsEnum classification);
     Integer deleteBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
     Integer deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification);
+    Integer deleteByOrganizationIdAndTreasuryId(Long organizationId, String treasuryId);
 }

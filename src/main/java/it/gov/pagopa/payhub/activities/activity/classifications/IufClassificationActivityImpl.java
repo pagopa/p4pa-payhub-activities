@@ -33,6 +33,15 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     public IufClassificationActivityResult classifyIuf(Long organizationId, String treasuryId, String iuf) {
         log.info("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
+        if(iuf == null || iuf.isBlank()) {
+            log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} and IUF is NULL", organizationId, treasuryId);
+            saveClassification(organizationId, treasuryId, iuf, List.of(ClassificationsEnum.TES_NO_MATCH));
+            return IufClassificationActivityResult.builder()
+                    .organizationId(organizationId)
+                    .transfers2classify(Collections.emptyList())
+                    .build();
+        }
+
         Treasury treasury = treasuryService.getById(treasuryId);
 
         if (treasury.getBillAmountCents() < 0) {
@@ -55,8 +64,8 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
             .toList();
 
         if (transfers2classify.isEmpty()) {
-            log.debug("Saving payments reporting found for organization id {} and iuf: {}", organizationId, iuf);
-            saveClassification(organizationId, treasuryId, iuf);
+            log.debug("Saving classification TES_NO_IUF_OR_IUV for organization id {} and iuf: {}", organizationId, iuf);
+            saveClassification(organizationId, treasuryId, iuf, List.of(ClassificationsEnum.TES_NO_IUF_OR_IUV));
         }
 
         return IufClassificationActivityResult.builder()
@@ -72,11 +81,11 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
      * @param treasuryId  treasury id
      * @param iuf  flow unique identifier
      */
-    private void saveClassification(Long organizationId, String treasuryId, String iuf) {
+    private void saveClassification(Long organizationId, String treasuryId, String iuf, List<ClassificationsEnum> labels) {
         log.debug("retrieving treasury from ID {}", treasuryId);
         Treasury treasury = treasuryService.getById(treasuryId);
 
-        log.debug("Saving classification TES_NO_IUF_OR_IUV for organizationId: {} - treasuryId: {} - iuf: {}", organizationId, treasuryId, iuf);
-        transferClassificationStoreService.saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_IUF_OR_IUV));
+        log.debug("Saving classification for labels: {} for organizationId: {} - treasuryId: {} - iuf: {}", labels, organizationId, treasuryId, iuf);
+        transferClassificationStoreService.saveIufClassifications(treasury, labels);
     }
 }

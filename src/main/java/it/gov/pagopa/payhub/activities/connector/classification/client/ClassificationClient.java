@@ -36,4 +36,9 @@ public class ClassificationClient {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification);
     }
+
+    public Integer deleteByOrganizationIdAndTreasuryId(Long organizationId, String treasuryId, String accessToken) {
+        return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
+                .deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
+    }
 }

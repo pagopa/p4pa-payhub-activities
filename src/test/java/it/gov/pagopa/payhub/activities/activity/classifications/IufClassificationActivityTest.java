@@ -136,5 +136,48 @@ class IufClassificationActivityTest {
 
         assertEquals(expectedResult, actualResult);
     }
-}
 
+    @Test
+    void givenNullIufWhenClassifyIufThenTesNoMatchClassificationSave() {
+        Treasury treasury = TreasuryFaker.buildTreasuryDTO();
+        String nullIuf = null;
+
+        IufClassificationActivityResult expectedIufClassificationActivityResult =
+                IufClassificationActivityResult
+                        .builder()
+                        .organizationId(ORGANIZATIONID)
+                        .transfers2classify(new ArrayList<>())
+                        .build();
+
+        when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
+
+        IufClassificationActivityResult iufClassificationActivityResult =
+                iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, nullIuf);
+
+        assertEquals(expectedIufClassificationActivityResult, iufClassificationActivityResult);
+        Mockito.verify(transferClassificationStoreService).saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_MATCH));
+        Mockito.verifyNoInteractions(paymentsReportingServiceMock);
+    }
+
+    @Test
+    void givenBlankIufWhenClassifyIufThenTesNoMatchClassificationSave() {
+        Treasury treasury = TreasuryFaker.buildTreasuryDTO();
+        String blankIuf = "   ";
+
+        IufClassificationActivityResult expectedIufClassificationActivityResult =
+                IufClassificationActivityResult
+                        .builder()
+                        .organizationId(ORGANIZATIONID)
+                        .transfers2classify(new ArrayList<>())
+                        .build();
+
+        when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
+
+        IufClassificationActivityResult iufClassificationActivityResult =
+                iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, blankIuf);
+
+        assertEquals(expectedIufClassificationActivityResult, iufClassificationActivityResult);
+        Mockito.verify(transferClassificationStoreService).saveIufClassifications(treasury, List.of(ClassificationsEnum.TES_NO_MATCH));
+        Mockito.verifyNoInteractions(paymentsReportingServiceMock);
+    }
+}
