@@ -138,7 +138,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
 
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> debtPositionApisHolder.getDataExportsApi(accessToken)
-                        .exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateFrom, paymentDateTo, null, null, debtPositionTypeOrgId, 0, 10, null),
+                        .exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateFrom, paymentDateTo, null, null, debtPositionTypeOrgId, null, 0, 10, null),
                 new ParameterizedTypeReference<>() {},
                 debtPositionApisHolder::unload);
     }
