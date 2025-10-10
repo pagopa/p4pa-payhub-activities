@@ -95,7 +95,9 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
             Treasury treasury = treasuryService.insert(
                     treasuryCsvCompleteMapper.map(row, ingestionFlowFile));
 
-            treasuryCsvCompleteIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
+            if (treasury.getIuf() != null) {
+                treasuryCsvCompleteIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
+            }
             return true;
         } catch (Exception e) {
             log.error("Error processing treasury csv complete with iuf {} and iuv {}: {}",
