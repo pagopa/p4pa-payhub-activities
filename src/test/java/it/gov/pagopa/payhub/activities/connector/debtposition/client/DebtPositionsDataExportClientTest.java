@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.pu.debtposition.client.generated.DataExportsApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
@@ -7,16 +9,13 @@ import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.OffsetDateTimeIntervalFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFileFilter;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.OffsetDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionsDataExportClientTest {
@@ -39,13 +38,14 @@ class DebtPositionsDataExportClientTest {
         String accessToken = "token";
         Long orgId = 1L;
         String userId = "user";
-        PaidExportFileFilter filter = new PaidExportFileFilter(); // no dates
+        PaidExportFileFilter filter = new PaidExportFileFilter();   // no dates
+        filter.setDebtPositionOrigins(null);
         PagedInstallmentsPaidView expected = new PagedInstallmentsPaidView();
 
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken))
                 .thenReturn(dataExportsApiMock);
         Mockito.when(dataExportsApiMock.exportPaidInstallments(
-                        orgId, userId, null, null, null, null, null, 0, 10, null))
+                        orgId, userId, null, null, null, null, null, null, 0, 10, null))
                 .thenReturn(expected);
 
         PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(
@@ -63,6 +63,7 @@ class DebtPositionsDataExportClientTest {
         paymentDate.setTo(to);
 
         PaidExportFileFilter filter = new PaidExportFileFilter();
+        filter.setDebtPositionOrigins(null);
         filter.setPaymentDateTime(paymentDate);
 
         PagedInstallmentsPaidView expected = new PagedInstallmentsPaidView();
@@ -70,7 +71,7 @@ class DebtPositionsDataExportClientTest {
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi("token"))
                 .thenReturn(dataExportsApiMock);
         Mockito.when(dataExportsApiMock.exportPaidInstallments(
-                        1L, "user", from, to, null, null, null, 0, 10, null))
+                        1L, "user", from, to, null, null, null, null, 0, 10, null))
                 .thenReturn(expected);
 
         PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(
@@ -88,6 +89,7 @@ class DebtPositionsDataExportClientTest {
         installmentDate.setTo(to);
 
         PaidExportFileFilter filter = new PaidExportFileFilter();
+        filter.setDebtPositionOrigins(null);
         filter.setInstallmentUpdateDateTime(installmentDate);
 
         PagedInstallmentsPaidView expected = new PagedInstallmentsPaidView();
@@ -95,7 +97,7 @@ class DebtPositionsDataExportClientTest {
         Mockito.when(debtPositionApisHolderMock.getDataExportsApi("token"))
                 .thenReturn(dataExportsApiMock);
         Mockito.when(dataExportsApiMock.exportPaidInstallments(
-                        1L, "user", null, null, from, to, null, 0, 10, null))
+                        1L, "user", null, null, from, to, null, null, 0, 10, null))
                 .thenReturn(expected);
 
         PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(
@@ -116,6 +118,7 @@ class DebtPositionsDataExportClientTest {
         installmentDate.setTo(now.minusDays(1));
 
         PaidExportFileFilter filter = new PaidExportFileFilter();
+        filter.setDebtPositionOrigins(null);
         filter.setPaymentDateTime(paymentDate);
         filter.setInstallmentUpdateDateTime(installmentDate);
 
@@ -127,7 +130,7 @@ class DebtPositionsDataExportClientTest {
                         1L, "user",
                         paymentDate.getFrom(), paymentDate.getTo(),
                         installmentDate.getFrom(), installmentDate.getTo(),
-                        null, 0, 10, null))
+                        null, null, 0, 10, null))
                 .thenReturn(expected);
 
         PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(

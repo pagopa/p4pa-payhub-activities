@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.OffsetDateTimeIntervalFilter;
@@ -32,7 +33,11 @@ public class DebtPositionsDataExportClient {
         OffsetDateTime installmentUpdateDateTimeFrom = installmentUpdateDateTime != null ? installmentUpdateDateTime.getFrom() : null;
         OffsetDateTime installmentUpdateDateTimeTo = installmentUpdateDateTime != null ? installmentUpdateDateTime.getTo() : null;
 
-        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateTimeFrom, paymentDateTimeTo, installmentUpdateDateTimeFrom, installmentUpdateDateTimeTo, paidExportFileFilter.getDebtPositionTypeOrgId(), page, size, sort);
+        List<DebtPositionOrigin> debtPositionOrigins = paidExportFileFilter.getDebtPositionOrigins() != null ?
+            paidExportFileFilter.getDebtPositionOrigins().stream().map(e -> DebtPositionOrigin.fromValue(e.getValue())).toList()
+            : null;
+
+        return debtPositionApisHolder.getDataExportsApi(accessToken).exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateTimeFrom, paymentDateTimeTo, installmentUpdateDateTimeFrom, installmentUpdateDateTimeTo, paidExportFileFilter.getDebtPositionTypeOrgId(), debtPositionOrigins, page, size, sort);
     }
 
     public PagedReceiptsArchivingView getExportReceiptsArchivingView(String accessToken, Long organizationId, String operatorExternalUserId, ReceiptsArchivingExportFileFilter receiptsArchivingExportFileFilter, Integer page, Integer size, List<String> sort) {
