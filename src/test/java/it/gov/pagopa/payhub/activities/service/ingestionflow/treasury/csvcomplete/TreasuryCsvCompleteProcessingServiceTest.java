@@ -137,6 +137,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
+        dto.setIuf(null);
         dto.setIuv("IUV12345");
         dto.setOrganizationIpaCode(ipa);
 
