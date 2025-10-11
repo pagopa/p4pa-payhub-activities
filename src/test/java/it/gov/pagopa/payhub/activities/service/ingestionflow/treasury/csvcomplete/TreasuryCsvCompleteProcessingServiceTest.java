@@ -144,7 +144,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
         Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
 
         Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
-        mappedNotification.setIuf("IUF12345");
+        mappedNotification.setIuf(null);
         mappedNotification.setTreasuryId("TREASURY_ID_1");
         Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
         Mockito.when(treasuryService.insert(mappedNotification)).thenReturn(mappedNotification);
