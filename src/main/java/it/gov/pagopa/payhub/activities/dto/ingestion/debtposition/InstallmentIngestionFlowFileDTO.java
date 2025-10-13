@@ -98,7 +98,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "nation", required = true, profiles = V2_0_ENG)
     private String nation;
 
-    @CsvBindByName(column = "emailPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "mailPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "email", required = true, profiles = V2_0_ENG)
     private String email;
 
@@ -124,7 +124,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "legacyPaymentMetadata", profiles = V2_0_ENG)
     private String legacyPaymentMetadata;
 
-    @CsvBindByName(column = "flagGeneraIuv", required = true, profiles = {V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "flgGeneraIuv", required = true, profiles = {V1_3, V1_4, V2_0})
     @CsvBindByName(column = "generateNotice", required = true, profiles = V2_0_ENG)
     private Boolean generateNotice;
 
