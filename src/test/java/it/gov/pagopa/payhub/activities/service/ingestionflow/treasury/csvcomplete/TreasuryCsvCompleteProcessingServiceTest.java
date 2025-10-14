@@ -125,6 +125,42 @@ class TreasuryCsvCompleteProcessingServiceTest {
     }
 
     @Test
+    void processTreasuryCsvCompleteWithNoErrorsAndNullIuf() {
+
+        String ipa = "IPA123";
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        Long orgId = 1L;
+        organization.setOrganizationId(orgId);
+        Optional<Organization> organizationOptional = Optional.of(organization);
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
+        dto.setBillYear("2025");
+        dto.setIuf(null);
+        dto.setIuv("IUV12345");
+        dto.setOrganizationIpaCode(ipa);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
+
+        Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
+        mappedNotification.setIuf(null);
+        mappedNotification.setTreasuryId("TREASURY_ID_1");
+        Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
+        Mockito.when(treasuryService.insert(mappedNotification)).thenReturn(mappedNotification);
+
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
+                Stream.of(dto).iterator(), List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(1L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Mockito.verify(mapperMock).map(dto, ingestionFlowFile);
+        Mockito.verify(treasuryService).insert(mappedNotification);
+    }
+
+    @Test
     void givenThrowExceptionWhenProcessTreasuryCsvCompleteThenAddError() throws URISyntaxException {
 
         String ipa = "IPA123";
