@@ -74,32 +74,32 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "fullName", required = true, profiles = V2_0_ENG)
     private String fullName;
 
-    @CsvBindByName(column = "indirizzoPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "address", required = true, profiles = V2_0_ENG)
+    @CsvBindByName(column = "indirizzoPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "address", profiles = V2_0_ENG)
     private String address;
 
-    @CsvBindByName(column = "civicoPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "civic", required = true, profiles = V2_0_ENG)
+    @CsvBindByName(column = "civicoPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "civic", profiles = V2_0_ENG)
     private String civic;
 
-    @CsvBindByName(column = "capPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "postalCode", required = true, profiles = V2_0_ENG)
+    @CsvBindByName(column = "capPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "postalCode", profiles = V2_0_ENG)
     private String postalCode;
 
-    @CsvBindByName(column = "localitaPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "location", required = true, profiles = V2_0_ENG)
+    @CsvBindByName(column = "localitaPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "location", profiles = V2_0_ENG)
     private String location;
 
-    @CsvBindByName(column = "provinciaPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "province", required = true, profiles = V2_0_ENG)
+    @CsvBindByName(column = "provinciaPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "province", profiles = V2_0_ENG)
     private String province;
 
-    @CsvBindByName(column = "nazionePagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "nation", required = true, profiles = V2_0_ENG)
+    @CsvBindByName(column = "nazionePagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "nation", profiles = V2_0_ENG)
     private String nation;
 
-    @CsvBindByName(column = "mailPagatore", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "email", required = true, profiles = V2_0_ENG)
+    @CsvBindByName(column = "mailPagatore", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "email", profiles = V2_0_ENG)
     private String email;
 
     @CsvBindByName(column = "dataEsecuzionePagamento", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
