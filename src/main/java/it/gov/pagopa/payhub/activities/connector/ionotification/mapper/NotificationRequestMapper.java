@@ -67,6 +67,7 @@ public class NotificationRequestMapper {
     private NotificationRequestDTO mapNotificationRequestDTO(DebtPositionDTO debtPositionDTO, IONotificationDTO ioNotificationDTO, InstallmentDTO installmentDTO) {
 
         NotificationRequestDTO notificationRequestDTO = new NotificationRequestDTO();
+        notificationRequestDTO.setPersonEntityType(NotificationRequestDTO.PersonEntityTypeEnum.valueOf(installmentDTO.getDebtor().getEntityType().getValue()));
         notificationRequestDTO.setFiscalCode(installmentDTO.getDebtor().getFiscalCode());
         notificationRequestDTO.setOrgId(debtPositionDTO.getOrganizationId());
         notificationRequestDTO.setDebtPositionTypeOrgId(debtPositionDTO.getDebtPositionTypeOrgId());
