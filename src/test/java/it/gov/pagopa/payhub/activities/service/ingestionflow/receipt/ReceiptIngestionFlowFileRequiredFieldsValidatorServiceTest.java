@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,8 +38,8 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
     }
 
     @Test
-    void givenObligatoryFieldsNullWhenValidateRequiredFieldsThenOk(){
-        ReceiptIngestionFlowFileDTO dto =  podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+    void givenObligatoryFieldsNullWhenValidateRequiredFieldsThenOk() {
+        ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
         dto.setRemittanceInformation(null);
         dto.setFiscalCodePA(null);
         dto.setIdTransfer(null);
@@ -55,8 +56,8 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
     }
 
     @Test
-    void givenObligatoryFieldsNotNullWhenValidateRequiredFieldsThenDoNothing(){
-        ReceiptIngestionFlowFileDTO dto =  podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+    void givenObligatoryFieldsNotNullWhenValidateRequiredFieldsThenDoNothing() {
+        ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
 
         setDefaultValues(dto);
 
@@ -144,7 +145,53 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         dto.setIuv("IUV");
         dto.setCreditorReferenceId("DIFFERENT");
 
-        assertThrows(IllegalArgumentException.class, () ->validateIuvMatchesCreditorReferenceId(dto));
+        assertThrows(IllegalArgumentException.class, () -> validateIuvMatchesCreditorReferenceId(dto));
+    }
+
+    @Test
+    void givenSameIuvAndCreditorReferenceIdWhenValidateIuvMatchesCreditorReferenceIdThenSuccess() {
+        ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
+        dto.setIuv("IUV");
+        dto.setCreditorReferenceId("IUV");
+
+        assertDoesNotThrow(() -> validateIuvMatchesCreditorReferenceId(dto));
+    }
+
+    @Test
+    void givenInvalidIurWhenValidateReceiptUniquenessThenException() {
+        ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
+        dto.setPaymentReceiptId("PAY123");
+        ReceiptNoPII receiptNoPII = new ReceiptNoPII();
+        receiptNoPII.setCreditorReferenceId("PAY12");
+
+        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+                .thenReturn(receiptNoPII);
+
+        assertThrows(IllegalArgumentException.class, () -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateReceiptUniqueness(dto));
+    }
+
+    @Test
+    void givenCorrectPayloadWhenValidateReceiptUniquenessThenSuccess() {
+        ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
+        dto.setCreditorReferenceId("PAY123");
+        ReceiptNoPII receiptNoPII = new ReceiptNoPII();
+        receiptNoPII.setCreditorReferenceId("PAY123");
+
+        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+                .thenReturn(receiptNoPII);
+
+        assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateReceiptUniqueness(dto));
+    }
+
+    @Test
+    void givenNullReceiptWhenValidateReceiptUniquenessThenSuccess() {
+        ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
+        dto.setPaymentReceiptId("PAY123");
+
+        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+                .thenReturn(null);
+
+        assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateReceiptUniqueness(dto));
     }
 
 }
