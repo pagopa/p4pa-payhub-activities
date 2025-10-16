@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
@@ -23,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
     @Mock
     private OrganizationService organizationServiceMock;
+    @Mock
+    private ReceiptService receiptServiceMock;
 
     private ReceiptIngestionFlowFileRequiredFieldsValidatorService receiptIngestionFlowFileRequiredFieldsValidatorService;
 
@@ -30,7 +33,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
 
     @BeforeEach
     void setUp() {
-        receiptIngestionFlowFileRequiredFieldsValidatorService = new ReceiptIngestionFlowFileRequiredFieldsValidatorService(organizationServiceMock);
+        receiptIngestionFlowFileRequiredFieldsValidatorService = new ReceiptIngestionFlowFileRequiredFieldsValidatorService(organizationServiceMock, receiptServiceMock);
     }
 
     @Test

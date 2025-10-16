@@ -11,4 +11,5 @@ public interface ReceiptService {
 	ReceiptDTO createReceipt(ReceiptWithAdditionalNodeDataDTO receipt);
 	ReceiptNoPII getByTransferId(Long transferId);
 	ReceiptDTO getByReceiptId(Long receiptId);
+	ReceiptNoPII getByPaymentReceiptId(String paymentReceiptId);
 }

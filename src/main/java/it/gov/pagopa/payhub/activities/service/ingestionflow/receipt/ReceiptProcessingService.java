@@ -75,6 +75,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                 );
             }
             validateIuvMatchesCreditorReferenceId(receipt);
+            requiredFieldsValidatorService.validateReceiptUniqueness(receipt);
             setDefaultValues(receipt);
             ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
             receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
