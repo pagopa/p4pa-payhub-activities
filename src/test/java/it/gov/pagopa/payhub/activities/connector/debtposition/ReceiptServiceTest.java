@@ -80,4 +80,25 @@ class ReceiptServiceTest {
 		verify(authnServiceMock, times(1)).getAccessToken();
 		verify(receiptClientMock, times(1)).getByReceiptId(accessToken, receiptId);
 	}
+
+	@Test
+	void whenGetByPaymentReceiptIdThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		ReceiptNoPII expected = mock(ReceiptNoPII.class);
+		String paymentReceiptId = "paymentReceiptId";
+
+		when(authnServiceMock.getAccessToken())
+				.thenReturn(accessToken);
+		when(receiptClientMock.getByPaymentReceiptId(accessToken, paymentReceiptId))
+				.thenReturn(expected);
+
+		// When
+		ReceiptNoPII result = receiptService.getByPaymentReceiptId(paymentReceiptId);
+
+		// Then
+		assertEquals(expected, result);
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(receiptClientMock, times(1)).getByPaymentReceiptId(accessToken, paymentReceiptId);
+	}
 }

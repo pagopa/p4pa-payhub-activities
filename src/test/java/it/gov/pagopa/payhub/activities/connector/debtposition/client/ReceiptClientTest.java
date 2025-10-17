@@ -118,4 +118,42 @@ class ReceiptClientTest {
 		Assertions.assertNull(result);
 	}
 
+	@Test
+	void whenGetByPaymentReceiptIdThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		String paymentReceiptId = "paymentReceiptId";
+		ReceiptNoPII expectedResult = mock(ReceiptNoPII.class);
+
+		when(debtPositionApisHolderMock.getReceiptNoPiiSearchControllerApi(accessToken))
+				.thenReturn(receiptNoPiiSearchControllerApiMock);
+		when(receiptNoPiiSearchControllerApiMock.crudReceiptsGetByPaymentReceiptId(paymentReceiptId))
+				.thenReturn(expectedResult);
+
+		// When
+		ReceiptNoPII result = receiptClient.getByPaymentReceiptId(accessToken, paymentReceiptId);
+		// Then
+		Assertions.assertEquals(expectedResult, result);
+
+		verify(debtPositionApisHolderMock, times(1)).getReceiptNoPiiSearchControllerApi(accessToken);
+		verify(receiptNoPiiSearchControllerApiMock, times(1)).crudReceiptsGetByPaymentReceiptId(paymentReceiptId);
+	}
+
+	@Test
+	void whenGetByPaymentReceiptIdThenThrowException() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		String paymentReceiptId = "paymentReceiptId";
+
+		when(debtPositionApisHolderMock.getReceiptNoPiiSearchControllerApi(accessToken))
+				.thenReturn(receiptNoPiiSearchControllerApiMock);
+		when(receiptNoPiiSearchControllerApiMock.crudReceiptsGetByPaymentReceiptId(paymentReceiptId))
+				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+		// When
+		ReceiptNoPII result = receiptClient.getByPaymentReceiptId(accessToken, paymentReceiptId);
+		// Then
+		Assertions.assertNull(result);
+	}
+
 }

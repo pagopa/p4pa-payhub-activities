@@ -41,8 +41,15 @@ public class ReceiptClient {
            log.info("ReceiptDTO not found for id: {}", receiptId);
            return null;
        }
-
     }
 
-
+    public ReceiptNoPII getByPaymentReceiptId(String accessToken, String paymentReceiptId) {
+        try {
+            return debtPositionApisHolder.getReceiptNoPiiSearchControllerApi(accessToken)
+                    .crudReceiptsGetByPaymentReceiptId(paymentReceiptId);
+        } catch (HttpClientErrorException.NotFound e) {
+            log.info("Receipt not found for paymentReceiptId: {}", paymentReceiptId);
+            return null;
+        }
+    }
 }
