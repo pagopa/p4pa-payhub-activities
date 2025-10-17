@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.exportflow.debtposition;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvIgnore;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
@@ -38,6 +39,7 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "identificativoMessaggioRicevuta", required = true)
     private String receiptMessageIdentifier;
     @CsvBindByName(column = "dataOraMessaggioRicevuta")
+    @CsvDate("yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime receiptMessageDateTime;
     @CsvBindByName(column = "riferimentoMessaggioRichiesta", required = true)
     private String requestMessageReference;

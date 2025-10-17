@@ -81,4 +81,21 @@ class ReceiptsArchivingExportFlowFileDTOMapperTest {
         assertEquals("OK", result.getPaymentOutcome());
     }
 
+    @Test
+    void  givenValidReceiptArchivingViewWithNullPaymentDateTimeWhenMapThenReturnReturnReturnReceiptsArchivingViewDTO() {
+        ReceiptArchivingView receiptArchivingView = podamFactory.manufacturePojo(ReceiptArchivingView.class);
+        receiptArchivingView.setPaymentDateTime(null);
+
+        Mockito.when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        ReceiptsArchivingExportFlowFileDTO result = receiptsArchivingExportFlowFileDTOMapper.map(receiptArchivingView);
+
+        assertNotNull(result);
+        TestUtils.reflectionEqualsByName(receiptArchivingView, result);
+        TestUtils.checkNotNullFields(result, "paymentDateTime");
+        assertNull(result.getPaymentDateTime());
+        assertEquals("RTXML", result.getReceiptXml());
+        assertEquals("OK", result.getPaymentOutcome());
+    }
 }

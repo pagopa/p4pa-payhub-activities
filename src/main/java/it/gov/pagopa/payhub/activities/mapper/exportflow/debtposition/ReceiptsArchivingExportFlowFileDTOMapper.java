@@ -24,7 +24,9 @@ public class ReceiptsArchivingExportFlowFileDTOMapper {
 
         ReceiptsArchivingExportFlowFileDTO.ReceiptsArchivingExportFlowFileDTOBuilder receiptsArchivingExportFlowFileDTOBuilder = ReceiptsArchivingExportFlowFileDTO.builder()
                 .receiptXml(rtFileHandlerService.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
-                .paymentDateTime(receiptArchivingView.getPaymentDateTime())
+                .paymentDateTime(receiptArchivingView.getPaymentDateTime() != null
+                        ? receiptArchivingView.getPaymentDateTime().toLocalDateTime()
+                        : null)
                 .paymentReceiptId(receiptArchivingView.getPaymentReceiptId())
                 .remittanceInformation(receiptArchivingView.getRemittanceInformation())
                 .orgFiscalCode(receiptArchivingView.getOrgFiscalCode())

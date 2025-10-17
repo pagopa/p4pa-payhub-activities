@@ -16,8 +16,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
-import java.time.temporal.ChronoUnit;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -184,7 +182,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getDomainIdentifier());
         assertNull(exportFlowFileDTO.getRequestingStationIdentifier());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getReceiptMessageIdentifier());
-        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime().truncatedTo(ChronoUnit.SECONDS), exportFlowFileDTO.getReceiptMessageDateTime());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime(), exportFlowFileDTO.getReceiptMessageDateTime());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getRequestMessageReference());
         assertEquals(paidViewDTO.getPaymentDateTime().toLocalDate(), exportFlowFileDTO.getRequestDateReference());
         assertEquals(UniqueIdentifierType.B, exportFlowFileDTO.getUniqueIdentifierType());
