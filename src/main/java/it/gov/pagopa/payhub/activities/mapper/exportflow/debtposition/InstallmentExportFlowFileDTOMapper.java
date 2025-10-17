@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Lazy
@@ -45,7 +44,7 @@ public class InstallmentExportFlowFileDTOMapper {
                 .domainIdentifier(installmentPaidViewDTO.getOrgFiscalCode())
                 .receiptMessageIdentifier(installmentPaidViewDTO.getPaymentReceiptId())
                 .receiptMessageDateTime(installmentPaidViewDTO.getPaymentDateTime() != null
-                        ? installmentPaidViewDTO.getPaymentDateTime().toLocalDateTime().truncatedTo(ChronoUnit.SECONDS)
+                        ? installmentPaidViewDTO.getPaymentDateTime().toLocalDateTime()
                         : null)
                 .requestMessageReference(installmentPaidViewDTO.getPaymentReceiptId())
                 .requestDateReference(paymentDate)
