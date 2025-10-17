@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -34,7 +33,9 @@ public class InstallmentExportFlowFileDTOMapper {
         PersonDTO debtor = installmentPaidViewDTO.getDebtor();
         PersonDTO payer = installmentPaidViewDTO.getPayer();
 
-        LocalDate paymentDate = installmentPaidViewDTO.getPaymentDateTime().toLocalDate();
+        LocalDate paymentDate = installmentPaidViewDTO.getPaymentDateTime() != null
+                ? installmentPaidViewDTO.getPaymentDateTime().toLocalDate()
+                : null;
 
         PaidInstallmentExportFlowFileDTO.PaidInstallmentExportFlowFileDTOBuilder builder = PaidInstallmentExportFlowFileDTO.builder()
                 .iuf(installmentPaidViewDTO.getIuf())
