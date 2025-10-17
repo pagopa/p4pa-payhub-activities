@@ -166,9 +166,9 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getDomainIdentifier());
         assertNull(exportFlowFileDTO.getRequestingStationIdentifier());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getReceiptMessageIdentifier());
-        assertEquals(paidViewDTO.getPaymentDateTime(), exportFlowFileDTO.getReceiptMessageDateTime());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime(), exportFlowFileDTO.getReceiptMessageDateTime());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getRequestMessageReference());
-        assertEquals(paidViewDTO.getPaymentDateTime(), exportFlowFileDTO.getRequestDateTimeReference());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime(), exportFlowFileDTO.getRequestDateTimeReference());
         assertEquals(UniqueIdentifierType.B, exportFlowFileDTO.getUniqueIdentifierType());
         assertEquals(paidViewDTO.getIdPsp(), exportFlowFileDTO.getUniqueIdentifierCode());
         assertEquals(paidViewDTO.getPspCompanyName(), exportFlowFileDTO.getAttestingName());
@@ -211,7 +211,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getPaymentContextCode());
         assertEquals(Utilities.longCentsToBigDecimalEuro(paidViewDTO.getAmountCents()), exportFlowFileDTO.getSingleAmountPaid());
         assertEquals("0", exportFlowFileDTO.getSinglePaymentOutcome());
-        assertEquals(paidViewDTO.getPaymentDateTime(), exportFlowFileDTO.getSinglePaymentOutcomeDateTime());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime(), exportFlowFileDTO.getSinglePaymentOutcomeDateTime());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getUniqueCollectionIdentifier());
         assertEquals(paidViewDTO.getRemittanceInformation(), exportFlowFileDTO.getPaymentReason());
         assertEquals("9/"+ paidViewDTO.getCategory(), exportFlowFileDTO.getCollectionSpecificData());

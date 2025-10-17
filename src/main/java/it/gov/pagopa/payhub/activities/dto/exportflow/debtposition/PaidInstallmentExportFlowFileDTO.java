@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import static it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileVersions.*;
 
@@ -37,11 +37,11 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "identificativoMessaggioRicevuta", required = true)
     private String receiptMessageIdentifier;
     @CsvBindByName(column = "dataOraMessaggioRicevuta")
-    private OffsetDateTime receiptMessageDateTime;
+    private LocalDateTime receiptMessageDateTime;
     @CsvBindByName(column = "riferimentoMessaggioRichiesta", required = true)
     private String requestMessageReference;
     @CsvBindByName(column = "riferimentoDataRichiesta")
-    private OffsetDateTime requestDateTimeReference;
+    private LocalDateTime requestDateTimeReference;
     @CsvBindByName(column = "tipoIdentificativoUnivoco")
     private UniqueIdentifierType uniqueIdentifierType;
     @CsvBindByName(column = "codiceIdentificativoUnivoco")
@@ -139,7 +139,7 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "esitoSingoloPagamento")
     private String singlePaymentOutcome;
     @CsvBindByName(column = "dataEsitoSingoloPagamento")
-    private OffsetDateTime singlePaymentOutcomeDateTime;
+    private LocalDateTime singlePaymentOutcomeDateTime;
     @CsvBindByName(column = "identificativoUnivocoRiscos", required = true)
     private String uniqueCollectionIdentifier;
     @CsvBindByName(column = "causaleVersamento", required = true)
@@ -186,7 +186,7 @@ public class PaidInstallmentExportFlowFileDTO {
     private String codIun;
     @CsvBindByName(column = "dataNotifica" )
     @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3})
-    private OffsetDateTime notificationDate;
+    private LocalDateTime notificationDate;
     @CsvBindByName(column = "costoNotifica" )
     @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1, EXPORT_PAID_VERSION_V1_2, EXPORT_PAID_VERSION_V1_3})
     private Long notificationFeeCents;
