@@ -114,6 +114,66 @@ class FullClassificationsExportFlowFileDTOMapperTest {
         assertNull(result.getDebtorEmail());
     }
 
+    @Test
+    void givenFullClassificationViewDTOWithNullDatesWhenMapThenReturnClassificationsExportFlowFileDTO() {
+        FullClassificationViewDTO fullClassificationViewDTO = podamFactory.manufacturePojo(FullClassificationViewDTO.class);
+        fullClassificationViewDTO.setRecPaymentDateTime(null);
+        fullClassificationViewDTO.setRecCreationDate(null);
+        fullClassificationViewDTO.setPayRepFlowDateTime(null);
+        fullClassificationViewDTO.setTresCreationDate(null);
+        fullClassificationViewDTO.setTresReceptionDate(null);
+        ClassificationsExportFlowFileDTO result = fullClassificationsExportFlowFileDTOMapper.map(fullClassificationViewDTO);
+
+        assertNotNull(result);
+        TestUtils.checkNotNullFields(result,
+                "objectVersion",
+                "requestingStationId",
+                "institutionAttOperatingUnitCode",
+                "institutionAttOperatingUnitName",
+                "institutionAttAddress",
+                "institutionAttCivicNumber",
+                "institutionAttPostalCode",
+                "institutionAttCity",
+                "institutionAttProvince",
+                "institutionAttCountry",
+                "beneficiaryOperatingUnitCode",
+                "beneficiaryOperatingUnitName",
+                "beneficiaryAddress",
+                "beneficiaryCivicNumber",
+                "beneficiaryPostalCode",
+                "beneficiaryCity",
+                "beneficiaryProvince",
+                "beneficiaryCountry",
+                "dueTypeCode",
+                "objectVersionR",
+                "currencyCode",
+                "signCode",
+                "checkNumber",
+                "bankReferenceCode",
+                "clientReferenceCode",
+                "orderDate",
+                "completenessClassification",
+                "dueTypeCodePa1",
+                "dueTypeDescriptionPa1",
+                "taxonomicCodePa1",
+                "fiscalCodePa1",
+                "namePa1",
+                "acquisitionDateI",
+                "acquisitionDateI",
+                "tresBillYear",
+                "tresBillCode",
+                "recPaymentDateTime",
+                "requestReferenceDate",
+                "payRepFlowDateTime",
+                "tresAcquisitionDate",
+                "tresReceiptDate",
+                "singlePaymentOutcomeDateE",
+                "recCreationDate",
+                "acquisitionDateR",
+                "tresAcquisitionDateT"
+        );
+    }
+
     public static void allFieldsAssertions(FullClassificationViewDTO fullClassificationViewDTO, ClassificationsExportFlowFileDTO result){
         assertEquals(fullClassificationViewDTO.getRecFileName(), result.getRecFileName());
         assertEquals(1, result.getFlowRowNumber());
@@ -121,9 +181,9 @@ class FullClassificationsExportFlowFileDTOMapperTest {
         assertEquals(fullClassificationViewDTO.getRecIuv(), result.getRecIuv());
         assertEquals(fullClassificationViewDTO.getRecOrgFiscalCode(), result.getRecOrgFiscalCode());
         assertEquals(fullClassificationViewDTO.getRecPaymentReceiptId(), result.getRecPaymentReceiptId());
-        assertEquals(fullClassificationViewDTO.getRecPaymentDateTime(), result.getRecPaymentDateTime());
+        assertEquals(fullClassificationViewDTO.getRecPaymentDateTime().toLocalDateTime(), result.getRecPaymentDateTime());
         assertEquals(fullClassificationViewDTO.getRecPaymentReceiptId(), result.getRequestMessageReferenceId());
-        assertEquals(fullClassificationViewDTO.getRecPaymentDateTime(), result.getRequestReferenceDate());
+        assertEquals(fullClassificationViewDTO.getRecPaymentDateTime().toLocalDate(), result.getRequestReferenceDate());
         assertEquals("B", result.getInstitutionAttTypeUniqueId());
         assertEquals(fullClassificationViewDTO.getRecIdPsp(), result.getRecPspId());
         assertEquals(fullClassificationViewDTO.getRecPspCompanyName(), result.getRecPspCompanyName());
@@ -172,14 +232,14 @@ class FullClassificationsExportFlowFileDTOMapperTest {
         assertEquals(fullClassificationViewDTO.getRecPaymentReceiptId(), result.getPaymentContextCode());
         assertEquals(Utilities.longCentsToBigDecimalEuro(fullClassificationViewDTO.getRecTransferAmount()), result.getRecTransferAmount());
         assertEquals("0", result.getSinglePaymentOutcomeE());
-        assertEquals(fullClassificationViewDTO.getRecPaymentDateTime(), result.getSinglePaymentOutcomeDateE());
+        assertEquals(fullClassificationViewDTO.getRecPaymentDateTime().toLocalDate(), result.getSinglePaymentOutcomeDateE());
         assertEquals(fullClassificationViewDTO.getRecPaymentReceiptId(), result.getUniqueCollectionIdE());
         assertEquals(fullClassificationViewDTO.getRecTransferRemittanceInformation(), result.getRecTransferRemittanceInformation());
         assertEquals("9/" + fullClassificationViewDTO.getRecTransferCategory(), result.getRecTransferCategory());
-        assertEquals(fullClassificationViewDTO.getRecCreationDate(), result.getRecCreationDate());
+        assertEquals(fullClassificationViewDTO.getRecCreationDate().toLocalDate(), result.getRecCreationDate());
         assertEquals(fullClassificationViewDTO.getRecInstallmentBalance(), result.getRecInstallmentBalance());
         assertEquals(fullClassificationViewDTO.getPayRepIuf(), result.getPayRepIuf());
-        assertEquals(fullClassificationViewDTO.getPayRepFlowDateTime(), result.getPayRepFlowDateTime());
+        assertEquals(fullClassificationViewDTO.getPayRepFlowDateTime().toLocalDateTime(), result.getPayRepFlowDateTime());
         assertEquals(fullClassificationViewDTO.getPayRepRegulationUniqueIdentifier(), result.getUniqueRegulationCodeR());
         assertEquals(fullClassificationViewDTO.getPayRepRegulationDate(), result.getRegulationDateR());
         assertEquals(fullClassificationViewDTO.getPayRepSenderPspType(), result.getSenderInstitutionUniqueIdType());
@@ -195,7 +255,7 @@ class FullClassificationsExportFlowFileDTOMapperTest {
         assertEquals(Utilities.longCentsToBigDecimalEuro(fullClassificationViewDTO.getPayRepAmountPaidCents()), result.getSinglePaymentAmountR());
         assertEquals(fullClassificationViewDTO.getPayRepPaymentOutcomeCode(), result.getSinglePaymentOutcomeCodeR());
         assertEquals(fullClassificationViewDTO.getPayRepPayDate(), result.getSinglePaymentOutcomeDateR());
-        assertEquals(fullClassificationViewDTO.getRecCreationDate(), result.getAcquisitionDateR());
+        assertEquals(fullClassificationViewDTO.getRecCreationDate().toLocalDate(), result.getAcquisitionDateR());
         assertEquals(fullClassificationViewDTO.getTresAbiCode(), result.getTresAbiCode());
         assertEquals(fullClassificationViewDTO.getTresCabCode(), result.getTresCabCode());
         assertEquals(fullClassificationViewDTO.getTresAccountRegistryCode(), result.getTresAccountRegistryCode());
@@ -207,11 +267,11 @@ class FullClassificationsExportFlowFileDTOMapperTest {
         assertEquals(fullClassificationViewDTO.getTresLastName(), result.getTresOrCode());
         assertEquals(fullClassificationViewDTO.getTresIuf(), result.getTresIuf());
         assertEquals(fullClassificationViewDTO.getTresIuv(), result.getTresIuv());
-        assertEquals(fullClassificationViewDTO.getTresCreationDate(), result.getTresAcquisitionDateT());
+        assertEquals(fullClassificationViewDTO.getTresCreationDate().toLocalDate(), result.getTresAcquisitionDateT());
         assertEquals(fullClassificationViewDTO.getTresBillYear(), result.getTresBillYear());
         assertEquals(fullClassificationViewDTO.getTresBillCode(), result.getTresBillCode());
         assertEquals(fullClassificationViewDTO.getTresDomainIdCode(), result.getDomainUniqueId());
-        assertEquals(fullClassificationViewDTO.getTresReceptionDate(), result.getTresReceiptDate());
+        assertEquals(fullClassificationViewDTO.getTresReceptionDate().toLocalDate(), result.getTresReceiptDate());
         assertEquals(fullClassificationViewDTO.getTresDocumentYear(), result.getTresDocumentYear());
         assertEquals(fullClassificationViewDTO.getTresDocumentCode(), result.getTresDocumentCode());
         assertEquals(fullClassificationViewDTO.getTresProvisionalAe(), result.getTresProvisionalAe());
