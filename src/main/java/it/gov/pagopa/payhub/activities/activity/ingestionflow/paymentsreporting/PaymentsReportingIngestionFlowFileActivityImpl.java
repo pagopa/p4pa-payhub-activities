@@ -95,7 +95,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 
 		paymentsReportingIngestionFlowFileValidatorService.validateData(ctFlussoRiversamento, ingestionFlowFileDTO);
 
-		return Pair.of(ingestionFlowFileDTO.getFileVersion(),
+		return Pair.of("1.0.3",
 				paymentsReportingMapperService.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO)
 		);
 	}
