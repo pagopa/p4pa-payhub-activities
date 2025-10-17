@@ -16,6 +16,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
+import java.time.temporal.ChronoUnit;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -157,6 +159,22 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertNull(result.getPayerEmail());
     }
 
+    @Test
+    void  givenInstallmentPaidViewDTOWithNullPaymentDateTimeWhenMapThenReturnReturnInstallmentPaidViewDTO() {
+        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
+        installmentPaidViewDTO.setPaymentDateTime(null);
+
+        Mockito.when(rtFileHandlerServiceMock.read(installmentPaidViewDTO.getOrganizationId(), installmentPaidViewDTO.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
+
+        assertNotNull(result);
+        assertNull(result.getRequestDateReference());
+        assertNull(result.getReceiptMessageDateTime());
+        assertNull(result.getSinglePaymentOutcomeDate());
+    }
+
     private void assertAllField(InstallmentPaidViewDTO paidViewDTO, PaidInstallmentExportFlowFileDTO exportFlowFileDTO) {
         assertEquals(paidViewDTO.getIuf(), exportFlowFileDTO.getIuf());
         assertEquals(1, exportFlowFileDTO.getFlowRowNumber());
@@ -166,9 +184,9 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getDomainIdentifier());
         assertNull(exportFlowFileDTO.getRequestingStationIdentifier());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getReceiptMessageIdentifier());
-        assertEquals(paidViewDTO.getPaymentDateTime(), exportFlowFileDTO.getReceiptMessageDateTime());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime().truncatedTo(ChronoUnit.SECONDS), exportFlowFileDTO.getReceiptMessageDateTime());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getRequestMessageReference());
-        assertEquals(paidViewDTO.getPaymentDateTime(), exportFlowFileDTO.getRequestDateTimeReference());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDate(), exportFlowFileDTO.getRequestDateReference());
         assertEquals(UniqueIdentifierType.B, exportFlowFileDTO.getUniqueIdentifierType());
         assertEquals(paidViewDTO.getIdPsp(), exportFlowFileDTO.getUniqueIdentifierCode());
         assertEquals(paidViewDTO.getPspCompanyName(), exportFlowFileDTO.getAttestingName());
@@ -211,7 +229,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getPaymentContextCode());
         assertEquals(Utilities.longCentsToBigDecimalEuro(paidViewDTO.getAmountCents()), exportFlowFileDTO.getSingleAmountPaid());
         assertEquals("0", exportFlowFileDTO.getSinglePaymentOutcome());
-        assertEquals(paidViewDTO.getPaymentDateTime(), exportFlowFileDTO.getSinglePaymentOutcomeDateTime());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDate(), exportFlowFileDTO.getSinglePaymentOutcomeDate());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getUniqueCollectionIdentifier());
         assertEquals(paidViewDTO.getRemittanceInformation(), exportFlowFileDTO.getPaymentReason());
         assertEquals("9/"+ paidViewDTO.getCategory(), exportFlowFileDTO.getCollectionSpecificData());
