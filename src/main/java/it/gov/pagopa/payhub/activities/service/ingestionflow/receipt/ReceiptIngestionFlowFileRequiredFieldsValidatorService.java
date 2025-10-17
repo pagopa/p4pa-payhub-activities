@@ -42,31 +42,15 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
         }
     }
 
-    public boolean isValidOrganization(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO receiptIngestionFlowFileDTO) {
-        Long organizationId = ingestionFlowFile.getOrganizationId();
-        Organization org = organizationService.getOrganizationById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization with id " + organizationId + " not found."));
+    public void validateIngestionFile(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO dto) {
+        validateOrganization(ingestionFlowFile, dto);
 
-        String orgFiscalCode = org.getOrgFiscalCode();
-        String receiptOrgFiscalCode = receiptIngestionFlowFileDTO.getOrgFiscalCode();
-        String receiptFiscalCodePA = receiptIngestionFlowFileDTO.getFiscalCodePA();
-
-        if (StringUtils.isBlank(receiptFiscalCodePA)) {
-            return orgFiscalCode.equals(receiptOrgFiscalCode);
-        }
-
-        return orgFiscalCode.equals(receiptOrgFiscalCode) && orgFiscalCode.equals(receiptFiscalCodePA);
-    }
-
-    public static void validateIuvMatchesCreditorReferenceId(ReceiptIngestionFlowFileDTO dto) {
         if (!dto.getIuv().equals(dto.getCreditorReferenceId())) {
             throw new IllegalArgumentException(
                     String.format("codIuv and identificativoUnivocoVersamento must be equal, but found iuv='%s' and creditorReferenceId='%s'",
                             dto.getIuv(), dto.getCreditorReferenceId()));
         }
-    }
 
-    public void validateReceiptUniqueness(ReceiptIngestionFlowFileDTO dto) {
         ReceiptNoPII receipt = receiptService.getByPaymentReceiptId(dto.getPaymentReceiptId());
         if (receipt != null && !receipt.getCreditorReferenceId().equals(dto.getCreditorReferenceId())) {
             throw new IllegalArgumentException(
@@ -76,4 +60,28 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
             );
         }
     }
+
+    private void validateOrganization(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO receiptIngestionFlowFileDTO) {
+        Long organizationId = ingestionFlowFile.getOrganizationId();
+        Organization org = organizationService.getOrganizationById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization with id " + organizationId + " not found."));
+
+        String orgFiscalCode = org.getOrgFiscalCode();
+        String receiptOrgFiscalCode = receiptIngestionFlowFileDTO.getOrgFiscalCode();
+        String receiptFiscalCodePA = receiptIngestionFlowFileDTO.getFiscalCodePA();
+
+        boolean isValid;
+        if (StringUtils.isBlank(receiptFiscalCodePA)) {
+            isValid = orgFiscalCode.equals(receiptOrgFiscalCode);
+        } else {
+            isValid = orgFiscalCode.equals(receiptOrgFiscalCode) && orgFiscalCode.equals(receiptFiscalCodePA);
+        }
+
+        if (!isValid) {
+            throw new IllegalArgumentException(
+                    "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
+            );
+        }
+    }
+
 }

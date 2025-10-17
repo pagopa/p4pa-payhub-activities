@@ -37,138 +37,105 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ReceiptProcessingServiceTest {
 
-  @Mock
-  private ReceiptErrorsArchiverService errorsArchiverServiceMock;
+    @Mock
+    private ReceiptErrorsArchiverService errorsArchiverServiceMock;
 
-  @Mock
-  private ReceiptService receiptServiceMock;
+    @Mock
+    private ReceiptService receiptServiceMock;
 
-  @Mock
-  private Path workingDirectory;
-  
-  @Mock
-  private ReceiptMapper mapperMock;
+    @Mock
+    private Path workingDirectory;
 
-  @Mock
-  private OrganizationService organizationServiceMock;
+    @Mock
+    private ReceiptMapper mapperMock;
 
-  @Mock
-  private ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorServiceMock;
+    @Mock
+    private OrganizationService organizationServiceMock;
 
-  private ReceiptProcessingService service;
+    @Mock
+    private ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorServiceMock;
 
-  private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+    private ReceiptProcessingService service;
 
-  @BeforeEach
-  void setUp() {
-    service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, requiredFieldsValidatorServiceMock);
-  }
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
-  @AfterEach
-  void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(
-            mapperMock,
-            errorsArchiverServiceMock,
-            receiptServiceMock);
-  }
+    @BeforeEach
+    void setUp() {
+        service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, requiredFieldsValidatorServiceMock);
+    }
 
-  @Test
-  void whenProcessReceiptThenOk() {
-    //given
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
-    dto.setIuv("IUV");
-    dto.setCreditorReferenceId("IUV");
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
+    @AfterEach
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
+                mapperMock,
+                errorsArchiverServiceMock,
+                receiptServiceMock);
+    }
 
-    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto)).thenReturn(true);
-    Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
-    Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(new ReceiptDTO());
+    @Test
+    void whenProcessReceiptThenOk() {
+        //given
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+        dto.setIuv("IUV");
+        dto.setCreditorReferenceId("IUV");
+        ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
 
-    //when
-    ReceiptIngestionFlowFileResult result = service.processReceipts(
-        Stream.of(dto).iterator(), List.of(),
-            ingestionFlowFile, workingDirectory);
+        Mockito.doNothing().when(requiredFieldsValidatorServiceMock).validateIngestionFile(ingestionFlowFile, dto);
+        Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
+        Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(new ReceiptDTO());
 
-    //then
-    Assertions.assertEquals(1L, result.getProcessedRows());
-    Assertions.assertEquals(1L, result.getTotalRows());
-    Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
-    Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
-    Mockito.verifyNoInteractions(errorsArchiverServiceMock);
-  }
-  
-  @Test
-  void givenIncorrectDataWhenProcessReceiptThenError() throws URISyntaxException {
-    // Given
-    ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
-    dto.setIuv("IUV");
-    dto.setCreditorReferenceId("IUV");
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
+        //when
+        ReceiptIngestionFlowFileResult result = service.processReceipts(
+                Stream.of(dto).iterator(), List.of(),
+                ingestionFlowFile, workingDirectory);
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    workingDirectory = Path.of(new URI("file:///tmp"));
+        //then
+        Assertions.assertEquals(1L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
+        Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
+        Mockito.verifyNoInteractions(errorsArchiverServiceMock);
+    }
 
-    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto)).thenReturn(true);
-    Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
-    Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO))
-        .thenThrow(new RuntimeException("Processing error"));
+    @Test
+    void givenIncorrectDataWhenProcessReceiptThenError() throws URISyntaxException {
+        // Given
+        ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+        dto.setIuv("IUV");
+        dto.setCreditorReferenceId("IUV");
+        ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
 
-    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-        .thenReturn("zipFileName.csv");
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        workingDirectory = Path.of(new URI("file:///tmp"));
 
-    // When
-    ReceiptIngestionFlowFileResult result = service.processReceipts(
-        Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
-        ingestionFlowFile,
-        workingDirectory
-    );
+        Mockito.doNothing().when(requiredFieldsValidatorServiceMock).validateIngestionFile(ingestionFlowFile, dto);
+        Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
+        Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO))
+                .thenThrow(new RuntimeException("Processing error"));
 
-    // Then
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    assertEquals(2, result.getTotalRows());
-    assertEquals(0, result.getProcessedRows());
-    assertEquals("Some rows have failed", result.getErrorDescription());
-    assertEquals("zipFileName.csv", result.getDiscardedFileName());
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
-    Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
-    Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
-    verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Processing error")
-    )));
-  }
+        // When
+        ReceiptIngestionFlowFileResult result = service.processReceipts(
+                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
+                ingestionFlowFile,
+                workingDirectory
+        );
 
-  @Test
-  void givenIncorrectFiscalCodeWhenProcessReceiptThenAddError() throws URISyntaxException {
-    // Given
-    ReceiptIngestionFlowFileDTO dto = new ReceiptIngestionFlowFileDTO();
+        // Then
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        assertEquals(2, result.getTotalRows());
+        assertEquals(0, result.getProcessedRows());
+        assertEquals("Some rows have failed", result.getErrorDescription());
+        assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    workingDirectory = Path.of(new URI("file:///tmp"));
-
-    Mockito.when(requiredFieldsValidatorServiceMock.isValidOrganization(ingestionFlowFile, dto))
-            .thenReturn(false);
-    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-            .thenReturn("zipFileName.csv");
-
-    // When
-    ReceiptIngestionFlowFileResult result = service.processReceipts(
-            Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
-            ingestionFlowFile,
-            workingDirectory
-    );
-
-    // Then
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    assertEquals(2, result.getTotalRows());
-    assertEquals(0, result.getProcessedRows());
-    assertEquals("Some rows have failed", result.getErrorDescription());
-    assertEquals("zipFileName.csv", result.getDiscardedFileName());
-
-    verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-            new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA).")
-    ));
-  }
+        Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
+        Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
+        verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Processing error")
+        )));
+    }
 }
