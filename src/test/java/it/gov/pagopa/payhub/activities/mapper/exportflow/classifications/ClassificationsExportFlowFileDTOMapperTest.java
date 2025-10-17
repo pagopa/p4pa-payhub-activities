@@ -200,9 +200,9 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertEquals(classificationViewDTO.getRecIuv(), result.getRecIuv());
         assertEquals(classificationViewDTO.getRecOrgFiscalCode(), result.getRecOrgFiscalCode());
         assertEquals(classificationViewDTO.getRecPaymentReceiptId(), result.getRecPaymentReceiptId());
-        assertEquals(classificationViewDTO.getRecPaymentDateTime(), result.getRecPaymentDateTime());
+        assertEquals(classificationViewDTO.getRecPaymentDateTime().toLocalDateTime(), result.getRecPaymentDateTime());
         assertEquals(classificationViewDTO.getRecPaymentReceiptId(), result.getRequestMessageReferenceId());
-        assertEquals(classificationViewDTO.getRecPaymentDateTime(), result.getRequestReferenceDate());
+        assertEquals(classificationViewDTO.getRecPaymentDateTime().toLocalDate(), result.getRequestReferenceDate());
         assertEquals("B", result.getInstitutionAttTypeUniqueId());
         assertEquals(classificationViewDTO.getRecIdPsp(), result.getRecPspId());
         assertEquals(classificationViewDTO.getRecPspCompanyName(), result.getRecPspCompanyName());
@@ -240,14 +240,14 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertEquals(classificationViewDTO.getRecPaymentReceiptId(), result.getPaymentContextCode());
         assertEquals(Utilities.longCentsToBigDecimalEuro(classificationViewDTO.getRecTransferAmount()), result.getRecTransferAmount());
         assertEquals("0", result.getSinglePaymentOutcomeE());
-        assertEquals(classificationViewDTO.getRecPaymentDateTime(), result.getSinglePaymentOutcomeDateE());
+        assertEquals(classificationViewDTO.getRecPaymentDateTime().toLocalDate(), result.getSinglePaymentOutcomeDateE());
         assertEquals(classificationViewDTO.getRecPaymentReceiptId(), result.getUniqueCollectionIdE());
         assertEquals(classificationViewDTO.getRecTransferRemittanceInformation(), result.getRecTransferRemittanceInformation());
         assertEquals("9/" + classificationViewDTO.getRecTransferCategory(), result.getRecTransferCategory());
-        assertEquals(classificationViewDTO.getRecCreationDate(), result.getRecCreationDate());
+        assertEquals(classificationViewDTO.getRecCreationDate().toLocalDate(), result.getRecCreationDate());
         assertEquals(classificationViewDTO.getRecInstallmentBalance(), result.getRecInstallmentBalance());
         assertEquals(classificationViewDTO.getPayRepIuf(), result.getPayRepIuf());
-        assertEquals(classificationViewDTO.getPayRepFlowDateTime(), result.getPayRepFlowDateTime());
+        assertEquals(classificationViewDTO.getPayRepFlowDateTime().toLocalDateTime(), result.getPayRepFlowDateTime());
         assertEquals(classificationViewDTO.getPayRepRegulationUniqueIdentifier(), result.getUniqueRegulationCodeR());
         assertEquals(classificationViewDTO.getPayRepRegulationDate(), result.getRegulationDateR());
         assertEquals(classificationViewDTO.getPayRepSenderPspType(), result.getSenderInstitutionUniqueIdType());
@@ -263,7 +263,7 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertEquals(Utilities.longCentsToBigDecimalEuro(classificationViewDTO.getPayRepAmountPaidCents()), result.getSinglePaymentAmountR());
         assertEquals(classificationViewDTO.getPayRepPaymentOutcomeCode(), result.getSinglePaymentOutcomeCodeR());
         assertEquals(classificationViewDTO.getPayRepPayDate(), result.getSinglePaymentOutcomeDateR());
-        assertEquals(classificationViewDTO.getRecCreationDate(), result.getAcquisitionDateR());
+        assertEquals(classificationViewDTO.getRecCreationDate().toLocalDate(), result.getAcquisitionDateR());
         assertEquals(classificationViewDTO.getTresAbiCode(), result.getTresAbiCode());
         assertEquals(classificationViewDTO.getTresCabCode(), result.getTresCabCode());
         assertEquals(classificationViewDTO.getTresAccountRegistryCode(), result.getTresAccountRegistryCode());
@@ -275,13 +275,13 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertEquals(classificationViewDTO.getTresLastName(), result.getTresOrCode());
         assertEquals(classificationViewDTO.getTresIuf(), result.getTresIuf());
         assertEquals(classificationViewDTO.getTresIuv(), result.getTresIuv());
-        assertEquals(classificationViewDTO.getTresCreationDate(), result.getTresAcquisitionDateT());
+        assertEquals(classificationViewDTO.getTresCreationDate().toLocalDate(), result.getTresAcquisitionDateT());
         if (!TreasuryOrigin.TREASURY_XLS.equals(classificationViewDTO.getTresOrigin())) {
             assertEquals(classificationViewDTO.getTresBillYear(), result.getTresBillYear());
             assertEquals(classificationViewDTO.getTresBillCode(), result.getTresBillCode());
         }
         assertEquals(classificationViewDTO.getTresDomainIdCode(), result.getDomainUniqueId());
-        assertEquals(classificationViewDTO.getTresReceptionDate(), result.getTresReceiptDate());
+        assertEquals(classificationViewDTO.getTresReceptionDate().toLocalDate(), result.getTresReceiptDate());
         assertEquals(classificationViewDTO.getTresDocumentYear(), result.getTresDocumentYear());
         assertEquals(classificationViewDTO.getTresDocumentCode(), result.getTresDocumentCode());
         assertEquals(classificationViewDTO.getTresProvisionalAe(), result.getTresProvisionalAe());
