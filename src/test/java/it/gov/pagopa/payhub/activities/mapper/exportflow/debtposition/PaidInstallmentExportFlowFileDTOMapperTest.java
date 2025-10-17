@@ -170,7 +170,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getReceiptMessageIdentifier());
         assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime().truncatedTo(ChronoUnit.SECONDS), exportFlowFileDTO.getReceiptMessageDateTime());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getRequestMessageReference());
-        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime().truncatedTo(ChronoUnit.SECONDS), exportFlowFileDTO.getRequestDateTimeReference());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDate(), exportFlowFileDTO.getRequestDateReference());
         assertEquals(UniqueIdentifierType.B, exportFlowFileDTO.getUniqueIdentifierType());
         assertEquals(paidViewDTO.getIdPsp(), exportFlowFileDTO.getUniqueIdentifierCode());
         assertEquals(paidViewDTO.getPspCompanyName(), exportFlowFileDTO.getAttestingName());
@@ -213,7 +213,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getPaymentContextCode());
         assertEquals(Utilities.longCentsToBigDecimalEuro(paidViewDTO.getAmountCents()), exportFlowFileDTO.getSingleAmountPaid());
         assertEquals("0", exportFlowFileDTO.getSinglePaymentOutcome());
-        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDateTime().truncatedTo(ChronoUnit.SECONDS), exportFlowFileDTO.getSinglePaymentOutcomeDateTime());
+        assertEquals(paidViewDTO.getPaymentDateTime().toLocalDate(), exportFlowFileDTO.getSinglePaymentOutcomeDate());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getUniqueCollectionIdentifier());
         assertEquals(paidViewDTO.getRemittanceInformation(), exportFlowFileDTO.getPaymentReason());
         assertEquals("9/"+ paidViewDTO.getCategory(), exportFlowFileDTO.getCollectionSpecificData());
