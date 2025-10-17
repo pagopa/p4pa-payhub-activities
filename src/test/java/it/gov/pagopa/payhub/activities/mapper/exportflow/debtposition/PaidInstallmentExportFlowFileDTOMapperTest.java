@@ -159,6 +159,22 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertNull(result.getPayerEmail());
     }
 
+    @Test
+    void  givenInstallmentPaidViewDTOWithNullPaymentDateTimeWhenMapThenReturnReturnInstallmentPaidViewDTO() {
+        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
+        installmentPaidViewDTO.setPaymentDateTime(null);
+
+        Mockito.when(rtFileHandlerServiceMock.read(installmentPaidViewDTO.getOrganizationId(), installmentPaidViewDTO.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
+
+        assertNotNull(result);
+        assertNull(result.getRequestDateReference());
+        assertNull(result.getReceiptMessageDateTime());
+        assertNull(result.getSinglePaymentOutcomeDate());
+    }
+
     private void assertAllField(InstallmentPaidViewDTO paidViewDTO, PaidInstallmentExportFlowFileDTO exportFlowFileDTO) {
         assertEquals(paidViewDTO.getIuf(), exportFlowFileDTO.getIuf());
         assertEquals(1, exportFlowFileDTO.getFlowRowNumber());
