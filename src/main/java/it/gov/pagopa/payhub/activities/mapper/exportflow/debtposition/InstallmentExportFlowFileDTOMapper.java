@@ -10,6 +10,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Lazy
@@ -31,6 +33,10 @@ public class InstallmentExportFlowFileDTOMapper {
         PersonDTO debtor = installmentPaidViewDTO.getDebtor();
         PersonDTO payer = installmentPaidViewDTO.getPayer();
 
+        LocalDate paymentDate = installmentPaidViewDTO.getPaymentDateTime() != null
+                ? installmentPaidViewDTO.getPaymentDateTime().toLocalDate()
+                : null;
+
         PaidInstallmentExportFlowFileDTO.PaidInstallmentExportFlowFileDTOBuilder builder = PaidInstallmentExportFlowFileDTO.builder()
                 .iuf(installmentPaidViewDTO.getIuf())
                 .flowRowNumber(1)
@@ -38,9 +44,11 @@ public class InstallmentExportFlowFileDTOMapper {
                 .iuv(installmentPaidViewDTO.getNoticeNumber())
                 .domainIdentifier(installmentPaidViewDTO.getOrgFiscalCode())
                 .receiptMessageIdentifier(installmentPaidViewDTO.getPaymentReceiptId())
-                .receiptMessageDateTime(installmentPaidViewDTO.getPaymentDateTime())
+                .receiptMessageDateTime(installmentPaidViewDTO.getPaymentDateTime() != null
+                        ? installmentPaidViewDTO.getPaymentDateTime().toLocalDateTime().truncatedTo(ChronoUnit.SECONDS)
+                        : null)
                 .requestMessageReference(installmentPaidViewDTO.getPaymentReceiptId())
-                .requestDateTimeReference(installmentPaidViewDTO.getPaymentDateTime())
+                .requestDateReference(paymentDate)
                 .uniqueIdentifierType(UniqueIdentifierType.B)
                 .uniqueIdentifierCode(installmentPaidViewDTO.getIdPsp())
                 .attestingName(installmentPaidViewDTO.getPspCompanyName())
@@ -63,7 +71,7 @@ public class InstallmentExportFlowFileDTOMapper {
                 .paymentContextCode(installmentPaidViewDTO.getPaymentReceiptId())
                 .singleAmountPaid(Utilities.longCentsToBigDecimalEuro(installmentPaidViewDTO.getAmountCents()))
                 .singlePaymentOutcome("0")
-                .singlePaymentOutcomeDateTime(installmentPaidViewDTO.getPaymentDateTime())
+                .singlePaymentOutcomeDate(paymentDate)
                 .uniqueCollectionIdentifier(installmentPaidViewDTO.getPaymentReceiptId())
                 .paymentReason(installmentPaidViewDTO.getRemittanceInformation())
                 .collectionSpecificData("9/".concat(installmentPaidViewDTO.getCategory()))
@@ -76,7 +84,7 @@ public class InstallmentExportFlowFileDTOMapper {
                 .orgName(installmentPaidViewDTO.getCompanyName())
                 .dueTaxonomicCode(installmentPaidViewDTO.getCategory())
                 .codIun(installmentPaidViewDTO.getIun())
-                .notificationDate(installmentPaidViewDTO.getNotificationDate())
+                .notificationDate(installmentPaidViewDTO.getNotificationDate() != null ? installmentPaidViewDTO.getNotificationDate().toLocalDate() : null)
                 .notificationFeeCents(installmentPaidViewDTO.getNotificationFeeCents());
 
         if (MARCA_BOLLO.equals(installmentPaidViewDTO.getCode())) {
