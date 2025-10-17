@@ -193,6 +193,86 @@ class ClassificationsExportFlowFileDTOMapperTest {
         );
     }
 
+    @Test
+    void givenClassificationViewDTOWithNullDatesWhenMapThenReturnClassificationsExportFlowFileDTO() {
+        ClassificationViewDTO classificationViewDTO = podamFactory.manufacturePojo(ClassificationViewDTO.class);
+        classificationViewDTO.setRecPaymentDateTime(null);
+        classificationViewDTO.setRecCreationDate(null);
+        classificationViewDTO.setPayRepFlowDateTime(null);
+        classificationViewDTO.setTresCreationDate(null);
+        classificationViewDTO.setTresReceptionDate(null);
+
+        ClassificationsExportFlowFileDTO result = classificationsExportFlowFileDTOMapper.map(classificationViewDTO);
+
+        assertNotNull(result);
+        TestUtils.checkNotNullFields(result,
+                "objectVersion",
+                "requestingStationId",
+                "institutionAttOperatingUnitCode",
+                "institutionAttOperatingUnitName",
+                "institutionAttAddress",
+                "institutionAttCivicNumber",
+                "institutionAttPostalCode",
+                "institutionAttCity",
+                "institutionAttProvince",
+                "institutionAttCountry",
+                "beneficiaryOperatingUnitCode",
+                "beneficiaryOperatingUnitName",
+                "beneficiaryAddress",
+                "beneficiaryCivicNumber",
+                "beneficiaryPostalCode",
+                "beneficiaryCity",
+                "beneficiaryProvince",
+                "beneficiaryCountry",
+                "dueTypeCode",
+                "objectVersionR",
+                "currencyCode",
+                "signCode",
+                "checkNumber",
+                "bankReferenceCode",
+                "clientReferenceCode",
+                "orderDate",
+                "completenessClassification",
+                "dueTypeCodePa1",
+                "dueTypeDescriptionPa1",
+                "taxonomicCodePa1",
+                "fiscalCodePa1",
+                "namePa1",
+                "payNoticeIud",
+                "payNoticeIuv",
+                "payNoticePaymentExecutionDate",
+                "payNoticePaymentType",
+                "singlePaymentAmountI",
+                "payerUniqueIdTypeI",
+                "payerUniqueIdCodeI",
+                "payerFullNameI",
+                "payerAddressI",
+                "payerCivicNumberI",
+                "payerPostalCodeI",
+                "payerLocationI",
+                "payerProvinceI",
+                "payerCountryI",
+                "payerEmailI",
+                "payNoticePaCommission",
+                "payNoticeRemittanceInformation",
+                "payNoticeTransferCategory",
+                "payNoticeDebtPositionTypeOrgCode",
+                "payNoticeBalance",
+                "acquisitionDateI",
+                "tresBillYear",
+                "tresBillCode",
+                "recPaymentDateTime",
+                "requestReferenceDate",
+                "payRepFlowDateTime",
+                "tresAcquisitionDate",
+                "tresReceiptDate",
+                "singlePaymentOutcomeDateE",
+                "recCreationDate",
+                "acquisitionDateR",
+                "tresAcquisitionDateT"
+        );
+    }
+
     public static void allFieldsAssertions(ClassificationViewDTO classificationViewDTO, ClassificationsExportFlowFileDTO result){
         assertEquals(classificationViewDTO.getRecFileName(), result.getRecFileName());
         assertEquals(1, result.getFlowRowNumber());
