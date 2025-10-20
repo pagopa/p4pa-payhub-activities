@@ -173,21 +173,41 @@ class UtilitiesTest {
     }
 
     @Test
-    void givenNotNullInputWhenApplyIfNotNullThenOk() {
-        String input = "test";
+    void givenNotNullInputWhenToLocalDateTimeThenOk() {
+        OffsetDateTime input = OffsetDateTime.of(2025, 10, 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
+        LocalDateTime expected = LocalDateTime.of(2025, 10, 20, 11, 30, 0, 0);
 
-        Integer res = Utilities.applyIfNotNull(input, String::length);
+        LocalDateTime result = Utilities.toLocalDateTime(input);
 
-        assertEquals(4, res);
+        assertEquals(expected, result);
     }
 
     @Test
-    void givenNullInputWhenApplyIfNotNullThenOk() {
-        String input = null;
+    void givenNullInputWhenToLocalDateTimeThenOk() {
+        OffsetDateTime input = null;
 
-        Integer res = Utilities.applyIfNotNull(input, String::length);
+        LocalDateTime result = Utilities.toLocalDateTime(input);
 
-        assertNull(res);
+        assertNull(result);
+    }
+
+    @Test
+    void givenNotNullInputWhenToLocalDateThenOk() {
+        OffsetDateTime input = OffsetDateTime.of(2025, 10, 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
+        LocalDate expected = LocalDate.of(2025, 10, 20);
+
+        LocalDate result = Utilities.toLocalDate(input);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void givenNullInputWhenToLocalDateThenOk() {
+        OffsetDateTime input = null;
+
+        LocalDate result = Utilities.toLocalDate(input);
+
+        assertNull(result);
     }
 
     @ParameterizedTest
