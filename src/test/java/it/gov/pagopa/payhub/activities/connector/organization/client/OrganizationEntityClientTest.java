@@ -1,10 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.organization.client;
 
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApisHolder;
-import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
-import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
+import it.gov.pagopa.pu.organization.client.generated.OrganizationApi;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +19,7 @@ class OrganizationEntityClientTest {
     @Mock
     private OrganizationApisHolder organizationApisHolderMock;
     @Mock
-    private OrganizationSearchControllerApi organizationSearchControllerApiMock;
-    @Mock
-    private OrganizationEntityControllerApi organizationEntityControllerApiMock;
+    private OrganizationApi organizationApiMock;
 
     private OrganizationEntityClient organizationEntityClient;
 
@@ -34,7 +31,8 @@ class OrganizationEntityClientTest {
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                organizationApisHolderMock
+                organizationApisHolderMock,
+                organizationApiMock
         );
     }
 
@@ -43,11 +41,11 @@ class OrganizationEntityClientTest {
         // Given
         String accessToken = "accessToken";
         Organization expectedOrganization = new Organization();
-        OrganizationRequestBody requestBody = new OrganizationRequestBody();
+        OrganizationCreateDTO requestBody = new OrganizationCreateDTO();
 
-        Mockito.when(organizationApisHolderMock.getOrganizationEntityControllerApi(accessToken))
-            .thenReturn(organizationEntityControllerApiMock);
-        Mockito.when(organizationEntityControllerApiMock.crudCreateOrganization(requestBody))
+        Mockito.when(organizationApisHolderMock.getOrganizationApi(accessToken))
+            .thenReturn(organizationApiMock);
+        Mockito.when(organizationApiMock.createOrganization(requestBody))
             .thenReturn(expectedOrganization);
 
         // When
