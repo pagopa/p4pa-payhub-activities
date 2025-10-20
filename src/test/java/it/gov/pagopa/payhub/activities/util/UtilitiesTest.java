@@ -172,6 +172,24 @@ class UtilitiesTest {
         assertFalse(Utilities.hasAllValues(map));
     }
 
+    @Test
+    void givenNotNullInputWhenApplyIfNotNullThenOk() {
+        String input = "test";
+
+        Integer res = Utilities.applyIfNotNull(input, String::length);
+
+        assertEquals(4, res);
+    }
+
+    @Test
+    void givenNullInputWhenApplyIfNotNullThenOk() {
+        String input = null;
+
+        Integer res = Utilities.applyIfNotNull(input, String::length);
+
+        assertNull(res);
+    }
+
     @ParameterizedTest
     @MethodSource("provideMapsForHasAllValues")
     void givenMapWhenHasAllValuesThenReturnExpected(MultiValuedMap<String, String> map, boolean expected) {

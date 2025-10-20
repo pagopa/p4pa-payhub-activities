@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Lazy
 @Component
@@ -21,12 +22,8 @@ public class ClassificationsExportFlowFileDTOMapper {
 
         TreasuryOrigin treasuryOrigin = retrievedObject.getTresOrigin();
 
-        LocalDate recPaymentDate = retrievedObject.getRecPaymentDateTime() != null
-                ? retrievedObject.getRecPaymentDateTime().toLocalDate()
-                : null;
-        LocalDate recCreationDate = retrievedObject.getRecCreationDate() != null
-                ? retrievedObject.getRecCreationDate().toLocalDate()
-                : null;
+        LocalDate recPaymentDate = Utilities.applyIfNotNull(retrievedObject.getRecPaymentDateTime(), OffsetDateTime::toLocalDate);
+        LocalDate recCreationDate = Utilities.applyIfNotNull(retrievedObject.getRecCreationDate(), OffsetDateTime::toLocalDate);
 
         ClassificationsExportFlowFileDTO.ClassificationsExportFlowFileDTOBuilder classificationsExportFlowFileDTOBuilder = ClassificationsExportFlowFileDTO.builder()
                 .recFileName(retrievedObject.getRecFileName())
@@ -35,9 +32,7 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .recIuv(retrievedObject.getRecIuv())
                 .recOrgFiscalCode(retrievedObject.getRecOrgFiscalCode())
                 .recPaymentReceiptId(retrievedObject.getRecPaymentReceiptId())
-                .recPaymentDateTime(retrievedObject.getRecPaymentDateTime() != null
-                        ? retrievedObject.getRecPaymentDateTime().toLocalDateTime()
-                        : null)
+                .recPaymentDateTime(Utilities.applyIfNotNull(retrievedObject.getRecPaymentDateTime(), OffsetDateTime::toLocalDateTime))
                 .requestMessageReferenceId(retrievedObject.getRecPaymentReceiptId())
                 .requestReferenceDate(recPaymentDate)
                 .institutionAttTypeUniqueId("B")
@@ -89,9 +84,7 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .recCreationDate(recCreationDate)
                 .recInstallmentBalance(retrievedObject.getRecInstallmentBalance())
                 .payRepIuf(retrievedObject.getPayRepIuf())
-                .payRepFlowDateTime(retrievedObject.getPayRepFlowDateTime() != null
-                        ? retrievedObject.getPayRepFlowDateTime().toLocalDateTime()
-                        : null)
+                .payRepFlowDateTime(Utilities.applyIfNotNull(retrievedObject.getPayRepFlowDateTime(), OffsetDateTime::toLocalDateTime))
                 .uniqueRegulationCodeR(retrievedObject.getPayRepRegulationUniqueIdentifier())
                 .regulationDateR(retrievedObject.getPayRepRegulationDate())
                 .senderInstitutionUniqueIdType(retrievedObject.getPayRepSenderPspType())
@@ -119,13 +112,9 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresOrCode(retrievedObject.getTresLastName())
                 .tresIuf(retrievedObject.getTresIuf())
                 .tresIuv(retrievedObject.getTresIuv())
-                .tresAcquisitionDateT(retrievedObject.getTresCreationDate() != null
-                        ? retrievedObject.getTresCreationDate().toLocalDate()
-                        : null)
+                .tresAcquisitionDateT(Utilities.applyIfNotNull(retrievedObject.getTresCreationDate(), OffsetDateTime::toLocalDate))
                 .domainUniqueId(retrievedObject.getTresDomainIdCode())
-                .tresReceiptDate(retrievedObject.getTresReceptionDate() != null
-                        ? retrievedObject.getTresReceptionDate().toLocalDate()
-                        : null)
+                .tresReceiptDate(Utilities.applyIfNotNull(retrievedObject.getTresReceptionDate(), OffsetDateTime::toLocalDate))
                 .tresDocumentYear(retrievedObject.getTresDocumentYear())
                 .tresDocumentCode(retrievedObject.getTresDocumentCode())
                 .tresProvisionalAe(retrievedObject.getTresProvisionalAe())

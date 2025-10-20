@@ -15,6 +15,7 @@ import java.text.DecimalFormatSymbols;
 import java.time.*;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -163,5 +164,9 @@ public class Utilities {
     public static boolean hasAllValues(MultiValuedMap<String, String> map) {
         return !map.isEmpty() && map.entries().stream()
                 .allMatch(e -> e.getValue() != null && !e.getValue().isBlank());
+    }
+
+    public static <T, R> R applyIfNotNull(T input, Function<T, R> func) {
+        return input != null ? func.apply(input) : null;
     }
 }
