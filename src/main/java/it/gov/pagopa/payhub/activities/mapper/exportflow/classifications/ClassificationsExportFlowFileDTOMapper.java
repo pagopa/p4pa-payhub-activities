@@ -8,6 +8,8 @@ import it.gov.pagopa.pu.classification.dto.generated.TreasuryOrigin;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Lazy
 @Component
 public class ClassificationsExportFlowFileDTOMapper {
@@ -19,6 +21,9 @@ public class ClassificationsExportFlowFileDTOMapper {
 
         TreasuryOrigin treasuryOrigin = retrievedObject.getTresOrigin();
 
+        LocalDate recPaymentDate = Utilities.toLocalDate(retrievedObject.getRecPaymentDateTime());
+        LocalDate recCreationDate = Utilities.toLocalDate(retrievedObject.getRecCreationDate());
+
         ClassificationsExportFlowFileDTO.ClassificationsExportFlowFileDTOBuilder classificationsExportFlowFileDTOBuilder = ClassificationsExportFlowFileDTO.builder()
                 .recFileName(retrievedObject.getRecFileName())
                 .flowRowNumber(1)
@@ -26,9 +31,9 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .recIuv(retrievedObject.getRecIuv())
                 .recOrgFiscalCode(retrievedObject.getRecOrgFiscalCode())
                 .recPaymentReceiptId(retrievedObject.getRecPaymentReceiptId())
-                .recPaymentDateTime(retrievedObject.getRecPaymentDateTime())
+                .recPaymentDateTime(Utilities.toLocalDateTime(retrievedObject.getRecPaymentDateTime()))
                 .requestMessageReferenceId(retrievedObject.getRecPaymentReceiptId())
-                .requestReferenceDate(retrievedObject.getRecPaymentDateTime())
+                .requestReferenceDate(recPaymentDate)
                 .institutionAttTypeUniqueId("B")
                 .recPspId(retrievedObject.getRecIdPsp())
                 .recPspCompanyName(retrievedObject.getRecPspCompanyName())
@@ -71,14 +76,14 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .paymentContextCode(retrievedObject.getRecPaymentReceiptId())
                 .recTransferAmount(Utilities.longCentsToBigDecimalEuro(retrievedObject.getRecTransferAmount()))
                 .singlePaymentOutcomeE("0")
-                .singlePaymentOutcomeDateE(retrievedObject.getRecPaymentDateTime())
+                .singlePaymentOutcomeDateE(recPaymentDate)
                 .uniqueCollectionIdE(retrievedObject.getRecPaymentReceiptId())
                 .recTransferRemittanceInformation(retrievedObject.getRecTransferRemittanceInformation())
                 .recTransferCategory("9/" + retrievedObject.getRecTransferCategory())
-                .recCreationDate(retrievedObject.getRecCreationDate())
+                .recCreationDate(recCreationDate)
                 .recInstallmentBalance(retrievedObject.getRecInstallmentBalance())
                 .payRepIuf(retrievedObject.getPayRepIuf())
-                .payRepFlowDateTime(retrievedObject.getPayRepFlowDateTime())
+                .payRepFlowDateTime(Utilities.toLocalDateTime(retrievedObject.getPayRepFlowDateTime()))
                 .uniqueRegulationCodeR(retrievedObject.getPayRepRegulationUniqueIdentifier())
                 .regulationDateR(retrievedObject.getPayRepRegulationDate())
                 .senderInstitutionUniqueIdType(retrievedObject.getPayRepSenderPspType())
@@ -94,7 +99,7 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .singlePaymentAmountR(Utilities.longCentsToBigDecimalEuro(retrievedObject.getPayRepAmountPaidCents()))
                 .singlePaymentOutcomeCodeR(retrievedObject.getPayRepPaymentOutcomeCode())
                 .singlePaymentOutcomeDateR(retrievedObject.getPayRepPayDate())
-                .acquisitionDateR(retrievedObject.getRecCreationDate())
+                .acquisitionDateR(recCreationDate)
                 .tresAbiCode(retrievedObject.getTresAbiCode())
                 .tresCabCode(retrievedObject.getTresCabCode())
                 .tresAccountRegistryCode(retrievedObject.getTresAccountRegistryCode())
@@ -106,9 +111,9 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresOrCode(retrievedObject.getTresLastName())
                 .tresIuf(retrievedObject.getTresIuf())
                 .tresIuv(retrievedObject.getTresIuv())
-                .tresAcquisitionDateT(retrievedObject.getTresCreationDate())
+                .tresAcquisitionDateT(Utilities.toLocalDate(retrievedObject.getTresCreationDate()))
                 .domainUniqueId(retrievedObject.getTresDomainIdCode())
-                .tresReceiptDate(retrievedObject.getTresReceptionDate())
+                .tresReceiptDate(Utilities.toLocalDate(retrievedObject.getTresReceptionDate()))
                 .tresDocumentYear(retrievedObject.getTresDocumentYear())
                 .tresDocumentCode(retrievedObject.getTresDocumentCode())
                 .tresProvisionalAe(retrievedObject.getTresProvisionalAe())

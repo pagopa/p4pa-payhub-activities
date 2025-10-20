@@ -164,4 +164,12 @@ public class Utilities {
         return !map.isEmpty() && map.entries().stream()
                 .allMatch(e -> e.getValue() != null && !e.getValue().isBlank());
     }
+
+    public static LocalDateTime toLocalDateTime(OffsetDateTime offsetDateTime) {
+        return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+    }
+
+    public static LocalDate toLocalDate(OffsetDateTime offsetDateTime) {
+        return offsetDateTime != null ? offsetDateTime.toLocalDate() : null;
+    }
 }

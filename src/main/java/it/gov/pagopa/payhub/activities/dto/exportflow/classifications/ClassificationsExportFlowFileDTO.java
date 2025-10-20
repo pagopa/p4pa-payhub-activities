@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.exportflow.classifications;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvIgnore;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileVersions;
 import it.gov.pagopa.pu.classification.dto.generated.PersonEntityType;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -44,13 +45,14 @@ public class ClassificationsExportFlowFileDTO {
     private String recPaymentReceiptId;
 
     @CsvBindByName(column = "dt_e_data_ora_messaggio_ricevuta_e")
-    private OffsetDateTime recPaymentDateTime;
+    @CsvDate("yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime recPaymentDateTime;
 
     @CsvBindByName(column = "cod_e_riferimento_messaggio_richiesta_e")
     private String requestMessageReferenceId;
 
     @CsvBindByName(column = "dt_e_riferimento_data_richiesta_e")
-    private OffsetDateTime requestReferenceDate;
+    private LocalDate requestReferenceDate;
 
     @CsvBindByName(column = "cod_e_istit_att_id_univ_att_tipo_id_univoco_e")
     private String institutionAttTypeUniqueId;
@@ -197,7 +199,7 @@ public class ClassificationsExportFlowFileDTO {
     private String singlePaymentOutcomeE;
 
     @CsvBindByName(column = "dt_e_dati_pag_dati_sing_pag_data_esito_singolo_pagamento_e")
-    private OffsetDateTime singlePaymentOutcomeDateE;
+    private LocalDate singlePaymentOutcomeDateE;
 
     @CsvBindByName(column = "cod_e_dati_pag_dati_sing_pag_id_univoco_riscoss_e")
     private String uniqueCollectionIdE;
@@ -212,7 +214,7 @@ public class ClassificationsExportFlowFileDTO {
     private String dueTypeCode;
 
     @CsvBindByName(column = "dt_acquisizione_e")
-    private OffsetDateTime recCreationDate;
+    private LocalDate recCreationDate;
 
     @CsvBindByName(column = "bilancioE")
     private String recInstallmentBalance;
@@ -224,7 +226,8 @@ public class ClassificationsExportFlowFileDTO {
     private String payRepIuf;
 
     @CsvBindByName(column = "dt_data_ora_flusso_r")
-    private OffsetDateTime payRepFlowDateTime;
+    @CsvDate("yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime payRepFlowDateTime;
 
     @CsvBindByName(column = "cod_identificativo_univoco_regolamento_r")
     private String uniqueRegulationCodeR;
@@ -272,7 +275,7 @@ public class ClassificationsExportFlowFileDTO {
     private LocalDate singlePaymentOutcomeDateR;
 
     @CsvBindByName(column = "dt_acquisizione_r")
-    private OffsetDateTime acquisitionDateR;
+    private LocalDate acquisitionDateR;
 
     @CsvBindByName(column = "cod_abi_t")
     private String tresAbiCode;
@@ -311,7 +314,7 @@ public class ClassificationsExportFlowFileDTO {
     private String clientReferenceCode;
 
     @CsvBindByName(column = "dt_data_ordine_t")
-    private OffsetDateTime orderDate;
+    private LocalDate orderDate;
 
     @CsvBindByName(column = "de_descrizione_ordinante_t")
     private String tresLastName;
@@ -326,7 +329,7 @@ public class ClassificationsExportFlowFileDTO {
     private String tresIuv;
 
     @CsvBindByName(column = "dt_acquisizione_t")
-    private OffsetDateTime tresAcquisitionDateT;
+    private LocalDate tresAcquisitionDateT;
 
     @CsvBindByName(column = "de_anno_bolletta_t")
     private String tresBillYear;
@@ -338,7 +341,7 @@ public class ClassificationsExportFlowFileDTO {
     private String domainUniqueId;
 
     @CsvBindByName(column = "dt_ricezione_t")
-    private OffsetDateTime tresReceiptDate;
+    private LocalDate tresReceiptDate;
 
     @CsvBindByName(column = "de_anno_documento_t")
     private String tresDocumentYear;

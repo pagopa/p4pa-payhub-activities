@@ -172,6 +172,44 @@ class UtilitiesTest {
         assertFalse(Utilities.hasAllValues(map));
     }
 
+    @Test
+    void givenNotNullInputWhenToLocalDateTimeThenOk() {
+        OffsetDateTime input = OffsetDateTime.of(2025, 10, 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
+        LocalDateTime expected = LocalDateTime.of(2025, 10, 20, 11, 30, 0, 0);
+
+        LocalDateTime result = Utilities.toLocalDateTime(input);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void givenNullInputWhenToLocalDateTimeThenOk() {
+        OffsetDateTime input = null;
+
+        LocalDateTime result = Utilities.toLocalDateTime(input);
+
+        assertNull(result);
+    }
+
+    @Test
+    void givenNotNullInputWhenToLocalDateThenOk() {
+        OffsetDateTime input = OffsetDateTime.of(2025, 10, 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
+        LocalDate expected = LocalDate.of(2025, 10, 20);
+
+        LocalDate result = Utilities.toLocalDate(input);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void givenNullInputWhenToLocalDateThenOk() {
+        OffsetDateTime input = null;
+
+        LocalDate result = Utilities.toLocalDate(input);
+
+        assertNull(result);
+    }
+
     @ParameterizedTest
     @MethodSource("provideMapsForHasAllValues")
     void givenMapWhenHasAllValuesThenReturnExpected(MultiValuedMap<String, String> map, boolean expected) {
