@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +16,6 @@ public interface OrganizationService {
 
   List<Organization> getActiveOrganizationsByBrokerId(Long brokerId);
 
-  Organization createOrganization(OrganizationRequestBody organization);
+  Organization createOrganization(OrganizationCreateDTO organization);
 
 }

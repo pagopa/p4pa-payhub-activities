@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.client.Organizatio
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationRequestBody;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelOrganizationEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -52,7 +52,8 @@ class OrganizationServiceTest {
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
                 authnServiceMock,
-                organizationSearchClientMock
+                organizationSearchClientMock,
+                organizationEntityClientMock
         );
     }
 
@@ -191,7 +192,7 @@ class OrganizationServiceTest {
     @Test
     void givenOrganizationRequestBodyWhenCreateOrganizationThenReturnOrganization() {
         // Given
-        OrganizationRequestBody requestBody = new OrganizationRequestBody();
+        OrganizationCreateDTO requestBody = new OrganizationCreateDTO();
         Organization expectedOrganization = new Organization();
         Mockito.when(organizationEntityClientMock.createOrganization(requestBody, accessToken))
             .thenReturn(expectedOrganization);
@@ -201,7 +202,6 @@ class OrganizationServiceTest {
 
         // Then
         Assertions.assertSame(expectedOrganization, result);
-        Mockito.verify(organizationEntityClientMock).createOrganization(requestBody, accessToken);
     }
 
 }
