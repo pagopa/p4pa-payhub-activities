@@ -29,11 +29,11 @@ public class AssessmentsDetailServiceImpl implements AssessmentsDetailService {
 
 
     @Override
-    public CollectionModelAssessmentsDetail findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iud, String iuv) {
+    public CollectionModelAssessmentsDetail findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud) {
         return assessmentsDetailClient.findAssessmentsDetailByOrganizationIdAndIuvAndIud(
                 organizationId,
-                iud,
                 iuv,
+                iud,
                 authnService.getAccessToken()
         );
     }

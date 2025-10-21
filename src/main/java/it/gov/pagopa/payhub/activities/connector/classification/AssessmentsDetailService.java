@@ -25,7 +25,7 @@ public interface AssessmentsDetailService {
      * @param iud the unique identifier of the debt-position.
      * @return object containing a list of AssessmentsDetail found.
      */
-    CollectionModelAssessmentsDetail findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iud, String iuv);
+    CollectionModelAssessmentsDetail findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud);
 
     /**
      * Update AssessmentsDetails based on the provided AssessmentsDetailRequestBody.
