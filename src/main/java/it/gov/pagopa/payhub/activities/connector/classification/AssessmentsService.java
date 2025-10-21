@@ -35,4 +35,12 @@ public interface AssessmentsService {
      * @return the created Assessments object.
      */
     Assessments createAssessment(AssessmentsRequestBody assessmentsRequestBody);
+
+    /**
+     * Find an assessment for the specified assessment ID.
+     *
+     * @param assessmentId the unique identifier of the assessment.
+     * @return the Assessments object.
+     */
+    Assessments findAssessment(Long assessmentId);
 }

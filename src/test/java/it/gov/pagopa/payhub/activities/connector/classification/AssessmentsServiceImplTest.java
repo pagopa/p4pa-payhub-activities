@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.classification.client.Assessmen
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -159,5 +160,25 @@ class AssessmentsServiceImplTest {
     assertTrue(result.isEmpty());
   }
 
+  @Test
+  void whenFindAssessmentThenOk() {
+    //Given
+    Long assessmentId = 1L;
+    String accessToken = "accessToken";
+
+    Assessments expectedResponse = new Assessments();
+    expectedResponse.setAssessmentId(assessmentId);
+
+    when(authnServiceMock.getAccessToken())
+            .thenReturn(accessToken);
+    when(assessmentClientMock.findAssessment(assessmentId, accessToken))
+            .thenReturn(expectedResponse);
+
+    //When
+    Assessments actualResult = assessmentsService.findAssessment(assessmentId);
+
+    //Then
+    Assertions.assertEquals(expectedResponse, actualResult);
+  }
 
 }
