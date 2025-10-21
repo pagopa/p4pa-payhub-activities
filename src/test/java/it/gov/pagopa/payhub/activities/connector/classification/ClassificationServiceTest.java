@@ -6,6 +6,8 @@ import it.gov.pagopa.payhub.activities.connector.classification.client.Classific
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelClassification;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelClassificationEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -144,5 +146,32 @@ class ClassificationServiceTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(classificationClientMock, times(1)).deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId, accessToken);
+    }
+
+    @Test
+    void testFindAllByOrganizationIdAndIuvAndIud() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "testIUV";
+        String iud = "testIUD";
+        String accessToken = "accessToken";
+
+        CollectionModelClassification expectedResponse = new CollectionModelClassification();
+        Classification classification = new Classification();
+        classification.setOrganizationId(organizationId);
+        classification.setIuv(iuv);
+        classification.setIud(iud);
+        expectedResponse.setEmbedded(new PagedModelClassificationEmbedded(List.of(classification)));
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(classificationClientMock.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        CollectionModelClassification actualResult = classificationService.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud);
+
+        // Then
+        assertEquals(expectedResponse, actualResult);
     }
 }

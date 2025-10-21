@@ -40,5 +40,10 @@ public class AssessmentsServiceImpl implements AssessmentsService {
         return assessmentClient.createAssessment(assessmentsRequestBody, authnService.getAccessToken());
     }
 
+    @Override
+    public Assessments findAssessment(Long assessmentId) {
+        return assessmentClient.findAssessment(assessmentId, authnService.getAccessToken());
+    }
+
 
 }
