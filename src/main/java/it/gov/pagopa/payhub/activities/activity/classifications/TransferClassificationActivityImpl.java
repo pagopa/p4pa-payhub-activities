@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -64,7 +65,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
   }
 
 	@Override
-	public void classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
+	public Pair<InstallmentNoPII,Transfer> classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
 		log.info("Transfer classification for organization id: {} and iuv: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
@@ -81,7 +82,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			Organization organization = organizationService.getOrganizationByFiscalCode(transferDTO.getOrgFiscalCode())
 					.orElseThrow(() -> new OrganizationNotFoundException("Organization not foud with fiscalCode "+transferDTO.getOrgFiscalCode()));
 			if(!transferSemanticKey.getOrgId().equals(organization.getOrganizationId()))
-				return;
+				return null;
 		}
 
 		// find Installment related to the transfer
@@ -108,6 +109,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		// Store results
 		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, installmentDTO, paymentsReporting, treasuryIUF, paymentNotificationDTO, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
+		return Pair.of(installmentDTO, transferDTO);
 	}
 
 	/**
