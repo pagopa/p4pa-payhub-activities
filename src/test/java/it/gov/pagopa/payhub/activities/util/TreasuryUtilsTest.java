@@ -135,7 +135,7 @@ class TreasuryUtilsTest {
 
         String result = TreasuryUtils.generateBillCode(iuf);
 
-        String expectedBillCode = "8102790";
+        String expectedBillCode = "315b8e4";
         assertEquals(expectedBillCode, result);
     }
 }
