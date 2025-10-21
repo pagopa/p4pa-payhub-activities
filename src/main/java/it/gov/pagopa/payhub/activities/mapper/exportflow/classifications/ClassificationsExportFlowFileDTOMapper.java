@@ -120,6 +120,7 @@ public class ClassificationsExportFlowFileDTOMapper {
                 .tresProvisionalCode(retrievedObject.getTresProvisionalCode())
                 .tresActualSuspensionDate(retrievedObject.getTresActualSuspensionDate())
                 .tresManagementProvisionalCode(retrievedObject.getTresManagementProvisionalCode())
+                .completenessClassification(retrievedObject.getClassificationLabel() != null ? retrievedObject.getClassificationLabel().getValue() : null)
                 .lastClassificationDate(retrievedObject.getLastClassificationDate());
 
         if (!TreasuryOrigin.TREASURY_XLS.equals(treasuryOrigin)) {
