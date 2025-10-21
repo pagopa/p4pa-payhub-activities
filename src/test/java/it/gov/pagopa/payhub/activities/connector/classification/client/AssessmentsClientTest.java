@@ -98,4 +98,26 @@ class AssessmentsClientTest {
                 .crudAssessmentsFindByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(any(), any(), any());
     }
 
+    @Test
+    void whenFindAssessmentByAssessmentIdThenOk() {
+        // Given
+        Long assessmentId = 1L;
+        String accessToken = "accessToken";
+
+        AssessmentsEntityControllerApi mockApi = mock(AssessmentsEntityControllerApi.class);
+
+        Assessments expectedResponse = new Assessments();
+        expectedResponse.assessmentId(assessmentId);
+
+        when(classificationApisHolderMock.getAssessmentsEntityControllerApi(accessToken))
+                .thenReturn(mockApi);
+        when(mockApi.crudGetAssessments(String.valueOf(assessmentId)))
+                .thenReturn(expectedResponse);
+
+        // When
+        Assessments result = assessmentClient.findAssessment(assessmentId, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+    }
 }

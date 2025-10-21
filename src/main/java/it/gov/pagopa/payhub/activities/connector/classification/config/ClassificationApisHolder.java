@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ClassificationApisHolder {
 
+    private final ClassificationSearchControllerApi classificationSearchControllerApi;
     private final ClassificationEntityControllerApi classificationEntityControllerApi;
     private final ClassificationEntityExtendedControllerApi classificationEntityExtendedControllerApi;
 
@@ -30,6 +31,7 @@ public class ClassificationApisHolder {
     private final AssessmentsEntityControllerApi assessmentsEntityControllerApi;
 
     private final AssessmentsDetailEntityControllerApi assessmentsDetailEntityControllerApi;
+    private final AssessmentsDetailSearchControllerApi assessmentsDetailSearchControllerApi;
 
     private final AssessmentsRegistryApi assessmentsRegistryApi;
     private final AssessmentsRegistrySearchControllerApi assessmentsRegistrySearchControllerApi;
@@ -54,6 +56,7 @@ public class ClassificationApisHolder {
             restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("CLASSIFICATION"));
         }
 
+        this.classificationSearchControllerApi = new ClassificationSearchControllerApi(apiClient);
         this.classificationEntityControllerApi = new ClassificationEntityControllerApi(apiClient);
         this.classificationEntityExtendedControllerApi = new ClassificationEntityExtendedControllerApi(apiClient);
 
@@ -68,7 +71,10 @@ public class ClassificationApisHolder {
         this.assessmentsControllerApi = new AssessmentsControllerApi(apiClient);
         this.assessmentsSearchControllerApi = new AssessmentsSearchControllerApi(apiClient);
         this.assessmentsEntityControllerApi = new AssessmentsEntityControllerApi(apiClient);
+
         this.assessmentsDetailEntityControllerApi = new AssessmentsDetailEntityControllerApi(apiClient);
+        this.assessmentsDetailSearchControllerApi = new AssessmentsDetailSearchControllerApi(apiClient);
+
         this.assessmentsRegistryApi = new AssessmentsRegistryApi(apiClient);
         this.assessmentsRegistrySearchControllerApi = new AssessmentsRegistrySearchControllerApi(apiClient);
 
@@ -85,6 +91,10 @@ public class ClassificationApisHolder {
     }
 
     /** It will return a {@link TreasurySearchControllerApi} instrumented with the provided accessToken.*/
+
+    public ClassificationSearchControllerApi getClassificationSearchControllerApi(String accessToken) {
+        return getApi(accessToken, classificationSearchControllerApi);
+    }
 
     public ClassificationEntityControllerApi getClassificationEntityControllerApi(String accessToken){
         return getApi(accessToken, classificationEntityControllerApi);
@@ -127,6 +137,10 @@ public class ClassificationApisHolder {
 
     public AssessmentsDetailEntityControllerApi getAssessmentsDetailEntityControllerApi(String accessToken){
         return getApi(accessToken, assessmentsDetailEntityControllerApi);
+    }
+
+    public AssessmentsDetailSearchControllerApi getAssessmentsDetailSearchControllerApi(String accessToken){
+        return getApi(accessToken, assessmentsDetailSearchControllerApi);
     }
 
     public AssessmentsRegistryApi getAssessmentsRegistryApi(String accessToken){

@@ -42,5 +42,10 @@ public class AssessmentClient {
         .crudCreateAssessments(assessments);
   }
 
+  public Assessments findAssessment(Long assessmentId, String accessToken) {
+    return classificationApisHolder.getAssessmentsEntityControllerApi(accessToken)
+            .crudGetAssessments(String.valueOf(assessmentId));
+  }
+
 
 }
