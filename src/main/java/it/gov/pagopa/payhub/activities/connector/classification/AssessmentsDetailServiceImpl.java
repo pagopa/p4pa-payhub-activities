@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.AssessmentsDetailClient;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetail;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelAssessmentsDetail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -27,4 +28,21 @@ public class AssessmentsDetailServiceImpl implements AssessmentsDetailService {
     }
 
 
+    @Override
+    public CollectionModelAssessmentsDetail findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iud, String iuv) {
+        return assessmentsDetailClient.findAssessmentsDetailByOrganizationIdAndIuvAndIud(
+                organizationId,
+                iud,
+                iuv,
+                authnService.getAccessToken()
+        );
+    }
+
+    public AssessmentsDetail updateAssessmentsDetail(Long assessmentDetailId, AssessmentsDetailRequestBody updateRequest) {
+        return assessmentsDetailClient.updateAssessmentsDetail(
+                assessmentDetailId,
+                updateRequest,
+                authnService.getAccessToken()
+        );
+    }
 }
