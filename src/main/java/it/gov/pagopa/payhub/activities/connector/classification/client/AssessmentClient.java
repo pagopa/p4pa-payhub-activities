@@ -42,5 +42,15 @@ public class AssessmentClient {
         .crudCreateAssessments(assessments);
   }
 
+  public Assessments findAssessment(Long assessmentId, String accessToken) {
+    try {
+      return classificationApisHolder.getAssessmentsEntityControllerApi(accessToken)
+              .crudGetAssessments(String.valueOf(assessmentId));
+    } catch (HttpClientErrorException.NotFound e) {
+      log.info("Assessment not found: assessmentId: {}", assessmentId);
+      return null;
+    }
+  }
+
 
 }
