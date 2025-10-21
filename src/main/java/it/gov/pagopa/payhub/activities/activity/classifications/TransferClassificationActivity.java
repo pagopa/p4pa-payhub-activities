@@ -17,7 +17,7 @@ public interface TransferClassificationActivity {
 	 * Processes Transfer classification based on the provided parameters.
 	 *
 	 * @param transferSemanticKey the DTO containing semantic keys such as organization ID, IUV, IUR, and transfer index.
-	 * @return Pair < InstallmentNoPII,Transfer> return pair of classified installment and transfer
+	 * @return Pair&lt;InstallmentNoPII,Transfer&gt; return pair of classified installment and transfer
 	 */
 	@ActivityMethod
 	Pair<InstallmentNoPII,Transfer> classifyTransfer(TransferSemanticKeyDTO transferSemanticKey);
