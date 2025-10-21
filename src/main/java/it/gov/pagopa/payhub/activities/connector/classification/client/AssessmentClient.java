@@ -43,8 +43,13 @@ public class AssessmentClient {
   }
 
   public Assessments findAssessment(Long assessmentId, String accessToken) {
-    return classificationApisHolder.getAssessmentsEntityControllerApi(accessToken)
-            .crudGetAssessments(String.valueOf(assessmentId));
+    try {
+      return classificationApisHolder.getAssessmentsEntityControllerApi(accessToken)
+              .crudGetAssessments(String.valueOf(assessmentId));
+    } catch (HttpClientErrorException.NotFound e) {
+      log.info("Assessment not found: assessmentId: {}", assessmentId);
+      return null;
+    }
   }
 
 

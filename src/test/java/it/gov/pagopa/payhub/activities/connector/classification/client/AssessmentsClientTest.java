@@ -13,11 +13,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -119,5 +122,25 @@ class AssessmentsClientTest {
 
         // Then
         assertEquals(expectedResponse, result);
+    }
+
+    @Test
+    void whenFindNonExistingAssessmentByAssessmentIdThenNull() {
+        // Given
+        Long assessmentId = 0L;
+        String accessToken = "accessToken";
+
+        AssessmentsEntityControllerApi mockApi = mock(AssessmentsEntityControllerApi.class);
+
+        when(classificationApisHolderMock.getAssessmentsEntityControllerApi(accessToken))
+                .thenReturn(mockApi);
+        when(mockApi.crudGetAssessments(String.valueOf(assessmentId)))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        Assessments actualResult = assessmentClient.findAssessment(assessmentId, accessToken);
+
+        // Then
+        assertNull(actualResult);
     }
 }

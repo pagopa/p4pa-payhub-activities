@@ -18,6 +18,6 @@ public interface AssessmentsClassificationActivity {
 	 * @param iud the unique identifier of the debt position related to the assessment
 	 */
 	@ActivityMethod
-	AssessmentEventDTO classifyAssessments(Long organizationId, String iuv, String iud);
+	AssessmentEventDTO classifyAssessment(Long organizationId, String iuv, String iud);
 
 }
