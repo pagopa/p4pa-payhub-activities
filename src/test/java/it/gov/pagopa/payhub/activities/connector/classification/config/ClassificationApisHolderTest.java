@@ -142,12 +142,21 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     }
 //endregion
 
-    //region Assessments Detail entity
+//region Assessments Detail entity
     @Test
     void whenGetAssessmentsDetailEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> classificationApisHolder.getAssessmentsDetailEntityControllerApi(accessToken)
                         .crudCreateAssessmentsdetail(new AssessmentsDetailRequestBody()),
+                new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
+    }
+
+    @Test
+    void whenGetAssessmentsDetailSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> classificationApisHolder.getAssessmentsDetailSearchControllerApi(accessToken)
+                        .crudAssessmentsDetailsFindAllByOrganizationIdAndIuvAndIud(1L, "iuv", "iud"),
                 new ParameterizedTypeReference<>() {},
                 classificationApisHolder::unload);
     }
@@ -265,5 +274,16 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 classificationApisHolder::unload);
     }
+
+//region Classification entity
+    @Test
+    void whenGetClassificationSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> classificationApisHolder.getClassificationSearchControllerApi(accessToken)
+                        .crudClassificationsFindAllByOrganizationIdAndIuvAndIud(1L, "iuv", "iud"),
+                new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
+    }
+//endregion
 
 }

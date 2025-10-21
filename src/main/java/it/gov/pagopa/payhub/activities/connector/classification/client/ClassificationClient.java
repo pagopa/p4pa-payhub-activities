@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.classification.client;
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelClassification;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -40,5 +41,10 @@ public class ClassificationClient {
     public Integer deleteByOrganizationIdAndTreasuryId(Long organizationId, String treasuryId, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                 .deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
+    }
+
+    public CollectionModelClassification findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud, String accessToken) {
+        return classificationApisHolder.getClassificationSearchControllerApi(accessToken)
+                .crudClassificationsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud);
     }
 }

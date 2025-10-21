@@ -2,8 +2,11 @@ package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityExtendedControllerApi;
+import it.gov.pagopa.pu.classification.client.generated.ClassificationSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelClassification;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelClassificationEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -137,5 +140,34 @@ class ClassificationClientTest {
         assertEquals(expectedResponse, result);
         verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
+    }
+
+    @Test
+    void testFindAllByOrganizationIdAndIuvAndIud() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "testIuv";
+        String iud = "testIud";
+        String accessToken = "accessToken";
+
+        ClassificationSearchControllerApi mockApi = mock(ClassificationSearchControllerApi.class);
+
+        CollectionModelClassification expectedResponse = new CollectionModelClassification();
+        Classification classification = new Classification();
+        classification.setOrganizationId(organizationId);
+        classification.setIuv(iuv);
+        classification.setIud(iud);
+        expectedResponse.setEmbedded(new PagedModelClassificationEmbedded(List.of(classification)));
+
+        when(classificationApisHolderMock.getClassificationSearchControllerApi(accessToken))
+                .thenReturn(mockApi);
+        when(mockApi.crudClassificationsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+                .thenReturn(expectedResponse);
+
+        // When
+        CollectionModelClassification actualResult = classificationClient.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, actualResult);
     }
 }
