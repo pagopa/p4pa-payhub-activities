@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -65,7 +65,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
   }
 
 	@Override
-	public ImmutablePair<InstallmentNoPII,Transfer> classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
+	public Pair<InstallmentNoPII,Transfer> classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
 		log.info("Transfer classification for organization id: {} and iuv: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
@@ -109,7 +109,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		// Store results
 		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, installmentDTO, paymentsReporting, treasuryIUF, paymentNotificationDTO, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
-		return ImmutablePair.of(installmentDTO, transferDTO);
+		return Pair.of(installmentDTO, transferDTO);
 	}
 
 	/**
