@@ -13,6 +13,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPost
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import java.net.URI;
@@ -63,7 +64,7 @@ class TreasuryPosteProcessingServiceTest {
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = "8102790";
+    String billCode = TreasuryUtils.generateBillCode(iuf);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
@@ -94,7 +95,7 @@ class TreasuryPosteProcessingServiceTest {
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = "8102790";
+    String billCode = TreasuryUtils.generateBillCode(iuf);
 
     TreasuryPosteIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
     dto.setBillDate(dateString);
@@ -168,7 +169,7 @@ class TreasuryPosteProcessingServiceTest {
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = "8102790";
+    String billCode = TreasuryUtils.generateBillCode(iuf);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);

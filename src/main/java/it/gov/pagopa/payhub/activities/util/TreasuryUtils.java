@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -111,7 +113,8 @@ public class TreasuryUtils {
 
   /** Utility function to generate a billCode if not present as input */
   public static String generateBillCode(String iuf) {
-    // TODO: P4ADEV-3861
-    return iuf.substring(iuf.length() - 7);
+      byte[] iufBytes = iuf.getBytes(StandardCharsets.UTF_8);
+      String uuid = UUID.nameUUIDFromBytes(iufBytes).toString();
+      return uuid.substring(uuid.length() - 7);
   }
 }
