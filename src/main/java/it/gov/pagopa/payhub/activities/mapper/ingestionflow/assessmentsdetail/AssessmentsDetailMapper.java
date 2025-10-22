@@ -11,13 +11,12 @@ import org.springframework.stereotype.Service;
 public class AssessmentsDetailMapper {
     private final String dataCipherPsw;
 
-
     public AssessmentsDetailMapper(
             @Value("${cipher.file-encrypt-psw}") String dataCipherPsw) {
         this.dataCipherPsw = dataCipherPsw;
     }
 
-    public AssessmentsDetailRequestBody map2AssessmentsDetailRequestBody(AssessmentsIngestionFlowFileDTO dto, Long organizationId, Long assessmentId, ReceiptDTO receiptDTO) {
+    public AssessmentsDetailRequestBody map2AssessmentsDetailRequestBody(AssessmentsIngestionFlowFileDTO dto, Long organizationId, Long assessmentId, ReceiptDTO receiptDTO, Long debtPositionTypeOrgId) {
 
         byte [] cfDebtorHash = AESUtils.encrypt(this.dataCipherPsw, receiptDTO.getDebtor().getFiscalCode());
 
@@ -25,6 +24,7 @@ public class AssessmentsDetailMapper {
                 .assessmentId(assessmentId)
                 .organizationId(organizationId)
                 .debtPositionTypeOrgCode(dto.getDebtPositionTypeOrgCode())
+                .debtPositionTypeOrgId(debtPositionTypeOrgId)
                 .iuv(dto.getIuv())
                 .iud(dto.getIud())
                 .iur(receiptDTO.getPaymentReceiptId())

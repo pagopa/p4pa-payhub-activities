@@ -31,13 +31,15 @@ class AssessmentsMapperTest {
     AssessmentsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
     Long organizationId = 123L;
     Long assessmentId = 123L;
+    Long debtPositionTypeOrgId = 1L;
     ReceiptDTO receiptDTO = podamFactory.manufacturePojo(ReceiptDTO.class);
 
-    var result = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(dto, organizationId, assessmentId, receiptDTO);
+    var result = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(dto, organizationId, assessmentId, receiptDTO, debtPositionTypeOrgId);
 
     Assertions.assertNotNull(result);
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "links", "assessmentDetailId","paymentDateTime","receiptId");
+        "updateTraceId", "links", "assessmentDetailId","paymentDateTime","receiptId", "officeDescription",
+            "sectionDescription", "assessmentDescription", "classificationLabel", "dateReceipt", "dateReporting", "dateTreasury");
   }
 
 }

@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessments;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsDetailService;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
@@ -15,6 +16,7 @@ import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBod
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPIIEmbedded;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -67,6 +69,9 @@ class AssessmentsProcessingServiceTest {
     @Mock
     private OrganizationService organizationServiceMock;
 
+    @Mock
+    private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
+
     @BeforeEach
     void setUp() {
         service = new AssessmentsProcessingService(
@@ -76,7 +81,8 @@ class AssessmentsProcessingServiceTest {
                 assessmentsDetailServiceMock,
                 mapperMock,
                 installmentServiceMock,
-                receiptServiceMock
+                receiptServiceMock,
+                debtPositionTypeOrgServiceMock
                 );
     }
 
@@ -140,11 +146,16 @@ class AssessmentsProcessingServiceTest {
         Mockito.when(row.getAssessmentName()).thenReturn("ASSESSMENT1");
         Mockito.when(row.getIud()).thenReturn("IUD1");
 
+        DebtPositionTypeOrg debtPositionTypeOrg = mock(DebtPositionTypeOrg.class);
+
+        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(), row.getDebtPositionTypeOrgCode()))
+                .thenReturn(debtPositionTypeOrg);
+
         Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
 
         var receiptDTOMock = mock(it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO.class);
         Mockito.when(receiptServiceMock.getByReceiptId(any())).thenReturn(receiptDTOMock);
-        Mockito.when(mapperMock.map2AssessmentsDetailRequestBody(row, 123L,456L, receiptDTOMock)).thenReturn(assessmentsDetailRequestBody);
+        Mockito.when(mapperMock.map2AssessmentsDetailRequestBody(row, 123L,456L, receiptDTOMock, debtPositionTypeOrg.getDebtPositionTypeOrgId())).thenReturn(assessmentsDetailRequestBody);
 
         // When
         boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
@@ -223,5 +234,49 @@ class AssessmentsProcessingServiceTest {
         Assertions.assertEquals(1, errorList.size());
         Assertions.assertEquals("DEBT_POSITION_NOT_FOUND", errorList.getFirst().getErrorCode());
         Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("Debt position with IUD IUD1 not found"));
+    }
+
+    @Test
+    void consumeRowWithNoDPTypeOrgShouldReturnFalseAndAddError() {
+        long lineNumber = 1L;
+        AssessmentsIngestionFlowFileDTO row = mock(AssessmentsIngestionFlowFileDTO.class);
+
+        AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
+        ingestionFlowFileResult.setIpaCode("IPA123");
+
+        IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+
+        Organization organization = new Organization();
+        organization.setIpaCode("IPA123");
+        organization.setOrganizationId(123L);
+        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
+
+        var collectionInstallment = mock(CollectionModelInstallmentNoPII.class);
+        var embedded = mock(CollectionModelInstallmentNoPIIEmbedded.class);
+        Mockito.when(collectionInstallment.getEmbedded()).thenReturn(embedded);
+        Mockito.when(embedded.getInstallmentNoPIIs()).thenReturn(List.of(mock(InstallmentNoPII.class)));
+        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(Mockito.eq(123L), any(), any())).thenReturn(collectionInstallment);
+
+        List<AssessmentsErrorDTO> errorList = new ArrayList<>();
+
+        Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
+        Mockito.when(row.getDebtPositionTypeOrgCode()).thenReturn("DPT001");
+        Mockito.when(row.getAssessmentName()).thenReturn("ASSESSMENT1");
+        Mockito.when(row.getIud()).thenReturn("IUD1");
+
+        var receiptDTOMock = mock(it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO.class);
+        Mockito.when(receiptServiceMock.getByReceiptId(any())).thenReturn(receiptDTOMock);
+
+        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(), row.getDebtPositionTypeOrgCode()))
+                .thenReturn(null);
+
+        // When
+        boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
+
+        // Then
+        Assertions.assertFalse(result);
+        Assertions.assertEquals(1, errorList.size());
+        Assertions.assertEquals("DEBT_POSITION_TYPE_ORG_NOT_FOUND", errorList.getFirst().getErrorCode());
+        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("Debt position type org not found for org 123 and code DPT001"));
     }
 }
