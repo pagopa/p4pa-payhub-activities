@@ -113,7 +113,7 @@ public class CsvService {
         }
 
         try (Writer writer = Files.newBufferedWriter(csvFilePath)) {
-            HeaderColumnNameMappingStrategy<C> mappingStrategy = new HeaderColumnNameMappingStrategy<>();
+            ColumnPositionMappingStrategy<C> mappingStrategy = new ColumnPositionMappingStrategy<>();
             mappingStrategy.setProfile(csvProfile);
             mappingStrategy.setType(typeClass);
 
