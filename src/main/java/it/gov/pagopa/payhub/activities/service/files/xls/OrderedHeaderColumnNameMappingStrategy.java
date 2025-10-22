@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.mapper;
+package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
