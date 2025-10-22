@@ -26,6 +26,7 @@ public class JsonConfig {
   public ObjectMapper objectMapper() {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(configureDateTimeModule());
+    mapper.registerModule(configurePairModule());
     mapper.registerModule(new Jdk8Module());
     mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.DEFAULT));
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -47,7 +48,11 @@ public class JsonConfig {
     return new JavaTimeModule()
       .addSerializer(LocalDateTime.class, new LocalDateTimeToOffsetDateTimeSerializer())
       .addDeserializer(LocalDateTime.class, new OffsetDateTimeToLocalDateTimeDeserializer())
-      .addDeserializer(OffsetDateTime.class, new LocalDateTimeToOffsetDateTimeDeserializer())
+      .addDeserializer(OffsetDateTime.class, new LocalDateTimeToOffsetDateTimeDeserializer());
+  }
+
+  private static SimpleModule configurePairModule() {
+    return new SimpleModule()
       .addSerializer(Pair.class, new PairSerializer())
       .addDeserializer(Pair.class, new PairDeserializer());
   }
