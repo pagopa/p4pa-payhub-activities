@@ -371,4 +371,14 @@ class ClassificationsExportFlowFileDTOMapperTest {
         assertEquals(classificationViewDTO.getLastClassificationDate(), result.getLastClassificationDate());
     }
 
+    @Test
+    void givenClassificationViewDTOWithNullClassificationLabelWhenMapThenCompletenessClassificationIsNull() {
+        ClassificationViewDTO classificationViewDTO = podamFactory.manufacturePojo(ClassificationViewDTO.class);
+        classificationViewDTO.setClassificationLabel(null);
+
+        ClassificationsExportFlowFileDTO result = classificationsExportFlowFileDTOMapper.map(classificationViewDTO);
+
+        assertNotNull(result);
+        assertNull(result.getCompletenessClassification(), "completenessClassification should be null when classificationLabel is null");
+    }
 }
