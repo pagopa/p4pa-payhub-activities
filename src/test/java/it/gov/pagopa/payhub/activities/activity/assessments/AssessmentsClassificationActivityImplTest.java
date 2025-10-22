@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.assessments;
 
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentClassificationService;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
-import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsDetailSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,13 +42,13 @@ class AssessmentsClassificationActivityImplTest {
 		expectedResult.setIuv(iuv);
 		expectedResult.setIud(iud);
 
-		AssessmentsDetailSemanticKeyDTO assessmentsDetailSemanticKeyDTO = new AssessmentsDetailSemanticKeyDTO(
+		AssessmentsClassificationSemanticKeyDTO assessmentsClassificationSemanticKeyDTO = new AssessmentsClassificationSemanticKeyDTO(
 				organizationId, iuv, iud
 		);
 
 		when(assessmentClassificationServiceMock.classifyAssessment(organizationId, iuv, iud)).thenReturn(expectedResult);
 
-		AssessmentEventDTO actualResult = activity.classifyAssessment(assessmentsDetailSemanticKeyDTO);
+		AssessmentEventDTO actualResult = activity.classifyAssessment(assessmentsClassificationSemanticKeyDTO);
 
 		Assertions.assertEquals(expectedResult, actualResult);
 	}

@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssessmentsDetailSemanticKeyDTO {
+public class AssessmentsClassificationSemanticKeyDTO {
 	private Long orgId;
 	private String iuv;
 	private String iud;
