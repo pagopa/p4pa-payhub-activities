@@ -3,12 +3,14 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessments;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsDetailService;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -16,10 +18,7 @@ import it.gov.pagopa.pu.classification.dto.generated.AssessmentStatus;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -43,15 +42,16 @@ public class AssessmentsProcessingService extends
     private final AssessmentsDetailMapper assessmentsDetailMapper;
     private final InstallmentService installmentService;
     private final ReceiptService receiptService;
+    private final DebtPositionTypeOrgService debtPositionTypeOrgService;
 
-
-    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper, InstallmentService installmentService, ReceiptService receiptService) {
+    public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper, InstallmentService installmentService, ReceiptService receiptService, DebtPositionTypeOrgService debtPositionTypeOrgService) {
         super(errorArchiverService, organizationService);
         this.assessmentsService = assessmentsService;
         this.assessmentsDetailService = assessmentsDetailService;
         this.assessmentsDetailMapper = assessmentsDetailMapper;
         this.installmentService = installmentService;
         this.receiptService = receiptService;
+        this.debtPositionTypeOrgService = debtPositionTypeOrgService;
     }
 
     public AssessmentsIngestionFlowFileResult processAssessments(
@@ -128,11 +128,23 @@ public class AssessmentsProcessingService extends
             Optional<Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(organization.getOrganizationId(),
                     row.getDebtPositionTypeOrgCode(), row.getAssessmentName());
 
+            DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService.getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(), row.getDebtPositionTypeOrgCode());
+            if (debtPositionTypeOrg == null) {
+                log.error("Debt position type org not found for org {} and code {}", organization.getOrganizationId(), row.getDebtPositionTypeOrgCode());
+                String errorMessage = String.format("Debt position type org not found for org %s and code %s", organization.getOrganizationId(), row.getDebtPositionTypeOrgCode());
+                AssessmentsErrorDTO error = new AssessmentsErrorDTO(
+                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
+                        row.getOrganizationIpaCode(), "DEBT_POSITION_TYPE_ORG_NOT_FOUND", errorMessage);
+                errorList.add(error);
+                return false;
+            }
+
             Assessments assessments = null;
             if (assessmentsOptional.isEmpty()) {
                 AssessmentsRequestBody assessmentsRequestBody = AssessmentsRequestBody.builder()
                         .organizationId(organization.getOrganizationId())
                         .debtPositionTypeOrgCode(row.getDebtPositionTypeOrgCode())
+                        .debtPositionTypeOrgId(debtPositionTypeOrg.getDebtPositionTypeOrgId())
                         .assessmentName(row.getAssessmentName())
                         .status(AssessmentStatus.CLOSED)
                         .printed(false)
@@ -145,7 +157,7 @@ public class AssessmentsProcessingService extends
             } else
                 assessments = assessmentsOptional.get();
 
-            AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(row, organization.getOrganizationId(), assessments.getAssessmentId(), receiptDTO);
+            AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(row, organization.getOrganizationId(), assessments.getAssessmentId(), receiptDTO, debtPositionTypeOrg.getDebtPositionTypeOrgId());
 
             assessmentsDetailService.createAssessmentDetail(assessmentsDetailRequestBody);
 
