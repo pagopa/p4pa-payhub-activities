@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+
+import it.gov.pagopa.payhub.activities.util.OrderedHeaderColumnNameMappingStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,8 +115,7 @@ public class CsvService {
         }
 
         try (Writer writer = Files.newBufferedWriter(csvFilePath)) {
-            ColumnPositionMappingStrategy<C> mappingStrategy = new ColumnPositionMappingStrategy<>();
-            mappingStrategy.setProfile(csvProfile);
+            OrderedHeaderColumnNameMappingStrategy<C> mappingStrategy = new OrderedHeaderColumnNameMappingStrategy<>();
             mappingStrategy.setType(typeClass);
 
             StatefulBeanToCsv<C> beanToCsv = new StatefulBeanToCsvBuilder<C>(writer)
