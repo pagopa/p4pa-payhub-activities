@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
-import it.gov.pagopa.payhub.activities.enums.assessment.AssessmentClassificationLabelEnum;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsclassification.Assessments2AssessmentEventMapper;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -75,22 +75,22 @@ public class AssessmentClassificationServiceImpl implements AssessmentClassifica
 	}
 
 	private List<AssessmentsDetail> classifyAssessmentsDetails(List<AssessmentsDetail> assessmentsDetailList, List<Classification> classificationList) {
-		AssessmentClassificationLabelEnum classificationLabel = null;
+		ClassificationLabel classificationLabel = null;
 		LocalDate classificationLabelDate = null;
 		for (Classification classification: classificationList) {
 			switch (classification.getLabel()) {
 				case RT_NO_IUF, RT_NO_IUD -> {
-					if(!AssessmentClassificationLabelEnum.REPORTED.equals(classificationLabel)) {
-						classificationLabel = AssessmentClassificationLabelEnum.PAID;
+					if(!ClassificationLabel.REPORTED.equals(classificationLabel)) {
+						classificationLabel = ClassificationLabel.PAID;
 						classificationLabelDate = classification.getPayDate();
 					}
 				}
 				case RT_IUF, IUF_TES_DIV_IMP -> {
-					classificationLabel = AssessmentClassificationLabelEnum.REPORTED;
+					classificationLabel = ClassificationLabel.REPORTED;
 					classificationLabelDate = classification.getRegulationDate();
 				}
 				case RT_TES, RT_IUF_TES, IUD_RT_IUF_TES -> {
-					return updateAssessmentsDetails(assessmentsDetailList, AssessmentClassificationLabelEnum.CASHED, classification.getBillDate());
+					return updateAssessmentsDetails(assessmentsDetailList, ClassificationLabel.CASHED, classification.getBillDate());
 				}
 				default ->
 					log.debug("Unused label for assessment classification: label {}, classificationId {}", classification.getLabel(), classification.getClassificationId());
@@ -101,13 +101,14 @@ public class AssessmentClassificationServiceImpl implements AssessmentClassifica
 
 	private List<AssessmentsDetail> updateAssessmentsDetails(
 			List<AssessmentsDetail> assessmentsDetailList,
-			AssessmentClassificationLabelEnum classificationLabel, LocalDate classificationLabelDate) {
+			ClassificationLabel classificationLabel, LocalDate classificationLabelDate) {
 		List<AssessmentsDetail> updatedAssessmentsDetailList = new ArrayList<>();
 
 		assessmentsDetailList.forEach(ad -> {
 			AssessmentsDetailRequestBody assessmentsDetailRequestBody = AssessmentsDetailRequestBody.builder()
 					.assessmentId(ad.getAssessmentId())
 					.organizationId(ad.getOrganizationId())
+					.debtPositionTypeOrgId(ad.getDebtPositionTypeOrgId())
 					.debtPositionTypeOrgCode(ad.getDebtPositionTypeOrgCode())
 					.iuv(ad.getIuv())
 					.iud(ad.getIud())
@@ -116,14 +117,13 @@ public class AssessmentClassificationServiceImpl implements AssessmentClassifica
 					.sectionCode(ad.getSectionCode())
 					.amountCents(ad.getAmountCents())
 					.amountSubmitted(ad.getAmountSubmitted())
-					/* TODO P4ADEV-4025 uncomment
-					.dateReceipt(AssessmentClassificationLabelEnum.PAID.equals(classificationLabel) ?
-							classificationLabelDate : ad.getDateReceipt())
-					.dateReporting(AssessmentClassificationLabelEnum.REPORTED.equals(classificationLabel) ?
-							classificationLabelDate : ad.getDateReporting())
-					.dateTreasury(AssessmentClassificationLabelEnum.CASHED.equals(classificationLabel) ?
-							classificationLabelDate : ad.getDateTreasury())
-					.classificationLabel(classificationLabel)*/
+					.dateReceipt(ClassificationLabel.PAID.equals(classificationLabel) ?
+							classificationLabelDate.atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime() : ad.getDateReceipt())
+					.dateReporting(ClassificationLabel.REPORTED.equals(classificationLabel) ?
+							classificationLabelDate.atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime() : ad.getDateReporting())
+					.dateTreasury(ClassificationLabel.CASHED.equals(classificationLabel) ?
+							classificationLabelDate.atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime() : ad.getDateTreasury())
+					.classificationLabel(classificationLabel)
 					.build();
 			updatedAssessmentsDetailList.add(
 					assessmentsDetailService.updateAssessmentsDetail(

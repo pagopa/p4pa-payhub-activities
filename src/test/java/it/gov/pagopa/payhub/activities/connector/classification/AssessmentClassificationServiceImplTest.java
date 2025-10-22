@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
-import it.gov.pagopa.payhub.activities.enums.assessment.AssessmentClassificationLabelEnum;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsclassification.Assessments2AssessmentEventMapper;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -16,14 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static it.gov.pagopa.pu.classification.dto.generated.ClassificationLabel.*;
 import static it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum.*;
-import static it.gov.pagopa.payhub.activities.enums.assessment.AssessmentClassificationLabelEnum.*;
 
 @ExtendWith(MockitoExtension.class)
 class AssessmentClassificationServiceImplTest {
@@ -53,17 +54,18 @@ class AssessmentClassificationServiceImplTest {
 	private final static String iud = "testIUD";
 	private final static String iur = "testIUR";
 	private final static String debtPositionTypeOrgCode = "dbTypeOrgCode";
+	private final static Long debtPositionTypeOrgId = 5L;
 	private final static String debtorFiscalCodeHash = "debtorFiscalCodeHash";
 	private final static String sectionCode = "";
 	private final static Long amountCents = 0L;
 	private final static Boolean amountSubmitted = true;
 
+	private final static OffsetDateTime expectedDateTreasury = LocalDate.of(2025, 3, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
+	private final static OffsetDateTime expectedDateReporting = LocalDate.of(2025, 2, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
+	private final static OffsetDateTime expectedDateReceipt = LocalDate.of(2025, 1, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
+
 	@BeforeAll
 	static void setup() {
-		LocalDate expectedDateTreasury = LocalDate.of(2025, 3, 1);
-		LocalDate expectedDateReporting = LocalDate.of(2025, 2, 1);
-		LocalDate expectedDateReceipt = LocalDate.of(2025, 1, 1);
-
 		assessments = new Assessments();
 		assessments.setAssessmentId(assessmentId);
 		assessments.setOrganizationId(organizationId);
@@ -73,22 +75,32 @@ class AssessmentClassificationServiceImplTest {
 		classifiedAsPaidAssessmentDetails = buildClassifiedAssessmentsDetail(PAID, expectedDateReceipt);
 	}
 
+	@AfterEach
+	void verifyNoMoreInteractions(){
+		Mockito.verifyNoMoreInteractions(
+				assessmentService,
+				assessmentsDetailService,
+				classificationService,
+				assessmentMapper
+		);
+	}
+
 	private static AssessmentsDetail buildClassifiedAssessmentsDetail(
-			AssessmentClassificationLabelEnum label, LocalDate classificationDate) {
+			ClassificationLabel label, OffsetDateTime classificationDate) {
 		AssessmentsDetail classifiedAssessmentDetail = new AssessmentsDetail();
 		classifiedAssessmentDetail.setAssessmentDetailId(assessmentId);
 		classifiedAssessmentDetail.setAssessmentId(assessmentId);
 		classifiedAssessmentDetail.setOrganizationId(organizationId);
 		classifiedAssessmentDetail.setIuv(iuv);
 		classifiedAssessmentDetail.setIud(iud);
-		// TODO P4ADEV-4025 uncomment classifiedAssessmentDetail.setClassificationLabel(label);
+		classifiedAssessmentDetail.setClassificationLabel(label);
 		switch (label) {
-			case CASHED -> {break;}
-				// TODO P4ADEV-4025 uncomment classifiedAssessmentDetail.setDateTreasury(classificationDate);
-			case REPORTED -> {break;}
-				// TODO P4ADEV-4025 uncomment classifiedAssessmentDetail.setDateReporting(classificationDate);
-			case PAID -> {break;}
-				// TODO P4ADEV-4025 uncomment classifiedAssessmentDetail.setDateReceipt(classificationDate);
+			case CASHED ->
+				classifiedAssessmentDetail.setDateTreasury(classificationDate);
+			case REPORTED ->
+				classifiedAssessmentDetail.setDateReporting(classificationDate);
+			case PAID ->
+				classifiedAssessmentDetail.setDateReceipt(classificationDate);
 			default -> throw new IllegalStateException("Unexpected value: " + label);
 		}
 		return classifiedAssessmentDetail;
@@ -106,6 +118,7 @@ class AssessmentClassificationServiceImplTest {
 		assessmentsDetail.setIud(iud);
 		assessmentsDetail.setIur(iur);
 		assessmentsDetail.setDebtPositionTypeOrgCode(debtPositionTypeOrgCode);
+		assessmentsDetail.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
 		assessmentsDetail.setDebtorFiscalCodeHash(debtorFiscalCodeHash.getBytes(StandardCharsets.UTF_8));
 		assessmentsDetail.setSectionCode(sectionCode);
 		assessmentsDetail.setAmountCents(amountCents);
@@ -128,6 +141,9 @@ class AssessmentClassificationServiceImplTest {
 					classification.setIuv(iuv);
 					classification.setIud(iud);
 					classification.setLabel(label);
+					classification.setPayDate(expectedDateReceipt.toLocalDate());
+					classification.setRegulationDate(expectedDateReporting.toLocalDate());
+					classification.setBillDate(expectedDateTreasury.toLocalDate());
 					classificationList.add(classification);
 				}
 		);
@@ -137,21 +153,11 @@ class AssessmentClassificationServiceImplTest {
 		return collectionModelClassification;
 	}
 
-	@AfterEach
-	void verifyNoMoreInteractions(){
-		Mockito.verifyNoMoreInteractions(
-				assessmentService,
-				assessmentsDetailService,
-				classificationService,
-				assessmentMapper
-		);
-	}
-
 	static Stream<CollectionModelAssessmentsDetail> testCollectionModelAssessmentsDetailsInputProvider() {
 		CollectionModelAssessmentsDetail nullEmbedded = new CollectionModelAssessmentsDetail();
 		nullEmbedded.setEmbedded(null);
 		CollectionModelAssessmentsDetail nullAssessmentsDetailList = new CollectionModelAssessmentsDetail();
-		nullAssessmentsDetailList.setEmbedded(new PagedModelAssessmentsDetailEmbedded());
+		nullAssessmentsDetailList.setEmbedded(new PagedModelAssessmentsDetailEmbedded(null));
 		CollectionModelAssessmentsDetail emptyAssessmentsDetailList = new CollectionModelAssessmentsDetail();
 		emptyAssessmentsDetailList.setEmbedded(new PagedModelAssessmentsDetailEmbedded(Collections.emptyList()));
 		return Stream.of(
@@ -159,21 +165,6 @@ class AssessmentClassificationServiceImplTest {
 				nullEmbedded,
 				nullAssessmentsDetailList,
 				emptyAssessmentsDetailList
-		);
-	}
-
-	static Stream<CollectionModelClassification> testCollectionModelClassificationsInputProvider() {
-		CollectionModelClassification nullEmbedded = new CollectionModelClassification();
-		nullEmbedded.setEmbedded(null);
-		CollectionModelClassification nullClassificationList = new CollectionModelClassification();
-		nullClassificationList.setEmbedded(new PagedModelClassificationEmbedded());
-		CollectionModelClassification emptyClassificationList = new CollectionModelClassification();
-		emptyClassificationList.setEmbedded(new PagedModelClassificationEmbedded(Collections.emptyList()));
-		return Stream.of(
-				null,
-				nullEmbedded,
-				nullClassificationList,
-				emptyClassificationList
 		);
 	}
 
@@ -211,6 +202,21 @@ class AssessmentClassificationServiceImplTest {
 
 		//Then
 		Assertions.assertNull(actualResult);
+	}
+
+	static Stream<CollectionModelClassification> testCollectionModelClassificationsInputProvider() {
+		CollectionModelClassification nullEmbedded = new CollectionModelClassification();
+		nullEmbedded.setEmbedded(null);
+		CollectionModelClassification nullClassificationList = new CollectionModelClassification();
+		nullClassificationList.setEmbedded(new PagedModelClassificationEmbedded(null));
+		CollectionModelClassification emptyClassificationList = new CollectionModelClassification();
+		emptyClassificationList.setEmbedded(new PagedModelClassificationEmbedded(Collections.emptyList()));
+		return Stream.of(
+				null,
+				nullEmbedded,
+				nullClassificationList,
+				emptyClassificationList
+		);
 	}
 
 	@ParameterizedTest
@@ -270,10 +276,10 @@ class AssessmentClassificationServiceImplTest {
 		Assertions.assertEquals(expectedResult, actualResult);
 		Mockito.verify(assessmentsDetailService).updateAssessmentsDetail(Mockito.any(), assessmentsDetailRequestBodyArgumentCaptor.capture());
 		AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailRequestBodyArgumentCaptor.getValue();
-		/* TODO P4ADEV-4025 uncomment Assertions.assertEquals(CASHED, assessmentsDetailRequestBody.getClassificationLabel());
+		Assertions.assertEquals(CASHED, assessmentsDetailRequestBody.getClassificationLabel());
 		Assertions.assertEquals(expectedDateTreasury, assessmentsDetailRequestBody.getDateTreasury());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateReceipt());
-		Assertions.assertNull(assessmentsDetailRequestBody.getDateReporting());*/
+		Assertions.assertNull(assessmentsDetailRequestBody.getDateReporting());
 	}
 
 	@Test
@@ -311,17 +317,17 @@ class AssessmentClassificationServiceImplTest {
 		Assertions.assertEquals(expectedResult, actualResult);
 		Mockito.verify(assessmentsDetailService).updateAssessmentsDetail(Mockito.any(), assessmentsDetailRequestBodyArgumentCaptor.capture());
 		AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailRequestBodyArgumentCaptor.getValue();
-		/* TODO P4ADEV-4025 uncomment Assertions.assertEquals(REPORTED, assessmentsDetailRequestBody.getClassificationLabel());
+		Assertions.assertEquals(REPORTED, assessmentsDetailRequestBody.getClassificationLabel());
 		Assertions.assertEquals(expectedDateReporting, assessmentsDetailRequestBody.getDateReporting());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateTreasury());
-		Assertions.assertNull(assessmentsDetailRequestBody.getDateReceipt());*/
+		Assertions.assertNull(assessmentsDetailRequestBody.getDateReceipt());
 	}
 
 	@Test
 	void whenClassifyAssessmentAsPaidThenOk() {
 		//Given
 		CollectionModelAssessmentsDetail collectionModelAssessmentsDetail = buildCollectionModelAssessmentsDetail();
-		CollectionModelClassification collectionModelClassification = buildCollectionModelClassification(RT_NO_IUF, RT_NO_IUD);
+		CollectionModelClassification collectionModelClassification = buildCollectionModelClassification(RT_NO_IUF, RT_NO_IUD, TES_NO_IUF_OR_IUV);
 
 		//region expected result
 		AssessmentEventDTO expectedResult = new AssessmentEventDTO();
@@ -352,9 +358,9 @@ class AssessmentClassificationServiceImplTest {
 		Assertions.assertEquals(expectedResult, actualResult);
 		Mockito.verify(assessmentsDetailService).updateAssessmentsDetail(Mockito.any(), assessmentsDetailRequestBodyArgumentCaptor.capture());
 		AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailRequestBodyArgumentCaptor.getValue();
-		/* TODO P4ADEV-4025 uncomment Assertions.assertEquals(PAID, assessmentsDetailRequestBody.getClassificationLabel());
+		Assertions.assertEquals(PAID, assessmentsDetailRequestBody.getClassificationLabel());
 		Assertions.assertEquals(expectedDateReceipt, assessmentsDetailRequestBody.getDateReceipt());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateTreasury());
-		Assertions.assertNull(assessmentsDetailRequestBody.getDateReporting());*/
+		Assertions.assertNull(assessmentsDetailRequestBody.getDateReporting());
 	}
 }

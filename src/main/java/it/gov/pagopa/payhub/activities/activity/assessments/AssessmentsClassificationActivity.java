@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.assessments;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsDetailSemanticKeyDTO;
 
 /**
  * Interface for classifying assessments in the system.
@@ -13,11 +14,9 @@ public interface AssessmentsClassificationActivity {
 	/**
 	 * Classify assessments for specified organizationId, iuv and iud
 	 *
-	 * @param organizationId the unique identifier of the organization which creates the assessment
-	 * @param iuv the unique identifier of the transfer related to the assessment
-	 * @param iud the unique identifier of the debt position related to the assessment
+	 * @param assessmentsDetailSemanticKey the DTO containing semantic keys such as organization ID, IUV, IUD,
 	 */
 	@ActivityMethod
-	AssessmentEventDTO classifyAssessment(Long organizationId, String iuv, String iud);
+	AssessmentEventDTO classifyAssessment(AssessmentsDetailSemanticKeyDTO assessmentsDetailSemanticKey);
 
 }
