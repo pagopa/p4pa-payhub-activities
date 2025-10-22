@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,6 +26,7 @@ public class JsonConfig {
   public ObjectMapper objectMapper() {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(configureDateTimeModule());
+    mapper.registerModule(configurePairModule());
     mapper.registerModule(new Jdk8Module());
     mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.DEFAULT));
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -47,5 +49,11 @@ public class JsonConfig {
       .addSerializer(LocalDateTime.class, new LocalDateTimeToOffsetDateTimeSerializer())
       .addDeserializer(LocalDateTime.class, new OffsetDateTimeToLocalDateTimeDeserializer())
       .addDeserializer(OffsetDateTime.class, new LocalDateTimeToOffsetDateTimeDeserializer());
+  }
+
+  private static SimpleModule configurePairModule() {
+    return new SimpleModule()
+      .addSerializer(Pair.class, new PairSerializer())
+      .addDeserializer(Pair.class, new PairDeserializer());
   }
 }
