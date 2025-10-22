@@ -1,5 +1,6 @@
-package it.gov.pagopa.payhub.activities.util;
+package it.gov.pagopa.payhub.activities.mapper;
 
+import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
@@ -12,10 +13,12 @@ public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameM
             return super.generateHeader(null);
         }
 
-        // Order the fields as they are declared in the DTO
+        super.generateHeader(bean);
+
+        // Return the fields in the order they are declared inside the DTO
         return Arrays.stream(bean.getClass().getDeclaredFields())
                 .map(field -> {
-                    var annotation = field.getAnnotation(com.opencsv.bean.CsvBindByName.class);
+                    CsvBindByName annotation = field.getAnnotation(CsvBindByName.class);
                     if (annotation != null && !annotation.column().isEmpty()) {
                         return annotation.column();
                     }
