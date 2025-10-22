@@ -80,7 +80,7 @@ public class AssessmentClassificationServiceImpl implements AssessmentClassifica
 		for (Classification classification: classificationList) {
 			switch (classification.getLabel()) {
 				case RT_NO_IUF, RT_NO_IUD -> {
-					if(!ClassificationLabel.REPORTED.equals(classificationLabel)) {
+					if(classificationLabel == null || ClassificationLabel.PAID.compareTo(classificationLabel) >= 0) {
 						classificationLabel = ClassificationLabel.PAID;
 						classificationLabelDate = classification.getPayDate();
 					}

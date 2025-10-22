@@ -48,31 +48,31 @@ class AssessmentClassificationServiceImplTest {
 	private static AssessmentsDetail classifiedAsReportedAssessmentDetails;
 	private static AssessmentsDetail classifiedAsPaidAssessmentDetails;
 
-	private final static Long assessmentId = 1L;
-	private final static Long organizationId = 3L;
-	private final static String iuv = "testIUV";
-	private final static String iud = "testIUD";
-	private final static String iur = "testIUR";
-	private final static String debtPositionTypeOrgCode = "dbTypeOrgCode";
-	private final static Long debtPositionTypeOrgId = 5L;
-	private final static String debtorFiscalCodeHash = "debtorFiscalCodeHash";
-	private final static String sectionCode = "";
-	private final static Long amountCents = 0L;
-	private final static Boolean amountSubmitted = true;
+	private static final Long ASSESSMENT_ID = 1L;
+	private static final Long ORGANIZATION_ID = 3L;
+	private static final String IUV = "testIUV";
+	private static final String IUD = "testIUD";
+	private static final String IUR = "testIUR";
+	private static final String DEBT_POSITION_TYPE_ORG_CODE = "dbTypeOrgCode";
+	private static final Long DEBT_POSITION_TYPE_ORG_ID = 5L;
+	private static final String DEBTOR_FISCAL_CODE_HASH = "debtorFiscalCodeHash";
+	private static final String SECTION_CODE = "";
+	private static final Long AMOUNT_CENTS = 0L;
+	private static final Boolean AMOUNT_SUBMITTED = true;
 
-	private final static OffsetDateTime expectedDateTreasury = LocalDate.of(2025, 3, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
-	private final static OffsetDateTime expectedDateReporting = LocalDate.of(2025, 2, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
-	private final static OffsetDateTime expectedDateReceipt = LocalDate.of(2025, 1, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
+	private static final OffsetDateTime EXPECTED_DATE_TREASURY = LocalDate.of(2025, 3, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
+	private static final OffsetDateTime EXPECTED_DATE_REPORTING = LocalDate.of(2025, 2, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
+	private static final OffsetDateTime EXPECTED_DATE_RECEIPT = LocalDate.of(2025, 1, 1).atStartOfDay().atZone(Utilities.ZONEID).toOffsetDateTime();
 
 	@BeforeAll
 	static void setup() {
 		assessments = new Assessments();
-		assessments.setAssessmentId(assessmentId);
-		assessments.setOrganizationId(organizationId);
+		assessments.setAssessmentId(ASSESSMENT_ID);
+		assessments.setOrganizationId(ORGANIZATION_ID);
 
-		classifiedAsCashedAssessmentDetails = buildClassifiedAssessmentsDetail(CASHED, expectedDateTreasury);
-		classifiedAsReportedAssessmentDetails = buildClassifiedAssessmentsDetail(REPORTED, expectedDateReporting);
-		classifiedAsPaidAssessmentDetails = buildClassifiedAssessmentsDetail(PAID, expectedDateReceipt);
+		classifiedAsCashedAssessmentDetails = buildClassifiedAssessmentsDetail(CASHED, EXPECTED_DATE_TREASURY);
+		classifiedAsReportedAssessmentDetails = buildClassifiedAssessmentsDetail(REPORTED, EXPECTED_DATE_REPORTING);
+		classifiedAsPaidAssessmentDetails = buildClassifiedAssessmentsDetail(PAID, EXPECTED_DATE_RECEIPT);
 	}
 
 	@AfterEach
@@ -88,11 +88,11 @@ class AssessmentClassificationServiceImplTest {
 	private static AssessmentsDetail buildClassifiedAssessmentsDetail(
 			ClassificationLabel label, OffsetDateTime classificationDate) {
 		AssessmentsDetail classifiedAssessmentDetail = new AssessmentsDetail();
-		classifiedAssessmentDetail.setAssessmentDetailId(assessmentId);
-		classifiedAssessmentDetail.setAssessmentId(assessmentId);
-		classifiedAssessmentDetail.setOrganizationId(organizationId);
-		classifiedAssessmentDetail.setIuv(iuv);
-		classifiedAssessmentDetail.setIud(iud);
+		classifiedAssessmentDetail.setAssessmentDetailId(ASSESSMENT_ID);
+		classifiedAssessmentDetail.setAssessmentId(ASSESSMENT_ID);
+		classifiedAssessmentDetail.setOrganizationId(ORGANIZATION_ID);
+		classifiedAssessmentDetail.setIuv(IUV);
+		classifiedAssessmentDetail.setIud(IUD);
 		classifiedAssessmentDetail.setClassificationLabel(label);
 		switch (label) {
 			case CASHED ->
@@ -111,18 +111,18 @@ class AssessmentClassificationServiceImplTest {
 		List<AssessmentsDetail> assessmentsDetailList = new ArrayList<>();
 
 		AssessmentsDetail assessmentsDetail = new AssessmentsDetail();
-		assessmentsDetail.setAssessmentDetailId(assessmentId);
-		assessmentsDetail.setAssessmentId(assessmentId);
-		assessmentsDetail.organizationId(organizationId);
-		assessmentsDetail.setIuv(iuv);
-		assessmentsDetail.setIud(iud);
-		assessmentsDetail.setIur(iur);
-		assessmentsDetail.setDebtPositionTypeOrgCode(debtPositionTypeOrgCode);
-		assessmentsDetail.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
-		assessmentsDetail.setDebtorFiscalCodeHash(debtorFiscalCodeHash.getBytes(StandardCharsets.UTF_8));
-		assessmentsDetail.setSectionCode(sectionCode);
-		assessmentsDetail.setAmountCents(amountCents);
-		assessmentsDetail.setAmountSubmitted(amountSubmitted);
+		assessmentsDetail.setAssessmentDetailId(ASSESSMENT_ID);
+		assessmentsDetail.setAssessmentId(ASSESSMENT_ID);
+		assessmentsDetail.organizationId(ORGANIZATION_ID);
+		assessmentsDetail.setIuv(IUV);
+		assessmentsDetail.setIud(IUD);
+		assessmentsDetail.setIur(IUR);
+		assessmentsDetail.setDebtPositionTypeOrgCode(DEBT_POSITION_TYPE_ORG_CODE);
+		assessmentsDetail.setDebtPositionTypeOrgId(DEBT_POSITION_TYPE_ORG_ID);
+		assessmentsDetail.setDebtorFiscalCodeHash(DEBTOR_FISCAL_CODE_HASH.getBytes(StandardCharsets.UTF_8));
+		assessmentsDetail.setSectionCode(SECTION_CODE);
+		assessmentsDetail.setAmountCents(AMOUNT_CENTS);
+		assessmentsDetail.setAmountSubmitted(AMOUNT_SUBMITTED);
 		assessmentsDetailList.add(assessmentsDetail);
 
 		collectionModelAssessmentsDetail.setEmbedded(
@@ -137,13 +137,13 @@ class AssessmentClassificationServiceImplTest {
 		Arrays.stream(labels).forEach(
 				label -> {
 					Classification classification = new Classification();
-					classification.organizationId(organizationId);
-					classification.setIuv(iuv);
-					classification.setIud(iud);
+					classification.organizationId(ORGANIZATION_ID);
+					classification.setIuv(IUV);
+					classification.setIud(IUD);
 					classification.setLabel(label);
-					classification.setPayDate(expectedDateReceipt.toLocalDate());
-					classification.setRegulationDate(expectedDateReporting.toLocalDate());
-					classification.setBillDate(expectedDateTreasury.toLocalDate());
+					classification.setPayDate(EXPECTED_DATE_RECEIPT.toLocalDate());
+					classification.setRegulationDate(EXPECTED_DATE_REPORTING.toLocalDate());
+					classification.setBillDate(EXPECTED_DATE_TREASURY.toLocalDate());
 					classificationList.add(classification);
 				}
 		);
@@ -174,12 +174,12 @@ class AssessmentClassificationServiceImplTest {
 		//Given
 
 		//region mock stubbing
-		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelAssessmentsDetail);
 		//endregion
 
 		//When
-		AssessmentEventDTO actualResult = service.classifyAssessment(organizationId, iuv, iud);
+		AssessmentEventDTO actualResult = service.classifyAssessment(ORGANIZATION_ID, IUV, IUD);
 
 		//Then
 		Assertions.assertNull(actualResult);
@@ -191,14 +191,14 @@ class AssessmentClassificationServiceImplTest {
 		CollectionModelAssessmentsDetail collectionModelAssessmentsDetail = buildCollectionModelAssessmentsDetail();
 
 		//region mock stubbing
-		Mockito.when(assessmentService.findAssessment(assessmentId))
+		Mockito.when(assessmentService.findAssessment(ASSESSMENT_ID))
 				.thenReturn(null);
-		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelAssessmentsDetail);
 		//endregion
 
 		//When
-		AssessmentEventDTO actualResult = service.classifyAssessment(organizationId, iuv, iud);
+		AssessmentEventDTO actualResult = service.classifyAssessment(ORGANIZATION_ID, IUV, IUD);
 
 		//Then
 		Assertions.assertNull(actualResult);
@@ -226,16 +226,16 @@ class AssessmentClassificationServiceImplTest {
 		CollectionModelAssessmentsDetail collectionModelAssessmentsDetail = buildCollectionModelAssessmentsDetail();
 
 		//region mock stubbing
-		Mockito.when(assessmentService.findAssessment(assessmentId))
+		Mockito.when(assessmentService.findAssessment(ASSESSMENT_ID))
 				.thenReturn(assessments);
-		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelAssessmentsDetail);
-		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelClassification);
 		//endregion
 
 		//When
-		AssessmentEventDTO actualResult = service.classifyAssessment(organizationId, iuv, iud);
+		AssessmentEventDTO actualResult = service.classifyAssessment(ORGANIZATION_ID, IUV, IUD);
 
 		//Then
 		Assertions.assertNull(actualResult);
@@ -249,35 +249,35 @@ class AssessmentClassificationServiceImplTest {
 
 		//region expected result
 		AssessmentEventDTO expectedResult = new AssessmentEventDTO();
-		expectedResult.setAssessmentId(assessmentId);
-		expectedResult.setOrganizationId(organizationId);
-		expectedResult.setIuv(iuv);
-		expectedResult.setIud(iud);
+		expectedResult.setAssessmentId(ASSESSMENT_ID);
+		expectedResult.setOrganizationId(ORGANIZATION_ID);
+		expectedResult.setIuv(IUV);
+		expectedResult.setIud(IUD);
 		expectedResult.setAssessmentsDetailList(List.of(classifiedAsCashedAssessmentDetails));
 		//endregion
 
 		//region mock stubbing
-		Mockito.when(assessmentService.findAssessment(assessmentId))
+		Mockito.when(assessmentService.findAssessment(ASSESSMENT_ID))
 				.thenReturn(assessments);
-		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelAssessmentsDetail);
-		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelClassification);
-		Mockito.when(assessmentsDetailService.updateAssessmentsDetail(Mockito.eq(assessmentId), Mockito.any()))
+		Mockito.when(assessmentsDetailService.updateAssessmentsDetail(Mockito.eq(ASSESSMENT_ID), Mockito.any()))
 				.thenReturn(classifiedAsCashedAssessmentDetails);
 		Mockito.when(assessmentMapper.map(assessments, List.of(classifiedAsCashedAssessmentDetails)))
 				.thenReturn(expectedResult);
 		//endregion
 
 		//When
-		AssessmentEventDTO actualResult = service.classifyAssessment(organizationId, iuv, iud);
+		AssessmentEventDTO actualResult = service.classifyAssessment(ORGANIZATION_ID, IUV, IUD);
 
 		//Then
 		Assertions.assertEquals(expectedResult, actualResult);
 		Mockito.verify(assessmentsDetailService).updateAssessmentsDetail(Mockito.any(), assessmentsDetailRequestBodyArgumentCaptor.capture());
 		AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailRequestBodyArgumentCaptor.getValue();
 		Assertions.assertEquals(CASHED, assessmentsDetailRequestBody.getClassificationLabel());
-		Assertions.assertEquals(expectedDateTreasury, assessmentsDetailRequestBody.getDateTreasury());
+		Assertions.assertEquals(EXPECTED_DATE_TREASURY, assessmentsDetailRequestBody.getDateTreasury());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateReceipt());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateReporting());
 	}
@@ -290,35 +290,35 @@ class AssessmentClassificationServiceImplTest {
 
 		//region expected result
 		AssessmentEventDTO expectedResult = new AssessmentEventDTO();
-		expectedResult.setAssessmentId(assessmentId);
-		expectedResult.setOrganizationId(organizationId);
-		expectedResult.setIuv(iuv);
-		expectedResult.setIud(iud);
+		expectedResult.setAssessmentId(ASSESSMENT_ID);
+		expectedResult.setOrganizationId(ORGANIZATION_ID);
+		expectedResult.setIuv(IUV);
+		expectedResult.setIud(IUD);
 		expectedResult.setAssessmentsDetailList(List.of(classifiedAsReportedAssessmentDetails));
 		//endregion
 
 		//region mock stubbing
-		Mockito.when(assessmentService.findAssessment(assessmentId))
+		Mockito.when(assessmentService.findAssessment(ASSESSMENT_ID))
 				.thenReturn(assessments);
-		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelAssessmentsDetail);
-		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelClassification);
-		Mockito.when(assessmentsDetailService.updateAssessmentsDetail(Mockito.eq(assessmentId), Mockito.any()))
+		Mockito.when(assessmentsDetailService.updateAssessmentsDetail(Mockito.eq(ASSESSMENT_ID), Mockito.any()))
 				.thenReturn(classifiedAsReportedAssessmentDetails);
 		Mockito.when(assessmentMapper.map(assessments, List.of(classifiedAsReportedAssessmentDetails)))
 				.thenReturn(expectedResult);
 		//endregion
 
 		//When
-		AssessmentEventDTO actualResult = service.classifyAssessment(organizationId, iuv, iud);
+		AssessmentEventDTO actualResult = service.classifyAssessment(ORGANIZATION_ID, IUV, IUD);
 
 		//Then
 		Assertions.assertEquals(expectedResult, actualResult);
 		Mockito.verify(assessmentsDetailService).updateAssessmentsDetail(Mockito.any(), assessmentsDetailRequestBodyArgumentCaptor.capture());
 		AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailRequestBodyArgumentCaptor.getValue();
 		Assertions.assertEquals(REPORTED, assessmentsDetailRequestBody.getClassificationLabel());
-		Assertions.assertEquals(expectedDateReporting, assessmentsDetailRequestBody.getDateReporting());
+		Assertions.assertEquals(EXPECTED_DATE_REPORTING, assessmentsDetailRequestBody.getDateReporting());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateTreasury());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateReceipt());
 	}
@@ -331,35 +331,35 @@ class AssessmentClassificationServiceImplTest {
 
 		//region expected result
 		AssessmentEventDTO expectedResult = new AssessmentEventDTO();
-		expectedResult.setAssessmentId(assessmentId);
-		expectedResult.setOrganizationId(organizationId);
-		expectedResult.setIuv(iuv);
-		expectedResult.setIud(iud);
+		expectedResult.setAssessmentId(ASSESSMENT_ID);
+		expectedResult.setOrganizationId(ORGANIZATION_ID);
+		expectedResult.setIuv(IUV);
+		expectedResult.setIud(IUD);
 		expectedResult.setAssessmentsDetailList(List.of(classifiedAsPaidAssessmentDetails));
 		//endregion
 
 		//region mock stubbing
-		Mockito.when(assessmentService.findAssessment(assessmentId))
+		Mockito.when(assessmentService.findAssessment(ASSESSMENT_ID))
 				.thenReturn(assessments);
-		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(assessmentsDetailService.findAssessmentsDetailByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelAssessmentsDetail);
-		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+		Mockito.when(classificationService.findAllByOrganizationIdAndIuvAndIud(ORGANIZATION_ID, IUV, IUD))
 				.thenReturn(collectionModelClassification);
-		Mockito.when(assessmentsDetailService.updateAssessmentsDetail(Mockito.eq(assessmentId), Mockito.any()))
+		Mockito.when(assessmentsDetailService.updateAssessmentsDetail(Mockito.eq(ASSESSMENT_ID), Mockito.any()))
 				.thenReturn(classifiedAsPaidAssessmentDetails);
 		Mockito.when(assessmentMapper.map(assessments, List.of(classifiedAsPaidAssessmentDetails)))
 				.thenReturn(expectedResult);
 		//endregion
 
 		//When
-		AssessmentEventDTO actualResult = service.classifyAssessment(organizationId, iuv, iud);
+		AssessmentEventDTO actualResult = service.classifyAssessment(ORGANIZATION_ID, IUV, IUD);
 
 		//Then
 		Assertions.assertEquals(expectedResult, actualResult);
 		Mockito.verify(assessmentsDetailService).updateAssessmentsDetail(Mockito.any(), assessmentsDetailRequestBodyArgumentCaptor.capture());
 		AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailRequestBodyArgumentCaptor.getValue();
 		Assertions.assertEquals(PAID, assessmentsDetailRequestBody.getClassificationLabel());
-		Assertions.assertEquals(expectedDateReceipt, assessmentsDetailRequestBody.getDateReceipt());
+		Assertions.assertEquals(EXPECTED_DATE_RECEIPT, assessmentsDetailRequestBody.getDateReceipt());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateTreasury());
 		Assertions.assertNull(assessmentsDetailRequestBody.getDateReporting());
 	}
