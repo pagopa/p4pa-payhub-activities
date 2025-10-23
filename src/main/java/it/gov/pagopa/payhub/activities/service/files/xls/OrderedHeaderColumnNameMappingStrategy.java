@@ -59,17 +59,19 @@ public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameM
             return false;
         }
 
-        if (ignoreAnn.profiles().length == 0) {
+        String[] profiles = ignoreAnn.profiles();
+        if (profiles.length == 0 || Arrays.stream(profiles).allMatch(String::isBlank)) {
             return true;
         }
 
         if (activeProfile != null) {
-            for (String profile : ignoreAnn.profiles()) {
+            for (String profile : profiles) {
                 if (profile.equals(activeProfile)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 }
