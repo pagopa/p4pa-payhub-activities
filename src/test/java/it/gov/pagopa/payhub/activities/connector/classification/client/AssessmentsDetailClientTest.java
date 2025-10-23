@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,7 +58,57 @@ class AssessmentsDetailClientTest {
     }
 
     @Test
-    void testFindAssessmentsDetailByOrganizationIdAndIuvAndIud() {
+    void whenEmbeddedNullFindAssessmentsDetailByOrganizationIdAndIuvAndIudThenEmptyList() {
+        // Given
+        String accessToken = "accessToken";
+        Long organizationId = 3L;
+        String iuv = "testIuv";
+        String iud = "testIud";
+
+        AssessmentsDetailSearchControllerApi mockApi = mock(AssessmentsDetailSearchControllerApi.class);
+
+        CollectionModelAssessmentsDetail expectedResponse = new CollectionModelAssessmentsDetail();
+        expectedResponse.setEmbedded(null);
+
+        when(classificationApisHolderMock.getAssessmentsDetailSearchControllerApi(accessToken))
+                .thenReturn(mockApi);
+        when(mockApi.crudAssessmentsDetailsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<AssessmentsDetail> actualResult = assessmentDetailClient.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
+
+        // Then
+        assertEquals(Collections.emptyList(), actualResult);
+    }
+
+    @Test
+    void whenAssessmentsDetailNullFindAssessmentsDetailByOrganizationIdAndIuvAndIudThenEmptyList() {
+        // Given
+        String accessToken = "accessToken";
+        Long organizationId = 3L;
+        String iuv = "testIuv";
+        String iud = "testIud";
+
+        AssessmentsDetailSearchControllerApi mockApi = mock(AssessmentsDetailSearchControllerApi.class);
+
+        CollectionModelAssessmentsDetail expectedResponse = new CollectionModelAssessmentsDetail();
+        expectedResponse.setEmbedded(new PagedModelAssessmentsDetailEmbedded(null));
+
+        when(classificationApisHolderMock.getAssessmentsDetailSearchControllerApi(accessToken))
+                .thenReturn(mockApi);
+        when(mockApi.crudAssessmentsDetailsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<AssessmentsDetail> actualResult = assessmentDetailClient.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
+
+        // Then
+        assertEquals(Collections.emptyList(), actualResult);
+    }
+
+    @Test
+    void whenFindAssessmentsDetailByOrganizationIdAndIuvAndIudThenOk() {
         // Given
         String accessToken = "accessToken";
         Long organizationId = 3L;
@@ -79,10 +130,11 @@ class AssessmentsDetailClientTest {
                 .thenReturn(expectedResponse);
 
         // When
-        CollectionModelAssessmentsDetail actualResult = assessmentDetailClient.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
+        List<AssessmentsDetail> actualResult = assessmentDetailClient.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
 
         // Then
-        assertEquals(expectedResponse, actualResult);
+		assert expectedResponse.getEmbedded() != null;
+		assertEquals(expectedResponse.getEmbedded().getAssessmentsDetails(), actualResult);
     }
 
     @Test

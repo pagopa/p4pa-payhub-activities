@@ -2,7 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetail;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelAssessmentsDetail;
+
+import java.util.List;
 
 /**
  * This interface provides methods for creating assessments detail in the system.
@@ -23,9 +24,9 @@ public interface AssessmentsDetailService {
      * @param organizationId the unique identifier of the organization.
      * @param iuv the unique identifier of the transfer.
      * @param iud the unique identifier of the debt-position.
-     * @return object containing a list of AssessmentsDetail found.
+     * @return list of AssessmentsDetail found.
      */
-    CollectionModelAssessmentsDetail findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud);
+    List<AssessmentsDetail> findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud);
 
     /**
      * Update AssessmentsDetails based on the provided AssessmentsDetailRequestBody.
@@ -35,4 +36,13 @@ public interface AssessmentsDetailService {
      * @return the updated AssessmentsDetail object.
      */
     AssessmentsDetail updateAssessmentsDetail(Long assessmentDetailId, AssessmentsDetailRequestBody updateRequest);
+
+    /**
+     * Update AssessmentsDetails based on the provided AssessmentsDetail.
+     *
+     * @param assessmentDetailId the unique identifier of the assessment detail.
+     * @param updatedAssessmentsDetail the request body containing the updated assessment
+     * @return the updated AssessmentsDetail object.
+     */
+    AssessmentsDetail updateAssessmentsDetail(Long assessmentDetailId, AssessmentsDetail updatedAssessmentsDetail);
 }

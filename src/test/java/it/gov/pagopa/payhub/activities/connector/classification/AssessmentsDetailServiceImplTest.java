@@ -2,10 +2,9 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.AssessmentsDetailClient;
+import it.gov.pagopa.payhub.activities.connector.classification.mapper.UpdateAssessmentsDetailRequestBodyMapper;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetail;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelAssessmentsDetail;
-import it.gov.pagopa.pu.classification.dto.generated.PagedModelAssessmentsDetailEmbedded;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,23 +24,29 @@ class AssessmentsDetailServiceImplTest {
   @Mock
   private AssessmentsDetailClient assessmentsDetailClientMock;
   @Mock
+  private UpdateAssessmentsDetailRequestBodyMapper assessmentsDetailRequestBodyMapperMock;
+  @Mock
   private AuthnService authnServiceMock;
 
   private AssessmentsDetailService service;
 
-
   @BeforeEach
   void setUp() {
-    service = new AssessmentsDetailServiceImpl(assessmentsDetailClientMock, authnServiceMock);
+    service = new AssessmentsDetailServiceImpl(
+            assessmentsDetailClientMock,
+            assessmentsDetailRequestBodyMapperMock,
+            authnServiceMock
+    );
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
             assessmentsDetailClientMock,
-        authnServiceMock);
+            assessmentsDetailRequestBodyMapperMock,
+            authnServiceMock
+    );
   }
-
 
   @Test
   void createAssessmentsDetailWithValidRequest() {
@@ -66,15 +71,12 @@ class AssessmentsDetailServiceImplTest {
     String iud = "testIUD";
     String accessToken = "accessToken";
 
-    //region prepare CollectionModelAssessmentsDetail expectedResponse
-    CollectionModelAssessmentsDetail expectedResponse = new CollectionModelAssessmentsDetail();
-    PagedModelAssessmentsDetailEmbedded page = new PagedModelAssessmentsDetailEmbedded();
+    //region prepare AssessmentsDetailList
     AssessmentsDetail assessmentsDetail = new AssessmentsDetail();
     assessmentsDetail.setOrganizationId(organizationId);
     assessmentsDetail.setIuv(iuv);
     assessmentsDetail.setIud(iud);
-    page.setAssessmentsDetails(List.of(assessmentsDetail));
-    expectedResponse.setEmbedded(page);
+    List<AssessmentsDetail>  expectedResponse = List.of(assessmentsDetail);
     //endregion
 
     when(assessmentsDetailClientMock.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken))
@@ -82,13 +84,13 @@ class AssessmentsDetailServiceImplTest {
     Mockito.when(authnServiceMock.getAccessToken())
             .thenReturn(accessToken);
 
-    CollectionModelAssessmentsDetail result = service.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud);
+    List<AssessmentsDetail> result = service.findAssessmentsDetailByOrganizationIdAndIuvAndIud(organizationId, iuv, iud);
 
     assertEquals(expectedResponse, result);
   }
 
   @Test
-  void whenUpdateAssessmentsDetailThenOk() {
+  void whenUpdateAssessmentsDetailByAssessmentsDetailRequestBodyThenOk() {
     //Given
     Long assessmentDetailId = 1L;
     AssessmentsDetailRequestBody updateRequest = new AssessmentsDetailRequestBody();
@@ -107,5 +109,30 @@ class AssessmentsDetailServiceImplTest {
 
     //Then
     assertEquals(expectedResponse, result);
+  }
+
+  @Test
+  void whenUpdateAssessmentsDetailByAssessmentsDetailThenOk() {
+    //Given
+    Long assessmentDetailId = 1L;
+    AssessmentsDetailRequestBody assessmentsDetailRequestBody = new AssessmentsDetailRequestBody();
+    AssessmentsDetail updateRequest = new AssessmentsDetail();
+    String accessToken = "accessToken";
+
+    AssessmentsDetail expectedResponse = new AssessmentsDetail();
+    expectedResponse.setAssessmentDetailId(assessmentDetailId);
+
+    when(assessmentsDetailClientMock.updateAssessmentsDetail(assessmentDetailId, assessmentsDetailRequestBody, accessToken))
+            .thenReturn(expectedResponse);
+    when(assessmentsDetailRequestBodyMapperMock.mapFromAssessmentsDetail(updateRequest))
+            .thenReturn(assessmentsDetailRequestBody);
+    Mockito.when(authnServiceMock.getAccessToken())
+            .thenReturn(accessToken);
+
+    //When
+    AssessmentsDetail actualResult = service.updateAssessmentsDetail(assessmentDetailId, updateRequest);
+
+    //Then
+    assertEquals(expectedResponse, actualResult);
   }
 }

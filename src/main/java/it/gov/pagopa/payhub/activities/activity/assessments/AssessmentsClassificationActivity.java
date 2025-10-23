@@ -14,7 +14,7 @@ public interface AssessmentsClassificationActivity {
 	/**
 	 * Classify assessments for specified organizationId, iuv and iud
 	 *
-	 * @param assessmentsClassificationSemanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUD,
+	 * @param assessmentsClassificationSemanticKeyDTO the DTO containing semantic keys such as organization ID, IUV, IUD.
 	 */
 	@ActivityMethod
 	AssessmentEventDTO classifyAssessment(AssessmentsClassificationSemanticKeyDTO assessmentsClassificationSemanticKeyDTO);

@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelClassification;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public interface ClassificationService {
      * @param organizationId the unique identifier of the organization.
      * @param iuv the unique identifier of the transfer.
      * @param iud the unique identifier of the debt-position.
-     * @return object containing a list of Classification found.
+     * @return list of Classification found.
      */
-    CollectionModelClassification findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud);
+    List<Classification> findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud);
 }

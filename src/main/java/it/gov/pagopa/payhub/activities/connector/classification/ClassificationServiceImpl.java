@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.activities.connector.classification.client.Classific
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
-import it.gov.pagopa.pu.classification.dto.generated.CollectionModelClassification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,7 @@ public class ClassificationServiceImpl implements ClassificationService {
     }
 
     @Override
-    public CollectionModelClassification findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud) {
+    public List<Classification> findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud) {
         return classificationClient.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, authnService.getAccessToken());
     }
 }

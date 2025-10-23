@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.assessments;
 
-import it.gov.pagopa.payhub.activities.connector.classification.AssessmentClassificationService;
+import it.gov.pagopa.payhub.activities.service.classifications.assessments.AssessmentClassificationService;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +25,6 @@ public class AssessmentsClassificationActivityImpl implements AssessmentsClassif
 				assessmentsClassificationSemanticKeyDTO.getIuv(),
 				assessmentsClassificationSemanticKeyDTO.getIud()
 		);
-		return assessmentClassificationService.classifyAssessment(
-				assessmentsClassificationSemanticKeyDTO.getOrgId(),
-				assessmentsClassificationSemanticKeyDTO.getIuv(),
-				assessmentsClassificationSemanticKeyDTO.getIud()
-		);
+		return assessmentClassificationService.classifyAssessment(assessmentsClassificationSemanticKeyDTO);
 	}
 }
