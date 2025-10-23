@@ -4,10 +4,11 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameMappingStrategy<T> {
     @Override
@@ -18,11 +19,15 @@ public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameM
 
         super.generateHeader(bean);
 
-        List<String> orderedHeaders = Stream.of(bean.getClass().getDeclaredFields())
+        List<Field> declaredFields = Arrays.asList(bean.getClass().getDeclaredFields());
+
+        List<String> orderedHeaders = declaredFields.stream()
                 .map(field -> {
                     CsvBindByName ann = field.getAnnotation(CsvBindByName.class);
                     if (ann == null) return null;
-                    return (ann.column() != null && !ann.column().isEmpty()) ? ann.column() : field.getName();
+                    return (ann.column() != null && !ann.column().isEmpty())
+                            ? ann.column()
+                            : field.getName();
                 })
                 .filter(Objects::nonNull)
                 .toList();
@@ -32,6 +37,7 @@ public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameM
             return (idx == -1) ? Integer.MAX_VALUE : idx;
         }));
 
-        return orderedHeaders.toArray(String[]::new);
+        headerIndex.initializeHeaderIndex(orderedHeaders.toArray(new String[0]));
+        return orderedHeaders.toArray(new String[0]);
     }
 }
