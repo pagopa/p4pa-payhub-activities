@@ -120,6 +120,7 @@ public class CsvService {
             mappingStrategy.setProfile(csvProfile);
 
             StatefulBeanToCsv<C> beanToCsv = new StatefulBeanToCsvBuilder<C>(writer)
+                    .withProfile(csvProfile)
                     .withSeparator(separator)
                     .withQuotechar(quoteChar)
                     .withMappingStrategy(mappingStrategy)
