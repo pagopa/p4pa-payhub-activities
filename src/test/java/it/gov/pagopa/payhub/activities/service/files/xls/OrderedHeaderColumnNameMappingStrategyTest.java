@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.files.xls;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvIgnore;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -69,5 +70,37 @@ class OrderedHeaderColumnNameMappingStrategyTest {
 
         assertEquals(0, comparator.compare("field1", "field1"));
         assertTrue(comparator.compare("unknown", "field1") > 0);
+    }
+
+    @Test
+    void testGenerateHeaderRespectsCsvIgnore() throws Exception {
+        class ExampleDto {
+            @CsvBindByName(column = "included")
+            private String included;
+
+            @CsvBindByName(column = "ignoredAlways")
+            @CsvIgnore
+            private String ignoredAlways;
+
+            @CsvBindByName(column = "ignoredForProfile")
+            @CsvIgnore(profiles = "PROFILE_X")
+            private String ignoredForProfile;
+        }
+
+        OrderedHeaderColumnNameMappingStrategy<ExampleDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>();
+        strategy.setType(ExampleDto.class);
+
+        // Case 1: without profile → ignore only "ignoredAlways"
+        String[] headers = strategy.generateHeader(new ExampleDto());
+        assertEquals(2, headers.length);
+        assertTrue(Arrays.asList(headers).contains("included"));
+        assertTrue(Arrays.asList(headers).contains("ignoredForProfile"));
+        assertFalse(Arrays.asList(headers).contains("ignoredAlways"));
+
+        // Case 2: with profile PROFILE_X → ignore even "ignoredForProfile"
+        strategy.setActiveProfile("PROFILE_X");
+        headers = strategy.generateHeader(new ExampleDto());
+        assertEquals(1, headers.length);
+        assertEquals("included", headers[0]);
     }
 }
