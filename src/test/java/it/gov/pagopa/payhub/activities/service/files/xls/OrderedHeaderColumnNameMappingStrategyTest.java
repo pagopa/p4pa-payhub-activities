@@ -4,12 +4,15 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvIgnore;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderedHeaderColumnNameMappingStrategyTest {
+
     static class PersonDto {
         @CsvBindByName(column = "first_name")
         private String firstName;
@@ -23,17 +26,14 @@ class OrderedHeaderColumnNameMappingStrategyTest {
 
     @Test
     void testGenerateHeaderWithBean() throws Exception {
-        OrderedHeaderColumnNameMappingStrategy<PersonDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>() {
-        };
+        OrderedHeaderColumnNameMappingStrategy<PersonDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>();
         strategy.setType(PersonDto.class);
 
         String[] headers = strategy.generateHeader(new PersonDto());
 
         assertNotNull(headers);
         assertEquals(3, headers.length);
-        assertEquals("first_name", headers[0]);
-        assertEquals("last_name", headers[1]);
-        assertEquals("age", headers[2]);
+        assertEquals(List.of("first_name", "last_name", "age"), List.of(headers));
     }
 
     @Test
@@ -53,8 +53,7 @@ class OrderedHeaderColumnNameMappingStrategyTest {
             private String field2;
         }
 
-        OrderedHeaderColumnNameMappingStrategy<PartialDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>() {
-        };
+        OrderedHeaderColumnNameMappingStrategy<PartialDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>();
         strategy.setType(PartialDto.class);
 
         String[] headers = strategy.generateHeader(new PartialDto());
@@ -73,34 +72,58 @@ class OrderedHeaderColumnNameMappingStrategyTest {
     }
 
     @Test
-    void testGenerateHeaderRespectsCsvIgnore() throws Exception {
-        class ExampleDto {
-            @CsvBindByName(column = "included")
-            private String included;
-
-            @CsvBindByName(column = "ignoredAlways")
-            @CsvIgnore
-            private String ignoredAlways;
-
-            @CsvBindByName(column = "ignoredForProfile")
-            @CsvIgnore(profiles = "PROFILE_X")
-            private String ignoredForProfile;
+    void testShouldIgnoreFieldBehaviorReflection() throws Exception {
+        class TestDto {
+            @CsvBindByName(column = "f1")
+            @CsvIgnore(profiles = {"A", "B"})
+            private String f1;
         }
 
-        OrderedHeaderColumnNameMappingStrategy<ExampleDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>();
-        strategy.setType(ExampleDto.class);
+        OrderedHeaderColumnNameMappingStrategy<TestDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>();
+        Field field = TestDto.class.getDeclaredField("f1");
 
-        // Case 1: without profile → ignore only "ignoredAlways"
-        String[] headers = strategy.generateHeader(new ExampleDto());
-        assertEquals(2, headers.length);
-        assertTrue(Arrays.asList(headers).contains("included"));
-        assertTrue(Arrays.asList(headers).contains("ignoredForProfile"));
-        assertFalse(Arrays.asList(headers).contains("ignoredAlways"));
+        strategy.setProfile(null);
+        assertFalse(invokeShouldIgnoreField(strategy, field));
 
-        // Case 2: with profile PROFILE_X → ignore even "ignoredForProfile"
-        strategy.setActiveProfile("PROFILE_X");
-        headers = strategy.generateHeader(new ExampleDto());
-        assertEquals(1, headers.length);
-        assertEquals("included", headers[0]);
+        strategy.setProfile("C");
+        assertFalse(invokeShouldIgnoreField(strategy, field));
+
+        strategy.setProfile("A");
+        assertTrue(invokeShouldIgnoreField(strategy, field));
+    }
+
+    private boolean invokeShouldIgnoreField(OrderedHeaderColumnNameMappingStrategy<?> strategy, Field field)
+            throws Exception {
+        var method = OrderedHeaderColumnNameMappingStrategy.class.getDeclaredMethod("shouldIgnoreField", Field.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(strategy, field);
+    }
+
+    @Test
+    void testSetProfileOverridesSuper() {
+        OrderedHeaderColumnNameMappingStrategy<PersonDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>();
+        strategy.setProfile("TEST_PROFILE");
+
+        try {
+            var field = OrderedHeaderColumnNameMappingStrategy.class.getDeclaredField("currentProfile");
+            field.setAccessible(true);
+            assertEquals("TEST_PROFILE", field.get(strategy));
+        } catch (Exception e) {
+            fail("Field currentProfile not found or access failed");
+        }
+    }
+
+    @Test
+    void testGenerateHeaderNoCsvBindByNameFields() throws Exception {
+        class EmptyDto {
+            private String noAnnotation;
+        }
+
+        OrderedHeaderColumnNameMappingStrategy<EmptyDto> strategy = new OrderedHeaderColumnNameMappingStrategy<>();
+        strategy.setType(EmptyDto.class);
+
+        String[] headers = strategy.generateHeader(new EmptyDto());
+        assertNotNull(headers);
+        assertEquals(0, headers.length);
     }
 }

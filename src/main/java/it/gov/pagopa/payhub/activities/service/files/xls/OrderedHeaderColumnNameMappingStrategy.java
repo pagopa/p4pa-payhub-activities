@@ -9,14 +9,15 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameMappingStrategy<T> {
 
-    private String activeProfile;
+    private String currentProfile;
 
-    public void setActiveProfile(String profile) {
-        this.activeProfile = profile;
+    @Override
+    public void setProfile(String profile) {
+        super.setProfile(profile);
+        this.currentProfile = profile;
     }
 
     @Override
@@ -30,15 +31,14 @@ public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameM
         List<Field> declaredFields = Arrays.asList(bean.getClass().getDeclaredFields());
 
         List<String> orderedHeaders = declaredFields.stream()
-                .filter(field -> !isIgnored(field))
+                .filter(field -> field.isAnnotationPresent(CsvBindByName.class))
+                .filter(field -> !shouldIgnoreField(field))
                 .map(field -> {
                     CsvBindByName ann = field.getAnnotation(CsvBindByName.class);
-                    if (ann == null) return null;
                     return (ann.column() != null && !ann.column().isEmpty())
                             ? ann.column()
                             : field.getName();
                 })
-                .filter(Objects::nonNull)
                 .toList();
 
         setColumnOrderOnWrite(Comparator.comparingInt(header -> {
@@ -50,29 +50,22 @@ public class OrderedHeaderColumnNameMappingStrategy<T> extends HeaderColumnNameM
         return orderedHeaders.toArray(new String[0]);
     }
 
-    /**
-     * Determine if a field should be ignored in base of @CsvIgnore and active profile
-     */
-    private boolean isIgnored(Field field) {
-        CsvIgnore ignoreAnn = field.getAnnotation(CsvIgnore.class);
-        if (ignoreAnn == null) {
+    private boolean shouldIgnoreField(Field field) {
+        if (!field.isAnnotationPresent(CsvIgnore.class)) {
             return false;
         }
 
-        String[] profiles = ignoreAnn.profiles();
-        if (profiles.length == 0 || Arrays.stream(profiles).allMatch(String::isBlank)) {
+        CsvIgnore ignoreAnnotation = field.getAnnotation(CsvIgnore.class);
+        String[] profiles = ignoreAnnotation.profiles();
+
+        if (profiles == null || profiles.length == 0) {
             return true;
         }
 
-        if (activeProfile != null) {
-            for (String profile : profiles) {
-                if (profile.equals(activeProfile)) {
-                    return true;
-                }
-            }
+        if (currentProfile == null || currentProfile.isEmpty()) {
+            return false;
         }
 
-        return false;
+        return Arrays.asList(profiles).contains(currentProfile);
     }
 }
-
