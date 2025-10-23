@@ -3,8 +3,6 @@ package it.gov.pagopa.payhub.activities.service.files.xls;
 import com.opencsv.bean.CsvBindByName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderedHeaderColumnNameMappingStrategyTest {
@@ -27,7 +25,10 @@ class OrderedHeaderColumnNameMappingStrategyTest {
         String[] headers = strategy.generateHeader(new PersonDto());
 
         assertNotNull(headers);
-        assertEquals(Arrays.asList("first_name", "last_name", "age"), Arrays.asList(headers), "The order of the fields should be the same as the DTO");
+        assertEquals(3, headers.length);
+        assertEquals("first_name", headers[0]);
+        assertEquals("last_name", headers[1]);
+        assertEquals("age", headers[2]);
     }
 
     @Test
