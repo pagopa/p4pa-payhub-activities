@@ -15,7 +15,7 @@ public class AssessmentsClassificationLabelServiceImpl implements AssessmentsCla
 
 	@Override
 	public ClassificationLabel extractAssessmentsClassificationLabel(List<Classification> classificationList) {
-		Set<ClassificationLabel> classificationLabelSet = new HashSet<>();
+		EnumSet<ClassificationLabel> classificationLabelSet = EnumSet.noneOf(ClassificationLabel.class);
 		for (Classification classification: classificationList) {
 			switch (classification.getLabel()) {
 				case RT_NO_IUF, RT_NO_IUD ->
@@ -30,9 +30,9 @@ public class AssessmentsClassificationLabelServiceImpl implements AssessmentsCla
 						);
 			}
 		}
-		return classificationLabelSet.stream()
-				.max(Comparator.comparingInt(ClassificationLabel::ordinal))
-				.orElse(ClassificationLabel.PAID); //at least assessment is paid
+		return classificationLabelSet.isEmpty() ?
+				ClassificationLabel.PAID : //at least assessment is paid
+				Collections.max(classificationLabelSet);
 	}
 
 }

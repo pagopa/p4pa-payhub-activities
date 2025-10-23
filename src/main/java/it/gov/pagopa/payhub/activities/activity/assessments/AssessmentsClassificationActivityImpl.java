@@ -20,11 +20,7 @@ public class AssessmentsClassificationActivityImpl implements AssessmentsClassif
 
 	@Override
 	public AssessmentEventDTO classifyAssessment(AssessmentsClassificationSemanticKeyDTO assessmentsClassificationSemanticKeyDTO)  {
-		log.info("Start classification of assessments for organizationId: {}, iuv: {}, iud: {}",
-				assessmentsClassificationSemanticKeyDTO.getOrgId(),
-				assessmentsClassificationSemanticKeyDTO.getIuv(),
-				assessmentsClassificationSemanticKeyDTO.getIud()
-		);
+		log.info("Start classification of assessments: {}", assessmentsClassificationSemanticKeyDTO);
 		return assessmentClassificationService.classifyAssessment(assessmentsClassificationSemanticKeyDTO);
 	}
 }

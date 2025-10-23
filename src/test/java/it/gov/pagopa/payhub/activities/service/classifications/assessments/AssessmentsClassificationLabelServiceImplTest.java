@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static it.gov.pagopa.pu.classification.dto.generated.ClassificationLabel.*;
@@ -44,6 +45,26 @@ class AssessmentsClassificationLabelServiceImplTest {
 	void extractAssessmentsClassificationLabelThenPaid() {
 		//Given
 		List<Classification> classificationList = buildClassificationList(RT_NO_IUF, RT_NO_IUD, TES_NO_IUF_OR_IUV);
+		//When
+		ClassificationLabel actualResult = service.extractAssessmentsClassificationLabel(classificationList);
+		//Then
+		Assertions.assertEquals(PAID, actualResult);
+	}
+
+	@Test
+	void extractAssessmentsClassificationLabelAllUnusedLabelsThenPaid() {
+		//Given
+		List<Classification> classificationList = buildClassificationList(TES_NO_MATCH, TES_NO_IUF_OR_IUV);
+		//When
+		ClassificationLabel actualResult = service.extractAssessmentsClassificationLabel(classificationList);
+		//Then
+		Assertions.assertEquals(PAID, actualResult);
+	}
+
+	@Test
+	void extractAssessmentsClassificationLabelFromEmptyClassificationListThenPaid() {
+		//Given
+		List<Classification> classificationList = Collections.emptyList();
 		//When
 		ClassificationLabel actualResult = service.extractAssessmentsClassificationLabel(classificationList);
 		//Then
