@@ -13,9 +13,15 @@ import java.util.*;
 @Service
 public class AssessmentsClassificationLabelServiceImpl implements AssessmentsClassificationLabelService {
 
+	private final List<ClassificationLabel> classificationLabelsPriorityOrderList = List.of(
+			ClassificationLabel.CASHED,
+			ClassificationLabel.REPORTED,
+			ClassificationLabel.PAID
+	);
+
 	@Override
 	public ClassificationLabel extractAssessmentsClassificationLabel(List<Classification> classificationList) {
-		EnumSet<ClassificationLabel> classificationLabelSet = EnumSet.noneOf(ClassificationLabel.class);
+		Set<ClassificationLabel> classificationLabelSet = new HashSet<>();
 		for (Classification classification: classificationList) {
 			switch (classification.getLabel()) {
 				case RT_NO_IUF, RT_NO_IUD ->
@@ -30,9 +36,10 @@ public class AssessmentsClassificationLabelServiceImpl implements AssessmentsCla
 						);
 			}
 		}
-		return classificationLabelSet.isEmpty() ?
-				ClassificationLabel.PAID : //at least assessment is paid
-				Collections.max(classificationLabelSet);
+		return classificationLabelsPriorityOrderList.stream()
+				.filter(classificationLabelSet::contains)
+				.findFirst()
+				.orElse(ClassificationLabel.PAID); //at least assessment is paid
 	}
 
 }
