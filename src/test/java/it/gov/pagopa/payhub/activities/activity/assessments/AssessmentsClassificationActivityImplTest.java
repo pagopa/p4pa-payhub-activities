@@ -1,12 +1,13 @@
 package it.gov.pagopa.payhub.activities.activity.assessments;
 
-import it.gov.pagopa.payhub.activities.connector.classification.AssessmentClassificationService;
+import it.gov.pagopa.payhub.activities.service.classifications.assessments.AssessmentClassificationService;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,21 +19,17 @@ class AssessmentsClassificationActivityImplTest {
 
 	@Mock
 	private AssessmentClassificationService assessmentClassificationServiceMock;
-
-	private AssessmentsClassificationActivity activity;
+	@InjectMocks
+	private AssessmentsClassificationActivityImpl activity;
 
 	@AfterEach
 	void verifyNoMoreInteractions(){
 		Mockito.verifyNoMoreInteractions(assessmentClassificationServiceMock);
 	}
 
-	@BeforeEach
-	void setUp() {
-		activity = new AssessmentsClassificationActivityImpl(assessmentClassificationServiceMock);
-	}
-
 	@Test
 	void whenClassifyAssessmentThenOk() {
+		//Given
 		Long organizationId = 3L;
 		String iuv = "testIUV";
 		String iud = "testIUD";
@@ -41,10 +38,15 @@ class AssessmentsClassificationActivityImplTest {
 		expectedResult.setIuv(iuv);
 		expectedResult.setIud(iud);
 
-		when(assessmentClassificationServiceMock.classifyAssessment(organizationId, iuv, iud)).thenReturn(expectedResult);
+		AssessmentsClassificationSemanticKeyDTO assessmentsClassificationSemanticKeyDTO = new AssessmentsClassificationSemanticKeyDTO(
+				organizationId, iuv, iud
+		);
 
-		AssessmentEventDTO actualResult = activity.classifyAssessment(organizationId, iuv, iud);
-
+		when(assessmentClassificationServiceMock.classifyAssessment(assessmentsClassificationSemanticKeyDTO))
+				.thenReturn(expectedResult);
+		//When
+		AssessmentEventDTO actualResult = activity.classifyAssessment(assessmentsClassificationSemanticKeyDTO);
+		//Then
 		Assertions.assertEquals(expectedResult, actualResult);
 	}
 }

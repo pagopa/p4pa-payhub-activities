@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.classification.dto.generated.CollectionModelClassificati
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Lazy
@@ -43,8 +44,12 @@ public class ClassificationClient {
                 .deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
     }
 
-    public CollectionModelClassification findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud, String accessToken) {
-        return classificationApisHolder.getClassificationSearchControllerApi(accessToken)
+    public List<Classification> findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud, String accessToken) {
+        CollectionModelClassification collectionModelClassification = classificationApisHolder.getClassificationSearchControllerApi(accessToken)
                 .crudClassificationsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud);
+        return collectionModelClassification.getEmbedded() == null ||
+                collectionModelClassification.getEmbedded().getClassifications() == null?
+                Collections.emptyList() :
+                collectionModelClassification.getEmbedded().getClassifications();
     }
 }

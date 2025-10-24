@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
+
 @Lazy
 @Service
 @Slf4j
@@ -24,9 +27,13 @@ public class AssessmentsDetailClient {
         .crudCreateAssessmentsdetail(assessmentsDetailRequestBody);
   }
 
-  public CollectionModelAssessmentsDetail findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud, String accessToken) {
-    return classificationApisHolder.getAssessmentsDetailSearchControllerApi(accessToken)
+  public List<AssessmentsDetail> findAssessmentsDetailByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud, String accessToken) {
+    CollectionModelAssessmentsDetail collectionModelAssessmentsDetail = classificationApisHolder.getAssessmentsDetailSearchControllerApi(accessToken)
             .crudAssessmentsDetailsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud);
+    return collectionModelAssessmentsDetail.getEmbedded() == null ||
+            collectionModelAssessmentsDetail.getEmbedded().getAssessmentsDetails() == null?
+            Collections.emptyList() :
+            collectionModelAssessmentsDetail.getEmbedded().getAssessmentsDetails();
   }
 
   public AssessmentsDetail updateAssessmentsDetail(Long assessmentDetailId, AssessmentsDetailRequestBody updateRequest, String accessToken) {

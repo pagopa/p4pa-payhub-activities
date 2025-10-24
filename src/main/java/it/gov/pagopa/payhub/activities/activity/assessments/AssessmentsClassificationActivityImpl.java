@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.assessments;
 
-import it.gov.pagopa.payhub.activities.connector.classification.AssessmentClassificationService;
+import it.gov.pagopa.payhub.activities.service.classifications.assessments.AssessmentClassificationService;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,8 @@ public class AssessmentsClassificationActivityImpl implements AssessmentsClassif
 	}
 
 	@Override
-	public AssessmentEventDTO classifyAssessment(Long organizationId, String iuv, String iud) {
-		log.info("Start classification of assessments for organizationId: {}, iuv: {}, iud: {}", organizationId, iuv, iud);
-		return assessmentClassificationService.classifyAssessment(organizationId, iuv, iud);
+	public AssessmentEventDTO classifyAssessment(AssessmentsClassificationSemanticKeyDTO assessmentsClassificationSemanticKeyDTO)  {
+		log.info("Start classification of assessments: {}", assessmentsClassificationSemanticKeyDTO);
+		return assessmentClassificationService.classifyAssessment(assessmentsClassificationSemanticKeyDTO);
 	}
 }

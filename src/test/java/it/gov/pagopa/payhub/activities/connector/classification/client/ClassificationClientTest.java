@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -143,7 +144,57 @@ class ClassificationClientTest {
     }
 
     @Test
-    void testFindAllByOrganizationIdAndIuvAndIud() {
+    void whenEmbeddedNullFindAllByOrganizationIdAndIuvAndIudThenEmptyList() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "testIuv";
+        String iud = "testIud";
+        String accessToken = "accessToken";
+
+        ClassificationSearchControllerApi mockApi = mock(ClassificationSearchControllerApi.class);
+
+        CollectionModelClassification expectedResponse = new CollectionModelClassification();
+        expectedResponse.setEmbedded(null);
+
+        when(classificationApisHolderMock.getClassificationSearchControllerApi(accessToken))
+                .thenReturn(mockApi);
+        when(mockApi.crudClassificationsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<Classification> actualResult = classificationClient.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
+
+        // Then
+        assertEquals(Collections.emptyList(), actualResult);
+    }
+
+    @Test
+    void whenClassificationsNullFindAllByOrganizationIdAndIuvAndIudThenEmptyList() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "testIuv";
+        String iud = "testIud";
+        String accessToken = "accessToken";
+
+        ClassificationSearchControllerApi mockApi = mock(ClassificationSearchControllerApi.class);
+
+        CollectionModelClassification expectedResponse = new CollectionModelClassification();
+        expectedResponse.setEmbedded(new PagedModelClassificationEmbedded(null));
+
+        when(classificationApisHolderMock.getClassificationSearchControllerApi(accessToken))
+                .thenReturn(mockApi);
+        when(mockApi.crudClassificationsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<Classification> actualResult = classificationClient.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
+
+        // Then
+        assertEquals(Collections.emptyList(), actualResult);
+    }
+
+    @Test
+    void whenFindAllByOrganizationIdAndIuvAndIudThenOk() {
         // Given
         Long organizationId = 1L;
         String iuv = "testIuv";
@@ -165,9 +216,10 @@ class ClassificationClientTest {
                 .thenReturn(expectedResponse);
 
         // When
-        CollectionModelClassification actualResult = classificationClient.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
+        List<Classification> actualResult = classificationClient.findAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud, accessToken);
 
         // Then
-        assertEquals(expectedResponse, actualResult);
+		assert expectedResponse.getEmbedded() != null;
+		assertEquals(expectedResponse.getEmbedded().getClassifications(), actualResult);
     }
 }
