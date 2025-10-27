@@ -177,7 +177,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getIuf(), exportFlowFileDTO.getIuf());
         assertEquals(1, exportFlowFileDTO.getFlowRowNumber());
         assertEquals(paidViewDTO.getIud(), exportFlowFileDTO.getIud());
-        assertEquals(paidViewDTO.getNoticeNumber(), exportFlowFileDTO.getIuv());
+        assertEquals(paidViewDTO.getCreditorReferenceId(), exportFlowFileDTO.getIuv());
         assertNull(exportFlowFileDTO.getObjectVersion());
         assertEquals(paidViewDTO.getOrgFiscalCode(), exportFlowFileDTO.getDomainIdentifier());
         assertNull(exportFlowFileDTO.getRequestingStationIdentifier());
