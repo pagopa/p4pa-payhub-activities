@@ -43,7 +43,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvDate(value = "yyyy-MM-dd")
     private LocalDate notificationDate;
 
-    @CsvBindByName(column = "indiceOpzionePagamento", required = true, profiles = {V1_4, V2_0})
+    @CsvBindByName(column = "indiceOpzionePagamento", required = true, profiles = V2_0)
     @CsvBindByName(column = "paymentOptionIndex", required = true, profiles = V2_0_ENG)
     private Integer paymentOptionIndex;
 
