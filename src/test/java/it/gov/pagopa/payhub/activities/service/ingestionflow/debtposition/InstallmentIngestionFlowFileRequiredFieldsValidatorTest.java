@@ -21,7 +21,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
 
         assertEquals(true, dto.getFlagPuPagoPaPayment());
         assertEquals(false, dto.getFlagMultiBeneficiary());
-        assertEquals(0, dto.getNumberBeneficiary());
+        assertEquals(1, dto.getNumberBeneficiary());
 
         assertNotNull(dto.getDescription());
         assertEquals(1, dto.getPaymentOptionIndex());
@@ -36,7 +36,7 @@ class InstallmentIngestionFlowFileRequiredFieldsValidatorTest {
 
         setDefaultValues(dto);
 
-        assertEquals(1, dto.getNumberBeneficiary());
+        assertEquals(2, dto.getNumberBeneficiary());
     }
 
     @Test
