@@ -40,7 +40,7 @@ public class InstallmentExportFlowFileDTOMapper {
                 .iuf(installmentPaidViewDTO.getIuf())
                 .flowRowNumber(1)
                 .iud(installmentPaidViewDTO.getIud())
-                .iuv(installmentPaidViewDTO.getNoticeNumber())
+                .iuv(installmentPaidViewDTO.getCreditorReferenceId())
                 .domainIdentifier(installmentPaidViewDTO.getOrgFiscalCode())
                 .receiptMessageIdentifier(installmentPaidViewDTO.getPaymentReceiptId())
                 .receiptMessageDateTime(installmentPaidViewDTO.getPaymentDateTime() != null
