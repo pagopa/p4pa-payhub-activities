@@ -26,7 +26,7 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
         }
 
         if (dto.getNumberBeneficiary() == null) {
-            dto.setNumberBeneficiary(Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) ? 1 : 0);
+            dto.setNumberBeneficiary(Boolean.TRUE.equals(dto.getFlagMultiBeneficiary()) ? 2 : 1);
         }
 
         setDefaultIfNotLastVersion(dto);
