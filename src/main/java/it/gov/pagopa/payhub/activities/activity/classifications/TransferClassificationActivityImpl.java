@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -65,7 +65,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
   }
 
 	@Override
-	public Pair<InstallmentNoPII,Transfer> classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
+	public TransferClassifyDTO classifyTransfer(TransferSemanticKeyDTO transferSemanticKey) {
 		log.info("Transfer classification for organization id: {} and iuv: {}",
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
@@ -109,7 +109,10 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 		// Store results
 		transferClassificationStoreService.saveClassifications(transferSemanticKey, transferDTO, installmentDTO, paymentsReporting, treasuryIUF, paymentNotificationDTO, classifications);
 		notifyReportedTransferId(transferDTO, paymentsReporting);
-		return Pair.of(installmentDTO, transferDTO);
+		return TransferClassifyDTO.builder()
+				.installmentNoPII(installmentDTO)
+				.transfer(transferDTO)
+				.build();
 	}
 
 	/**
