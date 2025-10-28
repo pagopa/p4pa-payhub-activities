@@ -86,7 +86,9 @@ public class FullClassificationsExportFlowFileDTOMapper {
                 .singlePaymentOutcomeDateE(recPaymentDate)
                 .uniqueCollectionIdE(retrievedObject.getRecPaymentReceiptId())
                 .recTransferRemittanceInformation(retrievedObject.getRecTransferRemittanceInformation())
-                .recTransferCategory("9/" + retrievedObject.getRecTransferCategory())
+                .recTransferCategory(retrievedObject.getRecTransferCategory() != null
+                        ? "9/" + retrievedObject.getRecTransferCategory()
+                        : null)
                 .recCreationDate(recCreationDate)
                 .recInstallmentBalance(retrievedObject.getRecInstallmentBalance())
                 .payRepFlowDateTime(Utilities.toLocalDateTime(retrievedObject.getPayRepFlowDateTime()))

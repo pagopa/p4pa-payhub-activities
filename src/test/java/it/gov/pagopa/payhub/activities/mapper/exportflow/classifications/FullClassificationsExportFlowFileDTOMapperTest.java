@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.classifications;
 import it.gov.pagopa.payhub.activities.dto.exportflow.classifications.ClassificationsExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.FullClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -171,6 +172,54 @@ class FullClassificationsExportFlowFileDTOMapperTest {
                 "recCreationDate",
                 "acquisitionDateR",
                 "tresAcquisitionDateT"
+        );
+    }
+
+    @Test
+    void givenFullClassificationViewDTOWithNullRecTransferCategoryWhenMapThenReturnClassificationsExportFlowFileDTO() {
+        FullClassificationViewDTO fullClassificationViewDTO = podamFactory.manufacturePojo(FullClassificationViewDTO.class);
+        fullClassificationViewDTO.setRecTransferCategory(null);
+
+        ClassificationsExportFlowFileDTO result = fullClassificationsExportFlowFileDTOMapper.map(fullClassificationViewDTO);
+
+        assertNotNull(result);
+        TestUtils.checkNotNullFields(result,
+                "objectVersion",
+                "requestingStationId",
+                "institutionAttOperatingUnitCode",
+                "institutionAttOperatingUnitName",
+                "institutionAttAddress",
+                "institutionAttCivicNumber",
+                "institutionAttPostalCode",
+                "institutionAttCity",
+                "institutionAttProvince",
+                "institutionAttCountry",
+                "beneficiaryOperatingUnitCode",
+                "beneficiaryOperatingUnitName",
+                "beneficiaryAddress",
+                "beneficiaryCivicNumber",
+                "beneficiaryPostalCode",
+                "beneficiaryCity",
+                "beneficiaryProvince",
+                "beneficiaryCountry",
+                "dueTypeCode",
+                "objectVersionR",
+                "currencyCode",
+                "signCode",
+                "checkNumber",
+                "bankReferenceCode",
+                "clientReferenceCode",
+                "orderDate",
+                "completenessClassification",
+                "dueTypeCodePa1",
+                "dueTypeDescriptionPa1",
+                "taxonomicCodePa1",
+                "fiscalCodePa1",
+                "namePa1",
+                "acquisitionDateI",
+                "tresBillYear",
+                "tresBillCode",
+                "recTransferCategory"
         );
     }
 
