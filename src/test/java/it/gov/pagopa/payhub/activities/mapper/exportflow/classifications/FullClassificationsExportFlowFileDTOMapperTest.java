@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.classifications;
 import it.gov.pagopa.payhub.activities.dto.exportflow.classifications.ClassificationsExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.classification.dto.generated.ClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.FullClassificationViewDTO;
 import it.gov.pagopa.pu.classification.dto.generated.PersonDTO;
 import org.junit.jupiter.api.BeforeEach;
