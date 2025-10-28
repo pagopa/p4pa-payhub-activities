@@ -174,6 +174,54 @@ class FullClassificationsExportFlowFileDTOMapperTest {
         );
     }
 
+    @Test
+    void givenFullClassificationViewDTOWithNullRecTransferCategoryWhenMapThenReturnClassificationsExportFlowFileDTO() {
+        FullClassificationViewDTO fullClassificationViewDTO = podamFactory.manufacturePojo(FullClassificationViewDTO.class);
+        fullClassificationViewDTO.setRecTransferCategory(null);
+
+        ClassificationsExportFlowFileDTO result = fullClassificationsExportFlowFileDTOMapper.map(fullClassificationViewDTO);
+
+        assertNotNull(result);
+        TestUtils.checkNotNullFields(result,
+                "objectVersion",
+                "requestingStationId",
+                "institutionAttOperatingUnitCode",
+                "institutionAttOperatingUnitName",
+                "institutionAttAddress",
+                "institutionAttCivicNumber",
+                "institutionAttPostalCode",
+                "institutionAttCity",
+                "institutionAttProvince",
+                "institutionAttCountry",
+                "beneficiaryOperatingUnitCode",
+                "beneficiaryOperatingUnitName",
+                "beneficiaryAddress",
+                "beneficiaryCivicNumber",
+                "beneficiaryPostalCode",
+                "beneficiaryCity",
+                "beneficiaryProvince",
+                "beneficiaryCountry",
+                "dueTypeCode",
+                "objectVersionR",
+                "currencyCode",
+                "signCode",
+                "checkNumber",
+                "bankReferenceCode",
+                "clientReferenceCode",
+                "orderDate",
+                "completenessClassification",
+                "dueTypeCodePa1",
+                "dueTypeDescriptionPa1",
+                "taxonomicCodePa1",
+                "fiscalCodePa1",
+                "namePa1",
+                "acquisitionDateI",
+                "tresBillYear",
+                "tresBillCode",
+                "recTransferCategory"
+        );
+    }
+
     public static void allFieldsAssertions(FullClassificationViewDTO fullClassificationViewDTO, ClassificationsExportFlowFileDTO result){
         assertEquals(fullClassificationViewDTO.getRecFileName(), result.getRecFileName());
         assertEquals(1, result.getFlowRowNumber());
