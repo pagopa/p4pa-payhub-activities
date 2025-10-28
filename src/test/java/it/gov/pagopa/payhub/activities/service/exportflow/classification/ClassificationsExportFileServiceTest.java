@@ -249,7 +249,7 @@ class ClassificationsExportFileServiceTest {
 
         // Then
         assertNotNull(result);
-        assertEquals("EXPORT_1.zip", result.getFileName());
+        assertEquals("EXPORT_1_WITHOUT_NOTIFICATION_v1.3.zip", result.getFileName());
         assertEquals(relativeFileFolder, result.getFilePath());
         assertEquals(5, result.getExportedRows());
         assertEquals(LocalDate.now(), result.getExportDate());

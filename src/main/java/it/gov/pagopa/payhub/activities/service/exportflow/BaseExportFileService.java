@@ -121,15 +121,16 @@ public abstract class BaseExportFileService<E,F,D,C> {
     }
 
     /**
-     * Retrieves the name of the export file based on the export file ID.
-     * This method generates the file name using a predefined prefix and the provided export file ID,
+     * Retrieves the name of the export file based on the export file ID and version.
+     * This method generates the file name using a predefined prefix, the provided export file ID and version,
      * appending the ".csv" extension.
      *
      * @param exportFileId The ID of the export file.
+     * @param version The version of the export file.
      * @return The generated export file name as a String.
      */
     protected String getExportFileName(Long exportFileId, String version){
-        return fileNamePrefix + "_" + exportFileId + "_v" + version + ".csv";
+        return fileNamePrefix + "_" + exportFileId + "_" + version + ".csv";
     }
 
     /**
