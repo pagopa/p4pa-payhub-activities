@@ -45,7 +45,10 @@ public abstract class BaseExportFileService<E,F,D,C> {
         if (exportStatus.equals(ExportFileStatus.PROCESSING)){
             Long organizationId = getOrganizationId(exportFileRecord);
             String profile = getFlowFileVersion(exportFileRecord);
-            Path csvFilePath = workingDirectory.resolve(String.valueOf(organizationId)).resolve(relativeFileFolder).resolve(getExportFileName(exportFileId));
+            Path csvFilePath = workingDirectory
+                    .resolve(String.valueOf(organizationId))
+                    .resolve(relativeFileFolder)
+                    .resolve(getExportFileName(exportFileId, profile));
             F exportFilter = getExportFilter(exportFileRecord);
 
             try {
@@ -125,8 +128,8 @@ public abstract class BaseExportFileService<E,F,D,C> {
      * @param exportFileId The ID of the export file.
      * @return The generated export file name as a String.
      */
-    protected String getExportFileName(Long exportFileId){
-        return fileNamePrefix + "_" + exportFileId + ".csv";
+    protected String getExportFileName(Long exportFileId, String version){
+        return fileNamePrefix + "_" + exportFileId + "_v" + version + ".csv";
     }
 
     /**
