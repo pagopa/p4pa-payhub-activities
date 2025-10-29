@@ -184,7 +184,7 @@ class InstallmentProcessingServiceTest {
                 .build();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 2L, 1L, ingestionFlowFile.getFileName()))
+                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, ingestionFlowFile.getFileName()))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
