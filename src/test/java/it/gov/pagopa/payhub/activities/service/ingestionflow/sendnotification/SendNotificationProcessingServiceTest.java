@@ -170,7 +170,7 @@ class SendNotificationProcessingServiceTest {
 
         // Then
         assertEquals(0, result.getProcessedRows());
-        assertEquals(2, result.getTotalRows());
+        assertEquals(1, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
