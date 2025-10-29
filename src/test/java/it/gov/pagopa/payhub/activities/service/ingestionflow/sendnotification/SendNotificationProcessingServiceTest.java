@@ -176,7 +176,7 @@ class SendNotificationProcessingServiceTest {
 
         verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
                 new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Error when create notification")
         ));
     }
 

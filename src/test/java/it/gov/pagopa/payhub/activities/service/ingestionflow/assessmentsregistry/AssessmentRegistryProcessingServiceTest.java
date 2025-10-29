@@ -209,7 +209,7 @@ class AssessmentRegistryProcessingServiceTest {
                                 .fileName(ingestionFlowFile.getFileName())
                                 .errorCode("PROCESS_EXCEPTION")
                                 .errorMessage("Processing error")
-                                .rowNumber(2L)
+                                .rowNumber(1L)
                                 .organizationIpaCode(ipaCode)
                                 .assessmentCode(dto.getAssessmentCode())
                                 .build())

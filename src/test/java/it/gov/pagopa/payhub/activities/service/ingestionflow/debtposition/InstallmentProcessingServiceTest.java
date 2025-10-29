@@ -208,7 +208,7 @@ class InstallmentProcessingServiceTest {
 
         verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), eq(List.of(
                 new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
-                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(), installmentSynchronizeDTO.getIud(), null, 2L, "PROCESS_EXCEPTION", "Error synchronizing the installment")
+                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(), installmentSynchronizeDTO.getIud(), null, 1L, "PROCESS_EXCEPTION", "Error synchronizing the installment")
         )));
     }
 }

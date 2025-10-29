@@ -187,7 +187,7 @@ class DebtPositionTypeProcessingServiceTest {
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
         new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
-        new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeIngestionFlowFileDTO.getDebtPositionTypeCode(),debtPositionTypeIngestionFlowFileDTO.getBrokerCf(), 2L, "PROCESS_EXCEPTION", "Processing error")
+        new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeIngestionFlowFileDTO.getDebtPositionTypeCode(),debtPositionTypeIngestionFlowFileDTO.getBrokerCf(), 1L, "PROCESS_EXCEPTION", "Processing error")
      )));
     Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
     Mockito.verify(mapperMock).map(debtPositionTypeIngestionFlowFileDTO, 1L);

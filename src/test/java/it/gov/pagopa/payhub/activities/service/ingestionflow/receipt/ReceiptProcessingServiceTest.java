@@ -135,7 +135,7 @@ class ReceiptProcessingServiceTest {
         Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
                 new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Processing error")
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 1L, "PROCESS_EXCEPTION", "Processing error")
         )));
     }
 }
