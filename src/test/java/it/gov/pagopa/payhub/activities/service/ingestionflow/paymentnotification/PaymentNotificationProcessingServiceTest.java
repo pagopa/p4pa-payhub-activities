@@ -115,7 +115,7 @@ class PaymentNotificationProcessingServiceTest {
 
     // Then
     Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    assertEquals(2, result.getTotalRows());
+    assertEquals(1, result.getTotalRows());
     assertEquals(0, result.getProcessedRows());
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
@@ -126,7 +126,7 @@ class PaymentNotificationProcessingServiceTest {
     verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
             new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
-            new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), paymentNotificationIngestionFlowFileDTO.getIuv(), paymentNotificationIngestionFlowFileDTO.getIud(), 2L, "PROCESS_EXCEPTION", "Processing error")
+            new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), paymentNotificationIngestionFlowFileDTO.getIuv(), paymentNotificationIngestionFlowFileDTO.getIud(), 1L, "PROCESS_EXCEPTION", "Processing error")
     )));
   }
 }

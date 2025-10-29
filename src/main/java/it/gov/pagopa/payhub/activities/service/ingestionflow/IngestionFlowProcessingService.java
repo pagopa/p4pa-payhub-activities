@@ -46,7 +46,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         int[] previousReaderExceptionSize = {0};
 
         while (iterator.hasNext()) {
-            totalRows = processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList, totalRows);
+            processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList);
 
             totalRows++;
 
@@ -62,7 +62,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
                 errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), totalRows, "PROCESSING_ERROR", e.getMessage()));
             }
         }
-        totalRows = processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList, totalRows);
+        processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList);
 
         String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
 
@@ -77,7 +77,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     /** Function to build an instance of the ErrorDTO with the configured params */
     protected abstract E buildErrorDto(String fileName, long lineNumber, String errorCode, String message);
 
-    private long processReaderExceptions(List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, int[] previousReaderExceptionSize, List<E> errorList, long totalRows) {
+    private void processReaderExceptions(List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, int[] previousReaderExceptionSize, List<E> errorList) {
         int readerExceptionDiff = readerExceptions.size() - previousReaderExceptionSize[0];
         if (readerExceptionDiff > 0) {
             readerExceptions.stream()
@@ -89,9 +89,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
                             )));
 
             previousReaderExceptionSize[0] = readerExceptions.size();
-            totalRows += readerExceptionDiff;
         }
-        return totalRows;
     }
 
     private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList) {
