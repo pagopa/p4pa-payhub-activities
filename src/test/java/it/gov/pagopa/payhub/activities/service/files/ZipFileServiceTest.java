@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFileException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -168,4 +169,17 @@ class ZipFileServiceTest {
 		zos.write(content.getBytes());
 		zos.closeEntry();
 	}
+
+    @Test
+    void givenMacosZipWhenUnzipThenOk(){
+        // Given
+        Path macosGeneratedZipFile = Path.of("src").resolve("test").resolve("resources").resolve("macosGeneratedZip.zip");
+
+        // When
+        List<Path> unzip = service.unzip(macosGeneratedZipFile, tempDir);
+
+        // Then
+        Assertions.assertEquals(1, unzip.size());
+        Assertions.assertEquals(tempDir.resolve("prova.csv"), unzip.getFirst());
+    }
 }
