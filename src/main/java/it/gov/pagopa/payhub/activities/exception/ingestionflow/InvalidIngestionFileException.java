@@ -9,13 +9,12 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
  */
 public class InvalidIngestionFileException extends NotRetryableActivityException {
 
-	/**
-	 * Constructs a new {@code InvalidIngestionFileException} with the specified detail message.
-	 *
-	 * @param message the detail message explaining the cause of the exception.
-	 */
 	public InvalidIngestionFileException(String message) {
-		super(message);
+		this(message, null);
 	}
+
+    public InvalidIngestionFileException(String message, Throwable e) {
+        super(message, e);
+    }
 }
 

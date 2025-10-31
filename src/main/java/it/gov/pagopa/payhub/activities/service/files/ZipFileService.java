@@ -110,7 +110,7 @@ public class ZipFileService {
 				zis.closeEntry();
 			}
 		} catch (IOException e) {
-			throw new InvalidIngestionFileException("Error while unzipping file: " + source);
+			throw new InvalidIngestionFileException("Error while unzipping file: " + source, e);
 		}
 		return extractedPaths;
 	}
@@ -280,7 +280,7 @@ public class ZipFileService {
 			}
 			return zipFilePath.toFile();
 		} catch (IOException e) {
-			throw new InvalidIngestionFileException("Error while zipping: " + zipFilePath);
+			throw new InvalidIngestionFileException("Error while zipping: " + zipFilePath, e);
 		}
 	}
 }
