@@ -6,6 +6,7 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class XMLUnmarshallerService {
 			JAXBElement<T> element = unmarshaller.unmarshal(new StreamSource(is), clazz);
 			return element.getValue();
 		} catch (IOException | JAXBException e) {
-			String errorMessage = "Error while parsing file " + file.getName() + ": " + e.getMessage();
+			String errorMessage = "Error while parsing file " + file.getName() + ": " + ExceptionUtils.getRootCauseMessage(e);
 			log.error(errorMessage, e);
 			throw new InvalidValueException(errorMessage);
 		}
