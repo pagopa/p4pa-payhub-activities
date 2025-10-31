@@ -46,7 +46,7 @@ public class ZipFileService {
 	/**
 	 * Extracts the contents of a ZIP file to a specified target directory and returns
 	 * a list of paths to the extracted files.
-	 *
+	 * <BR />
 	 * This method performs secure extraction by validating:
 	 * <ul>
 	 *   <li>The number of entries in the ZIP file does not exceed a predefined threshold.</li>
@@ -79,6 +79,9 @@ public class ZipFileService {
 
 			ZipEntry zipEntry;
 			while ((zipEntry = zis.getNextEntry()) != null) {
+                if(isMacosxFolder(zipEntry)){
+                    continue;
+                }
 				validateEntryCount(++entryCount);
 				Path targetPath = validateAndPrepareTargetPath(zipEntry, target);
 
@@ -112,14 +115,18 @@ public class ZipFileService {
 		return extractedPaths;
 	}
 
-	/**
+    private boolean isMacosxFolder(ZipEntry zipEntry) {
+        return zipEntry.getName().startsWith("__MACOSX/");
+    }
+
+    /**
 	 * Extracts the contents of a ZIP file to its own directory and returns a list of paths
 	 * to the extracted files.
-	 *
+	 * <BR />
 	 * This method uses the directory of the provided ZIP file as the default extraction location.
 	 * The contents of the ZIP file will be extracted into a subdirectory named after the ZIP file
 	 * (without its extension) within the same directory.
-	 *
+	 * <BR />
 	 * Internally, this method delegates the extraction process to {@link #unzip(Path, Path)}.
 	 *
 	 * @param path the path to the ZIP file to be extracted
@@ -210,7 +217,7 @@ public class ZipFileService {
 
 	/**
 	 * Validates the safety of a file name within a ZIP archive.
-	 *
+	 * <BR />
 	 * The file name is considered safe if it:
 	 * <ul>
 	 *   <li>Starts with an alphanumeric character.</li>
@@ -246,7 +253,7 @@ public class ZipFileService {
 
 	/**
 	 * Compresses the specified files into a single ZIP archive at the given ZIP file path.
-	 *
+	 * <BR />
 	 * This method performs the following operations:
 	 * <ul>
 	 *   <li>Creates a ZIP archive at the specified path.</li>
