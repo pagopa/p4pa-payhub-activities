@@ -7,6 +7,7 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class XMLMarshallerService {
 			marshaller.marshal(new JAXBElement<>(QName.valueOf(xmlTagName), clazz, value), stringWriter);
 			return stringWriter.toString();
 		} catch (JAXBException e) {
-			String errorMessage = "Error while marshalling object of class " + value.getClass() + ": " + e.getMessage();
+			String errorMessage = "Error while marshalling object of class " + value.getClass() + ": " + ExceptionUtils.getRootCauseMessage(e);
 			log.error(errorMessage, e);
 			throw new InvalidValueException(errorMessage);
 		}
