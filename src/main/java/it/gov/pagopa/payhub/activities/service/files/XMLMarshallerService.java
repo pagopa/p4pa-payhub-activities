@@ -33,7 +33,7 @@ public class XMLMarshallerService {
 			marshaller.marshal(new JAXBElement<>(QName.valueOf(xmlTagName), clazz, value), stringWriter);
 			return stringWriter.toString();
 		} catch (JAXBException e) {
-			String errorMessage = "Error while marshalling object of class: " + value.getClass();
+			String errorMessage = "Error while marshalling object of class " + value.getClass() + ": " + e.getMessage();
 			log.error(errorMessage, e);
 			throw new InvalidValueException(errorMessage);
 		}
