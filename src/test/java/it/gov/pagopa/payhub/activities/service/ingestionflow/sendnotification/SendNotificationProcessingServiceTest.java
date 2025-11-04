@@ -170,13 +170,13 @@ class SendNotificationProcessingServiceTest {
 
         // Then
         assertEquals(0, result.getProcessedRows());
-        assertEquals(1, result.getTotalRows());
+        assertEquals(2, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
         verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
                 new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Error when create notification")
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
         ));
     }
 

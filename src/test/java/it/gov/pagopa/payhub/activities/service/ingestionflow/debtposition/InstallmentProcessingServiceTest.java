@@ -184,7 +184,7 @@ class InstallmentProcessingServiceTest {
                 .build();
         Path workingDirectory = Path.of(new URI("file:///tmp"));
 
-                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, ingestionFlowFile.getFileName()))
+                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 2L, 1L, ingestionFlowFile.getFileName()))
                 .thenReturn(installmentSynchronizeDTO);
 
         Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
@@ -202,13 +202,13 @@ class InstallmentProcessingServiceTest {
 
         // Then
         assertEquals(0, result.getProcessedRows());
-        assertEquals(1, result.getTotalRows());
+        assertEquals(2, result.getTotalRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
         verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), eq(List.of(
                 new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
-                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(), installmentSynchronizeDTO.getIud(), null, 1L, "PROCESS_EXCEPTION", "Error synchronizing the installment")
+                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(), installmentSynchronizeDTO.getIud(), null, 2L, "PROCESS_EXCEPTION", "Error synchronizing the installment")
         )));
     }
 }

@@ -46,7 +46,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         int[] previousReaderExceptionSize = {0};
 
         while (iterator.hasNext()) {
-            processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList);
+            totalRows = processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList, totalRows);
 
             totalRows++;
 
@@ -62,7 +62,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
                 errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), totalRows, "PROCESSING_ERROR", e.getMessage()));
             }
         }
-        processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList);
+        totalRows = processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList, totalRows);
 
         String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
 
@@ -77,19 +77,25 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     /** Function to build an instance of the ErrorDTO with the configured params */
     protected abstract E buildErrorDto(String fileName, long lineNumber, String errorCode, String message);
 
-    private void processReaderExceptions(List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, int[] previousReaderExceptionSize, List<E> errorList) {
-        int readerExceptionDiff = readerExceptions.size() - previousReaderExceptionSize[0];
-        if (readerExceptionDiff > 0) {
-            readerExceptions.stream()
-                    .skip(previousReaderExceptionSize[0])
-                    .forEach(e ->
+    private long processReaderExceptions(List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, int[] previousReaderExceptionSize, List<E> errorList, long totalRows) {
+        int previousSize = previousReaderExceptionSize[0];
+        if (readerExceptions.size() > previousSize) {
+            List<CsvException> newExceptions = readerExceptions.subList(previousSize, readerExceptions.size());
+            newExceptions.forEach(e ->
                             errorList.add(buildErrorDto(
                                     ingestionFlowFile.getFileName(),
                                     e.getLineNumber(), "READER_EXCEPTION", e.getMessage()
                             )));
 
+            long distinctLineCount = newExceptions.stream()
+                    .map(CsvException::getLineNumber)
+                    .distinct()
+                    .count();
+
+            totalRows += distinctLineCount;
             previousReaderExceptionSize[0] = readerExceptions.size();
         }
+        return totalRows;
     }
 
     private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList) {

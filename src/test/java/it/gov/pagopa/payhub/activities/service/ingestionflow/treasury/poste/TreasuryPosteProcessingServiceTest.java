@@ -124,7 +124,7 @@ class TreasuryPosteProcessingServiceTest {
 
     // Then
     Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    assertEquals(1, result.getTotalRows());
+    assertEquals(2, result.getTotalRows());
     assertEquals(0, result.getProcessedRows());
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
