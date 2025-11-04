@@ -192,7 +192,7 @@ class AssessmentRegistryProcessingServiceTest {
                 ingestionFlowFile, workingDirectoryMock);
 
         // Then
-        assertEquals(1, result.getTotalRows());
+        assertEquals(2, result.getTotalRows());
         assertEquals(0, result.getProcessedRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
@@ -209,7 +209,7 @@ class AssessmentRegistryProcessingServiceTest {
                                 .fileName(ingestionFlowFile.getFileName())
                                 .errorCode("PROCESS_EXCEPTION")
                                 .errorMessage("Processing error")
-                                .rowNumber(1L)
+                                .rowNumber(2L)
                                 .organizationIpaCode(ipaCode)
                                 .assessmentCode(dto.getAssessmentCode())
                                 .build())

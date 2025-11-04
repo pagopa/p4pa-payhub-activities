@@ -181,13 +181,13 @@ class DebtPositionTypeProcessingServiceTest {
     );
 
     // Then
-    assertEquals(1, result.getTotalRows());
+    assertEquals(2, result.getTotalRows());
     assertEquals(0, result.getProcessedRows());
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
         new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
-        new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeIngestionFlowFileDTO.getDebtPositionTypeCode(),debtPositionTypeIngestionFlowFileDTO.getBrokerCf(), 1L, "PROCESS_EXCEPTION", "Processing error")
+        new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeIngestionFlowFileDTO.getDebtPositionTypeCode(),debtPositionTypeIngestionFlowFileDTO.getBrokerCf(), 2L, "PROCESS_EXCEPTION", "Processing error")
      )));
     Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
     Mockito.verify(mapperMock).map(debtPositionTypeIngestionFlowFileDTO, 1L);
