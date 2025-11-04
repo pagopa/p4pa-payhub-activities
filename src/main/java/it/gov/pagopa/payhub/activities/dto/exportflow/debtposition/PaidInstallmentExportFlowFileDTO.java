@@ -143,7 +143,7 @@ public class PaidInstallmentExportFlowFileDTO {
     private String singlePaymentOutcome;
     @CsvBindByName(column = "dataEsitoSingoloPagamento")
     private LocalDate singlePaymentOutcomeDate;
-    @CsvBindByName(column = "identificativoUnivocoRiscos", required = true)
+    @CsvBindByName(column = "identificativoUnivocoRiscoss", required = true)
     private String uniqueCollectionIdentifier;
     @CsvBindByName(column = "causaleVersamento", required = true)
     @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
