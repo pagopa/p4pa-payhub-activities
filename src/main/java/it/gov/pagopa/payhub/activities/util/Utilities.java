@@ -166,10 +166,10 @@ public class Utilities {
     }
 
     public static LocalDateTime toLocalDateTime(OffsetDateTime offsetDateTime) {
-        return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+        return offsetDateTime != null ? offsetDateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime() : null;
     }
 
     public static LocalDate toLocalDate(OffsetDateTime offsetDateTime) {
-        return offsetDateTime != null ? offsetDateTime.toLocalDate() : null;
+        return offsetDateTime != null ? offsetDateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDate() : null;
     }
 }
