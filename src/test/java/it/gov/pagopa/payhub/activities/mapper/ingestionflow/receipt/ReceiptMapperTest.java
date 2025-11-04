@@ -74,7 +74,7 @@ class ReceiptMapperTest {
         ReceiptWithAdditionalNodeDataDTO result = receiptMapper.map(ingestionFlowFile, request);
 
         // Then
-        TestUtils.checkNotNullFields(result, "receiptId", "creationDate", "updateDate", "payer", "iud", "debtPositionTypeOrgCode", "balance");
+        TestUtils.checkNotNullFields(result, "receiptId", "creationDate", "updateDate", "payer", "iud", "debtPositionTypeOrgCode", "balance", "updateOperatorExternalId", "updateTraceId");
         TestUtils.checkNotNullFields(result.getDebtor());
         if (!isPayerNull) {
             Assertions.assertNotNull(result.getPayer());
@@ -116,7 +116,7 @@ class ReceiptMapperTest {
         // Then
         TestUtils.checkNotNullFields(result, "receiptId", "officeName", "pspFiscalCode", "pspPartitaIva",
                 "idChannel", "channelDescription", "paymentMethod", "applicationDate", "transferDate", "standin",
-                "creationDate", "updateDate", "metadata", "rtFilePath", "paymentNote");
+                "creationDate", "updateDate", "metadata", "rtFilePath", "paymentNote", "updateOperatorExternalId", "updateTraceId");
         TestUtils.checkNotNullFields(result.getDebtor());
         TestUtils.checkNotNullFields(result.getPayer());
         if (!codPaymentResult) {
