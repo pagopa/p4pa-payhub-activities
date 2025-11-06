@@ -225,7 +225,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetDataExportControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         String operatorExternalUserId = "operatorExternalUserId";
-        String iuf = "IUF";
+        List<String> iuf = List.of("IUF");
         String iud = "IUD";
         String iuv = "IUV";
         String iur = "IUR";
