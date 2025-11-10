@@ -1,5 +1,7 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import com.github.jk1.license.render.*
+import com.github.jk1.license.filter.*
 
 plugins {
 	java
@@ -11,6 +13,7 @@ plugins {
 	jacoco
 	id("com.intershop.gradle.jaxb") version "7.0.2"
 	id("org.openapi.generator") version "7.15.0"
+    id("com.github.jk1.dependency-license-report") version "3.0.1"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -26,13 +29,23 @@ configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
 	}
+    compileClasspath {
+        resolutionStrategy.activateDependencyLocking()
+    }
 }
 
+licenseReport {
+    renderers = arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
+    outputDir = "$projectDir/dependency-licenses"
+    filters = arrayOf(SpdxLicenseBundleNormalizer())
+}
+tasks.classes {
+    finalizedBy(tasks.generateLicenseReport)
+}
 
 repositories {
 	mavenCentral()
 }
-
 
 tasks.withType<Test> {
 	useJUnitPlatform()
@@ -204,12 +217,6 @@ jaxb {
 			schema = file("src/main/resources/receipt/wsdl/xsd/paForNode.xsd")
 			bindings = layout.files("src/main/resources/receipt/wsdl/xsd/paForNode.xjb")
 		}
-	}
-}
-
-configurations {
-	compileClasspath {
-		resolutionStrategy.activateDependencyLocking()
 	}
 }
 
