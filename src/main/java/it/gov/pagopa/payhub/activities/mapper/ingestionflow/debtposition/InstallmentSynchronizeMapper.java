@@ -151,11 +151,12 @@ public class InstallmentSynchronizeMapper {
 
     private String getFirstValue(MultiValuedMap<String, String> map, List<String> columnNames, List<String> suffixes) {
         return columnNames.stream()
-                .flatMap(c ->
-                    suffixes.stream()
-                            .map(s -> c + s)
-                )
-                .flatMap(k -> map.get(k).stream())
+                .flatMap(c -> suffixes.stream().map(s -> c + s))
+                .flatMap(key -> map.keySet().stream()
+                        .filter(existingKey -> existingKey.equalsIgnoreCase(key))
+                        .findFirst()
+                        .stream()
+                        .flatMap(matchingKey -> map.get(matchingKey).stream()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Missing required value for keys: %s".formatted(columnNames)));
     }
