@@ -39,7 +39,7 @@ class TesNoIufOrIuvClassifierTest {
 
         return Stream.of(
             Arguments.of(validTransfer, null, validReporting, validTreasury, null),
-            Arguments.of(null, null, validReporting, validTreasury, ClassificationsEnum.TES_NO_IUF_OR_IUV),
+            Arguments.of(null, null, validReporting, validTreasury, null),
             Arguments.of(validTransfer, null, null, validTreasury, ClassificationsEnum.TES_NO_IUF_OR_IUV),
             Arguments.of(validTransfer, validNotification, validReporting, validTreasury, null),
             Arguments.of(validTransfer, null, validReporting, null, null)
