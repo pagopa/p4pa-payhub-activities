@@ -71,9 +71,9 @@ class WorkflowHubClientTest {
                 .thenReturn(expectedResult);
 
         // When
-        WorkflowExecutionStatus result = client.waitWorkflowCompletion(accessToken, workflowId, maxAttempts, retryDelayMs);
+        WorkflowStatusDTO result = client.waitWorkflowCompletion(accessToken, workflowId, maxAttempts, retryDelayMs);
 
         // Then
-        Assertions.assertSame(expectedResult.getStatus(), result);
+        Assertions.assertSame(expectedResult, result);
     }
 }

@@ -46,7 +46,7 @@ public class DPInstallmentsWorkflowCompletionService {
                 return true;
             }
             WorkflowExecutionStatus workflowStatus = workflowHubService.waitWorkflowCompletion(
-                    workflowId, maxAttempts, retryDelayMs);
+                    workflowId, maxAttempts, retryDelayMs).getStatus();
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
                 errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, workflowStatus.name(),

@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub.client;
 
-import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.config.WorkflowHubApisHolder;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
 import org.springframework.context.annotation.Lazy;
@@ -20,7 +19,7 @@ public class WorkflowHubClient {
         return workflowHubApisHolder.getWorkflowHubApi(accessToken).getWorkflowStatus(workflowId);
     }
 
-    public WorkflowExecutionStatus waitWorkflowCompletion(String accessToken, String workflowId, Integer maxAttempts, Integer retryDelayMs){
-        return workflowHubApisHolder.getWorkflowHubApi(accessToken).waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs).getStatus();
+    public WorkflowStatusDTO waitWorkflowCompletion(String accessToken, String workflowId, Integer maxAttempts, Integer retryDelayMs){
+        return workflowHubApisHolder.getWorkflowHubApi(accessToken).waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs);
     }
 }

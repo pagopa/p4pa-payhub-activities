@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
 class WorkflowHubServiceTest {
@@ -71,14 +72,15 @@ class WorkflowHubServiceTest {
         String workflowId = "workflowId";
         Integer maxAttempts = 2;
         Integer retryDelayMs = 1;
+        WorkflowStatusDTO expectedResult = new WorkflowStatusDTO();
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
 
         Mockito.when(workflowHubClientMock.waitWorkflowCompletion(accessToken, workflowId, maxAttempts, retryDelayMs))
-                .thenReturn(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+                .thenReturn(expectedResult);
 
-        WorkflowExecutionStatus result = service.waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs);
+        WorkflowStatusDTO result = service.waitWorkflowCompletion(workflowId, maxAttempts, retryDelayMs);
 
-        assertEquals(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED, result);
+        assertSame(expectedResult, result);
     }
 }
