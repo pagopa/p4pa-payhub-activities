@@ -1,6 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
@@ -13,6 +16,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +51,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
     @Mock
     private IUVArchivingExportFileService iuvArchivingExportFileServiceMock;
 
+    private ObjectMapper objectMapper = new JsonConfig().objectMapper();
+
     private static final Integer PAGE_SIZE = 2;
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
     private static final int MAX_WAITING_MINUTES = 1;
@@ -76,7 +83,15 @@ class SynchronizeIngestedDebtPositionActivityTest {
     }
 
     @Test
-    void testSynchronizeIngestedDebtPositionWithoutErrors() {
+    void testSynchronizeIngestedDebtPositionWithoutErrors_NoResult() {
+        testSynchronizeIngestedDebtPositionWithoutErrors(false);
+    }
+    @Test
+    void testSynchronizeIngestedDebtPositionWithoutErrors_SuccessfulResult() {
+        testSynchronizeIngestedDebtPositionWithoutErrors(true);
+    }
+    @SneakyThrows
+    void testSynchronizeIngestedDebtPositionWithoutErrors(boolean hasWfResult) {
         Long ingestionFlowFileId = 1L;
         WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
         DebtPositionDTO debtPosition1 = buildDebtPositionDTO();
@@ -102,7 +117,13 @@ class SynchronizeIngestedDebtPositionActivityTest {
         SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.INVALID);
         SyncCompleteDTO iupdSyncStatusUpdateDTO4 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
+        WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+        workflowStatusDTO.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+        if(hasWfResult){
+            SyncStatusUpdateRequestDTO wfSyncResult = new SyncStatusUpdateRequestDTO();
+            wfSyncResult.setIupd2finalize(Map.of("IUD", new SyncCompleteDTO(InstallmentStatus.UNPAID)));
+            workflowStatusDTO.setResult(objectMapper.writeValueAsString(wfSyncResult));
+        }
 
         PagedDebtPositions pagedDebtPositionsFirstPage = PagedDebtPositions.builder()
                 .content(List.of(debtPosition1, debtPosition2))
@@ -155,7 +176,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
-                .thenReturn(workflowExecutionStatus);
+                .thenReturn(workflowStatusDTO);
 
         Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices))
                 .thenReturn("folderId");
@@ -199,6 +220,9 @@ class SynchronizeIngestedDebtPositionActivityTest {
                         "\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.")
                 .build();
 
+        WorkflowStatusDTO worflowStatusDTO = new WorkflowStatusDTO();
+        worflowStatusDTO.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_TIMED_OUT);
+
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
         Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
@@ -219,7 +243,71 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.doThrow(new RestClientException("Error")).when(workflowHubServiceMock)
                 .waitWorkflowCompletion("workflowId_2", MAX_ATTEMPTS, RETRY_DELAY);
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
-                .thenReturn(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_TIMED_OUT);
+                .thenReturn(worflowStatusDTO);
+
+        SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
+
+        assertEquals(response, result);
+    }
+
+    @Test
+    void testSynchronizeIngestedDebtPositionWithErrorsOnResult() throws JsonProcessingException {
+        Long ingestionFlowFileId = 1L;
+        DebtPositionDTO debtPosition1 = buildDebtPositionDTO();
+        DebtPositionDTO debtPosition2 = buildDebtPositionDTO();
+        DebtPositionDTO debtPosition3 = buildDebtPositionDTO();
+        DebtPositionDTO debtPosition4 = buildDebtPositionDTO();
+        PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+        WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
+
+        PagedDebtPositions pagedDebtPositionsFirstPage = PagedDebtPositions.builder()
+                .content(List.of(debtPosition1, debtPosition2))
+                .size(2L)
+                .totalPages(2L)
+                .totalElements(4L)
+                .number(0L)
+                .build();
+
+        PagedDebtPositions pagedDebtPositionsSecondPage = PagedDebtPositions.builder()
+                .content(List.of(debtPosition3, debtPosition4))
+                .size(2L)
+                .totalPages(2L)
+                .totalElements(4L)
+                .number(1L)
+                .build();
+
+        SyncIngestedDebtPositionDTO response = SyncIngestedDebtPositionDTO.builder()
+                .errorsDescription("\nError on debt position with iupdOrg " + debtPosition2.getIupdOrg() +": Error" +
+                        "\nSynchronization workflow for debt position with iupdOrg " + debtPosition3.getIupdOrg() + " terminated with error status.")
+                .build();
+
+        WorkflowStatusDTO worflowStatusDTO = new WorkflowStatusDTO();
+        worflowStatusDTO.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+        SyncStatusUpdateRequestDTO syncResult = new SyncStatusUpdateRequestDTO();
+        syncResult.setIupdSyncError(Map.of("IUD_ERROR", new SyncErrorDTO("ERROR")));
+        worflowStatusDTO.setResult(objectMapper.writeValueAsString(syncResult));
+
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
+                .thenReturn(pagedDebtPositionsFirstPage);
+        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
+                .thenReturn(pagedDebtPositionsSecondPage);
+
+        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
+                .thenReturn(paymentEventType);
+
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+                .thenReturn(null);
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+                .thenReturn(new WorkflowCreatedDTO("workflowId_2", "runId"));
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+                .thenReturn(new WorkflowCreatedDTO("workflowId_3", "runId"));
+        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+                .thenReturn(null);
+
+        Mockito.doThrow(new RestClientException("Error")).when(workflowHubServiceMock)
+                .waitWorkflowCompletion("workflowId_2", MAX_ATTEMPTS, RETRY_DELAY);
+        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
+                .thenReturn(worflowStatusDTO);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
@@ -255,7 +343,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
         SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.CANCELLED);
         SyncCompleteDTO iupdSyncStatusUpdateDTO4 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
+        WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+        workflowStatusDTO.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
         PagedDebtPositions pagedDebtPositionsFirstPage = PagedDebtPositions.builder()
                 .content(List.of(debtPosition1, debtPosition2))
@@ -308,7 +397,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
-                .thenReturn(workflowExecutionStatus);
+                .thenReturn(workflowStatusDTO);
 
         Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices))
                 .thenReturn("folderId");
@@ -347,7 +436,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
         SyncCompleteDTO iupdSyncStatusUpdateDTO3 = new SyncCompleteDTO(InstallmentStatus.INVALID);
         SyncCompleteDTO iupdSyncStatusUpdateDTO4 = new SyncCompleteDTO(InstallmentStatus.UNPAID);
 
-        WorkflowExecutionStatus workflowExecutionStatus = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
+        WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+        workflowStatusDTO.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
         PagedDebtPositions pagedDebtPositionsFirstPage = PagedDebtPositions.builder()
                 .content(List.of(debtPosition1, debtPosition2))
@@ -396,7 +486,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
-                .thenReturn(workflowExecutionStatus);
+                .thenReturn(workflowStatusDTO);
 
         Mockito.when(generateNoticeServiceMock.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices))
                 .thenThrow(new IllegalStateException("Broker 1 has not GENERATE_NOTICE apiKey configured!"));

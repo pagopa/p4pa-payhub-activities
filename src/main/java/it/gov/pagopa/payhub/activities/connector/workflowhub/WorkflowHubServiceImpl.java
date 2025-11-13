@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub;
 
-import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.client.WorkflowHubClient;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
@@ -26,7 +25,7 @@ public class WorkflowHubServiceImpl implements WorkflowHubService {
     }
 
     @Override
-    public WorkflowExecutionStatus waitWorkflowCompletion(String workflowId, Integer maxAttempts, Integer retryDelayMs) {
+    public WorkflowStatusDTO waitWorkflowCompletion(String workflowId, Integer maxAttempts, Integer retryDelayMs) {
         String accessToken = authnService.getAccessToken();
         return workflowHubClient.waitWorkflowCompletion(accessToken, workflowId, maxAttempts, retryDelayMs);
     }

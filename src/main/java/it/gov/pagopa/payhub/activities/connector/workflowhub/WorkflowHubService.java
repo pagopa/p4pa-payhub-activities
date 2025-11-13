@@ -24,6 +24,6 @@ public interface WorkflowHubService {
      * @param retryDelayMs the delay in milliseconds between each attempt
      * @return the final {@link WorkflowExecutionStatus} of the workflow
      */
-    WorkflowExecutionStatus waitWorkflowCompletion(String workflowId, Integer maxAttempts, Integer retryDelayMs);
+    WorkflowStatusDTO waitWorkflowCompletion(String workflowId, Integer maxAttempts, Integer retryDelayMs);
 
 }

@@ -67,7 +67,7 @@ rest:
       time-to-live-minutes: "\${DEFAULT_REST_CONNECTION_POOL_TIME_TO_LIVE_MINUTES:10}"
     timeout:
       connect-millis: "\${DEFAULT_REST_TIMEOUT_CONNECT_MILLIS:120000}"
-      read-millis: "\${DEFAULT_REST_TIMEOUT_READ_MILLIS:120000}"
+      read-millis: "\${DEFAULT_REST_TIMEOUT_READ_MILLIS:301000}" # it should be greater or equal to ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes
 
   auth:
     base-url: "\${AUTH_BASE_URL:http://localhost:8080/auth}"

@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,8 +51,11 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
+        WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+        workflowStatusDTO.setStatus(WORKFLOW_EXECUTION_STATUS_COMPLETED);
+
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs))
-                .thenReturn(WORKFLOW_EXECUTION_STATUS_COMPLETED);
+                .thenReturn(workflowStatusDTO);
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
@@ -81,8 +85,11 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
+        WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+        workflowStatusDTO.setStatus(WORKFLOW_EXECUTION_STATUS_FAILED);
+
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs))
-                .thenReturn(WORKFLOW_EXECUTION_STATUS_FAILED);
+                .thenReturn(workflowStatusDTO);
 
         // When
         boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);

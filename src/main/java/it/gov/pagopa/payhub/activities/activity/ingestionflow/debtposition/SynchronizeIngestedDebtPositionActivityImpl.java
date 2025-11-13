@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
-import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
@@ -12,6 +11,7 @@ import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeServ
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
@@ -85,15 +88,18 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                 WorkflowCreatedDTO workflow = p.getRight();
                 DebtPositionDTO debtPosition = p.getLeft();
                 try {
-                    WorkflowExecutionStatus workflowExecutionStatus = workflowHubService.waitWorkflowCompletion(workflow.getWorkflowId(), maxAttempts, retryDelayMs);
+                    WorkflowStatusDTO workflowExecutionStatus = workflowHubService.waitWorkflowCompletion(workflow.getWorkflowId(), maxAttempts, retryDelayMs);
 
-                    if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowExecutionStatus)) {
+                    if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowExecutionStatus.getStatus()) ||
+                            (workflowExecutionStatus.getResult() != null && !workflowExecutionStatus.getResult().contains("\"iupdSyncError\":{}"))) {
                         errors.append("\nSynchronization workflow for debt position with iupdOrg ")
                                 .append(debtPosition.getIupdOrg())
                                 .append(" terminated with error status.");
-                    } else if (debtPosition.getFlagPuPagoPaPayment()) {
-                        debtPositionsExportIuv.add(debtPosition);
-                        addIuvListToGenerateNotice(ingestionFlowFileId, debtPosition, debtPositionsGenerateNotices, iuvListGenerateNotices);
+                    } else {
+                        if (debtPosition.getFlagPuPagoPaPayment()) {
+                            debtPositionsExportIuv.add(debtPosition);
+                            addIuvListToGenerateNotice(ingestionFlowFileId, debtPosition, debtPositionsGenerateNotices, iuvListGenerateNotices);
+                        }
                     }
                 } catch (Exception e) {
                     log.error("Error waiting for debt position sync workflowId with id {} and iupdOrg {}: {}", workflow.getWorkflowId(), debtPosition.getIupdOrg(), e.getMessage());
