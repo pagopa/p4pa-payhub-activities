@@ -1,21 +1,29 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
 import it.gov.pagopa.pu.debtposition.client.generated.ReceiptApi;
 import it.gov.pagopa.pu.debtposition.client.generated.ReceiptNoPiiSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import java.io.File;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
-
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptClientTest {
@@ -152,6 +160,58 @@ class ReceiptClientTest {
 
 		// When
 		ReceiptNoPII result = receiptClient.getByPaymentReceiptId(accessToken, paymentReceiptId);
+		// Then
+		Assertions.assertNull(result);
+	}
+
+
+	@Test
+	void whenGetReceiptPdfThenInvokeWithAccessToken() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long receiptId = 1L;
+		Long organizationId = 1L;
+
+		String expectedFileName = "test.pdf";
+		File expectedResource = new File(expectedFileName);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentDisposition(
+				ContentDisposition.attachment().filename(expectedFileName).build());
+		ResponseEntity<File> responseEntity = new ResponseEntity<>(expectedResource, headers, HttpStatus.OK);
+
+		AttachmentDTO expectedResult = AttachmentDTO.builder()
+				.fileName(expectedFileName)
+				.file(expectedResource)
+				.build();
+
+		when(debtPositionApisHolderMock.getReceiptApi(accessToken))
+				.thenReturn(receiptApiMock);
+		when(receiptApiMock.getReceiptPdfWithHttpInfo(receiptId, organizationId))
+				.thenReturn(responseEntity);
+
+		// When
+		AttachmentDTO result = receiptClient.getReceiptPdf(accessToken, receiptId, organizationId);
+		// Then
+		Assertions.assertEquals(expectedResult, result);
+
+		verify(debtPositionApisHolderMock, times(1)).getReceiptApi(accessToken);
+		verify(receiptApiMock, times(1)).getReceiptPdfWithHttpInfo(receiptId, organizationId);
+	}
+
+	@Test
+	void whenGetReceiptPdfThenThrowException() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		Long receiptId = 1L;
+		Long organizationId = 1L;
+
+		when(debtPositionApisHolderMock.getReceiptApi(accessToken))
+				.thenReturn(receiptApiMock);
+		when(receiptApiMock.getReceiptPdfWithHttpInfo(receiptId, organizationId))
+				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+		// When
+		AttachmentDTO result = receiptClient.getReceiptPdf(accessToken, receiptId, organizationId);
 		// Then
 		Assertions.assertNull(result);
 	}

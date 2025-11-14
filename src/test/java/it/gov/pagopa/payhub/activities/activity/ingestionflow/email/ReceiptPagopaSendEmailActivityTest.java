@@ -1,11 +1,22 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.email;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivityImpl;
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPaEmailConfigurerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaSendEmailActivityTest {
@@ -26,6 +33,10 @@ class ReceiptPagopaSendEmailActivityTest {
 
   @Mock
   private SendEmailActivity sendEmailActivityMock;
+  @Mock
+  private ReceiptService receiptServiceMock;
+  @Mock
+  private OrganizationService organizationServiceMock;
 
   @InjectMocks
   private ReceiptPagopaSendEmailActivityImpl receiptPagopaSendEmailActivity;
@@ -35,12 +46,16 @@ class ReceiptPagopaSendEmailActivityTest {
   void givenValidReceiptAndInstallmentWhenSendReceiptHandledEmailMailThenOk() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
+    receiptWithAdditionalNodeDataDTO.setReceiptId(1L);
+    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode("orgFiscalCode");
     InstallmentDTO installmentDTO = new InstallmentDTO();
     List<String> recipients = List.of("recipient1", "recipient2");
     Map<String, String> params = Map.of();
 
     Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
     Mockito.when(receiptPagoPaEmailConfigurerServiceMock.buildTemplateParams(receiptWithAdditionalNodeDataDTO)).thenReturn(params);
+    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptWithAdditionalNodeDataDTO.getReceiptId()), anyLong())).thenReturn(new AttachmentDTO());
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(receiptWithAdditionalNodeDataDTO.getOrgFiscalCode())).thenReturn(Optional.of(new Organization().organizationId(1L)));
 
     // When
     Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));

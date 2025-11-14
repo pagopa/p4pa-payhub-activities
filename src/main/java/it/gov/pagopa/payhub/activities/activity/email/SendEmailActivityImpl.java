@@ -43,6 +43,8 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         String mailBody = resolvePlaceholders(template.getBody(), templatedEmail.getParams());
         emailDTO.setHtmlText(Jsoup.clean(mailBody, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false)));
 
+        emailDTO.setAttachment(templatedEmail.getAttachment());
+
         sendEmail(emailDTO);
     }
 

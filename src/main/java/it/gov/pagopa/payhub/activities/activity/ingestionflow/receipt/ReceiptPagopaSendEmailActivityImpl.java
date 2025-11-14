@@ -1,17 +1,21 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPaEmailConfigurerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Map;
 
 @Lazy
 @Slf4j
@@ -19,10 +23,14 @@ import java.util.Map;
 public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmailActivity {
 
   private final ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService;
+  private final ReceiptService receiptService;
+  private final OrganizationService organizationService;
   private final SendEmailActivity sendEmailActivity;
 
-  public ReceiptPagopaSendEmailActivityImpl(ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService, SendEmailActivity sendEmailActivity) {
+  public ReceiptPagopaSendEmailActivityImpl(ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService, ReceiptService receiptService, OrganizationService organizationService, SendEmailActivity sendEmailActivity) {
     this.receiptPagopaEmailConfigurerService = receiptPagopaEmailConfigurerService;
+    this.receiptService = receiptService;
+    this.organizationService = organizationService;
     this.sendEmailActivity = sendEmailActivity;
   }
 
@@ -49,8 +57,17 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
 
     Map<String, String> params = receiptPagopaEmailConfigurerService.buildTemplateParams(receiptDTO);
 
+    Optional<Organization> organization = organizationService.getOrganizationByFiscalCode(receiptDTO.getOrgFiscalCode());
+    if (organization.isEmpty()) {
+      log.info("Not sending email for receipt id[{}] [{}/{}]: organization not found", receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber());
+      return;
+    }
+
+    Long organizationId = organization.get().getOrganizationId();
+    AttachmentDTO receiptPdf = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
+
     sendEmailActivity.sendTemplatedEmail(new TemplatedEmailDTO(
-            EmailTemplateName.INGESTION_PAGOPA_RT, recipients.toArray(new String[0]), null, params
+            EmailTemplateName.INGESTION_PAGOPA_RT, recipients.toArray(new String[0]), null, params, receiptPdf
     ));
     //configure email
   }
