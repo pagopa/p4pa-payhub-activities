@@ -102,7 +102,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                         }
                     }
                 } catch (Exception e) {
-                    log.error("Error waiting for debt position sync workflowId with id {} and iupdOrg {}: {}", workflow.getWorkflowId(), debtPosition.getIupdOrg(), e.getMessage());
+                    log.error("Error waiting for debt position sync workflowId with id {} and iupdOrg {}", workflow.getWorkflowId(), debtPosition.getIupdOrg(), e);
                     errors.append("\nError on debt position with iupdOrg ")
                             .append(debtPosition.getIupdOrg()).append(": ")
                             .append(e.getMessage());
@@ -140,7 +140,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             try {
                 pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices);
             } catch (Exception e) {
-                log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}: {}", ingestionFlowFileId, e.getMessage());
+                log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}", ingestionFlowFileId, e);
                 errors.append("\nError on generate notice massive for ingestionFlowFileId ")
                         .append(ingestionFlowFileId).append(": ")
                         .append(e.getMessage());
@@ -179,7 +179,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                         return Pair.of(debtPosition, workflowCreatedDTO);
 
                     } catch (Exception e) {
-                        log.error("Error synchronizing debt position with id {} and iupdOrg {}: {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e.getMessage());
+                        log.error("Error synchronizing debt position with id {} and iupdOrg {}", debtPosition.getDebtPositionId(), debtPosition.getIupdOrg(), e);
                         errors.append("\nError on debt position with iupdOrg ")
                                 .append(debtPosition.getIupdOrg()).append(": ")
                                 .append(e.getMessage());
