@@ -8,9 +8,10 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,52 +72,56 @@ class EmailSenderServiceTest {
     @Test
     void whenSendWithAttachmentThenOk() throws MessagingException, IOException {
         // Given
-        File testFile = File.createTempFile("test_attachment", ".txt");
-        String fileContent = "This is a test attachment content.";
-        java.nio.file.Files.writeString(testFile.toPath(), fileContent);
+        Path workingDirectory = Path.of("build", "test");
+        Path testFilePath = Files.createTempFile(workingDirectory, "test_attachment", ".txt");
 
-        AttachmentDTO expectedAttachment = AttachmentDTO.builder()
-            .fileName("receipt.txt")
-            .file(testFile)
-            .build();
+        try {
+            String fileContent = "This is a test attachment content.";
+            Files.writeString(testFilePath, fileContent);
 
-        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
-        emailDTO.setAttachment(expectedAttachment);
+            AttachmentDTO expectedAttachment = AttachmentDTO.builder()
+                .fileName("receipt.txt")
+                .file(testFilePath.toFile())
+                .build();
 
-        MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
+            EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+            emailDTO.setAttachment(expectedAttachment);
 
-        Mockito.doNothing()
-            .when(javaMailSenderMock)
-            .send(Mockito.<MimeMessagePreparator>argThat(m -> {
-                try {
-                    m.prepare(result[0]);
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
+            MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
 
-                return true;
-            }));
+            Mockito.doNothing()
+                .when(javaMailSenderMock)
+                .send(Mockito.<MimeMessagePreparator>argThat(m -> {
+                    try {
+                        m.prepare(result[0]);
+                    } catch (Exception e) {
+                        throw new IllegalStateException(e);
+                    }
 
-        // When
-        service.send(emailDTO);
+                    return true;
+                }));
 
-        // Then
-        MimeMessage resultMessage = result[0];
-        checkResultMessage(resultMessage, emailDTO);
+            // When
+            service.send(emailDTO);
 
-        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
-        Assertions.assertEquals(2, mainMultipart.getCount(), "Expected 2 parts: text content and attachment.");
-        Assertions.assertEquals(emailDTO.getHtmlText(), ((MimeMultipart)(mainMultipart).getBodyPart(0).getContent()).getBodyPart(0).getContent());
+            // Then
+            MimeMessage resultMessage = result[0];
+            checkResultMessage(resultMessage, emailDTO);
 
-        BodyPart attachmentPart = mainMultipart.getBodyPart(1);
-        Assertions.assertEquals(expectedAttachment.getFileName(), attachmentPart.getFileName());
-        String actualAttachmentContent = new String(
-            attachmentPart.getInputStream().readAllBytes(),
-            StandardCharsets.UTF_8
-        );
-        Assertions.assertEquals(fileContent, actualAttachmentContent);
+            MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
+            Assertions.assertEquals(2, mainMultipart.getCount(), "Expected 2 parts: text content and attachment.");
+            Assertions.assertEquals(emailDTO.getHtmlText(), ((MimeMultipart) (mainMultipart).getBodyPart(0).getContent()).getBodyPart(0).getContent());
 
-        testFile.delete();
+            BodyPart attachmentPart = mainMultipart.getBodyPart(1);
+            Assertions.assertEquals(expectedAttachment.getFileName(), attachmentPart.getFileName());
+            String actualAttachmentContent = new String(
+                attachmentPart.getInputStream().readAllBytes(),
+                StandardCharsets.UTF_8
+            );
+            Assertions.assertEquals(fileContent, actualAttachmentContent);
+        } finally {
+            Files.deleteIfExists(testFilePath);
+        }
     }
 
     private static void checkResultMessage(MimeMessage resultMessage, EmailDTO emailDTO) throws MessagingException {
