@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
+import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
@@ -8,6 +9,8 @@ import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfiguration
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
 import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
+import java.io.File;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class SendEmailActivityTest {
@@ -104,7 +105,8 @@ class SendEmailActivityTest {
                 "var4", "VALUE4",
                 "var5", "VALUE5"
         );
-        TemplatedEmailDTO templatedEmailDTO = new TemplatedEmailDTO(templateName, new String[]{"TO"}, new String[]{"CC"}, params);
+        AttachmentDTO attachment = new AttachmentDTO(new File("test"), "test.zip");
+        TemplatedEmailDTO templatedEmailDTO = new TemplatedEmailDTO(templateName, new String[]{"TO"}, new String[]{"CC"}, params, attachment);
 
         EmailTemplate template = new EmailTemplate("SUBJECT %var1% %var2%", "BODY %var3% %var4%");
         Mockito.when(templateResolverServiceMock.resolve(templateName))
@@ -117,6 +119,7 @@ class SendEmailActivityTest {
         Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
             Assertions.assertSame(templatedEmailDTO.getTo(), e.getTo());
             Assertions.assertSame(templatedEmailDTO.getCc(), e.getCc());
+            Assertions.assertSame(templatedEmailDTO.getAttachment(), e.getAttachment());
             Assertions.assertEquals("SUBJECT VALUE1 VALUE2", e.getMailSubject());
             Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
 

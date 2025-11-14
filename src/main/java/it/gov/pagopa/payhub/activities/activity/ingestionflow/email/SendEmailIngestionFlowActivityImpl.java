@@ -46,7 +46,7 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         Pair<String[], String[]> destinations = destinationRetrieverService.retrieveEmailDestinations(ingestionFlowFileDTO);
 
         sendEmailActivity.sendTemplatedEmail(new TemplatedEmailDTO(
-                templateName, destinations.getKey(), destinations.getValue(), params
+                templateName, destinations.getKey(), destinations.getValue(), params, null
         ));
     }
 

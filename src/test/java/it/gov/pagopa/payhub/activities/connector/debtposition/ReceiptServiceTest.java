@@ -1,7 +1,15 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.ReceiptClient;
+import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
@@ -10,10 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptServiceTest {
@@ -100,5 +104,27 @@ class ReceiptServiceTest {
 		assertEquals(expected, result);
 		verify(authnServiceMock, times(1)).getAccessToken();
 		verify(receiptClientMock, times(1)).getByPaymentReceiptId(accessToken, paymentReceiptId);
+	}
+
+	@Test
+	void whenGetReceiptPdfThenInvokeClient() {
+		// Given
+		String accessToken = "ACCESSTOKEN";
+		AttachmentDTO expected = mock(AttachmentDTO.class);
+		Long receiptId = 1L;
+		Long organizationId = 1L;
+
+		when(authnServiceMock.getAccessToken())
+				.thenReturn(accessToken);
+		when(receiptClientMock.getReceiptPdf(accessToken, receiptId, organizationId))
+				.thenReturn(expected);
+
+		// When
+		AttachmentDTO result = receiptService.getReceiptPdf(receiptId, organizationId);
+
+		// Then
+		assertEquals(expected, result);
+		verify(authnServiceMock, times(1)).getAccessToken();
+		verify(receiptClientMock, times(1)).getReceiptPdf(accessToken, receiptId, organizationId);
 	}
 }
