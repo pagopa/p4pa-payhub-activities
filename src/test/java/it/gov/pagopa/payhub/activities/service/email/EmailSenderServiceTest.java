@@ -73,6 +73,7 @@ class EmailSenderServiceTest {
     void whenSendWithAttachmentThenOk() throws MessagingException, IOException {
         // Given
         Path workingDirectory = Path.of("build", "test");
+        Files.createDirectories(workingDirectory);
         Path testFilePath = Files.createTempFile(workingDirectory, "test_attachment", ".txt");
 
         try {
