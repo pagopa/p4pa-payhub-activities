@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEnti
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSearchControllerApi;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileUpdateStatusRequestDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,6 +109,16 @@ class IngestionFlowFileClientTest {
         String errorDescription = "errorDescription";
         long processedRows = 1L;
         long totalRows = 10L;
+
+        IngestionFlowFileUpdateStatusRequestDTO ingestionFlowFileUpdateStatusRequestDTO = new IngestionFlowFileUpdateStatusRequestDTO();
+        ingestionFlowFileUpdateStatusRequestDTO.setOldStatus(oldStatus);
+        ingestionFlowFileUpdateStatusRequestDTO.setNewStatus(newStatus);
+        ingestionFlowFileUpdateStatusRequestDTO.setProcessedRows(processedRows);
+        ingestionFlowFileUpdateStatusRequestDTO.setTotalRows(totalRows);
+        ingestionFlowFileUpdateStatusRequestDTO.setFileVersion(fileVersion);
+        ingestionFlowFileUpdateStatusRequestDTO.setErrorDescription(errorDescription);
+        ingestionFlowFileUpdateStatusRequestDTO.setDiscardFile(discardFileName);
+
         IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
                 .fileVersion(fileVersion)
                 .processedRows(processedRows)
@@ -120,9 +131,7 @@ class IngestionFlowFileClientTest {
 
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
-        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus,
-                processedRows, totalRows,
-                fileVersion, errorDescription, discardFileName))
+        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, ingestionFlowFileUpdateStatusRequestDTO))
                 .thenReturn(expectedResponse);
 
         // When
@@ -145,6 +154,16 @@ class IngestionFlowFileClientTest {
         String errorDescription = "errorDescription";
         long processedRows = 1L;
         long totalRows = 10L;
+
+        IngestionFlowFileUpdateStatusRequestDTO ingestionFlowFileUpdateStatusRequestDTO = new IngestionFlowFileUpdateStatusRequestDTO();
+        ingestionFlowFileUpdateStatusRequestDTO.setOldStatus(oldStatus);
+        ingestionFlowFileUpdateStatusRequestDTO.setNewStatus(newStatus);
+        ingestionFlowFileUpdateStatusRequestDTO.setProcessedRows(processedRows);
+        ingestionFlowFileUpdateStatusRequestDTO.setTotalRows(totalRows);
+        ingestionFlowFileUpdateStatusRequestDTO.setFileVersion(fileVersion);
+        ingestionFlowFileUpdateStatusRequestDTO.setErrorDescription(errorDescription);
+        ingestionFlowFileUpdateStatusRequestDTO.setDiscardFile(discardFileName);
+
         IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
                 .fileVersion(fileVersion)
                 .processedRows(processedRows)
@@ -155,9 +174,7 @@ class IngestionFlowFileClientTest {
 
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
-        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, oldStatus, newStatus,
-                processedRows, totalRows,
-                fileVersion, errorDescription, discardFileName))
+        when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, ingestionFlowFileUpdateStatusRequestDTO))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When

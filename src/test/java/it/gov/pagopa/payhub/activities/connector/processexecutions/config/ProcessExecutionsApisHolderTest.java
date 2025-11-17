@@ -9,6 +9,8 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileUpdateStatusRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,9 +59,18 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
 
     @Test
     void whenGetIngestionFlowFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        IngestionFlowFileUpdateStatusRequestDTO ingestionFlowFileUpdateStatusRequestDTO = new IngestionFlowFileUpdateStatusRequestDTO();
+        ingestionFlowFileUpdateStatusRequestDTO.setOldStatus(IngestionFlowFileStatus.UPLOADED);
+        ingestionFlowFileUpdateStatusRequestDTO.setNewStatus(IngestionFlowFileStatus.PROCESSING);
+        ingestionFlowFileUpdateStatusRequestDTO.setProcessedRows(0L);
+        ingestionFlowFileUpdateStatusRequestDTO.setTotalRows(0L);
+        ingestionFlowFileUpdateStatusRequestDTO.setFileVersion("1.0");
+        ingestionFlowFileUpdateStatusRequestDTO.setErrorDescription("message");
+        ingestionFlowFileUpdateStatusRequestDTO.setDiscardFile("error");
+
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                            .updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, 0L, 0L, "1.0", "message", "error"),
+                            .updateStatus(1L, ingestionFlowFileUpdateStatusRequestDTO),
                 new ParameterizedTypeReference<>() {},
                 processExecutionsApisHolder::unload);
     }

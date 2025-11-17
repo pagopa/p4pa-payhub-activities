@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileUpdateStatusRequestDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -41,12 +42,19 @@ public class IngestionFlowFileClient {
         if(ingestionFlowFileResult==null){
             ingestionFlowFileResult = new IngestionFlowFileResult();
         }
+
+        IngestionFlowFileUpdateStatusRequestDTO ingestionFlowFileUpdateStatusRequestDTO = new IngestionFlowFileUpdateStatusRequestDTO();
+        ingestionFlowFileUpdateStatusRequestDTO.setOldStatus(oldStatus);
+        ingestionFlowFileUpdateStatusRequestDTO.setNewStatus(newStatus);
+        ingestionFlowFileUpdateStatusRequestDTO.setProcessedRows(ingestionFlowFileResult.getProcessedRows());
+        ingestionFlowFileUpdateStatusRequestDTO.setTotalRows(ingestionFlowFileResult.getTotalRows());
+        ingestionFlowFileUpdateStatusRequestDTO.setFileVersion(ingestionFlowFileResult.getFileVersion());
+        ingestionFlowFileUpdateStatusRequestDTO.setErrorDescription(ingestionFlowFileResult.getErrorDescription());
+        ingestionFlowFileUpdateStatusRequestDTO.setDiscardFile(ingestionFlowFileResult.getDiscardedFileName());
+
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
-                    .updateStatus(ingestionFlowFileId,
-                            oldStatus, newStatus,
-                            ingestionFlowFileResult.getProcessedRows(), ingestionFlowFileResult.getTotalRows(),
-                            ingestionFlowFileResult.getFileVersion(), ingestionFlowFileResult.getErrorDescription(), ingestionFlowFileResult.getDiscardedFileName());
+                    .updateStatus(ingestionFlowFileId, ingestionFlowFileUpdateStatusRequestDTO);
         } catch (HttpClientErrorException.NotFound e) {
             return 0;
         }
