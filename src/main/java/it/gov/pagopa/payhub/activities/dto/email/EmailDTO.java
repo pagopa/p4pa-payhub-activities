@@ -19,5 +19,5 @@ public class EmailDTO {
     private String[] cc;
     private String mailSubject;
     private String htmlText;
-    private AttachmentDTO attachment;
+    private FileResourceDTO attachment;
 }

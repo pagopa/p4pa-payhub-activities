@@ -3,14 +3,13 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
-import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
+import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPaEmailConfigurerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,9 +64,7 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
     }
 
     Long organizationId = organization.get().getOrganizationId();
-    File receiptPdf = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
-
-    AttachmentDTO attachment = new AttachmentDTO(receiptPdf, receiptPdf.getName());
+    FileResourceDTO attachment = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
     sendEmailActivity.sendTemplatedEmail(new TemplatedEmailDTO(
         EmailTemplateName.INGESTION_PAGOPA_RT, recipients.toArray(new String[0]), null, params, attachment)
     );
