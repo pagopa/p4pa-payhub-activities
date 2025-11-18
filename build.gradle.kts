@@ -439,7 +439,11 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
 	modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
 	typeMappings.set(mapOf(
 		"LocalDateTime" to "java.time.LocalDateTime",
-		"object" to "com.fasterxml.jackson.databind.JsonNode"
+		"object" to "com.fasterxml.jackson.databind.JsonNode",
+		"string+binary" to "Resource"
+	))
+	importMappings.set(mapOf(
+		"Resource" to "org.springframework.core.io.Resource"
 	))
 	configOptions.set(mapOf(
 		"swaggerAnnotations" to "false",

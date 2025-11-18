@@ -21,5 +21,5 @@ public class TemplatedEmailDTO {
     private String[] to;
     private String[] cc;
     private Map<String, String> params;
-    private AttachmentDTO attachment;
+    private FileResourceDTO attachment;
 }

@@ -1,15 +1,14 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
-import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
+import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
 import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
-import java.io.File;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ByteArrayResource;
 
 @ExtendWith(MockitoExtension.class)
 class SendEmailActivityTest {
@@ -105,7 +105,9 @@ class SendEmailActivityTest {
                 "var4", "VALUE4",
                 "var5", "VALUE5"
         );
-        AttachmentDTO attachment = new AttachmentDTO(new File("test"), "test.zip");
+        ByteArrayResource expectedResource = new ByteArrayResource("PDF-DATA".getBytes());
+        String expectedFileName = "filename";
+        FileResourceDTO attachment = new FileResourceDTO(expectedResource, expectedFileName);
         TemplatedEmailDTO templatedEmailDTO = new TemplatedEmailDTO(templateName, new String[]{"TO"}, new String[]{"CC"}, params, attachment);
 
         EmailTemplate template = new EmailTemplate("SUBJECT %var1% %var2%", "BODY %var3% %var4%");
