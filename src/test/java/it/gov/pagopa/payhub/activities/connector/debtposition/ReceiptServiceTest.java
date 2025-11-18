@@ -9,10 +9,10 @@ import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.ReceiptClient;
-import it.gov.pagopa.payhub.activities.dto.email.AttachmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import java.io.File;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -110,7 +110,7 @@ class ReceiptServiceTest {
 	void whenGetReceiptPdfThenInvokeClient() {
 		// Given
 		String accessToken = "ACCESSTOKEN";
-		AttachmentDTO expected = mock(AttachmentDTO.class);
+		File expected = mock(File.class);
 		Long receiptId = 1L;
 		Long organizationId = 1L;
 
@@ -120,7 +120,7 @@ class ReceiptServiceTest {
 				.thenReturn(expected);
 
 		// When
-		AttachmentDTO result = receiptService.getReceiptPdf(receiptId, organizationId);
+		File result = receiptService.getReceiptPdf(receiptId, organizationId);
 
 		// Then
 		assertEquals(expected, result);

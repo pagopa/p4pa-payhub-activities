@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPa
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,11 +65,12 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
     }
 
     Long organizationId = organization.get().getOrganizationId();
-    AttachmentDTO receiptPdf = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
+    File receiptPdf = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
 
+    AttachmentDTO attachment = new AttachmentDTO(receiptPdf, receiptPdf.getName());
     sendEmailActivity.sendTemplatedEmail(new TemplatedEmailDTO(
-            EmailTemplateName.INGESTION_PAGOPA_RT, recipients.toArray(new String[0]), null, params, receiptPdf
-    ));
+        EmailTemplateName.INGESTION_PAGOPA_RT, recipients.toArray(new String[0]), null, params, attachment)
+    );
     //configure email
   }
 
