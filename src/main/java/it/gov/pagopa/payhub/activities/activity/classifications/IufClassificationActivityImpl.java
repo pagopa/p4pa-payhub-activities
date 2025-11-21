@@ -19,6 +19,8 @@ import java.util.Objects;
 @Lazy
 @Component
 public class IufClassificationActivityImpl implements IufClassificationActivity {
+    public static final String UNKNOWN_IUF_PREFIX = "UNKNOWN";
+
     private final PaymentsReportingService paymentsReportingService;
     private final TransferClassificationStoreService transferClassificationStoreService;
     private final TreasuryService treasuryService;
@@ -33,7 +35,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     public IufClassificationActivityResult classifyIuf(Long organizationId, String treasuryId, String iuf) {
         log.info("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
-        if(iuf == null || iuf.isBlank()) {
+        if(iuf == null || iuf.isBlank() || iuf.startsWith(UNKNOWN_IUF_PREFIX)) {
             log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} and IUF is NULL", organizationId, treasuryId);
             saveClassification(organizationId, treasuryId, iuf, List.of(ClassificationsEnum.TES_NO_MATCH));
             return IufClassificationActivityResult.builder()

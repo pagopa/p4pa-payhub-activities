@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.generateTechnicalIuf;
+
 @Lazy
 @Service
 @Slf4j
@@ -45,10 +47,14 @@ public class TreasuryOpiParserService {
         return Pair.of(
                 newTreasuries.getLeft(),
                 newTreasuries.getRight().stream()
-                        .filter(treasury -> treasury.getIuf() != null)
-                        .collect(Collectors.toMap(
-                                Treasury::getIuf,
-                                treasury -> Objects.requireNonNull(treasuryService.insert(treasury).getTreasuryId())
-                        )));
+                        .map(treasury -> {
+                            String treasuryId = Objects.requireNonNull(treasuryService.insert(treasury).getTreasuryId());
+                            return Map.entry(
+                                    treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
+                                    treasuryId
+                            );
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+
     }
 }

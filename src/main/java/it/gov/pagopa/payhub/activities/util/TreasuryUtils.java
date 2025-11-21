@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
+import static it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivityImpl.UNKNOWN_IUF_PREFIX;
+
 public class TreasuryUtils {
   private TreasuryUtils() {}
 
@@ -116,5 +118,9 @@ public class TreasuryUtils {
       byte[] iufBytes = iuf.getBytes(StandardCharsets.UTF_8);
       String uuid = UUID.nameUUIDFromBytes(iufBytes).toString();
       return uuid.substring(uuid.length() - 7);
+  }
+
+  public static String generateTechnicalIuf(String treasuryId) {
+      return UNKNOWN_IUF_PREFIX + treasuryId;
   }
 }

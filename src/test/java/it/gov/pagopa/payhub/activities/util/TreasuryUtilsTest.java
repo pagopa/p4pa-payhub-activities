@@ -138,4 +138,15 @@ class TreasuryUtilsTest {
         String expectedBillCode = "315b8e4";
         assertEquals(expectedBillCode, result);
     }
+
+    @Test
+    void givenTreasuryIdWhenGenerateTechnicalIufThenOk() {
+        String treasuryId = "123";
+
+        String result = TreasuryUtils.generateTechnicalIuf(treasuryId);
+
+        String expectedResult = "UNKNOWN123";
+
+        assertEquals(expectedResult, result);
+    }
 }
