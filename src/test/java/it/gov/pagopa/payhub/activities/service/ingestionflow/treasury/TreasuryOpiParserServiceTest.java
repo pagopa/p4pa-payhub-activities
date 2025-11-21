@@ -63,8 +63,8 @@ class TreasuryOpiParserServiceTest {
         // Then
         assertNotNull(result);
         assertSame(handlerResult.getLeft(), result.getLeft());
-        assertEquals(isIufPresent ? 1 : 0, result.getRight().size());
-        verify(treasuryService, times(isIufPresent ? 1 : 0)).insert(treasuryDTO);
+        assertEquals(1, result.getRight().size());
+        verify(treasuryService, times(1)).insert(treasuryDTO);
         if (isIufPresent) {
             assertEquals("treasury123", result.getRight().get("Flow123"));
         }

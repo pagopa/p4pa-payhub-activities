@@ -60,21 +60,23 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
         String rowIuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
         try {
-            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
+            if (rowIuf != null) {
+                TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
 
-            if(existingTreasury != null) {
-                boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
-                if (treasuryMatch) {
-                    String errorMessage = String.format(
-                            "IUF %s already associated to another treasury for organization with IPA code %s",
-                            rowIuf, ipa);
-                    log.error(errorMessage);
-                    TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
-                            ingestionFlowFile.getFileName(),
-                            rowIuf,
-                            lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
-                    errorList.add(error);
-                    return false;
+                if (existingTreasury != null) {
+                    boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
+                    if (treasuryMatch) {
+                        String errorMessage = String.format(
+                                "IUF %s already associated to another treasury for organization with IPA code %s",
+                                rowIuf, ipa);
+                        log.error(errorMessage);
+                        TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
+                                ingestionFlowFile.getFileName(),
+                                rowIuf,
+                                lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
+                        errorList.add(error);
+                        return false;
+                    }
                 }
             }
 
