@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.generateTechnicalIuf;
+
 @Service
 @Lazy
 @Slf4j
@@ -83,9 +85,11 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             Treasury treasury = treasuryService.insert(
                     treasuryCsvMapper.map(row, ingestionFlowFile));
 
-            if (treasury.getIuf() != null) {
-                ingestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
-            }
+            String treasuryId = treasury.getTreasuryId();
+            ingestionFlowFileResult.getIuf2TreasuryIdMap().put(
+                    treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
+                    treasuryId
+            );
 
             return true;
         } catch (Exception e) {
