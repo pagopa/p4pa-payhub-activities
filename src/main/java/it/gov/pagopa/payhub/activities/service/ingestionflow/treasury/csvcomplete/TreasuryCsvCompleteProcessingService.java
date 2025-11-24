@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.generateTechnicalIuf;
+
 @Service
 @Lazy
 @Slf4j
@@ -95,9 +97,11 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
             Treasury treasury = treasuryService.insert(
                     treasuryCsvCompleteMapper.map(row, ingestionFlowFile));
 
-            if (treasury.getIuf() != null) {
-                treasuryCsvCompleteIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
-            }
+            String treasuryId = treasury.getTreasuryId();
+            ingestionFlowFileResult.getIuf2TreasuryIdMap().put(
+                    treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
+                    treasuryId
+            );
             return true;
         } catch (Exception e) {
             log.error("Error processing treasury csv complete with iuf {} and iuv {}: {}",
