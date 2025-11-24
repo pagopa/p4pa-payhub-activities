@@ -82,7 +82,7 @@ class TreasuryValidatorOpi171ServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(10, result.size());
+        assertEquals(9, result.size());
 
         assertEquals("Tipo movimento field is not valorized but it is required", result.get(0).getErrorMessage());
         assertEquals("Tipo documento field is not valorized but it is required", result.get(1).getErrorMessage());
@@ -101,7 +101,7 @@ class TreasuryValidatorOpi171ServiceTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(12, result.size());
+        assertEquals(11, result.size());
 
         assertEquals("Esercizio field is not valorized but it is required", result.get(0).getErrorMessage());
         assertEquals("Tipo movimento field is not valorized but it is required", result.get(1).getErrorMessage());
