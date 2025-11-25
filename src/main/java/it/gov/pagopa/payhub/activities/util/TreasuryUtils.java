@@ -11,6 +11,7 @@ public class TreasuryUtils {
   private TreasuryUtils() {}
 
   public static final String IUF = "IUF";
+  public static final String UNKNOWN_IUF_PREFIX = "UNKNOWN";
   public static final String REGEX_MATCHER = "([A-Za-z0-9-_](\\S+)\\s+(\\S+))";
   public static final String ALPHANUM_PATTERN = "([A-Za-z0-9-_]+)";
   public static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
@@ -116,5 +117,9 @@ public class TreasuryUtils {
       byte[] iufBytes = iuf.getBytes(StandardCharsets.UTF_8);
       String uuid = UUID.nameUUIDFromBytes(iufBytes).toString();
       return uuid.substring(uuid.length() - 7);
+  }
+
+  public static String generateTechnicalIuf(String treasuryId) {
+      return UNKNOWN_IUF_PREFIX + treasuryId;
   }
 }

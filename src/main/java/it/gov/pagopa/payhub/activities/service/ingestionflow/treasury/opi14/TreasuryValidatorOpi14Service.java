@@ -47,8 +47,6 @@ public class TreasuryValidatorOpi14Service implements TreasuryValidatorService<F
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_ANAGRAFICA_CLIENTE_NOT_FOUND", "Anagrafica cliente field is not valorized but it is required");
                     if (movimentoContoEvidenza.getCausale() == null)
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_CAUSALE_NOT_FOUND", "Causale field is not valorized but it is required");
-                    if (iuf == null)
-                        addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_IUF_NOT_FOUND", "Iuf field is not valorized but it is required");
                     if (StringUtils.isNotBlank(iuf) && iuf.length() > 35)
                         addError(treasuryErrorDTOList, fileName, codEsercizio, codBolletta, "PAA_IUF_TOO_LONG", "Codice univoco Flusso exceed max length of 35 chars");
                     if (movimentoContoEvidenza.getSospesoDaRegolarizzare() == null || movimentoContoEvidenza.getSospesoDaRegolarizzare().getDataEffettivaSospeso() == null)

@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.UNKNOWN_IUF_PREFIX;
+
 @Slf4j
 @Lazy
 @Component
@@ -33,7 +35,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     public IufClassificationActivityResult classifyIuf(Long organizationId, String treasuryId, String iuf) {
         log.info("Starting IUF Classification for organization id {} and iuf {}", organizationId,iuf);
 
-        if(iuf == null || iuf.isBlank()) {
+        if(iuf == null || iuf.isBlank() || iuf.startsWith(UNKNOWN_IUF_PREFIX)) {
             log.debug("Saving classification TES_NO_MATCH for organizationId: {} - treasuryId: {} and IUF is NULL", organizationId, treasuryId);
             saveClassification(organizationId, treasuryId, iuf, List.of(ClassificationsEnum.TES_NO_MATCH));
             return IufClassificationActivityResult.builder()

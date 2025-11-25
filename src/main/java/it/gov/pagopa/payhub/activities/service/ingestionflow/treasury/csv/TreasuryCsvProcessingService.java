@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.generateTechnicalIuf;
+
 @Service
 @Lazy
 @Slf4j
@@ -60,28 +62,35 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
         String rowIuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
         try {
-            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
+            if (rowIuf != null) {
+                TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
 
-            if(existingTreasury != null) {
-                boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
-                if (treasuryMatch) {
-                    String errorMessage = String.format(
-                            "IUF %s already associated to another treasury for organization with IPA code %s",
-                            rowIuf, ipa);
-                    log.error(errorMessage);
-                    TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
-                            ingestionFlowFile.getFileName(),
-                            rowIuf,
-                            lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
-                    errorList.add(error);
-                    return false;
+                if (existingTreasury != null) {
+                    boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
+                    if (treasuryMatch) {
+                        String errorMessage = String.format(
+                                "IUF %s already associated to another treasury for organization with IPA code %s",
+                                rowIuf, ipa);
+                        log.error(errorMessage);
+                        TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
+                                ingestionFlowFile.getFileName(),
+                                rowIuf,
+                                lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
+                        errorList.add(error);
+                        return false;
+                    }
                 }
             }
 
             Treasury treasury = treasuryService.insert(
                     treasuryCsvMapper.map(row, ingestionFlowFile));
 
-            ingestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
+            String treasuryId = treasury.getTreasuryId();
+            ingestionFlowFileResult.getIuf2TreasuryIdMap().put(
+                    treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
+                    treasuryId
+            );
+
             return true;
         } catch (Exception e) {
             log.error("Error processing treasury csv with iuf {}: {}",
