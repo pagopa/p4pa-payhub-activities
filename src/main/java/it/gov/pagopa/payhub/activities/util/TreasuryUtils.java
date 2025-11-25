@@ -7,12 +7,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
-import static it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivityImpl.UNKNOWN_IUF_PREFIX;
-
 public class TreasuryUtils {
   private TreasuryUtils() {}
 
   public static final String IUF = "IUF";
+  public static final String UNKNOWN_IUF_PREFIX = "UNKNOWN";
   public static final String REGEX_MATCHER = "([A-Za-z0-9-_](\\S+)\\s+(\\S+))";
   public static final String ALPHANUM_PATTERN = "([A-Za-z0-9-_]+)";
   public static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");

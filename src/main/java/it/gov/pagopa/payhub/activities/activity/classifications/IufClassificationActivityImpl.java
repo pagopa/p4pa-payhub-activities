@@ -15,12 +15,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.UNKNOWN_IUF_PREFIX;
+
 @Slf4j
 @Lazy
 @Component
 public class IufClassificationActivityImpl implements IufClassificationActivity {
-    public static final String UNKNOWN_IUF_PREFIX = "UNKNOWN";
-
     private final PaymentsReportingService paymentsReportingService;
     private final TransferClassificationStoreService transferClassificationStoreService;
     private final TreasuryService treasuryService;
