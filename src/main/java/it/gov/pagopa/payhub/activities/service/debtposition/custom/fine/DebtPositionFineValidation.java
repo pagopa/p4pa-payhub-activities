@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 @Service
 public class DebtPositionFineValidation {
 
-    private final Set<PaymentOptionTypeEnum> expectedTypes = Set.of(
-            PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT,
-            PaymentOptionTypeEnum.SINGLE_INSTALLMENT
+    private final Set<PaymentOptionType> expectedTypes = Set.of(
+            PaymentOptionType.REDUCED_SINGLE_INSTALLMENT,
+            PaymentOptionType.SINGLE_INSTALLMENT
     );
 
     public void validateFine(DebtPositionDTO debtPositionDTO) {
@@ -60,7 +60,7 @@ public class DebtPositionFineValidation {
      * for the fine(REDUCED_SINGLE_INSTALLMENT and SINGLE_INSTALLMENT).
      */
     private void validatePaymentOptionTypes(List<PaymentOptionDTO> validPaymentOptions) {
-        Set<PaymentOptionTypeEnum> actualTypes = validPaymentOptions.stream()
+        Set<PaymentOptionType> actualTypes = validPaymentOptions.stream()
                 .map(PaymentOptionDTO::getPaymentOptionType)
                 .collect(Collectors.toSet());
 

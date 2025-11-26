@@ -29,11 +29,11 @@ class DebtPositionFineValidationTest {
     @Test
     void whenValidateFineThenOk(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));
         PaymentOptionDTO paymentOptionDTO2 = new PaymentOptionDTO();
         paymentOptionDTO2.setInstallments(List.of(buildInstallmentDTO2()));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
@@ -44,16 +44,16 @@ class DebtPositionFineValidationTest {
     @Test
     void givenPOMoreThanTwoWithOneCancelledWhenValidateFineThenOk(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));
         PaymentOptionDTO paymentOptionDTO2 = new PaymentOptionDTO();
         InstallmentDTO installmentDTO = buildInstallmentDTO();
         installmentDTO.setStatus(InstallmentStatus.CANCELLED);
         paymentOptionDTO2.setInstallments(List.of(installmentDTO, buildInstallmentDTO2()));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
         PaymentOptionDTO paymentOptionDTO3 = new PaymentOptionDTO();
         paymentOptionDTO3.setInstallments(List.of(buildInstallmentDTO2()));
-        paymentOptionDTO3.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO3.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
         paymentOptionDTO3.setStatus(PaymentOptionStatus.CANCELLED);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
@@ -85,11 +85,11 @@ class DebtPositionFineValidationTest {
     @Test
     void given2POAnd2InstallmentsButTypeNotReducedOrSingleWhenValidateFineThenThrowInvalidDebtPositionException(){
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.INSTALLMENTS);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.INSTALLMENTS);
         paymentOptionDTO1.setInstallments(List.of(buildInstallmentDTO()));
         PaymentOptionDTO paymentOptionDTO2 = new PaymentOptionDTO();
         paymentOptionDTO2.setInstallments(List.of(buildInstallmentDTO2()));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.INSTALLMENTS);
+        paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.INSTALLMENTS);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
@@ -97,9 +97,9 @@ class DebtPositionFineValidationTest {
         InvalidDebtPositionException result =
                 assertThrows(InvalidDebtPositionException.class, () -> debtPositionFineValidation.validateFine(debtPositionDTO));
 
-        Set<PaymentOptionTypeEnum> expectedTypes = Set.of(
-                PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT,
-                PaymentOptionTypeEnum.SINGLE_INSTALLMENT
+        Set<PaymentOptionType> expectedTypes = Set.of(
+                PaymentOptionType.REDUCED_SINGLE_INSTALLMENT,
+                PaymentOptionType.SINGLE_INSTALLMENT
         );
 
         assertEquals(String.format("Payment options must be exactly of types: %s; provided: [INSTALLMENTS]", expectedTypes), result.getMessage());

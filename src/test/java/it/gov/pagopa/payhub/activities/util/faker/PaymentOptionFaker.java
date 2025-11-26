@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class PaymentOptionFaker {
                 .status(PaymentOptionStatus.PAID)
                 .installments(List.of(buildInstallmentDTO()))
                 .description("description")
-                .paymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+                .paymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
     }
 
     public static PaymentOptionDTO buildPaymentOptionDTO2(){
@@ -33,7 +33,7 @@ public class PaymentOptionFaker {
                 .status(PaymentOptionStatus.UNPAID)
                 .installments(List.of(buildInstallmentDTO(), buildInstallmentDTO2()))
                 .description("description")
-                .paymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+                .paymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
     }
 
 }
