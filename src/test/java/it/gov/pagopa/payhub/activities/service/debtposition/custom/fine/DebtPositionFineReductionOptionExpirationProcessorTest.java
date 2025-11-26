@@ -49,7 +49,7 @@ class DebtPositionFineReductionOptionExpirationProcessorTest {
         installmentDTO.setInstallmentId(1L);
         installmentDTO.setStatus(InstallmentStatus.UNPAYABLE);
         paymentOptionDTO.setInstallments(List.of(installmentDTO));
-        paymentOptionDTO.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
         paymentOptionDTO.setStatus(PaymentOptionStatus.UNPAYABLE);
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO));
         InstallmentSyncStatus syncStatus = new InstallmentSyncStatus();

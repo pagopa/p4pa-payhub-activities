@@ -36,7 +36,7 @@ class DebtPositionFineProcessorTest {
     void whenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
         paymentOptionDTO1.setStatus(PaymentOptionStatus.TO_SYNC);
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
@@ -64,7 +64,7 @@ class DebtPositionFineProcessorTest {
     void givenPOIsNotToSyncWhenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
         paymentOptionDTO1.setStatus(PaymentOptionStatus.PAID);
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
@@ -89,7 +89,7 @@ class DebtPositionFineProcessorTest {
     void givenInstallmentIsNotToSyncWhenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
         paymentOptionDTO1.setStatus(PaymentOptionStatus.TO_SYNC);
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
@@ -114,7 +114,7 @@ class DebtPositionFineProcessorTest {
     void givenReductionDateNotBeforeWhenProcessFineThenNowThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
         paymentOptionDTO1.setStatus(PaymentOptionStatus.TO_SYNC);
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
@@ -139,7 +139,7 @@ class DebtPositionFineProcessorTest {
     void givenReductionDateNullWhenProcessFineThenOk(){
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
         paymentOptionDTO1.setStatus(PaymentOptionStatus.TO_SYNC);
 
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();

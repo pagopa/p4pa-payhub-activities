@@ -36,7 +36,7 @@ public class DebtPositionFineProcessor {
     private void updateFullPOAndInstallmentsIfToSync(DebtPositionDTO debtPositionDTO) {
         debtPositionDTO.getPaymentOptions().stream()
                 .filter(po ->
-                        PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()) &&
+                        PaymentOptionType.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()) &&
                         PaymentOptionStatus.TO_SYNC.equals(po.getStatus()))
                 .findFirst()
                 .ifPresent(po -> {

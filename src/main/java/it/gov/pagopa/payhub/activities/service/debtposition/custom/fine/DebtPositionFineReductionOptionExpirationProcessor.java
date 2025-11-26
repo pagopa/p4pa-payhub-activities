@@ -34,7 +34,7 @@ public class DebtPositionFineReductionOptionExpirationProcessor {
         if (!DebtPositionStatus.PAID.equals(debtPositionDTO.getStatus()) && !DebtPositionStatus.REPORTED.equals(debtPositionDTO.getStatus())) {
             debtPositionDTO.getPaymentOptions().stream()
                     .filter(po ->
-                            PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()) &&
+                            PaymentOptionType.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()) &&
                                     PaymentOptionStatus.UNPAYABLE.equals(po.getStatus()))
                     .forEach(paymentOptionDTO -> {
                         paymentOptionDTO.setStatus(PaymentOptionStatus.TO_SYNC);

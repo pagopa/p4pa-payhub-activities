@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecu
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Lazy;
@@ -45,9 +45,9 @@ public class DebtPositionFineNotificationDateProcessor {
                 .filter(installment -> installment.getNotificationDate() != null)
                 .forEach(installment -> {
                     boolean processed = false;
-                    if (PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT.equals(po.getPaymentOptionType())) {
+                    if (PaymentOptionType.REDUCED_SINGLE_INSTALLMENT.equals(po.getPaymentOptionType())) {
                         processed = processNotifiedReducedSingleInstallment(executionParams, installment, response);
-                    } else if (PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType())) {
+                    } else if (PaymentOptionType.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType())) {
                         processed = processNotifiedSingleInstallment(executionParams, installment);
                     }
 

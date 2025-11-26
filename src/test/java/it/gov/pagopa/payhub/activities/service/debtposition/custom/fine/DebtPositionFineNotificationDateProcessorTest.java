@@ -4,7 +4,10 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +41,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
 
         // Create the related Installment with a notification date (2 days ago)
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
@@ -57,7 +60,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         installmentDTO2.setDueDate(Objects.requireNonNull(installmentDTO2.getNotificationDate()).plusDays(60).atZoneSameInstant(Utilities.ZONEID).toLocalDate());
 
         paymentOptionDTO2.setInstallments(List.of(installmentDTO2));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
@@ -77,7 +80,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
 
         // Create the related Installment with a notification date (2 days ago)
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
@@ -96,7 +99,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         installmentDTO2.setDueDate(Objects.requireNonNull(installmentDTO2.getNotificationDate()).plusDays(40).atZoneSameInstant(Utilities.ZONEID).toLocalDate());
 
         paymentOptionDTO2.setInstallments(List.of(installmentDTO2));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
@@ -117,7 +120,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         // Given
         // Create a PaymentOption of type REDUCED_SINGLE_INSTALLMENT
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
 
         // Create the related Installment with a notification date (2 days ago)
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
@@ -136,7 +139,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         installmentDTO2.setDueDate(Objects.requireNonNull(installmentDTO2.getNotificationDate()).plusDays(60).atZoneSameInstant(Utilities.ZONEID).toLocalDate());
 
         paymentOptionDTO2.setInstallments(List.of(installmentDTO2));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
@@ -157,7 +160,7 @@ class DebtPositionFineNotificationDateProcessorTest {
     void givenNotificationIdNullWhenProcessNotificationDateThenReturnFalse() {
         // Given
         PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-        paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+        paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
         InstallmentDTO installmentDTO1 = buildInstallmentDTO();
         installmentDTO1.setNotificationDate(null);
         paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
@@ -166,7 +169,7 @@ class DebtPositionFineNotificationDateProcessorTest {
         InstallmentDTO installmentDTO2 = buildInstallmentDTO2();
         installmentDTO2.setNotificationDate(null);
         paymentOptionDTO2.setInstallments(List.of(installmentDTO2));
-        paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+        paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
 
         DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
         debtPositionDTO.setPaymentOptions(List.of(paymentOptionDTO1, paymentOptionDTO2));
@@ -185,7 +188,7 @@ class DebtPositionFineNotificationDateProcessorTest {
     void givenPOWithUnknownTypeThenSkipProcessing() {
         // Given
         PaymentOptionDTO po = new PaymentOptionDTO();
-        po.setPaymentOptionType(PaymentOptionTypeEnum.DOWN_PAYMENT);
+        po.setPaymentOptionType(PaymentOptionType.DOWN_PAYMENT);
 
         InstallmentDTO installment = buildInstallmentDTO();
         installment.setNotificationDate(OffsetDateTime.now().minusDays(2));
