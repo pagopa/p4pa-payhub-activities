@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import org.junit.jupiter.api.Assertions;
@@ -57,7 +58,7 @@ class OrganizationMapperTest {
         Assertions.assertEquals("CBILL", result.getCbillInterBankCode());
         Assertions.assertEquals("logo", result.getOrgLogo());
         Assertions.assertEquals(OrganizationStatus.ACTIVE, result.getStatus());
-        Assertions.assertEquals("EN", result.getAdditionalLanguage());
+        Assertions.assertEquals(OrganizationAdditionalLanguage.EN, result.getAdditionalLanguage());
         Assertions.assertEquals(LocalDate.of(2024, 6, 1), result.getStartDate());
         Assertions.assertEquals(456L, result.getBrokerId());
         Assertions.assertTrue(result.getFlagNotifyIo());

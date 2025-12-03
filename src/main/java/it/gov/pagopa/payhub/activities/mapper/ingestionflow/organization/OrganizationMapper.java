@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class OrganizationMapper {
                 .orgLogo(dto.getOrgLogo())
                 .status(OrganizationStatus.valueOf(dto.getStatus()))
                 .startDate(dto.getStartDate() != null ? dto.getStartDate().toLocalDate() : null)
-                .additionalLanguage(dto.getAdditionalLanguage())
+                .additionalLanguage(OrganizationAdditionalLanguage.valueOf(dto.getAdditionalLanguage()))
 
                 .iban(dto.getIban())
                 .postalIban(dto.getPostalIban())
