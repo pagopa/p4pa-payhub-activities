@@ -51,8 +51,8 @@ class PaymentNotificationMapperTest {
     Assertions.assertEquals("testIuv", result.getIuv());
     Assertions.assertEquals(dto.getPaymentExecutionDate(), result.getPaymentExecutionDate());
     Assertions.assertEquals("testType", result.getPaymentType());
-    Assertions.assertEquals(1000L, result.getAmountPaidCents());
-    Assertions.assertEquals(100L, result.getPaCommissionCents());
+    Assertions.assertEquals(100000L, result.getAmountPaidCents());
+    Assertions.assertEquals(10000L, result.getPaCommissionCents());
     Assertions.assertEquals("testInfo", result.getRemittanceInformation());
     Assertions.assertEquals("testCategory", result.getTransferCategory());
     Assertions.assertEquals("testCode", result.getDebtPositionTypeOrgCode());
