@@ -36,12 +36,12 @@ public abstract class BaseIngestionFlowFileActivity<T extends IngestionFlowFileR
 		List<Path> retrievedFiles = null;
 		try {
 			IngestionFlowFile ingestionFlowFileDTO = findIngestionFlowFileRecord(ingestionFlowFileId);
-
 			retrievedFiles = retrieveFiles(ingestionFlowFileDTO);
 
 			T result = handleRetrievedFiles(retrievedFiles, ingestionFlowFileDTO);
 			result.setOrganizationId(ingestionFlowFileDTO.getOrganizationId());
-
+            result.setOperatorExternalUserId(ingestionFlowFileDTO.getOperatorExternalId());
+            result.setFileSize(ingestionFlowFileDTO.getFileSize());
 			fileArchiverService.archive(ingestionFlowFileDTO);
 
 			return result;

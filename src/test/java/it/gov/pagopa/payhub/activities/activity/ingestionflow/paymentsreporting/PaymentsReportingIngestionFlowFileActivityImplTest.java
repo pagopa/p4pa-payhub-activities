@@ -124,6 +124,8 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 					.transfers(List.of(paymentsReportingTransferDTO))
 					.totalRows(1L)
 					.processedRows(1L)
+                    .operatorExternalUserId("OPERATORID")
+                    .fileSize(100L)
 					.build();
 
 		when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(ingestionFlowFileDTO));

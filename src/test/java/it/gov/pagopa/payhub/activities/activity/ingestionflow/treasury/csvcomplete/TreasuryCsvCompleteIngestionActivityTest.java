@@ -188,6 +188,8 @@ class TreasuryCsvCompleteIngestionActivityTest {
         .totalRows(30L)
         .discardedFileName("dicardedFileName")
         .errorDescription("errorDescription")
+        .operatorExternalUserId("OPERATORID")
+        .fileSize(100L)
         .build();
   }
 
