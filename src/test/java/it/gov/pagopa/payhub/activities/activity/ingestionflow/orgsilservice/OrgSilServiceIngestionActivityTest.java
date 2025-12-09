@@ -162,6 +162,8 @@ class OrgSilServiceIngestionActivityTest {
         result.setProcessedRows(20L);
         result.setDiscardedFileName("dicardedFileName");
         result.setErrorDescription("errorDescription");
+        result.setOperatorExternalUserId("OPERATORID");
+        result.setFileSize(100L);
         return result;
     }
 

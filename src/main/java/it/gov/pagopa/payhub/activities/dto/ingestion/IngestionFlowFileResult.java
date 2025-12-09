@@ -23,4 +23,8 @@ public class IngestionFlowFileResult {
     private String errorDescription;
     /** Discarded file name */
     private String discardedFileName;
+    /** OperatorExternalUserId */
+    private String operatorExternalUserId;
+    /** FileSize */
+    private Long fileSize;
 }

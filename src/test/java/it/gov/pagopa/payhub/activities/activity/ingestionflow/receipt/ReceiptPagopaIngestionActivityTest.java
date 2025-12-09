@@ -100,6 +100,8 @@ class ReceiptPagopaIngestionActivityTest {
             .fileVersion("1.0.0")
             .totalRows(1L)
             .processedRows(1L)
+            .operatorExternalUserId("OPERATORID")
+            .fileSize(100L)
             .build();
 
     Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(receiptDTO);
