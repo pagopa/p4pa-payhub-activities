@@ -69,4 +69,9 @@ public class FullClassificationsExportFileService extends BaseClassificationsExp
         String flowFileVersion = super.getFlowFileVersion(exportFile);
         return  "WITH_NOTIFICATION_" + flowFileVersion;
     }
+
+    @Override
+    protected String getOperatorExternalId(ClassificationsExportFile exportFile) {
+        return exportFile.getOperatorExternalId();
+    }
 }

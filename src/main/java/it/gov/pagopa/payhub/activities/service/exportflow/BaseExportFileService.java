@@ -45,6 +45,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
         if (exportStatus.equals(ExportFileStatus.PROCESSING)){
             Long organizationId = getOrganizationId(exportFileRecord);
             String profile = getFlowFileVersion(exportFileRecord);
+            String operatorExternalId = getOperatorExternalId(exportFileRecord);
             Path csvFilePath = workingDirectory
                     .resolve(String.valueOf(organizationId))
                     .resolve(relativeFileFolder)
@@ -73,6 +74,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
                         .exportedRows(exportedRows[0])
                         .exportDate(LocalDate.now())
                         .fileSize(zippedFileSize)
+                        .operatorExternalId(operatorExternalId)
                         .build();
             }else{
                 return ExportFileResult.builder()
@@ -82,6 +84,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
                         .exportedRows(exportedRows[0])
                         .exportDate(LocalDate.now())
                         .fileSize(0L)
+                        .operatorExternalId(operatorExternalId)
                         .build();
             }
         }else {
@@ -170,6 +173,14 @@ public abstract class BaseExportFileService<E,F,D,C> {
      * @return the FlowFileVersion
      */
     protected abstract String getFlowFileVersion(E exportFile);
+
+    /**
+     * Retrieves the OperatorExternalId associated with the given export file.
+     *
+     * @param exportFile the export file for which the OperatorExternalId is to be retrieved
+     * @return the OperatorExternalId
+     */
+    protected abstract String getOperatorExternalId(E exportFile);
 
     /**
      * Executes a query using the specific API based on the declared type to retrieve a page of data.

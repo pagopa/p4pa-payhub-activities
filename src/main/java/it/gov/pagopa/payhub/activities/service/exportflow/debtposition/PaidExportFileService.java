@@ -70,6 +70,11 @@ public class PaidExportFileService extends BaseExportFileService<PaidExportFile,
     }
 
     @Override
+    protected String getOperatorExternalId(PaidExportFile exportFile) {
+        return exportFile.getOperatorExternalId();
+    }
+
+    @Override
     public List<InstallmentPaidViewDTO> retrievePage(PaidExportFile exportFile, PaidExportFileFilter filter, int pageNumber) {
         PagedInstallmentsPaidView pagedInstallmentsPaidView = debtPositionsDataExportService.exportPaidInstallments(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("installmentId"));
         if (pagedInstallmentsPaidView != null){

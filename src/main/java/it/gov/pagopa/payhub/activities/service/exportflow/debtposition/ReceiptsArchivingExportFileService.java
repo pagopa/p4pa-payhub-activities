@@ -64,6 +64,11 @@ public class ReceiptsArchivingExportFileService extends BaseExportFileService<Re
     }
 
     @Override
+    protected String getOperatorExternalId(ReceiptsArchivingExportFile exportFile) {
+        return exportFile.getOperatorExternalId();
+    }
+
+    @Override
     protected List<ReceiptArchivingView> retrievePage(ReceiptsArchivingExportFile exportFile, ReceiptsArchivingExportFileFilter filter, int pageNumber) {
         PagedReceiptsArchivingView pagedReceiptsArchivingView = debtPositionsDataExportService.exportReceiptsArchivingView(exportFile.getOrganizationId(), exportFile.getOperatorExternalId(), filter, pageNumber, pageSize, List.of("receiptId"));
         if (pagedReceiptsArchivingView != null){
