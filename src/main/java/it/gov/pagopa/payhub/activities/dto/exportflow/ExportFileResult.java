@@ -26,4 +26,6 @@ public class ExportFileResult {
     private LocalDate exportDate;
     /** The size of the file */
     private Long fileSize;
+    /** UpdateOperatorExternalId */
+    private String updateOperatorExternalId;
 }
