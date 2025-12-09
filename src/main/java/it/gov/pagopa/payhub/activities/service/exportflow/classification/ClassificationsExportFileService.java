@@ -71,7 +71,7 @@ public class ClassificationsExportFileService extends BaseClassificationsExportF
     }
 
     @Override
-    protected String getUpdateOperatorExternalId(ClassificationsExportFile exportFile) {
-        return exportFile.getUpdateOperatorExternalId();
+    protected String getOperatorExternalId(ClassificationsExportFile exportFile) {
+        return exportFile.getOperatorExternalId();
     }
 }

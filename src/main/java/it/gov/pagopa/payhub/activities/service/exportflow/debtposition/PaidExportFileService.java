@@ -70,8 +70,8 @@ public class PaidExportFileService extends BaseExportFileService<PaidExportFile,
     }
 
     @Override
-    protected String getUpdateOperatorExternalId(PaidExportFile exportFile) {
-        return exportFile.getUpdateOperatorExternalId();
+    protected String getOperatorExternalId(PaidExportFile exportFile) {
+        return exportFile.getOperatorExternalId();
     }
 
     @Override

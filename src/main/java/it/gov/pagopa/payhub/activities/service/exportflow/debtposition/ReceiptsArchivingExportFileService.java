@@ -64,8 +64,8 @@ public class ReceiptsArchivingExportFileService extends BaseExportFileService<Re
     }
 
     @Override
-    protected String getUpdateOperatorExternalId(ReceiptsArchivingExportFile exportFile) {
-        return exportFile.getUpdateOperatorExternalId();
+    protected String getOperatorExternalId(ReceiptsArchivingExportFile exportFile) {
+        return exportFile.getOperatorExternalId();
     }
 
     @Override

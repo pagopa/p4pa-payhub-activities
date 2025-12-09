@@ -45,7 +45,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
         if (exportStatus.equals(ExportFileStatus.PROCESSING)){
             Long organizationId = getOrganizationId(exportFileRecord);
             String profile = getFlowFileVersion(exportFileRecord);
-            String updateOperatorExternalId = getUpdateOperatorExternalId(exportFileRecord);
+            String operatorExternalId = getOperatorExternalId(exportFileRecord);
             Path csvFilePath = workingDirectory
                     .resolve(String.valueOf(organizationId))
                     .resolve(relativeFileFolder)
@@ -74,7 +74,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
                         .exportedRows(exportedRows[0])
                         .exportDate(LocalDate.now())
                         .fileSize(zippedFileSize)
-                        .updateOperatorExternalId(updateOperatorExternalId)
+                        .operatorExternalId(operatorExternalId)
                         .build();
             }else{
                 return ExportFileResult.builder()
@@ -84,7 +84,7 @@ public abstract class BaseExportFileService<E,F,D,C> {
                         .exportedRows(exportedRows[0])
                         .exportDate(LocalDate.now())
                         .fileSize(0L)
-                        .updateOperatorExternalId(updateOperatorExternalId)
+                        .operatorExternalId(operatorExternalId)
                         .build();
             }
         }else {
@@ -175,12 +175,12 @@ public abstract class BaseExportFileService<E,F,D,C> {
     protected abstract String getFlowFileVersion(E exportFile);
 
     /**
-     * Retrieves the UpdateOperatorExternalId associated with the given export file.
+     * Retrieves the OperatorExternalId associated with the given export file.
      *
-     * @param exportFile the export file for which the UpdateOperatorExternalId is to be retrieved
-     * @return the UpdateOperatorExternalId
+     * @param exportFile the export file for which the OperatorExternalId is to be retrieved
+     * @return the OperatorExternalId
      */
-    protected abstract String getUpdateOperatorExternalId(E exportFile);
+    protected abstract String getOperatorExternalId(E exportFile);
 
     /**
      * Executes a query using the specific API based on the declared type to retrieve a page of data.
