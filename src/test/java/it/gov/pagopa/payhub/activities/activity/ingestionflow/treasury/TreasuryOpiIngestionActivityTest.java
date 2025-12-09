@@ -94,6 +94,8 @@ class TreasuryOpiIngestionActivityTest {
                 .errorDescription("There were some errors during TreasuryOPI file ingestion. Please check error file.")
                 .processedRows(10L)
                 .totalRows(100L)
+                .operatorExternalUserId("OPERATORID")
+                .fileSize(100L)
                 .build();
 
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))

@@ -27,6 +27,7 @@ public class IngestionFlowFileFaker {
                 .discardFileName("DiscardFileName")
                 .ingestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING)
                 .fileSize(100L)
+                .operatorExternalId("OPERATORID")
                 .fileOrigin("PAGOPA")
                 .fileVersion("FILEVERSION");
     }

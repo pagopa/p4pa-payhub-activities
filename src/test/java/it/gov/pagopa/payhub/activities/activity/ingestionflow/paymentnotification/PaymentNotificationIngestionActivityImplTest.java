@@ -165,6 +165,8 @@ class PaymentNotificationIngestionActivityImplTest {
                 .iudList(List.of(
                         "iud1",
                         "iud2"))
+                .operatorExternalUserId("OPERATORID")
+                .fileSize(100L)
                 .build();
     }
 
