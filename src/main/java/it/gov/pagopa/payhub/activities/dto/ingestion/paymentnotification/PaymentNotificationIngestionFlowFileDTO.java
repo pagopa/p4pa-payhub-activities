@@ -69,12 +69,12 @@ public class PaymentNotificationIngestionFlowFileDTO {
     private LocalDate paymentExecutionDate;
 
     @CsvBindByName(column = "importoDovutoPagato", required = true)
-    @CsvBindByName(column = "amountPaidCents", required = true, profiles = "eng")
-    private BigDecimal amountPaidCents;
+    @CsvBindByName(column = "amountPaid", required = true, profiles = "eng")
+    private BigDecimal amountPaid;
 
     @CsvBindByName(column = "commissioneCaricoPa", required = true)
-    @CsvBindByName(column = "paCommissionCents", required = true, profiles = "eng")
-    private BigDecimal paCommissionCents;
+    @CsvBindByName(column = "paCommission", required = true, profiles = "eng")
+    private BigDecimal paCommission;
 
     @CsvBindByName(column = "tipoDovuto", required = true)
     @CsvBindByName(column = "debtPositionTypeOrgCode", required = true, profiles = "eng")

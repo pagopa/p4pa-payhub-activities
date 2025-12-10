@@ -7,6 +7,8 @@ import it.gov.pagopa.pu.classification.dto.generated.PersonEntityType;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.stereotype.Service;
 
+import static it.gov.pagopa.payhub.activities.util.Utilities.bigDecimalEuroToLongCentsAmount;
+
 @Service
 public class PaymentNotificationMapper {
 
@@ -19,8 +21,8 @@ public class PaymentNotificationMapper {
         .iuv(dto.getIuv())
         .paymentExecutionDate(dto.getPaymentExecutionDate())
         .paymentType(dto.getPaymentType())
-        .amountPaidCents(dto.getAmountPaidCents().longValue())
-        .paCommissionCents(dto.getPaCommissionCents().longValue())
+        .amountPaidCents(bigDecimalEuroToLongCentsAmount(dto.getAmountPaid()))
+        .paCommissionCents(bigDecimalEuroToLongCentsAmount(dto.getPaCommission()))
         .remittanceInformation(dto.getRemittanceInformation())
         .transferCategory(dto.getTransferCategory())
         .debtPositionTypeOrgCode(dto.getDebtPositionTypeOrgCode())
