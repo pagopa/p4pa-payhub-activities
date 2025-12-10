@@ -23,8 +23,8 @@ class PaymentNotificationMapperTest {
     dto.setIuv("testIuv");
     dto.setPaymentExecutionDate(LocalDate.now());
     dto.setPaymentType("testType");
-    dto.setAmountPaidCents(BigDecimal.valueOf(1000));
-    dto.setPaCommissionCents(BigDecimal.valueOf(100));
+    dto.setAmountPaid(BigDecimal.valueOf(1000));
+    dto.setPaCommission(BigDecimal.valueOf(100));
     dto.setRemittanceInformation("testInfo");
     dto.setTransferCategory("testCategory");
     dto.setDebtPositionTypeOrgCode("testCode");
