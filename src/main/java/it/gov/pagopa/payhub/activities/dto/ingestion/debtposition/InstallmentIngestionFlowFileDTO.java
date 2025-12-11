@@ -132,7 +132,7 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "flagPuPagoPaPayment", required = true, profiles = V2_0_ENG)
     private Boolean flagPuPagoPaPayment;
 
-    @CsvBindByName(column = "bilancio", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "bilancio", profiles = {V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "balance", profiles = V2_0_ENG)
     private String balance;
 
