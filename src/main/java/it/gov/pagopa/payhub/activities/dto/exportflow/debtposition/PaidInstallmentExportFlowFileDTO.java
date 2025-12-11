@@ -146,31 +146,22 @@ public class PaidInstallmentExportFlowFileDTO {
     @CsvBindByName(column = "identificativoUnivocoRiscoss", required = true)
     private String uniqueCollectionIdentifier;
     @CsvBindByName(column = "causaleVersamento", required = true)
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String paymentReason;
     @CsvBindByName(column = "datiSpecificiRiscossione", required = true)
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String collectionSpecificData;
     @CsvBindByName(column = "tipoDovuto", required = true)
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String dueType;
     @CsvBindByName(column = "tipoFirma")
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private Integer signatureType;
     @CsvBindByName(column = "rt")
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String rt;
     @CsvBindByName(column = "indiceDatiSingoloPagamento" , required = true)
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private Integer singlePaymentDataIndex;
     @CsvBindByName(column = "numRtDatiPagDatiSingPagCommissioniApplicatePsp")
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private BigDecimal pspAppliedFees;
     @CsvBindByName(column = "codRtDatiPagDatiSingPagAllegatoRicevutaTipo")
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String receiptAttachmentType;
     @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest")
-    @CsvIgnore(profiles = EXPORT_PAID_VERSION_V1)
     private String receiptAttachmentTest;
     @CsvBindByName(column = "bilancio")
     @CsvIgnore(profiles = {EXPORT_PAID_VERSION_V1, EXPORT_PAID_VERSION_V1_1})

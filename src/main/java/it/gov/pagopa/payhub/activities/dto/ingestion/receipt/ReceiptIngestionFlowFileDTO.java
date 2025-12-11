@@ -206,31 +206,31 @@ public class ReceiptIngestionFlowFileDTO {
     @CsvBindByName(column = "identificativoUnivocoRiscoss", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String uniqueCollectionId;
 
-    @CsvBindByName(column = "causaleVersamento", required = true, profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "causaleVersamento", required = true, profiles = {V1_0, V1_1, V1_2, V1_3})
     private String remittanceInformation;
 
-    @CsvBindByName(column = "datiSpecificiRiscossione", profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "datiSpecificiRiscossione", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String paymentNote;
 
-    @CsvBindByName(column = "tipoDovuto", profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "tipoDovuto", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String debtPositionTypeOrgCode;
 
-    @CsvBindByName(column = "tipoFirma", profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "tipoFirma", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String signatureType;
 
-    @CsvBindByName(column = "rt", profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "rt", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String rt;
 
-    @CsvBindByName(column = "indiceDatiSingoloPagamento", required = true, profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "indiceDatiSingoloPagamento", required = true, profiles = {V1_0, V1_1, V1_2, V1_3})
     private Integer idTransfer;
 
-    @CsvBindByName(column = "numRtDatiPagDatiSingPagCommissioniApplicatePsp", profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "numRtDatiPagDatiSingPagCommissioniApplicatePsp", profiles = {V1_0, V1_1, V1_2, V1_3})
     private BigDecimal feeCents;
 
-    @CsvBindByName(column = "codRtDatiPagDatiSingPagAllegatoRicevutaTipo", profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "codRtDatiPagDatiSingPagAllegatoRicevutaTipo", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String receiptAttachmentTypeCode;
 
-    @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest", profiles = {V1_1, V1_2, V1_3})
+    @CsvBindByName(column = "blbRtDatiPagDatiSingPagAllegatoRicevutaTest", profiles = {V1_0, V1_1, V1_2, V1_3})
     private String mbdAttachment;
 
     @CsvBindByName(column = "bilancio", profiles = {V1_2, V1_3})
