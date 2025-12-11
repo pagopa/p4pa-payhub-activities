@@ -172,6 +172,7 @@ class TransferClassificationStoreServiceTest {
 
         Assertions.assertEquals(expectedResult, result);
         TestUtils.checkNotNullFields(dtoList.getFirst(),
+                "debtPositionTypeOrgDescription",
                 "classificationId", "creationDate", "updateDate", "updateTraceId", "updateOperatorExternalId", // tech fields
                 "links" // Hateoas
         );
@@ -237,7 +238,7 @@ class TransferClassificationStoreServiceTest {
                 service.saveClassifications(transferSemanticKeyDTO, null, null, paymentsReportingDTO, treasuryDTO, null, classifications));
 
         TestUtils.checkNotNullFields(dtoList.getFirst(),
-                "iur", "transferIndex", "transferId", "transferAmount", "transferCategory", "remittanceInformation", "debtPositionTypeOrgCode", // Transfer fields
+                "iur", "transferIndex", "transferId", "transferAmount", "transferCategory", "remittanceInformation", "debtPositionTypeOrgCode", "debtPositionTypeOrgDescription", // Transfer fields
                 "iuv", "iud", "installmentIngestionFlowFileName", "installmentBalance", "debtorFiscalCodeHash", // Installment fields
                 "paymentDateTime", "pspCompanyName", "receiptOrgFiscalCode", "receiptPaymentReceiptId", "receiptPaymentRequestId", "receiptIdPsp", "receiptPspCompanyName", "receiptPersonalDataId", "receiptPaymentOutcomeCode", "receiptPaymentAmount", "receiptCreditorReferenceId", "receiptCreationDate", "receiptPaymentDateTime", // Receipt fields
                 "classificationId", "creationDate", "updateDate", "updateTraceId", "updateOperatorExternalId", // tech fields
@@ -284,7 +285,7 @@ class TransferClassificationStoreServiceTest {
 
         Assertions.assertEquals(expectedResult, result);
         TestUtils.checkNotNullFields(dtoList.getFirst(),
-                "iur", "transferIndex", "transferId", "transferAmount", "transferCategory", // Transfer fields
+                "iur", "transferIndex", "transferId", "transferAmount", "transferCategory", "debtPositionTypeOrgDescription", // Transfer fields
                 "installmentIngestionFlowFileName", // Installment fields
                 "paymentsReportingId", "iuf", "regulationDate", "regulationUniqueIdentifier", // PaymentsReporting fields
                 "treasuryId", "billDate", "regionValueDate", "accountRegistryCode", "billAmountCents", "pspLastName", "billCode", "billYear", "documentCode", "documentYear", "provisionalAe", "provisionalCode", // Treasury fields
@@ -337,7 +338,7 @@ class TransferClassificationStoreServiceTest {
 
         Assertions.assertEquals(expectedResult, result);
         TestUtils.checkNotNullFields(dtoList.getFirst(),
-                "iur", "transferIndex", "transferId", "transferAmount", "transferCategory", "remittanceInformation", "debtPositionTypeOrgCode", // Transfer fields
+                "iur", "transferIndex", "transferId", "transferAmount", "transferCategory", "remittanceInformation", "debtPositionTypeOrgCode", "debtPositionTypeOrgDescription", // Transfer fields
                 "iuv", "iud", "installmentIngestionFlowFileName", "installmentBalance", "debtorFiscalCodeHash", // Installment fields
                 "paymentsReportingId", "regulationDate", "regulationUniqueIdentifier", "payDate", // PaymentsReporting fields
                 "paymentDateTime", "pspCompanyName", "receiptOrgFiscalCode", "receiptPaymentReceiptId", "receiptPaymentRequestId", "receiptIdPsp", "receiptPspCompanyName", "receiptPersonalDataId", "receiptPaymentOutcomeCode", "receiptPaymentAmount", "receiptCreditorReferenceId", "receiptCreationDate", "receiptPaymentDateTime", // Receipt fields
