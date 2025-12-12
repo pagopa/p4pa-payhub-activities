@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -40,10 +41,13 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
             dto.setPaymentOptionIndex(1);
         }
         if (dto.getPaymentOptionType() == null) {
-            dto.setPaymentOptionType("SINGLE_INSTALLMENT");
+            dto.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT.getValue());
         }
         if (dto.getPaymentOptionDescription() == null) {
             dto.setPaymentOptionDescription("Pagamento Singolo Avviso");
+        }
+        if (dto.getMultiDebtor() == null) {
+            dto.setMultiDebtor(Boolean.FALSE);
         }
     }
 }
