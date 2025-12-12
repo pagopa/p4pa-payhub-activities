@@ -111,6 +111,7 @@ class TransferClassificationStoreServiceTest {
                         .transferIndex(transferSemanticKeyDTO.getTransferIndex())
 
                         .debtPositionTypeOrgCode(debtPositionTypeOrg.getCode())
+                        .debtPositionTypeOrgDescription(debtPositionTypeOrg.getDescription())
 
                         .organizationEntityType(organization.getOrgTypeCode())
                         .organizationName(organization.getOrgName())
@@ -172,7 +173,6 @@ class TransferClassificationStoreServiceTest {
 
         Assertions.assertEquals(expectedResult, result);
         TestUtils.checkNotNullFields(dtoList.getFirst(),
-                "debtPositionTypeOrgDescription",
                 "classificationId", "creationDate", "updateDate", "updateTraceId", "updateOperatorExternalId", // tech fields
                 "links" // Hateoas
         );
