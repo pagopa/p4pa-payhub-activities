@@ -166,6 +166,7 @@ public class TransferClassificationStoreService {
                         // DebtPositionTypeOrg fields
                         .debtPositionTypeOrgCode(optionalDebtPositionTypeOrg.map(DebtPositionTypeOrg::getCode)
                                 .orElse(optionalPaymentNotification.map(PaymentNotificationNoPII::getDebtPositionTypeOrgCode).orElse(null)))
+                        .debtPositionTypeOrgDescription(optionalDebtPositionTypeOrg.map(DebtPositionTypeOrg::getDescription).orElse(null))
 
                         // Organization fields
                         .organizationEntityType(optionalOrganization.map(Organization::getOrgTypeCode).orElse(null))
