@@ -230,6 +230,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         dto.setCreditorReferenceId("PAY123");
         dto.setPaymentReceiptId("PAY123");
         dto.setIuv("PAY123");
+        dto.setCompanyName("CompanyName");
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY123");
 
