@@ -82,6 +82,10 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
                     "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
             );
         }
+
+        if(StringUtils.isBlank(receiptIngestionFlowFileDTO.getCompanyName())){
+            receiptIngestionFlowFileDTO.setCompanyName(org.getOrgName());
+        }
     }
 
 }
