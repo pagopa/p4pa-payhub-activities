@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
@@ -225,5 +226,23 @@ class DebtPositionServiceTest {
 
         // Then
         assertEquals(debtPositionDTO, result);
+    }
+
+    @Test
+    void whenGetDebtPositionByInstallmentIdThenSuccess() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long installemntId = 1L;
+        DebtPosition debtPosition = new DebtPosition();
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(debtPositionClientMock.getDebtPositionByInstallmentId(accessToken, installemntId))
+            .thenReturn(debtPosition);
+
+        // When
+        Optional<DebtPosition> result = debtPositionService.getDebtPositionByInstallmentId(installemntId);
+
+        // Then
+        assertEquals(debtPosition, result.get());
     }
 }
