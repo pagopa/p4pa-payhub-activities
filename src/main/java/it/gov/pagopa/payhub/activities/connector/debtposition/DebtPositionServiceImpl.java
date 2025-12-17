@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Lazy
 @Service
@@ -59,5 +60,11 @@ public class DebtPositionServiceImpl implements DebtPositionService {
     public DebtPositionDTO getDebtPosition(Long debtPositionId) {
         String accessToken = authnService.getAccessToken();
         return debtPositionClient.getDebtPosition(accessToken, debtPositionId);
+    }
+
+    @Override
+    public Optional<DebtPosition> getDebtPositionByInstallmentId(Long installmentId) {
+        String accessToken = authnService.getAccessToken();
+        return Optional.ofNullable(debtPositionClient.getDebtPositionByInstallmentId(accessToken, installmentId));
     }
 }
