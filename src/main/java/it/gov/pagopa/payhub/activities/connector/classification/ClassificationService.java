@@ -13,6 +13,7 @@ public interface ClassificationService {
     Integer deleteBySemanticKey(TransferSemanticKeyDTO transferSemanticKeyDTO);
     Integer deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification);
     Integer deleteByOrganizationIdAndTreasuryId(Long organizationId, String treasuryId);
+    Integer deleteDuplicates(Long organizationId, String iuv, int transferIndex, Long receiptPaymentAmount, String receiptOrgFiscalCode);
     /**
      * Find Classifications by specified organizationId, iuv and iud.
      *

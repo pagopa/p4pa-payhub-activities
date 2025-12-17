@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDT
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,15 @@ public class PaymentsReportingServiceImpl implements PaymentsReportingService {
             .stream()
             .max(Comparator.comparing(PaymentsReporting::getUpdateDate))
             .orElse(null);
+    }
+
+    @Override
+    public List<PaymentsReporting> findDuplicates(Long organizationId, String iuv, int transferIndex, String orgFiscalCode) {
+        CollectionModelPaymentsReporting collectionModelPaymentsReporting = paymentsReportingClient.findDuplicates(organizationId, iuv, transferIndex, orgFiscalCode, authnService.getAccessToken());
+        return collectionModelPaymentsReporting.getEmbedded().getPaymentsReportings()
+            .stream()
+            .sorted(Comparator.comparing(PaymentsReporting::getIuv))
+            .collect(Collectors.toList());
     }
 
 }

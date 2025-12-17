@@ -1,21 +1,21 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.UNKNOWN_IUF_PREFIX;
+
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
+import it.gov.pagopa.payhub.activities.dto.classifications.DuplicatePaymentsReportingCheckDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.UNKNOWN_IUF_PREFIX;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Lazy
@@ -24,11 +24,14 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
     private final PaymentsReportingService paymentsReportingService;
     private final TransferClassificationStoreService transferClassificationStoreService;
     private final TreasuryService treasuryService;
+    private final DuplicatePaymentReportingCheckActivity duplicatePaymentReportingCheckActivity;
 
-    public IufClassificationActivityImpl(PaymentsReportingService paymentsReportingService, TransferClassificationStoreService transferClassificationStoreService, TreasuryService treasuryService) {
+    public IufClassificationActivityImpl(PaymentsReportingService paymentsReportingService, TransferClassificationStoreService transferClassificationStoreService, TreasuryService treasuryService,
+        DuplicatePaymentReportingCheckActivity duplicatePaymentReportingCheckActivity) {
         this.paymentsReportingService = paymentsReportingService;
         this.transferClassificationStoreService = transferClassificationStoreService;
 	    this.treasuryService = treasuryService;
+      this.duplicatePaymentReportingCheckActivity = duplicatePaymentReportingCheckActivity;
     }
 
     @Override
@@ -69,6 +72,18 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
             log.debug("Saving classification TES_NO_IUF_OR_IUV for organization id {} and iuf: {}", organizationId, iuf);
             saveClassification(organizationId, treasuryId, iuf, List.of(ClassificationsEnum.TES_NO_IUF_OR_IUV));
         }
+
+        // DuplicatePaymentReportingCheckActivity
+        transfers2classify.forEach(transfer -> {
+                DuplicatePaymentsReportingCheckDTO duplicatePaymentsReportingCheckDTO = DuplicatePaymentsReportingCheckDTO.builder()
+                    .orgId(organizationId)
+                    .iuv(transfer.getIuv())
+                    .transferIndex(transfer.getTransferIndex())
+                    .build();
+
+                duplicatePaymentReportingCheckActivity.duplicateCheck(duplicatePaymentsReportingCheckDTO, transfer.getIur());
+            }
+        );
 
         return IufClassificationActivityResult.builder()
                 .organizationId(organizationId)

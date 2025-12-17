@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
-import it.gov.pagopa.payhub.activities.dto.classifications.DuplicatePaymentReportingCheckActivityResult;
-import it.gov.pagopa.payhub.activities.dto.classifications.DuplicatePaymentsReportingQueryDTO;
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.dto.classifications.DuplicatePaymentsReportingCheckDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -18,39 +20,48 @@ import org.springframework.stereotype.Component;
 public class DuplicatePaymentReportingCheckActivityImpl implements DuplicatePaymentReportingCheckActivity {
 
   private final ClassificationService classificationService;
+  private final PaymentsReportingService paymentsReportingService;
+  private final ReceiptService receiptService;
 
-  public DuplicatePaymentReportingCheckActivityImpl(ClassificationService classificationService) {
+  public DuplicatePaymentReportingCheckActivityImpl(ClassificationService classificationService,
+                                                    PaymentsReportingService paymentsReportingService,
+                                                    ReceiptService receiptService) {
     this.classificationService = classificationService;
+    this.paymentsReportingService = paymentsReportingService;
+    this.receiptService = receiptService;
   }
 
   @Override
-  public DuplicatePaymentReportingCheckActivityResult duplicateCheck(DuplicatePaymentsReportingQueryDTO queryFields) {
-    // Delete Classification by queryFields and label = DOPPI
-    // TODO: amount here is Classification's amount
-    // classificationService.deleteDuplicates(queryFields.getOrgId(), queryFields.getIuv(), queryFields.getTransferIndex(), queryFields.getAmount(), ClassificationsEnum.DOPPI);
+  public void duplicateCheck(DuplicatePaymentsReportingCheckDTO duplicatePaymentsReportingCheckDTO, String transferIur) {
+    ReceiptNoPII receipt = receiptService.getByPaymentReceiptId(transferIur);
+    duplicatePaymentsReportingCheckDTO.setAmount(receipt.getPaymentAmountCents());
+    duplicatePaymentsReportingCheckDTO.setOrgFiscalCode(receipt.getOrgFiscalCode());
 
-    // Find Payments Reporting by queryFields
-    // amount here is PaymentsReporting amountPaidCents
-    List<PaymentsReporting> paymentsReportingList = new ArrayList<>(); // TODO: instantiate with query
-    // paymentsReportingService.findBy(queryFields.getOrgId(), queryFields.getIuv(), queryFields.getTransferIndex(), queryFields.getAmount())
+    // Delete Classifications
+    classificationService.deleteDuplicates(duplicatePaymentsReportingCheckDTO.getOrgId(), duplicatePaymentsReportingCheckDTO.getIuv(), duplicatePaymentsReportingCheckDTO.getTransferIndex(), duplicatePaymentsReportingCheckDTO.getAmount(), duplicatePaymentsReportingCheckDTO.getOrgFiscalCode());
+
+    // Find possible duplicates Payments Reporting
+    List<PaymentsReporting> paymentsReportingList = paymentsReportingService.findDuplicates(duplicatePaymentsReportingCheckDTO.getOrgId(), duplicatePaymentsReportingCheckDTO.getIuv(), duplicatePaymentsReportingCheckDTO.getTransferIndex(),
+        duplicatePaymentsReportingCheckDTO.getOrgFiscalCode());
 
     // If multiple Payments Reporting (different IURs) are found, create a Classification with label DOPPI for each
     List<String> iurs = paymentsReportingList.stream().map(PaymentsReporting::getIur).distinct().toList();
-    if (iurs.size() < 1) {
+    if (iurs.size() > 1) {
       List<Classification> classifications = new ArrayList<>();
 
-      paymentsReportingList.stream()
+      paymentsReportingList
           .forEach(pr -> {
-              Classification classification = new Classification()
-                  .paymentsReportingId(pr.getPaymentsReportingId())
-                  .organizationId(pr.getOrganizationId())
-                  .iuv(pr.getIuv())
-                  .transferIndex(pr.getTransferIndex())
-                  .iur(pr.getIur())
-                  .label(ClassificationsEnum.DOPPI);
-              classifications.add(classification);
+            Classification classification = new Classification()
+                .paymentsReportingId(pr.getPaymentsReportingId())
+                .organizationId(pr.getOrganizationId())
+                .iuv(pr.getIuv())
+                .transferIndex(pr.getTransferIndex())
+                .iur(pr.getIur())
+                .label(ClassificationsEnum.DOPPI);
+            classifications.add(classification);
           });
+
+      classificationService.saveAll(classifications);
     }
-    return null;
   }
 }

@@ -9,9 +9,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DuplicatePaymentsReportingQueryDTO {
+public class DuplicatePaymentsReportingCheckDTO {
 	private Long orgId;
 	private String iuv;
-	private Long amount;
 	private Integer transferIndex;
+	private Long amount;
+	private String orgFiscalCode;
 }
