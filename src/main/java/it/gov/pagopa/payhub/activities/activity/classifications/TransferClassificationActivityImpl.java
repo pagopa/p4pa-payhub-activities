@@ -70,7 +70,7 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Clear previous classification
-		Integer deletedRowsNumber = classificationService.deleteBySemanticKey(transferSemanticKey); // TODO: ignore classification=DOPPI
+		Integer deletedRowsNumber = classificationService.deleteBySemanticKeyExcludingLabel(transferSemanticKey, ClassificationsEnum.DOPPI);
 		log.debug("Deleted {} classifications for organization id: {} and iuv: {}",
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 

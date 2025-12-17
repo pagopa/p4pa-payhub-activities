@@ -44,6 +44,11 @@ public class ClassificationClient {
                 .deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
     }
 
+    public Integer deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(Long organizationId, String iuv,String iur,  int transferIndex, ClassificationsEnum label, String accessToken) {
+        return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
+            .deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label);
+    }
+
     public Integer deleteDuplicates(Long organizationId, String iuv, int transferIndex,
         Long receiptPaymentAmount, String receiptOrgFiscalCode,
         ClassificationsEnum label, String accessToken) {

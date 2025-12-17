@@ -1,11 +1,17 @@
 
 package it.gov.pagopa.payhub.activities.connector.classification;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.ClassificationClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,11 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClassificationServiceTest {
@@ -103,6 +104,31 @@ class ClassificationServiceTest {
         // Then
         assertEquals(expectedResponse, result);
         verify(classificationClientMock, times(1)).deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId,iuv,iur,transferIndex,accessToken);
+    }
+
+    @Test
+    void testDeleteBySemanticKeyExcludingLabel() {
+        // Given
+        TransferSemanticKeyDTO transferSemanticKeyDTO = new TransferSemanticKeyDTO(1L, "IUV123", "IUR123", 0);
+        Integer expectedResponse = 1;
+        String accessToken = "accessToken";
+        Long organizationId = transferSemanticKeyDTO.getOrgId();
+        String iuv = transferSemanticKeyDTO.getIuv();
+        String iur = transferSemanticKeyDTO.getIur();
+        int transferIndex = transferSemanticKeyDTO.getTransferIndex();
+        ClassificationsEnum label = ClassificationsEnum.DOPPI;
+
+
+        when(classificationClientMock.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId,iuv,iur,transferIndex,label,accessToken)).thenReturn(expectedResponse);
+        Mockito.when(authnServiceMock.getAccessToken())
+            .thenReturn(accessToken);
+
+        // When
+        Integer result = classificationService.deleteBySemanticKeyExcludingLabel(transferSemanticKeyDTO, label);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationClientMock, times(1)).deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId,iuv,iur,transferIndex,label,accessToken);
     }
 
 	@Test

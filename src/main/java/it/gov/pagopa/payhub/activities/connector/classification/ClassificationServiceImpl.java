@@ -44,6 +44,12 @@ public class ClassificationServiceImpl implements ClassificationService {
     }
 
     @Override
+    public Integer deleteBySemanticKeyExcludingLabel(TransferSemanticKeyDTO transferSemanticKeyDTO, ClassificationsEnum label) {
+        return classificationClient.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(transferSemanticKeyDTO.getOrgId(), transferSemanticKeyDTO.getIuv(), transferSemanticKeyDTO.getIur(),
+            transferSemanticKeyDTO.getTransferIndex(), label, authnService.getAccessToken());
+    }
+
+    @Override
     public Integer deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification) {
         return classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, authnService.getAccessToken());
     }
