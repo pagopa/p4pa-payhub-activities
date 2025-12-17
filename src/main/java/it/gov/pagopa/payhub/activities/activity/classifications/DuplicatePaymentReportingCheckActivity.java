@@ -26,5 +26,5 @@ public interface DuplicatePaymentReportingCheckActivity {
    * @param transferIur Identifies the receipt to get missing information like receiptPaymentAmount and orgFiscalCode
    */
   @ActivityMethod
-  void duplicateCheck(DuplicatePaymentsReportingCheckDTO duplicatePaymentsReportingCheckDTO, String transferIur);
+  void duplicatePaymentsCheck(DuplicatePaymentsReportingCheckDTO duplicatePaymentsReportingCheckDTO, String transferIur);
 }

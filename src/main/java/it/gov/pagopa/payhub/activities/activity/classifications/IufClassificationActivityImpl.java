@@ -81,7 +81,7 @@ public class IufClassificationActivityImpl implements IufClassificationActivity 
                     .transferIndex(transfer.getTransferIndex())
                     .build();
 
-                duplicatePaymentReportingCheckActivity.duplicateCheck(duplicatePaymentsReportingCheckDTO, transfer.getIur());
+                duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(duplicatePaymentsReportingCheckDTO, transfer.getIur());
             }
         );
 

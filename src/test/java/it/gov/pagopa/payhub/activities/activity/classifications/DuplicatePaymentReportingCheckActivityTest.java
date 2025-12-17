@@ -51,7 +51,7 @@ class DuplicatePaymentReportingCheckActivityTest {
   }
 
   @Test
-  void givenDuplicatesPaymentsReportingWhenDuplicateCheckThenSaveDOPPIClassifications() {
+  void givenDuplicatesPaymentsReportingWhenDuplicatePaymentsCheckThenSaveDOPPIClassifications() {
     DuplicatePaymentsReportingCheckDTO dto = DuplicatePaymentsReportingCheckDTO.builder()
         .orgId(1L)
         .iuv("IUV")
@@ -71,7 +71,7 @@ class DuplicatePaymentReportingCheckActivityTest {
     when(paymentsReportingServiceMock.findDuplicates(eq(dto.getOrgId()), eq(dto.getIuv()), eq(dto.getTransferIndex()), eq(receipt.getOrgFiscalCode())))
         .thenReturn(List.of(paymentsReporting1, paymentsReporting2));
 
-    duplicatePaymentReportingCheckActivity.duplicateCheck(dto, "IUR");
+    duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(dto, "IUR");
 
     List<Classification> expectedClassifications = List.of(
         new Classification()
@@ -93,7 +93,7 @@ class DuplicatePaymentReportingCheckActivityTest {
   }
 
   @Test
-  void givenNoDuplicatesWhenDuplicateCheckThenDoNothing() {
+  void givenNoDuplicatesWhenDuplicatePaymentsCheckThenDoNothing() {
     String iur = "IUR";
 
     DuplicatePaymentsReportingCheckDTO dto = DuplicatePaymentsReportingCheckDTO.builder()
@@ -115,7 +115,7 @@ class DuplicatePaymentReportingCheckActivityTest {
     when(paymentsReportingServiceMock.findDuplicates(eq(dto.getOrgId()), eq(dto.getIuv()), eq(dto.getTransferIndex()), eq(receipt.getOrgFiscalCode())))
         .thenReturn(List.of(paymentsReporting1, paymentsReporting2));
 
-    duplicatePaymentReportingCheckActivity.duplicateCheck(dto, iur);
+    duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(dto, iur);
 
     verify(classificationServiceMock, never()).saveAll(any());
   }

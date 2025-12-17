@@ -92,7 +92,7 @@ class IufClassificationActivityTest {
         when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
         when(paymentsReportingServiceMock.getByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
                 .thenReturn(expectedCollectionModelPaymentsReporting);
-        doNothing().when(duplicatePaymentReportingCheckActivityMock).duplicateCheck(any(), any());
+        doNothing().when(duplicatePaymentReportingCheckActivityMock).duplicatePaymentsCheck(any(), any());
 
         IufClassificationActivityResult iufClassificationActivityResult =
                 iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, IUF);

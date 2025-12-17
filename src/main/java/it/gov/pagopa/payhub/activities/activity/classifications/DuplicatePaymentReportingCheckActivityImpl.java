@@ -32,7 +32,7 @@ public class DuplicatePaymentReportingCheckActivityImpl implements DuplicatePaym
   }
 
   @Override
-  public void duplicateCheck(DuplicatePaymentsReportingCheckDTO duplicatePaymentsReportingCheckDTO, String transferIur) {
+  public void duplicatePaymentsCheck(DuplicatePaymentsReportingCheckDTO duplicatePaymentsReportingCheckDTO, String transferIur) {
     ReceiptNoPII receipt = receiptService.getByPaymentReceiptId(transferIur);
     duplicatePaymentsReportingCheckDTO.setAmount(receipt.getPaymentAmountCents());
     duplicatePaymentsReportingCheckDTO.setOrgFiscalCode(receipt.getOrgFiscalCode());
