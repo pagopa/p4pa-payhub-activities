@@ -17,8 +17,8 @@ public class DebtPositionUtilities {
     private static final Set<InstallmentStatus> expirableStatuses = Set.of(
             InstallmentStatus.UNPAID
     );
-    public static final Set<InstallmentStatus> INSTALLMENT_PAYED_STATUSES_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
-    public static final List<InstallmentStatus> INSTALLMENT_PAYED_STATUSES_LIST = List.copyOf(INSTALLMENT_PAYED_STATUSES_SET);
+    public static final Set<InstallmentStatus> INSTALLMENT_PAID_STATUSES_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+    public static final List<InstallmentStatus> INSTALLMENT_PAID_STATUSES_LIST = List.copyOf(INSTALLMENT_PAID_STATUSES_SET);
 
     /** It will return the min dueDate of all active installments */
     public static LocalDate calcDebtPositionNextDueDate(DebtPositionDTO debtPositionDTO){

@@ -35,4 +35,9 @@ public class PaymentsReportingClient {
                     .crudPaymentsReportingFindByTransferSemanticKey(orgId, iuv, iur, transferIndex);
     }
 
+    public CollectionModelPaymentsReporting findDuplicates(Long organizationId, String iuv, int transferIndex, String orgFiscalCode, String accessToken) {
+        return classificationApisHolder.getPaymentsReportingSearchApi(accessToken)
+            .crudPaymentsReportingFindDuplicates(organizationId, iuv, transferIndex, orgFiscalCode);
+    }
+
 }

@@ -14,4 +14,5 @@ public interface PaymentsReportingService {
     Integer saveAll(List<PaymentsReporting> dtos);
     CollectionModelPaymentsReporting getByOrganizationIdAndIuf(Long organizationId, String iuf);
     PaymentsReporting getByTransferSemanticKey(TransferSemanticKeyDTO tSKDTO);
+    List<PaymentsReporting> findDuplicates(Long organizationId, String iuv, int transferIndex, String orgFiscalCode);
 }

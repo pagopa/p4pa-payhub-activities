@@ -1,5 +1,11 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.pu.classification.client.generated.ClassificationEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.ClassificationSearchControllerApi;
@@ -7,6 +13,8 @@ import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelClassification;
 import it.gov.pagopa.pu.classification.dto.generated.PagedModelClassificationEmbedded;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClassificationClientTest {
@@ -100,6 +102,30 @@ class ClassificationClientTest {
         assertEquals(expectedResponse, result);
         verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
+    }
+
+
+    @Test
+    void testDeleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "IUV123";
+        String iur = "IUR123";
+        int transferIndex = 0;
+        ClassificationsEnum label = ClassificationsEnum.DOPPI;
+        String accessToken = "accessToken";
+        Integer expectedResponse = 1;
+        ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label)).thenReturn(expectedResponse);
+
+        // When
+        Integer result = classificationClient.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+            .deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label);
     }
 
 	@Test

@@ -1,5 +1,10 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
@@ -7,7 +12,14 @@ import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
-import it.gov.pagopa.pu.classification.dto.generated.*;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
+import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.PagedModelPaymentsReportingEmbedded;
+import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
+import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,13 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class IufClassificationActivityTest {
@@ -32,6 +37,8 @@ class IufClassificationActivityTest {
     private TransferClassificationStoreService transferClassificationStoreService;
     @Mock
     private TreasuryService treasuryServiceMock;
+    @Mock
+    private DuplicatePaymentReportingCheckActivity duplicatePaymentReportingCheckActivityMock;
 
     private IufClassificationActivity iufClassificationActivity;
 
@@ -44,7 +51,8 @@ class IufClassificationActivityTest {
         iufClassificationActivity = new IufClassificationActivityImpl(
                 paymentsReportingServiceMock,
                 transferClassificationStoreService,
-                treasuryServiceMock);
+                treasuryServiceMock,
+                duplicatePaymentReportingCheckActivityMock);
     }
 
     @AfterEach
@@ -52,7 +60,8 @@ class IufClassificationActivityTest {
         Mockito.verifyNoMoreInteractions(
                 paymentsReportingServiceMock,
                 transferClassificationStoreService,
-                treasuryServiceMock);
+                treasuryServiceMock,
+                duplicatePaymentReportingCheckActivityMock);
     }
 
     @Test
@@ -83,6 +92,7 @@ class IufClassificationActivityTest {
         when(treasuryServiceMock.getById(TREASURYID)).thenReturn(treasury);
         when(paymentsReportingServiceMock.getByOrganizationIdAndIuf(ORGANIZATIONID, IUF))
                 .thenReturn(expectedCollectionModelPaymentsReporting);
+        doNothing().when(duplicatePaymentReportingCheckActivityMock).duplicatePaymentsCheck(any(), any());
 
         IufClassificationActivityResult iufClassificationActivityResult =
                 iufClassificationActivity.classifyIuf(ORGANIZATIONID, TREASURYID, IUF);

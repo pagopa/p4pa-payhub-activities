@@ -44,6 +44,12 @@ public class ClassificationServiceImpl implements ClassificationService {
     }
 
     @Override
+    public Integer deleteBySemanticKeyExcludingLabel(TransferSemanticKeyDTO transferSemanticKeyDTO, ClassificationsEnum label) {
+        return classificationClient.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(transferSemanticKeyDTO.getOrgId(), transferSemanticKeyDTO.getIuv(), transferSemanticKeyDTO.getIur(),
+            transferSemanticKeyDTO.getTransferIndex(), label, authnService.getAccessToken());
+    }
+
+    @Override
     public Integer deleteByOrganizationIdAndIudAndLabel(Long organizationId, String iud, ClassificationsEnum classification) {
         return classificationClient.deleteByOrganizationIdAndIudAndLabel(organizationId, iud, classification, authnService.getAccessToken());
     }
@@ -51,6 +57,11 @@ public class ClassificationServiceImpl implements ClassificationService {
     @Override
     public Integer deleteByOrganizationIdAndTreasuryId(Long organizationId, String treasuryId) {
         return classificationClient.deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId, authnService.getAccessToken());
+    }
+
+    @Override
+    public Integer deleteDuplicates(Long organizationId, String iuv, int transferIndex, Long receiptPaymentAmount, String receiptOrgFiscalCode) {
+        return classificationClient.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, authnService.getAccessToken());
     }
 
     @Override
