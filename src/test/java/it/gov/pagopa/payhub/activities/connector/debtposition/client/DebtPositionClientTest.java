@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
+import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -28,11 +29,12 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionClientTest {
-
     @Mock
     private DebtPositionApisHolder debtPositionApisHolderMock;
     @Mock
     private DebtPositionApi debtPositionApiMock;
+    @Mock
+    private DebtPositionSearchControllerApi debtPositionSearchControllerApiMock;
 
     private DebtPositionClient debtPositionClient;
 
@@ -44,7 +46,7 @@ class DebtPositionClientTest {
     @AfterEach
     void verifyNoMoreInteractions(){
         Mockito.verifyNoMoreInteractions(
-                debtPositionApisHolderMock
+            debtPositionApisHolderMock
         );
     }
 
@@ -57,9 +59,9 @@ class DebtPositionClientTest {
         DebtPositionDTO expectedResult = buildDebtPositionDTO();
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
-                .thenReturn(debtPositionApiMock);
+            .thenReturn(debtPositionApiMock);
         Mockito.when(debtPositionApiMock.finalizeSyncStatus(Mockito.same(debtPositionId), Mockito.same(requestDTO)))
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         // When
         DebtPositionDTO result = debtPositionClient.finalizeSyncStatus(accessToken, debtPositionId, requestDTO);
@@ -77,9 +79,9 @@ class DebtPositionClientTest {
         DebtPositionDTO expectedResult = buildDebtPositionDTO();
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
-                .thenReturn(debtPositionApiMock);
+            .thenReturn(debtPositionApiMock);
         Mockito.when(debtPositionApiMock.checkAndUpdateInstallmentExpiration(debtPositionId))
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         // When
         DebtPositionDTO result = debtPositionClient.checkAndUpdateInstallmentExpiration(accessToken, debtPositionId);
@@ -97,9 +99,9 @@ class DebtPositionClientTest {
         boolean massive = true;
         boolean partialChange = false;
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
-                .massive(massive)
-                .partialChange(partialChange)
-                .build();
+            .massive(massive)
+            .partialChange(partialChange)
+            .build();
         String operatorUserId = "USERID";
         String expectedWorkflowId = "workflow-123";
 
@@ -107,9 +109,9 @@ class DebtPositionClientTest {
         headers.add("x-workflow-id", expectedWorkflowId);
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken, operatorUserId))
-                .thenReturn(debtPositionApiMock);
+            .thenReturn(debtPositionApiMock);
         Mockito.when(debtPositionApiMock.installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, massive, partialChange))
-                .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
+            .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
 
         // When
         String result = debtPositionClient.installmentSynchronize(accessToken, origin, installmentSynchronizeDTO, wfExecutionParameters, operatorUserId);
@@ -128,9 +130,9 @@ class DebtPositionClientTest {
         Integer size = 2;
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
-                .thenReturn(debtPositionApiMock);
+            .thenReturn(debtPositionApiMock);
         Mockito.when(debtPositionApiMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, null, page, size, null))
-                .thenReturn(new PagedDebtPositions());
+            .thenReturn(new PagedDebtPositions());
 
         // When
         PagedDebtPositions result = debtPositionClient.getDebtPositionsByIngestionFlowFileId(accessToken, ingestionFlowFileId, null, page, size, null);
@@ -146,18 +148,18 @@ class DebtPositionClientTest {
         String expectedWorkflowId = "workflow-123";
         OffsetDateTime dateTime = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
         UpdateInstallmentNotificationDateRequest request = UpdateInstallmentNotificationDateRequest.builder()
-                .debtPositionId(1L)
-                .nav(Collections.singletonList("nav"))
-                .notificationDate(dateTime)
-                .build();
+            .debtPositionId(1L)
+            .nav(Collections.singletonList("nav"))
+            .notificationDate(dateTime)
+            .build();
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("x-workflow-id", expectedWorkflowId);
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
-                .thenReturn(debtPositionApiMock);
+            .thenReturn(debtPositionApiMock);
         Mockito.when(debtPositionApiMock.updateInstallmentNotificationDateWithHttpInfo(request))
-                .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
+            .thenReturn(new ResponseEntity<>(headers, HttpStatus.OK));
 
         // When
         String result = debtPositionClient.updateInstallmentNotificationDate(accessToken, request);
@@ -175,10 +177,10 @@ class DebtPositionClientTest {
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
-                .thenReturn(debtPositionApiMock);
+            .thenReturn(debtPositionApiMock);
 
         Mockito.when(debtPositionApiMock.getDebtPosition(debtPositionId))
-                .thenReturn(debtPositionDTO);
+            .thenReturn(debtPositionDTO);
 
         // When
         DebtPositionDTO result = debtPositionClient.getDebtPosition(accessToken, debtPositionId);
@@ -194,12 +196,51 @@ class DebtPositionClientTest {
         Long debtPositionId = 0L;
 
         Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken))
-                .thenReturn(debtPositionApiMock);
+            .thenReturn(debtPositionApiMock);
         Mockito.when(debtPositionApiMock.getDebtPosition(debtPositionId))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+            .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
         // When
         DebtPositionDTO result = debtPositionClient.getDebtPosition(accessToken, debtPositionId);
+
+        // Then
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void whenGetDebtPositionByInstallmentIdThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long installmentId = 1L;
+        DebtPosition debtPosition = new DebtPosition();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionSearchControllerApi(accessToken))
+            .thenReturn(debtPositionSearchControllerApiMock);
+
+        Mockito.when(debtPositionSearchControllerApiMock.crudDebtPositionsFindByInstallmentId(installmentId))
+            .thenReturn(debtPosition);
+
+        // When
+        DebtPosition result = debtPositionClient.getDebtPositionByInstallmentId(accessToken, installmentId);
+
+        // Then
+        Assertions.assertEquals(debtPosition, result);
+    }
+
+    @Test
+    void whenGetDebtPositionByInstallmentIdThenNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long installmentId = 1L;
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionSearchControllerApi(accessToken))
+            .thenReturn(debtPositionSearchControllerApiMock);
+
+        Mockito.when(debtPositionSearchControllerApiMock.crudDebtPositionsFindByInstallmentId(installmentId))
+            .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        DebtPosition result = debtPositionClient.getDebtPositionByInstallmentId(accessToken, installmentId);
 
         // Then
         Assertions.assertNull(result);

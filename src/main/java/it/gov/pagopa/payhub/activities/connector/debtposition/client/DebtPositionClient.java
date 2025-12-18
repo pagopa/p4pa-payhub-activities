@@ -32,7 +32,7 @@ public class DebtPositionClient {
 
     public String installmentSynchronize(String accessToken, DebtPositionOrigin origin, InstallmentSynchronizeDTO installmentSynchronizeDTO, WfExecutionParameters wfExecutionParameters, String operatorUserId) {
         ResponseEntity<Void> response = debtPositionApisHolder.getDebtPositionApi(accessToken, operatorUserId)
-                .installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange());
+            .installmentSynchronizeWithHttpInfo(origin, installmentSynchronizeDTO, wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange());
 
         return response.getHeaders().getFirst("x-workflow-id");
     }
@@ -43,7 +43,7 @@ public class DebtPositionClient {
 
     public String updateInstallmentNotificationDate(String accessToken, UpdateInstallmentNotificationDateRequest updateInstallmentNotificationDateRequest) {
         ResponseEntity<Void> response = debtPositionApisHolder.getDebtPositionApi(accessToken)
-                .updateInstallmentNotificationDateWithHttpInfo(updateInstallmentNotificationDateRequest);
+            .updateInstallmentNotificationDateWithHttpInfo(updateInstallmentNotificationDateRequest);
 
         return response.getHeaders().getFirst("x-workflow-id");
     }
@@ -53,6 +53,16 @@ public class DebtPositionClient {
             return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPosition(debtPositionId);
         } catch (HttpClientErrorException.NotFound e) {
             log.info("Cannot find DebtPosition having id: {}", debtPositionId);
+            return null;
+        }
+    }
+
+    public DebtPosition getDebtPositionByInstallmentId(String accessToken, Long installmentId) {
+        try {
+            return debtPositionApisHolder.getDebtPositionSearchControllerApi(accessToken)
+                .crudDebtPositionsFindByInstallmentId(installmentId);
+        } catch (HttpClientErrorException.NotFound e) {
+            log.info("Cannot find DebtPosition having installmentId: {}", installmentId);
             return null;
         }
     }

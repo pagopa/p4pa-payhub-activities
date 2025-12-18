@@ -16,6 +16,7 @@ public class DebtPositionApisHolder {
     private final TransferSearchControllerApi transferSearchControllerApi;
     private final TransferApi transferApi;
     private final DebtPositionEntityControllerApi debtPositionEntityControllerApi;
+    private final DebtPositionSearchControllerApi debtPositionSearchControllerApi;
     private final DebtPositionApi debtPositionApi;
     private final ReceiptApi receiptApi;
     private final DebtPositionTypeOrgApi debtPositionTypeOrgApi;
@@ -35,8 +36,8 @@ public class DebtPositionApisHolder {
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
 
     public DebtPositionApisHolder(
-            DebtPositionApiClientConfig clientConfig,
-            RestTemplateBuilder restTemplateBuilder
+        DebtPositionApiClientConfig clientConfig,
+        RestTemplateBuilder restTemplateBuilder
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClientExt apiClient = new ApiClientExt(restTemplate);
@@ -49,6 +50,7 @@ public class DebtPositionApisHolder {
             restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("DEBT-POSITIONS"));
         }
 
+        this.debtPositionSearchControllerApi = new DebtPositionSearchControllerApi(apiClient);
         this.debtPositionEntityControllerApi = new DebtPositionEntityControllerApi(apiClient);
         this.debtPositionApi = new DebtPositionApi(apiClient);
         this.transferSearchControllerApi = new TransferSearchControllerApi(apiClient);
@@ -57,7 +59,7 @@ public class DebtPositionApisHolder {
         this.debtPositionTypeOrgApi = new DebtPositionTypeOrgApi(apiClient);
         this.debtPositionTypeOrgEntityApi = new DebtPositionTypeOrgEntityControllerApi(apiClient);
         this.debtPositionTypeOrgSearchControllerApi = new DebtPositionTypeOrgSearchControllerApi(apiClient);
-	    this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
+        this.receiptNoPiiSearchControllerApi = new ReceiptNoPiiSearchControllerApi(apiClient);
         this.dataExportsApi = new DataExportsApi(apiClient);
         this.installmentNoPiiEntityControllerApi = new InstallmentNoPiiEntityControllerApi(apiClient);
         this.installmentApi = new InstallmentApi(apiClient);
@@ -71,6 +73,10 @@ public class DebtPositionApisHolder {
     @PreDestroy
     public void unload() {
         authContextHolder.remove();
+    }
+
+    public DebtPositionSearchControllerApi getDebtPositionSearchControllerApi(String accessToken) {
+        return getApi(accessToken, null, debtPositionSearchControllerApi);
     }
 
     public DebtPositionEntityControllerApi getDebtPositionEntityControllerApi(String accessToken) {
@@ -113,7 +119,7 @@ public class DebtPositionApisHolder {
         return getApi(accessToken, null, debtPositionTypeOrgSearchControllerApi);
     }
 
-	public ReceiptNoPiiSearchControllerApi getReceiptNoPiiSearchControllerApi(String accessToken) {
+    public ReceiptNoPiiSearchControllerApi getReceiptNoPiiSearchControllerApi(String accessToken) {
         return getApi(accessToken, null, receiptNoPiiSearchControllerApi);
     }
 
