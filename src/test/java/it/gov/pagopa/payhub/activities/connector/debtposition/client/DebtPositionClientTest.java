@@ -226,4 +226,23 @@ class DebtPositionClientTest {
         // Then
         Assertions.assertEquals(debtPosition, result);
     }
+
+    @Test
+    void whenGetDebtPositionByInstallmentIdThenNull() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long installmentId = 1L;
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionSearchControllerApi(accessToken))
+            .thenReturn(debtPositionSearchControllerApiMock);
+
+        Mockito.when(debtPositionSearchControllerApiMock.crudDebtPositionsFindByInstallmentId(installmentId))
+            .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        // When
+        DebtPosition result = debtPositionClient.getDebtPositionByInstallmentId(accessToken, installmentId);
+
+        // Then
+        Assertions.assertNull(result);
+    }
 }
