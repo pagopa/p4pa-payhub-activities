@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This interface provides methods that manage debt positions within the related microservice.
@@ -53,4 +54,12 @@ public interface DebtPositionService {
      * @return {@link DebtPositionDTO} object.
      */
     DebtPositionDTO getDebtPosition(Long debtPositionId);
+
+    /**
+     * Get a complete Debt Position by Installment ID
+     *
+     * @param installmentId the ID of the installment
+     * @return {@link DebtPosition} object.
+     */
+    Optional<DebtPosition> getDebtPositionByInstallmentId(Long installmentId);
 }

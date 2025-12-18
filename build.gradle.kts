@@ -475,6 +475,8 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
 	apiPackage.set("it.gov.pagopa.pu.classification.client.generated")
 	modelPackage.set("it.gov.pagopa.pu.classification.dto.generated")
 	typeMappings.set(mapOf(
+		"DebtPositionOrigin" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin",
+		"ReceiptOriginType" to "it.gov.pagopa.pu.debtposition.dto.generated.ReceiptOriginType",
 		"DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
 		"LocalDateTime" to "java.time.LocalDateTime"
 	))
