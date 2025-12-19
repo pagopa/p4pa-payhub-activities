@@ -1,7 +1,5 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
@@ -11,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.NullNode;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -30,7 +30,7 @@ class InstallmentSynchronizeMapperTest {
 
     @BeforeEach
     void setUp(){
-        installmentSynchronizeMapper = new InstallmentSynchronizeMapper(new ObjectMapper());
+        installmentSynchronizeMapper = new InstallmentSynchronizeMapper(new JsonMapper());
     }
 
     @Test

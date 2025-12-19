@@ -1,9 +1,5 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
@@ -12,6 +8,10 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.NullNode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,10 +32,10 @@ public class InstallmentSynchronizeMapper {
     private static final List<String> COLUMN_NAMES_IBAN = List.of("ibanAccreditoEnte", "iban");
     private static final List<String> COLUMN_NAMES_CATEGORY = List.of("codiceTassonomiaEnte", "category", "datiSpecificiRiscossioneEnte");
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
-    public InstallmentSynchronizeMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public InstallmentSynchronizeMapper(JsonMapper jsonMapper) {
+        this.jsonMapper = jsonMapper;
     }
 
     public InstallmentSynchronizeDTO map(InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO,
@@ -91,8 +91,8 @@ public class InstallmentSynchronizeMapper {
         }
 
         try {
-            return objectMapper.readTree(executionConfig);
-        } catch (JsonProcessingException e) {
+            return jsonMapper.readTree(executionConfig);
+        } catch (JacksonException e) {
             throw new InvalidValueException(String.format("Invalid execution config value: [%s] ", executionConfig));
         }
     }

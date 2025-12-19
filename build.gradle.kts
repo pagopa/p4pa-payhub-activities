@@ -98,6 +98,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
     implementation("org.codehaus.janino:janino:$janinoVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
@@ -447,7 +448,7 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
     typeMappings.set(
         mapOf(
             "LocalDateTime" to "java.time.LocalDateTime",
-            "object" to "com.fasterxml.jackson.databind.JsonNode",
+            "object" to "tools.jackson.databind.JsonNode",
             "string+binary" to "Resource"
         )
     )

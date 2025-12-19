@@ -15,6 +15,7 @@ import java.text.DecimalFormatSymbols;
 import java.time.*;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,8 @@ public class Utilities {
     private Utilities(){}
 
     public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
+    public static final TimeZone DEFAULT_TIMEZONE = TimeZone.getTimeZone(ZONEID);
+
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
     public static final int IBAN_LENGTH = 27;
     public static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
