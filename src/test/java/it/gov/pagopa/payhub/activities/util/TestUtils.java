@@ -23,6 +23,10 @@ import java.util.*;
 public class TestUtils {
     private TestUtils(){}
 
+    static {
+        TimeZone.setDefault(Utilities.DEFAULT_TIMEZONE);
+    }
+
     public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
     public static final LocalDate LOCALDATE = LocalDate.of(2024, 5, 15);
     public static final LocalDate LOCAL_DATE_2024 = LOCALDATE;
