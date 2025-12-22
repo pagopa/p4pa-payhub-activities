@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -32,6 +34,11 @@ class JsonConfigTest {
     public Integer value;
     public LocalDateTime dateTime;
     public OffsetDateTime offsetDateTime;
+  }
+
+  @BeforeEach
+  void init(){
+      TestUtils.clearDefaultTimezone();
   }
 
   @Test
