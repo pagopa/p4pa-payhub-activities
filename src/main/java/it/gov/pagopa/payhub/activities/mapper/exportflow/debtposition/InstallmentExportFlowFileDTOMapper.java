@@ -55,7 +55,7 @@ public class InstallmentExportFlowFileDTOMapper {
                 .beneficiaryUniqueIdentifierCode(installmentPaidViewDTO.getOrgFiscalCode())
                 .beneficiaryName(installmentPaidViewDTO.getCompanyName())
                 .debtorEntityType(debtor.getEntityType())
-                .debtorUniqueIdentifierCode(Objects.requireNonNullElse(debtor.getFiscalCode(), ANONYMOUS))
+                .debtorUniqueIdentifierCode(getFiscalCode(debtor))
                 .debtorFullName(debtor.getFullName())
                 .debtorAddress(debtor.getAddress())
                 .debtorStreetNumber(debtor.getCivic())
@@ -93,7 +93,7 @@ public class InstallmentExportFlowFileDTOMapper {
 
         if (payer != null) {
             builder.payerEntityType(payer.getEntityType())
-                    .payerUniqueIdentifierCode(Objects.requireNonNullElse(payer.getFiscalCode(), ANONYMOUS))
+                    .payerUniqueIdentifierCode(getFiscalCode(payer))
                     .payerFullName(payer.getFullName())
                     .payerAddress(payer.getAddress())
                     .payerStreetNumber(payer.getCivic())
@@ -105,5 +105,9 @@ public class InstallmentExportFlowFileDTOMapper {
         }
 
         return builder.build();
+    }
+
+    private static String getFiscalCode(PersonDTO payer) {
+        return Objects.requireNonNullElse(payer.getFiscalCode(), ANONYMOUS);
     }
 }

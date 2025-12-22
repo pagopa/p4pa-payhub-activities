@@ -28,7 +28,6 @@ public class SendNotificationMapper {
         request.setTaxonomyCode(sendFile.getTaxonomyCode());
         request.setPaFee(sendFile.getPaFee());
         request.setVat(sendFile.getVat());
-        request.setPagoPaIntMode(PagoPaIntModeEnum.valueOf(sendFile.getPagoPaIntMode()));
 
         Recipient recipient = new Recipient();
         recipient.setRecipientType(RecipientTypeEnum.valueOf(sendFile.getRecipientType()));
