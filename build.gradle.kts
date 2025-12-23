@@ -59,6 +59,8 @@ dependencies {
 tasks {
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
+    testLogging.events = setOf(TestLogEvent.FAILED)
+    testLogging.exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
