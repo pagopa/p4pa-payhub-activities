@@ -5,7 +5,7 @@ import it.gov.pagopa.pu.debtposition.client.generated.*;
 import it.gov.pagopa.pu.debtposition.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
