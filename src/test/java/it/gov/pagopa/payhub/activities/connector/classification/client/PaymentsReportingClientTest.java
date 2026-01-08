@@ -1,21 +1,20 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentsReportingClientTest {
@@ -99,5 +98,30 @@ class PaymentsReportingClientTest {
         assertEquals(expectedResponse, result);
         verify(paymentsReportingSearchControllerApiMock, times(1))
                 .crudPaymentsReportingFindByTransferSemanticKey(orgId, iuv, iur, transferIndex);
+    }
+
+    @Test
+    void testFindDuplicates() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "IUV_TEST";
+        int transferIndex = 2;
+        String orgFiscalCode = "FISCAL_CODE_123";
+        String accessToken = "accessToken";
+
+        CollectionModelPaymentsReporting expectedResponse = new CollectionModelPaymentsReporting();
+
+        when(classificationApisHolderMock.getPaymentsReportingSearchApi(accessToken))
+                .thenReturn(paymentsReportingSearchControllerApiMock);
+        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindDuplicates(organizationId, iuv, transferIndex, orgFiscalCode))
+                .thenReturn(expectedResponse);
+
+        // When
+        CollectionModelPaymentsReporting result = paymentsReportingClient.findDuplicates(organizationId, iuv, transferIndex, orgFiscalCode, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock, times(1)).getPaymentsReportingSearchApi(accessToken);
+        verify(paymentsReportingSearchControllerApiMock, times(1)).crudPaymentsReportingFindDuplicates(organizationId, iuv, transferIndex, orgFiscalCode);
     }
 }

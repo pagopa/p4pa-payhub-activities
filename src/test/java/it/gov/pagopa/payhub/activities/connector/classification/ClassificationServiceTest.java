@@ -1,17 +1,11 @@
 
 package it.gov.pagopa.payhub.activities.connector.classification;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.classification.client.ClassificationClient;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClassificationServiceTest {
@@ -198,5 +197,29 @@ class ClassificationServiceTest {
 
         // Then
         assertEquals(expectedResponse, actualResult);
+    }
+
+    @Test
+    void testDeleteDuplicates() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "IUV123";
+        int transferIndex = 1;
+        Long receiptPaymentAmount = 100L;
+        String receiptOrgFiscalCode = "FISCAL_CODE";
+        String accessToken = "accessToken";
+        Integer expectedResponse = 1;
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(classificationClientMock.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        Integer result = classificationService.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationClientMock, times(1)).deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, accessToken);
     }
 }
