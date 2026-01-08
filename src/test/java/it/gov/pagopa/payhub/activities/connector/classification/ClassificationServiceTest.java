@@ -105,6 +105,31 @@ class ClassificationServiceTest {
         verify(classificationClientMock, times(1)).deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId,iuv,iur,transferIndex,accessToken);
     }
 
+    @Test
+    void testDeleteBySemanticKeyExcludingLabel() {
+        // Given
+        TransferSemanticKeyDTO transferSemanticKeyDTO = new TransferSemanticKeyDTO(1L, "IUV123", "IUR123", 0);
+        Integer expectedResponse = 1;
+        String accessToken = "accessToken";
+        Long organizationId = transferSemanticKeyDTO.getOrgId();
+        String iuv = transferSemanticKeyDTO.getIuv();
+        String iur = transferSemanticKeyDTO.getIur();
+        int transferIndex = transferSemanticKeyDTO.getTransferIndex();
+        ClassificationsEnum label = ClassificationsEnum.DOPPI;
+
+
+        when(classificationClientMock.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId,iuv,iur,transferIndex,label,accessToken)).thenReturn(expectedResponse);
+        Mockito.when(authnServiceMock.getAccessToken())
+            .thenReturn(accessToken);
+
+        // When
+        Integer result = classificationService.deleteBySemanticKeyExcludingLabel(transferSemanticKeyDTO, label);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationClientMock, times(1)).deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId,iuv,iur,transferIndex,label,accessToken);
+    }
+
 	@Test
 	void testDeleteByOrganizationIdAndIudAndLabel() {
         // Given
@@ -172,5 +197,29 @@ class ClassificationServiceTest {
 
         // Then
         assertEquals(expectedResponse, actualResult);
+    }
+
+    @Test
+    void testDeleteDuplicates() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "IUV123";
+        int transferIndex = 1;
+        Long receiptPaymentAmount = 100L;
+        String receiptOrgFiscalCode = "FISCAL_CODE";
+        String accessToken = "accessToken";
+        Integer expectedResponse = 1;
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(classificationClientMock.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        Integer result = classificationService.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationClientMock, times(1)).deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, accessToken);
     }
 }

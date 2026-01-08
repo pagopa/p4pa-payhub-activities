@@ -44,6 +44,18 @@ public class ClassificationClient {
                 .deleteByOrganizationIdAndTreasuryId(organizationId, treasuryId);
     }
 
+    public Integer deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(Long organizationId, String iuv,String iur,  int transferIndex, ClassificationsEnum label, String accessToken) {
+        return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
+            .deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label);
+    }
+
+    public Integer deleteDuplicates(Long organizationId, String iuv, int transferIndex,
+        Long receiptPaymentAmount, String receiptOrgFiscalCode,
+        ClassificationsEnum label, String accessToken) {
+        return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
+            .deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label);
+    }
+
     public List<Classification> findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud, String accessToken) {
         CollectionModelClassification collectionModelClassification = classificationApisHolder.getClassificationSearchControllerApi(accessToken)
                 .crudClassificationsFindAllByOrganizationIdAndIuvAndIud(organizationId, iuv, iud);

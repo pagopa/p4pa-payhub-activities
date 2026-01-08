@@ -102,6 +102,30 @@ class ClassificationClientTest {
                 .deleteByOrganizationIdAndIuvAndIurAndTransferIndex(organizationId, iuv, iur, transferIndex);
     }
 
+
+    @Test
+    void testDeleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "IUV123";
+        String iur = "IUR123";
+        int transferIndex = 0;
+        ClassificationsEnum label = ClassificationsEnum.DOPPI;
+        String accessToken = "accessToken";
+        Integer expectedResponse = 1;
+        ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label)).thenReturn(expectedResponse);
+
+        // When
+        Integer result = classificationClient.deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+            .deleteByOrganizationIdAndIuvAndIurAndTransferIndexAndLabelNot(organizationId, iuv, iur, transferIndex, label);
+    }
+
 	@Test
 	void testDeleteByOrganizationIdAndIudAndLabel() {
         // Given
@@ -221,5 +245,31 @@ class ClassificationClientTest {
         // Then
 		assert expectedResponse.getEmbedded() != null;
 		assertEquals(expectedResponse.getEmbedded().getClassifications(), actualResult);
+    }
+
+    @Test
+    void testDeleteDuplicates() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "IUV123";
+        int transferIndex = 1;
+        Long receiptPaymentAmount = 100L;
+        String receiptOrgFiscalCode = "FiscalCode123";
+        ClassificationsEnum label = ClassificationsEnum.DOPPI;
+        String accessToken = "accessToken";
+        Integer expectedResponse = 1;
+
+        ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
+        when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
+        when(mockApi.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label))
+                .thenReturn(expectedResponse);
+
+        // When
+        Integer result = classificationClient.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
+                .deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label);
     }
 }

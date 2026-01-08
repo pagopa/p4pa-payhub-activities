@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,5 +107,43 @@ class PaymentsReportingServiceTest {
         // Then
         assertEquals(expectedResponse.getEmbedded().getPaymentsReportings().getFirst(), result);
         verify(paymentsReportingClientMock, times(1)).getByTransferSemanticKey(orgId, iuv, iur, transferIndex, accessToken);
+    }
+
+    @Test
+    void testFindDuplicates() {
+        // Given
+        Long organizationId = 1L;
+        String iuv = "IUV_SEARCH";
+        int transferIndex = 1;
+        String orgFiscalCode = "fiscalCode";
+        String accessToken = "accessToken";
+
+        PaymentsReporting pr2 = new PaymentsReporting();
+        pr2.setIuv("Z_IUV");
+        PaymentsReporting pr1 = new PaymentsReporting();
+        pr1.setIuv("A_IUV");
+
+        CollectionModelPaymentsReporting mockResponse = CollectionModelPaymentsReporting.builder()
+                .embedded(PagedModelPaymentsReportingEmbedded.builder()
+                        .paymentsReportings(List.of(pr2, pr1))
+                        .build())
+                .build();
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(paymentsReportingClientMock.findDuplicates(organizationId, iuv, transferIndex, orgFiscalCode, accessToken))
+                .thenReturn(mockResponse);
+
+        // When
+        List<PaymentsReporting> result = paymentsReportingService.findDuplicates(organizationId, iuv, transferIndex, orgFiscalCode);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        assertEquals("A_IUV", result.get(0).getIuv());
+        assertEquals("Z_IUV", result.get(1).getIuv());
+
+        verify(paymentsReportingClientMock, times(1)).findDuplicates(organizationId, iuv, transferIndex, orgFiscalCode, accessToken);
+        verify(authnServiceMock, times(1)).getAccessToken();
     }
 }

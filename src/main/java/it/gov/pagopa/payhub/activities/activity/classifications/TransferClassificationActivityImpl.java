@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
-import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAYED_STATUSES_SET;
+import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAID_STATUSES_SET;
 
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
@@ -70,12 +70,12 @@ public class TransferClassificationActivityImpl implements TransferClassificatio
 			transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Clear previous classification
-        Integer deletedRowsNumber = classificationService.deleteBySemanticKey(transferSemanticKey);
+		Integer deletedRowsNumber = classificationService.deleteBySemanticKeyExcludingLabel(transferSemanticKey, ClassificationsEnum.DOPPI);
 		log.debug("Deleted {} classifications for organization id: {} and iuv: {}",
 			deletedRowsNumber, transferSemanticKey.getOrgId(), transferSemanticKey.getIuv());
 
 		// Retrieve Transfer 2 classify
-		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_PAYED_STATUSES_SET);
+		Transfer transferDTO = transferService.findBySemanticKey(transferSemanticKey, INSTALLMENT_PAID_STATUSES_SET);
 
 		// Exclude transfer if exists from different organization origin
 		if(transferDTO!=null) {

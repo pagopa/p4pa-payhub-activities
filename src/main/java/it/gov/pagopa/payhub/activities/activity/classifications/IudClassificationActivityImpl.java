@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.classifications;
 
+import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAID_STATUSES_LIST;
+
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentNotificationService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.TransferService;
@@ -10,15 +12,12 @@ import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.INSTALLMENT_PAYED_STATUSES_LIST;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Lazy
@@ -44,7 +43,7 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
     log.info("Starting IUD Classification for organization id {} and iud {}", organizationId,iud);
 
     CollectionModelInstallmentNoPII installment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organizationId, iud,
-        INSTALLMENT_PAYED_STATUSES_LIST);
+        INSTALLMENT_PAID_STATUSES_LIST);
     List<InstallmentNoPII> installmentsList = installment.getEmbedded().getInstallmentNoPIIs();
     if (installmentsList == null || installmentsList.isEmpty()) {
       log.info("No installments found for organization id {} and iud {}", organizationId,iud);
