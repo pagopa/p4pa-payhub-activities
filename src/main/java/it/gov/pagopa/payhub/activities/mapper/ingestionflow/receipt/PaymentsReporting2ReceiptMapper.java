@@ -22,7 +22,11 @@ public class PaymentsReporting2ReceiptMapper {
      */
     public static final String DEFAULT_TRANSFER_CATEGORY = "9/0801100AP/";
 
-    public ReceiptWithAdditionalNodeDataDTO map2DummyReceipt(PaymentsReporting paymentsReporting, Organization organization) {
+    public ReceiptWithAdditionalNodeDataDTO map2Receipt(PaymentsReporting paymentsReporting, Organization organization,
+                                                        List<InstallmentDebtorDTO> installmentDebtorDTOS) {
+
+        PersonDTO personDTO = !installmentDebtorDTOS.isEmpty() ? installmentDebtorDTOS.getFirst().getDebtor() : buildAnonymousPerson();
+
         return new ReceiptWithAdditionalNodeDataDTO()
                 .ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
                 .receiptOrigin(ReceiptOriginType.PAYMENTS_REPORTING)
@@ -44,8 +48,8 @@ public class PaymentsReporting2ReceiptMapper {
                 .applicationDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getAcquiringDate()))
                 .transferDate(Utilities.toOffsetDateTimeStartOfTheDay(paymentsReporting.getRegulationDate()))
                 .standin(false)
-                .debtor(buildAnonymousPerson())
-                .payer(buildAnonymousPerson())
+                .debtor(personDTO)
+                .payer(personDTO)
                 .transfers(List.of(buildDummyTransfer(paymentsReporting, organization.getOrgFiscalCode(), organization.getOrgName())));
     }
 
