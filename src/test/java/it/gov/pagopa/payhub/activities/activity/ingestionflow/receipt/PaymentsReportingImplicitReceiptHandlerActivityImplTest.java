@@ -61,8 +61,12 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		Organization organizationFake = OrganizationFaker.buildOrganizationDTO();
 		ReceiptWithAdditionalNodeDataDTO dummyReceiptMocked = mock(ReceiptWithAdditionalNodeDataDTO.class);
 		ReceiptDTO dummyReceiptCreated = mock(ReceiptDTO.class);
-        InstallmentDebtorDTO installmentDebtorDTO = mock(InstallmentDebtorDTO.class);
 
+        InstallmentDebtorDTO installmentDebtorDTO = mock(InstallmentDebtorDTO.class);
+        installmentDebtorDTO.setIuv(paymentsReportingFake.getIuv());
+        installmentDebtorDTO.setOrganizationId(organizationFake.getOrganizationId());
+
+        when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId())).thenReturn(List.of(installmentDebtorDTO));
 		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId())).thenReturn(Optional.of(organizationFake));
 		when(paymentsReporting2ReceiptMapperMock.map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO))).thenReturn(dummyReceiptMocked);
