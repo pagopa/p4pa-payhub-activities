@@ -51,7 +51,7 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 
 	@Override
 	public boolean hasNext() {
-		return documentInputStream.available() > 0 && !errorBuildingMapper;
+		return !errorBuildingMapper && documentInputStream.available() > 0;
 	}
 
 	@Override
