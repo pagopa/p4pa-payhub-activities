@@ -32,6 +32,7 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	private int currentRowIndex = -1;
 	private boolean pendingRowReady = false;
 	private List<String> pendingRow;
+	private boolean errorBuildingMapper = false;
 
 	public XlsIterator(Path filePath, List<String> requiredHeaderList, Function<List<String>, XlsRowMapper<D>> mapperBuildFunction) throws IOException {
 		this.filePath = filePath;
@@ -50,7 +51,7 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 
 	@Override
 	public boolean hasNext() {
-		return documentInputStream.available() > 0;
+		return !errorBuildingMapper && documentInputStream.available() > 0;
 	}
 
 	@Override
@@ -78,6 +79,7 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 			String missingHeaders = requiredHeaderList.stream()
 					.filter(h -> !headers.contains(h))
 					.collect(Collectors.joining(", "));
+			this.errorBuildingMapper = true;
 			throw new TreasuryXlsInvalidFileException("Missing headers in file \"%s\", cannot create mapper: %s".formatted(filePath.getFileName(), missingHeaders), null);
 		}
 		mapper = this.mapperBuildFunction.apply(headers);

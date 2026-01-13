@@ -11,7 +11,9 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
@@ -51,11 +53,17 @@ class TreasuryPosteProcessingServiceTest {
   @Mock
   private TreasuryService treasuryService;
 
+  @Mock
+  private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
   private TreasuryPosteProcessingService service;
+
+  private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+          new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
   @BeforeEach
   void setUp() {
-    service = new TreasuryPosteProcessingService(mapperMock, treasuryService, errorsArchiverServiceMock, organizationServiceMock);
+    service = new TreasuryPosteProcessingService(mapperMock, treasuryService, errorsArchiverServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock);
   }
 
   @Test
@@ -115,9 +123,13 @@ class TreasuryPosteProcessingServiceTest {
 
     Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(null);
 
+    CsvException exception = new CsvException("DUMMYERROR");
+    Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+            .thenReturn(csvErrorDetails);
+
     // When
     TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
-        Stream.of(dto).iterator(), iban, List.of(new CsvException("DUMMYERROR")),
+        Stream.of(dto).iterator(), iban, List.of(exception),
         ingestionFlowFile,
         workingDirectory
     );

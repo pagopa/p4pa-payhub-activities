@@ -6,7 +6,9 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csv.TreasuryCsvMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
@@ -52,11 +54,17 @@ class TreasuryCsvProcessingServiceTest {
     @Mock
     private TreasuryService treasuryServiceMock;
 
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
     private TreasuryCsvProcessingService service;
+
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
     @BeforeEach
     void setUp() {
-        service = new TreasuryCsvProcessingService(mapperMock, errorsArchiverServiceMock, treasuryServiceMock, organizationServiceMock);
+        service = new TreasuryCsvProcessingService(mapperMock, errorsArchiverServiceMock, treasuryServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @AfterEach
@@ -149,8 +157,12 @@ class TreasuryCsvProcessingServiceTest {
         Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, TreasuryUtils.getIdentificativo(dto.getRemittanceDescription(), TreasuryUtils.IUF)))
                 .thenReturn(null);
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                .thenReturn(csvErrorDetails);
+
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsv(
-                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(dto).iterator(), List.of(exception),
                 ingestionFlowFile,
                 workingDirectoryMock
         );

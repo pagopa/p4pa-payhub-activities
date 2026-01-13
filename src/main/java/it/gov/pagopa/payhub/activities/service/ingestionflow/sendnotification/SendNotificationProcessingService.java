@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotifi
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
@@ -36,9 +37,10 @@ public class SendNotificationProcessingService extends
             SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
             SendNotificationService sendNotificationService,
             OrganizationService organizationService,
+            FileExceptionHandlerService fileExceptionHandlerService,
             SendNotificationMapper mapper,
             SendNotificationFileHandlerService sendNotificationFileHandlerService) {
-        super(sendNotificationErrorArchiverService, organizationService);
+        super(sendNotificationErrorArchiverService, organizationService, fileExceptionHandlerService);
         this.sendNotificationService = sendNotificationService;
         this.mapper = mapper;
         this.sendNotificationFileHandlerService = sendNotificationFileHandlerService;

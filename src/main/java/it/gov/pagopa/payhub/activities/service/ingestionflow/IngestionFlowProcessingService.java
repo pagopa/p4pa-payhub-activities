@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
 
     private final ErrorArchiverService<E> errorArchiverService;
     protected final OrganizationService organizationService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     /**
      * Processes the input Iterator and readerExceptions in order to:
@@ -81,11 +83,17 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         int previousSize = previousReaderExceptionSize[0];
         if (readerExceptions.size() > previousSize) {
             List<CsvException> newExceptions = readerExceptions.subList(previousSize, readerExceptions.size());
-            newExceptions.forEach(e ->
-                            errorList.add(buildErrorDto(
-                                    ingestionFlowFile.getFileName(),
-                                    e.getLineNumber(), "READER_EXCEPTION", e.getMessage()
-                            )));
+
+            newExceptions.forEach(e -> {
+                FileExceptionHandlerService.CsvErrorDetails errorDetails = fileExceptionHandlerService.mapCsvExceptionToErrorCodeAndMessage(e);
+
+                errorList.add(buildErrorDto(
+                        ingestionFlowFile.getFileName(),
+                        e.getLineNumber(),
+                        errorDetails.getErrorCode(),
+                        errorDetails.getErrorMessage()
+                ));
+            });
 
             long distinctLineCount = newExceptions.stream()
                     .map(CsvException::getLineNumber)

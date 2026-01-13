@@ -10,7 +10,9 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
@@ -72,11 +74,18 @@ class AssessmentsProcessingServiceTest {
     @Mock
     private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
 
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
+
     @BeforeEach
     void setUp() {
         service = new AssessmentsProcessingService(
                 errorsArchiverServiceMock,
                 organizationServiceMock,
+                fileExceptionHandlerServiceMock,
                 assessmentsServiceMock,
                 assessmentsDetailServiceMock,
                 mapperMock,
@@ -184,12 +193,16 @@ class AssessmentsProcessingServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                        .thenReturn(csvErrorDetails);
+
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
         // When
         AssessmentsIngestionFlowFileResult result = service.processAssessments(
-                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(dto).iterator(), List.of(exception),
                 ingestionFlowFile, workingDirectory);
 
         // Then

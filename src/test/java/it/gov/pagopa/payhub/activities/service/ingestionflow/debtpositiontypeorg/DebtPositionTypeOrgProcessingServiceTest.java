@@ -7,7 +7,9 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg.DebtPositionTypeOrgMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -58,9 +60,14 @@ class DebtPositionTypeOrgProcessingServiceTest {
     private OrganizationService organizationServiceMock;
     @Mock
     private OrganizationService organizationServiceSuperMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     @Mock
     private DebtPositionTypeOrgProcessingService service;
+
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
     @BeforeEach
     void setUp() {
@@ -70,7 +77,8 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 debtPositionTypeOrgServiceMock,
                 debtPositionTypeServiceMock,
                 organizationServiceMock,
-                organizationServiceSuperMock
+                organizationServiceSuperMock,
+                fileExceptionHandlerServiceMock
         );
     }
 
@@ -195,9 +203,13 @@ class DebtPositionTypeOrgProcessingServiceTest {
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                .thenReturn(csvErrorDetails);
+
         // When
         DebtPositionTypeOrgIngestionFlowFileResult result = service.processDebtPositionTypeOrg(
-                Stream.of(debtPositionTypeOrgIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(debtPositionTypeOrgIngestionFlowFileDTO).iterator(), List.of(exception),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -208,7 +220,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
+                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "CSV_GENERIC_ERROR", "Errore"),
                 new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeOrgIngestionFlowFileDTO.getCode(),1L, 2L, "PROCESS_EXCEPTION", "Processing error")
         )));
         Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());

@@ -5,7 +5,9 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization.OrganizationMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
@@ -51,12 +53,18 @@ class OrganizationProcessingServiceTest {
     private OrganizationService organizationServiceMock;
 
     @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
+    @Mock
     private OrganizationProcessingService service;
+
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
     @BeforeEach
     void setUp() {
         service = new OrganizationProcessingService(mapperMock, errorsArchiverServiceMock,
-                organizationServiceMock);
+                organizationServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @AfterEach
@@ -162,9 +170,13 @@ class OrganizationProcessingServiceTest {
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                .thenReturn(csvErrorDetails);
+
         // When
         OrganizationIngestionFlowFileResult result = service.processOrganization(
-                Stream.of(organizationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(organizationIngestionFlowFileDTO).iterator(), List.of(exception),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -176,7 +188,7 @@ class OrganizationProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
         Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
+                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, "CSV_GENERIC_ERROR", "Errore"),
                 new OrganizationErrorDTO(ingestionFlowFile.getFileName(), organizationIngestionFlowFileDTO.getIpaCode(), 2L, "PROCESS_EXCEPTION", "Processing error")
         )));
     }

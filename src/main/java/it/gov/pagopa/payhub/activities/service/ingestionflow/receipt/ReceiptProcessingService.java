@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -33,8 +34,9 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
     public ReceiptProcessingService(ReceiptMapper receiptMapper,
                                     ReceiptErrorsArchiverService receiptErrorsArchiverService,
                                     ReceiptService receiptService,
-                                    OrganizationService organizationService, ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService) {
-        super(receiptErrorsArchiverService, organizationService);
+                                    OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService,
+                                    ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService) {
+        super(receiptErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.receiptService = receiptService;
         this.receiptMapper = receiptMapper;
         this.requiredFieldsValidatorService = requiredFieldsValidatorService;

@@ -7,7 +7,9 @@ import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionPara
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
@@ -30,7 +32,6 @@ import static it.gov.pagopa.payhub.activities.util.faker.InstallmentIngestionFlo
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +47,13 @@ class InstallmentProcessingServiceTest {
     private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
     @Mock
     private OrganizationService organizationServiceMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
     private InstallmentProcessingService service;
+
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
     @BeforeEach
     void setUp(){
@@ -55,7 +62,8 @@ class InstallmentProcessingServiceTest {
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
                 dpInstallmentsWorkflowCompletionServiceMock,
-                organizationServiceMock
+                organizationServiceMock,
+                fileExceptionHandlerServiceMock
                 );
     }
 
@@ -193,9 +201,13 @@ class InstallmentProcessingServiceTest {
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                .thenReturn(csvErrorDetails);
+
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(exception),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -206,9 +218,9 @@ class InstallmentProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-        verify(installmentErrorsArchiverServiceMock).writeErrors(eq(workingDirectory), eq(ingestionFlowFile), eq(List.of(
-                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
+        verify(installmentErrorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, "CSV_GENERIC_ERROR", "Errore"),
                 new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(), installmentSynchronizeDTO.getIud(), null, 2L, "PROCESS_EXCEPTION", "Error synchronizing the installment")
-        )));
+        ));
     }
 }

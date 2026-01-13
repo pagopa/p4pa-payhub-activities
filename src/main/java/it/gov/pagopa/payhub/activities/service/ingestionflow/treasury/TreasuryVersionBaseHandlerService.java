@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -25,15 +26,17 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
     private final TreasuryValidatorService<T> validatorService;
     private final TreasuryErrorsArchiverService treasuryErrorsArchiverService;
     private final TreasuryService treasuryService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public static final String ORG_BT_CODE_DEFAULT = "0000000000";
     public static final String ORG_ISTAT_CODE_DEFAULT = "0000000000";
 
-    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService, TreasuryService treasuryService) {
+    protected TreasuryVersionBaseHandlerService(TreasuryMapperService<T> mapperService, TreasuryValidatorService<T> validatorService, TreasuryErrorsArchiverService treasuryErrorsArchiverService, TreasuryService treasuryService, FileExceptionHandlerService fileExceptionHandlerService) {
         this.mapperService = mapperService;
         this.validatorService = validatorService;
         this.treasuryErrorsArchiverService = treasuryErrorsArchiverService;
         this.treasuryService = treasuryService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     protected abstract T unmarshall(File file);
@@ -46,7 +49,27 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
             unmarshalled = unmarshall(input);
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using version handler {}: {}", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName(), e.getMessage());
-            return Pair.of(new IngestionFlowFileResult(), null);
+
+            FileExceptionHandlerService.XmlErrorDetails xmlErrorDetails = fileExceptionHandlerService.mapXmlParsingExceptionToErrorCodeAndMessage(e.getMessage());
+            TreasuryErrorDTO unmarshallError = TreasuryErrorDTO.builder()
+                    .fileName(ingestionFlowFileDTO.getFileName())
+                    .billYear(null)
+                    .billCode(null)
+                    .errorCode(xmlErrorDetails.getErrorCode())
+                    .errorMessage(xmlErrorDetails.getErrorMessage())
+                    .build();
+
+            List<TreasuryErrorDTO> errorDTOList = List.of(unmarshallError);
+
+            treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
+
+            return Pair.of(
+                    IngestionFlowFileResult.builder()
+                            .fileVersion(getFileVersion())
+                            .totalRows(0)
+                            .processedRows(0)
+                            .build(),
+                    null);
         }
 
         List<TreasuryErrorDTO> errorDTOList = validate(ingestionFlowFileDTO, inputFileNumber, unmarshalled);

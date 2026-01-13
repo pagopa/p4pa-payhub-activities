@@ -7,7 +7,9 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
@@ -55,13 +57,19 @@ class ReceiptProcessingServiceTest {
     @Mock
     private ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorServiceMock;
 
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
     private ReceiptProcessingService service;
 
     private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
+
     @BeforeEach
     void setUp() {
-        service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, requiredFieldsValidatorServiceMock);
+        service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock, requiredFieldsValidatorServiceMock);
     }
 
     @AfterEach
@@ -117,9 +125,13 @@ class ReceiptProcessingServiceTest {
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                .thenReturn(csvErrorDetails);
+
         // When
         ReceiptIngestionFlowFileResult result = service.processReceipts(
-                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(dto).iterator(), List.of(exception),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -134,7 +146,7 @@ class ReceiptProcessingServiceTest {
         Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
         Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "CSV_GENERIC_ERROR", "Errore"),
                 new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Processing error")
         )));
     }

@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.Payment
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification.PaymentNotificationMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -31,8 +32,8 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
             PaymentNotificationMapper paymentNotificationMapper,
             PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService,
             PaymentNotificationService paymentNotificationService,
-            OrganizationService organizationService) {
-        super(paymentNotificationErrorsArchiverService, organizationService);
+            OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
+        super(paymentNotificationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.paymentNotificationMapper = paymentNotificationMapper;
         this.paymentNotificationService = paymentNotificationService;
     }

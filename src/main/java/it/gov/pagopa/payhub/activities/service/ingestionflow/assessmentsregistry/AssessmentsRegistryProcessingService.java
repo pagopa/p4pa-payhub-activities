@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.Assessm
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -33,8 +34,9 @@ public class AssessmentsRegistryProcessingService extends
     public AssessmentsRegistryProcessingService(
             AssessmentsRegistryMapper assessmentsRegistryMapper,
             AssessmentsRegistryErrorsArchiverService assessmentsRegistryErrorsArchiverService,
-            AssessmentsRegistryService assessmentsRegistryService, OrganizationService organizationService) {
-        super(assessmentsRegistryErrorsArchiverService, organizationService);
+            AssessmentsRegistryService assessmentsRegistryService, OrganizationService organizationService,
+            FileExceptionHandlerService fileExceptionHandlerService) {
+        super(assessmentsRegistryErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.assessmentsRegistryMapper = assessmentsRegistryMapper;
         this.assessmentsRegistryService = assessmentsRegistryService;
     }

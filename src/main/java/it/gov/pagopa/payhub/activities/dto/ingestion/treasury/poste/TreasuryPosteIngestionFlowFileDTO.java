@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste;
 
 import com.opencsv.bean.CsvBindByPosition;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +17,8 @@ import static it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.Treas
 @Builder
 public class TreasuryPosteIngestionFlowFileDTO {
 
-  @NotNull
   @Size(max = 15)
-  @CsvBindByPosition(position = 0, profiles = {V1_0})
+  @CsvBindByPosition(position = 0, required = true, profiles = {V1_0})
   private String billDate;
 
   @Size(max = 15)

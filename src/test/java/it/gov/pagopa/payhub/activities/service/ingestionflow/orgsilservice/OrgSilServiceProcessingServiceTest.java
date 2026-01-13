@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilService
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.orgsilservice.OrgSilServiceMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilService;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
@@ -50,13 +51,16 @@ class OrgSilServiceProcessingServiceTest {
 
   @Mock
   private OrgSilServiceService orgSilServiceServiceMock;
+
+  @Mock
+  private FileExceptionHandlerService fileExceptionHandlerServiceMock;
   
   private OrgSilServiceProcessingService service;
 
   @BeforeEach
   void setUp() {
     service = new OrgSilServiceProcessingService(mapperMock, errorsArchiverServiceMock,
-        organizationServiceMock, orgSilServiceServiceMock);
+        organizationServiceMock, orgSilServiceServiceMock, fileExceptionHandlerServiceMock);
   }
 
   @Test

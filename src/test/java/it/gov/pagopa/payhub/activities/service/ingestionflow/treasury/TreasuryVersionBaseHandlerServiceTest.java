@@ -3,8 +3,10 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.enums.TreasuryOperationEnum;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,6 +38,8 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
     protected TreasuryService treasuryServiceMock;
     @Mock
     protected TreasuryUnmarshallerService treasuryUnmarshallerServiceMock;
+    @Mock
+    protected FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     private T unmarshalledObject;
 
@@ -54,6 +58,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
                 treasuryErrorsArchiverServiceMock,
                 treasuryServiceMock,
                 treasuryUnmarshallerServiceMock,
+                fileExceptionHandlerServiceMock,
                 getMapperServiceMock(),
                 getValidatorServiceMock()
         );
@@ -121,20 +126,38 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
     @Test
     void testHandle_whenUnmarshallFails_thenReturnsNull() {
         // Given
-        File file = mock(File.class);
+
+        Path fileFolder = Path.of("build");
+        File file = fileFolder.resolve("prova.txt").toFile();
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
 
+        List<TreasuryErrorDTO> errorDTOS = List.of(new TreasuryErrorDTO("testFile",
+                 null, null, FileErrorCode.XML_GENERIC_ERROR.name(),"Errore"));
+
+        Pair<IngestionFlowFileResult, List<Treasury>> expectedResult = Pair.of(
+                IngestionFlowFileResult.builder()
+                        .fileVersion(getExpectedFileVersion())
+                        .totalRows(0)
+                        .processedRows(0)
+                        .build(),
+                null);
+
         getUnmarshallerMockitOngoingStubbing(file).thenThrow(new RuntimeException("Unmarshall failed"));
+
+        Mockito.when(fileExceptionHandlerServiceMock.mapXmlParsingExceptionToErrorCodeAndMessage("Unmarshall failed"))
+                .thenReturn(new FileExceptionHandlerService.XmlErrorDetails(FileErrorCode.XML_GENERIC_ERROR.name(), "Errore"));
 
         // When
         Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
 
         // Then
         assertNotNull(result);
-        Assertions.assertEquals(new IngestionFlowFileResult(), result.getLeft());
+        Assertions.assertEquals(expectedResult, result);
         Assertions.assertNull(result.getRight());
         Mockito.verify(getMapperServiceMock(), never()).apply(any(), any());
+        Mockito.verify(treasuryErrorsArchiverServiceMock)
+                .writeErrors(fileFolder, ingestionFlowFileDTO, errorDTOS);
     }
 
     @Test

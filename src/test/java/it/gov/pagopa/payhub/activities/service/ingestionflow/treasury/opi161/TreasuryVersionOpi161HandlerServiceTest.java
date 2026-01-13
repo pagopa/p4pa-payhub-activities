@@ -30,7 +30,7 @@ class TreasuryVersionOpi161HandlerServiceTest extends TreasuryVersionBaseHandler
 
     @Override
     protected TreasuryVersionBaseHandlerService<FlussoGiornaleDiCassa> buildVersionHandlerService() {
-        return new TreasuryVersionOpi161HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock);
+        return new TreasuryVersionOpi161HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @Override
