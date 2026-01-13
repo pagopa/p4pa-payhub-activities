@@ -141,4 +141,21 @@ class InstallmentServiceTest {
 		verify(installmentClientMock, times(1)).getByOrganizationIdAndReceiptId(orgId, receiptId, origins, accessToken);
 	}
 
+    @Test
+    void whenFindByIuvOrNavThenInvokeClient() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long orgId = 1L;
+        String iuv = "IUV";
+
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+
+        // When
+        installmentService.findByIuvOrNav(iuv, null, orgId);
+
+        // Then
+        verify(authnServiceMock, times(1)).getAccessToken();
+        verify(installmentClientMock, times(1)).findByIuvOrNav(iuv, null, orgId, accessToken);
+    }
+
 }

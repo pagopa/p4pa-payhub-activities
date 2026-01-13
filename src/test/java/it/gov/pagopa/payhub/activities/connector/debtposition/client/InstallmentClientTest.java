@@ -213,4 +213,21 @@ class InstallmentClientTest {
 		// Then
 		verify(installmentApiMock, times(1)).getInstallmentsByOrganizationIdAndReceiptId(organizationId, receiptId, origins);
 	}
+
+    @Test
+    void whenFindByIuvOrNavThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+        String iuv = "IUV";
+
+        when(debtPositionApisHolderMock.getInstallmentApi(accessToken))
+                .thenReturn(installmentApiMock);
+
+        // When
+        installmentClient.findByIuvOrNav(iuv, null, organizationId, accessToken);
+
+        // Then
+        verify(installmentApiMock, times(1)).getInstallmentsByIuvOrNav(iuv, null, organizationId);
+    }
 }
