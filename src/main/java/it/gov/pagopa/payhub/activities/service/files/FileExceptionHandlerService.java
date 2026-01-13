@@ -33,8 +33,6 @@ public class FileExceptionHandlerService {
                 return buildErrorDetailsFromCsvRequiredFields(csvRequiredFieldEmptyException);
             }
             case CsvDataTypeMismatchException csvDataTypeMismatchException -> {
-                StringBuilder message = new StringBuilder();
-
                 Class<?> destinationClass = csvDataTypeMismatchException.getDestinationClass();
                 String fieldType = destinationClass != null
                         ? destinationClass.getSimpleName()
@@ -42,9 +40,9 @@ public class FileExceptionHandlerService {
 
                 Object sourceValue = csvDataTypeMismatchException.getSourceObject();
 
-                message.append(String.format("Impossibile convertire il valore '%s' nel tipo '%s'", sourceValue, fieldType));
+                String message = String.format("Impossibile convertire il valore '%s' nel tipo '%s'", sourceValue, fieldType);
 
-                return new CsvErrorDetails(FileErrorCode.CSV_DATA_TYPE_MISMATCH.name(), message.toString());
+                return new CsvErrorDetails(FileErrorCode.CSV_DATA_TYPE_MISMATCH.name(), message);
             }
             case CsvValidationException csvValidationException -> {
                 return new CsvErrorDetails(FileErrorCode.CSV_VALIDATION_ERROR.name(),
