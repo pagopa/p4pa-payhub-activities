@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontype.DebtPositionTypeMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
@@ -62,6 +63,9 @@ class DebtPositionTypeProcessingServiceTest {
 
   @Mock
   private DebtPositionTypeProcessingService service;
+
+  private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+          new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
   @BeforeEach
   void setUp() {
@@ -170,6 +174,9 @@ class DebtPositionTypeProcessingServiceTest {
         .thenReturn(Optional.of(organization));
     Mockito.when(mapperMock.map(debtPositionTypeIngestionFlowFileDTO, 1L)).thenReturn(mappedDebtPosType);
 
+    CsvException exception = new CsvException("DUMMYERROR");
+    Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+            .thenReturn(csvErrorDetails);
 
     Mockito.when(debtPositionTypeServiceMock.createDebtPositionType(mappedDebtPosType))
         .thenThrow(new RuntimeException("Processing error"));
@@ -179,7 +186,7 @@ class DebtPositionTypeProcessingServiceTest {
 
     // When
     DebtPositionTypeIngestionFlowFileResult result = service.processDebtPositionType(
-        Stream.of(debtPositionTypeIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+        Stream.of(debtPositionTypeIngestionFlowFileDTO).iterator(), List.of(exception),
         ingestionFlowFile,
         workingDirectory
     );
@@ -190,7 +197,7 @@ class DebtPositionTypeProcessingServiceTest {
     assertEquals("Some rows have failed", result.getErrorDescription());
     assertEquals("zipFileName.csv", result.getDiscardedFileName());
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-        new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
+        new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "CSV_GENERIC_ERROR", "Errore"),
         new DebtPositionTypeErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeIngestionFlowFileDTO.getDebtPositionTypeCode(),debtPositionTypeIngestionFlowFileDTO.getBrokerCf(), 2L, "PROCESS_EXCEPTION", "Processing error")
      )));
     Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());

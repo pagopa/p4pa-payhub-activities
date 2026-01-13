@@ -55,6 +55,9 @@ public class FileExceptionHandlerService {
             case null, default -> {
                 StringBuilder message = new StringBuilder("Errore generico nella lettura del file");
 
+                if(e == null){
+                    return new CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), message.toString());
+                }
                 if (e.getMessage() != null && !e.getMessage().isEmpty()) {
                     message.append(": ").append(e.getMessage());
                 }
@@ -186,7 +189,7 @@ public class FileExceptionHandlerService {
 
     private static XmlErrorDetails handleComplexTypeError(String msg) {
         String element = extract(msg, "element '([^']+)'");
-        String expected = extract(msg, "One of '\\{[^}]*\\}?([^}']+)");
+        String expected = extract(msg, "One of '\\{([^}]+)\\}'");
         if (element != null && expected != null) {
             return new XmlErrorDetails(FileErrorCode.XML_MISSING_REQUIRED_FIELD.name(),
                     String.format("Elemento '%s' non valido: è atteso '%s'", element, expected));

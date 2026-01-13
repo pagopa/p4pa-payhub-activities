@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificati
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -51,6 +52,9 @@ class SendNotificationProcessingServiceTest {
     private SendNotificationProcessingService service;
 
     private static final String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
+
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
     @BeforeEach
     void setUp() {
@@ -165,9 +169,13 @@ class SendNotificationProcessingServiceTest {
         Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                .thenReturn(csvErrorDetails);
+
         // When
         SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
-                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(exception),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -179,7 +187,7 @@ class SendNotificationProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
         verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "READER_EXCEPTION", "DUMMYERROR"),
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "CSV_GENERIC_ERROR", "Errore"),
                 new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
         ));
     }

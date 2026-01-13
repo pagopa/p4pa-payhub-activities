@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification.PaymentNotificationMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
@@ -53,6 +54,9 @@ class PaymentNotificationProcessingServiceTest {
 
   @Mock
   private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
+  private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+          new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
   private PaymentNotificationProcessingService service;
 
@@ -110,9 +114,13 @@ class PaymentNotificationProcessingServiceTest {
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
         .thenReturn("zipFileName.csv");
 
+    CsvException exception = new CsvException("DUMMYERROR");
+    Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+            .thenReturn(csvErrorDetails);
+
     // When
     PaymentNotificationIngestionFlowFileResult result = service.processPaymentNotification(
-        Stream.of(paymentNotificationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+        Stream.of(paymentNotificationIngestionFlowFileDTO).iterator(), List.of(exception),
         ingestionFlowFile,
         workingDirectory
     );
@@ -129,7 +137,7 @@ class PaymentNotificationProcessingServiceTest {
     verify(mapperMock).map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile);
     verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-            new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), null, null, -1L, "READER_EXCEPTION", "DUMMYERROR"),
+            new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), null, null, -1L, "CSV_GENERIC_ERROR", "Errore"),
             new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), paymentNotificationIngestionFlowFileDTO.getIuv(), paymentNotificationIngestionFlowFileDTO.getIud(), 2L, "PROCESS_EXCEPTION", "Processing error")
     )));
   }

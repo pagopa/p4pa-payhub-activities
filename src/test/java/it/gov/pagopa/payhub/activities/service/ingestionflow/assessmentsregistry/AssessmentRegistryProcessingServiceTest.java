@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemant
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
@@ -55,6 +56,9 @@ class AssessmentRegistryProcessingServiceTest {
     private AssessmentsRegistryProcessingService service;
 
     private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+
+    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
+            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
     @BeforeEach
     void setUp() {
@@ -180,6 +184,10 @@ class AssessmentRegistryProcessingServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
+        CsvException exception = new CsvException("DUMMYERROR");
+        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
+                .thenReturn(csvErrorDetails);
+
         Mockito.when(assessmentsRegistryServiceMock.searchAssessmentsRegistryBySemanticKey(registrySemanticKey))
                         .thenReturn(Optional.empty());
 
@@ -191,7 +199,7 @@ class AssessmentRegistryProcessingServiceTest {
 
         // When
         AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
-                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(dto).iterator(), List.of(exception),
                 ingestionFlowFile, workingDirectoryMock);
 
         // Then
@@ -204,8 +212,8 @@ class AssessmentRegistryProcessingServiceTest {
                 .writeErrors(workingDirectoryMock, ingestionFlowFile, List.of(
                         AssessmentsRegistryErrorDTO.builder()
                                 .fileName(ingestionFlowFile.getFileName())
-                                .errorCode("READER_EXCEPTION")
-                                .errorMessage("DUMMYERROR")
+                                .errorCode("CSV_GENERIC_ERROR")
+                                .errorMessage("Errore")
                                 .rowNumber(-1L)
                                 .build(),
                         AssessmentsRegistryErrorDTO.builder()

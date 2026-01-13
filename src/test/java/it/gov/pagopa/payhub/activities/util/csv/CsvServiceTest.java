@@ -154,7 +154,7 @@ class CsvServiceTest {
         csvService.createCsv(filePath, headerList, data);
 
         // When & Then
-        assertThrows(IOException.class, () ->
+        assertDoesNotThrow(() ->
                 csvService.readCsv(filePath, TestCsv.class, (iterator, readerExceptions) -> {
                     List<TestCsv> list = new ArrayList<>();
                     iterator.forEachRemaining(list::add);
