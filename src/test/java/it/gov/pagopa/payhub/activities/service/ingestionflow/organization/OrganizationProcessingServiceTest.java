@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationEr
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization.OrganizationMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
@@ -51,12 +52,15 @@ class OrganizationProcessingServiceTest {
     private OrganizationService organizationServiceMock;
 
     @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
+    @Mock
     private OrganizationProcessingService service;
 
     @BeforeEach
     void setUp() {
         service = new OrganizationProcessingService(mapperMock, errorsArchiverServiceMock,
-                organizationServiceMock);
+                organizationServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @AfterEach

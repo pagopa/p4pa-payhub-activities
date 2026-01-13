@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvErr
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csv.TreasuryCsvMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
@@ -36,8 +37,9 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             TreasuryCsvMapper treasuryCsvMapper,
             TreasuryCsvErrorsArchiverService treasuryCsvErrorsArchiverService,
             TreasuryService treasuryService,
-            OrganizationService organizationService) {
-        super(treasuryCsvErrorsArchiverService, organizationService);
+            OrganizationService organizationService,
+            FileExceptionHandlerService fileExceptionHandlerService) {
+        super(treasuryCsvErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.treasuryCsvMapper = treasuryCsvMapper;
         this.treasuryService = treasuryService;
     }

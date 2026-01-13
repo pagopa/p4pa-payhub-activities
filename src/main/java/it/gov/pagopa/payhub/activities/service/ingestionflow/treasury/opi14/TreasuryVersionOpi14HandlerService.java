@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi14;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryUnmarshallerService;
@@ -21,8 +22,9 @@ public class TreasuryVersionOpi14HandlerService extends TreasuryVersionBaseHandl
                                               TreasuryValidatorOpi14Service validatorService,
                                               TreasuryUnmarshallerService treasuryUnmarshallerService,
                                               TreasuryErrorsArchiverService treasuryErrorsArchiverService,
-                                              TreasuryService treasuryService) {
-        super(mapperService, validatorService, treasuryErrorsArchiverService, treasuryService);
+                                              TreasuryService treasuryService,
+                                              FileExceptionHandlerService fileExceptionHandlerService) {
+        super(mapperService, validatorService, treasuryErrorsArchiverService, treasuryService, fileExceptionHandlerService);
         this.treasuryUnmarshallerService = treasuryUnmarshallerService;
     }
 

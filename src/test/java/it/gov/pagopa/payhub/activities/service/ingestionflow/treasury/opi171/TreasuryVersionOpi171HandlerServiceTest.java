@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi171;
 
 import static org.mockito.Mockito.mock;
 
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryValidatorService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService;
@@ -21,6 +22,8 @@ class TreasuryVersionOpi171HandlerServiceTest extends TreasuryVersionBaseHandler
     private TreasuryMapperOpi171Service mapperServiceMock;
     @Mock
     private TreasuryValidatorOpi171Service validatorServiceMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     @Override
     protected FlussoGiornaleDiCassa mockFlussoGiornaleDiCassa() {
@@ -29,7 +32,7 @@ class TreasuryVersionOpi171HandlerServiceTest extends TreasuryVersionBaseHandler
 
     @Override
     protected TreasuryVersionBaseHandlerService<FlussoGiornaleDiCassa> buildVersionHandlerService() {
-        return new TreasuryVersionOpi171HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock);
+        return new TreasuryVersionOpi171HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @Override

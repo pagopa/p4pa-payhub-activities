@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErr
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +47,9 @@ class InstallmentProcessingServiceTest {
     private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
     @Mock
     private OrganizationService organizationServiceMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
     private InstallmentProcessingService service;
 
     @BeforeEach
@@ -55,7 +59,8 @@ class InstallmentProcessingServiceTest {
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
                 dpInstallmentsWorkflowCompletionServiceMock,
-                organizationServiceMock
+                organizationServiceMock,
+                fileExceptionHandlerServiceMock
                 );
     }
 

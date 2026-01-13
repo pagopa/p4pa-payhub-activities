@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationEr
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization.OrganizationMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -29,8 +30,8 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     public OrganizationProcessingService(
             OrganizationMapper organizationMapper,
             OrganizationErrorsArchiverService organizationErrorsArchiverService,
-            OrganizationService organizationService) {
-        super(organizationErrorsArchiverService, organizationService);
+            OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
+        super(organizationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.organizationMapper = organizationMapper;
     }
 

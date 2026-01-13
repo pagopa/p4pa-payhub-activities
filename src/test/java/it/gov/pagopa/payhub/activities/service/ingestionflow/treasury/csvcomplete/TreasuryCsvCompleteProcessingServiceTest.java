@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngesti
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -52,11 +53,14 @@ class TreasuryCsvCompleteProcessingServiceTest {
     @Mock
     private TreasuryService treasuryService;
 
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
     private TreasuryCsvCompleteProcessingService service;
 
     @BeforeEach
     void setUp() {
-        service = new TreasuryCsvCompleteProcessingService(mapperMock, errorsArchiverServiceMock, treasuryService, organizationServiceMock);
+        service = new TreasuryCsvCompleteProcessingService(mapperMock, errorsArchiverServiceMock, treasuryService, organizationServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @Test

@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilService
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.orgsilservice.OrgSilServiceMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilService;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
@@ -35,8 +36,8 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
             OrgSilServiceMapper orgSilServiceMapper,
             OrgSilServiceErrorsArchiverService orgSilServiceErrorsArchiverService,
             OrganizationService organizationService,
-            OrgSilServiceService orgSilServiceService) {
-        super(orgSilServiceErrorsArchiverService, organizationService);
+            OrgSilServiceService orgSilServiceService, FileExceptionHandlerService fileExceptionHandlerService) {
+        super(orgSilServiceErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.orgSilServiceMapper = orgSilServiceMapper;
         this.orgSilServiceService = orgSilServiceService;
     }

@@ -11,6 +11,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErro
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
@@ -72,11 +73,15 @@ class AssessmentsProcessingServiceTest {
     @Mock
     private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
 
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
     @BeforeEach
     void setUp() {
         service = new AssessmentsProcessingService(
                 errorsArchiverServiceMock,
                 organizationServiceMock,
+                fileExceptionHandlerServiceMock,
                 assessmentsServiceMock,
                 assessmentsDetailServiceMock,
                 mapperMock,

@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsErr
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls.TreasuryXlsMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
@@ -34,8 +35,8 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
 			TreasuryXlsMapper treasuryXlsMapper,
 			TreasuryService treasuryService,
 			TreasuryXlsErrorsArchiverService treasuryXlsErrorsArchiverService,
-			OrganizationService organizationService) {
-		super(treasuryXlsErrorsArchiverService, organizationService);
+			OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
+		super(treasuryXlsErrorsArchiverService, organizationService, fileExceptionHandlerService);
 		this.treasuryXlsMapper = treasuryXlsMapper;
 		this.treasuryService = treasuryService;
 	}

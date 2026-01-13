@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPos
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg.DebtPositionTypeOrgMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -58,6 +59,8 @@ class DebtPositionTypeOrgProcessingServiceTest {
     private OrganizationService organizationServiceMock;
     @Mock
     private OrganizationService organizationServiceSuperMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     @Mock
     private DebtPositionTypeOrgProcessingService service;
@@ -70,7 +73,8 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 debtPositionTypeOrgServiceMock,
                 debtPositionTypeServiceMock,
                 organizationServiceMock,
-                organizationServiceSuperMock
+                organizationServiceSuperMock,
+                fileExceptionHandlerServiceMock
         );
     }
 

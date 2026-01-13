@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi161;
 
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryMapperService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryValidatorService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService;
@@ -22,6 +23,8 @@ class TreasuryVersionOpi161HandlerServiceTest extends TreasuryVersionBaseHandler
     private TreasuryMapperOpi161Service mapperServiceMock;
     @Mock
     private TreasuryValidatorOpi161Service validatorServiceMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     @Override
     protected FlussoGiornaleDiCassa mockFlussoGiornaleDiCassa() {
@@ -30,7 +33,7 @@ class TreasuryVersionOpi161HandlerServiceTest extends TreasuryVersionBaseHandler
 
     @Override
     protected TreasuryVersionBaseHandlerService<FlussoGiornaleDiCassa> buildVersionHandlerService() {
-        return new TreasuryVersionOpi161HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock);
+        return new TreasuryVersionOpi161HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @Override

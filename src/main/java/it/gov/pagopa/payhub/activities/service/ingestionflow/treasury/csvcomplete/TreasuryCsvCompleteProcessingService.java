@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.Treasu
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationIpaCodeNotMatchException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -37,8 +38,9 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
             TreasuryCsvCompleteMapper treasuryCsvCompleteMapper,
             TreasuryCsvCompleteErrorsArchiverService treasuryCsvCompleteErrorsArchiverService,
             TreasuryService treasuryService,
-            OrganizationService organizationService) {
-        super(treasuryCsvCompleteErrorsArchiverService, organizationService);
+            OrganizationService organizationService,
+            FileExceptionHandlerService fileExceptionHandlerService) {
+        super(treasuryCsvCompleteErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.treasuryCsvCompleteMapper = treasuryCsvCompleteMapper;
         this.treasuryService = treasuryService;
     }

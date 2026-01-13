@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.Assessm
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -48,6 +49,8 @@ class AssessmentRegistryProcessingServiceTest {
     private AssessmentsRegistryService assessmentsRegistryServiceMock;
     @Mock
     private OrganizationService organizationServiceMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     private AssessmentsRegistryProcessingService service;
 
@@ -56,7 +59,7 @@ class AssessmentRegistryProcessingServiceTest {
     @BeforeEach
     void setUp() {
         service = new AssessmentsRegistryProcessingService(mapperMock, errorsArchiverServiceMock,
-                assessmentsRegistryServiceMock, organizationServiceMock);
+                assessmentsRegistryServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock);
     }
 
     @AfterEach

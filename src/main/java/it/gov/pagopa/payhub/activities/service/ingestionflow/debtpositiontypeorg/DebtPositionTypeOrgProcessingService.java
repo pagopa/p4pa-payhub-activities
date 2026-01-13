@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPos
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg.DebtPositionTypeOrgMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
@@ -38,8 +39,9 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
             DebtPositionTypeOrgErrorsArchiverService debtPositionTypeErrorsArchiverService,
             DebtPositionTypeOrgService debtPositionTypeOrgService, DebtPositionTypeService debtPositionTypeService,
             OrganizationService organizationServiceSpecialized,
-            OrganizationService organizationServiceSuper) {
-        super(debtPositionTypeErrorsArchiverService, organizationServiceSuper);
+            OrganizationService organizationServiceSuper,
+            FileExceptionHandlerService fileExceptionHandlerService) {
+        super(debtPositionTypeErrorsArchiverService, organizationServiceSuper, fileExceptionHandlerService);
         this.debtPositionTypeOrgMapper = debtPositionTypeOrgMapper;
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
         this.debtPositionTypeService = debtPositionTypeService;

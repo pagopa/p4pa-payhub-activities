@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.Payment
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.paymentnotification.PaymentNotificationMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -50,11 +51,14 @@ class PaymentNotificationProcessingServiceTest {
   @Mock
   private PaymentNotificationService paymentNotificationServiceMock;
 
+  @Mock
+  private FileExceptionHandlerService fileExceptionHandlerServiceMock;
+
   private PaymentNotificationProcessingService service;
 
   @BeforeEach
   void setUp() {
-    service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock, paymentNotificationServiceMock, organizationServiceMock);
+    service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock, paymentNotificationServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock);
   }
 
   @AfterEach

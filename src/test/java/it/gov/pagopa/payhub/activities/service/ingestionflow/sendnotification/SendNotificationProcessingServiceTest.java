@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotifi
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
@@ -44,6 +45,8 @@ class SendNotificationProcessingServiceTest {
     private OrganizationService organizationServiceMock;
     @Mock
     private SendNotificationFileHandlerService sendNotificationFileHandlerServiceMock;
+    @Mock
+    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     private SendNotificationProcessingService service;
 
@@ -55,6 +58,7 @@ class SendNotificationProcessingServiceTest {
                 sendNotificationErrorArchiverServiceMock,
                 sendNotificationServiceMock,
                 organizationServiceMock,
+                fileExceptionHandlerServiceMock,
                 mapperMock,
                 sendNotificationFileHandlerServiceMock
         );

@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -188,9 +190,17 @@ public class CsvService {
                 .withSkipLines(skipLines)
                 .build();
 
-            return rowProcessor.apply(csvToBean.iterator(), csvToBean.getCapturedExceptions());
+                return rowProcessor.apply(csvToBean.iterator(), csvToBean.getCapturedExceptions());
 
         } catch (Exception e) {
+            if (e.getCause() instanceof CsvRequiredFieldEmptyException csvRequiredFieldEmptyException) {
+                csvRequiredFieldEmptyException.setLineNumber(0);
+
+                List<CsvException> headerExceptions = new ArrayList<>();
+                headerExceptions.add(csvRequiredFieldEmptyException);
+                return rowProcessor.apply(Collections.emptyIterator(), headerExceptions);
+            }
+
             throw new IOException("Error while reading csv file: " + e.getMessage(), e);
         }
     }

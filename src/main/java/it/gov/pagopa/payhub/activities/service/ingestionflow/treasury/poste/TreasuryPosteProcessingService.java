@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPost
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper;
+import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
@@ -38,8 +39,9 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
       TreasuryPosteMapper treasuryPosteMapper,
       TreasuryService treasuryService,
       TreasuryPosteErrorsArchiverService treasuryPosteErrorsArchiverService,
-      OrganizationService organizationService) {
-    super(treasuryPosteErrorsArchiverService, organizationService);
+      OrganizationService organizationService,
+      FileExceptionHandlerService fileExceptionHandlerService) {
+    super(treasuryPosteErrorsArchiverService, organizationService, fileExceptionHandlerService);
     this.treasuryPosteMapper = treasuryPosteMapper;
     this.treasuryService = treasuryService;
   }
