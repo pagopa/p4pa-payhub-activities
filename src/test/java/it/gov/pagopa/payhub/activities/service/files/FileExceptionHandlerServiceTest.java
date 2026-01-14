@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.exceptions.*;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
+import lombok.Data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -343,6 +344,7 @@ class FileExceptionHandlerServiceTest {
         private String username;
     }
 
+    @Data
     private static class TestCsvBeanNoAnnotations {
         private String data;
     }
