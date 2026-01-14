@@ -178,7 +178,7 @@ class XlsIteratorTest {
 		// WHEN, THEN
 		TreasuryXlsInvalidFileException ex = assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.next());
 		String expectedMissingHeaders = String.join(", ", TreasuryXlsHeadersEnum.getHeaders());
-		Assertions.assertEquals("Missing headers in file \"IPA_TEST_4_XLS_WITH_NO_HEADERS.xls\", cannot create mapper: %s".formatted(expectedMissingHeaders), ex.getMessage());
+		Assertions.assertEquals("Header mancanti nel file \"IPA_TEST_4_XLS_WITH_NO_HEADERS.xls\": %s".formatted(expectedMissingHeaders), ex.getMessage());
 		sut.close();
 	}
 
@@ -194,7 +194,7 @@ class XlsIteratorTest {
 		// WHEN, THEN
 		TreasuryXlsInvalidFileException ex = assertThrows(TreasuryXlsInvalidFileException.class, () -> sut.next());
 
-		Assertions.assertEquals("Headers not found in empty file \"IPA_TEST_5_XLS_EMPTY.xls\", cannot create mapper", ex.getMessage());
+		Assertions.assertEquals("Header non trovati nel file \"IPA_TEST_5_XLS_EMPTY.xls\"", ex.getMessage());
 		sut.close();
 	}
 
@@ -263,7 +263,7 @@ class XlsIteratorTest {
 				TreasuryXlsHeadersEnum.ABI.getValue(),
 				TreasuryXlsHeadersEnum.CAB.getValue()
 		));
-		Assertions.assertEquals("Missing headers in file \"IPA_TEST_8_XLS_WITH_MISSING_COLUMN.xls\", cannot create mapper: %s".formatted(expectedMissingHeaders), ex.getMessage());
+		Assertions.assertEquals("Header mancanti nel file \"IPA_TEST_8_XLS_WITH_MISSING_COLUMN.xls\": %s".formatted(expectedMissingHeaders), ex.getMessage());
 		sut.close();
 	}
 

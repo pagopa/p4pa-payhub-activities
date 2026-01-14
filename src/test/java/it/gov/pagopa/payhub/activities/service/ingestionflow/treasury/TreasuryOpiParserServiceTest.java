@@ -93,7 +93,6 @@ class TreasuryOpiParserServiceTest {
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        // USA anyList() invece di parsingErrors specifico
         when(handler1.handle(any(File.class), eq(ingestionFlowFileDTO), eq(1), anyList()))
                 .thenAnswer(invocation -> {
                     List<TreasuryErrorDTO> errors = invocation.getArgument(3);

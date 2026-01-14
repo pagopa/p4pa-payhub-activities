@@ -126,7 +126,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
 		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
-		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
+		Assertions.assertEquals("La cella con nome \"%s\" non puo' essere vuota".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
 	}
 
 	@Test
@@ -137,7 +137,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
 		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
-		Assertions.assertEquals("Xls Cell with name \"%s\" must not be null or blank".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
+		Assertions.assertEquals("La cella con nome \"%s\" non puo' essere vuota".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
 	}
 
 	@Test
@@ -149,7 +149,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
 		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
-		Assertions.assertEquals("Error in parsing LocalDate from value \"LocalDate\" for Xls cell \"%s\"".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
+		Assertions.assertEquals("Impossibile convertire il valore \"LocalDate\" in data per la cella \"%s\"".formatted(TreasuryXlsHeadersEnum.DATA_CONTABILE.getValue()), ex.getMessage());
 	}
 
 	@Test
@@ -161,7 +161,7 @@ class TreasuryXlsRowMapperTest {
 		values.set(headers.indexOf(TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue()), TreasuryXlsHeadersEnum.DESCRIZIONE_ESTESA.getValue() + "_value");
 		//WHEN, THEN
 		IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class, () -> sut.map(values, 0));
-		Assertions.assertEquals("Error in parsing Long from value \"Long\" for Xls cell \"%s\"".formatted(TreasuryXlsHeadersEnum.IMPORTO.getValue()), ex.getMessage());
+		Assertions.assertEquals("Impossibile convertire il valore \"Long\" in centesimi per la cella \"%s\"".formatted(TreasuryXlsHeadersEnum.IMPORTO.getValue()), ex.getMessage());
 	}
 
 	@Test

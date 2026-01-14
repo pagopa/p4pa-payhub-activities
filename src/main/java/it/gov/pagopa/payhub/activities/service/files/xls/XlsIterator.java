@@ -73,14 +73,14 @@ public class XlsIterator<D> implements Closeable, Iterator<D> {
 	private void buildMapper() {
 		List<String> headers = this.readNextRow()
 				.orElseThrow(
-						() -> new TreasuryXlsInvalidFileException("Headers not found in empty file \"%s\", cannot create mapper".formatted(filePath.getFileName()), null)
+						() -> new TreasuryXlsInvalidFileException("Header non trovati nel file \"%s\"".formatted(filePath.getFileName()), null)
 				);
 		if(!headers.containsAll(requiredHeaderList)) {
 			String missingHeaders = requiredHeaderList.stream()
 					.filter(h -> !headers.contains(h))
 					.collect(Collectors.joining(", "));
 			this.errorBuildingMapper = true;
-			throw new TreasuryXlsInvalidFileException("Missing headers in file \"%s\", cannot create mapper: %s".formatted(filePath.getFileName(), missingHeaders), null);
+			throw new TreasuryXlsInvalidFileException("Header mancanti nel file \"%s\": %s".formatted(filePath.getFileName(), missingHeaders), null);
 		}
 		mapper = this.mapperBuildFunction.apply(headers);
 	}
