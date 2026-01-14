@@ -45,6 +45,8 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
 
     private TreasuryVersionBaseHandlerService<T> handlerService;
 
+    private final ArrayList<TreasuryErrorDTO> parsingErrors = new ArrayList<>();
+
     @BeforeEach
     void setUp() {
         unmarshalledObject = mockFlussoGiornaleDiCassa();
@@ -99,7 +101,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         Mockito.when(getMapperServiceMock().apply(unmarshalledObject, ingestionFlowFileDTO)).thenReturn(expectedMap);
 
         // When
-        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, parsingErrors);
 
         // Then
         assertNotNull(result);
@@ -120,7 +122,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         Mockito.when(getValidatorServiceMock().validatePageSize(unmarshalledObject, 1)).thenReturn(false);
 
         // When
-        Assertions.assertThrows(TreasuryOpiInvalidFileException.class, () -> handlerService.handle(file, ingestionFlowFileDTO, 1));
+        Assertions.assertThrows(TreasuryOpiInvalidFileException.class, () -> handlerService.handle(file, ingestionFlowFileDTO, 1, parsingErrors));
     }
 
     @Test
@@ -131,9 +133,6 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         File file = fileFolder.resolve("prova.txt").toFile();
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
         ingestionFlowFileDTO.setFileName("testFile");
-
-        List<TreasuryErrorDTO> errorDTOS = List.of(new TreasuryErrorDTO("testFile",
-                 null, null, FileErrorCode.XML_GENERIC_ERROR.name(),"Errore"));
 
         Pair<IngestionFlowFileResult, List<Treasury>> expectedResult = Pair.of(
                 IngestionFlowFileResult.builder()
@@ -149,15 +148,13 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
                 .thenReturn(new FileExceptionHandlerService.XmlErrorDetails(FileErrorCode.XML_GENERIC_ERROR.name(), "Errore"));
 
         // When
-        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, parsingErrors);
 
         // Then
         assertNotNull(result);
         Assertions.assertEquals(expectedResult, result);
         Assertions.assertNull(result.getRight());
         Mockito.verify(getMapperServiceMock(), never()).apply(any(), any());
-        Mockito.verify(treasuryErrorsArchiverServiceMock)
-                .writeErrors(fileFolder, ingestionFlowFileDTO, errorDTOS);
     }
 
     @Test
@@ -216,7 +213,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(1);
 
         // When
-        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, parsingErrors);
 
         // Then
         assertNotNull(result);
@@ -258,7 +255,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         when(treasuryServiceMock.deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode())).thenReturn(0);
 
         // When
-        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1);
+        Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, parsingErrors);
 
         // Then
         assertNotNull(result);

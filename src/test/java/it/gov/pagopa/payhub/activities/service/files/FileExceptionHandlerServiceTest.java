@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.exceptions.*;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,16 +30,62 @@ class FileExceptionHandlerServiceTest {
 
     // ==================== CSV TESTS ====================
 
-    @Test
-    void testCsvRequiredFieldEmpty_ColumnCountMismatch() {
-        CsvRequiredFieldEmptyException exception = new CsvRequiredFieldEmptyException(
-                "Number of data fields does not match number of headers"
-        );
+    @ParameterizedTest
+    @MethodSource("provideCsvRequiredFieldMessageBasedTestCases")
+    void testCsvRequiredFieldEmpty_MessageBased(String message, String expectedErrorCode, String expectedErrorMessage) {
+        CsvRequiredFieldEmptyException exception = new CsvRequiredFieldEmptyException(message);
 
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
-        assertEquals(FileErrorCode.CSV_COLUMN_COUNT_MISMATCH.name(), result.getErrorCode());
-        assertEquals("Il numero di colonne nella riga non corrisponde al numero atteso", result.getErrorMessage());
+        assertEquals(expectedErrorCode, result.getErrorCode());
+        assertEquals(expectedErrorMessage, result.getErrorMessage());
+    }
+
+    private static Stream<Arguments> provideCsvRequiredFieldMessageBasedTestCases() {
+        return Stream.of(
+                // Column count mismatch
+                Arguments.of(
+                        "Number of data fields does not match number of headers",
+                        FileErrorCode.CSV_COLUMN_COUNT_MISMATCH.name(),
+                        "Il numero di colonne nella riga non corrisponde al numero atteso"
+                ),
+                // Header missing - single field
+                Arguments.of(
+                        "Header is missing required fields [TIPODOVUTO]. The list of headers encountered is []",
+                        FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(),
+                        "Nell'header manca il campo obbligatorio 'TIPODOVUTO'"
+                ),
+                // Header missing - multiple fields
+                Arguments.of(
+                        "Header is missing required fields [CAMPO1, CAMPO2, CAMPO3]. The list of headers encountered is []",
+                        FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(),
+                        "Nell'header manca il campo obbligatorio 'CAMPO1, CAMPO2, CAMPO3'"
+                ),
+                // Header missing - no brackets
+                Arguments.of(
+                        "Header is missing required fields",
+                        FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(),
+                        "Nell'header mancano uno o più campi obbligatori"
+                ),
+                // Mandatory field - with field name
+                Arguments.of(
+                        "Field 'debtPositionTypeCode' is mandatory but no value was provided.",
+                        FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                        "Il campo obbligatorio 'debtPositionTypeCode' e' vuoto"
+                ),
+                // Mandatory field - no quotes
+                Arguments.of(
+                        "Field is mandatory but no value was provided.",
+                        FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                        "Un campo obbligatorio e' vuoto o mancante"
+                ),
+                // Generic error
+                Arguments.of(
+                        "Generic required field error",
+                        FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                        "Un campo obbligatorio e' vuoto o mancante: Generic required field error"
+                )
+        );
     }
 
     @Test
@@ -53,11 +101,11 @@ class FileExceptionHandlerServiceTest {
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
-        assertEquals("Il campo obbligatorio 'name' alla posizione 0 è vuoto o mancante", result.getErrorMessage());
+        assertEquals("Il campo obbligatorio 'name' alla posizione 0 e' vuoto o mancante", result.getErrorMessage());
     }
 
     @Test
-    void testCsvRequiredFieldEmpty_WithNameAnnotation_HeaderMissing() throws NoSuchFieldException {
+    void testCsvRequiredFieldEmpty_WithNameAnnotation_HeaderLine() throws NoSuchFieldException {
         Field field = TestCsvBeanWithName.class.getDeclaredField("email");
 
         CsvRequiredFieldEmptyException exception = new CsvRequiredFieldEmptyException(
@@ -74,7 +122,7 @@ class FileExceptionHandlerServiceTest {
     }
 
     @Test
-    void testCsvRequiredFieldEmpty_WithNameAnnotation_DataLineMissing() throws NoSuchFieldException {
+    void testCsvRequiredFieldEmpty_WithNameAnnotation_DataLine() throws NoSuchFieldException {
         Field field = TestCsvBeanWithName.class.getDeclaredField("email");
 
         CsvRequiredFieldEmptyException exception = new CsvRequiredFieldEmptyException(
@@ -87,7 +135,7 @@ class FileExceptionHandlerServiceTest {
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
-        assertEquals("Il campo obbligatorio 'email_address' è vuoto", result.getErrorMessage());
+        assertEquals("Il campo obbligatorio 'email_address' e' vuoto", result.getErrorMessage());
     }
 
     @Test
@@ -104,96 +152,157 @@ class FileExceptionHandlerServiceTest {
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
-        assertEquals("Il campo obbligatorio 'username' è vuoto", result.getErrorMessage());
+        assertEquals("Il campo obbligatorio 'username' e' vuoto", result.getErrorMessage());
     }
 
     @Test
-    void testCsvRequiredFieldEmpty_NoFieldNoAnnotation() {
+    void testCsvRequiredFieldEmpty_WithField_NoAnnotations() throws NoSuchFieldException {
+        Field field = TestCsvBeanNoAnnotations.class.getDeclaredField("data");
+
         CsvRequiredFieldEmptyException exception = new CsvRequiredFieldEmptyException(
-                "Generic required field error"
+                TestCsvBeanNoAnnotations.class,
+                field,
+                "Field 'data' is required"
         );
 
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
-        assertEquals("Un campo obbligatorio è vuoto o mancante: Generic required field error", result.getErrorMessage());
+        assertEquals("Un campo obbligatorio e' vuoto o mancante: Field 'data' is required", result.getErrorMessage());
     }
 
-    @Test
-    void testCsvDataTypeMismatch_WithDestinationClass() {
-        CsvDataTypeMismatchException exception = new CsvDataTypeMismatchException("invalid", Integer.class,
-                "Cannot convert");
-
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
-
-        assertEquals(FileErrorCode.CSV_DATA_TYPE_MISMATCH.name(), result.getErrorCode());
-        assertEquals("Impossibile convertire il valore 'invalid' nel tipo 'Integer'", result.getErrorMessage());
-    }
-
-    @Test
-    void testCsvDataTypeMismatch_WithoutDestinationClass() {
-        CsvDataTypeMismatchException exception = new CsvDataTypeMismatchException("123.34", null,
-                "Cannot convert");
-
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
-
-        assertEquals(FileErrorCode.CSV_DATA_TYPE_MISMATCH.name(), result.getErrorCode());
-        assertEquals("Impossibile convertire il valore '123.34' nel tipo 'unknown'", result.getErrorMessage());
-    }
-
-    @Test
-    void testCsvValidationException() {
-        CsvValidationException exception = new CsvValidationException(
-                "Email format is invalid"
+    @ParameterizedTest
+    @MethodSource("provideCsvDataTypeMismatchTestCases")
+    void testCsvDataTypeMismatch(Object sourceValue, Class<?> destinationClass, String expectedMessage) {
+        CsvDataTypeMismatchException exception = new CsvDataTypeMismatchException(
+                sourceValue, destinationClass, "Cannot convert"
         );
+
+        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+
+        assertEquals(FileErrorCode.CSV_DATA_TYPE_MISMATCH.name(), result.getErrorCode());
+        assertEquals(expectedMessage, result.getErrorMessage());
+    }
+
+    private static Stream<Arguments> provideCsvDataTypeMismatchTestCases() {
+        return Stream.of(
+                Arguments.of(
+                        "invalid_number",
+                        Integer.class,
+                        "Impossibile convertire il valore 'invalid_number' nel tipo 'Integer'"
+                ),
+                Arguments.of(
+                        "123.45",
+                        null,
+                        "Impossibile convertire il valore '123.45' nel tipo 'unknown'"
+                ),
+                Arguments.of(
+                        null,
+                        String.class,
+                        "Impossibile convertire il valore 'null' nel tipo 'String'"
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCsvValidationExceptionTestCases")
+    void testCsvValidationException(String message, String expectedMessage) {
+        CsvValidationException exception = new CsvValidationException(message);
 
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_VALIDATION_ERROR.name(), result.getErrorCode());
-        assertEquals("Validazione fallita: Email format is invalid", result.getErrorMessage());
+        assertEquals(expectedMessage, result.getErrorMessage());
     }
 
-    @Test
-    void testCsvConstraintViolationException() {
-        CsvConstraintViolationException exception = new CsvConstraintViolationException(
-                "Value exceeds maximum length"
+    private static Stream<Arguments> provideCsvValidationExceptionTestCases() {
+        return Stream.of(
+                Arguments.of(
+                        "Email format is invalid",
+                        "Validazione fallita: Email format is invalid"
+                ),
+                Arguments.of(
+                        "",
+                        "Validazione fallita: "
+                )
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCsvConstraintViolationExceptionTestCases")
+    void testCsvConstraintViolationException(String message, String expectedMessage) {
+        CsvConstraintViolationException exception = new CsvConstraintViolationException(message);
 
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_CONSTRAINT_VIOLATION.name(), result.getErrorCode());
-        assertEquals("Vincolo violato: Value exceeds maximum length", result.getErrorMessage());
+        assertEquals(expectedMessage, result.getErrorMessage());
     }
 
-    @Test
-    void testCsvGenericException_WithMessage() {
-        CsvException exception = new CsvException("Generic CSV error");
+    private static Stream<Arguments> provideCsvConstraintViolationExceptionTestCases() {
+        return Stream.of(
+                Arguments.of(
+                        "Value exceeds maximum length",
+                        "Vincolo violato: Value exceeds maximum length"
+                ),
+                Arguments.of(
+                        null,
+                        "Vincolo violato: null"
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCsvGenericExceptionTestCases")
+    void testCsvGenericException(String message, String causeMessage, String expectedMessage) {
+        RuntimeException cause = causeMessage != null ? new RuntimeException(causeMessage) : null;
+        CsvException exception = new TestCsvException(message, cause);
 
         FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_GENERIC_ERROR.name(), result.getErrorCode());
-        assertEquals("Errore generico nella lettura del file: Generic CSV error", result.getErrorMessage());
+        assertEquals(expectedMessage, result.getErrorMessage());
     }
 
-    @Test
-    void testCsvGenericException_WithCause() {
-        RuntimeException cause = new RuntimeException("Root cause message");
-        CsvException exception = new TestCsvException("Wrapper message", cause);
-
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
-
-        assertEquals(FileErrorCode.CSV_GENERIC_ERROR.name(), result.getErrorCode());
-        assertEquals("Errore generico nella lettura del file: Wrapper message. Causa: Root cause message", result.getErrorMessage());
-    }
-
-    @Test
-    void testCsvGenericException_EmptyMessage() {
-        CsvException exception = new CsvException("");
-
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
-
-        assertEquals(FileErrorCode.CSV_GENERIC_ERROR.name(), result.getErrorCode());
-        assertEquals("Errore generico nella lettura del file", result.getErrorMessage());
+    private static Stream<Arguments> provideCsvGenericExceptionTestCases() {
+        return Stream.of(
+                // With message only
+                Arguments.of(
+                        "Generic CSV error",
+                        null,
+                        "Errore generico nella lettura del file: Generic CSV error"
+                ),
+                // With message and cause
+                Arguments.of(
+                        "Wrapper message",
+                        "Root cause message",
+                        "Errore generico nella lettura del file: Wrapper message. Causa: Root cause message"
+                ),
+                // Empty message
+                Arguments.of(
+                        "",
+                        null,
+                        "Errore generico nella lettura del file"
+                ),
+                // Null message
+                Arguments.of(
+                        null,
+                        null,
+                        "Errore generico nella lettura del file"
+                ),
+                // With message and cause without message
+                Arguments.of(
+                        "Main message",
+                        "",
+                        "Errore generico nella lettura del file: Main message"
+                ),
+                // Empty message with cause
+                Arguments.of(
+                        "",
+                        "Cause message",
+                        "Errore generico nella lettura del file. Causa: Cause message"
+                )
+        );
     }
 
     @Test
@@ -202,6 +311,40 @@ class FileExceptionHandlerServiceTest {
 
         assertEquals(FileErrorCode.CSV_GENERIC_ERROR.name(), result.getErrorCode());
         assertEquals("Errore generico nella lettura del file", result.getErrorMessage());
+    }
+
+    // ==================== TEST HELPER CLASSES ====================
+
+    private static class TestCsvException extends CsvException {
+        public TestCsvException(String message) {
+            super(message);
+        }
+
+        public TestCsvException(String message, Throwable cause) {
+            super(message);
+            if (cause != null) {
+                initCause(cause);
+            }
+        }
+    }
+
+    private static class TestCsvBeanWithPosition {
+        @CsvBindByPosition(position = 0, required = true)
+        private String name;
+    }
+
+    private static class TestCsvBeanWithName {
+        @CsvBindByName(column = "email_address", required = true)
+        private String email;
+    }
+
+    private static class TestCsvBeanWithEmptyName {
+        @CsvBindByName(column = "", required = true)
+        private String username;
+    }
+
+    private static class TestCsvBeanNoAnnotations {
+        private String data;
     }
 
     // ==================== XML TESTS ====================
@@ -229,7 +372,7 @@ class FileExceptionHandlerServiceTest {
                 Arguments.of(
                         "Error while parsing file GDC-test.xml: SAXParseException: cvc-datatype-valid.1.2.1: " +
                                 "'202-01-12' is not a valid value for 'date'.",
-                        "Il valore '202-01-12' non è valido per il tipo 'date'"
+                        "Il valore '202-01-12' non e' valido per il tipo 'date'"
                 ),
                 // MinLength error - empty field
                 Arguments.of(
@@ -262,7 +405,7 @@ class FileExceptionHandlerServiceTest {
                 Arguments.of(
                         "Error while parsing file GDC-test.xml: SAXParseException: cvc-minInclusive-valid: " +
                                 "Value '2' is not facet-valid with respect to minInclusive '10' for type 'importoMinimo'",
-                        "Il valore '2' è sotto il minimo consentito '10' per il campo 'importoMinimo'"
+                        "Il valore '2' e' sotto il minimo consentito '10' per il campo 'importoMinimo'"
                 ),
                 // MaxExclusive error
                 Arguments.of(
@@ -274,13 +417,13 @@ class FileExceptionHandlerServiceTest {
                 Arguments.of(
                         "Error while parsing file GDC-test.xml: SAXParseException: cvc-minExclusive-valid: " +
                                 "Value '0' is not facet-valid with respect to minExclusive '0' for type 'positiveNumber'",
-                        "Il valore '0' è sotto il minimo consentito '0' per il campo 'positiveNumber'"
+                        "Il valore '0' e' sotto il minimo consentito '0' per il campo 'positiveNumber'"
                 ),
                 // FractionDigits error
                 Arguments.of(
                         "Error while parsing file GDC-test.xml: SAXParseException: cvc-fractionDigits-valid: " +
                                 "Value '150859348.15678' has 5 fraction digits, but the number of fraction digits has been limited to 2",
-                        "Il valore '150859348.15678' ha 5 decimali ma il massimo consentito è 2"
+                        "Il valore '150859348.15678' ha 5 decimali ma il massimo consentito e' 2"
                 ),
                 // Length error without actual length
                 Arguments.of(
@@ -325,7 +468,7 @@ class FileExceptionHandlerServiceTest {
                 Arguments.of(
                         "Error while parsing file GDC-test.xml: SAXParseException: cvc-complex-type.2.4.a: " +
                                 "Invalid content was found starting with element 'pagine_totali'. One of '{pagina}' is expected.",
-                        "Elemento 'pagine_totali' non valido: è atteso 'pagina'"
+                        "Elemento 'pagine_totali' non valido: e' atteso l'elemento 'pagina'"
                 ),
                 // Complex type error - missing elements
                 Arguments.of(
@@ -353,7 +496,7 @@ class FileExceptionHandlerServiceTest {
                         "Error while parsing file GDC-test.xml: SAXParseException: cvc-enumeration-valid: " +
                                 "Value '2.5' is not facet-valid with respect to enumeration '[1.0, 1.1]'. " +
                                 "It must be a value from the enumeration.",
-                        "Il valore '2.5' non è tra i valori ammessi [1.0, 1.1]"
+                        "Il valore '2.5' non e' tra i valori ammessi [1.0, 1.1]"
                 ),
                 // Enumeration error - missing value
                 Arguments.of(
@@ -412,33 +555,4 @@ class FileExceptionHandlerServiceTest {
         assertNotNull(result);
     }
 
-    // ==================== TEST HELPER CLASSES ====================
-
-    private static class TestCsvBeanWithPosition {
-        @com.opencsv.bean.CsvBindByPosition(position = 0, required = true)
-        private String name;
-    }
-
-    private static class TestCsvBeanWithName {
-        @com.opencsv.bean.CsvBindByName(column = "email_address", required = true)
-        private String email;
-    }
-
-    private static class TestCsvBeanWithEmptyName {
-        @com.opencsv.bean.CsvBindByName(column = "", required = true)
-        private String username;
-    }
-
-    private static class TestCsvException extends CsvException {
-        public TestCsvException(String message) {
-            super(message);
-        }
-
-        public TestCsvException(String message, Throwable cause) {
-            super(message);
-            if (cause != null) {
-                initCause(cause);
-            }
-        }
-    }
 }
