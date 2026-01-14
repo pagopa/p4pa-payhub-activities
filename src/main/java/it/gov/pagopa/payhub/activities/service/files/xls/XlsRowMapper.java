@@ -62,7 +62,7 @@ public abstract class XlsRowMapper<D> {
 		if(cellValue != null && !cellValue.isBlank()) {
 			return biFunction.apply(cellName, cellValue);
 		} else {
-			throw new IllegalStateException("Xls Cell with name \"%s\" must not be null or blank".formatted(cellName));
+			throw new IllegalStateException("La cella con nome \"%s\" non puo' essere vuota".formatted(cellName));
 		}
 	}
 

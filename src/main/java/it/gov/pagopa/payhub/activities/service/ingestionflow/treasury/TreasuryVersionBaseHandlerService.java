@@ -13,10 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -43,14 +40,16 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
     protected abstract String getFileVersion();
 
     @Override
-    public Pair<IngestionFlowFileResult, List<Treasury>> handle(File input, IngestionFlowFile ingestionFlowFileDTO, int inputFileNumber) {
+    public Pair<IngestionFlowFileResult, List<Treasury>> handle(File input, IngestionFlowFile ingestionFlowFileDTO, int inputFileNumber, List<TreasuryErrorDTO> parsingErrors) {
         T unmarshalled;
         try {
             unmarshalled = unmarshall(input);
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using version handler {}: {}", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName(), e.getMessage());
 
-            FileExceptionHandlerService.XmlErrorDetails xmlErrorDetails = fileExceptionHandlerService.mapXmlParsingExceptionToErrorCodeAndMessage(e.getMessage());
+            FileExceptionHandlerService.XmlErrorDetails xmlErrorDetails =
+                    fileExceptionHandlerService.mapXmlParsingExceptionToErrorCodeAndMessage(e.getMessage());
+
             TreasuryErrorDTO unmarshallError = TreasuryErrorDTO.builder()
                     .fileName(ingestionFlowFileDTO.getFileName())
                     .billYear(null)
@@ -59,9 +58,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
                     .errorMessage(xmlErrorDetails.getErrorMessage())
                     .build();
 
-            List<TreasuryErrorDTO> errorDTOList = List.of(unmarshallError);
-
-            treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
+            parsingErrors.add(unmarshallError);
 
             return Pair.of(
                     IngestionFlowFileResult.builder()

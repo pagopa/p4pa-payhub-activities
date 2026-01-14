@@ -2,6 +2,8 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.treasury.TreasuryOpiInvalidFileException;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
@@ -27,13 +29,17 @@ class TreasuryOpiParserServiceTest {
 
     private TreasuryOpiParserService treasuryOpiParserService;
     private List<TreasuryVersionHandlerService> versionHandlerServices;
+    private TreasuryErrorsArchiverService treasuryErrorsArchiverService;
     private TreasuryService treasuryService;
+
+    private final ArrayList<TreasuryErrorDTO> parsingErrors = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
         versionHandlerServices = new ArrayList<>();
         treasuryService = mock(TreasuryService.class);
-        treasuryOpiParserService = new TreasuryOpiParserService(versionHandlerServices, treasuryService);
+        treasuryErrorsArchiverService = mock(TreasuryErrorsArchiverService.class);
+        treasuryOpiParserService = new TreasuryOpiParserService(versionHandlerServices, treasuryService, treasuryErrorsArchiverService);
     }
 
     @ParameterizedTest
@@ -54,7 +60,7 @@ class TreasuryOpiParserServiceTest {
                 .iuf(isIufPresent ? "Flow123" : null);
         Pair<IngestionFlowFileResult, List<Treasury>> handlerResult = Pair.of(new IngestionFlowFileResult(), List.of(treasuryDTO));
 
-        when(handler.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handlerResult);
+        when(handler.handle(file, ingestionFlowFileDTO, 1, parsingErrors)).thenReturn(handlerResult);
         when(treasuryService.insert(treasuryDTO)).thenReturn(treasuryDTO);
 
         // When
@@ -73,22 +79,49 @@ class TreasuryOpiParserServiceTest {
     @Test
     void testParseData_whenAllHandlersFail_thenThrowsException() {
         // Given
-        Path filePath = mock(Path.class);
-        File file = mock(File.class);
-        when(filePath.toFile()).thenReturn(file);
-
+        Path filePath = Path.of("build/prova.txt");
         IngestionFlowFile ingestionFlowFileDTO = new IngestionFlowFile();
+        ingestionFlowFileDTO.setFileName("testFile");
+
+        TreasuryErrorDTO treasuryError = TreasuryErrorDTO.builder()
+                .fileName("testFile")
+                .errorCode(FileErrorCode.XML_GENERIC_ERROR.name())
+                .errorMessage("Parse error")
+                .build();
 
         TreasuryVersionHandlerService handler1 = mock(TreasuryVersionHandlerService.class);
         TreasuryVersionHandlerService handler2 = mock(TreasuryVersionHandlerService.class);
         versionHandlerServices.addAll(List.of(handler1, handler2));
 
-        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Pair.of(new IngestionFlowFileResult(), null));
-        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Pair.of(new IngestionFlowFileResult(), null));
+        when(handler1.handle(any(File.class), eq(ingestionFlowFileDTO), eq(1), anyList()))
+                .thenAnswer(invocation -> {
+                    List<TreasuryErrorDTO> errors = invocation.getArgument(3);
+                    errors.add(treasuryError);
+                    return Pair.of(new IngestionFlowFileResult(), null);
+                });
 
-        // When & Then
-        assertThrows(TreasuryOpiInvalidFileException.class, () ->
-                treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1));
+        when(handler2.handle(any(File.class), eq(ingestionFlowFileDTO), eq(1), anyList()))
+                .thenAnswer(invocation -> {
+                    List<TreasuryErrorDTO> errors = invocation.getArgument(3);
+                    errors.add(treasuryError);
+                    return Pair.of(new IngestionFlowFileResult(), null);
+                });
+
+        // When
+        TreasuryOpiInvalidFileException exception = assertThrows(
+                TreasuryOpiInvalidFileException.class,
+                () -> treasuryOpiParserService.parseData(filePath, ingestionFlowFileDTO, 1)
+        );
+
+        //Then
+        assertTrue(exception.getMessage().contains("Cannot parse treasury Opi file"));
+
+        verify(treasuryErrorsArchiverService).writeErrors(
+                any(Path.class),
+                eq(ingestionFlowFileDTO),
+                argThat(errors -> errors.size() == 1 &&
+                        errors.stream().anyMatch(e -> e.getErrorCode().equals(FileErrorCode.XML_GENERIC_ERROR.name())))
+        );
     }
 
     @Test
@@ -110,9 +143,9 @@ class TreasuryOpiParserServiceTest {
                 .iuf("Flow456");
 
         Pair<IngestionFlowFileResult, List<Treasury>> handler1Result = Pair.of(new IngestionFlowFileResult(), List.of(treasuryDTO));
-        when(handler1.handle(file, ingestionFlowFileDTO, 1)).thenReturn(handler1Result);
+        when(handler1.handle(file, ingestionFlowFileDTO, 1, parsingErrors)).thenReturn(handler1Result);
 
-        when(handler2.handle(file, ingestionFlowFileDTO, 1)).thenReturn(Pair.of(new IngestionFlowFileResult(), Collections.emptyList()));
+        when(handler2.handle(file, ingestionFlowFileDTO, 1, parsingErrors)).thenReturn(Pair.of(new IngestionFlowFileResult(), Collections.emptyList()));
         when(treasuryService.insert(treasuryDTO)).thenReturn(treasuryDTO);
 
         // When

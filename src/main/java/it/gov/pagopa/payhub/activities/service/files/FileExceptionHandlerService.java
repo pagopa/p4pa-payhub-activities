@@ -72,70 +72,89 @@ public class FileExceptionHandlerService {
         }
     }
 
-    private FileExceptionHandlerService.CsvErrorDetails buildErrorDetailsFromCsvRequiredFields(CsvRequiredFieldEmptyException csvRequiredFieldEmptyException) {
-        String message = csvRequiredFieldEmptyException.getMessage();
+    private CsvErrorDetails buildErrorDetailsFromCsvRequiredFields(CsvRequiredFieldEmptyException exception) {
+        String message = exception.getMessage();
 
-        if (message != null && message.contains("Number of data fields does not match")) {
-            return createColumnCountMismatchError();
+        CsvErrorDetails messageBasedError = handleMessageBasedErrors(message);
+        if (messageBasedError != null) {
+            return messageBasedError;
         }
 
-        Field field = csvRequiredFieldEmptyException.getDestinationField();
+        return handleFieldBasedErrors(exception);
+    }
+
+    private CsvErrorDetails handleMessageBasedErrors(String message) {
+        if (message == null) {
+            return null;
+        }
+
+        if (message.contains("Number of data fields does not match")) {
+            return new CsvErrorDetails(FileErrorCode.CSV_COLUMN_COUNT_MISMATCH.name(),
+                    "Il numero di colonne nella riga non corrisponde al numero atteso");
+        }
+
+        if (message.contains("Header is missing required fields")) {
+            String fields = extractBetween(message, '[', ']');
+            return new CsvErrorDetails(FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(),
+                    fields != null ? String.format("Nell'header manca il campo obbligatorio '%s'", fields)
+                            : "Nell'header mancano uno o più campi obbligatori");
+        }
+
+        if (message.contains("is mandatory but no value was provided")) {
+            String field = extractBetween(message, '\'', '\'');
+            return new CsvErrorDetails(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                    field != null ? String.format("Il campo obbligatorio '%s' e' vuoto", field)
+                            : "Un campo obbligatorio e' vuoto o mancante");
+        }
+
+        return null;
+    }
+
+    private String extractBetween(String text, char startChar, char endChar) {
+        try {
+            int start = text.indexOf(startChar);
+            int end = text.indexOf(endChar, start + 1);
+            return (start != -1 && end > start) ? text.substring(start + 1, end).trim() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private CsvErrorDetails handleFieldBasedErrors(CsvRequiredFieldEmptyException exception) {
+        Field field = exception.getDestinationField();
+
         if (field == null) {
-            return createGenericMissingFieldError(message);
+            return new CsvErrorDetails(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                    "Un campo obbligatorio e' vuoto o mancante: " + exception.getMessage());
         }
 
-        CsvBindByPosition positionAnnotation = field.getAnnotation(CsvBindByPosition.class);
-        if (positionAnnotation != null) {
-            return createPositionBasedError(field.getName(), positionAnnotation.position());
+        CsvBindByPosition posAnnot = field.getAnnotation(CsvBindByPosition.class);
+        if (posAnnot != null) {
+            return new CsvErrorDetails(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                    String.format("Il campo obbligatorio '%s' alla posizione %d e' vuoto o mancante",
+                            field.getName(), posAnnot.position()));
         }
 
-        CsvBindByName nameAnnotation = field.getAnnotation(CsvBindByName.class);
-        if (nameAnnotation != null) {
-            return createNameBasedError(field.getName(), nameAnnotation.column(),
-                    csvRequiredFieldEmptyException.getLineNumber());
+        CsvBindByName nameAnnot = field.getAnnotation(CsvBindByName.class);
+        if (nameAnnot != null) {
+            return handleNameAnnotation(field.getName(), nameAnnot.column(), exception.getLineNumber());
         }
 
-        return createGenericMissingFieldError(message);
+        return new CsvErrorDetails(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                "Un campo obbligatorio e' vuoto o mancante: " + exception.getMessage());
     }
 
-    private CsvErrorDetails createColumnCountMismatchError() {
-        return new CsvErrorDetails(
-                FileErrorCode.CSV_COLUMN_COUNT_MISMATCH.name(),
-                "Il numero di colonne nella riga non corrisponde al numero atteso"
-        );
-    }
-
-    private CsvErrorDetails createPositionBasedError(String fieldName, int position) {
-        return new CsvErrorDetails(
-                FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
-                String.format("Il campo obbligatorio '%s' alla posizione %d è vuoto o mancante",
-                        fieldName, position)
-        );
-    }
-
-    private CsvErrorDetails createNameBasedError(String fieldName, String columnName, long lineNumber) {
+    private CsvErrorDetails handleNameAnnotation(String fieldName, String columnName, long lineNumber) {
         String displayName = columnName.isEmpty() ? fieldName : columnName;
 
         if (lineNumber == 0) {
-            return new CsvErrorDetails(
-                    FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(),
-                    String.format("Nell'header manca il campo obbligatorio '%s'", displayName)
-            );
+            return new CsvErrorDetails(FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(),
+                    String.format("Nell'header manca il campo obbligatorio '%s'", displayName));
         }
 
-        return new CsvErrorDetails(
-                FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
-                String.format("Il campo obbligatorio '%s' è vuoto", displayName)
-        );
+        return new CsvErrorDetails(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
+                String.format("Il campo obbligatorio '%s' e' vuoto", displayName));
     }
-
-    private CsvErrorDetails createGenericMissingFieldError(String message) {
-        return new CsvErrorDetails(
-                FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(),
-                "Un campo obbligatorio è vuoto o mancante: " + message
-        );
-    }
-
 
     //XML
     @Data
@@ -192,7 +211,7 @@ public class FileExceptionHandlerService {
         String expected = extract(msg, "One of '\\{([^}]+)\\}'");
         if (element != null && expected != null) {
             return new XmlErrorDetails(FileErrorCode.XML_MISSING_REQUIRED_FIELD.name(),
-                    String.format("Elemento '%s' non valido: è atteso '%s'", element, expected));
+                    String.format("Elemento '%s' non valido: e' atteso l'elemento '%s'", element, expected));
         }
         return new XmlErrorDetails(FileErrorCode.XML_MISSING_REQUIRED_FIELD.name(),
                 "Errore di validazione XML: struttura complessa non valida");
@@ -202,7 +221,7 @@ public class FileExceptionHandlerService {
         String val = extract(msg, "'([^']+)' is not a valid value");
         String datatype = extract(msg, "for '([^']+)'");
         return new XmlErrorDetails(FileErrorCode.XML_VALIDATION_ERROR.name(),
-                String.format("Il valore '%s' non è valido per il tipo '%s'", val, datatype));
+                String.format("Il valore '%s' non e' valido per il tipo '%s'", val, datatype));
     }
 
     private static XmlErrorDetails handleLengthError(String msg, String type) {
@@ -224,7 +243,7 @@ public class FileExceptionHandlerService {
     }
 
     private static XmlErrorDetails handleRangeError(String msg, String value, String type) {
-        String op = msg.contains("max") ? "supera il massimo" : "è sotto il minimo";
+        String op = msg.contains("max") ? "supera il massimo" : "e' sotto il minimo";
         String limit = extract(msg, "(?:maxInclusive|minInclusive|maxExclusive|minExclusive) '([^']+)'");
 
         String base = String.format("Il valore '%s' %s consentito '%s'", value, op, limit);
@@ -237,7 +256,7 @@ public class FileExceptionHandlerService {
         String enumValues = extract(msg, "enumeration '\\[([^\\]]+)\\]'");
         if (value != null && enumValues != null) {
             return new XmlErrorDetails(FileErrorCode.XML_CONSTRAINT_VIOLATION.name(),
-                    String.format("Il valore '%s' non è tra i valori ammessi [%s]", value, enumValues));
+                    String.format("Il valore '%s' non e' tra i valori ammessi [%s]", value, enumValues));
         }
         return new XmlErrorDetails(FileErrorCode.XML_CONSTRAINT_VIOLATION.name(),
                 "Errore di validazione: valore non tra quelli ammessi");
@@ -248,7 +267,7 @@ public class FileExceptionHandlerService {
             Matcher m = Pattern.compile("has (\\d+) fraction.*limited to (\\d+)").matcher(msg);
             if (m.find()) {
                 return new XmlErrorDetails(FileErrorCode.XML_VALIDATION_ERROR.name(),
-                        String.format("Il valore '%s' ha %s decimali ma il massimo consentito è %s",
+                        String.format("Il valore '%s' ha %s decimali ma il massimo consentito e' %s",
                         value, m.group(1), m.group(2)));
             }
         }
