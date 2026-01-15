@@ -13,6 +13,8 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.OffsetDateTime;
+
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +59,7 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	void whenGetPaymentsReportingApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
 			accessToken -> pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-					.getPaymentsReportingList(1L),
+					.getPaymentsReportingList(1L, OffsetDateTime.now()),
 			new ParameterizedTypeReference<>() {},
 			pagoPaPaymentsApisHolder::unload);
 	}

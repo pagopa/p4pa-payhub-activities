@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,11 +35,12 @@ class PaymentsReportingPagoPaClientTest {
 	void testGetPaymentsReportingList() {
 		// Given
 		Long organizationId = 1L;
+		OffsetDateTime latestReportDate = null; //TODO null will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
 		String accessToken = "accessToken";
 		PaymentsReportingIdDTO expectedResponse = new PaymentsReportingIdDTO();
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.getPaymentsReportingList(organizationId)).thenReturn(List.of(expectedResponse));
+		when(mockApi.getPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
 
 		// When
 		List<PaymentsReportingIdDTO> result = client.getPaymentsReportingList(organizationId, accessToken);
@@ -46,7 +48,7 @@ class PaymentsReportingPagoPaClientTest {
 		// Then
 		assertEquals(List.of(expectedResponse), result);
 		verify(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken), times(1))
-			.getPaymentsReportingList(organizationId);
+			.getPaymentsReportingList(organizationId, latestReportDate);
 	}
 
 	@Test
@@ -55,15 +57,17 @@ class PaymentsReportingPagoPaClientTest {
 		Long organizationId = 1L;
 		String flowId = "flowId";
 		String fileName = "fileName";
+		Long revision = 1L;
+		String pspId = "pspId";
 		String accessToken = "accessToken";
 		Long expectedResponse = 123L;
 
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.fetchPaymentReporting(organizationId, flowId, fileName)).thenReturn(expectedResponse);
+		when(mockApi.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId)).thenReturn(expectedResponse);
 
 		// When
-		Long result = client.fetchPaymentReporting(organizationId, flowId, fileName, accessToken);
+		Long result = client.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId, accessToken);
 
 		// Then
 		assertEquals(expectedResponse, result);
