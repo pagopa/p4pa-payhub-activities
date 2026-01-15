@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
+import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmentsExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
@@ -10,6 +11,7 @@ import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -17,7 +19,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Lazy
@@ -29,17 +33,19 @@ public class IUVArchivingExportFileService {
     private final FoldersPathsConfig foldersPathsConfig;
     private final IUVInstallmentsExportFlowFileDTOMapper iuvMapper;
     private final IngestionFlowFileService ingestionFlowFileService;
+    private final DebtPositionTypeOrgService debtPositionTypeOrgService;
 
     public IUVArchivingExportFileService(CsvService csvService,
                                          FileArchiverService fileArchiverService,
                                          FoldersPathsConfig foldersPathsConfig,
                                          IUVInstallmentsExportFlowFileDTOMapper iuvMapper,
-                                         IngestionFlowFileService ingestionFlowFileService) {
+                                         IngestionFlowFileService ingestionFlowFileService, DebtPositionTypeOrgService debtPositionTypeOrgService) {
         this.csvService = csvService;
         this.fileArchiverService = fileArchiverService;
         this.foldersPathsConfig = foldersPathsConfig;
         this.iuvMapper = iuvMapper;
         this.ingestionFlowFileService = ingestionFlowFileService;
+        this.debtPositionTypeOrgService = debtPositionTypeOrgService;
     }
 
     public Path executeExport(List<DebtPositionDTO> debtPositions, Long ingestionFlowFileId) {
@@ -76,12 +82,16 @@ public class IUVArchivingExportFileService {
     }
 
     private List<IUVInstallmentsExportFlowFileDTO> filterAndMap(List<DebtPositionDTO> debtPositions, Long ingestionFlowFileId) {
+        Map<Long, DebtPositionTypeOrg> dpTypeOrgMap = new HashMap<>();
         return debtPositions.stream()
                 .flatMap(dp -> dp.getPaymentOptions().stream()
                                 .flatMap(po ->
                                         po.getInstallments().stream()
                                                 .filter(inst -> ingestionFlowFileId.equals(inst.getIngestionFlowFileId()))
-                                                .map(inst -> iuvMapper.map(inst, dp.getDebtPositionTypeOrgId()))
+                                                .map(inst -> iuvMapper.map(
+                                                        inst,
+                                                        dpTypeOrgMap.computeIfAbsent(dp.getDebtPositionTypeOrgId(), debtPositionTypeOrgService::getById)
+                                                ))
                                 ))
                 .toList();
     }
