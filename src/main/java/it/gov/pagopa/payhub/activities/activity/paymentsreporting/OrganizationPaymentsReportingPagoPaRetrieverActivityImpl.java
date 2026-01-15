@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 			.filter(idDTO -> !alreadyProcessedFileNames.contains(idDTO.getPaymentsReportingFileName()))
 			.map(idDTO -> {
 				Organization organization = organizationService.getOrganizationById(organizationId).orElseThrow(() -> new IllegalArgumentException("Organization doesn't exists: " + organizationId));
-				return paymentsReportingPagoPaService.fetchPaymentReporting(organization, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName());
+				return paymentsReportingPagoPaService.fetchPaymentReporting(organization, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName(), Optional.ofNullable(idDTO.getRevision()).orElse(0).longValue(), null); //TODO null will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
             })
 			.toList();
 	}

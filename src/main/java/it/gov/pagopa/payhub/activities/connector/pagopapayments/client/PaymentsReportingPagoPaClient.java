@@ -17,11 +17,12 @@ public class PaymentsReportingPagoPaClient {
 	}
 
 	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, String accessToken) {
-		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken).getPaymentsReportingList(organizationId);
+		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
+				.getPaymentsReportingList(organizationId, null); //TODO will be removed from OpenAPI payments-reporting in https://pagopa.atlassian.net/browse/P4ADEV-4297
 	}
 
-	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, String accessToken) {
+	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName);
+				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, revision, pspId);
 	}
 }
