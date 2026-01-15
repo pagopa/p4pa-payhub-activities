@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
-import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.PaymentsReportingPagoPaClient;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -27,13 +26,11 @@ class PaymentsReportingPagoPaServiceTest {
 	private PaymentsReportingPagoPaClient paymentsReportingPagoPaClientMock;
 	@Mock
 	private AuthnService authnServiceMock;
-	@Mock
-	private PaymentsReportingService paymentsReportingService;
 
 	private PaymentsReportingPagoPaService service;
 
 	@BeforeEach
-	void setUp() { service = new PaymentsReportingPagoPaServiceImpl(paymentsReportingPagoPaClientMock, paymentsReportingService, authnServiceMock); }
+	void setUp() { service = new PaymentsReportingPagoPaServiceImpl(paymentsReportingPagoPaClientMock, authnServiceMock); }
 
 	@AfterEach
 	void tearDown() {
@@ -45,11 +42,9 @@ class PaymentsReportingPagoPaServiceTest {
 		// Given
 		String accessToken = "accessToken";
 		Long organizationId = 1L;
-		OffsetDateTime latestFlowDate = OffsetDateTime.now();
 		List<PaymentsReportingIdDTO> expectedResponse = List.of(new PaymentsReportingIdDTO());
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(paymentsReportingService.findLatestFlowDate(organizationId)).thenReturn(latestFlowDate);
-		when(paymentsReportingPagoPaClientMock.getPaymentsReportingList(organizationId, latestFlowDate, accessToken)).thenReturn(expectedResponse);
+		when(paymentsReportingPagoPaClientMock.getPaymentsReportingList(organizationId, accessToken)).thenReturn(expectedResponse);
 		// When
 		List<PaymentsReportingIdDTO> result = service.getPaymentsReportingList(organizationId);
 

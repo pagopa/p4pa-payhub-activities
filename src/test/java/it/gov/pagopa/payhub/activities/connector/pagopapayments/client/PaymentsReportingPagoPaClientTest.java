@@ -35,7 +35,7 @@ class PaymentsReportingPagoPaClientTest {
 	void testGetPaymentsReportingList() {
 		// Given
 		Long organizationId = 1L;
-		OffsetDateTime latestReportDate = OffsetDateTime.now();
+		OffsetDateTime latestReportDate = null; //TODO null will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
 		String accessToken = "accessToken";
 		PaymentsReportingIdDTO expectedResponse = new PaymentsReportingIdDTO();
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
@@ -43,7 +43,7 @@ class PaymentsReportingPagoPaClientTest {
 		when(mockApi.getPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
 
 		// When
-		List<PaymentsReportingIdDTO> result = client.getPaymentsReportingList(organizationId, latestReportDate, accessToken);
+		List<PaymentsReportingIdDTO> result = client.getPaymentsReportingList(organizationId, accessToken);
 
 		// Then
 		assertEquals(List.of(expectedResponse), result);

@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -53,11 +52,6 @@ public class PaymentsReportingServiceImpl implements PaymentsReportingService {
             .stream()
             .sorted(Comparator.comparing(PaymentsReporting::getIuv))
             .toList();
-    }
-
-    @Override
-    public OffsetDateTime findLatestFlowDate(Long organizationId) {
-        return paymentsReportingClient.findLatestFlowDate(organizationId, authnService.getAccessToken());
     }
 
 }

@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Lazy
@@ -17,9 +16,9 @@ public class PaymentsReportingPagoPaClient {
 		this.pagoPaPaymentsApisHolder = pagoPaPaymentsApisHolder;
 	}
 
-	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, OffsetDateTime latestReportDate, String accessToken) {
+	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.getPaymentsReportingList(organizationId, latestReportDate);
+				.getPaymentsReportingList(organizationId, null); //TODO will be removed from OpenAPI payments-reporting in https://pagopa.atlassian.net/browse/P4ADEV-4297
 	}
 
 	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
