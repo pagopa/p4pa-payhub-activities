@@ -59,13 +59,15 @@ class PaymentsReportingPagoPaServiceTest {
 		Organization organization = OrganizationFaker.buildOrganizationDTO();
 		String flowId = "flowId";
 		String fileName = "fileName";
+		Long revision = 1L;
+		String pspId = "pspId";
 		Long expectedResponse = 123L;
 
 		when(authnServiceMock.getAccessToken(organization.getIpaCode())).thenReturn(accessToken);
-		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organization.getOrganizationId(), flowId, fileName, accessToken)).thenReturn(expectedResponse);
+		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organization.getOrganizationId(), flowId, fileName, revision, pspId, accessToken)).thenReturn(expectedResponse);
 
 		// When
-		Long result = service.fetchPaymentReporting(organization, flowId, fileName);
+		Long result = service.fetchPaymentReporting(organization, flowId, fileName, revision, pspId);
 
 		// Then
 		assertEquals(expectedResponse, result);

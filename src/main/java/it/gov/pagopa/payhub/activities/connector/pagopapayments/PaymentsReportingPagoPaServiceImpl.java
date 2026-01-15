@@ -29,8 +29,8 @@ public class PaymentsReportingPagoPaServiceImpl implements PaymentsReportingPago
 	}
 
 	@Override
-	public Long fetchPaymentReporting(Organization organization, String pagopaPaymentsReportingId, String fileName) {
-		log.info("Fetching payment reporting for organizationId: {} and pagopaPaymentsReportingId: {} asking to store it with name: {}", organization.getOrganizationId(), pagopaPaymentsReportingId, fileName);
-		return paymentsReportingPagoPaClient.fetchPaymentReporting(organization.getOrganizationId(), pagopaPaymentsReportingId, fileName, authnService.getAccessToken(organization.getIpaCode()));
+	public Long fetchPaymentReporting(Organization organization, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId) {
+		log.info("Fetching payment reporting for organizationId: {} and pagopaPaymentsReportingId: {} and revision: {} and pspId: {} asking to store it with name: {}", organization.getOrganizationId(), pagopaPaymentsReportingId, fileName, revision, pspId);
+		return paymentsReportingPagoPaClient.fetchPaymentReporting(organization.getOrganizationId(), pagopaPaymentsReportingId, fileName, revision, pspId, authnService.getAccessToken(organization.getIpaCode()));
 	}
 }

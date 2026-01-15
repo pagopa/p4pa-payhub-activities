@@ -57,11 +57,13 @@ class OrganizationPaymentsReportingPagoPaListRetrieverActivityImplTest {
         PaymentsReportingIdDTO theDayBeforeYesterdayPaymentsReportingId = PaymentsReportingIdDTO.builder()
                 .pagopaPaymentsReportingId(idFlow1)
                 .flowDateTime(theDayBeforeYesterday)
+                .revision(1)
                 .paymentsReportingFileName(idFlow1 + theDayBeforeYesterday + ".xml")
                 .build();
         PaymentsReportingIdDTO yesterdayPaymentsReportingId = PaymentsReportingIdDTO.builder()
                 .pagopaPaymentsReportingId(idFlow2)
                 .flowDateTime(yesterday)
+                .revision(1)
                 .paymentsReportingFileName(idFlow2 + yesterday + ".xml")
                 .build();
         IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile();
