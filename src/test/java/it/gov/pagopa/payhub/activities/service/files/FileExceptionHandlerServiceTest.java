@@ -36,7 +36,7 @@ class FileExceptionHandlerServiceTest {
     void testCsvRequiredFieldEmpty_MessageBased(String message, String expectedErrorCode, String expectedErrorMessage) {
         CsvRequiredFieldEmptyException exception = new CsvRequiredFieldEmptyException(message);
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(expectedErrorCode, result.getErrorCode());
         assertEquals(expectedErrorMessage, result.getErrorMessage());
@@ -66,7 +66,7 @@ class FileExceptionHandlerServiceTest {
                 Arguments.of(
                         "Header is missing required fields",
                         FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(),
-                        "Nell'header mancano uno o più campi obbligatori"
+                        "Nell'header mancano uno o piu' campi obbligatori"
                 ),
                 // Mandatory field - with field name
                 Arguments.of(
@@ -99,7 +99,7 @@ class FileExceptionHandlerServiceTest {
                 "Field 'name' is required"
         );
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
         assertEquals("Il campo obbligatorio 'name' alla posizione 0 e' vuoto o mancante", result.getErrorMessage());
@@ -116,7 +116,7 @@ class FileExceptionHandlerServiceTest {
         );
         exception.setLineNumber(0); // Header line
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_HEADER.name(), result.getErrorCode());
         assertEquals("Nell'header manca il campo obbligatorio 'email_address'", result.getErrorMessage());
@@ -133,7 +133,7 @@ class FileExceptionHandlerServiceTest {
         );
         exception.setLineNumber(5); // Data line
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
         assertEquals("Il campo obbligatorio 'email_address' e' vuoto", result.getErrorMessage());
@@ -150,7 +150,7 @@ class FileExceptionHandlerServiceTest {
         );
         exception.setLineNumber(1);
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
         assertEquals("Il campo obbligatorio 'username' e' vuoto", result.getErrorMessage());
@@ -166,7 +166,7 @@ class FileExceptionHandlerServiceTest {
                 "Field 'data' is required"
         );
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
         assertEquals("Un campo obbligatorio e' vuoto o mancante: Field 'data' is required", result.getErrorMessage());
@@ -179,7 +179,7 @@ class FileExceptionHandlerServiceTest {
                 sourceValue, destinationClass, "Cannot convert"
         );
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_DATA_TYPE_MISMATCH.name(), result.getErrorCode());
         assertEquals(expectedMessage, result.getErrorMessage());
@@ -210,7 +210,7 @@ class FileExceptionHandlerServiceTest {
     void testCsvValidationException(String message, String expectedMessage) {
         CsvValidationException exception = new CsvValidationException(message);
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_VALIDATION_ERROR.name(), result.getErrorCode());
         assertEquals(expectedMessage, result.getErrorMessage());
@@ -234,7 +234,7 @@ class FileExceptionHandlerServiceTest {
     void testCsvConstraintViolationException(String message, String expectedMessage) {
         CsvConstraintViolationException exception = new CsvConstraintViolationException(message);
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_CONSTRAINT_VIOLATION.name(), result.getErrorCode());
         assertEquals(expectedMessage, result.getErrorMessage());
@@ -259,7 +259,7 @@ class FileExceptionHandlerServiceTest {
         RuntimeException cause = causeMessage != null ? new RuntimeException(causeMessage) : null;
         CsvException exception = new TestCsvException(message, cause);
 
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(exception);
 
         assertEquals(FileErrorCode.CSV_GENERIC_ERROR.name(), result.getErrorCode());
         assertEquals(expectedMessage, result.getErrorMessage());
@@ -308,7 +308,7 @@ class FileExceptionHandlerServiceTest {
 
     @Test
     void testCsvNullException() {
-        FileExceptionHandlerService.CsvErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(null);
+        FileExceptionHandlerService.ErrorDetails result = service.mapCsvExceptionToErrorCodeAndMessage(null);
 
         assertEquals(FileErrorCode.CSV_GENERIC_ERROR.name(), result.getErrorCode());
         assertEquals("Errore generico nella lettura del file", result.getErrorMessage());
@@ -354,7 +354,7 @@ class FileExceptionHandlerServiceTest {
     @ParameterizedTest
     @MethodSource("provideXmlValidationErrorTestCases")
     void testXmlValidationErrors(String message, String expectedErrorMessage) {
-        FileExceptionHandlerService.XmlErrorDetails result =
+        FileExceptionHandlerService.ErrorDetails result =
                 service.mapXmlParsingExceptionToErrorCodeAndMessage(message);
 
         assertEquals(FileErrorCode.XML_VALIDATION_ERROR.name(), result.getErrorCode());
@@ -457,7 +457,7 @@ class FileExceptionHandlerServiceTest {
     @ParameterizedTest
     @MethodSource("provideXmlMissingRequiredFieldTestCases")
     void testXmlMissingRequiredFieldErrors(String message, String expectedErrorMessage) {
-        FileExceptionHandlerService.XmlErrorDetails result =
+        FileExceptionHandlerService.ErrorDetails result =
                 service.mapXmlParsingExceptionToErrorCodeAndMessage(message);
 
         assertEquals(FileErrorCode.XML_MISSING_REQUIRED_FIELD.name(), result.getErrorCode());
@@ -484,7 +484,7 @@ class FileExceptionHandlerServiceTest {
     @ParameterizedTest
     @MethodSource("provideXmlConstraintViolationTestCases")
     void testXmlConstraintViolationErrors(String message, String expectedErrorMessage) {
-        FileExceptionHandlerService.XmlErrorDetails result =
+        FileExceptionHandlerService.ErrorDetails result =
                 service.mapXmlParsingExceptionToErrorCodeAndMessage(message);
 
         assertEquals(FileErrorCode.XML_CONSTRAINT_VIOLATION.name(), result.getErrorCode());
@@ -512,7 +512,7 @@ class FileExceptionHandlerServiceTest {
     @ParameterizedTest
     @MethodSource("provideXmlGenericErrorTestCases")
     void testXmlGenericErrors(String message, String expectedErrorMessage) {
-        FileExceptionHandlerService.XmlErrorDetails result =
+        FileExceptionHandlerService.ErrorDetails result =
                 service.mapXmlParsingExceptionToErrorCodeAndMessage(message);
 
         assertEquals(FileErrorCode.XML_GENERIC_ERROR.name(), result.getErrorCode());
@@ -542,7 +542,7 @@ class FileExceptionHandlerServiceTest {
     @Test
     void testExtractTechnicalMessage_WithSAXParseException() {
         String message = "Error while parsing file test.xml: SAXParseException: cvc-pattern-valid: some error";
-        FileExceptionHandlerService.XmlErrorDetails result =
+        FileExceptionHandlerService.ErrorDetails result =
                 service.mapXmlParsingExceptionToErrorCodeAndMessage(message);
 
         assertNotNull(result);
@@ -551,7 +551,7 @@ class FileExceptionHandlerServiceTest {
     @Test
     void testExtractTechnicalMessage_WithoutSAXParseException() {
         String message = "Error while parsing file test.xml: cvc-pattern-valid: some error";
-        FileExceptionHandlerService.XmlErrorDetails result =
+        FileExceptionHandlerService.ErrorDetails result =
                 service.mapXmlParsingExceptionToErrorCodeAndMessage(message);
 
         assertNotNull(result);

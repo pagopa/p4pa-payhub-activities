@@ -60,17 +60,12 @@ class DebtPositionTypeOrgProcessingServiceTest {
     private OrganizationService organizationServiceMock;
     @Mock
     private OrganizationService organizationServiceSuperMock;
-    @Mock
-    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     @Mock
     private DebtPositionTypeOrgProcessingService service;
-
-    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
-
     @BeforeEach
     void setUp() {
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
         service = new DebtPositionTypeOrgProcessingService(
                 mapperMock,
                 errorsArchiverServiceMock,
@@ -78,7 +73,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 debtPositionTypeServiceMock,
                 organizationServiceMock,
                 organizationServiceSuperMock,
-                fileExceptionHandlerServiceMock
+                fileExceptionHandlerService
         );
     }
 
@@ -198,18 +193,14 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 .thenReturn(collectionModel);
 
         Mockito.when(debtPositionTypeOrgServiceMock.createDebtPositionTypeOrg(mappedDebtPosTypeOrg))
-                .thenThrow(new RuntimeException("Processing error"));
+                .thenThrow(new RuntimeException("[DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS] debt position type org already exists"));
 
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
-        CsvException exception = new CsvException("DUMMYERROR");
-        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-                .thenReturn(csvErrorDetails);
-
         // When
         DebtPositionTypeOrgIngestionFlowFileResult result = service.processDebtPositionTypeOrg(
-                Stream.of(debtPositionTypeOrgIngestionFlowFileDTO).iterator(), List.of(exception),
+                Stream.of(debtPositionTypeOrgIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -220,8 +211,9 @@ class DebtPositionTypeOrgProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, "CSV_GENERIC_ERROR", "Errore"),
-                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeOrgIngestionFlowFileDTO.getCode(),1L, 2L, "PROCESS_EXCEPTION", "Processing error")
+                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
+                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeOrgIngestionFlowFileDTO.getCode(),1L, 2L,
+                        FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.name(), FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.getMessage())
         )));
         Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
         Mockito.verify(mapperMock).map(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());

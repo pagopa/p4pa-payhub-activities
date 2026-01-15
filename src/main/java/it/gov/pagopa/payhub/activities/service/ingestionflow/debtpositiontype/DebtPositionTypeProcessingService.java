@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontype.DebtPositionTypeMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -31,6 +32,7 @@ public class DebtPositionTypeProcessingService extends
 
     private final DebtPositionTypeMapper debtPositionTypeMapper;
     private final DebtPositionTypeService debtPositionTypeService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public DebtPositionTypeProcessingService(
             DebtPositionTypeMapper debtPositionTypeMapper,
@@ -40,6 +42,7 @@ public class DebtPositionTypeProcessingService extends
         super(debtPositionTypeErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.debtPositionTypeMapper = debtPositionTypeMapper;
         this.debtPositionTypeService = debtPositionTypeService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
 
@@ -91,8 +94,9 @@ public class DebtPositionTypeProcessingService extends
             if (!CollectionUtils.isEmpty(debtPositionTypeList)) {
                 DebtPositionTypeErrorDTO error = new DebtPositionTypeErrorDTO(
                         ingestionFlowFile.getFileName(), debtPositionTypeDTO.getDebtPositionTypeCode(),
-                        debtPositionTypeDTO.getBrokerCf(), lineNumber, "DEBT_POSITION_TYPE_ALREADY_EXISTS",
-                        "Debt position type already exists");
+                        debtPositionTypeDTO.getBrokerCf(), lineNumber,
+                        FileErrorCode.DEBT_POSITION_TYPE_ALREADY_EXISTS.name(),
+                        FileErrorCode.DEBT_POSITION_TYPE_ALREADY_EXISTS.getMessage());
                 errorList.add(error);
                 return false;
             }
@@ -103,10 +107,11 @@ public class DebtPositionTypeProcessingService extends
         } catch (Exception e) {
             log.error("Error processing debt position type with type code {}: {}",
                     debtPositionTypeDTO.getDebtPositionTypeCode(), e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             DebtPositionTypeErrorDTO error = new DebtPositionTypeErrorDTO(
                     ingestionFlowFile.getFileName(), debtPositionTypeDTO.getDebtPositionTypeCode(),
                     debtPositionTypeDTO.getBrokerCf(),
-                    lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;

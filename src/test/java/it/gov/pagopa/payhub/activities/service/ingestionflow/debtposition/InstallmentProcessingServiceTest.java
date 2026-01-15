@@ -47,23 +47,19 @@ class InstallmentProcessingServiceTest {
     private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
     @Mock
     private OrganizationService organizationServiceMock;
-    @Mock
-    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     private InstallmentProcessingService service;
 
-    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
-
     @BeforeEach
     void setUp(){
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
         service = new InstallmentProcessingService(
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
                 dpInstallmentsWorkflowCompletionServiceMock,
                 organizationServiceMock,
-                fileExceptionHandlerServiceMock
+                fileExceptionHandlerService
                 );
     }
 
@@ -195,19 +191,15 @@ class InstallmentProcessingServiceTest {
                 Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 2L, 1L, ingestionFlowFile.getFileName()))
                 .thenReturn(installmentSynchronizeDTO);
 
-        Mockito.doThrow(new RestClientException("Error synchronizing the installment"))
+        Mockito.doThrow(new RestClientException("[DEBT_POSITION_NOT_FOUND] debt position not found"))
                         .when(debtPositionServiceMock).installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
         Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
-        CsvException exception = new CsvException("DUMMYERROR");
-        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-                .thenReturn(csvErrorDetails);
-
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(exception),
+                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -219,8 +211,10 @@ class InstallmentProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
         verify(installmentErrorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, "CSV_GENERIC_ERROR", "Errore"),
-                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(), installmentSynchronizeDTO.getIud(), null, 2L, "PROCESS_EXCEPTION", "Error synchronizing the installment")
+                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
+                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(),
+                        installmentSynchronizeDTO.getIud(), null, 2L,
+                        FileErrorCode.DEBT_POSITION_NOT_FOUND.name(), FileErrorCode.DEBT_POSITION_NOT_FOUND.getMessage())
         ));
     }
 }

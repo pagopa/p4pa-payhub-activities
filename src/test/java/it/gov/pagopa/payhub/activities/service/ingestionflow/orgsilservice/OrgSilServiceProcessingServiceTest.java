@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.orgsilservice.OrgSilServiceMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilService;
@@ -51,16 +52,14 @@ class OrgSilServiceProcessingServiceTest {
 
   @Mock
   private OrgSilServiceService orgSilServiceServiceMock;
-
-  @Mock
-  private FileExceptionHandlerService fileExceptionHandlerServiceMock;
   
   private OrgSilServiceProcessingService service;
 
   @BeforeEach
   void setUp() {
+    FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
     service = new OrgSilServiceProcessingService(mapperMock, errorsArchiverServiceMock,
-        organizationServiceMock, orgSilServiceServiceMock, fileExceptionHandlerServiceMock);
+        organizationServiceMock, orgSilServiceServiceMock, fileExceptionHandlerService);
   }
 
   @Test
@@ -198,8 +197,8 @@ class OrgSilServiceProcessingServiceTest {
     Assertions.assertEquals("IPA_NOT_FOUND", error.getIpaCode());
     Assertions.assertEquals("TestApp", error.getApplicationName());
     Assertions.assertEquals(lineNumber, error.getRowNumber());
-    Assertions.assertEquals("ORGANIZATION_IPA_DOES_NOT_MATCH", error.getErrorCode());
-    Assertions.assertTrue(error.getErrorMessage().contains("Organization IPA code IPA_NOT_FOUND does not match with the one in the ingestion flow file IPA_CODE"));
+    Assertions.assertEquals(FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(), error.getErrorCode());
+    Assertions.assertEquals("Il codice IPA IPA_NOT_FOUND dell'ente non corrisponde a quello del file IPA_CODE", error.getErrorMessage());
   }
 
   @Test

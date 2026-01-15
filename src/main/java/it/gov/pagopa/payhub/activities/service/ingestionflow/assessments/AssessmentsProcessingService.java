@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
@@ -43,6 +44,7 @@ public class AssessmentsProcessingService extends
     private final InstallmentService installmentService;
     private final ReceiptService receiptService;
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public AssessmentsProcessingService(ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService, OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService, AssessmentsService assessmentsService, AssessmentsDetailService assessmentsDetailService, AssessmentsDetailMapper assessmentsDetailMapper, InstallmentService installmentService, ReceiptService receiptService, DebtPositionTypeOrgService debtPositionTypeOrgService) {
         super(errorArchiverService, organizationService, fileExceptionHandlerService);
@@ -52,6 +54,7 @@ public class AssessmentsProcessingService extends
         this.installmentService = installmentService;
         this.receiptService = receiptService;
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public AssessmentsIngestionFlowFileResult processAssessments(
@@ -81,16 +84,14 @@ public class AssessmentsProcessingService extends
         try {
             String ipa = ingestionFlowFileResult.getIpaCode();
             if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
-                String errorMessage = String.format(
-                        "Organization IPA code %s does not match with the one in the ingestion flow file %s",
-                        row.getOrganizationIpaCode(), ipa);
-                log.error(errorMessage);
+                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
                 AssessmentsErrorDTO error = new AssessmentsErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(), "ORGANIZATION_IPA_DOES_NOT_MATCH", errorMessage);
+                        row.getOrganizationIpaCode(),
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
                 errorList.add(error);
                 return false;
-
             }
 
             Optional<Organization> organizationOptional = organizationService.getOrganizationByIpaCode(row.getOrganizationIpaCode());
@@ -98,11 +99,11 @@ public class AssessmentsProcessingService extends
 
             if (organizationOptional.isEmpty()) {
                 log.error("Organization with IPA code {} does not exist", row.getOrganizationIpaCode());
-                String errorMessage = String.format(
-                        "Organization with IPA code %s does not exist", row.getOrganizationIpaCode());
                 AssessmentsErrorDTO error = new AssessmentsErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(), "ORGANIZATION_IPA_DOES_NOT_EXISTS", errorMessage);
+                        row.getOrganizationIpaCode(),
+                        FileErrorCode.ORGANIZATION_IPA_DOES_NOT_EXISTS.name(),
+                        FileErrorCode.ORGANIZATION_IPA_DOES_NOT_EXISTS.format(row.getOrganizationIpaCode()));
                 errorList.add(error);
                 return false;
             } else
@@ -112,11 +113,11 @@ public class AssessmentsProcessingService extends
                     row.getIud(), List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED));
             if (collectionInstallment.getEmbedded().getInstallmentNoPIIs().isEmpty()) {
                 log.error("Debt position with IUD {} not found for organization {}", row.getIud(), organization.getOrganizationId());
-                String errorMessage = String.format(
-                        "Debt position with IUD %s not found for organization %s", row.getIud(), organization.getOrganizationId());
                 AssessmentsErrorDTO error = new AssessmentsErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(), "DEBT_POSITION_NOT_FOUND", errorMessage);
+                        row.getOrganizationIpaCode(),
+                        FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.name(),
+                        FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.format(row.getIud()));
                 errorList.add(error);
                 return false;
             }
@@ -131,10 +132,11 @@ public class AssessmentsProcessingService extends
             DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService.getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(), row.getDebtPositionTypeOrgCode());
             if (debtPositionTypeOrg == null) {
                 log.error("Debt position type org not found for org {} and code {}", organization.getOrganizationId(), row.getDebtPositionTypeOrgCode());
-                String errorMessage = String.format("Debt position type org not found for org %s and code %s", organization.getOrganizationId(), row.getDebtPositionTypeOrgCode());
                 AssessmentsErrorDTO error = new AssessmentsErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(), "DEBT_POSITION_TYPE_ORG_NOT_FOUND", errorMessage);
+                        row.getOrganizationIpaCode(),
+                        FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.name(),
+                        FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.format(row.getDebtPositionTypeOrgCode()));
                 errorList.add(error);
                 return false;
             }
@@ -165,12 +167,13 @@ public class AssessmentsProcessingService extends
 
         } catch (Exception e) {
             log.error("Error processing row {} in file {}: {}", lineNumber, ingestionFlowFile.getFileName(), e.getMessage(), e);
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             AssessmentsErrorDTO error = new AssessmentsErrorDTO(
                     ingestionFlowFile.getFileName(),
                     lineNumber,
                     row.getAssessmentCode(),
                     row.getOrganizationIpaCode(),
-                    "PROCESS_EXCEPTION", e.getMessage());
+                    errorDetails.getErrorCode(), errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;

@@ -54,19 +54,17 @@ class TreasuryXlsProcessingServiceTest {
 	@Mock
 	private TreasuryService treasuryServiceMock;
 
-	@Mock
-	private FileExceptionHandlerService fileExceptionHandlerServiceMock;
-
 	private TreasuryXlsProcessingService service;
 
 	@BeforeEach
 	void setUp() {
+		FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
 		service = new TreasuryXlsProcessingService(
 				mapperMock,
 				treasuryServiceMock,
 				errorsArchiverServiceMock,
 				organizationServiceMock,
-				fileExceptionHandlerServiceMock
+				fileExceptionHandlerService
 		);
 	}
 

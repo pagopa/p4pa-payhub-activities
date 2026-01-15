@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemant
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -30,6 +31,7 @@ public class AssessmentsRegistryProcessingService extends
 
     private final AssessmentsRegistryMapper assessmentsRegistryMapper;
     private final AssessmentsRegistryService assessmentsRegistryService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public AssessmentsRegistryProcessingService(
             AssessmentsRegistryMapper assessmentsRegistryMapper,
@@ -39,6 +41,7 @@ public class AssessmentsRegistryProcessingService extends
         super(assessmentsRegistryErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.assessmentsRegistryMapper = assessmentsRegistryMapper;
         this.assessmentsRegistryService = assessmentsRegistryService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public AssessmentsRegistryIngestionFlowFileResult processAssessmentsRegistry(
@@ -67,13 +70,12 @@ public class AssessmentsRegistryProcessingService extends
         try {
             String ipa = ingestionFlowFileResult.getIpaCode();
             if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
-                String errorMessage = String.format(
-                        "Organization IPA code %s does not match with the one in the ingestion flow file %s",
-                        row.getOrganizationIpaCode(), ipa);
-                log.error(errorMessage);
+                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
                 AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(), "ORGANIZATION_IPA_DOES_NOT_MATCH", errorMessage);
+                        row.getOrganizationIpaCode(),
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
                 errorList.add(error);
                 return false;
 
@@ -96,7 +98,9 @@ public class AssessmentsRegistryProcessingService extends
             if (assessmentsRegistryOptional.isPresent()) {
                 AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
                         ingestionFlowFile.getFileName(), lineNumber, assessmentsRegistry.getAssessmentCode(),
-                        row.getOrganizationIpaCode(), "ASSESSMENTS_REGISTRY_ALREADY_EXISTS", "AssessmentsRegistry already exists");
+                        row.getOrganizationIpaCode(),
+                        FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name(),
+                        FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage());
                 errorList.add(error);
                 return false;
             }
@@ -106,12 +110,13 @@ public class AssessmentsRegistryProcessingService extends
 
         } catch (Exception e) {
             log.error("Error processing row {} in file {}: {}", lineNumber, ingestionFlowFile.getFileName(), e.getMessage(), e);
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
                     ingestionFlowFile.getFileName(),
                     lineNumber,
                     row.getAssessmentCode(),
                     row.getOrganizationIpaCode(),
-                    "PROCESS_EXCEPTION", e.getMessage());
+                    errorDetails.getErrorCode(), errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;
