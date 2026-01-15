@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Lazy
@@ -16,12 +17,13 @@ public class PaymentsReportingPagoPaClient {
 		this.pagoPaPaymentsApisHolder = pagoPaPaymentsApisHolder;
 	}
 
-	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, String accessToken) {
-		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken).getPaymentsReportingList(organizationId);
+	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, OffsetDateTime latestReportDate, String accessToken) {
+		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
+				.getPaymentsReportingList(organizationId, latestReportDate);
 	}
 
-	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, String accessToken) {
+	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName);
+				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, revision, pspId);
 	}
 }

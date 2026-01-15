@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
+import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.PaymentsReportingPagoPaClient;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,11 +27,13 @@ class PaymentsReportingPagoPaServiceTest {
 	private PaymentsReportingPagoPaClient paymentsReportingPagoPaClientMock;
 	@Mock
 	private AuthnService authnServiceMock;
+	@Mock
+	private PaymentsReportingService paymentsReportingService;
 
 	private PaymentsReportingPagoPaService service;
 
 	@BeforeEach
-	void setUp() { service = new PaymentsReportingPagoPaServiceImpl(paymentsReportingPagoPaClientMock, authnServiceMock); }
+	void setUp() { service = new PaymentsReportingPagoPaServiceImpl(paymentsReportingPagoPaClientMock, paymentsReportingService, authnServiceMock); }
 
 	@AfterEach
 	void tearDown() {
@@ -41,9 +45,11 @@ class PaymentsReportingPagoPaServiceTest {
 		// Given
 		String accessToken = "accessToken";
 		Long organizationId = 1L;
+		OffsetDateTime latestFlowDate = OffsetDateTime.now();
 		List<PaymentsReportingIdDTO> expectedResponse = List.of(new PaymentsReportingIdDTO());
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(paymentsReportingPagoPaClientMock.getPaymentsReportingList(organizationId, accessToken)).thenReturn(expectedResponse);
+		when(paymentsReportingService.findLatestFlowDate(organizationId)).thenReturn(latestFlowDate);
+		when(paymentsReportingPagoPaClientMock.getPaymentsReportingList(organizationId, latestFlowDate, accessToken)).thenReturn(expectedResponse);
 		// When
 		List<PaymentsReportingIdDTO> result = service.getPaymentsReportingList(organizationId);
 
@@ -59,13 +65,15 @@ class PaymentsReportingPagoPaServiceTest {
 		Organization organization = OrganizationFaker.buildOrganizationDTO();
 		String flowId = "flowId";
 		String fileName = "fileName";
+		Long revision = 1L;
+		String pspId = "pspId";
 		Long expectedResponse = 123L;
 
 		when(authnServiceMock.getAccessToken(organization.getIpaCode())).thenReturn(accessToken);
-		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organization.getOrganizationId(), flowId, fileName, accessToken)).thenReturn(expectedResponse);
+		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organization.getOrganizationId(), flowId, fileName, revision, pspId, accessToken)).thenReturn(expectedResponse);
 
 		// When
-		Long result = service.fetchPaymentReporting(organization, flowId, fileName);
+		Long result = service.fetchPaymentReporting(organization, flowId, fileName, revision, pspId);
 
 		// Then
 		assertEquals(expectedResponse, result);

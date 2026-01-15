@@ -44,7 +44,7 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 			.filter(idDTO -> !alreadyProcessedFileNames.contains(idDTO.getPaymentsReportingFileName()))
 			.map(idDTO -> {
 				Organization organization = organizationService.getOrganizationById(organizationId).orElseThrow(() -> new IllegalArgumentException("Organization doesn't exists: " + organizationId));
-				return paymentsReportingPagoPaService.fetchPaymentReporting(organization, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName());
+				return paymentsReportingPagoPaService.fetchPaymentReporting(organization, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName(), idDTO.getRevision().longValue(), null); //TODO will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
             })
 			.toList();
 	}
