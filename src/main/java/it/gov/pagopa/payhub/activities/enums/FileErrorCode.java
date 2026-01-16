@@ -73,7 +73,8 @@ public enum FileErrorCode {
     INVALID_DUE_DATE("La data di scadenza non puo' essere retroattiva"),
     MISSING_DEBTOR("Il debitore e' obbligatorio"),
     INVALID_VAT_CODE("Il codice fiscale o partita iva non e' valido"),
-    INVALID_PERSONAL_DATA("Il nome del beneficiario e' obbligatorio o l'email non e' formattata correttamente"),
+    INVALID_FULLNAME("Il nome del beneficiario e' obbligatorio"),
+    INVALID_EMAIL("L'email non e' formattata correttamente"),
 
     // transfer
     MISSING_TRANSFER("La rata deve avere almeno un beneficiario"),
@@ -84,6 +85,12 @@ public enum FileErrorCode {
     INVALID_POSTAL_IBAN("L'iban postale non e' valido"),
     MISSING_TAXONOMY_CATEGORY("Il codice tassonomico e' obbligatorio"),
     INVALID_TAXONOMY_CATEGORY("Il codice tassonomico non e' valido"),
+
+    //receipt
+    RECEIPT_NOT_FOUND("La ricevuta non e' stata trovata"),
+    RECEIPT_IUV_MISMATCH("I campi codIuv e identificativoUnivocoVersamento devono essere uguali"),
+    RECEIPT_ALREADY_ASSOCIATED_TO_ANOTHER_IUV("La ricevuta caricata e' gia' associata ad un altro IUV"),
+    RECEIPT_ORG_MISMATCH("I campi identificativoDominio e cod_fiscale_pa1 devono essere uguali all'ente della ricevuta"),
 
     // debt position type
     DEBT_POSITION_TYPE_ALREADY_EXISTS("Il tipo posizione debitoria gia' esiste"),
