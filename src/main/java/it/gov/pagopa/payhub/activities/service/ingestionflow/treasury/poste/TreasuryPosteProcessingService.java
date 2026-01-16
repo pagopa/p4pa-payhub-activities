@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPost
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -34,6 +35,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
 
   private final TreasuryPosteMapper treasuryPosteMapper;
   private final TreasuryService treasuryService;
+  private final FileExceptionHandlerService fileExceptionHandlerService;
 
   public TreasuryPosteProcessingService(
       TreasuryPosteMapper treasuryPosteMapper,
@@ -44,6 +46,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
     super(treasuryPosteErrorsArchiverService, organizationService, fileExceptionHandlerService);
     this.treasuryPosteMapper = treasuryPosteMapper;
     this.treasuryService = treasuryService;
+    this.fileExceptionHandlerService = fileExceptionHandlerService;
   }
 
   public TreasuryIufIngestionFlowFileResult processTreasuryPoste(
@@ -57,6 +60,8 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
     ingestionFlowFileResult.setIban(iban);
     ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
     ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
+    String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+    ingestionFlowFileResult.setIpaCode(ipa);
 
     process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
     return ingestionFlowFileResult;
@@ -73,6 +78,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
 
     TreasuryPosteIngestionFlowFileResult treasuryPosteIngestionFlowFileResult = (TreasuryPosteIngestionFlowFileResult) ingestionFlowFileResult;
     String iban = treasuryPosteIngestionFlowFileResult.getIban();
+    String ipa = treasuryPosteIngestionFlowFileResult.getIpaCode();
 
     try {
       TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), iuf);
@@ -80,13 +86,12 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
       if (existingTreasury != null) {
         boolean treasuryMatch = !existingTreasury.getBillCode().equals(billCode) || !existingTreasury.getBillYear().equals(billYear);
         if (treasuryMatch) {
-          String errorMessage = String.format(
-              "IUF %s already associated to another treasury for organization with IPA code %s",
-              iuf, iban);
-          log.error(errorMessage);
+          log.error("IUF {} already associated to another treasury for organization with IPA code {}", iuf, ipa);
           TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(
               ingestionFlowFile.getFileName(), iuf,
-              lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
+              lineNumber,
+                  FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
+                  FileErrorCode.IUF_ALREADY_ASSOCIATED.format(iuf, ipa));
           errorList.add(error);
           return false;
         }
@@ -101,9 +106,10 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
       log.error("Error processing treasury poste with iuf {}: {}",
           iuf,
           e.getMessage());
+      FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
       TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(
           ingestionFlowFile.getFileName(), iuf,
-          lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+          lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
       errorList.add(error);
       log.info("Current error list size after handleProcessingError: {}", errorList.size());
       return false;

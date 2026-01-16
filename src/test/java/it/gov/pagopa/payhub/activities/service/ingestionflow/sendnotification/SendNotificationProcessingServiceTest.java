@@ -46,23 +46,17 @@ class SendNotificationProcessingServiceTest {
     private OrganizationService organizationServiceMock;
     @Mock
     private SendNotificationFileHandlerService sendNotificationFileHandlerServiceMock;
-    @Mock
-    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     private SendNotificationProcessingService service;
 
-    private static final String PROCESS_EXCEPTION = "PROCESS_EXCEPTION";
-
-    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
-
     @BeforeEach
     void setUp() {
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
         service = new SendNotificationProcessingService(
                 sendNotificationErrorArchiverServiceMock,
                 sendNotificationServiceMock,
                 organizationServiceMock,
-                fileExceptionHandlerServiceMock,
+                fileExceptionHandlerService,
                 mapperMock,
                 sendNotificationFileHandlerServiceMock
         );
@@ -169,13 +163,9 @@ class SendNotificationProcessingServiceTest {
         Mockito.when(sendNotificationErrorArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
-        CsvException exception = new CsvException("DUMMYERROR");
-        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-                .thenReturn(csvErrorDetails);
-
         // When
         SendNotificationIngestionFlowFileResult result = service.processSendNotifications(
-                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(exception),
+                Stream.of(sendNotificationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -187,8 +177,8 @@ class SendNotificationProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
         verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, "CSV_GENERIC_ERROR", "Errore"),
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, PROCESS_EXCEPTION, "Error when create notification")
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.GENERIC_ERROR.name(), "Error when create notification")
         ));
     }
 
@@ -242,7 +232,8 @@ class SendNotificationProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
         verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Row not processed, notification already exists")
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, FileErrorCode.NOTIFICATION_ALREADY_PROCESSED.name(),
+                        FileErrorCode.NOTIFICATION_ALREADY_PROCESSED.getMessage())
         ));
     }
 
@@ -282,7 +273,8 @@ class SendNotificationProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
         verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L, PROCESS_EXCEPTION, "Error while create notification")
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 1L,
+                        FileErrorCode.NOTIFICATION_NOT_PROCESSED.name(), FileErrorCode.NOTIFICATION_NOT_PROCESSED.getMessage())
         ));
     }
 

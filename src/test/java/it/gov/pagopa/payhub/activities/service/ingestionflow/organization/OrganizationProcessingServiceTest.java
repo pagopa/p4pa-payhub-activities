@@ -53,18 +53,13 @@ class OrganizationProcessingServiceTest {
     private OrganizationService organizationServiceMock;
 
     @Mock
-    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
-
-    @Mock
     private OrganizationProcessingService service;
-
-    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
     @BeforeEach
     void setUp() {
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
         service = new OrganizationProcessingService(mapperMock, errorsArchiverServiceMock,
-                organizationServiceMock, fileExceptionHandlerServiceMock);
+                organizationServiceMock, fileExceptionHandlerService);
     }
 
     @AfterEach
@@ -165,18 +160,14 @@ class OrganizationProcessingServiceTest {
 
 
         Mockito.when(organizationServiceMock.createOrganization(mappedOrg))
-                .thenThrow(new RuntimeException("Processing error"));
+                .thenThrow(new RuntimeException("[ORGANIZATION_ALREADY_EXISTS] Organization already exists"));
 
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
-        CsvException exception = new CsvException("DUMMYERROR");
-        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-                .thenReturn(csvErrorDetails);
-
         // When
         OrganizationIngestionFlowFileResult result = service.processOrganization(
-                Stream.of(organizationIngestionFlowFileDTO).iterator(), List.of(exception),
+                Stream.of(organizationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -188,8 +179,9 @@ class OrganizationProcessingServiceTest {
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
         Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, "CSV_GENERIC_ERROR", "Errore"),
-                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), organizationIngestionFlowFileDTO.getIpaCode(), 2L, "PROCESS_EXCEPTION", "Processing error")
+                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
+                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), organizationIngestionFlowFileDTO.getIpaCode(), 2L,
+                        FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(), FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage())
         )));
     }
 

@@ -4,6 +4,7 @@ import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -49,15 +50,19 @@ public class DPInstallmentsWorkflowCompletionService {
                     workflowId, maxAttempts, retryDelayMs).getStatus();
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
-                errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, workflowStatus.name(),
-                        "WORKFLOW_TERMINATED_WITH_FAILURE", "Workflow terminated with error status"));
+                errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber,
+                        workflowStatus.name(),
+                        FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(),
+                        FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage()));
                 return false;
             }
 
             return true;
         } catch (Exception e) {
             log.warn("Workflow {} did not complete within retry limits.", workflowId);
-            errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, null, "RETRY_LIMIT_REACHED", "Maximum number of retries reached"));
+            errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, null,
+                    FileErrorCode.WORKFLOW_TIMEOUT.name(),
+                    FileErrorCode.WORKFLOW_TIMEOUT.getMessage()));
             return false;
         }
     }

@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngesti
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.xls.TreasuryXlsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.xls.TreasuryXlsMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -30,16 +31,18 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
 
 	private final TreasuryXlsMapper treasuryXlsMapper;
 	private final TreasuryService treasuryService;
+	private final FileExceptionHandlerService fileExceptionHandlerService;
 
 	public TreasuryXlsProcessingService(
-			TreasuryXlsMapper treasuryXlsMapper,
-			TreasuryService treasuryService,
-			TreasuryXlsErrorsArchiverService treasuryXlsErrorsArchiverService,
-			OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
+            TreasuryXlsMapper treasuryXlsMapper,
+            TreasuryService treasuryService,
+            TreasuryXlsErrorsArchiverService treasuryXlsErrorsArchiverService,
+            OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
 		super(treasuryXlsErrorsArchiverService, organizationService, fileExceptionHandlerService);
 		this.treasuryXlsMapper = treasuryXlsMapper;
 		this.treasuryService = treasuryService;
-	}
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
+    }
 
 	@Override
 	protected boolean consumeRow(long lineNumber, TreasuryXlsIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryXlsErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
@@ -53,14 +56,13 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
 			if(existingTreasury != null) {
 				boolean treasuryNotMatch = !existingTreasury.getBillCode().equals(TreasuryUtils.generateBillCode(rowIuf)) || !existingTreasury.getBillYear().equals(String.valueOf(billDate.getYear()));
 				if (treasuryNotMatch) {
-					String errorMessage = String.format(
-							"IUF %s already associated to another treasury for organization with IPA code %s",
-							rowIuf, ipa);
-					log.error(errorMessage);
+					log.error("IUF {} already associated to another treasury for organization with IPA code {}", rowIuf, ipa);
 					TreasuryXlsErrorDTO error = new TreasuryXlsErrorDTO(
 							ingestionFlowFile.getFileName(),
 							rowIuf,
-							lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
+							lineNumber,
+							FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
+							FileErrorCode.IUF_ALREADY_ASSOCIATED.format(rowIuf, ipa));
 					errorList.add(error);
 					return false;
 				}
@@ -75,10 +77,12 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
 			log.error("Error processing treasury csv with iuf {}: {}",
 					rowIuf,
 					e.getMessage());
+			FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
+
 			TreasuryXlsErrorDTO error = new TreasuryXlsErrorDTO(
 					ingestionFlowFile.getFileName(),
 					rowIuf,
-					lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+					lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
 			errorList.add(error);
 			log.info("Current error list size after handleProcessingError: {}", errorList.size());
 			return false;

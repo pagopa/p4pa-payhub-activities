@@ -1,29 +1,18 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.poste;
 
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
-import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +21,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class TreasuryPosteProcessingServiceTest {
@@ -53,17 +56,12 @@ class TreasuryPosteProcessingServiceTest {
   @Mock
   private TreasuryService treasuryService;
 
-  @Mock
-  private FileExceptionHandlerService fileExceptionHandlerServiceMock;
-
   private TreasuryPosteProcessingService service;
-
-  private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-          new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
 
   @BeforeEach
   void setUp() {
-    service = new TreasuryPosteProcessingService(mapperMock, treasuryService, errorsArchiverServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock);
+    FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
+    service = new TreasuryPosteProcessingService(mapperMock, treasuryService, errorsArchiverServiceMock, organizationServiceMock, fileExceptionHandlerService);
   }
 
   @Test
@@ -73,6 +71,12 @@ class TreasuryPosteProcessingServiceTest {
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
     String billCode = TreasuryUtils.generateBillCode(iuf);
+    String ipa = "IPA123";
+    Organization organization = new Organization();
+    organization.setIpaCode(ipa);
+    Long orgId = 1L;
+    organization.setOrganizationId(orgId);
+    Optional<Organization> organizationOptional = Optional.of(organization);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
@@ -85,6 +89,8 @@ class TreasuryPosteProcessingServiceTest {
     mappedNotification.setTreasuryId("TREASURY_ID_1");
     Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
     Mockito.when(treasuryService.insert(mappedNotification)).thenReturn(mappedNotification);
+    Mockito.when(organizationServiceMock.getOrganizationById(any()))
+            .thenReturn(organizationOptional);
 
     TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
         Stream.of(dto).iterator(), iban, List.of(),
@@ -104,6 +110,12 @@ class TreasuryPosteProcessingServiceTest {
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
     String billCode = TreasuryUtils.generateBillCode(iuf);
+    String ipa = "IPA123";
+    Organization organization = new Organization();
+    organization.setIpaCode(ipa);
+    Long orgId = 1L;
+    organization.setOrganizationId(orgId);
+    Optional<Organization> organizationOptional = Optional.of(organization);
 
     TreasuryPosteIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
     dto.setBillDate(dateString);
@@ -122,14 +134,12 @@ class TreasuryPosteProcessingServiceTest {
         .thenReturn("zipFileName.csv");
 
     Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(null);
-
-    CsvException exception = new CsvException("DUMMYERROR");
-    Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-            .thenReturn(csvErrorDetails);
+    Mockito.when(organizationServiceMock.getOrganizationById(any()))
+            .thenReturn(organizationOptional);
 
     // When
     TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
-        Stream.of(dto).iterator(), iban, List.of(exception),
+        Stream.of(dto).iterator(), iban, List.of(new CsvException("DUMMYERROR")),
         ingestionFlowFile,
         workingDirectory
     );
@@ -152,6 +162,12 @@ class TreasuryPosteProcessingServiceTest {
     String iban = "IT84K0760101000000010123456";
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
+    String ipa = "IPA123";
+    Organization organization = new Organization();
+    organization.setIpaCode(ipa);
+    Long orgId = 1L;
+    organization.setOrganizationId(orgId);
+    Optional<Organization> organizationOptional = Optional.of(organization);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
@@ -162,6 +178,8 @@ class TreasuryPosteProcessingServiceTest {
     TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
     existingTreasuryIuf.setIuf(iuf);
     Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+    Mockito.when(organizationServiceMock.getOrganizationById(any()))
+            .thenReturn(organizationOptional);
 
     TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
         Stream.of(dto).iterator(), iban, List.of(),
@@ -182,6 +200,12 @@ class TreasuryPosteProcessingServiceTest {
     String dateString = "23/09/2025";
     LocalDate billDate = LocalDate.of(2025, 9, 23);
     String billCode = TreasuryUtils.generateBillCode(iuf);
+    String ipa = "IPA123";
+    Organization organization = new Organization();
+    organization.setIpaCode(ipa);
+    Long orgId = 1L;
+    organization.setOrganizationId(orgId);
+    Optional<Organization> organizationOptional = Optional.of(organization);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
@@ -194,6 +218,8 @@ class TreasuryPosteProcessingServiceTest {
     existingTreasuryIuf.setBillCode(billCode);
     existingTreasuryIuf.setBillYear("2025");
     Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+    Mockito.when(organizationServiceMock.getOrganizationById(any()))
+            .thenReturn(organizationOptional);
 
     Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
     mappedNotification.setIuf(iuf);
@@ -220,6 +246,12 @@ class TreasuryPosteProcessingServiceTest {
     String iuf = "2025-09-23BPPIITRRXXX-000038102790";
     String dateString = "23/09/2025";
     String billCode = "8102790";
+    String ipa = "IPA123";
+    Organization organization = new Organization();
+    organization.setIpaCode(ipa);
+    Long orgId = 1L;
+    organization.setOrganizationId(orgId);
+    Optional<Organization> organizationOptional = Optional.of(organization);
 
     IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
     TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
@@ -233,6 +265,8 @@ class TreasuryPosteProcessingServiceTest {
     existingTreasuryIuf.setBillCode("BILL123");
     existingTreasuryIuf.setBillYear("2025");
     Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+    Mockito.when(organizationServiceMock.getOrganizationById(any()))
+            .thenReturn(organizationOptional);
 
     TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
         Stream.of(dto).iterator(), iban, List.of(),

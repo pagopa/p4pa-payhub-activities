@@ -30,6 +30,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
     private final ReceiptService receiptService;
     private final ReceiptMapper receiptMapper;
     private final ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public ReceiptProcessingService(ReceiptMapper receiptMapper,
                                     ReceiptErrorsArchiverService receiptErrorsArchiverService,
@@ -40,6 +41,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
         this.receiptService = receiptService;
         this.receiptMapper = receiptMapper;
         this.requiredFieldsValidatorService = requiredFieldsValidatorService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     /**
@@ -77,11 +79,12 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
             return true;
         } catch (Exception e) {
             log.error("Error processing receipt: {}", e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             ReceiptErrorDTO error = ReceiptErrorDTO.builder()
                     .fileName(ingestionFlowFile.getFileName())
                     .rowNumber(lineNumber)
-                    .errorCode("PROCESS_EXCEPTION")
-                    .errorMessage(e.getMessage())
+                    .errorCode(errorDetails.getErrorCode())
+                    .errorMessage(errorDetails.getErrorMessage())
                     .build();
 
             errorList.add(error);

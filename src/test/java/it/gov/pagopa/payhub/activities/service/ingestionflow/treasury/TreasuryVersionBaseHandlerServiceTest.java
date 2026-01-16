@@ -145,7 +145,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         getUnmarshallerMockitOngoingStubbing(file).thenThrow(new RuntimeException("Unmarshall failed"));
 
         Mockito.when(fileExceptionHandlerServiceMock.mapXmlParsingExceptionToErrorCodeAndMessage("Unmarshall failed"))
-                .thenReturn(new FileExceptionHandlerService.XmlErrorDetails(FileErrorCode.XML_GENERIC_ERROR.name(), "Errore"));
+                .thenReturn(new FileExceptionHandlerService.ErrorDetails(FileErrorCode.XML_GENERIC_ERROR.name(), "Errore"));
 
         // When
         Pair<IngestionFlowFileResult, List<Treasury>> result = handlerService.handle(file, ingestionFlowFileDTO, 1, parsingErrors);

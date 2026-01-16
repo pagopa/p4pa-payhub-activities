@@ -20,4 +20,5 @@ import lombok.experimental.SuperBuilder;
 public class TreasuryPosteIngestionFlowFileResult extends TreasuryIufIngestionFlowFileResult {
 
     private String iban;
+    private String ipaCode;
 }

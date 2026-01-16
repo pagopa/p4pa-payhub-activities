@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,8 +99,8 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         assertFalse(result);
         assertNotNull(errorList);
         assertEquals(WORKFLOW_EXECUTION_STATUS_FAILED.name(), errorList.getFirst().getWorkflowStatus());
-        assertEquals("WORKFLOW_TERMINATED_WITH_FAILURE", errorList.getFirst().getErrorCode());
-        assertEquals("Workflow terminated with error status", errorList.getFirst().getErrorMessage());
+        assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(), errorList.getFirst().getErrorCode());
+        assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage(), errorList.getFirst().getErrorMessage());
     }
 
     @Test
@@ -117,7 +118,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         // Then
         assertFalse(result);
         assertEquals(1, errorList.size());
-        assertEquals("RETRY_LIMIT_REACHED", errorList.getFirst().getErrorCode());
-        assertEquals("Maximum number of retries reached", errorList.getFirst().getErrorMessage());
+        assertEquals(FileErrorCode.WORKFLOW_TIMEOUT.name(), errorList.getFirst().getErrorCode());
+        assertEquals(FileErrorCode.WORKFLOW_TIMEOUT.getMessage(), errorList.getFirst().getErrorMessage());
     }
 }

@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.organization.OrganizationMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class OrganizationProcessingService extends IngestionFlowProcessingService<OrganizationIngestionFlowFileDTO, OrganizationIngestionFlowFileResult, OrganizationErrorDTO> {
 
     private final OrganizationMapper organizationMapper;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public OrganizationProcessingService(
             OrganizationMapper organizationMapper,
@@ -33,6 +35,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
         super(organizationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.organizationMapper = organizationMapper;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public OrganizationIngestionFlowFileResult processOrganization(
@@ -64,7 +67,8 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
                 log.error("Broker with fiscal code {} is not related to organization having fiscal code {}", ingestionFlowFileResult.getBrokerFiscalCode(), organizationDTO.getOrgFiscalCode());
                 OrganizationErrorDTO error = new OrganizationErrorDTO(
                         ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, "BROKER_NOT_MATCHED", "Broker not matched");
+                        lineNumber, FileErrorCode.BROKER_MISMATCH.name(),
+                        FileErrorCode.BROKER_MISMATCH.getMessage());
                 errorList.add(error);
                 return false;
             }
@@ -73,7 +77,8 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             if (existingOrg.isPresent()) {
                 OrganizationErrorDTO error = new OrganizationErrorDTO(
                         ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, "ORGANIZATION_ALREADY_EXISTS", "Organization already exists");
+                        lineNumber, FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(),
+                        FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage());
                 errorList.add(error);
                 return false;
             }
@@ -85,9 +90,10 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
 
         } catch (Exception e) {
             log.error("Error processing organization with ipa code {}: {}", organizationDTO.getIpaCode(), e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             OrganizationErrorDTO error = new OrganizationErrorDTO(
                     ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                    lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;

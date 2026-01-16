@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg.DebtPositionTypeOrgMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -32,7 +33,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
     private final DebtPositionTypeService debtPositionTypeService;
     private final OrganizationService organizationServiceSpecialized;
-
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public DebtPositionTypeOrgProcessingService(
             DebtPositionTypeOrgMapper debtPositionTypeOrgMapper,
@@ -46,6 +47,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
         this.debtPositionTypeService = debtPositionTypeService;
         this.organizationServiceSpecialized = organizationServiceSpecialized;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
 
@@ -91,8 +93,8 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
                         debtPositionTypeOrgDTO.getCode(),
                         ingestionFlowFile.getOrganizationId(),
                         lineNumber,
-                        "DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS",
-                        "Debt position type org already exists");
+                        FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.name(),
+                        FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.getMessage());
                 errorList.add(error);
                 return false;
             }
@@ -105,8 +107,8 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
                         debtPositionTypeOrgDTO.getCode(),
                         ingestionFlowFile.getOrganizationId(),
                         lineNumber,
-                        "DEBT_POSITION_TYPE_NOT_FOUND",
-                        "Debt position type not found for code: " + debtPositionTypeOrgDTO.getCode());
+                        FileErrorCode.DEBT_POSITION_TYPE_BY_CODE_NOT_FOUND.name(),
+                        FileErrorCode.DEBT_POSITION_TYPE_BY_CODE_NOT_FOUND.format(debtPositionTypeOrgDTO.getCode()));
                 errorList.add(error);
                 return false;
             }
@@ -117,13 +119,14 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
 
         } catch (Exception e) {
             log.error("Error processing debt position type org with organization id:{} and type code {}: {}", ingestionFlowFile.getOrganizationId(), debtPositionTypeOrgDTO.getCode(), e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             DebtPositionTypeOrgErrorDTO error = new DebtPositionTypeOrgErrorDTO(
                     ingestionFlowFile.getFileName(),
                     debtPositionTypeOrgDTO.getCode(),
                     ingestionFlowFile.getOrganizationId(),
                     lineNumber,
-                    "PROCESS_EXCEPTION",
-                    e.getMessage());
+                    errorDetails.getErrorCode(),
+                    errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;
