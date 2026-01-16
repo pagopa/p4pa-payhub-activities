@@ -60,6 +60,8 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
     ingestionFlowFileResult.setIban(iban);
     ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
     ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
+    String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+    ingestionFlowFileResult.setIpaCode(ipa);
 
     process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
     return ingestionFlowFileResult;
@@ -68,7 +70,6 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
   @Override
   protected boolean consumeRow(long lineNumber, TreasuryPosteIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryPosteErrorDTO> errorList,
       IngestionFlowFile ingestionFlowFile) {
-    String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
     String iuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
     LocalDate billDate = LocalDate.parse(row.getBillDate(), POSTE_DATE_FORMAT);
@@ -77,6 +78,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
 
     TreasuryPosteIngestionFlowFileResult treasuryPosteIngestionFlowFileResult = (TreasuryPosteIngestionFlowFileResult) ingestionFlowFileResult;
     String iban = treasuryPosteIngestionFlowFileResult.getIban();
+    String ipa = treasuryPosteIngestionFlowFileResult.getIpaCode();
 
     try {
       TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), iuf);
