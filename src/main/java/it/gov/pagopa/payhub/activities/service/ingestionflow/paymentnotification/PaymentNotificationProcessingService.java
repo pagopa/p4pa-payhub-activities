@@ -27,6 +27,7 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
 
     private final PaymentNotificationMapper paymentNotificationMapper;
     private final PaymentNotificationService paymentNotificationService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public PaymentNotificationProcessingService(
             PaymentNotificationMapper paymentNotificationMapper,
@@ -36,6 +37,7 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
         super(paymentNotificationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.paymentNotificationMapper = paymentNotificationMapper;
         this.paymentNotificationService = paymentNotificationService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public PaymentNotificationIngestionFlowFileResult processPaymentNotification(
@@ -64,9 +66,11 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
             log.error("Error processing payment notice with iud {} and iuv {}: {}",
                     paymentNotificationDTO.getIud(), paymentNotificationDTO.getIuv(),
                     e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             PaymentNotificationErrorDTO error = new PaymentNotificationErrorDTO(
                     ingestionFlowFile.getFileName(), paymentNotificationDTO.getIuv(),
-                    paymentNotificationDTO.getIud(), lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    paymentNotificationDTO.getIud(), lineNumber, errorDetails.getErrorCode(),
+                    errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;

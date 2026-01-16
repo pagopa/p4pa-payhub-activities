@@ -74,18 +74,13 @@ class AssessmentsProcessingServiceTest {
     @Mock
     private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
 
-    @Mock
-    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
-
-    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
-
     @BeforeEach
     void setUp() {
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
         service = new AssessmentsProcessingService(
                 errorsArchiverServiceMock,
                 organizationServiceMock,
-                fileExceptionHandlerServiceMock,
+                fileExceptionHandlerService,
                 assessmentsServiceMock,
                 assessmentsDetailServiceMock,
                 mapperMock,
@@ -193,16 +188,12 @@ class AssessmentsProcessingServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
-        CsvException exception = new CsvException("DUMMYERROR");
-        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-                        .thenReturn(csvErrorDetails);
-
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
         // When
         AssessmentsIngestionFlowFileResult result = service.processAssessments(
-                Stream.of(dto).iterator(), List.of(exception),
+                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile, workingDirectory);
 
         // Then
@@ -245,8 +236,8 @@ class AssessmentsProcessingServiceTest {
         // Then
         Assertions.assertFalse(result);
         Assertions.assertEquals(1, errorList.size());
-        Assertions.assertEquals("DEBT_POSITION_NOT_FOUND", errorList.getFirst().getErrorCode());
-        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("Debt position with IUD IUD1 not found"));
+        Assertions.assertEquals(FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.name(), errorList.getFirst().getErrorCode());
+        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("La posizione debitoria con IUD IUD1 non e' stata trovata per l'ente"));
     }
 
     @Test
@@ -289,7 +280,7 @@ class AssessmentsProcessingServiceTest {
         // Then
         Assertions.assertFalse(result);
         Assertions.assertEquals(1, errorList.size());
-        Assertions.assertEquals("DEBT_POSITION_TYPE_ORG_NOT_FOUND", errorList.getFirst().getErrorCode());
-        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("Debt position type org not found for org 123 and code DPT001"));
+        Assertions.assertEquals(FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.name(), errorList.getFirst().getErrorCode());
+        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("Il tipo posizione debitoria impostato con codice DPT001 non e' stato trovato per l'ente"));
     }
 }

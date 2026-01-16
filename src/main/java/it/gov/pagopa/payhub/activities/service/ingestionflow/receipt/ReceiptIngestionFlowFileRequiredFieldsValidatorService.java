@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -47,15 +48,15 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
 
         if (!dto.getIuv().equals(dto.getCreditorReferenceId())) {
             throw new IllegalArgumentException(
-                    String.format("codIuv and identificativoUnivocoVersamento must be equal, but found iuv='%s' and creditorReferenceId='%s'",
-                            dto.getIuv(), dto.getCreditorReferenceId()));
+                    String.format("[%s] codIuv and identificativoUnivocoVersamento must be equal, but found iuv='%s' and creditorReferenceId='%s'",
+                            FileErrorCode.RECEIPT_IUV_MISMATCH.name(), dto.getIuv(), dto.getCreditorReferenceId()));
         }
 
         ReceiptNoPII receipt = receiptService.getByPaymentReceiptId(dto.getPaymentReceiptId());
         if (receipt != null && !receipt.getCreditorReferenceId().equals(dto.getCreditorReferenceId())) {
             throw new IllegalArgumentException(
-                    String.format("A receipt with paymentReceiptId='%s' already exists and is associated with a different installment (existing IUV='%s', provided IUV='%s')",
-                            dto.getPaymentReceiptId(), receipt.getCreditorReferenceId(), dto.getCreditorReferenceId()
+                    String.format("[%s] A receipt with paymentReceiptId='%s' already exists and is associated with a different installment (existing IUV='%s', provided IUV='%s')",
+                            FileErrorCode.RECEIPT_ALREADY_ASSOCIATED_TO_ANOTHER_IUV.name(), dto.getPaymentReceiptId(), receipt.getCreditorReferenceId(), dto.getCreditorReferenceId()
                     )
             );
         }
@@ -64,7 +65,8 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
     private void validateOrganization(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO receiptIngestionFlowFileDTO) {
         Long organizationId = ingestionFlowFile.getOrganizationId();
         Organization org = organizationService.getOrganizationById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization with id " + organizationId + " not found."));
+                .orElseThrow(() -> new OrganizationNotFoundException(String.format("[%s] Organization with id %s not found",
+                        FileErrorCode.ORGANIZATION_NOT_FOUND.name(), organizationId)));
 
         String orgFiscalCode = org.getOrgFiscalCode();
         String receiptOrgFiscalCode = receiptIngestionFlowFileDTO.getOrgFiscalCode();
@@ -79,7 +81,7 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
 
         if (!isValid) {
             throw new IllegalArgumentException(
-                    "Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
+                    FileErrorCode.RECEIPT_ORG_MISMATCH.name() + " Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
             );
         }
 

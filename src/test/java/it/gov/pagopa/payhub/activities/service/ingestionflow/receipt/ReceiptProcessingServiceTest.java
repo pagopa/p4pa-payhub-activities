@@ -57,19 +57,14 @@ class ReceiptProcessingServiceTest {
     @Mock
     private ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorServiceMock;
 
-    @Mock
-    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
-
     private ReceiptProcessingService service;
 
     private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
-    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
-
     @BeforeEach
     void setUp() {
-        service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock, requiredFieldsValidatorServiceMock);
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
+        service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, fileExceptionHandlerService, requiredFieldsValidatorServiceMock);
     }
 
     @AfterEach
@@ -125,13 +120,9 @@ class ReceiptProcessingServiceTest {
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
-        CsvException exception = new CsvException("DUMMYERROR");
-        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-                .thenReturn(csvErrorDetails);
-
         // When
         ReceiptIngestionFlowFileResult result = service.processReceipts(
-                Stream.of(dto).iterator(), List.of(exception),
+                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -146,8 +137,8 @@ class ReceiptProcessingServiceTest {
         Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
         Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, "CSV_GENERIC_ERROR", "Errore"),
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, "PROCESS_EXCEPTION", "Processing error")
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.GENERIC_ERROR.name(), "Processing error")
         )));
     }
 }

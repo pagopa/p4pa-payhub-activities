@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificati
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -30,8 +31,7 @@ public class SendNotificationProcessingService extends
     private final SendNotificationService sendNotificationService;
     private final SendNotificationMapper mapper;
     private final SendNotificationFileHandlerService sendNotificationFileHandlerService;
-
-    private static final String PROCESS_ERROR = "PROCESS_EXCEPTION";
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public SendNotificationProcessingService(
             SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
@@ -44,6 +44,7 @@ public class SendNotificationProcessingService extends
         this.sendNotificationService = sendNotificationService;
         this.mapper = mapper;
         this.sendNotificationFileHandlerService = sendNotificationFileHandlerService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     /**
@@ -80,7 +81,8 @@ public class SendNotificationProcessingService extends
             if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
                     && createNotificationRequest.getRecipients().getFirst().getPayments().getFirst().getPagoPa() != null &&
                     checkSendNotificationAlreadyExists(createNotificationRequest.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
-                errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, PROCESS_ERROR, "Row not processed, notification already exists"));
+                errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, FileErrorCode.NOTIFICATION_ALREADY_PROCESSED.name(),
+                        FileErrorCode.NOTIFICATION_ALREADY_PROCESSED.getMessage()));
                 return false;
             }
 
@@ -119,15 +121,18 @@ public class SendNotificationProcessingService extends
                 }
                 return true;
             }
-            errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, PROCESS_ERROR, "Error while create notification"));
+            errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber,
+                    FileErrorCode.NOTIFICATION_NOT_PROCESSED.name(),
+                    FileErrorCode.NOTIFICATION_NOT_PROCESSED.getMessage()));
             return false;
         } catch (Exception e) {
             log.error("Error processing send notification: {}", e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             SendNotificationErrorDTO error = SendNotificationErrorDTO.builder()
                     .fileName(ingestionFlowFile.getFileName())
                     .rowNumber(lineNumber)
-                    .errorCode(PROCESS_ERROR)
-                    .errorMessage(e.getMessage())
+                    .errorCode(errorDetails.getErrorCode())
+                    .errorMessage(errorDetails.getErrorMessage())
                     .build();
 
             errorList.add(error);

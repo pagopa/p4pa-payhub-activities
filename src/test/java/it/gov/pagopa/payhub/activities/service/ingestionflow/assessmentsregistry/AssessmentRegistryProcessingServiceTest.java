@@ -50,20 +50,16 @@ class AssessmentRegistryProcessingServiceTest {
     private AssessmentsRegistryService assessmentsRegistryServiceMock;
     @Mock
     private OrganizationService organizationServiceMock;
-    @Mock
-    private FileExceptionHandlerService fileExceptionHandlerServiceMock;
 
     private AssessmentsRegistryProcessingService service;
 
     private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
-    private final FileExceptionHandlerService.CsvErrorDetails csvErrorDetails =
-            new FileExceptionHandlerService.CsvErrorDetails(FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore");
-
     @BeforeEach
     void setUp() {
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
         service = new AssessmentsRegistryProcessingService(mapperMock, errorsArchiverServiceMock,
-                assessmentsRegistryServiceMock, organizationServiceMock, fileExceptionHandlerServiceMock);
+                assessmentsRegistryServiceMock, organizationServiceMock, fileExceptionHandlerService);
     }
 
     @AfterEach
@@ -110,8 +106,8 @@ class AssessmentRegistryProcessingServiceTest {
                 .writeErrors(workingDirectoryMock, ingestionFlowFile, List.of(
                         AssessmentsRegistryErrorDTO.builder()
                                 .fileName(ingestionFlowFile.getFileName())
-                                .errorCode("ORGANIZATION_IPA_DOES_NOT_MATCH")
-                                .errorMessage("Organization IPA code IPA123 does not match with the one in the ingestion flow file IPA123_WRONG")
+                                .errorCode(FileErrorCode.ORGANIZATION_IPA_MISMATCH.name())
+                                .errorMessage("Il codice IPA IPA123 dell'ente non corrisponde a quello del file IPA123_WRONG")
                                 .rowNumber(1L)
                                 .organizationIpaCode(ipaCode)
                                 .build())
@@ -184,10 +180,6 @@ class AssessmentRegistryProcessingServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
 
-        CsvException exception = new CsvException("DUMMYERROR");
-        Mockito.when(fileExceptionHandlerServiceMock.mapCsvExceptionToErrorCodeAndMessage(exception))
-                .thenReturn(csvErrorDetails);
-
         Mockito.when(assessmentsRegistryServiceMock.searchAssessmentsRegistryBySemanticKey(registrySemanticKey))
                         .thenReturn(Optional.empty());
 
@@ -199,7 +191,7 @@ class AssessmentRegistryProcessingServiceTest {
 
         // When
         AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
-                Stream.of(dto).iterator(), List.of(exception),
+                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile, workingDirectoryMock);
 
         // Then
@@ -212,13 +204,13 @@ class AssessmentRegistryProcessingServiceTest {
                 .writeErrors(workingDirectoryMock, ingestionFlowFile, List.of(
                         AssessmentsRegistryErrorDTO.builder()
                                 .fileName(ingestionFlowFile.getFileName())
-                                .errorCode("CSV_GENERIC_ERROR")
-                                .errorMessage("Errore")
+                                .errorCode(FileErrorCode.CSV_GENERIC_ERROR.name())
+                                .errorMessage("Errore generico nella lettura del file: DUMMYERROR")
                                 .rowNumber(-1L)
                                 .build(),
                         AssessmentsRegistryErrorDTO.builder()
                                 .fileName(ingestionFlowFile.getFileName())
-                                .errorCode("PROCESS_EXCEPTION")
+                                .errorCode(FileErrorCode.GENERIC_ERROR.name())
                                 .errorMessage("Processing error")
                                 .rowNumber(2L)
                                 .organizationIpaCode(ipaCode)
@@ -275,8 +267,8 @@ class AssessmentRegistryProcessingServiceTest {
                 .writeErrors(workingDirectoryMock, ingestionFlowFile, List.of(
                         AssessmentsRegistryErrorDTO.builder()
                                 .fileName(ingestionFlowFile.getFileName())
-                                .errorCode("ASSESSMENTS_REGISTRY_ALREADY_EXISTS")
-                                .errorMessage("AssessmentsRegistry already exists")
+                                .errorCode(FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name())
+                                .errorMessage(FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage())
                                 .rowNumber(1L)
                                 .organizationIpaCode(ipaCode)
                                 .assessmentCode(assessmentsRegistry.getAssessmentCode())

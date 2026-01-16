@@ -4,6 +4,7 @@ import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
@@ -58,10 +59,9 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
                 }
             } catch (Exception e){
                 log.error("Not handled exception during IngestionFlowFile processing: ingestionFlowFileId {}, lineNumber {}",
-                        ingestionFlowFile.getIngestionFlowFileId(),
-                        totalRows
-                        , e);
-                errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), totalRows, "PROCESSING_ERROR", e.getMessage()));
+                        ingestionFlowFile.getIngestionFlowFileId(), totalRows, e);
+                FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
+                errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), totalRows, FileErrorCode.PROCESSING_ERROR.name(), errorDetails.getErrorMessage()));
             }
         }
         totalRows = processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList, totalRows);
@@ -85,7 +85,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
             List<CsvException> newExceptions = readerExceptions.subList(previousSize, readerExceptions.size());
 
             newExceptions.forEach(e -> {
-                FileExceptionHandlerService.CsvErrorDetails errorDetails = fileExceptionHandlerService.mapCsvExceptionToErrorCodeAndMessage(e);
+                FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapCsvExceptionToErrorCodeAndMessage(e);
 
                 errorList.add(buildErrorDto(
                         ingestionFlowFile.getFileName(),
@@ -122,7 +122,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     protected String getIpaCodeByOrganizationId(Long organizationId){
         Optional<Organization> organizationOptional = organizationService.getOrganizationById(organizationId);
         if (organizationOptional.isEmpty()){
-            String errorMessage = String.format("Organization with id %s not found", organizationId);
+            String errorMessage = String.format("[%s] Organization with id %s not found", FileErrorCode.ORGANIZATION_NOT_FOUND.name(), organizationId);
             log.error(errorMessage);
             throw new OrganizationNotFoundException(errorMessage);
         } else {

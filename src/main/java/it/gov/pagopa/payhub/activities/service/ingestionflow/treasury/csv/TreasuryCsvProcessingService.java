@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngesti
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csv.TreasuryCsvIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csv.TreasuryCsvMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -32,6 +33,7 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
 
     private final TreasuryCsvMapper treasuryCsvMapper;
     private final TreasuryService treasuryService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public TreasuryCsvProcessingService(
             TreasuryCsvMapper treasuryCsvMapper,
@@ -42,6 +44,7 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
         super(treasuryCsvErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.treasuryCsvMapper = treasuryCsvMapper;
         this.treasuryService = treasuryService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public TreasuryIufIngestionFlowFileResult processTreasuryCsv(
@@ -70,14 +73,13 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
                 if (existingTreasury != null) {
                     boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
                     if (treasuryMatch) {
-                        String errorMessage = String.format(
-                                "IUF %s already associated to another treasury for organization with IPA code %s",
-                                rowIuf, ipa);
-                        log.error(errorMessage);
+                        log.error("IUF {} already associated to another treasury for organization with IPA code {}", rowIuf, ipa);
                         TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
                                 ingestionFlowFile.getFileName(),
                                 rowIuf,
-                                lineNumber, "IUF_ALREADY_ASSOCIATED", errorMessage);
+                                lineNumber,
+                                FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
+                                FileErrorCode.IUF_ALREADY_ASSOCIATED.format(rowIuf, ipa));
                         errorList.add(error);
                         return false;
                     }
@@ -98,10 +100,11 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             log.error("Error processing treasury csv with iuf {}: {}",
                     rowIuf,
                     e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
                     ingestionFlowFile.getFileName(),
                     rowIuf,
-                    lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;

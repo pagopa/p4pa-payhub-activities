@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.orgsilservice.OrgSilServiceMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -31,6 +32,7 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
 
     private final OrgSilServiceMapper orgSilServiceMapper;
     private final OrgSilServiceService orgSilServiceService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public OrgSilServiceProcessingService(
             OrgSilServiceMapper orgSilServiceMapper,
@@ -40,6 +42,7 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
         super(orgSilServiceErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.orgSilServiceMapper = orgSilServiceMapper;
         this.orgSilServiceService = orgSilServiceService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public OrgSilServiceIngestionFlowFileResult processOrgSilService(
@@ -65,13 +68,12 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
         try {
             String ipa = ingestionFlowFileResult.getIpaCode();
             if (!row.getIpaCode().equalsIgnoreCase(ipa)) {
-                String errorMessage = String.format(
-                        "Organization IPA code %s does not match with the one in the ingestion flow file %s",
-                        row.getIpaCode(), ipa);
-                log.error(errorMessage);
+                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getIpaCode(), ipa);
                 OrgSilServiceErrorDTO error = new OrgSilServiceErrorDTO(
                         ingestionFlowFile.getFileName(), row.getIpaCode(), row.getApplicationName(),
-                        lineNumber, "ORGANIZATION_IPA_DOES_NOT_MATCH", errorMessage);
+                        lineNumber,
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getIpaCode(), ipa));
                 errorList.add(error);
                 return false;
 
@@ -81,11 +83,11 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
 
             if(optionalOrganization.isEmpty()) {
                 log.error("Organization with IPA code {} does not exist", row.getIpaCode());
-                String errorMessage = String.format(
-                        "Organization with IPA code %s does not exist", row.getIpaCode());
                 OrgSilServiceErrorDTO error = new OrgSilServiceErrorDTO(
                         ingestionFlowFile.getFileName(), row.getIpaCode(), row.getApplicationName(),
-                        lineNumber, "ORGANIZATION_IPA_DOES_NOT_EXISTS", errorMessage);
+                        lineNumber,
+                        FileErrorCode.ORGANIZATION_IPA_DOES_NOT_EXISTS.name(),
+                        FileErrorCode.ORGANIZATION_IPA_DOES_NOT_EXISTS.format(row.getIpaCode()));
                 errorList.add(error);
                 return false;
             }
@@ -111,12 +113,13 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
 
         } catch (Exception e) {
             log.error("Error processing org sil service with organization ipa code:{} and application name {}: {}", row.getIpaCode(), row.getApplicationName(), e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             OrgSilServiceErrorDTO error = OrgSilServiceErrorDTO.builder()
                     .fileName(ingestionFlowFile.getFileName())
                     .ipaCode(row.getIpaCode())
                     .applicationName(row.getApplicationName())
-                    .errorCode("PROCESS_EXCEPTION")
-                    .errorMessage(e.getMessage())
+                    .errorCode(errorDetails.getErrorCode())
+                    .errorMessage(errorDetails.getErrorMessage())
                     .rowNumber(lineNumber)
                     .build();
             errorList.add(error);

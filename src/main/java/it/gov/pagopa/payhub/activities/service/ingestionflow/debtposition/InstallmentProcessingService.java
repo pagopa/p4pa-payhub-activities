@@ -32,6 +32,7 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     private final DebtPositionService debtPositionService;
     private final InstallmentSynchronizeMapper installmentSynchronizeMapper;
     private final DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService;
+    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public InstallmentProcessingService(DebtPositionService debtPositionService,
                                         InstallmentSynchronizeMapper installmentSynchronizeMapper,
@@ -42,6 +43,7 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         this.debtPositionService = debtPositionService;
         this.installmentSynchronizeMapper = installmentSynchronizeMapper;
         this.dpInstallmentsWorkflowCompletionService = dpInstallmentsWorkflowCompletionService;
+        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     /**
@@ -84,10 +86,11 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
             return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber, ingestionFlowFile.getFileName(), errorList);
         } catch (Exception e) {
             log.error("Error processing installment {}: {}", installment.getIud(), e.getMessage());
+            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
             InstallmentErrorDTO error = new InstallmentErrorDTO(
                     ingestionFlowFile.getFileName(),
                     installment.getIupdOrg(), installment.getIud(), null,
-                    lineNumber, "PROCESS_EXCEPTION", e.getMessage());
+                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
             errorList.add(error);
             log.info("Current error list size after handleProcessingError: {}", errorList.size());
             return false;

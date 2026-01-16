@@ -47,7 +47,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
         } catch (Exception e) {
             log.info("file flussoGiornaleDiCassa with name {} parsing error using version handler {}: {}", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName(), e.getMessage());
 
-            FileExceptionHandlerService.XmlErrorDetails xmlErrorDetails =
+            FileExceptionHandlerService.ErrorDetails xmlErrorDetails =
                     fileExceptionHandlerService.mapXmlParsingExceptionToErrorCodeAndMessage(e.getMessage());
 
             TreasuryErrorDTO unmarshallError = TreasuryErrorDTO.builder()
