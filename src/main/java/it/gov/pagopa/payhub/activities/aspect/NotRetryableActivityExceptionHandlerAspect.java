@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.aspect;
 
+import io.micrometer.tracing.Tracer;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityInfo;
 import io.temporal.failure.ApplicationFailure;
@@ -20,6 +21,13 @@ public class NotRetryableActivityExceptionHandlerAspect {
 
     private static final PerformanceLoggerThresholdLevels defaultPerformanceThresholdLevels =
             new PerformanceLoggerThresholdLevels(300, 1200);
+
+    @SuppressWarnings({"unused", "FieldCanBeLocal"}) // added dependency in order to make this service observation aware
+    private final Tracer tracer;
+
+    public NotRetryableActivityExceptionHandlerAspect(Tracer tracer) {
+        this.tracer = tracer;
+    }
 
     @Pointcut("within(it.gov.pagopa..activity..*)")
     public void activityBean() {
