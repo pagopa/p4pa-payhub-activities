@@ -1,6 +1,5 @@
 package it.gov.pagopa.payhub.activities.aspect;
 
-import io.micrometer.tracing.Tracer;
 import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
@@ -29,8 +28,6 @@ class NotRetryableActivityExceptionHandlerAspectTest {
 
     @MockitoBean
     private IngestionFlowFileService ingestionFlowFileServiceMock;
-    @MockitoBean
-    private Tracer tracerMock;
 
     @Test
     void givenNotErrorWhenInvokeActivityThenReturnItsValue(){
