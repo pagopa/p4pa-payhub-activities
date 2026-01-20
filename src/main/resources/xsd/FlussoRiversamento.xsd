@@ -95,6 +95,13 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="stRevisione">
+		<xsd:restriction base="xsd:integer">
+			<xsd:minInclusive value="1"/>
+			<xsd:maxInclusive value="2147483647"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 	<!-- **** END: tipi semplici ****-->
 
 	<!-- **** BEGIN: tipi complessi ****-->
@@ -223,6 +230,12 @@
 				<xsd:annotation>
 					<xsd:documentation>Identificativo legato alla trasmissione del flusso di riconciliazione.</xsd:documentation>
 					<xsd:documentation>Deve essere univoco nell’ambito dell’anno di riferimento delle operazioni di pagamento cui si riferisce il flusso.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="revisioneFlusso" type="pay_i:stRevisione" minOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Numero di revisione che identifica la versione del flusso.</xsd:documentation>
+					<xsd:documentation>Valore interi ammessi: esempio 1</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="dataOraFlusso" type="pay_i:stISODateTime" minOccurs="1">

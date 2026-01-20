@@ -45,14 +45,14 @@ public class OrganizationPaymentsReportingPagoPaRetrieverActivityImpl implements
 			.filter(idDTO -> !alreadyProcessedFileNames.contains(idDTO.getPaymentsReportingFileName()))
 			.map(idDTO -> {
 				Organization organization = organizationService.getOrganizationById(organizationId).orElseThrow(() -> new IllegalArgumentException("Organization doesn't exists: " + organizationId));
-				return paymentsReportingPagoPaService.fetchPaymentReporting(organization, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName(), Optional.ofNullable(idDTO.getRevision()).orElse(0).longValue(), null); //TODO null will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
+				return paymentsReportingPagoPaService.fetchPaymentReporting(organization, idDTO.getPagopaPaymentsReportingId(), idDTO.getPaymentsReportingFileName(), Optional.ofNullable(idDTO.getRevision()).orElse(0).longValue(), idDTO.getPspId());
             })
 			.toList();
 	}
 
 	/**
-	 * Filters the Set of PaymentsReportingIdDTOs to find those that have not been processed yet based on file names.
-	 * @return a Set of file names that have not been processed
+	 * Map the Set of PaymentsReportingIdDTOs to find those that have been already processed, based on file names.
+	 * @return a Set of file names that have been processed
 	 */
 	private Set<String> getFilenamesFilteredByStatus(Long organizationId, List<PaymentsReportingIdDTO> paymentsReportingIds) {
 		return paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName)

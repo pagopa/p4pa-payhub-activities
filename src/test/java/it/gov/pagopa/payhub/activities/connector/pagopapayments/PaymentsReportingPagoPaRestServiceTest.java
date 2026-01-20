@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentsReportingPagoPaServiceTest {
+class PaymentsReportingPagoPaRestServiceTest {
 	@Mock
 	private PaymentsReportingPagoPaClient paymentsReportingPagoPaClientMock;
 	@Mock
@@ -29,7 +30,7 @@ class PaymentsReportingPagoPaServiceTest {
 	private PaymentsReportingPagoPaService service;
 
 	@BeforeEach
-	void setUp() { service = new PaymentsReportingPagoPaServiceImpl(paymentsReportingPagoPaClientMock, authnServiceMock); }
+	void setUp() { service = new PaymentsReportingPagoPaRestServiceImpl(paymentsReportingPagoPaClientMock, authnServiceMock); }
 
 	@AfterEach
 	void tearDown() {
@@ -41,9 +42,10 @@ class PaymentsReportingPagoPaServiceTest {
 		// Given
 		String accessToken = "accessToken";
 		Long organizationId = 1L;
+		OffsetDateTime latestFlowDate = null; // getPaymentsReportingList pass null as latestFlowDate to restGetPaymentsReportingList
 		List<PaymentsReportingIdDTO> expectedResponse = List.of(new PaymentsReportingIdDTO());
 		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-		when(paymentsReportingPagoPaClientMock.getPaymentsReportingList(organizationId, accessToken)).thenReturn(expectedResponse);
+		when(paymentsReportingPagoPaClientMock.restGetPaymentsReportingList(organizationId, latestFlowDate, accessToken)).thenReturn(expectedResponse);
 		// When
 		List<PaymentsReportingIdDTO> result = service.getPaymentsReportingList(organizationId);
 
@@ -64,7 +66,7 @@ class PaymentsReportingPagoPaServiceTest {
 		Long expectedResponse = 123L;
 
 		when(authnServiceMock.getAccessToken(organization.getIpaCode())).thenReturn(accessToken);
-		when(paymentsReportingPagoPaClientMock.fetchPaymentReporting(organization.getOrganizationId(), flowId, fileName, revision, pspId, accessToken)).thenReturn(expectedResponse);
+		when(paymentsReportingPagoPaClientMock.restFetchPaymentReporting(organization.getOrganizationId(), flowId, fileName, revision, pspId, accessToken)).thenReturn(expectedResponse);
 
 		// When
 		Long result = service.fetchPaymentReporting(organization, flowId, fileName, revision, pspId);

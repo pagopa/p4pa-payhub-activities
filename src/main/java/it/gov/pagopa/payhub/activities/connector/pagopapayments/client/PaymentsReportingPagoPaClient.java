@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Lazy
@@ -16,13 +17,23 @@ public class PaymentsReportingPagoPaClient {
 		this.pagoPaPaymentsApisHolder = pagoPaPaymentsApisHolder;
 	}
 
-	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, String accessToken) {
+	public List<PaymentsReportingIdDTO> restGetPaymentsReportingList(Long organizationId, OffsetDateTime latestFlowDate, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.getPaymentsReportingList(organizationId, null); //TODO will be removed from OpenAPI payments-reporting in https://pagopa.atlassian.net/browse/P4ADEV-4297
+				.restGetPaymentsReportingList(organizationId, latestFlowDate);
 	}
 
-	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
+	public Long restFetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, revision, pspId);
+				.restFetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, revision, pspId);
+	}
+
+	public List<PaymentsReportingIdDTO> soapGetPaymentsReportingList(Long organizationId, String accessToken) {
+		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
+				.soapGetPaymentsReportingList(organizationId);
+	}
+
+	public Long soapFetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, String accessToken) {
+		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
+				.soapFetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName);
 	}
 }

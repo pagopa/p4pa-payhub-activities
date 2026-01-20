@@ -35,20 +35,20 @@ class PaymentsReportingPagoPaClientTest {
 	void testGetPaymentsReportingList() {
 		// Given
 		Long organizationId = 1L;
-		OffsetDateTime latestReportDate = null; //TODO null will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
+		OffsetDateTime latestReportDate = OffsetDateTime.now();
 		String accessToken = "accessToken";
 		PaymentsReportingIdDTO expectedResponse = new PaymentsReportingIdDTO();
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.getPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
+		when(mockApi.restGetPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
 
 		// When
-		List<PaymentsReportingIdDTO> result = client.getPaymentsReportingList(organizationId, accessToken);
+		List<PaymentsReportingIdDTO> result = client.restGetPaymentsReportingList(organizationId, latestReportDate, accessToken);
 
 		// Then
 		assertEquals(List.of(expectedResponse), result);
 		verify(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken), times(1))
-			.getPaymentsReportingList(organizationId, latestReportDate);
+			.restGetPaymentsReportingList(organizationId, latestReportDate);
 	}
 
 	@Test
@@ -64,10 +64,10 @@ class PaymentsReportingPagoPaClientTest {
 
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId)).thenReturn(expectedResponse);
+		when(mockApi.restFetchPaymentReporting(organizationId, flowId, fileName, revision, pspId)).thenReturn(expectedResponse);
 
 		// When
-		Long result = client.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId, accessToken);
+		Long result = client.restFetchPaymentReporting(organizationId, flowId, fileName, revision, pspId, accessToken);
 
 		// Then
 		assertEquals(expectedResponse, result);

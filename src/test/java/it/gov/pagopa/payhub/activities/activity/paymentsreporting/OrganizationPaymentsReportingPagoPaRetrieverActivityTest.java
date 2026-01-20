@@ -62,11 +62,13 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 		OffsetDateTime now = OffsetDateTime.now();
 		String filename = idFlow + now +".xml";
 		Long revision = 1L;
+		String pspId = "pspId";
 		PaymentsReportingIdDTO dto = PaymentsReportingIdDTO.builder()
 			.pagopaPaymentsReportingId(idFlow)
 			.flowDateTime(now)
 			.paymentsReportingFileName(filename)
-			.revision(1)
+			.revision(revision.intValue())
+			.pspId(pspId)
 			.build();
 		IngestionFlowFile ingestionFlowFile = IngestionFlowFileFaker.buildIngestionFlowFile();
 		ingestionFlowFile.setOrganizationId(organizationId);
@@ -77,7 +79,7 @@ class OrganizationPaymentsReportingPagoPaRetrieverActivityTest {
 				.thenReturn(Optional.of(organization));
 		Mockito.when(ingestionFlowFileServiceMock.findByOrganizationIdFlowTypeFilename(organizationId, PAYMENTS_REPORTING_PAGOPA, dto.getPaymentsReportingFileName()))
 				.thenReturn(List.of(ingestionFlowFile));
-		Mockito.when(paymentsReportingPagoPaServiceMock.fetchPaymentReporting(organization, idFlow, filename, revision, null)) //TODO pspId null will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
+		Mockito.when(paymentsReportingPagoPaServiceMock.fetchPaymentReporting(organization, idFlow, filename, revision, pspId))
 				.thenReturn(expectedIngestionFlowFileId);
 
 		// When
