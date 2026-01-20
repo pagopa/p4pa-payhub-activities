@@ -101,6 +101,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
+    implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
     implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-compress:$commonsCompressVersion")

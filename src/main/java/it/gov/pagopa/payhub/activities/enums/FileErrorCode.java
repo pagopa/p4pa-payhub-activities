@@ -33,11 +33,15 @@ public enum FileErrorCode {
 
     // organization
     BROKER_MISMATCH("L'intermediario non e' correlato con l'ente"),
+    BROKER_NOT_FOUND("L'intermediario non e' stato trovato"),
     ORGANIZATION_IPA_MISMATCH("Il codice IPA %s dell'ente non corrisponde a quello del file %s"),
     ORGANIZATION_IPA_DOES_NOT_EXISTS("L'ente con codice IPA %s non esiste"),
     ORGANIZATION_NOT_FOUND("L'ente non esiste"),
     ORGANIZATION_ALREADY_EXISTS("L'ente esiste gia'"),
+    ORG_SIL_SERVICE_NOT_FOUND("L'Org Sil Service non e' stato trovato"),
     INVALID_ORGANIZATION_STATUS("L'ente non e' attivo"),
+    INVALID_SEGREGATION_CODE("Codice di segregazione non valido"),
+    MISSING_ORGANIZATION_FIELDS("Il logo, l'iban e il codice di segregazione dell'ente sono obbligatori"),
 
     // debt position
     DEBT_POSITION_BY_IUD_NOT_FOUND("La posizione debitoria con IUD %s non e' stata trovata per l'ente"),
