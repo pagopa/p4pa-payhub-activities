@@ -138,6 +138,11 @@ See [config/application.yml](src/main/resources/config/application.yml) for each
 | RECEIPTS_ARCHIVING_EXPORT_FLOW_FILE_SIZE_PAGE   | Page size configured when exporting receipt for archiving purposes                                | 10000   |
 | CLASSIFICATIONS_EXPORT_FLOW_FILE_SIZE_PAGE      | Page size configured when exporting classifications                                               | 10000   |
 
+##### IngestFile
+| ENV                                                        | DESCRIPTION                                                                          | DEFAULT |
+|------------------------------------------------------------|--------------------------------------------------------------------------------------|---------|
+| INGEST_FLOW_FILES_PAYMENTS_REPORTING_LEGACY_FEATURE_FLAGS  | Select between legacy SOAP or new REST PaymentsReportingPagoPaService implementation | false   |
+
 #### 🔑 keys
 | ENV                   | DESCRIPTION                                                              | DEFAULT |
 |-----------------------|--------------------------------------------------------------------------|---------|

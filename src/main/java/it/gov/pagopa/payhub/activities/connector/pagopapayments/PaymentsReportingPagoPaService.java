@@ -22,6 +22,9 @@ public interface PaymentsReportingPagoPaService {
 	 *
 	 * @param organization the organization
 	 * @param pagopaPaymentsReportingId the flow id
+	 * @param fileName the ingestion flow filename
+	 * @param revision the payments reporting revision number (not needed for SOAP)
+	 * @param pspId the psp id (not needed for SOAP)
 	 * @return the payment reporting data to download
 	 */
 	Long fetchPaymentReporting(Organization organization, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId);

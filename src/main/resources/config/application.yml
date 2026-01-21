@@ -16,6 +16,8 @@ ingestion-flow-files:
     wf-await:
       max-waiting-minutes: 5
       retry-delays-ms: 1000
+  payments-reporting:
+    legacy-feature-flags: "\${INGEST_FLOW_FILES_PAYMENTS_REPORTING_LEGACY_FEATURE_FLAGS:false}"
 
 export-flow-files:
   page-request-thresholds:

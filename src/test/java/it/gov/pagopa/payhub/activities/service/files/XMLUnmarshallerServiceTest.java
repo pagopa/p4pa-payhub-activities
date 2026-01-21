@@ -24,6 +24,7 @@ class XMLUnmarshallerServiceTest {
 			<FlussoRiversamento xmlns="http://www.digitpa.gov.it/schemas/2011/Pagamenti/">
 			    <versioneOggetto>1.0</versioneOggetto>
 			    <identificativoFlusso>2024-04-07ABI03062-315V900103811327</identificativoFlusso>
+			    <revisioneFlusso>1</revisioneFlusso>
 			    <dataOraFlusso>2024-12-01T12:00:00</dataOraFlusso>
 			    <identificativoUnivocoRegolamento>Bonifico SEPA-03062-315V9</identificativoUnivocoRegolamento>
 			    <dataRegolamento>2024-12-01</dataRegolamento>

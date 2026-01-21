@@ -47,7 +47,8 @@ public class PaymentsReportingMapperService {
 			.receiverOrganizationType(ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getTipoIdentificativoUnivoco().value())
 			.totalAmountCents(ctFlussoRiversamento.getImportoTotalePagamenti().movePointRight(2).longValueExact())
 			.totalPayments(ctFlussoRiversamento.getNumeroTotalePagamenti().longValueExact())
-			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento());
+			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento())
+			.revision(ctFlussoRiversamento.getRevisioneFlusso());
 
 		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
 			.map(item -> builder
