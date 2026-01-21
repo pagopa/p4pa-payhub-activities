@@ -32,27 +32,27 @@ class PaymentsReportingPagoPaClientTest {
 	void tearDown() { Mockito.verifyNoMoreInteractions(pagoPaPaymentsApisHolderMock); }
 
 	@Test
-	void testGetPaymentsReportingList() {
+	void testRestGetPaymentsReportingList() {
 		// Given
 		Long organizationId = 1L;
-		OffsetDateTime latestReportDate = null; //TODO null will be fixed in https://pagopa.atlassian.net/browse/P4ADEV-4297
+		OffsetDateTime latestReportDate = OffsetDateTime.now();
 		String accessToken = "accessToken";
 		PaymentsReportingIdDTO expectedResponse = new PaymentsReportingIdDTO();
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.getPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
+		when(mockApi.restGetPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
 
 		// When
-		List<PaymentsReportingIdDTO> result = client.getPaymentsReportingList(organizationId, accessToken);
+		List<PaymentsReportingIdDTO> result = client.restGetPaymentsReportingList(organizationId, latestReportDate, accessToken);
 
 		// Then
 		assertEquals(List.of(expectedResponse), result);
 		verify(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken), times(1))
-			.getPaymentsReportingList(organizationId, latestReportDate);
+			.restGetPaymentsReportingList(organizationId, latestReportDate);
 	}
 
 	@Test
-	void testFetchPaymentReporting() {
+	void testRestFetchPaymentReporting() {
 		// Given
 		Long organizationId = 1L;
 		String flowId = "flowId";
@@ -64,10 +64,49 @@ class PaymentsReportingPagoPaClientTest {
 
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId)).thenReturn(expectedResponse);
+		when(mockApi.restFetchPaymentReporting(organizationId, flowId, fileName, revision, pspId)).thenReturn(expectedResponse);
 
 		// When
-		Long result = client.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId, accessToken);
+		Long result = client.restFetchPaymentReporting(organizationId, flowId, fileName, revision, pspId, accessToken);
+
+		// Then
+		assertEquals(expectedResponse, result);
+	}
+
+	@Test
+	void testSoapGetPaymentsReportingList() {
+		// Given
+		Long organizationId = 1L;
+		String accessToken = "accessToken";
+		PaymentsReportingIdDTO expectedResponse = new PaymentsReportingIdDTO();
+		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
+		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
+		when(mockApi.soapGetPaymentsReportingList(organizationId)).thenReturn(List.of(expectedResponse));
+
+		// When
+		List<PaymentsReportingIdDTO> result = client.soapGetPaymentsReportingList(organizationId, accessToken);
+
+		// Then
+		assertEquals(List.of(expectedResponse), result);
+		verify(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken), times(1))
+				.soapGetPaymentsReportingList(organizationId);
+	}
+
+	@Test
+	void testSoapFetchPaymentReporting() {
+		// Given
+		Long organizationId = 1L;
+		String flowId = "flowId";
+		String fileName = "fileName";
+		String accessToken = "accessToken";
+		Long expectedResponse = 123L;
+
+		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
+		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
+		when(mockApi.soapFetchPaymentReporting(organizationId, flowId, fileName)).thenReturn(expectedResponse);
+
+		// When
+		Long result = client.soapFetchPaymentReporting(organizationId, flowId, fileName, accessToken);
 
 		// Then
 		assertEquals(expectedResponse, result);
