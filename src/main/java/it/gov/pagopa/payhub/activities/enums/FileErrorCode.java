@@ -79,6 +79,7 @@ public enum FileErrorCode {
     INVALID_VAT_CODE("Il codice fiscale o partita iva non e' valido"),
     INVALID_FULLNAME("Il nome del beneficiario e' obbligatorio"),
     INVALID_EMAIL("L'email non e' formattata correttamente"),
+    INVALID_INSTALLMENT_NAV_MISMATCH("I campi codIuv e identificativoUnivocoVersamento non corrispondono con quelli della rata gia' presente nel sistema"),
 
     // transfer
     MISSING_TRANSFER("La rata deve avere almeno un beneficiario"),
