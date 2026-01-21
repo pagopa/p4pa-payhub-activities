@@ -59,7 +59,7 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	void whenGetPaymentsReportingApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
 			accessToken -> pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-					.getPaymentsReportingList(1L, OffsetDateTime.now()),
+					.restGetPaymentsReportingList(1L, OffsetDateTime.now()),
 			new ParameterizedTypeReference<>() {},
 			pagoPaPaymentsApisHolder::unload);
 	}
