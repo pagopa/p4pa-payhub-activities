@@ -24,7 +24,7 @@ data "azurerm_key_vault_secret" "sonar_token" {
   name         = "sonar-cloud-token"
 }
 
-# Key Vault - Sonar Token
+# Key Vault - GitHub Token
 data "azurerm_key_vault_secret" "github_token" {
   count = var.env_short == "p" ? 1 : 0
 
@@ -32,7 +32,7 @@ data "azurerm_key_vault_secret" "github_token" {
   name         = "azure-devops-github-rw-TOKEN"
 }
 
-# Key Vault - Slack webhok
+# Key Vault - Slack webhook
 data "azurerm_key_vault_secret" "slack_webhook" {
   count = var.env_short == "p" ? 1 : 0
 
