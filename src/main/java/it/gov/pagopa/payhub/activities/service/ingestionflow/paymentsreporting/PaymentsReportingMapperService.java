@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class responsible for data mapping related to `PaymentsReporting` objects.
@@ -48,7 +49,7 @@ public class PaymentsReportingMapperService {
 			.totalAmountCents(ctFlussoRiversamento.getImportoTotalePagamenti().movePointRight(2).longValueExact())
 			.totalPayments(ctFlussoRiversamento.getNumeroTotalePagamenti().longValueExact())
 			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento())
-			.revision(ctFlussoRiversamento.getRevisioneFlusso());
+			.revision(Optional.ofNullable(ctFlussoRiversamento.getRevisioneFlusso()).orElse(0));
 
 		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
 			.map(item -> builder
