@@ -120,6 +120,24 @@ public enum FileErrorCode {
     NOTIFICATION_ALREADY_PROCESSED("La notifica SEND e' gia' stata processata"),
     NOTIFICATION_NOT_PROCESSED("Non e' stato possibile processare la notifica SEND"),
 
+    //workflow-hub
+    SEND_DELIVERY_CONFLICT("Workflow terminato con errore durante l'invio della notifica SEND"),
+    SEND_STATUS_ERROR("Workflow terminato con errore durante il controllo dello stato della notifica SEND"),
+    WORKFLOW_INTERNAL_ERROR("Errore generico"),
+    INVALID_CONFIG("Configurazione non valida"),
+    INVALID_EXECUTION_CONFIG("Configurazione di esecuzione non valida"),
+    INVALID_EXECUTION_CONFIG_TYPE("Configurazione del tipo di esecuzione non valida"),
+    INVALID_INGESTION_FLOW_FILE_TYPE("Tipologia di import non supportata"),
+    INVALID_WORKFLOW_ID("Workflow ID non valido"),
+    INVALID_ORGANIZATION_ID_OR_IUD("Workflow ID o IUD non valido"),
+    INVALID_ORGANIZATION_ID_OR_IUF("Workflow ID o IUF non valido"),
+    WORKFLOW_NOT_FOUND("Workflow non trovato"),
+    WORKFLOW_TYPE_NOT_FOUND("Tipologia di workflow non trovato"),
+    TOO_MANY_ATTEMPTS("Numero massimo di tentativi raggiunto"),
+    JSON_SERIALIZATION_ERROR("Errore durante la serializzazione del JSON"),
+    JSON_DESERIALIZATION_ERROR("Errore durante la deserializzazione del JSON"),
+    SYNC_ERROR("Errore durante la sincronizzazione della rata di una posizione debitoria"),
+
     IMMUTABLE_FIELD("Campi non modificabili"),
     TODO;
 
