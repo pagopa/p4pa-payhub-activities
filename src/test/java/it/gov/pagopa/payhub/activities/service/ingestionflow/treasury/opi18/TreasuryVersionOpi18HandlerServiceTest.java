@@ -1,0 +1,54 @@
+package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.opi18;
+
+import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryMapperService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryValidatorService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.treasury.TreasuryVersionBaseHandlerServiceTest;
+import it.gov.pagopa.payhub.activities.xsd.treasury.opi18.FlussoGiornaleDiCassa;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.OngoingStubbing;
+
+import java.io.File;
+
+import static org.mockito.Mockito.mock;
+
+@ExtendWith(MockitoExtension.class)
+public class TreasuryVersionOpi18HandlerServiceTest extends TreasuryVersionBaseHandlerServiceTest<FlussoGiornaleDiCassa> {
+    @Mock
+    private TreasuryMapperOpi18Service mapperServiceMock;
+    @Mock
+    private TreasuryValidatorOpi18Service validatorServiceMock;
+
+    @Override
+    protected FlussoGiornaleDiCassa mockFlussoGiornaleDiCassa() {
+        return mock(FlussoGiornaleDiCassa.class);
+    }
+
+    @Override
+    protected TreasuryVersionBaseHandlerService<FlussoGiornaleDiCassa> buildVersionHandlerService() {
+        return new TreasuryVersionOpi18HandlerService(mapperServiceMock, validatorServiceMock, treasuryUnmarshallerServiceMock, treasuryErrorsArchiverServiceMock, treasuryServiceMock, fileExceptionHandlerServiceMock);
+    }
+
+    @Override
+    protected String getExpectedFileVersion() {
+        return "1.8";
+    }
+
+    @Override
+    protected OngoingStubbing<FlussoGiornaleDiCassa> getUnmarshallerMockitOngoingStubbing(File xmlFile) {
+        return Mockito.when(treasuryUnmarshallerServiceMock.unmarshalOpi18(xmlFile));
+    }
+
+    @Override
+    protected TreasuryValidatorService<FlussoGiornaleDiCassa> getValidatorServiceMock() {
+        return validatorServiceMock;
+    }
+
+    @Override
+    protected TreasuryMapperService<FlussoGiornaleDiCassa> getMapperServiceMock() {
+        return mapperServiceMock;
+    }
+}
