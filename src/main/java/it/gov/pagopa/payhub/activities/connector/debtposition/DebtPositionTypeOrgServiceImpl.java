@@ -30,7 +30,7 @@ public class DebtPositionTypeOrgServiceImpl implements DebtPositionTypeOrgServic
 
     @Override
     public IONotificationDTO getDefaultIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType) {
-        log.info("Fetching IO Notification details for debtPositionTypeOrgId: {} and paymentEventType: {}", debtPositionTypeOrgId, paymentEventType);
+        log.debug("Fetching IO Notification details for debtPositionTypeOrgId: {} and paymentEventType: {}", debtPositionTypeOrgId, paymentEventType);
         try {
             // To be updated when debtPositionTypeOrg supports additional PaymentEventType values
             if (paymentEventType != PaymentEventType.DP_CREATED) {
