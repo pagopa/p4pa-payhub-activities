@@ -81,7 +81,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     DEFAULT_ORDERING);
 
             log.info("Synchronizing page {} of {} retrieved searching debt positions related to ingestionFlowFileId {} (totalElements {})",
-                    currentPage, pagedDebtPositions.getTotalPages(), ingestionFlowFileId, pagedDebtPositions.getTotalElements());
+                    currentPage+1, pagedDebtPositions.getTotalPages(), ingestionFlowFileId, pagedDebtPositions.getTotalElements());
             List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> wfIds = syncDebtPositions(ingestionFlowFileId, pagedDebtPositions, errors);
 
             wfIds.forEach(p -> {

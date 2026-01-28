@@ -25,7 +25,7 @@ public class IONotificationFacadeServiceImpl implements IONotificationFacadeServ
 
     @Override
     public MessageResponseDTO sendMessage(NotificationRequestDTO notificationRequestDTO) {
-        log.info("Sending message to IONotification for debt position type org {}", notificationRequestDTO.getDebtPositionTypeOrgId());
+        log.debug("Sending message to IONotification for debt position type org {}", notificationRequestDTO.getDebtPositionTypeOrgId());
         String accessToken = authnService.getAccessToken();
         return ioNotificationClient.sendMessage(notificationRequestDTO, accessToken);
     }
