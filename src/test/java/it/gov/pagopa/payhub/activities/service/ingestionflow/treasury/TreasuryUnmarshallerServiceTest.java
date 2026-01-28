@@ -29,7 +29,8 @@ class TreasuryUnmarshallerServiceTest {
         Resource resourceV1_4 = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd");
         Resource resourceV1_6_1 = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd");
         Resource resourceV1_7_1 = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xsd");
-        treasuryUnmarshallerService = new TreasuryUnmarshallerService(resourceV1_4, resourceV1_6_1, resourceV1_7_1, xmlUnmarshallerService);
+        Resource resourceV1_8 = new ClassPathResource("xsd/OPI_GIORNALE_DI_CASSA_V_1_8.xsd");
+        treasuryUnmarshallerService = new TreasuryUnmarshallerService(resourceV1_4, resourceV1_6_1, resourceV1_7_1, resourceV1_8, xmlUnmarshallerService);
     }
 
     @Test
@@ -114,11 +115,38 @@ class TreasuryUnmarshallerServiceTest {
     }
 
     @Test
+    void givenValidXmlWhenUnmarshalOpi18ThenOk() throws Exception {
+        // given
+        Resource xmlFile = new ClassPathResource("treasury/OPI_GIORNALE_DI_CASSA_V_1_8.VALID.xml");
+        File file = xmlFile.getFile();
+
+        //when
+        it.gov.pagopa.payhub.activities.xsd.treasury.opi18.FlussoGiornaleDiCassa result = treasuryUnmarshallerService.unmarshalOpi18(file);
+
+        // then
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("GDC-202209302022202209291010285#001#001", result.getIdentificativoFlussoBT().getFirst());
+    }
+
+    @Test
+    void givenInvalidXmlWhenUnmarshalOpi18ThenException() throws IOException {
+        // given
+        Resource xmlFile = new ClassPathResource("treasury/OPI_GIORNALE_DI_CASSA_V_1_8.INVALID.xml");
+
+        // when then
+        File file = xmlFile.getFile();
+        Assertions.assertThrows(InvalidValueException.class,
+                () -> treasuryUnmarshallerService.unmarshalOpi18(file),
+                "Error while parsing file"
+        );
+    }
+
+    @Test
     void testJAXBExceptionInConstructorOpi14() {
         try (MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
             mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class))
                     .thenThrow(new JAXBException("Simulated JAXBException"));
-            Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null, null));
+            Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null, null, null));
         }
     }
 
@@ -127,7 +155,7 @@ class TreasuryUnmarshallerServiceTest {
         try (MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
             mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class))
                     .thenThrow(new JAXBException("Simulated JAXBException"));
-            Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null, null));
+            Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null, null, null));
         }
     }
 
@@ -136,7 +164,16 @@ class TreasuryUnmarshallerServiceTest {
         try (MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
             mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa.class))
                     .thenThrow(new JAXBException("Simulated JAXBException"));
-            Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null, null));
+            Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null, null, null));
+        }
+    }
+
+    @Test
+    void testJAXBExceptionInConstructorOpi18() {
+        try (MockedStatic<JAXBContext> mockedStatic = Mockito.mockStatic(JAXBContext.class)) {
+            mockedStatic.when(() -> JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi18.FlussoGiornaleDiCassa.class))
+                    .thenThrow(new JAXBException("Simulated JAXBException"));
+            Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(null, null, null, null, null));
         }
     }
 
@@ -147,6 +184,6 @@ class TreasuryUnmarshallerServiceTest {
         Mockito.when(mockResource.getURL()).thenThrow(new IOException("Simulated IOException"));
 
         // when then
-        Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(mockResource, null, null, null));
+        Assertions.assertThrows(IllegalStateException.class, () -> new TreasuryUnmarshallerService(mockResource, null, null, null, null));
     }
 }
