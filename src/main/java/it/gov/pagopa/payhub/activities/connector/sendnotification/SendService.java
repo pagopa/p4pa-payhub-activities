@@ -8,4 +8,5 @@ public interface SendService {
   void deliveryNotification(String sendNotificationId);
   SendNotificationDTO notificationStatus(String sendNotificationId);
   SendNotificationDTO retrieveNotificationDate(String sendNotificationId);
+  SendNotificationDTO retrieveNotificationByNotificationRequestId(String notificationRequestId);
 }
