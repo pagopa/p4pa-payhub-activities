@@ -27,6 +27,8 @@ public class TreasuryUnmarshallerService {
   private final Schema schemaOpi161;
   private final JAXBContext jaxbContextOpi171;
   private final Schema schemaOpi171;
+  private final JAXBContext jaxbContextOpi18;
+  private final Schema schemaOpi18;
   private final XMLUnmarshallerService xmlUnmarshallerService;
 
   /**
@@ -35,20 +37,24 @@ public class TreasuryUnmarshallerService {
    * @param xsdSchemaResourceOpi14 the XSD Resource of Opi v1.4
    * @param xsdSchemaResourceOpi161 the XSD Resource of Opi v1.6.1
    * @param xsdSchemaResourceOpi171 the XSD Resource of Opi v1.7.1
+   * @param xsdSchemaResourceOpi18 the XSD Resource of Opi v1.8
    * @param xmlUnmarshallerService the xml unmarshalling service
    */
   public TreasuryUnmarshallerService(@Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd") Resource xsdSchemaResourceOpi14,
                                      @Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd") Resource xsdSchemaResourceOpi161,
                                      @Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xsd") Resource xsdSchemaResourceOpi171,
+                                     @Value("classpath:xsd/OPI_GIORNALE_DI_CASSA_V_1_8.xsd") Resource xsdSchemaResourceOpi18,
                                      XMLUnmarshallerService xmlUnmarshallerService) {
     try {
       this.jaxbContextOpi14 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi14.FlussoGiornaleDiCassa.class);
       this.jaxbContextOpi161 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi161.FlussoGiornaleDiCassa.class);
       this.jaxbContextOpi171 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa.class);
+      this.jaxbContextOpi18 = JAXBContext.newInstance(it.gov.pagopa.payhub.activities.xsd.treasury.opi18.FlussoGiornaleDiCassa.class);
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
       this.schemaOpi14 = schemaFactory.newSchema(xsdSchemaResourceOpi14.getURL());
       this.schemaOpi161 = schemaFactory.newSchema(xsdSchemaResourceOpi161.getURL());
       this.schemaOpi171 = schemaFactory.newSchema(xsdSchemaResourceOpi171.getURL());
+      this.schemaOpi18 = schemaFactory.newSchema(xsdSchemaResourceOpi18.getURL());
       this.xmlUnmarshallerService = xmlUnmarshallerService;
     } catch (JAXBException | SAXException | IOException e) {
       log.error("Error while creating a new instance for TreasuryUnmarshallerService", e);
@@ -86,4 +92,13 @@ public class TreasuryUnmarshallerService {
     return xmlUnmarshallerService.unmarshal(file, it.gov.pagopa.payhub.activities.xsd.treasury.opi171.FlussoGiornaleDiCassa.class, jaxbContextOpi171, schemaOpi171);
   }
 
+  /**
+   * Unmarshals a OPI v1.8 file into a FlussoGiornaleDiCassa object.
+   *
+   * @param file the XML file to parse
+   * @return the unmarshalled FlussoGiornaleDiCassa object
+   */
+  public it.gov.pagopa.payhub.activities.xsd.treasury.opi18.FlussoGiornaleDiCassa unmarshalOpi18(File file) {
+    return xmlUnmarshallerService.unmarshal(file, it.gov.pagopa.payhub.activities.xsd.treasury.opi18.FlussoGiornaleDiCassa.class, jaxbContextOpi18, schemaOpi18);
+  }
 }

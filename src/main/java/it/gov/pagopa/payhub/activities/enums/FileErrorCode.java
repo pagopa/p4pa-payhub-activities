@@ -138,6 +138,33 @@ public enum FileErrorCode {
     JSON_DESERIALIZATION_ERROR("Errore durante la deserializzazione del JSON"),
     SYNC_ERROR("Errore durante la sincronizzazione della rata di una posizione debitoria"),
 
+    // p4pa-auth
+    INVALID_TOKEN("Token non valido"),
+    INVALID_A2A_TOKEN("Token a2a non valido"),
+    INVALID_TOKEN_TYPE("Token type non valido"),
+    INVALID_TOKEN_IAT("Campo IAT del Token non valido"),
+    INVALID_TOKEN_EXP("Token scaduto"),
+    INVALID_TOKEN_JTI("Token JTI non valido"),
+    INVALID_CLIENT_ID("Client ID non valido"),
+    INVALID_SUBJECT_TOKEN("Subject Token non valido"),
+    INVALID_SUBJECT_TOKEN_TYPE("Subject Token Type non valido"),
+    INVALID_SUBJECT_ISSUER("Subject Issuer non valido"),
+    INVALID_SCOPE("Scope del Token non valido"),
+    INVALID_AUDIENCE("Audience del Token non valido"),
+    INVALID_ISSUER("Issuer non valido"),
+    INVALID_PUBLIC_KEY("Chiave publica non valida"),
+    INVALID_CLIENT_SECRET("Client Secret non valida"),
+    INVALID_GRANT_TYPE("Token GrantType non valido"),
+    CLIENT_CONFLICT("Client già presente"),
+    USER_UNAUTHORIZED("Utente non autorizzato"),
+    CLIENT_UNAUTHORIZED("Client non autorizzato"),
+    TOO_MANY_REQUESTS("Troppe richieste inviate"),
+    USER_NOT_FOUND("Utente non trovato"),
+    OPERATOR_NOT_FOUND("Operatore non trovato"),
+    CLIENT_NOT_FOUND("Client non trovato"),
+    ROLES_NOT_FOUND("Nessun ruolo associato all'utente"),
+    ORGANIZATION_ACCESS_NOT_FOUND("Nessuna informazione di accesso disponibile sull'ente"),
+
     IMMUTABLE_FIELD("Campi non modificabili"),
     TODO;
 

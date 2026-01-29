@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 @Service
-@Order(0)
+@Order(2)
 public class TreasuryVersionOpi161HandlerService extends TreasuryVersionBaseHandlerService<FlussoGiornaleDiCassa> {
 
 
