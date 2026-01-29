@@ -42,4 +42,9 @@ public class SendServiceImpl implements SendService {
         return sendClient.retrieveNotificationDate(sendNotificationId, authnService.getAccessToken());
     }
 
+    @Override
+    public SendNotificationDTO retrieveNotificationByNotificationRequestId(String notificationRequestId) {
+        return sendClient.retrieveNotificationByNotificationRequestId(notificationRequestId, authnService.getAccessToken());
+    }
+
 }

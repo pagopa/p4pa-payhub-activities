@@ -119,4 +119,23 @@ class SendServiceTest {
         // Then
         assertSame(expectedResponse, result);
     }
+
+    @Test
+    public void givenSendNotificationIdWhenRetrieveNotificationByNotificationRequestIdThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String notificationRequestId = "notificationRequestId";
+        SendNotificationDTO expectedResponse = new SendNotificationDTO();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(sendClientMock.retrieveNotificationByNotificationRequestId(notificationRequestId, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        SendNotificationDTO result = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
+
+        // Then
+        assertSame(expectedResponse, result);
+    }
 }
