@@ -165,6 +165,12 @@ public enum FileErrorCode {
     ROLES_NOT_FOUND("Nessun ruolo associato all'utente"),
     ORGANIZATION_ACCESS_NOT_FOUND("Nessuna informazione di accesso disponibile sull'ente"),
 
+    //p4pa-pagopa-payments
+    ACTUALIZATION_ERROR("Errore durante l'invocazione di actualize"),
+    INVALID_INSTALLMENT("Rata non trovata oppure con sync status invalido"),
+    INVALID_SYNC_STATUS("Sync status non valido"),
+    INVALID_FILE_NAME("Nome file rendicontazione non valido"),
+
     IMMUTABLE_FIELD("Campi non modificabili"),
     TODO;
 
