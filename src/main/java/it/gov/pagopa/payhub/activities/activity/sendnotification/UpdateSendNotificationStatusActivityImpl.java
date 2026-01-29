@@ -24,6 +24,9 @@ public class UpdateSendNotificationStatusActivityImpl implements UpdateSendNotif
 	public SendNotificationDTO updateSendNotificationStatus(String notificationRequestId) {
 		log.info("Starting notificationStatus for notificationRequestId {}", notificationRequestId);
 		SendNotificationDTO sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
+		if(sendNotificationDTOByRequestId == null) {
+			return null;
+		}
 		SendNotificationDTO sendNotificationDTO = sendService.notificationStatus(sendNotificationDTOByRequestId.getSendNotificationId());
 		if(sendNotificationDTO!=null && sendNotificationDTO.getIun()!=null) {
 			sendNotificationDTO.getPayments().forEach(p ->

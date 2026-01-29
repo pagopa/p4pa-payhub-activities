@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
+import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +21,8 @@ class SendClientTest {
     private SendApisHolder sendApisHolderMock;
     @Mock
     private SendApi sendApiMock;
+    @Mock
+    private NotificationApi notificationApi;
 
     private SendClient sendClient;
 
@@ -114,6 +117,22 @@ class SendClientTest {
 
         // Then
         Mockito.verify(sendApiMock).retrieveNotificationDate(sendNotificationId);
+    }
+
+    @Test
+    void whenRetrieveNotificationByNotificationRequestIdThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String notificationRequestId = "notificationRequestId";
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+                .thenReturn(notificationApi);
+
+        // When
+        sendClient.retrieveNotificationByNotificationRequestId(notificationRequestId, accessToken);
+
+        // Then
+        Mockito.verify(notificationApi).getSendNotificationByNotificationRequestId(notificationRequestId);
     }
 
 }
