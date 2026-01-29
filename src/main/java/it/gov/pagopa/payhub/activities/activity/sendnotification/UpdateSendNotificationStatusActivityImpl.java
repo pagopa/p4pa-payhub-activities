@@ -22,7 +22,7 @@ public class UpdateSendNotificationStatusActivityImpl implements UpdateSendNotif
 
 	@Override
 	public SendNotificationDTO updateSendNotificationStatus(String notificationRequestId) {
-		log.info("Starting notificationStatus for notificationRequestId {}", notificationRequestId);
+		log.info("Starting updateSendNotificationStatus for notificationRequestId {}", notificationRequestId);
 		SendNotificationDTO sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
 		if(sendNotificationDTOByRequestId == null) {
 			return null;

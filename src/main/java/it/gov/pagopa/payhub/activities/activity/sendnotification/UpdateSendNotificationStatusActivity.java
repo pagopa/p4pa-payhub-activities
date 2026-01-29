@@ -10,7 +10,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 @ActivityInterface
 public interface UpdateSendNotificationStatusActivity {
 	/**
-	 * Retrieves the notification status from send notification.
+	 * Update notification status from send notification.
 	 *
 	 * @param notificationRequestId the ID of send notification request
 	 */
