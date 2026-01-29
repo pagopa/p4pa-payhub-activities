@@ -14,9 +14,9 @@ import java.util.Collections;
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 
 public class SendNotificationFaker {
-    public static SendNotificationDTO buildSendNotificationDTO() {
+    public static SendNotificationDTO buildSendNotificationDTO(String sendNotificationId) {
         return SendNotificationDTO.builder()
-                .sendNotificationId("sendNotificationId")
+                .sendNotificationId(sendNotificationId)
                 .iun("iun")
                 .organizationId(1L)
                 .payments(Collections.singletonList(SendNotificationPaymentsDTO.builder()
