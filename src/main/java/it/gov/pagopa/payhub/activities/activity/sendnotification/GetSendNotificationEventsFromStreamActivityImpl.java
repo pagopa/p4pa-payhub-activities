@@ -11,16 +11,16 @@ import java.util.List;
 @Service
 @Lazy
 @Slf4j
-public class GetSendNotificationEventFromStreamActivityImpl implements GetSendNotificationEventFromStreamActivity {
+public class GetSendNotificationEventsFromStreamActivityImpl implements GetSendNotificationEventsFromStreamActivity {
 
 	private final SendNotificationService sendNotificationService;
 
-	public GetSendNotificationEventFromStreamActivityImpl(SendNotificationService sendNotificationService) {
+	public GetSendNotificationEventsFromStreamActivityImpl(SendNotificationService sendNotificationService) {
 		this.sendNotificationService = sendNotificationService;
 	}
 
 	@Override
-	public List<ProgressResponseElementV25DTO> fetchSendNotificationEventFromStream(Long organizationId, String sendStreamId, String lastEventId) {
+	public List<ProgressResponseElementV25DTO> fetchSendNotificationEventsFromStream(Long organizationId, String sendStreamId, String lastEventId) {
 		log.info("Retrieve SEND event from stream {} for organization {}, starting from first event after last read {}", sendStreamId, organizationId, lastEventId);
 		return sendNotificationService.readSendStreamEvents(organizationId, sendStreamId, lastEventId);
 	}

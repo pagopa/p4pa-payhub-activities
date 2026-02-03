@@ -14,16 +14,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-class GetSendNotificationEventFromStreamActivityTest {
+class GetSendNotificationEventsFromStreamActivityTest {
 
 	@Mock
 	private SendNotificationService serviceMock;
 
-	private GetSendNotificationEventFromStreamActivity activity;
+	private GetSendNotificationEventsFromStreamActivity activity;
 
 	@BeforeEach
 	void init(){
-		this.activity = new GetSendNotificationEventFromStreamActivityImpl(serviceMock);
+		this.activity = new GetSendNotificationEventsFromStreamActivityImpl(serviceMock);
 	}
 
 	@AfterEach
@@ -32,7 +32,7 @@ class GetSendNotificationEventFromStreamActivityTest {
 	}
 
 	@Test
-	void testFetchSendNotificationEventFromStream() {
+	void testFetchSendNotificationEventsFromStream() {
 		// Given
 		Long organizationId = 1L;
 		String streamId = "streamId";
@@ -44,7 +44,7 @@ class GetSendNotificationEventFromStreamActivityTest {
 				.thenReturn(expectedResult);
 
 		// When
-		List<ProgressResponseElementV25DTO> actualResult = activity.fetchSendNotificationEventFromStream(organizationId, streamId, lastEventId);
+		List<ProgressResponseElementV25DTO> actualResult = activity.fetchSendNotificationEventsFromStream(organizationId, streamId, lastEventId);
 
 		// Then
 		Assertions.assertSame(expectedResult, actualResult);

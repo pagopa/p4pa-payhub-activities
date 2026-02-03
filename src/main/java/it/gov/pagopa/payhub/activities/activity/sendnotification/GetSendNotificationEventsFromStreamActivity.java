@@ -9,13 +9,13 @@ import java.util.List;
  * Interface for fetching send notification event from a stream.
  */
 @ActivityInterface
-public interface GetSendNotificationEventFromStreamActivity {
+public interface GetSendNotificationEventsFromStreamActivity {
 	/**
 	 * Fetch notification event from a stream.
 	 *
 	 * @param sendStreamId the ID of send notification stream
 	 */
 	@ActivityMethod
-	List<ProgressResponseElementV25DTO> fetchSendNotificationEventFromStream(Long organizationId, String sendStreamId, String lastEventId);
+	List<ProgressResponseElementV25DTO> fetchSendNotificationEventsFromStream(Long organizationId, String sendStreamId, String lastEventId);
 
 }
