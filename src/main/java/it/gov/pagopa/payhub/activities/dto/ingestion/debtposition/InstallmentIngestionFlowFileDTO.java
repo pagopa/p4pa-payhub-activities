@@ -30,12 +30,13 @@ public class InstallmentIngestionFlowFileDTO {
     @CsvBindByName(column = "description", required = true, profiles = V2_0_ENG)
     private String description;
 
-    @CsvBindByName(column = "dataValidita", profiles = {V1_4, V2_0})
+    @CsvBindByName(column = "dataValidita", profiles = V2_0)
     @CsvBindByName(column = "validityDate", profiles = V2_0_ENG)
     @CsvDate(value = "yyyy-MM-dd")
     private LocalDate validityDate;
 
-    @CsvBindByName(column = "multiDebtor", profiles = {V2_0, V2_0_ENG})
+    @CsvBindByName(column = "coobbligato", profiles = V2_0)
+    @CsvBindByName(column = "multiDebtor", profiles = V2_0_ENG)
     private Boolean multiDebtor;
 
     @CsvBindByName(column = "dataNotifica", profiles = V2_0)
