@@ -121,7 +121,7 @@ class SendServiceTest {
     }
 
     @Test
-    public void givenSendNotificationIdWhenRetrieveNotificationByNotificationRequestIdThenOk() {
+    void givenSendNotificationIdWhenRetrieveNotificationByNotificationRequestIdThenOk() {
         // Given
         String accessToken = "ACCESSTOKEN";
         String notificationRequestId = "notificationRequestId";
