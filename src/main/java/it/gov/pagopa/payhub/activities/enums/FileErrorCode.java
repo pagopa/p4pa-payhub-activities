@@ -166,10 +166,21 @@ public enum FileErrorCode {
     ORGANIZATION_ACCESS_NOT_FOUND("Nessuna informazione di accesso disponibile sull'ente"),
 
     //p4pa-pagopa-payments
-    ACTUALIZATION_ERROR("Errore durante l'invocazione di actualize"),
-    INVALID_INSTALLMENT("Rata non trovata oppure con sync status invalido"),
-    INVALID_SYNC_STATUS("Sync status non valido"),
-    INVALID_FILE_NAME("Nome file rendicontazione non valido"),
+    ACTUALIZATION_ERROR("Errore di attualizzazione"),
+    INVALID_INSTALLMENT("Rata non trovata oppure con status di sincronizzazione non valido"),
+    INVALID_SYNC_STATUS("Status di sincronizzazione non valido"),
+    INVALID_FILE_NAME("Nome file non valido"),
+
+    //p4pa-send-notification
+    PERSONAL_DATA_NOT_FOUND("Dati personali non trovati"),
+    UPLOAD_ERROR("Errore durante il caricamento del file da inviare"),
+    DELETE_ERROR("Errore durante l'eliminazione della root directory"),
+    INVALID_NOTIFICATION_STATUS("Errore sullo stato della notifica"),
+    STATUS_ALREADY_PROCESSED("Stato già elaborato"),
+    NOTIFICATION_NOT_FOUND("Notifica non trovata"),
+    STREAMS_NOT_FOUND("Flussi non trovati"),
+    FILE_NOT_FOUND("File non trovato"),
+    INVALID_SIGNATURE("Il file non ha una firma valida"),
 
     IMMUTABLE_FIELD("Campi non modificabili"),
     TODO;
