@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.sendnotification.controller.ApiClient;
 import it.gov.pagopa.pu.sendnotification.controller.BaseApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
+import it.gov.pagopa.pu.sendnotification.controller.generated.StreamsApi;
 import jakarta.annotation.PreDestroy;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
@@ -20,6 +21,7 @@ public class SendApisHolder {
 
     private final SendApi sendApi;
     private final NotificationApi sendNotificationAPI;
+    private final StreamsApi streamsApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -37,6 +39,7 @@ public class SendApisHolder {
 
         this.sendApi = new SendApi(apiClient);
         this.sendNotificationAPI = new NotificationApi(apiClient);
+        this.streamsApi = new StreamsApi(apiClient);
     }
 
     @PreDestroy
@@ -52,6 +55,11 @@ public class SendApisHolder {
     /** It will return a {@link NotificationApi} instrumented with the provided accessToken. Use null if auth is not required */
     public NotificationApi getSendNotificationApi(String accessToken){
         return getApi(accessToken, sendNotificationAPI);
+    }
+
+    /** It will return a {@link StreamsApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public StreamsApi getSendStreamsApi(String accessToken){
+        return getApi(accessToken, streamsApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {

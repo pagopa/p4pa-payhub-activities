@@ -2,11 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendNotificationClient;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
-import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.StartNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationServiceTest {
@@ -113,6 +111,48 @@ class SendNotificationServiceTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenValidRequestWhenFindSendStreamThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+
+        SendStreamDTO expectedResult = new SendStreamDTO();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(clientMock.findSendStream(organizationId, accessToken))
+                .thenReturn(expectedResult);
+
+        // When
+        SendStreamDTO result = service.findSendStream(organizationId);
+
+        // Then
+        Assertions.assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void givenValidRequestWhenReadSendStreamEventsThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+        String streamId = "streamId";
+        String lastEventId = "lastEventId";
+
+        List<ProgressResponseElementV25DTO> expectedResult = List.of(new ProgressResponseElementV25DTO());
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(clientMock.readSendStreamEvents(organizationId, streamId, lastEventId, accessToken))
+                .thenReturn(expectedResult);
+
+        // When
+        List<ProgressResponseElementV25DTO> result = service.readSendStreamEvents(organizationId, streamId, lastEventId);
+
+        // Then
+        Assertions.assertEquals(expectedResult, result);
     }
 
 }

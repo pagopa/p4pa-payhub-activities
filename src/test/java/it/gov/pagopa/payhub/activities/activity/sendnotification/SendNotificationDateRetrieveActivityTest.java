@@ -39,12 +39,14 @@ class SendNotificationDateRetrieveActivityTest {
     void givenAllPaymentsWithNotificationDateWhenRetrieveNotificationDateThenOk() {
         // Given
         String sendNotificationId = "sendNotificationId";
-        SendNotificationDTO dto = buildSendNotificationDTO();
+        String notificationRequestId = "notificationRequestId";
+        SendNotificationDTO dto = buildSendNotificationDTO(sendNotificationId);
 
+        /*Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);*/ //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
         Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
-        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId);
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId); //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
 
         // Then
         assertEquals(dto, result);
@@ -55,14 +57,16 @@ class SendNotificationDateRetrieveActivityTest {
     @Test
     void givenAllPaymentsWithoutNotificationDateWhenRetrieveNotificationDateThenReturnNull() {
         // Given
+        String notificationRequestId = "notificationRequestId";
         String sendNotificationId = "sendNotificationId";
-        SendNotificationDTO dto = buildSendNotificationDTO();
+        SendNotificationDTO dto = buildSendNotificationDTO(sendNotificationId);
         dto.getPayments().getFirst().setNotificationDate(null);
 
+        /*Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);*/ //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
         Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
-        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId);
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId); //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
 
         // Then
         assertNull(result);
@@ -72,8 +76,12 @@ class SendNotificationDateRetrieveActivityTest {
     @Test
     void givenMixedPaymentsWithAndWithoutNotificationDateWhenRetrieveNotificationDateThenReturnNullAndPartialUpdate() {
         // Given
+        String notificationRequestId = "notificationRequestId";
         String sendNotificationId = "sendNotificationId";
         SendNotificationDTO dto = new SendNotificationDTO();
+        dto.sendNotificationId(sendNotificationId);
+
+        /*Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);*/ //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
 
         SendNotificationPaymentsDTO paymentWithDate = new SendNotificationPaymentsDTO();
         paymentWithDate.setDebtPositionId(123L);
@@ -96,7 +104,7 @@ class SendNotificationDateRetrieveActivityTest {
         Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
-        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId);
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId); //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
 
         // Then
         assertNull(result);
@@ -106,17 +114,38 @@ class SendNotificationDateRetrieveActivityTest {
     @Test
     void givenNoPaymentsWhenRetrieveNotificationDateThenReturnDTO() {
         // Given
+        String notificationRequestId = "notificationRequestId";
         String sendNotificationId = "sendNotificationId";
         SendNotificationDTO dto = new SendNotificationDTO();
+        dto.setSendNotificationId(sendNotificationId);
         dto.setPayments(Collections.emptyList());
 
+        /*Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);*/ //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
         Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
-        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId);
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(sendNotificationId); //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
 
         // Then
         assertEquals(dto, result);
         Mockito.verifyNoInteractions(debtPositionServiceMock);
     }
+
+
+    /*@Test
+    void givenNoNotificationWhenRetrieveNotificationDateThenReturnNull() {
+        // Given
+        String notificationRequestId = "notificationRequestId";
+
+        Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId))
+                .thenReturn(null);
+
+        // When
+        SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(notificationRequestId);
+
+        // Then
+        assertNull(result);
+        Mockito.verify(sendServiceMock, Mockito.times(0)).retrieveNotificationDate(notificationRequestId);
+        Mockito.verifyNoInteractions(debtPositionServiceMock);
+    }*/ //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
 }

@@ -24,8 +24,12 @@ public class SendNotificationDateRetrieveActivityImpl implements SendNotificatio
     }
 
     @Override
-    public SendNotificationDTO sendNotificationDateRetrieve(String sendNotificationId) {
-        SendNotificationDTO sendNotificationDTO = sendService.retrieveNotificationDate(sendNotificationId);
+    public SendNotificationDTO sendNotificationDateRetrieve(String notificationRequestId) {
+        /*SendNotificationDTO sendNotificationDTO = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
+        if(sendNotificationDTO == null) {
+            return null;
+        }*/ //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
+        SendNotificationDTO sendNotificationDTO = sendService.retrieveNotificationDate(notificationRequestId); //TODO P4ADEV-3720 uncomment and remove use of notificationRequestId as sendNotificationId
         sendNotificationDTO.getPayments().stream()
                 .filter(payment -> payment.getNotificationDate() != null)
                 .forEach(sendNotificationPayments -> {
