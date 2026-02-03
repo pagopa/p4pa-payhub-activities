@@ -2,13 +2,11 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendNotificationClient;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
-import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.StartNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Lazy
 @Service
@@ -39,5 +37,15 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     @Override
     public StartNotificationResponse startSendNotification(String sendNotificationId, LoadFileRequest loadFileRequest) {
         return sendNotificationClient.startSendNotification(sendNotificationId, loadFileRequest, authnService.getAccessToken());
+    }
+
+    @Override
+    public SendStreamDTO findSendStream(Long organizationId) {
+        return sendNotificationClient.findSendStream(organizationId, authnService.getAccessToken());
+    }
+
+    @Override
+    public List<ProgressResponseElementV25DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String lastEventId) {
+        return sendNotificationClient.readSendStreamEvents(organizationId, sendStreamId, lastEventId, authnService.getAccessToken());
     }
 }
