@@ -56,8 +56,8 @@ public class InstallmentServiceImpl implements InstallmentService {
 	}
 
     @Override
-    public List<InstallmentDebtorDTO> findByIuvOrNav(String iuvOrNav, String xFiscalCode, Long organizationId) {
-        return installmentClient.findByIuvOrNav(iuvOrNav, xFiscalCode, organizationId, authnService.getAccessToken());
+    public List<InstallmentDebtorDTO> findByIuvOrNav(String iuvOrNav, String xFiscalCode, Long organizationId, List<InstallmentStatus> statuses) {
+        return installmentClient.findByIuvOrNav(iuvOrNav, xFiscalCode, organizationId, statuses, authnService.getAccessToken());
     }
 
 }

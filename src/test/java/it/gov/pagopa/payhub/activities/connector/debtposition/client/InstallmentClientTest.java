@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentApi;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiEntityControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiSearchControllerApi;
@@ -225,9 +226,9 @@ class InstallmentClientTest {
                 .thenReturn(installmentApiMock);
 
         // When
-        installmentClient.findByIuvOrNav(iuv, null, organizationId, accessToken);
+        installmentClient.findByIuvOrNav(iuv, null, organizationId, DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST, accessToken);
 
         // Then
-        verify(installmentApiMock, times(1)).getInstallmentsByIuvOrNav(iuv, null, organizationId);
+        verify(installmentApiMock, times(1)).getInstallmentsByIuvOrNav(iuv, null, organizationId, DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST);
     }
 }
