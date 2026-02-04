@@ -12,11 +12,13 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,12 +34,15 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
     private final ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService;
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
-    public ReceiptProcessingService(ReceiptMapper receiptMapper,
-                                    ReceiptErrorsArchiverService receiptErrorsArchiverService,
-                                    ReceiptService receiptService,
-                                    OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService,
-                                    ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService) {
-        super(receiptErrorsArchiverService, organizationService, fileExceptionHandlerService);
+    public ReceiptProcessingService(
+            @Value("${ingestion-flow-files.receipts.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
+            ReceiptMapper receiptMapper,
+            ReceiptErrorsArchiverService receiptErrorsArchiverService,
+            ReceiptService receiptService,
+            OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService,
+            ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService) {
+        super(maxConcurrentProcessingRows, receiptErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.receiptService = receiptService;
         this.receiptMapper = receiptMapper;
         this.requiredFieldsValidatorService = requiredFieldsValidatorService;
@@ -66,17 +71,21 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber,
+    protected String getSequencingId(ReceiptIngestionFlowFileDTO row) {
+        return row.getIuv();
+    }
+
+    @Override
+    protected List<ReceiptErrorDTO> consumeRow(long lineNumber,
                                  ReceiptIngestionFlowFileDTO receipt,
                                  ReceiptIngestionFlowFileResult ingestionFlowFileResult,
-                                 List<ReceiptErrorDTO> errorList,
                                  IngestionFlowFile ingestionFlowFile) {
         try {
             requiredFieldsValidatorService.validateIngestionFile(ingestionFlowFile, receipt);
             setDefaultValues(receipt);
             ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
             receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
-            return true;
+            return Collections.emptyList();
         } catch (Exception e) {
             log.error("Error processing receipt: {}", e.getMessage());
             FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
@@ -87,9 +96,7 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
                     .errorMessage(errorDetails.getErrorMessage())
                     .build();
 
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

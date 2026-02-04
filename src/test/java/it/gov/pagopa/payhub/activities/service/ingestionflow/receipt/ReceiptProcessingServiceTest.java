@@ -41,19 +41,14 @@ class ReceiptProcessingServiceTest {
 
     @Mock
     private ReceiptErrorsArchiverService errorsArchiverServiceMock;
-
     @Mock
     private ReceiptService receiptServiceMock;
-
     @Mock
     private Path workingDirectory;
-
     @Mock
     private ReceiptMapper mapperMock;
-
     @Mock
     private OrganizationService organizationServiceMock;
-
     @Mock
     private ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorServiceMock;
 
@@ -64,7 +59,7 @@ class ReceiptProcessingServiceTest {
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new ReceiptProcessingService(mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, fileExceptionHandlerService, requiredFieldsValidatorServiceMock);
+        service = new ReceiptProcessingService(1, mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, fileExceptionHandlerService, requiredFieldsValidatorServiceMock);
     }
 
     @AfterEach
@@ -72,7 +67,20 @@ class ReceiptProcessingServiceTest {
         Mockito.verifyNoMoreInteractions(
                 mapperMock,
                 errorsArchiverServiceMock,
-                receiptServiceMock);
+                receiptServiceMock,
+                organizationServiceMock);
+    }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        ReceiptIngestionFlowFileDTO row = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(row.getIuv(), result);
     }
 
     @Test

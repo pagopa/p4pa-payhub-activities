@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.co.jemos.podam.api.PodamFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,8 +34,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationProcessingServiceTest {
@@ -42,23 +42,21 @@ class OrganizationProcessingServiceTest {
 
     @Mock
     private OrganizationErrorsArchiverService errorsArchiverServiceMock;
-
     @Mock
     private Path workingDirectory;
-
     @Mock
     private OrganizationMapper mapperMock;
-
     @Mock
     private OrganizationService organizationServiceMock;
 
-    @Mock
     private OrganizationProcessingService service;
+
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new OrganizationProcessingService(mapperMock, errorsArchiverServiceMock,
+        service = new OrganizationProcessingService(1, mapperMock, errorsArchiverServiceMock,
                 organizationServiceMock, fileExceptionHandlerService);
     }
 
@@ -68,6 +66,18 @@ class OrganizationProcessingServiceTest {
                 mapperMock,
                 organizationServiceMock,
                 errorsArchiverServiceMock);
+    }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        OrganizationIngestionFlowFileDTO row = podamFactory.manufacturePojo(OrganizationIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(row.getOrgFiscalCode(), result);
     }
 
     @Test
@@ -245,7 +255,7 @@ class OrganizationProcessingServiceTest {
         Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
         Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
         Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(dto).getOrgFiscalCode();
+        Mockito.verify(dto, times(2)).getOrgFiscalCode();
         Mockito.verify(dto).getIpaCode();
         Mockito.verifyNoInteractions(mapperMock);
         Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
@@ -312,7 +322,7 @@ class OrganizationProcessingServiceTest {
         Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
         Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
         Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(dto).getOrgFiscalCode();
+        Mockito.verify(dto, times(2)).getOrgFiscalCode();
         Mockito.verify(dto).getIpaCode();
         Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
         Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.anyList());
@@ -372,7 +382,7 @@ class OrganizationProcessingServiceTest {
         Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
         Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
         Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode("ORG_FISCAL_CODE");
-        Mockito.verify(dto).getOrgFiscalCode();
+        Mockito.verify(dto, times(2)).getOrgFiscalCode();
         Mockito.verify(dto).getIpaCode();
         Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
         Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.anyList());

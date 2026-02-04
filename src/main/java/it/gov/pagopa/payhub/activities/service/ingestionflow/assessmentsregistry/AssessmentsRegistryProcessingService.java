@@ -14,14 +14,12 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Lazy
@@ -34,11 +32,13 @@ public class AssessmentsRegistryProcessingService extends
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public AssessmentsRegistryProcessingService(
+            @Value("${ingestion-flow-files.assessments-registry.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             AssessmentsRegistryMapper assessmentsRegistryMapper,
             AssessmentsRegistryErrorsArchiverService assessmentsRegistryErrorsArchiverService,
             AssessmentsRegistryService assessmentsRegistryService, OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService) {
-        super(assessmentsRegistryErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, assessmentsRegistryErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.assessmentsRegistryMapper = assessmentsRegistryMapper;
         this.assessmentsRegistryService = assessmentsRegistryService;
         this.fileExceptionHandlerService = fileExceptionHandlerService;
@@ -63,10 +63,19 @@ public class AssessmentsRegistryProcessingService extends
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber,
+    protected String getSequencingId(AssessmentsRegistryIngestionFlowFileDTO row) {
+        return row.getDebtPositionTypeOrgCode() +
+                "-" + row.getSectionCode() +
+                "-" + row.getOfficeCode() +
+                "-" +row.getAssessmentCode()+
+                "-" +row.getOperatingYear();
+    }
+
+    @Override
+    protected List<AssessmentsRegistryErrorDTO> consumeRow(long lineNumber,
                                  AssessmentsRegistryIngestionFlowFileDTO row,
                                  AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult,
-                                 List<AssessmentsRegistryErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+                                 IngestionFlowFile ingestionFlowFile) {
         try {
             String ipa = ingestionFlowFileResult.getIpaCode();
             if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
@@ -76,9 +85,7 @@ public class AssessmentsRegistryProcessingService extends
                         row.getOrganizationIpaCode(),
                         FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
                         FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
-                errorList.add(error);
-                return false;
-
+                return List.of(error);
             }
 
             AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
@@ -101,12 +108,11 @@ public class AssessmentsRegistryProcessingService extends
                         row.getOrganizationIpaCode(),
                         FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name(),
                         FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage());
-                errorList.add(error);
-                return false;
+                return List.of(error);
             }
 
             assessmentsRegistryService.createAssessmentsRegistry(assessmentsRegistry);
-            return true;
+            return Collections.emptyList();
 
         } catch (Exception e) {
             log.error("Error processing row {} in file {}: {}", lineNumber, ingestionFlowFile.getFileName(), e.getMessage(), e);
@@ -117,9 +123,7 @@ public class AssessmentsRegistryProcessingService extends
                     row.getAssessmentCode(),
                     row.getOrganizationIpaCode(),
                     errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

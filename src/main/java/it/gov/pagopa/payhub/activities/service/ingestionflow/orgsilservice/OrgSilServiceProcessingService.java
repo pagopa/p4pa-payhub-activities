@@ -13,17 +13,17 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilService;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Lazy
@@ -35,11 +35,13 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public OrgSilServiceProcessingService(
+            @Value("${ingestion-flow-files.org-sil-services.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             OrgSilServiceMapper orgSilServiceMapper,
             OrgSilServiceErrorsArchiverService orgSilServiceErrorsArchiverService,
             OrganizationService organizationService,
             OrgSilServiceService orgSilServiceService, FileExceptionHandlerService fileExceptionHandlerService) {
-        super(orgSilServiceErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, orgSilServiceErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.orgSilServiceMapper = orgSilServiceMapper;
         this.orgSilServiceService = orgSilServiceService;
         this.fileExceptionHandlerService = fileExceptionHandlerService;
@@ -63,7 +65,15 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, OrgSilServiceIngestionFlowFileDTO row, OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult, List<OrgSilServiceErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+    protected String getSequencingId(OrgSilServiceIngestionFlowFileDTO row) {
+        return row.getServiceType() + "-" + row.getApplicationName();
+    }
+
+    @Override
+    protected List<OrgSilServiceErrorDTO> consumeRow(long lineNumber,
+                                OrgSilServiceIngestionFlowFileDTO row,
+                                OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult,
+                                IngestionFlowFile ingestionFlowFile) {
 
         try {
             String ipa = ingestionFlowFileResult.getIpaCode();
@@ -74,29 +84,13 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
                         lineNumber,
                         FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
                         FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getIpaCode(), ipa));
-                errorList.add(error);
-                return false;
+                return List.of(error);
 
             }
-            Optional <Organization> optionalOrganization = organizationService.getOrganizationByIpaCode(row.getIpaCode());
-            Organization organization = null;
-
-            if(optionalOrganization.isEmpty()) {
-                log.error("Organization with IPA code {} does not exist", row.getIpaCode());
-                OrgSilServiceErrorDTO error = new OrgSilServiceErrorDTO(
-                        ingestionFlowFile.getFileName(), row.getIpaCode(), row.getApplicationName(),
-                        lineNumber,
-                        FileErrorCode.ORGANIZATION_IPA_DOES_NOT_EXISTS.name(),
-                        FileErrorCode.ORGANIZATION_IPA_DOES_NOT_EXISTS.format(row.getIpaCode()));
-                errorList.add(error);
-                return false;
-            }
-            else
-                organization = optionalOrganization.get();
 
             List<OrgSilService> existingServices = orgSilServiceService.getAllByOrganizationIdAndServiceType(
-                    organization.getOrganizationId(), OrgSilServiceType.valueOf(row.getServiceType()));
-            OrgSilServiceDTO orgSilServiceMapped = orgSilServiceMapper.map(row, organization.getOrganizationId());
+                    ingestionFlowFile.getOrganizationId(), OrgSilServiceType.valueOf(row.getServiceType()));
+            OrgSilServiceDTO orgSilServiceMapped = orgSilServiceMapper.map(row, ingestionFlowFile.getOrganizationId());
 
             if (!existingServices.isEmpty()) {
                 existingServices.stream()
@@ -109,7 +103,7 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
             }
 
             orgSilServiceService.createOrUpdateOrgSilService(orgSilServiceMapped);
-            return true;
+            return Collections.emptyList();
 
         } catch (Exception e) {
             log.error("Error processing org sil service with organization ipa code:{} and application name {}: {}", row.getIpaCode(), row.getApplicationName(), e.getMessage());
@@ -122,9 +116,7 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
                     .errorMessage(errorDetails.getErrorMessage())
                     .rowNumber(lineNumber)
                     .build();
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

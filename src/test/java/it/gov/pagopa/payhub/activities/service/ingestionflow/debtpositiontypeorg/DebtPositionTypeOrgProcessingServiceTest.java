@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.co.jemos.podam.api.PodamFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,30 +44,27 @@ class DebtPositionTypeOrgProcessingServiceTest {
 
     @Mock
     private DebtPositionTypeOrgErrorsArchiverService errorsArchiverServiceMock;
-
     @Mock
     private Path workingDirectory;
-
     @Mock
     private DebtPositionTypeOrgMapper mapperMock;
-
     @Mock
     private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
-
     @Mock
     private DebtPositionTypeService debtPositionTypeServiceMock;
-
     @Mock
     private OrganizationService organizationServiceMock;
     @Mock
     private OrganizationService organizationServiceSuperMock;
 
-    @Mock
     private DebtPositionTypeOrgProcessingService service;
+
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new DebtPositionTypeOrgProcessingService(
+        service = new DebtPositionTypeOrgProcessingService(1,
                 mapperMock,
                 errorsArchiverServiceMock,
                 debtPositionTypeOrgServiceMock,
@@ -89,6 +87,17 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 );
     }
 
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        DebtPositionTypeOrgIngestionFlowFileDTO row = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(row.getCode(), result);
+    }
 
     @Test
     void processDebtPositionTypeOrgWithNoErrors() {

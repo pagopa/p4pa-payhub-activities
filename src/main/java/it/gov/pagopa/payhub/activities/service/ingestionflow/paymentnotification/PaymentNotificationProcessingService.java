@@ -12,11 +12,13 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,11 +32,13 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public PaymentNotificationProcessingService(
+            @Value("${ingestion-flow-files.payment-notifications.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             PaymentNotificationMapper paymentNotificationMapper,
             PaymentNotificationErrorsArchiverService paymentNotificationErrorsArchiverService,
             PaymentNotificationService paymentNotificationService,
             OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
-        super(paymentNotificationErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, paymentNotificationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.paymentNotificationMapper = paymentNotificationMapper;
         this.paymentNotificationService = paymentNotificationService;
         this.fileExceptionHandlerService = fileExceptionHandlerService;
@@ -55,13 +59,21 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, PaymentNotificationIngestionFlowFileDTO paymentNotificationDTO, PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult, List<PaymentNotificationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+    protected String getSequencingId(PaymentNotificationIngestionFlowFileDTO row) {
+        return row.getIud();
+    }
+
+    @Override
+    protected List<PaymentNotificationErrorDTO> consumeRow(long lineNumber,
+                                  PaymentNotificationIngestionFlowFileDTO paymentNotificationDTO,
+                                  PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult,
+                                  IngestionFlowFile ingestionFlowFile) {
         try {
             PaymentNotificationDTO paymentNotificationCreated = paymentNotificationService.createPaymentNotification(
                     paymentNotificationMapper.map(paymentNotificationDTO, ingestionFlowFile));
 
             ingestionFlowFileResult.getIudList().add(paymentNotificationCreated.getIud());
-            return true;
+            return Collections.emptyList();
         } catch (Exception e) {
             log.error("Error processing payment notice with iud {} and iuv {}: {}",
                     paymentNotificationDTO.getIud(), paymentNotificationDTO.getIuv(),
@@ -71,9 +83,7 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
                     ingestionFlowFile.getFileName(), paymentNotificationDTO.getIuv(),
                     paymentNotificationDTO.getIud(), lineNumber, errorDetails.getErrorCode(),
                     errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

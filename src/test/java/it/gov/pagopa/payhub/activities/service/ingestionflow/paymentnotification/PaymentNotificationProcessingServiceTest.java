@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.co.jemos.podam.api.PodamFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,24 +41,23 @@ class PaymentNotificationProcessingServiceTest {
 
   @Mock
   private PaymentNotificationErrorsArchiverService errorsArchiverServiceMock;
-
   @Mock
   private Path workingDirectory;
-  
   @Mock
   private PaymentNotificationMapper mapperMock;
   @Mock
   private OrganizationService organizationServiceMock;
-
   @Mock
   private PaymentNotificationService paymentNotificationServiceMock;
 
   private PaymentNotificationProcessingService service;
 
+  private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+
   @BeforeEach
   void setUp() {
     FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-    service = new PaymentNotificationProcessingService(mapperMock, errorsArchiverServiceMock,
+    service = new PaymentNotificationProcessingService(1, mapperMock, errorsArchiverServiceMock,
             paymentNotificationServiceMock, organizationServiceMock, fileExceptionHandlerService);
   }
 
@@ -66,8 +66,21 @@ class PaymentNotificationProcessingServiceTest {
     Mockito.verifyNoMoreInteractions(
             mapperMock,
             errorsArchiverServiceMock,
-            paymentNotificationServiceMock);
+            paymentNotificationServiceMock,
+            organizationServiceMock);
   }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        PaymentNotificationIngestionFlowFileDTO row = podamFactory.manufacturePojo(PaymentNotificationIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(row.getIud(), result);
+    }
 
   @Test
   void processPaymentNotificationWithNoErrors() {

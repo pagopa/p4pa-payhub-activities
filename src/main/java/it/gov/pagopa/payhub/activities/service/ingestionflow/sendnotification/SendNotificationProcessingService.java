@@ -13,14 +13,12 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Lazy
@@ -34,13 +32,15 @@ public class SendNotificationProcessingService extends
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public SendNotificationProcessingService(
+            @Value("${ingestion-flow-files.send-notifications.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             SendNotificationErrorArchiverService sendNotificationErrorArchiverService,
             SendNotificationService sendNotificationService,
             OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService,
             SendNotificationMapper mapper,
             SendNotificationFileHandlerService sendNotificationFileHandlerService) {
-        super(sendNotificationErrorArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, sendNotificationErrorArchiverService, organizationService, fileExceptionHandlerService);
         this.sendNotificationService = sendNotificationService;
         this.mapper = mapper;
         this.sendNotificationFileHandlerService = sendNotificationFileHandlerService;
@@ -70,9 +70,14 @@ public class SendNotificationProcessingService extends
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, SendNotificationIngestionFlowFileDTO row,
+    protected String getSequencingId(SendNotificationIngestionFlowFileDTO row) {
+        return row.getPaProtocolNumber();
+    }
+
+    @Override
+    protected List<SendNotificationErrorDTO> consumeRow(long lineNumber, SendNotificationIngestionFlowFileDTO row,
                                  SendNotificationIngestionFlowFileResult ingestionFlowFileResult,
-                                 List<SendNotificationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+                                 IngestionFlowFile ingestionFlowFile) {
 
         try {
             CreateNotificationRequest createNotificationRequest = mapper.buildCreateNotificationRequest(row);
@@ -81,9 +86,8 @@ public class SendNotificationProcessingService extends
             if (createNotificationRequest.getRecipients().getFirst().getPayments() != null
                     && createNotificationRequest.getRecipients().getFirst().getPayments().getFirst().getPagoPa() != null &&
                     checkSendNotificationAlreadyExists(createNotificationRequest.getOrganizationId(), createNotificationRequest.getRecipients().getFirst().getPayments())) {
-                errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, FileErrorCode.NOTIFICATION_ALREADY_PROCESSED.name(),
+                return List.of(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber, FileErrorCode.NOTIFICATION_ALREADY_PROCESSED.name(),
                         FileErrorCode.NOTIFICATION_ALREADY_PROCESSED.getMessage()));
-                return false;
             }
 
             CreateNotificationResponse createResponse = sendNotificationService.createSendNotification(createNotificationRequest);
@@ -119,12 +123,11 @@ public class SendNotificationProcessingService extends
                             .forEach(doc -> sendNotificationService.startSendNotification(sendNotificationDTO.getSendNotificationId(),
                                     new LoadFileRequest(doc.getDigest(), doc.getFileName())));
                 }
-                return true;
+                return Collections.emptyList();
             }
-            errorList.add(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber,
+            return List.of(buildErrorDto(ingestionFlowFile.getFileName(), lineNumber,
                     FileErrorCode.NOTIFICATION_NOT_PROCESSED.name(),
                     FileErrorCode.NOTIFICATION_NOT_PROCESSED.getMessage()));
-            return false;
         } catch (Exception e) {
             log.error("Error processing send notification: {}", e.getMessage());
             FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
@@ -135,9 +138,7 @@ public class SendNotificationProcessingService extends
                     .errorMessage(errorDetails.getErrorMessage())
                     .build();
 
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

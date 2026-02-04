@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -58,7 +57,7 @@ class AssessmentRegistryProcessingServiceTest {
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new AssessmentsRegistryProcessingService(mapperMock, errorsArchiverServiceMock,
+        service = new AssessmentsRegistryProcessingService(1, mapperMock, errorsArchiverServiceMock,
                 assessmentsRegistryServiceMock, organizationServiceMock, fileExceptionHandlerService);
     }
 
@@ -70,6 +69,24 @@ class AssessmentRegistryProcessingServiceTest {
                 mapperMock,
                 assessmentsRegistryServiceMock,
                 organizationServiceMock);
+    }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        AssessmentsRegistryIngestionFlowFileDTO row = podamFactory.manufacturePojo(AssessmentsRegistryIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(
+                row.getDebtPositionTypeOrgCode() +
+                        "-" + row.getSectionCode() +
+                        "-" + row.getOfficeCode() +
+                        "-" +row.getAssessmentCode()+
+                        "-" +row.getOperatingYear(),
+                result);
     }
 
     @Test
@@ -141,15 +158,13 @@ class AssessmentRegistryProcessingServiceTest {
         Mockito.when(assessmentsRegistryServiceMock.searchAssessmentsRegistryBySemanticKey(registrySemanticKey))
                 .thenReturn(Optional.empty());
 
-        List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
 
         // When
-        boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
+        List<AssessmentsRegistryErrorDTO> result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, ingestionFlowFile);
 
         // Then
-        Assertions.assertTrue(result);
+        Assertions.assertTrue(result.isEmpty());
         Mockito.verify(assessmentsRegistryServiceMock).createAssessmentsRegistry(assessmentsRegistry);
-        Assertions.assertTrue(errorList.isEmpty());
     }
 
     @Test

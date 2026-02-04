@@ -13,6 +13,7 @@ import it.gov.pagopa.payhub.activities.util.TreasuryUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,26 +44,46 @@ class TreasuryPosteProcessingServiceTest {
 
   @Mock
   private TreasuryPosteErrorsArchiverService errorsArchiverServiceMock;
-
   @Mock
   private OrganizationService organizationServiceMock;
-
   @Mock
   private Path workingDirectory;
-
   @Mock
   private TreasuryPosteMapper mapperMock;
-
   @Mock
-  private TreasuryService treasuryService;
+  private TreasuryService treasuryServiceMock;
 
   private TreasuryPosteProcessingService service;
 
   @BeforeEach
   void setUp() {
     FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-    service = new TreasuryPosteProcessingService(mapperMock, treasuryService, errorsArchiverServiceMock, organizationServiceMock, fileExceptionHandlerService);
+    service = new TreasuryPosteProcessingService(1, mapperMock, treasuryServiceMock, errorsArchiverServiceMock, organizationServiceMock, fileExceptionHandlerService);
   }
+
+  @AfterEach
+  void verifyNoMoreInteractions() {
+    Mockito.verifyNoMoreInteractions(
+        mapperMock,
+        treasuryServiceMock,
+        organizationServiceMock,
+        errorsArchiverServiceMock
+    );
+  }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        TreasuryPosteIngestionFlowFileDTO row = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(
+                TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF),
+                result);
+    }
 
   @Test
   void processTreasuryPosteWithNoErrors() {
@@ -88,7 +109,7 @@ class TreasuryPosteProcessingServiceTest {
     mappedNotification.setIuf(iuf);
     mappedNotification.setTreasuryId("TREASURY_ID_1");
     Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
-    Mockito.when(treasuryService.insert(mappedNotification)).thenReturn(mappedNotification);
+    Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
     Mockito.when(organizationServiceMock.getOrganizationById(any()))
             .thenReturn(organizationOptional);
 
@@ -100,7 +121,7 @@ class TreasuryPosteProcessingServiceTest {
     Assertions.assertEquals(1L, result.getProcessedRows());
     Assertions.assertEquals(1L, result.getTotalRows());
     Mockito.verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
-    Mockito.verify(treasuryService).insert(mappedNotification);
+    Mockito.verify(treasuryServiceMock).insert(mappedNotification);
   }
 
   @Test
@@ -127,13 +148,13 @@ class TreasuryPosteProcessingServiceTest {
 
     Treasury mappedNotification = mock(Treasury.class);
     Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
-    Mockito.when(treasuryService.insert(mappedNotification))
+    Mockito.when(treasuryServiceMock.insert(mappedNotification))
         .thenThrow(new RuntimeException("Processing error"));
 
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
         .thenReturn("zipFileName.csv");
 
-    Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(null);
+    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(null);
     Mockito.when(organizationServiceMock.getOrganizationById(any()))
             .thenReturn(organizationOptional);
 
@@ -154,7 +175,7 @@ class TreasuryPosteProcessingServiceTest {
     Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
 
     verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
-    verify(treasuryService).insert(mappedNotification);
+    verify(treasuryServiceMock).insert(mappedNotification);
   }
 
   @Test
@@ -177,7 +198,7 @@ class TreasuryPosteProcessingServiceTest {
 
     TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
     existingTreasuryIuf.setIuf(iuf);
-    Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
     Mockito.when(organizationServiceMock.getOrganizationById(any()))
             .thenReturn(organizationOptional);
 
@@ -190,7 +211,7 @@ class TreasuryPosteProcessingServiceTest {
     Assertions.assertEquals(1L, result.getTotalRows());
     Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
     Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-    Mockito.verify(treasuryService, Mockito.never()).insert(Mockito.any());
+    Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
   }
 
   @Test
@@ -217,7 +238,7 @@ class TreasuryPosteProcessingServiceTest {
     existingTreasuryIuf.setIuf(iuf);
     existingTreasuryIuf.setBillCode(billCode);
     existingTreasuryIuf.setBillYear("2025");
-    Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
     Mockito.when(organizationServiceMock.getOrganizationById(any()))
             .thenReturn(organizationOptional);
 
@@ -225,7 +246,7 @@ class TreasuryPosteProcessingServiceTest {
     mappedNotification.setIuf(iuf);
     mappedNotification.setTreasuryId("TREASURY_ID_1");
     Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
-    Mockito.when(treasuryService.insert(mappedNotification)).thenReturn(mappedNotification);
+    Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
 
     TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
         Stream.of(dto).iterator(), iban, List.of(),
@@ -237,7 +258,7 @@ class TreasuryPosteProcessingServiceTest {
     Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
     Assertions.assertEquals(1, result.getIuf2TreasuryIdMap().size());
     Mockito.verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
-    Mockito.verify(treasuryService).insert(mappedNotification);
+    Mockito.verify(treasuryServiceMock).insert(mappedNotification);
   }
 
   @Test
@@ -264,7 +285,7 @@ class TreasuryPosteProcessingServiceTest {
     existingTreasuryIuf.setIuf(iuf);
     existingTreasuryIuf.setBillCode("BILL123");
     existingTreasuryIuf.setBillYear("2025");
-    Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
     Mockito.when(organizationServiceMock.getOrganizationById(any()))
             .thenReturn(organizationOptional);
 
@@ -278,7 +299,7 @@ class TreasuryPosteProcessingServiceTest {
     Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
     Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
     Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-    Mockito.verify(treasuryService, Mockito.never()).insert(Mockito.any());
+    Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
 
     TreasuryPosteIngestionFlowFileDTO dto2 = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
     dto2.setBillDate(dateString);
@@ -290,7 +311,7 @@ class TreasuryPosteProcessingServiceTest {
     existingTreasuryIuf2.setIuf(iuf);
     existingTreasuryIuf2.setBillCode(billCode);
     existingTreasuryIuf2.setBillYear("2024");
-    Mockito.when(treasuryService.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf2);
+    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf2);
 
     TreasuryIufIngestionFlowFileResult result2 = service.processTreasuryPoste(
         Stream.of(dto2).iterator(), iban, List.of(),
@@ -302,6 +323,6 @@ class TreasuryPosteProcessingServiceTest {
     Assertions.assertNotNull(result2.getIuf2TreasuryIdMap());
     Assertions.assertEquals(0, result2.getIuf2TreasuryIdMap().size());
     Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-    Mockito.verify(treasuryService, Mockito.never()).insert(Mockito.any());
+    Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
   }
 }

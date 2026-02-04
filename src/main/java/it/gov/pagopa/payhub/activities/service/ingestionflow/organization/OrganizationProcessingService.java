@@ -12,14 +12,12 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Lazy
@@ -30,10 +28,12 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public OrganizationProcessingService(
+            @Value("${ingestion-flow-files.organizations.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             OrganizationMapper organizationMapper,
             OrganizationErrorsArchiverService organizationErrorsArchiverService,
             OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
-        super(organizationErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, organizationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.organizationMapper = organizationMapper;
         this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
@@ -61,7 +61,15 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, OrganizationIngestionFlowFileDTO organizationDTO, OrganizationIngestionFlowFileResult ingestionFlowFileResult, List<OrganizationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+    protected String getSequencingId(OrganizationIngestionFlowFileDTO row) {
+        return row.getOrgFiscalCode();
+    }
+
+    @Override
+    protected List<OrganizationErrorDTO> consumeRow(long lineNumber,
+                                 OrganizationIngestionFlowFileDTO organizationDTO,
+                                 OrganizationIngestionFlowFileResult ingestionFlowFileResult,
+                                 IngestionFlowFile ingestionFlowFile) {
         try {
             if (!ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())) {
                 log.error("Broker with fiscal code {} is not related to organization having fiscal code {}", ingestionFlowFileResult.getBrokerFiscalCode(), organizationDTO.getOrgFiscalCode());
@@ -69,8 +77,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
                         ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
                         lineNumber, FileErrorCode.BROKER_MISMATCH.name(),
                         FileErrorCode.BROKER_MISMATCH.getMessage());
-                errorList.add(error);
-                return false;
+                return List.of(error);
             }
 
             Optional<Organization> existingOrg = organizationService.getOrganizationByFiscalCode(organizationDTO.getOrgFiscalCode());
@@ -79,14 +86,13 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
                         ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
                         lineNumber, FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(),
                         FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage());
-                errorList.add(error);
-                return false;
+                return List.of(error);
             }
 
             organizationService.createOrganization(
                     organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
 
-            return true;
+            return Collections.emptyList();
 
         } catch (Exception e) {
             log.error("Error processing organization with ipa code {}: {}", organizationDTO.getIpaCode(), e.getMessage());
@@ -94,9 +100,7 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             OrganizationErrorDTO error = new OrganizationErrorDTO(
                     ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
                     lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

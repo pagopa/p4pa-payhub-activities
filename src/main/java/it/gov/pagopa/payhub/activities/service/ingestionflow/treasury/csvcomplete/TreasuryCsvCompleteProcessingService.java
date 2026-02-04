@@ -16,14 +16,12 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.generateTechnicalIuf;
 
@@ -37,12 +35,14 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public TreasuryCsvCompleteProcessingService(
+            @Value("${ingestion-flow-files.treasuries.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             TreasuryCsvCompleteMapper treasuryCsvCompleteMapper,
             TreasuryCsvCompleteErrorsArchiverService treasuryCsvCompleteErrorsArchiverService,
             TreasuryService treasuryService,
             OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService) {
-        super(treasuryCsvCompleteErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, treasuryCsvCompleteErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.treasuryCsvCompleteMapper = treasuryCsvCompleteMapper;
         this.treasuryService = treasuryService;
         this.fileExceptionHandlerService = fileExceptionHandlerService;
@@ -66,7 +66,15 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, TreasuryCsvCompleteIngestionFlowFileDTO row, TreasuryIufIngestionFlowFileResult ingestionFlowFileResult, List<TreasuryCsvCompleteErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+    protected String getSequencingId(TreasuryCsvCompleteIngestionFlowFileDTO row) {
+        return row.getBillCode() + "-" + row.getBillYear();
+    }
+
+    @Override
+    protected List<TreasuryCsvCompleteErrorDTO> consumeRow(long lineNumber,
+                                      TreasuryCsvCompleteIngestionFlowFileDTO row,
+                                      TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
+                                      IngestionFlowFile ingestionFlowFile) {
         TreasuryCsvCompleteIngestionFlowFileResult treasuryCsvCompleteIngestionFlowFileResult = (TreasuryCsvCompleteIngestionFlowFileResult) ingestionFlowFileResult;
         String ipa = treasuryCsvCompleteIngestionFlowFileResult.getIpaCode();
         try {
@@ -78,8 +86,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                 throw new OrganizationIpaCodeNotMatchException(errorMessage);
             }
 
-            TreasuryIuf existingTreasury = null;
-
+            TreasuryIuf existingTreasury;
             if(row.getIuf()!= null) {
                 existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
                 if(existingTreasury != null) {
@@ -92,8 +99,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                                 lineNumber,
                                 FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
                                 FileErrorCode.IUF_ALREADY_ASSOCIATED.format(row.getIuf(), ipa));
-                        errorList.add(error);
-                        return false;
+                        return List.of(error);
                     }
                 }
             }
@@ -106,7 +112,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                     treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
                     treasuryId
             );
-            return true;
+            return Collections.emptyList();
         } catch (Exception e) {
             log.error("Error processing treasury csv complete with iuf {} and iuv {}: {}",
                     row.getIuf(), row.getIuv(),
@@ -116,9 +122,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
                     ingestionFlowFile.getFileName(),
                     row.getIuv(), row.getIuf(),
                     lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

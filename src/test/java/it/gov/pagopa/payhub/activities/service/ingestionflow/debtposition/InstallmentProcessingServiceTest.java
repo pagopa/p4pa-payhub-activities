@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIng
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
@@ -20,10 +21,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
+import uk.co.jemos.podam.api.PodamFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -50,10 +53,12 @@ class InstallmentProcessingServiceTest {
 
     private InstallmentProcessingService service;
 
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+
     @BeforeEach
     void setUp(){
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new InstallmentProcessingService(
+        service = new InstallmentProcessingService(1,
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
@@ -69,7 +74,33 @@ class InstallmentProcessingServiceTest {
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
-                dpInstallmentsWorkflowCompletionServiceMock);
+                dpInstallmentsWorkflowCompletionServiceMock,
+                organizationServiceMock);
+    }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        InstallmentIngestionFlowFileDTO row = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(row.getIupdOrg(), result);
+    }
+
+    @Test
+    void whenNoIupdOrgGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        InstallmentIngestionFlowFileDTO row = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+        row.setIupdOrg(null);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(row.getIud(), result);
     }
 
     @Test
@@ -90,8 +121,8 @@ class InstallmentProcessingServiceTest {
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
                 .thenReturn(workflowId);
 
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
-                .thenReturn(true);
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName()))
+                .thenReturn(Collections.emptyList());
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
@@ -115,6 +146,7 @@ class InstallmentProcessingServiceTest {
         InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
         InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        Path workingDirectory = Path.of("/tmp");
         String workflowId = "workflow-123";
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
                 .massive(true)
@@ -127,19 +159,25 @@ class InstallmentProcessingServiceTest {
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
                 .thenReturn(workflowId);
 
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
-                .thenReturn(false);
+        List<InstallmentErrorDTO> errors = List.of(InstallmentErrorDTO.builder().errorCode("DUMMY_ERROR").build());
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName()))
+                .thenReturn(errors);
+
+        Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(
                 Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(),
                 ingestionFlowFile,
-                Path.of("/tmp")
+                workingDirectory
         );
 
         // Then
         assertEquals(0, result.getProcessedRows());
         assertEquals(1, result.getTotalRows());
+
+        verify(installmentErrorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, errors);
     }
 
     @Test
@@ -159,8 +197,8 @@ class InstallmentProcessingServiceTest {
         Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
                 .thenReturn(null);
 
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(null, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName(), List.of()))
-                .thenReturn(true);
+        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(null, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName()))
+                .thenReturn(Collections.emptyList());
 
         // When
         InstallmentIngestionFlowFileResult result = service.processInstallments(

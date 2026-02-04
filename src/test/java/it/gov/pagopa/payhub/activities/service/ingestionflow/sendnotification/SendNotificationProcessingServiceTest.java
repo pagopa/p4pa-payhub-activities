@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotifi
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.sendnotification.SendNotificationMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
+import uk.co.jemos.podam.api.PodamFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,10 +51,12 @@ class SendNotificationProcessingServiceTest {
 
     private SendNotificationProcessingService service;
 
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new SendNotificationProcessingService(
+        service = new SendNotificationProcessingService(1,
                 sendNotificationErrorArchiverServiceMock,
                 sendNotificationServiceMock,
                 organizationServiceMock,
@@ -69,7 +73,20 @@ class SendNotificationProcessingServiceTest {
                 mapperMock,
                 sendNotificationErrorArchiverServiceMock,
                 sendNotificationServiceMock,
-                sendNotificationFileHandlerServiceMock);
+                sendNotificationFileHandlerServiceMock,
+                organizationServiceMock);
+    }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        SendNotificationIngestionFlowFileDTO row = podamFactory.manufacturePojo(SendNotificationIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(row.getPaProtocolNumber(), result);
     }
 
     @ParameterizedTest

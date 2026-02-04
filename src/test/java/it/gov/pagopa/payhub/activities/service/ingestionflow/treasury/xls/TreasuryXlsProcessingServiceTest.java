@@ -41,16 +41,12 @@ class TreasuryXlsProcessingServiceTest {
 
 	@Mock
 	private TreasuryXlsErrorsArchiverService errorsArchiverServiceMock;
-
 	@Mock
 	private OrganizationService organizationServiceMock;
-
 	@Mock
 	private Path workingDirectoryMock;
-
 	@Mock
 	private TreasuryXlsMapper mapperMock;
-
 	@Mock
 	private TreasuryService treasuryServiceMock;
 
@@ -59,7 +55,7 @@ class TreasuryXlsProcessingServiceTest {
 	@BeforeEach
 	void setUp() {
 		FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-		service = new TreasuryXlsProcessingService(
+		service = new TreasuryXlsProcessingService(1,
 				mapperMock,
 				treasuryServiceMock,
 				errorsArchiverServiceMock,
@@ -78,6 +74,20 @@ class TreasuryXlsProcessingServiceTest {
 				treasuryServiceMock
 		);
 	}
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        TreasuryXlsIngestionFlowFileDTO row = podamFactory.manufacturePojo(TreasuryXlsIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(
+                TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF),
+                result);
+    }
 
 	@Test
 	void givenValidInputWhenProcessTreasuryXlsThenCompleteWithProcessingOk() {

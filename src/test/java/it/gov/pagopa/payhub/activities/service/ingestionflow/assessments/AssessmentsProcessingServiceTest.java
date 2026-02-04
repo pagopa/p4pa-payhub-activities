@@ -13,15 +13,14 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsInge
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
+import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPIIEmbedded;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.co.jemos.podam.api.PodamFactory;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -44,40 +44,35 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class AssessmentsProcessingServiceTest {
 
+    private static final List<InstallmentStatus> INSTALLMENT_STATUSES = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
+
     @Mock
     private AssessmentsErrorArchiverServcie errorsArchiverServiceMock;
-
     @Mock
     private Path workingDirectory;
-
     @Mock
     private AssessmentsDetailMapper mapperMock;
-
     @Mock
     private AssessmentsService assessmentsServiceMock;
-
     @Mock
     private AssessmentsDetailService assessmentsDetailServiceMock;
-
     @Mock
     private InstallmentService installmentServiceMock;
-
     @Mock
     private ReceiptService receiptServiceMock;
-
-    @Mock
-    private AssessmentsProcessingService service;
-
     @Mock
     private OrganizationService organizationServiceMock;
-
     @Mock
     private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
+
+    private AssessmentsProcessingService service;
+
+    private static final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new AssessmentsProcessingService(
+        service = new AssessmentsProcessingService(1,
                 errorsArchiverServiceMock,
                 organizationServiceMock,
                 fileExceptionHandlerService,
@@ -87,7 +82,35 @@ class AssessmentsProcessingServiceTest {
                 installmentServiceMock,
                 receiptServiceMock,
                 debtPositionTypeOrgServiceMock
-                );
+        );
+    }
+
+    @AfterEach
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
+                errorsArchiverServiceMock,
+                organizationServiceMock,
+                assessmentsServiceMock,
+                assessmentsDetailServiceMock,
+                mapperMock,
+                installmentServiceMock,
+                receiptServiceMock,
+                debtPositionTypeOrgServiceMock
+        );
+    }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        AssessmentsIngestionFlowFileDTO row = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(
+                row.getDebtPositionTypeOrgCode() + "_" + row.getAssessmentName(),
+                result);
     }
 
     @Test
@@ -98,14 +121,18 @@ class AssessmentsProcessingServiceTest {
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         ingestionFlowFile.setOrganizationId(123L);
-        AssessmentsIngestionFlowFileDTO dto = mock(AssessmentsIngestionFlowFileDTO.class);
-        Mockito.when(dto.getOrganizationIpaCode()).thenReturn(ipaCode);
+        AssessmentsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
+        dto.setOrganizationIpaCode(ipaCode);
 
         Organization organization = new Organization();
         organization.setIpaCode(ipaWrong);
-        Optional<Organization> organizationOptional = Optional.of(organization);
+        organization.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+                        .thenReturn(Optional.of(organization));
+
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
         // When
         AssessmentsIngestionFlowFileResult result = service.processAssessments(
@@ -116,59 +143,71 @@ class AssessmentsProcessingServiceTest {
         Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         Assertions.assertEquals(0L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
+
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                AssessmentsErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("ORGANIZATION_IPA_MISMATCH")
+                        .errorMessage("Il codice IPA IPA123 dell'ente non corrisponde a quello del file IPA123_WRONG")
+                        .organizationIpaCode(ipaCode)
+                        .assessmentCode(dto.getAssessmentCode())
+                        .build()));
     }
 
     @Test
     void consumeRowWithMatchingIpaCodeProcessesSuccessfully() {
         // Given
         long lineNumber = 1L;
-        AssessmentsIngestionFlowFileDTO row = mock(AssessmentsIngestionFlowFileDTO.class);
+        String orgIpaCode = "IPA123";
+        AssessmentsIngestionFlowFileDTO row = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
+        row.setOrganizationIpaCode(orgIpaCode);
+        row.setDebtPositionTypeOrgCode("DPT001");
+        row.setAssessmentName("ASSESSMENT1");
+        row.setIud("IUD1");
 
         AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
-        ingestionFlowFileResult.setIpaCode("IPA123");
+        ingestionFlowFileResult.setIpaCode(orgIpaCode);
 
-        IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+        IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
+        ingestionFlowFile.setOperatorExternalId("OPERATOR");
+        ingestionFlowFile.setOrganizationId(123L);
 
-        Organization organization = new Organization();
-        organization.setIpaCode("IPA123");
-        organization.setOrganizationId(123L);
-
-        var collectionInstallment = mock(CollectionModelInstallmentNoPII.class);
-        var embedded = mock(CollectionModelInstallmentNoPIIEmbedded.class);
-        Mockito.when(collectionInstallment.getEmbedded()).thenReturn(embedded);
-        Mockito.when(embedded.getInstallmentNoPIIs()).thenReturn(List.of(mock(InstallmentNoPII.class)));
-        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(Mockito.eq(123L), any(), any())).thenReturn(collectionInstallment);
+        CollectionModelInstallmentNoPII collectionInstallment = new CollectionModelInstallmentNoPII();
+        collectionInstallment.setEmbedded(CollectionModelInstallmentNoPIIEmbedded.builder()
+                .installmentNoPIIs(List.of(mock(InstallmentNoPII.class)))
+                .build());
+        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(), row.getIud(), INSTALLMENT_STATUSES))
+                .thenReturn(collectionInstallment);
 
         AssessmentsDetailRequestBody assessmentsDetailRequestBody = mock(AssessmentsDetailRequestBody.class);
         Assessments assessments = mock(Assessments.class);
         Mockito.when(assessments.getAssessmentId()).thenReturn(456L);
         Mockito.when(assessmentsServiceMock.createAssessment(any())).thenReturn(assessments);
-        List<AssessmentsErrorDTO> errorList = new ArrayList<>();
-
-        Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
-        Mockito.when(row.getDebtPositionTypeOrgCode()).thenReturn("DPT001");
-        Mockito.when(row.getAssessmentName()).thenReturn("ASSESSMENT1");
-        Mockito.when(row.getIud()).thenReturn("IUD1");
 
         DebtPositionTypeOrg debtPositionTypeOrg = mock(DebtPositionTypeOrg.class);
 
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(), row.getDebtPositionTypeOrgCode()))
+        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), row.getDebtPositionTypeOrgCode()))
                 .thenReturn(debtPositionTypeOrg);
 
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
 
         var receiptDTOMock = mock(it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO.class);
         Mockito.when(receiptServiceMock.getByReceiptId(any())).thenReturn(receiptDTOMock);
-        Mockito.when(mapperMock.map2AssessmentsDetailRequestBody(row, 123L,456L, receiptDTOMock, debtPositionTypeOrg.getDebtPositionTypeOrgId())).thenReturn(assessmentsDetailRequestBody);
+        Mockito.when(mapperMock.map2AssessmentsDetailRequestBody(row, 123L, 456L, receiptDTOMock, debtPositionTypeOrg.getDebtPositionTypeOrgId())).thenReturn(assessmentsDetailRequestBody);
+
+        Mockito.when(assessmentsServiceMock.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
+                ingestionFlowFile.getOrganizationId(),
+                row.getDebtPositionTypeOrgCode(),
+                row.getAssessmentName()
+        )).thenReturn(Optional.empty());
 
         // When
-        boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
+        List<AssessmentsErrorDTO> result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, ingestionFlowFile);
 
         // Then
-        Assertions.assertTrue(result);
+        Assertions.assertTrue(result.isEmpty());
         Mockito.verify(assessmentsServiceMock).createAssessment(Mockito.any(AssessmentsRequestBody.class));
         Mockito.verify(assessmentsDetailServiceMock).createAssessmentDetail(assessmentsDetailRequestBody);
-        Assertions.assertTrue(errorList.isEmpty());
     }
 
     @Test
@@ -184,9 +223,12 @@ class AssessmentsProcessingServiceTest {
 
         Organization organization = new Organization();
         organization.setIpaCode(ipaCode);
-        Optional<Organization> organizationOptional = Optional.of(organization);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(Optional.of(organization));
+
+        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(),
+                        dto.getIud(), INSTALLMENT_STATUSES))
+                .thenReturn(CollectionModelInstallmentNoPII.builder().embedded(new CollectionModelInstallmentNoPIIEmbedded()).build());
 
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
@@ -202,85 +244,94 @@ class AssessmentsProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-        Mockito.verifyNoInteractions(assessmentsDetailServiceMock);
-        Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                AssessmentsErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(-1L)
+                        .errorCode("CSV_GENERIC_ERROR")
+                        .errorMessage("Errore generico nella lettura del file: DUMMYERROR")
+                        .build(),
+                AssessmentsErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(2L)
+                        .errorCode("DEBT_POSITION_BY_IUD_NOT_FOUND")
+                        .errorMessage("La posizione debitoria con IUD null non e' stata trovata per l'ente")
+                        .organizationIpaCode(ipaCode)
+                        .build()));
     }
 
     @Test
     void consumeRowWithNoInstallmentsShouldReturnFalseAndAddError() {
         // Given
         long lineNumber = 2L;
-        AssessmentsIngestionFlowFileDTO row = mock(AssessmentsIngestionFlowFileDTO.class);
+        String orgIpaCode = "IPA123";
+        AssessmentsIngestionFlowFileDTO row = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
+        row.setOrganizationIpaCode(orgIpaCode);
+        row.setIud("IUD1");
+
         AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
-        ingestionFlowFileResult.setIpaCode("IPA123");
-        IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+        ingestionFlowFileResult.setIpaCode(orgIpaCode);
+        IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(123L);
 
-        Organization organization = new Organization();
-        organization.setIpaCode("IPA123");
-        organization.setOrganizationId(123L);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
-
-        var collectionInstallment = mock(CollectionModelInstallmentNoPII.class);
-        var embedded = mock(CollectionModelInstallmentNoPIIEmbedded.class);
-        Mockito.when(collectionInstallment.getEmbedded()).thenReturn(embedded);
-        Mockito.when(embedded.getInstallmentNoPIIs()).thenReturn(new ArrayList<>());
-        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(Mockito.eq(123L), any(), any())).thenReturn(collectionInstallment);
-
-        List<AssessmentsErrorDTO> errorList = new ArrayList<>();
-        Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
-        Mockito.when(row.getIud()).thenReturn("IUD1");
+        CollectionModelInstallmentNoPII collectionInstallment = new CollectionModelInstallmentNoPII();
+        collectionInstallment.setEmbedded(CollectionModelInstallmentNoPIIEmbedded.builder()
+                .installmentNoPIIs(Collections.emptyList())
+                .build());
+        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(), row.getIud(), INSTALLMENT_STATUSES))
+                .thenReturn(collectionInstallment);
 
         // When
-        boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
+        List<AssessmentsErrorDTO> result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, ingestionFlowFile);
 
         // Then
-        Assertions.assertFalse(result);
-        Assertions.assertEquals(1, errorList.size());
-        Assertions.assertEquals(FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.name(), errorList.getFirst().getErrorCode());
-        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("La posizione debitoria con IUD IUD1 non e' stata trovata per l'ente"));
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.name(), result.getFirst().getErrorCode());
+        Assertions.assertTrue(result.getFirst().getErrorMessage().contains("La posizione debitoria con IUD IUD1 non e' stata trovata per l'ente"));
     }
 
     @Test
     void consumeRowWithNoDPTypeOrgShouldReturnFalseAndAddError() {
         long lineNumber = 1L;
-        AssessmentsIngestionFlowFileDTO row = mock(AssessmentsIngestionFlowFileDTO.class);
+        String orgIpaCode = "IPA123";
+        AssessmentsIngestionFlowFileDTO row = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
+        row.setOrganizationIpaCode(orgIpaCode);
+        row.setDebtPositionTypeOrgCode("DPT001");
+        row.setAssessmentName("ASSESSMENT1");
+        row.setIud("IUD1");
 
         AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
-        ingestionFlowFileResult.setIpaCode("IPA123");
+        ingestionFlowFileResult.setIpaCode(orgIpaCode);
 
-        IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+        IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(123L);
 
-        Organization organization = new Organization();
-        organization.setIpaCode("IPA123");
-        organization.setOrganizationId(123L);
-        Mockito.when(organizationServiceMock.getOrganizationByIpaCode("IPA123")).thenReturn(Optional.of(organization));
-
-        var collectionInstallment = mock(CollectionModelInstallmentNoPII.class);
-        var embedded = mock(CollectionModelInstallmentNoPIIEmbedded.class);
-        Mockito.when(collectionInstallment.getEmbedded()).thenReturn(embedded);
-        Mockito.when(embedded.getInstallmentNoPIIs()).thenReturn(List.of(mock(InstallmentNoPII.class)));
-        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(Mockito.eq(123L), any(), any())).thenReturn(collectionInstallment);
-
-        List<AssessmentsErrorDTO> errorList = new ArrayList<>();
-
-        Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
-        Mockito.when(row.getDebtPositionTypeOrgCode()).thenReturn("DPT001");
-        Mockito.when(row.getAssessmentName()).thenReturn("ASSESSMENT1");
-        Mockito.when(row.getIud()).thenReturn("IUD1");
+        CollectionModelInstallmentNoPII collectionInstallment = new CollectionModelInstallmentNoPII();
+        collectionInstallment.setEmbedded(CollectionModelInstallmentNoPIIEmbedded.builder()
+                .installmentNoPIIs(List.of(mock(InstallmentNoPII.class)))
+                .build());
+        Mockito.when(installmentServiceMock.getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(), row.getIud(), INSTALLMENT_STATUSES)).thenReturn(collectionInstallment);
 
         var receiptDTOMock = mock(it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO.class);
         Mockito.when(receiptServiceMock.getByReceiptId(any())).thenReturn(receiptDTOMock);
 
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(organization.getOrganizationId(), row.getDebtPositionTypeOrgCode()))
+        Mockito.when(assessmentsServiceMock.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
+                ingestionFlowFile.getOrganizationId(),
+                row.getDebtPositionTypeOrgCode(),
+                row.getAssessmentName()
+        )).thenReturn(Optional.empty());
+
+        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), row.getDebtPositionTypeOrgCode()))
                 .thenReturn(null);
 
         // When
-        boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
+        List<AssessmentsErrorDTO> result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, ingestionFlowFile);
 
         // Then
-        Assertions.assertFalse(result);
-        Assertions.assertEquals(1, errorList.size());
-        Assertions.assertEquals(FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.name(), errorList.getFirst().getErrorCode());
-        Assertions.assertTrue(errorList.getFirst().getErrorMessage().contains("Il tipo posizione debitoria impostato con codice DPT001 non e' stato trovato per l'ente"));
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.name(), result.getFirst().getErrorCode());
+        Assertions.assertTrue(result.getFirst().getErrorMessage().contains("Il tipo posizione debitoria impostato con codice DPT001 non e' stato trovato per l'ente"));
     }
 }

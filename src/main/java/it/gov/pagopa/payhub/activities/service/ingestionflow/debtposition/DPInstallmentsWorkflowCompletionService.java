@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
@@ -37,33 +38,30 @@ public class DPInstallmentsWorkflowCompletionService {
      * @param workflowId  The ID of the workflow to monitor.
      * @param installment The installment ingestion flow file DTO associated with the workflow.
      * @param fileName    The name of the file being processed.
-     * @param errorList   The list where errors encountered during processing will be recorded.
      * @return {@code true} if the workflow completed successfully, {@code false} if it terminated with an error or exceeded the retry limit.
      */
-    public boolean waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
-                                             String fileName, List<InstallmentErrorDTO> errorList) {
+    public List<InstallmentErrorDTO> waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
+                                             String fileName) {
         try {
             if (workflowId == null) {
-                return true;
+                return Collections.emptyList();
             }
             WorkflowExecutionStatus workflowStatus = workflowHubService.waitWorkflowCompletion(
                     workflowId, maxAttempts, retryDelayMs).getStatus();
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
-                errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber,
+                return List.of(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber,
                         workflowStatus.name(),
                         FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(),
                         FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage()));
-                return false;
             }
 
-            return true;
+            return Collections.emptyList();
         } catch (Exception e) {
             log.warn("Workflow {} did not complete within retry limits.", workflowId);
-            errorList.add(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, null,
+            return List.of(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, null,
                     FileErrorCode.WORKFLOW_TIMEOUT.name(),
                     FileErrorCode.WORKFLOW_TIMEOUT.getMessage()));
-            return false;
         }
     }
 

@@ -15,12 +15,14 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,11 +37,13 @@ public class DebtPositionTypeProcessingService extends
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public DebtPositionTypeProcessingService(
+            @Value("${ingestion-flow-files.dp-types.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             DebtPositionTypeMapper debtPositionTypeMapper,
             DebtPositionTypeErrorsArchiverService debtPositionTypeErrorsArchiverService,
             DebtPositionTypeService debtPositionTypeService, OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService) {
-        super(debtPositionTypeErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, debtPositionTypeErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.debtPositionTypeMapper = debtPositionTypeMapper;
         this.debtPositionTypeService = debtPositionTypeService;
         this.fileExceptionHandlerService = fileExceptionHandlerService;
@@ -72,10 +76,15 @@ public class DebtPositionTypeProcessingService extends
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber,
+    protected String getSequencingId(DebtPositionTypeIngestionFlowFileDTO row) {
+        return row.getDebtPositionTypeCode();
+    }
+
+    @Override
+    protected List<DebtPositionTypeErrorDTO> consumeRow(long lineNumber,
                                  DebtPositionTypeIngestionFlowFileDTO debtPositionTypeDTO,
                                  DebtPositionTypeIngestionFlowFileResult ingestionFlowFileResult,
-                                 List<DebtPositionTypeErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
+                                 IngestionFlowFile ingestionFlowFile) {
         try {
             CollectionModelDebtPositionType existingDebtPosType = debtPositionTypeService.getByMainFields(
                     debtPositionTypeDTO.getDebtPositionTypeCode(),
@@ -97,12 +106,11 @@ public class DebtPositionTypeProcessingService extends
                         debtPositionTypeDTO.getBrokerCf(), lineNumber,
                         FileErrorCode.DEBT_POSITION_TYPE_ALREADY_EXISTS.name(),
                         FileErrorCode.DEBT_POSITION_TYPE_ALREADY_EXISTS.getMessage());
-                errorList.add(error);
-                return false;
+                return List.of(error);
             }
 
             debtPositionTypeService.createDebtPositionType(debtPositionTypeMapper.map(debtPositionTypeDTO, ingestionFlowFileResult.getBrokerId()));
-            return true;
+            return Collections.emptyList();
 
         } catch (Exception e) {
             log.error("Error processing debt position type with type code {}: {}",
@@ -112,9 +120,7 @@ public class DebtPositionTypeProcessingService extends
                     ingestionFlowFile.getFileName(), debtPositionTypeDTO.getDebtPositionTypeCode(),
                     debtPositionTypeDTO.getBrokerCf(),
                     lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
+            return List.of(error);
         }
     }
 

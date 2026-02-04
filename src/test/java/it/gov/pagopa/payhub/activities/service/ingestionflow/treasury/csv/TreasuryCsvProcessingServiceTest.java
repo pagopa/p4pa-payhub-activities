@@ -40,16 +40,12 @@ class TreasuryCsvProcessingServiceTest {
 
     @Mock
     private TreasuryCsvErrorsArchiverService errorsArchiverServiceMock;
-
     @Mock
     private OrganizationService organizationServiceMock;
-
     @Mock
     private Path workingDirectoryMock;
-
     @Mock
     private TreasuryCsvMapper mapperMock;
-
     @Mock
     private TreasuryService treasuryServiceMock;
 
@@ -58,7 +54,7 @@ class TreasuryCsvProcessingServiceTest {
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new TreasuryCsvProcessingService(mapperMock, errorsArchiverServiceMock, treasuryServiceMock, organizationServiceMock, fileExceptionHandlerService);
+        service = new TreasuryCsvProcessingService(1, mapperMock, errorsArchiverServiceMock, treasuryServiceMock, organizationServiceMock, fileExceptionHandlerService);
     }
 
     @AfterEach
@@ -70,6 +66,20 @@ class TreasuryCsvProcessingServiceTest {
                 mapperMock,
                 treasuryServiceMock
         );
+    }
+
+    @Test
+    void whenGetSequencingIdThenReturnExpectedValue() {
+        // Given
+        TreasuryCsvIngestionFlowFileDTO row = podamFactory.manufacturePojo(TreasuryCsvIngestionFlowFileDTO.class);
+
+        // When
+        String result = service.getSequencingId(row);
+
+        // Then
+        assertEquals(
+                row.getBillCode() + "-" + row.getBillYear(),
+                result);
     }
 
     @Test
