@@ -44,8 +44,14 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
     InstallmentDTO mixedInstallment = null;
     InstallmentDTO lastNotifiedInstallment = null;
 
-    Organization organization = organizationService.getOrganizationByFiscalCode(receiptDTO.getOrgFiscalCode())
-        .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptDTO.getOrgFiscalCode() + " not found"));
+    String receiptOrgFiscalCode = receiptDTO.getOrgFiscalCode();
+
+    if(receiptOrgFiscalCode.startsWith("UNKNOWN_")) {
+        return null;
+    }
+
+    Organization organization = organizationService.getOrganizationByFiscalCode(receiptOrgFiscalCode)
+        .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptOrgFiscalCode + " not found"));
 
     if(organization.getFlagNotifyOutcomePush()) {
       List<InstallmentDTO> installmentsToNotify = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),

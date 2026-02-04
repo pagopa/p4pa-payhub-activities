@@ -87,6 +87,7 @@ class ReceiptPagopaSendEmailActivityTest {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
+    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode("11111111111");
     List<String> recipients = List.of();
 
     Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);

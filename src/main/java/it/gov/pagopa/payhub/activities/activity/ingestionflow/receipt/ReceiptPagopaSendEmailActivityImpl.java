@@ -47,6 +47,10 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
         installmentDTO.getInstallmentId());
     }
 
+    if(receiptDTO.getOrgFiscalCode().startsWith("UNKNOWN_")) {
+        return;
+    }
+
     //retrieve recipients
     List<String> recipients = receiptPagopaEmailConfigurerService.retrieveRecipients(receiptDTO, installmentDTO);
     if (recipients.isEmpty()) {
