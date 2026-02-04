@@ -13,5 +13,5 @@ public interface InstallmentService {
 	CollectionModelInstallmentNoPII getInstallmentsByOrgIdAndIudAndStatus(Long orgid, String iud, List<InstallmentStatus> installmentStatuses);
 	void updateIunByDebtPositionId(Long debtPositionId, String iun);
 	List<InstallmentDTO> getByOrganizationIdAndReceiptId(Long organizationId, Long receiptId, List<DebtPositionOrigin> debtPositionOrigin);
-    List<InstallmentDebtorDTO> findByIuvOrNav(String iuvOrNav, String xFiscalCode, Long organizationId);
+    List<InstallmentDebtorDTO> findByIuvOrNav(String iuvOrNav, String xFiscalCode, Long organizationId, List<InstallmentStatus> statuses);
 }

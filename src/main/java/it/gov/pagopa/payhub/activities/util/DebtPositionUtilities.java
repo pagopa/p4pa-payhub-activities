@@ -9,6 +9,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DebtPositionUtilities {
     private DebtPositionUtilities(){}
@@ -19,6 +21,8 @@ public class DebtPositionUtilities {
     );
     public static final Set<InstallmentStatus> INSTALLMENT_PAID_STATUSES_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
     public static final List<InstallmentStatus> INSTALLMENT_PAID_STATUSES_LIST = List.copyOf(INSTALLMENT_PAID_STATUSES_SET);
+    public static final Set<InstallmentStatus> UNPAID_OR_PAID_INSTALLMENT_STATUSES_SET = Stream.concat(INSTALLMENT_PAID_STATUSES_SET.stream(), Stream.of(InstallmentStatus.UNPAID,InstallmentStatus.EXPIRED)).collect(Collectors.toSet());
+    public static final List<InstallmentStatus> UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST = List.copyOf(UNPAID_OR_PAID_INSTALLMENT_STATUSES_SET);
 
     /** It will return the min dueDate of all active installments */
     public static LocalDate calcDebtPositionNextDueDate(DebtPositionDTO debtPositionDTO){

@@ -64,9 +64,9 @@ public class InstallmentClient {
 				.getInstallmentsByOrganizationIdAndReceiptId(organizationId, receiptId, debtPositionOrigin);
 	}
 
-    public List<InstallmentDebtorDTO> findByIuvOrNav(String iuvOrNav, String xFiscalCode, Long organizationId, String accessToken) {
+    public List<InstallmentDebtorDTO> findByIuvOrNav(String iuvOrNav, String xFiscalCode, Long organizationId, List<InstallmentStatus>  statuses, String accessToken) {
         return debtPositionApisHolder.getInstallmentApi(accessToken)
-                .getInstallmentsByIuvOrNav(iuvOrNav, xFiscalCode, organizationId);
+                .getInstallmentsByIuvOrNav(iuvOrNav, xFiscalCode, organizationId, statuses);
     }
 
 }
