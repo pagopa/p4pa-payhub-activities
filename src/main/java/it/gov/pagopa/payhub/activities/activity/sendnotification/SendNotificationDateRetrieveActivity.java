@@ -13,9 +13,9 @@ public interface SendNotificationDateRetrieveActivity {
     /**
      * Retrieve notification date process.
      *
-     * @param sendNotificationId the ID of send notification
+     * @param notificationRequestId the ID of send notification request
      */
     @ActivityMethod
-    SendNotificationDTO sendNotificationDateRetrieve(String sendNotificationId);
+    SendNotificationDTO sendNotificationDateRetrieve(String notificationRequestId);
 
 }

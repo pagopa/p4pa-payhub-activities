@@ -2,11 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.CreateNotificationResponse;
-import it.gov.pagopa.pu.sendnotification.dto.generated.LoadFileRequest;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.StartNotificationResponse;
+import it.gov.pagopa.pu.sendnotification.controller.generated.StreamsApi;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.List;
+
 @ExtendWith(MockitoExtension.class)
 class SendNotificationClientTest {
 
@@ -25,6 +24,8 @@ class SendNotificationClientTest {
     private SendApisHolder sendApisHolderMock;
     @Mock
     private NotificationApi sendNotificationApiMock;
+    @Mock
+    private StreamsApi sendStreamsApiMock;
 
     private SendNotificationClient client;
 
@@ -173,6 +174,48 @@ class SendNotificationClientTest {
         // Then
         Assertions.assertNotNull(result);
         Assertions.assertEquals(expectedResponse, result);
+    }
+
+    @Test
+    void givenValidRequestWhenFindSendStreamThenOk() {
+        //Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+
+        SendStreamDTO expectedResult = new SendStreamDTO();
+
+        Mockito.when(sendApisHolderMock.getSendStreamsApi(accessToken))
+                .thenReturn(sendStreamsApiMock);
+        Mockito.when(sendStreamsApiMock.getStreamByOrganizationId(organizationId))
+                .thenReturn(expectedResult);
+
+        //When
+        SendStreamDTO actualResult = client.findSendStream(organizationId, accessToken);
+
+        //Then
+        Assertions.assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void givenValidRequestWhenReadSendStreamEventsThenOk() {
+        //Given
+        String accessToken = "ACCESSTOKEN";
+        Long organizationId = 1L;
+        String streamId = "streamId";
+        String lastEventId = "lastEventId";
+
+        List<ProgressResponseElementV25DTO> expectedResult = List.of(new ProgressResponseElementV25DTO());
+
+        Mockito.when(sendApisHolderMock.getSendStreamsApi(accessToken))
+                .thenReturn(sendStreamsApiMock);
+        Mockito.when(sendStreamsApiMock.getStreamEvents(organizationId, streamId, lastEventId))
+                .thenReturn(expectedResult);
+
+        //When
+        List<ProgressResponseElementV25DTO> actualResult = client.readSendStreamEvents(organizationId, streamId, lastEventId, accessToken);
+
+        //Then
+        Assertions.assertEquals(expectedResult, actualResult);
     }
 
 }
