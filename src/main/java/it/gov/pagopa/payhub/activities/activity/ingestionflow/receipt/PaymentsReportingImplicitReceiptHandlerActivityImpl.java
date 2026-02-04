@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.PaymentsReporting2ReceiptMapper;
+import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDebtorDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
@@ -51,7 +52,7 @@ public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements Paym
 			Organization organization = organizationService.getOrganizationById(paymentsReporting.getOrganizationId())
 				.orElseThrow(() -> new InvalidValueException("Organization not found: " + paymentsReporting.getOrganizationId()));
 
-            List<InstallmentDebtorDTO> installments = installmentService.findByIuvOrNav(paymentsReporting.getIuv(), null, organization.getOrganizationId());
+            List<InstallmentDebtorDTO> installments = installmentService.findByIuvOrNav(paymentsReporting.getIuv(), null, organization.getOrganizationId(), DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST);
 
             ReceiptWithAdditionalNodeDataDTO dummyReceipt = paymentsReporting2ReceiptMapper.map2Receipt(paymentsReporting, organization, installments);
 

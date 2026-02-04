@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.PaymentsReporting2ReceiptMapper;
+import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
@@ -66,7 +67,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
         installmentDebtorDTO.setIuv(paymentsReportingFake.getIuv());
         installmentDebtorDTO.setOrganizationId(organizationFake.getOrganizationId());
 
-        when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId())).thenReturn(List.of(installmentDebtorDTO));
+        when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId(),  DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST)).thenReturn(List.of(installmentDebtorDTO));
 		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId())).thenReturn(Optional.of(organizationFake));
 		when(paymentsReporting2ReceiptMapperMock.map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO))).thenReturn(dummyReceiptMocked);
