@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.InstallmentClient;
+import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
@@ -151,11 +152,11 @@ class InstallmentServiceTest {
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
 
         // When
-        installmentService.findByIuvOrNav(iuv, null, orgId);
+        installmentService.findByIuvOrNav(iuv, null, orgId, DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST);
 
         // Then
         verify(authnServiceMock, times(1)).getAccessToken();
-        verify(installmentClientMock, times(1)).findByIuvOrNav(iuv, null, orgId, accessToken);
+        verify(installmentClientMock, times(1)).findByIuvOrNav(iuv, null, orgId,  DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST, accessToken);
     }
 
 }
