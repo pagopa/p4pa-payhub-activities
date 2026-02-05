@@ -51,6 +51,11 @@ public class ReceiptMapper {
         Organization org = organizationService.getOrganizationById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization with id " + organizationId + " not found."));
 
+        // If it's a technical organization, add UNKNOWN prefix to fiscal code
+        if(org.getOrganizationId() == -1L) {
+            rec.setFiscalCode("UNKNOWN_" + rec.getFiscalCode());
+        }
+
         return new ReceiptWithAdditionalNodeDataDTO()
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .receiptOrigin(ReceiptOriginType.RECEIPT_PAGOPA)
