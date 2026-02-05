@@ -104,9 +104,6 @@ class ReceiptProcessingServiceTest {
         //then
         Assertions.assertEquals(1L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
-        Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
-        Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
-        Mockito.verifyNoInteractions(errorsArchiverServiceMock);
     }
 
     @Test
@@ -123,7 +120,7 @@ class ReceiptProcessingServiceTest {
         Mockito.doNothing().when(requiredFieldsValidatorServiceMock).validateIngestionFile(ingestionFlowFile, dto);
         Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
         Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO))
-                .thenThrow(new RuntimeException("Processing error"));
+                .thenThrow(new RuntimeException("DUMMYPROCESSINGERROR"));
 
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
@@ -142,11 +139,9 @@ class ReceiptProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
 
-        Mockito.verify(mapperMock).map(ingestionFlowFile, dto);
-        Mockito.verify(receiptServiceMock).createReceipt(receiptWithAdditionalNodeDataDTO);
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
                 new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.GENERIC_ERROR.name(), "Processing error")
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.GENERIC_ERROR.name(), "DUMMYPROCESSINGERROR")
         )));
     }
 }

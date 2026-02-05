@@ -9,7 +9,6 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.Treasu
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
-import it.gov.pagopa.payhub.activities.exception.organization.OrganizationIpaCodeNotMatchException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
@@ -79,18 +78,20 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
         String ipa = treasuryCsvCompleteIngestionFlowFileResult.getIpaCode();
         try {
             if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
-                String errorMessage = String.format(
-                        "Organization IPA code %s does not match with the one in the ingestion flow file %s",
-                        row.getOrganizationIpaCode(), ipa);
-                log.error(errorMessage);
-                throw new OrganizationIpaCodeNotMatchException(errorMessage);
+                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
+                TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(
+                        ingestionFlowFile.getFileName(), row.getIuv(), row.getIuf(),
+                        lineNumber,
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
+                return List.of(error);
             }
 
             TreasuryIuf existingTreasury;
             if(row.getIuf()!= null) {
                 existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
                 if(existingTreasury != null) {
-                    boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
+                    boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(), row.getBillCode()) || !Objects.equals(existingTreasury.getBillYear(), row.getBillYear());
                     if (treasuryMatch) {
                         log.error("IUF {} already associated to another treasury for organization with IPA code {}", row.getIuf(), ipa);
                         TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(

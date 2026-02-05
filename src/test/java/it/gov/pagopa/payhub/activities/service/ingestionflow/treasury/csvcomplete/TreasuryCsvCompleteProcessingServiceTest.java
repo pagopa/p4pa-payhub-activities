@@ -4,6 +4,7 @@ import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.csvcomplete.TreasuryCsvCompleteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteMapper;
@@ -32,7 +33,6 @@ import java.util.stream.Stream;
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class TreasuryCsvCompleteProcessingServiceTest {
@@ -55,7 +55,12 @@ class TreasuryCsvCompleteProcessingServiceTest {
     @BeforeEach
     void setUp() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new TreasuryCsvCompleteProcessingService(1, mapperMock, errorsArchiverServiceMock, treasuryServiceMock, organizationServiceMock, fileExceptionHandlerService);
+        service = new TreasuryCsvCompleteProcessingService(1,
+                mapperMock,
+                errorsArchiverServiceMock,
+                treasuryServiceMock,
+                organizationServiceMock,
+                fileExceptionHandlerService);
     }
 
     @AfterEach
@@ -84,7 +89,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
 
     @Test
     void processTreasuryCsvCompleteWithOrganizationErrors() {
-
+        // Given
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
@@ -99,72 +104,95 @@ class TreasuryCsvCompleteProcessingServiceTest {
         Optional<Organization> organizationOptional = Optional.of(organization);
         Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
 
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
+        // When
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
                 ingestionFlowFile, workingDirectory);
 
+        // Then
         Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         Assertions.assertEquals(0L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
         Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
         Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
+
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryCsvCompleteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("ORGANIZATION_IPA_MISMATCH")
+                        .errorMessage("Il codice IPA IPA123 dell'ente non corrisponde a quello del file IPA123_WRONG")
+                        .iuf(dto.getIuf())
+                        .iuv(dto.getIuv())
+                        .build()
+        ));
     }
 
     @Test
     void processTreasuryCsvCompleteWithNoErrors() {
-
+        // Given
         String ipa = "IPA123";
+        String iuf = "IUF12345";
+        Long orgId = 1L;
+
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        Long orgId = 1L;
         organization.setOrganizationId(orgId);
-        Optional<Organization> organizationOptional = Optional.of(organization);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
-        dto.setIuf("IUF12345");
+        dto.setIuf(iuf);
         dto.setIuv("IUV12345");
         dto.setOrganizationIpaCode(ipa);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(Optional.of(organization));
+
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(orgId, iuf)).thenReturn(null);
 
         Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
-        mappedNotification.setIuf("IUF12345");
+        mappedNotification.setIuf(iuf);
         mappedNotification.setTreasuryId("TREASURY_ID_1");
         Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
         Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
 
+        // When
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
                 ingestionFlowFile, workingDirectory);
 
+        // Then
         Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         Assertions.assertEquals(1L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
-        Mockito.verify(mapperMock).map(dto, ingestionFlowFile);
-        Mockito.verify(treasuryServiceMock).insert(mappedNotification);
     }
 
     @Test
     void processTreasuryCsvCompleteWithNoErrorsAndNullIuf() {
-
+        // Given
         String ipa = "IPA123";
+        Long orgId = 1L;
+
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        Long orgId = 1L;
         organization.setOrganizationId(orgId);
-        Optional<Organization> organizationOptional = Optional.of(organization);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
         dto.setIuf(null);
         dto.setIuv("IUV12345");
         dto.setOrganizationIpaCode(ipa);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId))
+                .thenReturn(Optional.of(organization));
 
         Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
         mappedNotification.setIuf(null);
@@ -172,51 +200,54 @@ class TreasuryCsvCompleteProcessingServiceTest {
         Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
         Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
 
+        // When
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
                 ingestionFlowFile, workingDirectory);
 
+        // Then
         Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         Assertions.assertEquals(1L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
-        Mockito.verify(mapperMock).map(dto, ingestionFlowFile);
-        Mockito.verify(treasuryServiceMock).insert(mappedNotification);
     }
 
     @Test
     void givenThrowExceptionWhenProcessTreasuryCsvCompleteThenAddError() throws URISyntaxException {
-
+        // Given
         String ipa = "IPA123";
+        Long orgId = 1L;
+        String iuf = "IUF12345";
+
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        Long orgId = 1L;
         organization.setOrganizationId(orgId);
-        Optional<Organization> organizationOptional = Optional.of(organization);
 
-        TreasuryCsvCompleteIngestionFlowFileDTO paymentNotificationIngestionFlowFileDTO = TestUtils.getPodamFactory().manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
-        paymentNotificationIngestionFlowFileDTO.setBillYear("2025");
-        paymentNotificationIngestionFlowFileDTO.setOrganizationIpaCode(ipa);
-        paymentNotificationIngestionFlowFileDTO.setIuf("IUF12345");
-        paymentNotificationIngestionFlowFileDTO.setIuv("IUV12345");
+        TreasuryCsvCompleteIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
+        dto.setBillYear("2025");
+        dto.setOrganizationIpaCode(ipa);
+        dto.setIuf(iuf);
+        dto.setIuv("IUV12345");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(Optional.of(organization));
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
         workingDirectory = Path.of(new URI("file:///tmp"));
 
         Treasury mappedNotification = mock(Treasury.class);
-        Mockito.when(mapperMock.map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile)).thenReturn(mappedNotification);
+        Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
         Mockito.when(treasuryServiceMock.insert(mappedNotification))
-                .thenThrow(new RuntimeException("Processing error"));
+                .thenThrow(new RuntimeException("DUMMYPROCESSINGERROR"));
 
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
-        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, "IUF12345")).thenReturn(null);
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(null);
 
         // When
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
-                Stream.of(paymentNotificationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -230,95 +261,138 @@ class TreasuryCsvCompleteProcessingServiceTest {
         Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
         Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
 
-        verify(mapperMock).map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile);
-        verify(treasuryServiceMock).insert(mappedNotification);
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryCsvCompleteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(-1L)
+                        .errorCode("CSV_GENERIC_ERROR")
+                        .errorMessage("Errore generico nella lettura del file: DUMMYERROR")
+                        .build(),
+                TreasuryCsvCompleteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(2L)
+                        .errorCode("GENERIC_ERROR")
+                        .errorMessage("DUMMYPROCESSINGERROR")
+                        .iuf(dto.getIuf())
+                        .iuv(dto.getIuv())
+                        .build()
+        ));
     }
 
     @Test
     void processTreasuryCsvCompleteWithExistingTreasury() {
+        // Given
         String ipa = "IPA123";
+        long orgId = 1L;
+        String iuf = "IUF12345";
+
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        organization.setOrganizationId(1L);
-        Optional<Organization> organizationOptional = Optional.of(organization);
+        organization.setOrganizationId(orgId);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
         dto.setOrganizationIpaCode(ipa);
-        dto.setIuf("IUF12345");
+        dto.setIuf(iuf);
         dto.setIuv("IUV12345");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(Optional.of(organization));
 
         TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
-        existingTreasuryIuf.setIuf("IUF12345");
-        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, "IUF12345")).thenReturn(existingTreasuryIuf);
+        existingTreasuryIuf.setIuf(iuf);
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(orgId, iuf)).thenReturn(existingTreasuryIuf);
 
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
+
+        // When
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
                 ingestionFlowFile, workingDirectory);
 
+        // Then
         Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         Assertions.assertEquals(0L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
         Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
         Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-        Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
+
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryCsvCompleteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("IUF_ALREADY_ASSOCIATED")
+                        .errorMessage("Lo IUF IUF12345 e' gia' associato ad un'altra tesoreria per l'ente con codice IPA IPA123")
+                        .iuf(dto.getIuf())
+                        .iuv(dto.getIuv())
+                        .build()
+        ));
     }
 
     @Test
     void processTreasuryCsvCompleteWithExistingTreasurySameBillCodeAndYear() {
+        // Given
         String ipa = "IPA123";
+        long orgId = 1L;
+        String iuf = "IUF12345";
+
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        organization.setOrganizationId(1L);
-        Optional<Organization> organizationOptional = Optional.of(organization);
+        organization.setOrganizationId(orgId);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
-        dto.setIuf("IUF12345");
+        dto.setIuf(iuf);
         dto.setIuv("IUV12345");
         dto.setOrganizationIpaCode(ipa);
         dto.setBillCode("BILL123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(Optional.of(organization));
 
         TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
-        existingTreasuryIuf.setIuf("IUF12345");
+        existingTreasuryIuf.setIuf(iuf);
         existingTreasuryIuf.setBillCode("BILL123");
         existingTreasuryIuf.setBillYear("2025");
-        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, "IUF12345")).thenReturn(existingTreasuryIuf);
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(orgId, iuf)).thenReturn(existingTreasuryIuf);
 
         Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
-        mappedNotification.setIuf("IUF12345");
+        mappedNotification.setIuf(iuf);
         mappedNotification.setTreasuryId("TREASURY_ID_1");
         Mockito.when(mapperMock.map(dto, ingestionFlowFile)).thenReturn(mappedNotification);
         Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
 
+        // When
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
                 ingestionFlowFile, workingDirectory);
 
+        // Then
         Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         Assertions.assertEquals(1L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
         Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
         Assertions.assertEquals(1, result.getIuf2TreasuryIdMap().size());
-        Mockito.verify(mapperMock).map(dto, ingestionFlowFile);
-        Mockito.verify(treasuryServiceMock).insert(mappedNotification);
     }
 
     @Test
-    void processTreasuryCsvCompleteWithExistingTreasuryDifferentBillCodeOrYear() {
+    void processTreasuryCsvCompleteWithExistingTreasuryDifferentBillCode() {
+        // Given
         String ipa = "IPA123";
+        long orgId = 1L;
+
         Organization organization = new Organization();
         organization.setIpaCode(ipa);
-        organization.setOrganizationId(1L);
-        Optional<Organization> organizationOptional = Optional.of(organization);
+        organization.setOrganizationId(orgId);
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setBillYear("2025");
         dto.setIuf("IUF12345");
@@ -326,49 +400,92 @@ class TreasuryCsvCompleteProcessingServiceTest {
         dto.setOrganizationIpaCode(ipa);
         dto.setBillCode("BILL123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(organizationOptional);
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(Optional.of(organization));
 
         TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
-        existingTreasuryIuf.setIuf("IUF12345");
+        existingTreasuryIuf.setIuf(dto.getIuf());
         existingTreasuryIuf.setBillCode("BILL999");
         existingTreasuryIuf.setBillYear("2025");
-        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, "IUF12345")).thenReturn(existingTreasuryIuf);
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(orgId, dto.getIuf())).thenReturn(existingTreasuryIuf);
 
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
+
+        // When
         TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
                 Stream.of(dto).iterator(), List.of(),
                 ingestionFlowFile, workingDirectory);
 
+        // Then
+        Assertions.assertSame(orgId, result.getOrganizationId());
+        Assertions.assertEquals(0L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
+
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryCsvCompleteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("IUF_ALREADY_ASSOCIATED")
+                        .errorMessage("Lo IUF IUF12345 e' gia' associato ad un'altra tesoreria per l'ente con codice IPA IPA123")
+                        .iuf(dto.getIuf())
+                        .iuv(dto.getIuv())
+                        .build()
+        ));
+    }
+
+    @Test
+    void processTreasuryCsvCompleteWithExistingTreasuryDifferentYear() {
+        // Given
+        String ipa = "IPA123";
+        long orgId = 1L;
+
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(orgId);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(orgId)).thenReturn(Optional.of(organization));
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+        TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
+        dto.setBillYear("2026");
+        dto.setIuf("IUF12345");
+        dto.setIuv("IUV12345");
+        dto.setOrganizationIpaCode(ipa);
+        dto.setBillCode("BILL123");
+
+        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
+        existingTreasuryIuf.setIuf(dto.getIuf());
+        existingTreasuryIuf.setBillCode(dto.getBillCode());
+        existingTreasuryIuf.setBillYear("2025");
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(orgId, dto.getIuf())).thenReturn(existingTreasuryIuf);
+
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
+
+        // When
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryCsvComplete(
+                Stream.of(dto).iterator(), List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        // Then
         Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         Assertions.assertEquals(0L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
         Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
         Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-        Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any());
-        Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
 
-        TreasuryCsvCompleteIngestionFlowFileDTO dto2 = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
-        dto2.setBillYear("2026");
-        dto2.setIuf("IUF12345");
-        dto2.setIuv("IUV12345");
-        dto2.setOrganizationIpaCode(ipa);
-        dto2.setBillCode("BILL123");
-
-        TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
-        existingTreasuryIuf2.setIuf("IUF12345");
-        existingTreasuryIuf2.setBillCode("BILL123");
-        existingTreasuryIuf2.setBillYear("2025");
-        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, "IUF12345")).thenReturn(existingTreasuryIuf2);
-
-        TreasuryIufIngestionFlowFileResult result2 = service.processTreasuryCsvComplete(
-                Stream.of(dto2).iterator(), List.of(),
-                ingestionFlowFile, workingDirectory);
-
-        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result2.getOrganizationId());
-        Assertions.assertEquals(0L, result2.getProcessedRows());
-        Assertions.assertEquals(1L, result2.getTotalRows());
-        Assertions.assertNotNull(result2.getIuf2TreasuryIdMap());
-        Assertions.assertEquals(0, result2.getIuf2TreasuryIdMap().size());
-        Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any());
-        Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryCsvCompleteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("IUF_ALREADY_ASSOCIATED")
+                        .errorMessage("Lo IUF IUF12345 e' gia' associato ad un'altra tesoreria per l'ente con codice IPA IPA123")
+                        .iuf(dto.getIuf())
+                        .iuv(dto.getIuv())
+                        .build()
+        ));
     }
 }

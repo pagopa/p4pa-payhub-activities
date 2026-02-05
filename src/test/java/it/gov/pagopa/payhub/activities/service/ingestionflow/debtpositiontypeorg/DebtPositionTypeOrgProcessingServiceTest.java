@@ -84,7 +84,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 debtPositionTypeServiceMock,
                 organizationServiceMock,
                 organizationServiceSuperMock
-                );
+        );
     }
 
     @Test
@@ -106,6 +106,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
         DebtPositionTypeOrgIngestionFlowFileDTO dto = mock(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         Organization orgFromService = Organization.builder()
                 .brokerId(1L)
+                .organizationId(ingestionFlowFile.getOrganizationId())
                 .orgFiscalCode("brokerFC")
                 .ipaCode("ipaCode")
                 .orgName("orgName")
@@ -139,18 +140,23 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 .ioTemplateSubject(mappedDebtPosType.getIoTemplateSubject())
                 .ioTemplateMessage(mappedDebtPosType.getIoTemplateMessage())
                 .build();
-        CollectionModelDebtPositionType existingCollectionModel = mock(CollectionModelDebtPositionType.class);
-
-        PagedModelDebtPositionTypeEmbedded embedded = mock(PagedModelDebtPositionTypeEmbedded.class);
-        List<DebtPositionType> debtPositionTypeList = List.of(mock(DebtPositionType.class));
-        Mockito.when(existingCollectionModel.getEmbedded()).thenReturn(embedded);
-        Mockito.when(embedded.getDebtPositionTypes()).thenReturn(debtPositionTypeList);
 
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(orgFromService));
+
+        DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
+        CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
+                .embedded(PagedModelDebtPositionTypeEmbedded.builder()
+                        .debtPositionTypes(List.of(dpType))
+                        .build())
+                .build();
         Mockito.when(debtPositionTypeServiceMock.getByBrokerIdAndCode(orgFromService.getBrokerId(), dto.getCode()))
                 .thenReturn(existingCollectionModel);
-        Mockito.when(mapperMock.map(Mockito.eq(dto), Mockito.anyLong(), Mockito.anyLong())).thenReturn(mappedDebtPosType);
+
+        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode()))
+                .thenReturn(null);
+
+        Mockito.when(mapperMock.map(dto, dpType.getDebtPositionTypeId(), ingestionFlowFile.getOrganizationId())).thenReturn(mappedDebtPosType);
         Mockito.when(debtPositionTypeOrgServiceMock.createDebtPositionTypeOrg(mappedDebtPosType)).thenReturn(createdDebtPosType);
 
         // When
@@ -161,17 +167,12 @@ class DebtPositionTypeOrgProcessingServiceTest {
         // Then
         Assertions.assertEquals(1L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(mapperMock).map(Mockito.eq(dto), Mockito.anyLong(), Mockito.anyLong());
-        Mockito.verify(debtPositionTypeOrgServiceMock).createDebtPositionTypeOrg(mappedDebtPosType);
-        Mockito.verify(debtPositionTypeOrgServiceMock).getDebtPositionTypeOrgByOrganizationIdAndCode(Mockito.anyLong(), Mockito.any());
-        Mockito.verify(debtPositionTypeServiceMock, Mockito.atLeastOnce()).getByBrokerIdAndCode(Mockito.anyLong(), Mockito.any());
     }
 
     @Test
     void givenThrowExceptionWhenProcessDebtPositionTypeOrgThenAddError() throws URISyntaxException {
         // Given
-        DebtPositionTypeOrgIngestionFlowFileDTO debtPositionTypeOrgIngestionFlowFileDTO = TestUtils.getPodamFactory().manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        DebtPositionTypeOrgIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         workingDirectory = Path.of(new URI("file:///tmp"));
 
@@ -191,15 +192,20 @@ class DebtPositionTypeOrgProcessingServiceTest {
                 .build();
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(organization));
-        Mockito.when(mapperMock.map(Mockito.any(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(mappedDebtPosTypeOrg);
 
-        CollectionModelDebtPositionType collectionModel = mock(CollectionModelDebtPositionType.class);
-        PagedModelDebtPositionTypeEmbedded embedded = mock(PagedModelDebtPositionTypeEmbedded.class);
-        DebtPositionType debtPositionType = mock(DebtPositionType.class);
-        Mockito.when(collectionModel.getEmbedded()).thenReturn(embedded);
-        Mockito.when(embedded.getDebtPositionTypes()).thenReturn(List.of(debtPositionType));
-        Mockito.when(debtPositionTypeServiceMock.getByBrokerIdAndCode(Mockito.anyLong(), Mockito.any()))
-                .thenReturn(collectionModel);
+        DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
+        CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
+                .embedded(PagedModelDebtPositionTypeEmbedded.builder()
+                        .debtPositionTypes(List.of(dpType))
+                        .build())
+                .build();
+        Mockito.when(debtPositionTypeServiceMock.getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode()))
+                .thenReturn(existingCollectionModel);
+
+        Mockito.when(mapperMock.map(dto, dpType.getDebtPositionTypeId(), ingestionFlowFile.getOrganizationId())).thenReturn(mappedDebtPosTypeOrg);
+
+        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode()))
+                .thenReturn(null);
 
         Mockito.when(debtPositionTypeOrgServiceMock.createDebtPositionTypeOrg(mappedDebtPosTypeOrg))
                 .thenThrow(new RuntimeException("[DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS] debt position type org already exists"));
@@ -209,7 +215,7 @@ class DebtPositionTypeOrgProcessingServiceTest {
 
         // When
         DebtPositionTypeOrgIngestionFlowFileResult result = service.processDebtPositionTypeOrg(
-                Stream.of(debtPositionTypeOrgIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -220,15 +226,10 @@ class DebtPositionTypeOrgProcessingServiceTest {
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(),null, null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
-                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), debtPositionTypeOrgIngestionFlowFileDTO.getCode(),1L, 2L,
+                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), null, null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
+                new DebtPositionTypeOrgErrorDTO(ingestionFlowFile.getFileName(), dto.getCode(), 1L, 2L,
                         FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.name(), FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.getMessage())
         )));
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(mapperMock).map(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());
-        Mockito.verify(debtPositionTypeOrgServiceMock).createDebtPositionTypeOrg(mappedDebtPosTypeOrg);
-        Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
-        Mockito.verify(debtPositionTypeOrgServiceMock).getDebtPositionTypeOrgByOrganizationIdAndCode(Mockito.anyLong(), Mockito.any());
     }
 
     @Test
@@ -249,10 +250,6 @@ class DebtPositionTypeOrgProcessingServiceTest {
         Assertions.assertNull(result.getBrokerId());
         Assertions.assertEquals("Broker not found", result.getErrorDescription());
         Assertions.assertEquals(0, result.getProcessedRows());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verifyNoInteractions(mapperMock);
-        Mockito.verifyNoInteractions(errorsArchiverServiceMock);
-        Mockito.verifyNoInteractions(debtPositionTypeOrgServiceMock);
     }
 
     @Test
@@ -289,9 +286,8 @@ class DebtPositionTypeOrgProcessingServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(orgFromService));
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(
-                Mockito.anyLong(), Mockito.any()
-        )).thenReturn(existingDebtPosType);
+        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode()))
+                .thenReturn(existingDebtPosType);
         Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
 
@@ -305,17 +301,16 @@ class DebtPositionTypeOrgProcessingServiceTest {
         Assertions.assertEquals(1, result.getTotalRows());
         Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
         Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
-        Mockito.verify(errorsArchiverServiceMock).writeErrors(
-            same(workingDirectory),
-            same(ingestionFlowFile),
-            Mockito.anyList()
-        );
-        Mockito.verify(debtPositionTypeOrgServiceMock).getDebtPositionTypeOrgByOrganizationIdAndCode(
-                Mockito.anyLong(), Mockito.any()
-        );
-        Mockito.verifyNoInteractions(mapperMock);
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                DebtPositionTypeOrgErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode(FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.name())
+                        .errorMessage(FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.getMessage())
+                        .organizationId(ingestionFlowFile.getOrganizationId())
+                        .debtPositionTypeCode(dto.getCode())
+                        .build()
+        ));
     }
 
 }

@@ -4,6 +4,7 @@ import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.TreasuryService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.poste.TreasuryPosteIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIuf;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper;
@@ -40,36 +41,36 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class TreasuryPosteProcessingServiceTest {
 
-  private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
-  @Mock
-  private TreasuryPosteErrorsArchiverService errorsArchiverServiceMock;
-  @Mock
-  private OrganizationService organizationServiceMock;
-  @Mock
-  private Path workingDirectory;
-  @Mock
-  private TreasuryPosteMapper mapperMock;
-  @Mock
-  private TreasuryService treasuryServiceMock;
+    @Mock
+    private TreasuryPosteErrorsArchiverService errorsArchiverServiceMock;
+    @Mock
+    private OrganizationService organizationServiceMock;
+    @Mock
+    private Path workingDirectory;
+    @Mock
+    private TreasuryPosteMapper mapperMock;
+    @Mock
+    private TreasuryService treasuryServiceMock;
 
-  private TreasuryPosteProcessingService service;
+    private TreasuryPosteProcessingService service;
 
-  @BeforeEach
-  void setUp() {
-    FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-    service = new TreasuryPosteProcessingService(1, mapperMock, treasuryServiceMock, errorsArchiverServiceMock, organizationServiceMock, fileExceptionHandlerService);
-  }
+    @BeforeEach
+    void setUp() {
+        FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
+        service = new TreasuryPosteProcessingService(1, mapperMock, treasuryServiceMock, errorsArchiverServiceMock, organizationServiceMock, fileExceptionHandlerService);
+    }
 
-  @AfterEach
-  void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(
-        mapperMock,
-        treasuryServiceMock,
-        organizationServiceMock,
-        errorsArchiverServiceMock
-    );
-  }
+    @AfterEach
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
+                mapperMock,
+                treasuryServiceMock,
+                organizationServiceMock,
+                errorsArchiverServiceMock
+        );
+    }
 
     @Test
     void whenGetSequencingIdThenReturnExpectedValue() {
@@ -85,244 +86,348 @@ class TreasuryPosteProcessingServiceTest {
                 result);
     }
 
-  @Test
-  void processTreasuryPosteWithNoErrors() {
-    String iban = "IT84K0760101000000010123456";
-    String iuf = "2025-09-23BPPIITRRXXX-000038102790";
-    String dateString = "23/09/2025";
-    LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = TreasuryUtils.generateBillCode(iuf);
-    String ipa = "IPA123";
-    Organization organization = new Organization();
-    organization.setIpaCode(ipa);
-    Long orgId = 1L;
-    organization.setOrganizationId(orgId);
-    Optional<Organization> organizationOptional = Optional.of(organization);
+    @Test
+    void processTreasuryPosteWithNoErrors() {
+        // Given
+        String iban = "IT84K0760101000000010123456";
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+        String dateString = "23/09/2025";
+        LocalDate billDate = LocalDate.of(2025, 9, 23);
+        String billCode = TreasuryUtils.generateBillCode(iuf);
+        String ipa = "IPA123";
+        Long orgId = 1L;
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
-    dto.setBillDate(dateString);
-    dto.setRegionValueDate(dateString);
-    dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(orgId);
 
-    Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
-    mappedNotification.setIuf(iuf);
-    mappedNotification.setTreasuryId("TREASURY_ID_1");
-    Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
-    Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
-    Mockito.when(organizationServiceMock.getOrganizationById(any()))
-            .thenReturn(organizationOptional);
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
 
-    TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
-        Stream.of(dto).iterator(), iban, List.of(),
-        ingestionFlowFile, workingDirectory);
+        TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
+        dto.setBillDate(dateString);
+        dto.setRegionValueDate(dateString);
+        dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
 
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    Assertions.assertEquals(1L, result.getProcessedRows());
-    Assertions.assertEquals(1L, result.getTotalRows());
-    Mockito.verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
-    Mockito.verify(treasuryServiceMock).insert(mappedNotification);
-  }
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(orgId, iuf)).thenReturn(null);
 
-  @Test
-  void givenThrowExceptionWhenProcessTreasuryPosteThenAddError() throws URISyntaxException {
-    String iban = "IT84K0760101000000010123456";
-    String iuf = "2025-09-23BPPIITRRXXX-000038102790";
-    String dateString = "23/09/2025";
-    LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = TreasuryUtils.generateBillCode(iuf);
-    String ipa = "IPA123";
-    Organization organization = new Organization();
-    organization.setIpaCode(ipa);
-    Long orgId = 1L;
-    organization.setOrganizationId(orgId);
-    Optional<Organization> organizationOptional = Optional.of(organization);
+        Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
+        mappedNotification.setIuf(iuf);
+        mappedNotification.setTreasuryId("TREASURY_ID_1");
+        Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
+        Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
+        Mockito.when(organizationServiceMock.getOrganizationById(any()))
+                .thenReturn(Optional.of(organization));
 
-    TreasuryPosteIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
-    dto.setBillDate(dateString);
-    dto.setRegionValueDate(dateString);
-    dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+        // When
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
+                Stream.of(dto).iterator(), iban, List.of(),
+                ingestionFlowFile, workingDirectory);
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    workingDirectory = Path.of(new URI("file:///tmp"));
+        // Then
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(1L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Mockito.verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
+        Mockito.verify(treasuryServiceMock).insert(mappedNotification);
+    }
 
-    Treasury mappedNotification = mock(Treasury.class);
-    Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
-    Mockito.when(treasuryServiceMock.insert(mappedNotification))
-        .thenThrow(new RuntimeException("Processing error"));
+    @Test
+    void givenThrowExceptionWhenProcessTreasuryPosteThenAddError() throws URISyntaxException {
+        // Given
+        String iban = "IT84K0760101000000010123456";
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+        String dateString = "23/09/2025";
+        LocalDate billDate = LocalDate.of(2025, 9, 23);
+        String billCode = TreasuryUtils.generateBillCode(iuf);
+        String ipa = "IPA123";
+        Long orgId = 1L;
 
-    Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-        .thenReturn("zipFileName.csv");
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(orgId);
 
-    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(null);
-    Mockito.when(organizationServiceMock.getOrganizationById(any()))
-            .thenReturn(organizationOptional);
+        TreasuryPosteIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
+        dto.setBillDate(dateString);
+        dto.setRegionValueDate(dateString);
+        dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
 
-    // When
-    TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
-        Stream.of(dto).iterator(), iban, List.of(new CsvException("DUMMYERROR")),
-        ingestionFlowFile,
-        workingDirectory
-    );
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
 
-    // Then
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    assertEquals(2, result.getTotalRows());
-    assertEquals(0, result.getProcessedRows());
-    assertEquals("Some rows have failed", result.getErrorDescription());
-    assertEquals("zipFileName.csv", result.getDiscardedFileName());
-    Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
-    Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
+        workingDirectory = Path.of(new URI("file:///tmp"));
 
-    verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
-    verify(treasuryServiceMock).insert(mappedNotification);
-  }
+        Treasury mappedNotification = mock(Treasury.class);
+        Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
+        Mockito.when(treasuryServiceMock.insert(mappedNotification))
+                .thenThrow(new RuntimeException("DUMMYPROCESSINGERROR"));
 
-  @Test
-  void processTreasuryPosteWithExistingTreasury() {
-    String iban = "IT84K0760101000000010123456";
-    String iuf = "2025-09-23BPPIITRRXXX-000038102790";
-    String dateString = "23/09/2025";
-    String ipa = "IPA123";
-    Organization organization = new Organization();
-    organization.setIpaCode(ipa);
-    Long orgId = 1L;
-    organization.setOrganizationId(orgId);
-    Optional<Organization> organizationOptional = Optional.of(organization);
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
-    dto.setBillDate(dateString);
-    dto.setRegionValueDate(dateString);
-    dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(null);
+        Mockito.when(organizationServiceMock.getOrganizationById(any()))
+                .thenReturn(Optional.of(organization));
 
-    TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
-    existingTreasuryIuf.setIuf(iuf);
-    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
-    Mockito.when(organizationServiceMock.getOrganizationById(any()))
-            .thenReturn(organizationOptional);
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
-    TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
-        Stream.of(dto).iterator(), iban, List.of(),
-        ingestionFlowFile, workingDirectory);
+        // When
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
+                Stream.of(dto).iterator(), iban, List.of(new CsvException("DUMMYERROR")),
+                ingestionFlowFile,
+                workingDirectory
+        );
 
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    Assertions.assertEquals(0L, result.getProcessedRows());
-    Assertions.assertEquals(1L, result.getTotalRows());
-    Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
-    Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-    Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
-  }
+        // Then
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        assertEquals(2, result.getTotalRows());
+        assertEquals(0, result.getProcessedRows());
+        assertEquals("Some rows have failed", result.getErrorDescription());
+        assertEquals("zipFileName.csv", result.getDiscardedFileName());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
 
-  @Test
-  void processTreasuryPosteWithExistingTreasurySameBillCodeAndYear() {
-    String iban = "IT84K0760101000000010123456";
-    String iuf = "2025-09-23BPPIITRRXXX-000038102790";
-    String dateString = "23/09/2025";
-    LocalDate billDate = LocalDate.of(2025, 9, 23);
-    String billCode = TreasuryUtils.generateBillCode(iuf);
-    String ipa = "IPA123";
-    Organization organization = new Organization();
-    organization.setIpaCode(ipa);
-    Long orgId = 1L;
-    organization.setOrganizationId(orgId);
-    Optional<Organization> organizationOptional = Optional.of(organization);
+        verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
+        verify(treasuryServiceMock).insert(mappedNotification);
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
-    dto.setBillDate(dateString);
-    dto.setRegionValueDate(dateString);
-    dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
-    
-    TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
-    existingTreasuryIuf.setIuf(iuf);
-    existingTreasuryIuf.setBillCode(billCode);
-    existingTreasuryIuf.setBillYear("2025");
-    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
-    Mockito.when(organizationServiceMock.getOrganizationById(any()))
-            .thenReturn(organizationOptional);
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryPosteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(-1L)
+                        .errorCode("CSV_GENERIC_ERROR")
+                        .errorMessage("Errore generico nella lettura del file: DUMMYERROR")
+                        .build(),
+                TreasuryPosteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(2L)
+                        .errorCode("GENERIC_ERROR")
+                        .errorMessage("DUMMYPROCESSINGERROR")
+                        .iuf(iuf)
+                        .build()
+        ));
+    }
 
-    Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
-    mappedNotification.setIuf(iuf);
-    mappedNotification.setTreasuryId("TREASURY_ID_1");
-    Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
-    Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
+    @Test
+    void processTreasuryPosteWithExistingTreasury() {
+        // Given
+        String iban = "IT84K0760101000000010123456";
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+        String dateString = "23/09/2025";
+        String ipa = "IPA123";
+        Long orgId = 1L;
 
-    TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
-        Stream.of(dto).iterator(), iban, List.of(),
-        ingestionFlowFile, workingDirectory);
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(orgId);
 
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    Assertions.assertEquals(1L, result.getProcessedRows());
-    Assertions.assertEquals(1L, result.getTotalRows());
-    Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
-    Assertions.assertEquals(1, result.getIuf2TreasuryIdMap().size());
-    Mockito.verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
-    Mockito.verify(treasuryServiceMock).insert(mappedNotification);
-  }
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
 
-  @Test
-  void processTreasuryPosteWithExistingTreasuryDifferentBillCodeOrYear() {
-    String iban = "IT84K0760101000000010123456";
-    String iuf = "2025-09-23BPPIITRRXXX-000038102790";
-    String dateString = "23/09/2025";
-    String billCode = "8102790";
-    String ipa = "IPA123";
-    Organization organization = new Organization();
-    organization.setIpaCode(ipa);
-    Long orgId = 1L;
-    organization.setOrganizationId(orgId);
-    Optional<Organization> organizationOptional = Optional.of(organization);
+        TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
+        dto.setBillDate(dateString);
+        dto.setRegionValueDate(dateString);
+        dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
 
-    IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-    TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
-    dto.setBillDate(dateString);
-    dto.setRegionValueDate(dateString);
+        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
+        existingTreasuryIuf.setIuf(iuf);
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+        Mockito.when(organizationServiceMock.getOrganizationById(any()))
+                .thenReturn(Optional.of(organization));
 
-    dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
 
-    TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
-    existingTreasuryIuf.setIuf(iuf);
-    existingTreasuryIuf.setBillCode("BILL123");
-    existingTreasuryIuf.setBillYear("2025");
-    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
-    Mockito.when(organizationServiceMock.getOrganizationById(any()))
-            .thenReturn(organizationOptional);
+        // When
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
+                Stream.of(dto).iterator(), iban, List.of(),
+                ingestionFlowFile, workingDirectory);
 
-    TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
-        Stream.of(dto).iterator(), iban, List.of(),
-        ingestionFlowFile, workingDirectory);
+        //
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(0L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
+        Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
 
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-    Assertions.assertEquals(0L, result.getProcessedRows());
-    Assertions.assertEquals(1L, result.getTotalRows());
-    Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
-    Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
-    Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-    Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryPosteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("IUF_ALREADY_ASSOCIATED")
+                        .errorMessage("Lo IUF 2025-09-23BPPIITRRXXX-000038102790 e' gia' associato ad un'altra tesoreria per l'ente con codice IPA IPA123")
+                        .iuf(iuf)
+                        .build()
+        ));
+    }
 
-    TreasuryPosteIngestionFlowFileDTO dto2 = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
-    dto2.setBillDate(dateString);
-    dto2.setRegionValueDate(dateString);
-    dto2.setCreditBillAmount(null);
-    dto2.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+    @Test
+    void processTreasuryPosteWithExistingTreasurySameBillCodeAndYear() {
+        // Given
+        String iban = "IT84K0760101000000010123456";
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+        String dateString = "23/09/2025";
+        LocalDate billDate = LocalDate.of(2025, 9, 23);
+        String billCode = TreasuryUtils.generateBillCode(iuf);
+        String ipa = "IPA123";
+        Long orgId = 1L;
 
-    TreasuryIuf existingTreasuryIuf2 = new TreasuryIuf();
-    existingTreasuryIuf2.setIuf(iuf);
-    existingTreasuryIuf2.setBillCode(billCode);
-    existingTreasuryIuf2.setBillYear("2024");
-    Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf2);
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(orgId);
 
-    TreasuryIufIngestionFlowFileResult result2 = service.processTreasuryPoste(
-        Stream.of(dto2).iterator(), iban, List.of(),
-        ingestionFlowFile, workingDirectory);
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
 
-    Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result2.getOrganizationId());
-    Assertions.assertEquals(0L, result2.getProcessedRows());
-    Assertions.assertEquals(1L, result2.getTotalRows());
-    Assertions.assertNotNull(result2.getIuf2TreasuryIdMap());
-    Assertions.assertEquals(0, result2.getIuf2TreasuryIdMap().size());
-    Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-    Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
-  }
+        TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
+        dto.setBillDate(dateString);
+        dto.setRegionValueDate(dateString);
+        dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+
+        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
+        existingTreasuryIuf.setIuf(iuf);
+        existingTreasuryIuf.setBillCode(billCode);
+        existingTreasuryIuf.setBillYear("2025");
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+        Mockito.when(organizationServiceMock.getOrganizationById(any()))
+                .thenReturn(Optional.of(organization));
+
+        Treasury mappedNotification = podamFactory.manufacturePojo(Treasury.class);
+        mappedNotification.setIuf(iuf);
+        mappedNotification.setTreasuryId("TREASURY_ID_1");
+        Mockito.when(mapperMock.map(dto, iban, iuf, billCode, billDate, ingestionFlowFile)).thenReturn(mappedNotification);
+        Mockito.when(treasuryServiceMock.insert(mappedNotification)).thenReturn(mappedNotification);
+
+        // When
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
+                Stream.of(dto).iterator(), iban, List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        // Then
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(1L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(1, result.getIuf2TreasuryIdMap().size());
+        Mockito.verify(mapperMock).map(dto, iban, iuf, billCode, billDate, ingestionFlowFile);
+        Mockito.verify(treasuryServiceMock).insert(mappedNotification);
+    }
+
+    @Test
+    void processTreasuryPosteWithExistingTreasuryDifferentBillCode() {
+        // Given
+        String iban = "IT84K0760101000000010123456";
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+        String dateString = "23/09/2025";
+        String ipa = "IPA123";
+        Long orgId = 1L;
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(orgId);
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
+        TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
+        dto.setBillDate(dateString);
+        dto.setRegionValueDate(dateString);
+
+        dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+
+        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
+        existingTreasuryIuf.setIuf(iuf);
+        existingTreasuryIuf.setBillCode("BILL123");
+        existingTreasuryIuf.setBillYear("2025");
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(any()))
+                .thenReturn(Optional.of(organization));
+
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
+
+        // When
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
+                Stream.of(dto).iterator(), iban, List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        // Then
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(0L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
+        Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
+
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryPosteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("IUF_ALREADY_ASSOCIATED")
+                        .errorMessage("Lo IUF 2025-09-23BPPIITRRXXX-000038102790 e' gia' associato ad un'altra tesoreria per l'ente con codice IPA IPA123")
+                        .iuf(iuf)
+                        .build()
+        ));
+    }
+
+    @Test
+    void processTreasuryPosteWithExistingTreasuryDifferentYear() {
+        // Given
+        String iban = "IT84K0760101000000010123456";
+        String iuf = "2025-09-23BPPIITRRXXX-000038102790";
+        String dateString = "23/09/2025";
+        String billCode = "8102790";
+        String ipa = "IPA123";
+        Long orgId = 1L;
+        Organization organization = new Organization();
+        organization.setIpaCode(ipa);
+        organization.setOrganizationId(orgId);
+
+        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+        ingestionFlowFile.setOrganizationId(orgId);
+
+        TreasuryPosteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryPosteIngestionFlowFileDTO.class);
+        dto.setBillDate(dateString);
+        dto.setRegionValueDate(dateString);
+        dto.setCreditBillAmount(null);
+        dto.setRemittanceDescription("RI1/PUR/LGPE-RIVERSAMENTO/URI/2025-09-23BPPIITRRXXX-000038102790 ACCREDITO BOLLETTINO P.A.");
+
+        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
+        existingTreasuryIuf.setIuf(iuf);
+        existingTreasuryIuf.setBillCode(billCode);
+        existingTreasuryIuf.setBillYear("2024");
+        Mockito.when(treasuryServiceMock.getByOrganizationIdAndIuf(1L, iuf)).thenReturn(existingTreasuryIuf);
+
+        Mockito.when(organizationServiceMock.getOrganizationById(any()))
+                .thenReturn(Optional.of(organization));
+
+        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
+                .thenReturn("zipFileName.csv");
+
+        // When
+        TreasuryIufIngestionFlowFileResult result = service.processTreasuryPoste(
+                Stream.of(dto).iterator(), iban, List.of(),
+                ingestionFlowFile, workingDirectory);
+
+        //Then
+        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        Assertions.assertEquals(0L, result.getProcessedRows());
+        Assertions.assertEquals(1L, result.getTotalRows());
+        Assertions.assertNotNull(result.getIuf2TreasuryIdMap());
+        Assertions.assertEquals(0, result.getIuf2TreasuryIdMap().size());
+        Mockito.verify(mapperMock, Mockito.never()).map(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(treasuryServiceMock, Mockito.never()).insert(Mockito.any());
+
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                TreasuryPosteErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("IUF_ALREADY_ASSOCIATED")
+                        .errorMessage("Lo IUF 2025-09-23BPPIITRRXXX-000038102790 e' gia' associato ad un'altra tesoreria per l'ente con codice IPA IPA123")
+                        .iuf(iuf)
+                        .build()
+        ));
+    }
 }

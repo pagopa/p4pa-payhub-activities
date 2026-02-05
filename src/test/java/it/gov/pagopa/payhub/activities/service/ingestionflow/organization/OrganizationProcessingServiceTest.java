@@ -127,7 +127,7 @@ class OrganizationProcessingServiceTest {
 
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(brokerOrganization));
-        Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(Mockito.any()))
+        Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(dto.getOrgFiscalCode()))
                 .thenReturn(Optional.empty());
         Mockito.when(mapperMock.map(dto, brokerOrganization.getBrokerId())).thenReturn(mappedOrg);
         Mockito.when(organizationServiceMock.createOrganization(mappedOrg)).thenReturn(createdOrg);
@@ -140,13 +140,12 @@ class OrganizationProcessingServiceTest {
         // Then
         Assertions.assertEquals(1L, result.getProcessedRows());
         Assertions.assertEquals(1L, result.getTotalRows());
-        Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.any());
     }
 
     @Test
     void givenThrowExceptionWhenProcessOrganizationThenAddError() throws URISyntaxException {
         // Given
-        OrganizationIngestionFlowFileDTO organizationIngestionFlowFileDTO = TestUtils.getPodamFactory().manufacturePojo(OrganizationIngestionFlowFileDTO.class);
+        OrganizationIngestionFlowFileDTO dto = TestUtils.getPodamFactory().manufacturePojo(OrganizationIngestionFlowFileDTO.class);
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         workingDirectory = Path.of(new URI("file:///tmp"));
 
@@ -154,7 +153,8 @@ class OrganizationProcessingServiceTest {
 
         Organization organization = Organization.builder()
                 .brokerId(1L)
-                .orgFiscalCode(organizationIngestionFlowFileDTO.getBrokerCf())
+                .organizationId(ingestionFlowFile.getOrganizationId())
+                .orgFiscalCode(dto.getBrokerCf())
                 .ipaCode("ipaCode")
                 .orgName("orgName")
                 .status(OrganizationStatus.ACTIVE)
@@ -166,8 +166,10 @@ class OrganizationProcessingServiceTest {
                 .build();
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(organization));
-        Mockito.when(mapperMock.map(organizationIngestionFlowFileDTO, 1L)).thenReturn(mappedOrg);
+        Mockito.when(mapperMock.map(dto, organization.getBrokerId())).thenReturn(mappedOrg);
 
+        Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(dto.getOrgFiscalCode()))
+                .thenReturn(Optional.empty());
 
         Mockito.when(organizationServiceMock.createOrganization(mappedOrg))
                 .thenThrow(new RuntimeException("[ORGANIZATION_ALREADY_EXISTS] Organization already exists"));
@@ -177,7 +179,7 @@ class OrganizationProcessingServiceTest {
 
         // When
         OrganizationIngestionFlowFileResult result = service.processOrganization(
-                Stream.of(organizationIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
+                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
                 ingestionFlowFile,
                 workingDirectory
         );
@@ -187,10 +189,9 @@ class OrganizationProcessingServiceTest {
         assertEquals(0, result.getProcessedRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
-        Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode(Mockito.anyString());
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
                 new OrganizationErrorDTO(ingestionFlowFile.getFileName(), null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
-                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), organizationIngestionFlowFileDTO.getIpaCode(), 2L,
+                new OrganizationErrorDTO(ingestionFlowFile.getFileName(), dto.getIpaCode(), 2L,
                         FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(), FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage())
         )));
     }
@@ -213,21 +214,20 @@ class OrganizationProcessingServiceTest {
         Assertions.assertNull(result.getBrokerId());
         Assertions.assertEquals("Broker not found", result.getErrorDescription());
         Assertions.assertEquals(0, result.getProcessedRows());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verifyNoInteractions(mapperMock, errorsArchiverServiceMock);
     }
 
     @Test
     void processOrganizationWhenBrokerFiscalCodeNotMatched() {
         // Given
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        OrganizationIngestionFlowFileDTO dto = mock(OrganizationIngestionFlowFileDTO.class);
-        Mockito.when(dto.getBrokerCf()).thenReturn("DIFFERENT_BROKER_CF");
-        Mockito.when(dto.getOrgFiscalCode()).thenReturn("ORG_FISCAL_CODE");
-        Mockito.when(dto.getIpaCode()).thenReturn("IPA_CODE");
+        OrganizationIngestionFlowFileDTO dto = podamFactory.manufacturePojo(OrganizationIngestionFlowFileDTO.class);
+        dto.setBrokerCf("DIFFERENT_BROKER_CF");
+        dto.setOrgFiscalCode("ORG_FISCAL_CODE");
+        dto.setIpaCode("IPA_CODE");
 
         Organization orgFromService = Organization.builder()
                 .brokerId(1L)
+                .organizationId(ingestionFlowFile.getOrganizationId())
                 .orgFiscalCode("BROKER_CF_FROM_ORG")
                 .ipaCode("ipaCode")
                 .orgName("orgName")
@@ -254,14 +254,16 @@ class OrganizationProcessingServiceTest {
         Assertions.assertEquals(1, result.getTotalRows());
         Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
         Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(dto, times(2)).getOrgFiscalCode();
-        Mockito.verify(dto).getIpaCode();
-        Mockito.verifyNoInteractions(mapperMock);
-        Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
-        Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.anyList());
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                OrganizationErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("BROKER_MISMATCH")
+                        .errorMessage("L'intermediario non e' correlato con l'ente")
+                        .ipaCode(dto.getIpaCode())
+                        .build()
+        ));
     }
-
 
     @Test
     void processOrganizationWhenOrganizationDoesNotExist() {
@@ -281,20 +283,20 @@ class OrganizationProcessingServiceTest {
         Assertions.assertNull(result.getBrokerId());
         Assertions.assertEquals("Broker not found", result.getErrorDescription());
         Assertions.assertEquals(0, result.getProcessedRows());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
     }
 
     @Test
     void processOrganizationWithUnexpectedBrokerCfInCsvRow() {
         // Given
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        OrganizationIngestionFlowFileDTO dto = mock(OrganizationIngestionFlowFileDTO.class);
-        Mockito.when(dto.getBrokerCf()).thenReturn("UNEXPECTED_BROKER_CF");
-        Mockito.when(dto.getOrgFiscalCode()).thenReturn("ORG_FISCAL_CODE");
-        Mockito.when(dto.getIpaCode()).thenReturn("IPA_CODE");
+        OrganizationIngestionFlowFileDTO dto = podamFactory.manufacturePojo(OrganizationIngestionFlowFileDTO.class);
+        dto.setBrokerCf("UNEXPECTED_BROKER_CF");
+        dto.setOrgFiscalCode("ORG_FISCAL_CODE");
+        dto.setIpaCode("IPA_CODE");
 
         Organization orgFromService = Organization.builder()
                 .brokerId(1L)
+                .organizationId(ingestionFlowFile.getOrganizationId())
                 .orgFiscalCode("EXPECTED_BROKER_CF")
                 .ipaCode("ipaCode")
                 .orgName("orgName")
@@ -321,24 +323,29 @@ class OrganizationProcessingServiceTest {
         Assertions.assertEquals(1, result.getTotalRows());
         Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
         Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(dto, times(2)).getOrgFiscalCode();
-        Mockito.verify(dto).getIpaCode();
-        Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
-        Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.anyList());
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                OrganizationErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("BROKER_MISMATCH")
+                        .errorMessage("L'intermediario non e' correlato con l'ente")
+                        .ipaCode(dto.getIpaCode())
+                        .build()
+        ));
     }
 
     @Test
     void processOrganizationWhenOrganizationAlreadyExists() {
         // Given
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        OrganizationIngestionFlowFileDTO dto = mock(OrganizationIngestionFlowFileDTO.class);
-        Mockito.when(dto.getBrokerCf()).thenReturn("brokerFC");
-        Mockito.when(dto.getOrgFiscalCode()).thenReturn("ORG_FISCAL_CODE");
-        Mockito.when(dto.getIpaCode()).thenReturn("IPA_CODE");
+        OrganizationIngestionFlowFileDTO dto = podamFactory.manufacturePojo(OrganizationIngestionFlowFileDTO.class);
+        dto.setBrokerCf("brokerFC");
+        dto.setOrgFiscalCode("ORG_FISCAL_CODE");
+        dto.setIpaCode("IPA_CODE");
 
         Organization orgFromService = Organization.builder()
                 .brokerId(1L)
+                .organizationId(ingestionFlowFile.getOrganizationId())
                 .orgFiscalCode("brokerFC")
                 .ipaCode("ipaCode")
                 .orgName("orgName")
@@ -380,13 +387,15 @@ class OrganizationProcessingServiceTest {
         Assertions.assertEquals(1, result.getTotalRows());
         Assertions.assertEquals("Some rows have failed", result.getErrorDescription());
         Assertions.assertEquals("zipFileName.csv", result.getDiscardedFileName());
-        Mockito.verify(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Mockito.verify(organizationServiceMock).getOrganizationByFiscalCode("ORG_FISCAL_CODE");
-        Mockito.verify(dto, times(2)).getOrgFiscalCode();
-        Mockito.verify(dto).getIpaCode();
-        Mockito.verify(errorsArchiverServiceMock).archiveErrorFiles(workingDirectory, ingestionFlowFile);
-        Mockito.verify(errorsArchiverServiceMock).writeErrors(Mockito.eq(workingDirectory), Mockito.eq(ingestionFlowFile), Mockito.anyList());
-        Mockito.verifyNoInteractions(mapperMock);
+        Mockito.verify(errorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
+                OrganizationErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(1L)
+                        .errorCode("ORGANIZATION_ALREADY_EXISTS")
+                        .errorMessage("L'ente esiste gia'")
+                        .ipaCode(dto.getIpaCode())
+                        .build()
+        ));
     }
 
 }

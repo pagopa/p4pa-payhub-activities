@@ -102,9 +102,6 @@ class PaymentNotificationProcessingServiceTest {
     Assertions.assertNotNull(result.getIudList());
     Assertions.assertEquals(1, result.getIudList().size());
     Assertions.assertEquals(List.of("IUD"), result.getIudList());
-    Mockito.verify(mapperMock).map(dto, ingestionFlowFile);
-    Mockito.verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
-    Mockito.verifyNoInteractions(errorsArchiverServiceMock);
   }
   
   @Test
@@ -118,7 +115,7 @@ class PaymentNotificationProcessingServiceTest {
     PaymentNotificationDTO mappedNotification = mock(PaymentNotificationDTO.class);
     Mockito.when(mapperMock.map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile)).thenReturn(mappedNotification);
     Mockito.when(paymentNotificationServiceMock.createPaymentNotification(mappedNotification))
-        .thenThrow(new RuntimeException("Processing error"));
+        .thenThrow(new RuntimeException("DUMMYPROCESSINGERROR"));
 
     Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
         .thenReturn("zipFileName.csv");
@@ -139,12 +136,10 @@ class PaymentNotificationProcessingServiceTest {
     Assertions.assertNotNull(result.getIudList());
     Assertions.assertEquals(0, result.getIudList().size());
 
-    verify(mapperMock).map(paymentNotificationIngestionFlowFileDTO, ingestionFlowFile);
-    verify(paymentNotificationServiceMock).createPaymentNotification(mappedNotification);
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
             new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), null, null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
             new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), paymentNotificationIngestionFlowFileDTO.getIuv(), paymentNotificationIngestionFlowFileDTO.getIud(), 2L,
-                    FileErrorCode.GENERIC_ERROR.name(), "Processing error")
+                    FileErrorCode.GENERIC_ERROR.name(), "DUMMYPROCESSINGERROR")
     )));
   }
 }

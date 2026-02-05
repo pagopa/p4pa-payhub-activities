@@ -91,7 +91,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
             TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), iuf);
 
             if (existingTreasury != null) {
-                boolean treasuryMatch = !existingTreasury.getBillCode().equals(billCode) || !existingTreasury.getBillYear().equals(billYear);
+                boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(),billCode) || !Objects.equals(existingTreasury.getBillYear(), billYear);
                 if (treasuryMatch) {
                     log.error("IUF {} already associated to another treasury for organization with IPA code {}", iuf, ipa);
                     TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(

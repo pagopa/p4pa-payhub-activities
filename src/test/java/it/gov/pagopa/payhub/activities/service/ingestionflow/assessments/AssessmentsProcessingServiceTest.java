@@ -212,14 +212,13 @@ class AssessmentsProcessingServiceTest {
 
     @Test
     void processAssessmentsWithErrors() {
-
         // Given
         String ipaCode = "IPA123";
 
         IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
         ingestionFlowFile.setOrganizationId(123L);
-        AssessmentsIngestionFlowFileDTO dto = mock(AssessmentsIngestionFlowFileDTO.class);
-        Mockito.when(dto.getOrganizationIpaCode()).thenReturn(ipaCode);
+        AssessmentsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
+        dto.setOrganizationIpaCode(ipaCode);
 
         Organization organization = new Organization();
         organization.setIpaCode(ipaCode);
@@ -261,7 +260,7 @@ class AssessmentsProcessingServiceTest {
     }
 
     @Test
-    void consumeRowWithNoInstallmentsShouldReturnFalseAndAddError() {
+    void consumeRowWithNoInstallmentsShouldReturnError() {
         // Given
         long lineNumber = 2L;
         String orgIpaCode = "IPA123";
@@ -292,7 +291,7 @@ class AssessmentsProcessingServiceTest {
     }
 
     @Test
-    void consumeRowWithNoDPTypeOrgShouldReturnFalseAndAddError() {
+    void consumeRowWithNoDPTypeOrgShouldReturnError() {
         long lineNumber = 1L;
         String orgIpaCode = "IPA123";
         AssessmentsIngestionFlowFileDTO row = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
