@@ -74,6 +74,7 @@ class ReceiptPagopaSendEmailActivityTest {
   void givenNoInstallmentWhenSendReceiptHandledEmailMailThenNotSent() {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
+    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode("11111111111");
 
     // When
     Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, null));
@@ -100,4 +101,14 @@ class ReceiptPagopaSendEmailActivityTest {
     Mockito.verifyNoMoreInteractions(receiptPagoPaEmailConfigurerServiceMock, sendEmailActivityMock);
   }
 
+    @Test
+    void givenUnknownOrgFiscalCodeWhenSendReceiptHandledEmailThenNotSent() {
+        ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
+        receiptDTO.setOrgFiscalCode("UNKNOWN_11111111111");
+        InstallmentDTO installmentDTO = new InstallmentDTO();
+
+        receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO, installmentDTO);
+
+        Mockito.verifyNoInteractions(receiptPagoPaEmailConfigurerServiceMock, organizationServiceMock, sendEmailActivityMock);
+    }
 }

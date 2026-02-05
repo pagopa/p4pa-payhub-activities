@@ -37,7 +37,13 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
 
   @Override
   public void sendReceiptHandledEmail(ReceiptWithAdditionalNodeDataDTO receiptDTO, InstallmentDTO installmentDTO) {
-    if (installmentDTO == null) {
+      if(receiptDTO.getOrgFiscalCode().startsWith("UNKNOWN_")) {
+          log.info("Not sending email for receipt id [{}]: organization fiscal code is UNKNOWN",
+                  receiptDTO.getReceiptId());
+          return;
+      }
+
+      if (installmentDTO == null) {
       log.info("Not sending email for receipt id[{}] [{}/{}]: installment is null",
         receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber());
       return;
@@ -45,10 +51,6 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
       log.info("Starting send email for receipt id[{}] [{}/{}] and installment id[{}]",
         receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber(),
         installmentDTO.getInstallmentId());
-    }
-
-    if(receiptDTO.getOrgFiscalCode().startsWith("UNKNOWN_")) {
-        return;
     }
 
     //retrieve recipients
