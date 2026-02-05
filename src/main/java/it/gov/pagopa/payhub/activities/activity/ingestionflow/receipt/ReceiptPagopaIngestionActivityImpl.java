@@ -73,6 +73,7 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
     //set the missing ID in the DTO
     receiptWithAdditionalNodeDataDTO.setReceiptId(receiptDTO.getReceiptId());
 
+    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode(receiptDTO.getOrgFiscalCode());
 
     return ReceiptPagopaIngestionFlowFileResult.builder()
             .organizationId(ingestionFlowFileDTO.getOrganizationId())
