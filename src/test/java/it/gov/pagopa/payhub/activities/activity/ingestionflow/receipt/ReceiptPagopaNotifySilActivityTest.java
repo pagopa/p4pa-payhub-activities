@@ -204,4 +204,15 @@ class ReceiptPagopaNotifySilActivityTest {
     Mockito.verify(puSilServiceMock, never()).notifyPayment(anyLong(), any(), any());
   }
 
+    @Test
+    void givenUnknownOrgFiscalCodeWhenNotifyReceiptToSilThenReturnNull() {
+        ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
+        receiptDTO.setOrgFiscalCode("UNKNOWN_11111111111");
+        receiptDTO.setReceiptId(123L);
+
+        InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
+
+        Assertions.assertNull(result);
+    }
+
 }

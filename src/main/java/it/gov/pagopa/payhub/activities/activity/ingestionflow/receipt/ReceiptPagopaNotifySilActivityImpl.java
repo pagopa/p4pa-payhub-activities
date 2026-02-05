@@ -41,36 +41,51 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
   @Override
   public InstallmentDTO notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     log.info("Notify receipt to SIL by receiptId {}", receiptDTO.getReceiptId());
-    InstallmentDTO mixedInstallment = null;
-    InstallmentDTO lastNotifiedInstallment = null;
 
-    Organization organization = organizationService.getOrganizationByFiscalCode(receiptDTO.getOrgFiscalCode())
-        .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptDTO.getOrgFiscalCode() + " not found"));
+    String receiptOrgFiscalCode = receiptDTO.getOrgFiscalCode();
 
-    if(organization.getFlagNotifyOutcomePush()) {
-      List<InstallmentDTO> installmentsToNotify = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),
-          receiptDTO.getReceiptId(),null);
-      for(InstallmentDTO installment : installmentsToNotify) {
-        DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
-            .getDebtPositionTypeOrgByInstallmentId(installment.getInstallmentId());
-
-        if ("MIXED".equals(debtPositionTypeOrg.getCode())) {
-          mixedInstallment = installment;
-        }
-
-        // ignoring technical debt position types
-        if(debtPositionTypeOrg.getDebtPositionTypeId() > 0) {
-          if (debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId() != null) {
-            puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installment, organization.getIpaCode());
-            lastNotifiedInstallment = installment;
-          } else {
-            log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
-                debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
-          }
-        }
-      }
+    if(receiptOrgFiscalCode.startsWith("UNKNOWN_")) {
+        return null;
     }
-    // priority to MIXED, otherwise return lastNotifiedInstallment
-    return mixedInstallment != null ? mixedInstallment : lastNotifiedInstallment;
+
+    Organization organization = organizationService.getOrganizationByFiscalCode(receiptOrgFiscalCode)
+        .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptOrgFiscalCode + " not found"));
+
+    if (!organization.getFlagNotifyOutcomePush()) {
+        return null;
+    }
+
+    return processInstallments(organization, receiptDTO.getReceiptId());
+  }
+
+  private InstallmentDTO processInstallments(Organization organization, Long receiptId) {
+      InstallmentDTO mixedInstallment = null;
+      InstallmentDTO lastNotifiedInstallment = null;
+
+      List<InstallmentDTO> installmentsToNotify = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),
+              receiptId,null);
+
+      for(InstallmentDTO installment : installmentsToNotify) {
+          DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
+                  .getDebtPositionTypeOrgByInstallmentId(installment.getInstallmentId());
+
+          if ("MIXED".equals(debtPositionTypeOrg.getCode())) {
+              mixedInstallment = installment;
+          }
+
+          // Ignoring technical debt position types
+          if(debtPositionTypeOrg.getDebtPositionTypeId() > 0) {
+              if (debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId() != null) {
+                  puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installment, organization.getIpaCode());
+                  lastNotifiedInstallment = installment;
+              } else {
+                  log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
+                          debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
+              }
+          }
+      }
+
+      // Priority to MIXED, otherwise return lastNotifiedInstallment
+      return mixedInstallment != null ? mixedInstallment : lastNotifiedInstallment;
   }
 }
