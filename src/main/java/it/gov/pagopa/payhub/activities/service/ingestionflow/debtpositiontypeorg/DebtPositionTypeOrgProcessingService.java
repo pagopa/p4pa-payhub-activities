@@ -32,7 +32,6 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
     private final DebtPositionTypeOrgMapper debtPositionTypeOrgMapper;
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
     private final DebtPositionTypeService debtPositionTypeService;
-    private final OrganizationService organizationServiceSpecialized;
 
     public DebtPositionTypeOrgProcessingService(
             @Value("${ingestion-flow-files.dp-type-orgs.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -40,16 +39,13 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
             DebtPositionTypeOrgMapper debtPositionTypeOrgMapper,
             DebtPositionTypeOrgErrorsArchiverService debtPositionTypeErrorsArchiverService,
             DebtPositionTypeOrgService debtPositionTypeOrgService, DebtPositionTypeService debtPositionTypeService,
-            OrganizationService organizationServiceSpecialized,
-            OrganizationService organizationServiceSuper,
+            OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService) {
-        super(maxConcurrentProcessingRows, debtPositionTypeErrorsArchiverService, organizationServiceSuper, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, debtPositionTypeErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.debtPositionTypeOrgMapper = debtPositionTypeOrgMapper;
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
         this.debtPositionTypeService = debtPositionTypeService;
-        this.organizationServiceSpecialized = organizationServiceSpecialized;
     }
-
 
     public DebtPositionTypeOrgIngestionFlowFileResult processDebtPositionTypeOrg(
             Iterator<DebtPositionTypeOrgIngestionFlowFileDTO> iterator,
@@ -60,15 +56,15 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
         List<DebtPositionTypeOrgErrorDTO> errorList = new ArrayList<>();
         DebtPositionTypeOrgIngestionFlowFileResult ingestionFlowFileResult = new DebtPositionTypeOrgIngestionFlowFileResult();
 
-        Organization organization = organizationServiceSpecialized.getOrganizationById(ingestionFlowFile.getOrganizationId()).orElse(null);
-        Long brokerId = organization != null ? organization.getBrokerId() : null;
+        Organization organization = getOrganizationById(ingestionFlowFile.getOrganizationId());
+        Long brokerId = organization.getBrokerId();
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            ingestionFlowFileResult.setErrorDescription("Broker not found");
+            ingestionFlowFileResult.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
             return ingestionFlowFileResult;
         }
         ingestionFlowFileResult.setBrokerId(brokerId);
-        ingestionFlowFileResult.setBrokerFiscalCode(organization.getOrgFiscalCode());
+        ingestionFlowFileResult.setOrgIpaCode(organization.getIpaCode());
         ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
@@ -83,32 +79,40 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
     @Override
     protected List<DebtPositionTypeOrgErrorDTO> consumeRow(
             long lineNumber,
-            DebtPositionTypeOrgIngestionFlowFileDTO debtPositionTypeOrgDTO,
+            DebtPositionTypeOrgIngestionFlowFileDTO row,
             DebtPositionTypeOrgIngestionFlowFileResult ingestionFlowFileResult,
             IngestionFlowFile ingestionFlowFile) {
-        DebtPositionTypeOrg existingDebtPosTypeOrg = debtPositionTypeOrgService.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), debtPositionTypeOrgDTO.getCode());
+        String ipa = ingestionFlowFileResult.getOrgIpaCode();
+        if (!row.getIpaCode().equalsIgnoreCase(ipa)) {
+            log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getIpaCode(), ipa);
+            DebtPositionTypeOrgErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getIpaCode(), ipa));
+            return List.of(error);
+        }
 
+        DebtPositionTypeOrg existingDebtPosTypeOrg = debtPositionTypeOrgService.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), row.getCode());
 
         if (existingDebtPosTypeOrg != null) {
             DebtPositionTypeOrgErrorDTO error = buildErrorDto(
-                    ingestionFlowFile, lineNumber, debtPositionTypeOrgDTO,
+                    ingestionFlowFile, lineNumber, row,
                     FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.name(),
                     FileErrorCode.DEBT_POSITION_TYPE_ORG_ALREADY_EXISTS.getMessage());
             return List.of(error);
         }
 
-
-        List<DebtPositionType> debtPositionTypeList = Objects.requireNonNull(debtPositionTypeService.getByBrokerIdAndCode(ingestionFlowFileResult.getBrokerId(), debtPositionTypeOrgDTO.getCode()).getEmbedded()).getDebtPositionTypes();
+        List<DebtPositionType> debtPositionTypeList = Objects.requireNonNull(debtPositionTypeService.getByBrokerIdAndCode(ingestionFlowFileResult.getBrokerId(), row.getCode()).getEmbedded()).getDebtPositionTypes();
         if (CollectionUtils.isEmpty(debtPositionTypeList)) {
             DebtPositionTypeOrgErrorDTO error = buildErrorDto(
-                    ingestionFlowFile, lineNumber, debtPositionTypeOrgDTO,
+                    ingestionFlowFile, lineNumber, row,
                     FileErrorCode.DEBT_POSITION_TYPE_BY_CODE_NOT_FOUND.name(),
-                    FileErrorCode.DEBT_POSITION_TYPE_BY_CODE_NOT_FOUND.format(debtPositionTypeOrgDTO.getCode()));
+                    FileErrorCode.DEBT_POSITION_TYPE_BY_CODE_NOT_FOUND.format(row.getCode()));
             return List.of(error);
         }
         Long debtPositionTypeId = debtPositionTypeList.getFirst().getDebtPositionTypeId();
 
-        debtPositionTypeOrgService.createDebtPositionTypeOrg(debtPositionTypeOrgMapper.map(debtPositionTypeOrgDTO, debtPositionTypeId, ingestionFlowFile.getOrganizationId()));
+        debtPositionTypeOrgService.createDebtPositionTypeOrg(debtPositionTypeOrgMapper.map(row, debtPositionTypeId, ingestionFlowFile.getOrganizationId()));
         return Collections.emptyList();
     }
 

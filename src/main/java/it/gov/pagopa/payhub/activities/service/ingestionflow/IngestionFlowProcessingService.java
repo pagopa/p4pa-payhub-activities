@@ -201,13 +201,17 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     }
 
     protected String getIpaCodeByOrganizationId(Long organizationId) {
+        return getOrganizationById(organizationId).getIpaCode();
+    }
+
+    protected Organization getOrganizationById(Long organizationId) {
         Optional<Organization> organizationOptional = organizationService.getOrganizationById(organizationId);
         if (organizationOptional.isEmpty()) {
             String errorMessage = String.format("[%s] Organization with id %s not found", FileErrorCode.ORGANIZATION_NOT_FOUND.name(), organizationId);
             log.error(errorMessage);
             throw new OrganizationNotFoundException(errorMessage);
         } else {
-            return organizationOptional.get().getIpaCode();
+            return organizationOptional.get();
         }
     }
 }

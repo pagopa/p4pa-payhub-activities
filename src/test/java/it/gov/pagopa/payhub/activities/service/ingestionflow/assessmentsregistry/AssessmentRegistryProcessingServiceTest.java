@@ -11,7 +11,6 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
@@ -54,20 +53,22 @@ class AssessmentRegistryProcessingServiceTest extends BaseIngestionFlowProcessin
                 errorsArchiverServiceMock,
                 assessmentsRegistryServiceMock,
                 organizationServiceMock,
-                fileExceptionHandlerService));
+                fileExceptionHandlerService
+        ));
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
-                errorsArchiverServiceMock,
                 mapperMock,
+                errorsArchiverServiceMock,
                 assessmentsRegistryServiceMock,
-                organizationServiceMock);
+                organizationServiceMock
+        );
     }
 
     @Override
-    protected IngestionFlowProcessingService<AssessmentsRegistryIngestionFlowFileDTO, AssessmentsRegistryIngestionFlowFileResult, AssessmentsRegistryErrorDTO> getServiceSpy() {
+    protected AssessmentsRegistryProcessingService getServiceSpy() {
         return serviceSpy;
     }
 

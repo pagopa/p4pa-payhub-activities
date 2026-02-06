@@ -100,10 +100,29 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
     protected abstract IngestionFlowProcessingService<C, R, E> getServiceSpy();
     protected abstract ErrorArchiverService<E> getErrorsArchiverServiceMock();
     protected abstract R startProcess(Iterator<C> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory);
-    /** It should build and configure a happy use case configuring sequencingId related invocation just once.<BR />Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead */
+    /** It should build and configure a happy use case configuring sequencingId related mock invocations just once (or if the invocations are related to data changing anyway, as the entire dto).<BR />Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead */
     protected abstract C buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber);
     /** Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead */
     protected abstract List<Pair<C, List<E>>> buildAndConfigureUnhappyUseCases(IngestionFlowFile ingestionFlowFile, long previousRowNumber);
+
+//    @Test
+//    void givenOrganizationNotFoundErrorWhenProcessThenHandleIt(){
+//        if(shouldRetrieveOrganization) {
+//            // Given
+//            Mockito.reset(organizationServiceMock);
+//            Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+//                    .thenReturn(Optional.empty());
+//
+//            // When
+//            R result = startProcess(Stream.<C>empty().iterator(), List.of(), ingestionFlowFile, workingDirectory);
+//
+//            // Then
+//            assertEquals(0, result.getTotalRows());
+//            assertEquals(0, result.getProcessedRows());
+//            assertEquals("L'ente non esiste", result.getErrorDescription());
+//            assertNull(result.getDiscardedFileName());
+//        }
+//    }
 
     @Test
     void givenReaderExceptionAndNoProcessedRowsWhenProcessThenWriteError() {

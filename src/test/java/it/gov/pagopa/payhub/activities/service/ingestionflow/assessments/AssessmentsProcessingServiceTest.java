@@ -13,7 +13,6 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.As
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.classification.dto.generated.*;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
@@ -91,7 +90,7 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
     }
 
     @Override
-    protected IngestionFlowProcessingService<AssessmentsIngestionFlowFileDTO, AssessmentsIngestionFlowFileResult, AssessmentsErrorDTO> getServiceSpy() {
+    protected AssessmentsProcessingService getServiceSpy() {
         return serviceSpy;
     }
 

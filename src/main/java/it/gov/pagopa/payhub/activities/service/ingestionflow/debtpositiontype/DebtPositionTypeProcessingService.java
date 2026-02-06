@@ -56,12 +56,11 @@ public class DebtPositionTypeProcessingService extends
         List<DebtPositionTypeErrorDTO> errorList = new ArrayList<>();
         DebtPositionTypeIngestionFlowFileResult ingestionFlowFileResult = new DebtPositionTypeIngestionFlowFileResult();
 
-        Organization organization = organizationService.getOrganizationById(
-                ingestionFlowFile.getOrganizationId()).orElse(null);
-        Long brokerId = organization != null ? organization.getBrokerId() : null;
+        Organization organization = getOrganizationById(ingestionFlowFile.getOrganizationId());
+        Long brokerId = organization.getBrokerId();
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            ingestionFlowFileResult.setErrorDescription("Broker not found");
+            ingestionFlowFileResult.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
             return ingestionFlowFileResult;
         }
         ingestionFlowFileResult.setBrokerId(brokerId);

@@ -11,7 +11,6 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.Install
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,7 +37,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
     @Mock
     private InstallmentSynchronizeMapper installmentSynchronizeMapperMock;
     @Mock
-    private InstallmentErrorsArchiverService installmentErrorsArchiverServiceMock;
+    private InstallmentErrorsArchiverService errorsArchiverServiceMock;
     @Mock
     private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
 
@@ -55,7 +54,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
                 MAX_CONCURRENT_PROCESSING_ROWS,
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
-                installmentErrorsArchiverServiceMock,
+                errorsArchiverServiceMock,
                 dpInstallmentsWorkflowCompletionServiceMock,
                 organizationServiceMock,
                 fileExceptionHandlerService
@@ -67,19 +66,20 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
         Mockito.verifyNoMoreInteractions(
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
-                installmentErrorsArchiverServiceMock,
+                errorsArchiverServiceMock,
                 dpInstallmentsWorkflowCompletionServiceMock,
-                organizationServiceMock);
+                organizationServiceMock
+        );
     }
 
     @Override
-    protected IngestionFlowProcessingService<InstallmentIngestionFlowFileDTO, InstallmentIngestionFlowFileResult, InstallmentErrorDTO> getServiceSpy() {
+    protected InstallmentProcessingService getServiceSpy() {
         return serviceSpy;
     }
 
     @Override
     protected ErrorArchiverService<InstallmentErrorDTO> getErrorsArchiverServiceMock() {
-        return installmentErrorsArchiverServiceMock;
+        return errorsArchiverServiceMock;
     }
 
     @Override
