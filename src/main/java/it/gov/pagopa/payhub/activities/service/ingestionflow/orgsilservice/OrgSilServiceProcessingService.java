@@ -81,8 +81,20 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
 
         }
 
+        OrgSilServiceType serviceType;
+        try {
+            serviceType = OrgSilServiceType.fromValue(row.getServiceType());
+        } catch (IllegalArgumentException e) {
+            log.error("Service type {} is not valid", row.getServiceType());
+            OrgSilServiceErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ORG_SIL_SERVICE_TYPE_INVALID.name(),
+                    FileErrorCode.ORG_SIL_SERVICE_TYPE_INVALID.format(row.getServiceType()));
+            return List.of(error);
+        }
+
         List<OrgSilService> existingServices = orgSilServiceService.getAllByOrganizationIdAndServiceType(
-                ingestionFlowFile.getOrganizationId(), OrgSilServiceType.valueOf(row.getServiceType()));
+                ingestionFlowFile.getOrganizationId(), serviceType);
         OrgSilServiceDTO orgSilServiceMapped = orgSilServiceMapper.map(row, ingestionFlowFile.getOrganizationId());
 
         if (!existingServices.isEmpty()) {
