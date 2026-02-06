@@ -107,6 +107,9 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
 
         String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
 
+        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
+        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
+        ingestionFlowFileResult.setOperatorExternalUserId(ingestionFlowFile.getOperatorExternalId());
         ingestionFlowFileResult.setTotalRows(totalRows);
         ingestionFlowFileResult.setProcessedRows(processedRows);
         ingestionFlowFileResult.setErrorDescription(errorsZipFileName != null ? "Some rows have failed" : null);

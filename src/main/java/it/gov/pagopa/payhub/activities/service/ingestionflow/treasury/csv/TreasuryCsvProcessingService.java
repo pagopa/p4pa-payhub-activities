@@ -51,8 +51,6 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
         List<TreasuryCsvErrorDTO> errorList = new ArrayList<>();
         TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
@@ -73,7 +71,7 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
         String rowIuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
         if (rowIuf != null) {
-            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
+            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFile.getOrganizationId(), rowIuf);
 
             if (existingTreasury != null) {
                 boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());

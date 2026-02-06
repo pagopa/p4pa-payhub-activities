@@ -72,8 +72,6 @@ public class AssessmentsProcessingService extends
         List<AssessmentsErrorDTO> errorList = new ArrayList<>();
 
         AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);

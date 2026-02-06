@@ -50,8 +50,6 @@ public class AssessmentsRegistryProcessingService extends
         List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
 
         AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsRegistryIngestionFlowFileResult();
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);
@@ -85,7 +83,7 @@ public class AssessmentsRegistryProcessingService extends
         }
 
         AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
-                row, ingestionFlowFileResult.getOrganizationId());
+                row, ingestionFlowFile.getOrganizationId());
 
         Optional<AssessmentsRegistry> assessmentsRegistryOptional =
                 assessmentsRegistryService.searchAssessmentsRegistryBySemanticKey(

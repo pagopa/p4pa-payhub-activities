@@ -8,6 +8,7 @@ import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.util.MemoryAppender;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
@@ -105,24 +106,21 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
     /** Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead */
     protected abstract List<Pair<C, List<E>>> buildAndConfigureUnhappyUseCases(IngestionFlowFile ingestionFlowFile, long previousRowNumber);
 
-//    @Test
-//    void givenOrganizationNotFoundErrorWhenProcessThenHandleIt(){
-//        if(shouldRetrieveOrganization) {
-//            // Given
-//            Mockito.reset(organizationServiceMock);
-//            Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
-//                    .thenReturn(Optional.empty());
-//
-//            // When
-//            R result = startProcess(Stream.<C>empty().iterator(), List.of(), ingestionFlowFile, workingDirectory);
-//
-//            // Then
-//            assertEquals(0, result.getTotalRows());
-//            assertEquals(0, result.getProcessedRows());
-//            assertEquals("L'ente non esiste", result.getErrorDescription());
-//            assertNull(result.getDiscardedFileName());
-//        }
-//    }
+    @Test
+    void givenOrganizationNotFoundErrorWhenProcessThenThrowException(){
+        if(shouldRetrieveOrganization) {
+            // Given
+            Iterator<C> rowIterator = Stream.<C>empty().iterator();
+            List<CsvException> readerExceptions = List.of();
+
+            Mockito.reset(organizationServiceMock);
+            Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+                    .thenReturn(Optional.empty());
+
+            // When, Then (not handled because it cannot happen by construction
+            Assertions.assertThrows(OrganizationNotFoundException.class, () -> startProcess(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory));
+        }
+    }
 
     @Test
     void givenReaderExceptionAndNoProcessedRowsWhenProcessThenWriteError() {
@@ -144,6 +142,9 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         assertEquals(0, result.getProcessedRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
+        assertEquals(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        assertEquals(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+        assertEquals(ingestionFlowFile.getOperatorExternalId(), result.getOperatorExternalUserId());
 
         Mockito.verify(getErrorsArchiverServiceMock()).writeErrors(workingDirectory, ingestionFlowFile, List.of(
                 buildCsvGenericErrorDto(ingestionFlowFile, csvException1),
@@ -182,6 +183,9 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         assertEquals(1, result.getProcessedRows());
         assertEquals("Some rows have failed", result.getErrorDescription());
         assertEquals("zipFileName.csv", result.getDiscardedFileName());
+        assertEquals(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        assertEquals(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+        assertEquals(ingestionFlowFile.getOperatorExternalId(), result.getOperatorExternalUserId());
 
         Mockito.verify(getErrorsArchiverServiceMock()).writeErrors(workingDirectory, ingestionFlowFile, Stream.concat(
                         Stream.of(
@@ -245,6 +249,9 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         assertEquals(sequencingId2Rows.size(), result.getProcessedRows());
         assertNull(result.getErrorDescription());
         assertNull(result.getDiscardedFileName());
+        assertEquals(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
+        assertEquals(ingestionFlowFile.getFileVersion(), result.getFileVersion());
+        assertEquals(ingestionFlowFile.getOperatorExternalId(), result.getOperatorExternalUserId());
 
         Map<C, Invocation> row2Invocation = Mockito.mockingDetails(getServiceSpy()).getInvocations().stream()
                 .filter(i -> i.getMethod().getName().equals("consumeRow"))

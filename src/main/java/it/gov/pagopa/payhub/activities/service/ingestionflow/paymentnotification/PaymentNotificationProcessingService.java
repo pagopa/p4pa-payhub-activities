@@ -48,9 +48,7 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
             IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
         List<PaymentNotificationErrorDTO> errorList = new ArrayList<>();
         PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult = new PaymentNotificationIngestionFlowFileResult();
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIudList(new ArrayList<>());
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;

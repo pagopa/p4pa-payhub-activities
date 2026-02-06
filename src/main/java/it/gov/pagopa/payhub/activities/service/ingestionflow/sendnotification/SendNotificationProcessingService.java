@@ -62,8 +62,6 @@ public class SendNotificationProcessingService extends
         List<SendNotificationErrorDTO> errorList = new ArrayList<>();
         SendNotificationIngestionFlowFileResult result = new SendNotificationIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
-        result.setFileVersion(ingestionFlowFile.getFileVersion());
-        result.setOrganizationId(ingestionFlowFile.getOrganizationId());
         return result;
     }
 

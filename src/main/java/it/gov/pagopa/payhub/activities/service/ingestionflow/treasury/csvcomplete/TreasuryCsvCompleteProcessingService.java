@@ -51,12 +51,10 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
             IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
         List<TreasuryCsvCompleteErrorDTO> errorList = new ArrayList<>();
         TreasuryCsvCompleteIngestionFlowFileResult ingestionFlowFileResult = new TreasuryCsvCompleteIngestionFlowFileResult();
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
@@ -86,7 +84,7 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
 
         TreasuryIuf existingTreasury;
         if (row.getIuf() != null) {
-            existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
+            existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFile.getOrganizationId(), row.getIuf());
             if (existingTreasury != null) {
                 boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(), row.getBillCode()) || !Objects.equals(existingTreasury.getBillYear(), row.getBillYear());
                 if (treasuryMatch) {

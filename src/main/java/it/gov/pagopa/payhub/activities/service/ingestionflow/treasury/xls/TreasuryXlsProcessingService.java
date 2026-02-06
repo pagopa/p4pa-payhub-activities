@@ -53,9 +53,7 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
             Path workingDirectory) {
         List<TreasuryXlsErrorDTO> errorList = new ArrayList<>();
         TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
         process(iterator, new ArrayList<>(), ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
@@ -70,7 +68,7 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
         String rowIuf = TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
         LocalDate billDate = row.getBillDate();
 
-        TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
+        TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFile.getOrganizationId(), rowIuf);
 
         if (existingTreasury != null) {
             boolean treasuryNotMatch = !existingTreasury.getBillCode().equals(TreasuryUtils.generateBillCode(rowIuf)) || !existingTreasury.getBillYear().equals(String.valueOf(billDate.getYear()));

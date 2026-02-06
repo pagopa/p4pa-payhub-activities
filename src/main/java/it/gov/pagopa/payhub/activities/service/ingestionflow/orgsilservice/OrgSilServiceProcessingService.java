@@ -52,9 +52,6 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
         List<OrgSilServiceErrorDTO> errorList = new ArrayList<>();
         OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult = new OrgSilServiceIngestionFlowFileResult();
 
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
-
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);
 

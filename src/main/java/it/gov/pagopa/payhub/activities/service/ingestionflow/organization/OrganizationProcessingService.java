@@ -43,16 +43,15 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
         List<OrganizationErrorDTO> errorList = new ArrayList<>();
         OrganizationIngestionFlowFileResult ingestionFlowFileResult = new OrganizationIngestionFlowFileResult();
 
-        Optional<Organization> organizationBroker = organizationService.getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Long brokerId = organizationBroker.map(Organization::getBrokerId).orElse(null);
+        Organization organizationBroker = getOrganizationById(ingestionFlowFile.getOrganizationId());
+        Long brokerId = organizationBroker.getBrokerId();
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            ingestionFlowFileResult.setErrorDescription("Broker not found");
+            ingestionFlowFileResult.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
             return ingestionFlowFileResult;
         }
-        ingestionFlowFileResult.setBrokerId(organizationBroker.get().getBrokerId());
-        ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.get().getOrgFiscalCode());
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
+        ingestionFlowFileResult.setBrokerId(organizationBroker.getBrokerId());
+        ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.getOrgFiscalCode());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;

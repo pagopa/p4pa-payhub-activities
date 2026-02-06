@@ -54,10 +54,8 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
             IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
         List<TreasuryPosteErrorDTO> errorList = new ArrayList<>();
         TreasuryPosteIngestionFlowFileResult ingestionFlowFileResult = new TreasuryPosteIngestionFlowFileResult();
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIban(iban);
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
         String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipa);
 
@@ -85,7 +83,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
         String iban = treasuryPosteIngestionFlowFileResult.getIban();
         String ipa = treasuryPosteIngestionFlowFileResult.getIpaCode();
 
-        TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), iuf);
+        TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFile.getOrganizationId(), iuf);
 
         if (existingTreasury != null) {
             boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(), billCode) || !Objects.equals(existingTreasury.getBillYear(), billYear);

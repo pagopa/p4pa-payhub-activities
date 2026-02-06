@@ -65,7 +65,6 @@ public class DebtPositionTypeProcessingService extends
         }
         ingestionFlowFileResult.setBrokerId(brokerId);
         ingestionFlowFileResult.setBrokerFiscalCode(organization.getOrgFiscalCode());
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList,
                 workingDirectory);
