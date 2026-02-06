@@ -32,7 +32,6 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
     private final ReceiptService receiptService;
     private final ReceiptMapper receiptMapper;
     private final ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public ReceiptProcessingService(
             @Value("${ingestion-flow-files.receipts.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -46,7 +45,6 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
         this.receiptService = receiptService;
         this.receiptMapper = receiptMapper;
         this.requiredFieldsValidatorService = requiredFieldsValidatorService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     /**
@@ -77,33 +75,20 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
 
     @Override
     protected List<ReceiptErrorDTO> consumeRow(long lineNumber,
-                                 ReceiptIngestionFlowFileDTO receipt,
-                                 ReceiptIngestionFlowFileResult ingestionFlowFileResult,
-                                 IngestionFlowFile ingestionFlowFile) {
-        try {
-            requiredFieldsValidatorService.validateIngestionFile(ingestionFlowFile, receipt);
-            setDefaultValues(receipt);
-            ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
-            receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
-            return Collections.emptyList();
-        } catch (Exception e) {
-            log.error("Error processing receipt: {}", e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            ReceiptErrorDTO error = ReceiptErrorDTO.builder()
-                    .fileName(ingestionFlowFile.getFileName())
-                    .rowNumber(lineNumber)
-                    .errorCode(errorDetails.getErrorCode())
-                    .errorMessage(errorDetails.getErrorMessage())
-                    .build();
-
-            return List.of(error);
-        }
+                                               ReceiptIngestionFlowFileDTO receipt,
+                                               ReceiptIngestionFlowFileResult ingestionFlowFileResult,
+                                               IngestionFlowFile ingestionFlowFile) {
+        requiredFieldsValidatorService.validateIngestionFile(ingestionFlowFile, receipt);
+        setDefaultValues(receipt);
+        ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
+        receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
+        return Collections.emptyList();
     }
 
     @Override
-    protected ReceiptErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
+    protected ReceiptErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, ReceiptIngestionFlowFileDTO row, String errorCode, String message) {
         return ReceiptErrorDTO.builder()
-                .fileName(fileName)
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)

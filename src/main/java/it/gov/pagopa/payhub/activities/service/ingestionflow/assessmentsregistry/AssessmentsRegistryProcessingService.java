@@ -29,7 +29,6 @@ public class AssessmentsRegistryProcessingService extends
 
     private final AssessmentsRegistryMapper assessmentsRegistryMapper;
     private final AssessmentsRegistryService assessmentsRegistryService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public AssessmentsRegistryProcessingService(
             @Value("${ingestion-flow-files.assessments-registry.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -41,7 +40,6 @@ public class AssessmentsRegistryProcessingService extends
         super(maxConcurrentProcessingRows, assessmentsRegistryErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.assessmentsRegistryMapper = assessmentsRegistryMapper;
         this.assessmentsRegistryService = assessmentsRegistryService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public AssessmentsRegistryIngestionFlowFileResult processAssessmentsRegistry(
@@ -67,75 +65,65 @@ public class AssessmentsRegistryProcessingService extends
         return row.getDebtPositionTypeOrgCode() +
                 "-" + row.getSectionCode() +
                 "-" + row.getOfficeCode() +
-                "-" +row.getAssessmentCode()+
-                "-" +row.getOperatingYear();
+                "-" + row.getAssessmentCode() +
+                "-" + row.getOperatingYear();
     }
 
     @Override
     protected List<AssessmentsRegistryErrorDTO> consumeRow(long lineNumber,
-                                 AssessmentsRegistryIngestionFlowFileDTO row,
-                                 AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult,
-                                 IngestionFlowFile ingestionFlowFile) {
-        try {
-            String ipa = ingestionFlowFileResult.getIpaCode();
-            if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
-                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
-                AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
-                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
-                return List.of(error);
-            }
-
-            AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
-                    row, ingestionFlowFileResult.getOrganizationId());
-
-            Optional<AssessmentsRegistry> assessmentsRegistryOptional =
-                    assessmentsRegistryService.searchAssessmentsRegistryBySemanticKey(
-                            AssessmentsRegistrySemanticKey.builder()
-                                    .organizationId(assessmentsRegistry.getOrganizationId())
-                                    .debtPositionTypeOrgCode(assessmentsRegistry.getDebtPositionTypeOrgCode())
-                                    .sectionCode(assessmentsRegistry.getSectionCode())
-                                    .officeCode(assessmentsRegistry.getOfficeCode())
-                                    .assessmentCode(assessmentsRegistry.getAssessmentCode())
-                                    .operatingYear(assessmentsRegistry.getOperatingYear())
-                                    .build()
-                    );
-            if (assessmentsRegistryOptional.isPresent()) {
-                AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
-                        ingestionFlowFile.getFileName(), lineNumber, assessmentsRegistry.getAssessmentCode(),
-                        row.getOrganizationIpaCode(),
-                        FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name(),
-                        FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage());
-                return List.of(error);
-            }
-
-            assessmentsRegistryService.createAssessmentsRegistry(assessmentsRegistry);
-            return Collections.emptyList();
-
-        } catch (Exception e) {
-            log.error("Error processing row {} in file {}: {}", lineNumber, ingestionFlowFile.getFileName(), e.getMessage(), e);
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
-                    ingestionFlowFile.getFileName(),
-                    lineNumber,
-                    row.getAssessmentCode(),
-                    row.getOrganizationIpaCode(),
-                    errorDetails.getErrorCode(), errorDetails.getErrorMessage());
+                                                           AssessmentsRegistryIngestionFlowFileDTO row,
+                                                           AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult,
+                                                           IngestionFlowFile ingestionFlowFile) {
+        String ipa = ingestionFlowFileResult.getIpaCode();
+        if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
+            log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
+            AssessmentsRegistryErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
             return List.of(error);
         }
+
+        AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
+                row, ingestionFlowFileResult.getOrganizationId());
+
+        Optional<AssessmentsRegistry> assessmentsRegistryOptional =
+                assessmentsRegistryService.searchAssessmentsRegistryBySemanticKey(
+                        AssessmentsRegistrySemanticKey.builder()
+                                .organizationId(assessmentsRegistry.getOrganizationId())
+                                .debtPositionTypeOrgCode(assessmentsRegistry.getDebtPositionTypeOrgCode())
+                                .sectionCode(assessmentsRegistry.getSectionCode())
+                                .officeCode(assessmentsRegistry.getOfficeCode())
+                                .assessmentCode(assessmentsRegistry.getAssessmentCode())
+                                .operatingYear(assessmentsRegistry.getOperatingYear())
+                                .build()
+                );
+        if (assessmentsRegistryOptional.isPresent()) {
+            AssessmentsRegistryErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name(),
+                    FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage());
+            return List.of(error);
+        }
+
+        assessmentsRegistryService.createAssessmentsRegistry(assessmentsRegistry);
+        return Collections.emptyList();
     }
 
     @Override
-    protected AssessmentsRegistryErrorDTO buildErrorDto(String fileName, long lineNumber,
+    protected AssessmentsRegistryErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, AssessmentsRegistryIngestionFlowFileDTO row,
                                                         String errorCode, String message) {
-        return AssessmentsRegistryErrorDTO.builder()
-                .fileName(fileName)
+        AssessmentsRegistryErrorDTO errorDTO = AssessmentsRegistryErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setAssessmentCode(row.getAssessmentCode());
+            errorDTO.setOrganizationIpaCode(row.getOrganizationIpaCode());
+        }
+        return errorDTO;
     }
 }
 

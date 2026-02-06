@@ -271,7 +271,7 @@ class TreasuryCsvCompleteProcessingServiceTest {
                 TreasuryCsvCompleteErrorDTO.builder()
                         .fileName(ingestionFlowFile.getFileName())
                         .rowNumber(2L)
-                        .errorCode("GENERIC_ERROR")
+                        .errorCode("PROCESSING_ERROR")
                         .errorMessage("DUMMYPROCESSINGERROR")
                         .iuf(dto.getIuf())
                         .iuv(dto.getIuv())

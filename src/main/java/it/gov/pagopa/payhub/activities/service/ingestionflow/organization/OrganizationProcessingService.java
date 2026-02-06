@@ -25,7 +25,6 @@ import java.util.*;
 public class OrganizationProcessingService extends IngestionFlowProcessingService<OrganizationIngestionFlowFileDTO, OrganizationIngestionFlowFileResult, OrganizationErrorDTO> {
 
     private final OrganizationMapper organizationMapper;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public OrganizationProcessingService(
             @Value("${ingestion-flow-files.organizations.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -35,7 +34,6 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
             OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
         super(maxConcurrentProcessingRows, organizationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.organizationMapper = organizationMapper;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public OrganizationIngestionFlowFileResult processOrganization(
@@ -67,51 +65,45 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
 
     @Override
     protected List<OrganizationErrorDTO> consumeRow(long lineNumber,
-                                 OrganizationIngestionFlowFileDTO organizationDTO,
-                                 OrganizationIngestionFlowFileResult ingestionFlowFileResult,
-                                 IngestionFlowFile ingestionFlowFile) {
-        try {
-            if (!ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())) {
-                log.error("Broker with fiscal code {} is not related to organization having fiscal code {}", ingestionFlowFileResult.getBrokerFiscalCode(), organizationDTO.getOrgFiscalCode());
-                OrganizationErrorDTO error = new OrganizationErrorDTO(
-                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, FileErrorCode.BROKER_MISMATCH.name(),
-                        FileErrorCode.BROKER_MISMATCH.getMessage());
-                return List.of(error);
-            }
-
-            Optional<Organization> existingOrg = organizationService.getOrganizationByFiscalCode(organizationDTO.getOrgFiscalCode());
-            if (existingOrg.isPresent()) {
-                OrganizationErrorDTO error = new OrganizationErrorDTO(
-                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(),
-                        FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage());
-                return List.of(error);
-            }
-
-            organizationService.createOrganization(
-                    organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
-
-            return Collections.emptyList();
-
-        } catch (Exception e) {
-            log.error("Error processing organization with ipa code {}: {}", organizationDTO.getIpaCode(), e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            OrganizationErrorDTO error = new OrganizationErrorDTO(
-                    ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
+                                                    OrganizationIngestionFlowFileDTO organizationDTO,
+                                                    OrganizationIngestionFlowFileResult ingestionFlowFileResult,
+                                                    IngestionFlowFile ingestionFlowFile) {
+        if (!ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())) {
+            log.error("Broker with fiscal code {} is not related to organization having fiscal code {}", ingestionFlowFileResult.getBrokerFiscalCode(), organizationDTO.getOrgFiscalCode());
+            OrganizationErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, organizationDTO,
+                    FileErrorCode.BROKER_MISMATCH.name(),
+                    FileErrorCode.BROKER_MISMATCH.getMessage());
             return List.of(error);
         }
+
+        Optional<Organization> existingOrg = organizationService.getOrganizationByFiscalCode(organizationDTO.getOrgFiscalCode());
+        if (existingOrg.isPresent()) {
+            OrganizationErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, organizationDTO,
+                    FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(),
+                    FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage());
+            return List.of(error);
+        }
+
+        organizationService.createOrganization(
+                organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
+
+        return Collections.emptyList();
     }
 
     @Override
-    protected OrganizationErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return OrganizationErrorDTO.builder()
-                .fileName(fileName)
+    protected OrganizationErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, OrganizationIngestionFlowFileDTO row, String errorCode, String message) {
+        OrganizationErrorDTO errorDTO = OrganizationErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIpaCode(row.getIpaCode());
+        }
+        return errorDTO;
     }
 
 }

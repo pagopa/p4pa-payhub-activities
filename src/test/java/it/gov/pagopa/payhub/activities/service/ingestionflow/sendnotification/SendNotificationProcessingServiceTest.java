@@ -195,7 +195,7 @@ class SendNotificationProcessingServiceTest {
 
         verify(sendNotificationErrorArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
                 new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
-                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.GENERIC_ERROR.name(), "Error when create notification")
+                new SendNotificationErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.PROCESSING_ERROR.name(), "Error when create notification")
         ));
     }
 

@@ -141,7 +141,7 @@ class ReceiptProcessingServiceTest {
 
         verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
                 new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.GENERIC_ERROR.name(), "DUMMYPROCESSINGERROR")
+                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.PROCESSING_ERROR.name(), "DUMMYPROCESSINGERROR")
         )));
     }
 }

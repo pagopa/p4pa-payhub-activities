@@ -139,7 +139,7 @@ class PaymentNotificationProcessingServiceTest {
     verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
             new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), null, null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
             new PaymentNotificationErrorDTO(ingestionFlowFile.getFileName(), paymentNotificationIngestionFlowFileDTO.getIuv(), paymentNotificationIngestionFlowFileDTO.getIud(), 2L,
-                    FileErrorCode.GENERIC_ERROR.name(), "DUMMYPROCESSINGERROR")
+                    FileErrorCode.PROCESSING_ERROR.name(), "DUMMYPROCESSINGERROR")
     )));
   }
 }

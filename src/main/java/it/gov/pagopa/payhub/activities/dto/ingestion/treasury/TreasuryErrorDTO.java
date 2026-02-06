@@ -16,7 +16,7 @@ public class TreasuryErrorDTO extends ErrorFileDTO {
   private String billCode;
 
   public TreasuryErrorDTO(String fileName, String billYear, String billCode, String errorCode, String errorMessage) {
-    super(fileName, errorCode, errorMessage);
+    super(fileName, null, errorCode, errorMessage);
     this.billYear = billYear;
     this.billCode = billCode;
   }

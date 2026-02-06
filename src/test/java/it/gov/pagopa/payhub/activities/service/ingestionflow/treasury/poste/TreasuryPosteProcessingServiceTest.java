@@ -201,7 +201,7 @@ class TreasuryPosteProcessingServiceTest {
                 TreasuryPosteErrorDTO.builder()
                         .fileName(ingestionFlowFile.getFileName())
                         .rowNumber(2L)
-                        .errorCode("GENERIC_ERROR")
+                        .errorCode("PROCESSING_ERROR")
                         .errorMessage("DUMMYPROCESSINGERROR")
                         .iuf(iuf)
                         .build()

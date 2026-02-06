@@ -29,7 +29,6 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
 
     private final PaymentNotificationMapper paymentNotificationMapper;
     private final PaymentNotificationService paymentNotificationService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public PaymentNotificationProcessingService(
             @Value("${ingestion-flow-files.payment-notifications.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -41,7 +40,6 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
         super(maxConcurrentProcessingRows, paymentNotificationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.paymentNotificationMapper = paymentNotificationMapper;
         this.paymentNotificationService = paymentNotificationService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public PaymentNotificationIngestionFlowFileResult processPaymentNotification(
@@ -65,36 +63,29 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
 
     @Override
     protected List<PaymentNotificationErrorDTO> consumeRow(long lineNumber,
-                                  PaymentNotificationIngestionFlowFileDTO paymentNotificationDTO,
-                                  PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult,
-                                  IngestionFlowFile ingestionFlowFile) {
-        try {
-            PaymentNotificationDTO paymentNotificationCreated = paymentNotificationService.createPaymentNotification(
-                    paymentNotificationMapper.map(paymentNotificationDTO, ingestionFlowFile));
+                                                           PaymentNotificationIngestionFlowFileDTO paymentNotificationDTO,
+                                                           PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult,
+                                                           IngestionFlowFile ingestionFlowFile) {
+        PaymentNotificationDTO paymentNotificationCreated = paymentNotificationService.createPaymentNotification(
+                paymentNotificationMapper.map(paymentNotificationDTO, ingestionFlowFile));
 
-            ingestionFlowFileResult.getIudList().add(paymentNotificationCreated.getIud());
-            return Collections.emptyList();
-        } catch (Exception e) {
-            log.error("Error processing payment notice with iud {} and iuv {}: {}",
-                    paymentNotificationDTO.getIud(), paymentNotificationDTO.getIuv(),
-                    e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            PaymentNotificationErrorDTO error = new PaymentNotificationErrorDTO(
-                    ingestionFlowFile.getFileName(), paymentNotificationDTO.getIuv(),
-                    paymentNotificationDTO.getIud(), lineNumber, errorDetails.getErrorCode(),
-                    errorDetails.getErrorMessage());
-            return List.of(error);
-        }
+        ingestionFlowFileResult.getIudList().add(paymentNotificationCreated.getIud());
+        return Collections.emptyList();
     }
 
     @Override
-    protected PaymentNotificationErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return PaymentNotificationErrorDTO.builder()
-                .fileName(fileName)
+    protected PaymentNotificationErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, PaymentNotificationIngestionFlowFileDTO row, String errorCode, String message) {
+        PaymentNotificationErrorDTO errorDTO = PaymentNotificationErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIuv(row.getIuv());
+            errorDTO.setIud(row.getIud());
+        }
+        return errorDTO;
     }
 }
 

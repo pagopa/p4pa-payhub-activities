@@ -31,7 +31,6 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
 
     private final TreasuryCsvMapper treasuryCsvMapper;
     private final TreasuryService treasuryService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public TreasuryCsvProcessingService(
             @Value("${ingestion-flow-files.treasuries.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -44,7 +43,6 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
         super(maxConcurrentProcessingRows, treasuryCsvErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.treasuryCsvMapper = treasuryCsvMapper;
         this.treasuryService = treasuryService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public TreasuryIufIngestionFlowFileResult processTreasuryCsv(
@@ -68,61 +66,51 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
 
     @Override
     protected List<TreasuryCsvErrorDTO> consumeRow(long lineNumber,
-                              TreasuryCsvIngestionFlowFileDTO row,
-                              TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
-                              IngestionFlowFile ingestionFlowFile) {
+                                                   TreasuryCsvIngestionFlowFileDTO row,
+                                                   TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
+                                                   IngestionFlowFile ingestionFlowFile) {
         String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         String rowIuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
-        try {
-            if (rowIuf != null) {
-                TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
+        if (rowIuf != null) {
+            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFileResult.getOrganizationId(), rowIuf);
 
-                if (existingTreasury != null) {
-                    boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
-                    if (treasuryMatch) {
-                        log.error("IUF {} already associated to another treasury for organization with IPA code {}", rowIuf, ipa);
-                        TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
-                                ingestionFlowFile.getFileName(),
-                                rowIuf,
-                                lineNumber,
-                                FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
-                                FileErrorCode.IUF_ALREADY_ASSOCIATED.format(rowIuf, ipa));
-                        return List.of(error);
-                    }
+            if (existingTreasury != null) {
+                boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
+                if (treasuryMatch) {
+                    log.error("IUF {} already associated to another treasury for organization with IPA code {}", rowIuf, ipa);
+                    TreasuryCsvErrorDTO error = buildErrorDto(
+                            ingestionFlowFile, lineNumber, row,
+                            FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
+                            FileErrorCode.IUF_ALREADY_ASSOCIATED.format(rowIuf, ipa));
+                    return List.of(error);
                 }
             }
-
-            Treasury treasury = treasuryService.insert(
-                    treasuryCsvMapper.map(row, ingestionFlowFile));
-
-            String treasuryId = treasury.getTreasuryId();
-            ingestionFlowFileResult.getIuf2TreasuryIdMap().put(
-                    treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
-                    treasuryId
-            );
-
-            return Collections.emptyList();
-        } catch (Exception e) {
-            log.error("Error processing treasury csv with iuf {}: {}",
-                    rowIuf,
-                    e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            TreasuryCsvErrorDTO error = new TreasuryCsvErrorDTO(
-                    ingestionFlowFile.getFileName(),
-                    rowIuf,
-                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            return List.of(error);
         }
+
+        Treasury treasury = treasuryService.insert(
+                treasuryCsvMapper.map(row, ingestionFlowFile));
+
+        String treasuryId = treasury.getTreasuryId();
+        ingestionFlowFileResult.getIuf2TreasuryIdMap().put(
+                treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
+                treasuryId
+        );
+
+        return Collections.emptyList();
     }
 
     @Override
-    protected TreasuryCsvErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return TreasuryCsvErrorDTO.builder()
-                .fileName(fileName)
+    protected TreasuryCsvErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, TreasuryCsvIngestionFlowFileDTO row, String errorCode, String message) {
+        TreasuryCsvErrorDTO errorDTO = TreasuryCsvErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIuf(TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF));
+        }
+        return errorDTO;
     }
 }

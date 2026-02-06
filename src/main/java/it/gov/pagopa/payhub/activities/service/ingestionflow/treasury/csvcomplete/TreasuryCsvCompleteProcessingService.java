@@ -31,7 +31,6 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
 
     private final TreasuryCsvCompleteMapper treasuryCsvCompleteMapper;
     private final TreasuryService treasuryService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public TreasuryCsvCompleteProcessingService(
             @Value("${ingestion-flow-files.treasuries.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -44,7 +43,6 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
         super(maxConcurrentProcessingRows, treasuryCsvCompleteErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.treasuryCsvCompleteMapper = treasuryCsvCompleteMapper;
         this.treasuryService = treasuryService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public TreasuryIufIngestionFlowFileResult processTreasuryCsvComplete(
@@ -71,69 +69,60 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
 
     @Override
     protected List<TreasuryCsvCompleteErrorDTO> consumeRow(long lineNumber,
-                                      TreasuryCsvCompleteIngestionFlowFileDTO row,
-                                      TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
-                                      IngestionFlowFile ingestionFlowFile) {
+                                                           TreasuryCsvCompleteIngestionFlowFileDTO row,
+                                                           TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
+                                                           IngestionFlowFile ingestionFlowFile) {
         TreasuryCsvCompleteIngestionFlowFileResult treasuryCsvCompleteIngestionFlowFileResult = (TreasuryCsvCompleteIngestionFlowFileResult) ingestionFlowFileResult;
         String ipa = treasuryCsvCompleteIngestionFlowFileResult.getIpaCode();
-        try {
-            if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
-                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
-                TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(
-                        ingestionFlowFile.getFileName(), row.getIuv(), row.getIuf(),
-                        lineNumber,
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
-                return List.of(error);
-            }
 
-            TreasuryIuf existingTreasury;
-            if(row.getIuf()!= null) {
-                existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
-                if(existingTreasury != null) {
-                    boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(), row.getBillCode()) || !Objects.equals(existingTreasury.getBillYear(), row.getBillYear());
-                    if (treasuryMatch) {
-                        log.error("IUF {} already associated to another treasury for organization with IPA code {}", row.getIuf(), ipa);
-                        TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(
-                                ingestionFlowFile.getFileName(),
-                                row.getIuv(), row.getIuf(),
-                                lineNumber,
-                                FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
-                                FileErrorCode.IUF_ALREADY_ASSOCIATED.format(row.getIuf(), ipa));
-                        return List.of(error);
-                    }
-                }
-            }
-
-            Treasury treasury = treasuryService.insert(
-                    treasuryCsvCompleteMapper.map(row, ingestionFlowFile));
-
-            String treasuryId = treasury.getTreasuryId();
-            ingestionFlowFileResult.getIuf2TreasuryIdMap().put(
-                    treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
-                    treasuryId
-            );
-            return Collections.emptyList();
-        } catch (Exception e) {
-            log.error("Error processing treasury csv complete with iuf {} and iuv {}: {}",
-                    row.getIuf(), row.getIuv(),
-                    e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            TreasuryCsvCompleteErrorDTO error = new TreasuryCsvCompleteErrorDTO(
-                    ingestionFlowFile.getFileName(),
-                    row.getIuv(), row.getIuf(),
-                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
+        if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
+            log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
+            TreasuryCsvCompleteErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
             return List.of(error);
         }
+
+        TreasuryIuf existingTreasury;
+        if (row.getIuf() != null) {
+            existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryCsvCompleteIngestionFlowFileResult.getOrganizationId(), row.getIuf());
+            if (existingTreasury != null) {
+                boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(), row.getBillCode()) || !Objects.equals(existingTreasury.getBillYear(), row.getBillYear());
+                if (treasuryMatch) {
+                    log.error("IUF {} already associated to another treasury for organization with IPA code {}", row.getIuf(), ipa);
+                    TreasuryCsvCompleteErrorDTO error = buildErrorDto(
+                            ingestionFlowFile, lineNumber, row,
+                            FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
+                            FileErrorCode.IUF_ALREADY_ASSOCIATED.format(row.getIuf(), ipa));
+                    return List.of(error);
+                }
+            }
+        }
+
+        Treasury treasury = treasuryService.insert(
+                treasuryCsvCompleteMapper.map(row, ingestionFlowFile));
+
+        String treasuryId = treasury.getTreasuryId();
+        ingestionFlowFileResult.getIuf2TreasuryIdMap().put(
+                treasury.getIuf() == null ? generateTechnicalIuf(treasuryId) : treasury.getIuf(),
+                treasuryId
+        );
+        return Collections.emptyList();
     }
 
     @Override
-    protected TreasuryCsvCompleteErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return TreasuryCsvCompleteErrorDTO.builder()
-                .fileName(fileName)
+    protected TreasuryCsvCompleteErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, TreasuryCsvCompleteIngestionFlowFileDTO row, String errorCode, String message) {
+        TreasuryCsvCompleteErrorDTO errorDTO = TreasuryCsvCompleteErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIuv(row.getIuv());
+            errorDTO.setIuf(row.getIuf());
+        }
+        return errorDTO;
     }
 }

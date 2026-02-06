@@ -22,6 +22,7 @@ import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,6 @@ public class AssessmentsProcessingService extends
     private final InstallmentService installmentService;
     private final ReceiptService receiptService;
     private final DebtPositionTypeOrgService debtPositionTypeOrgService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public AssessmentsProcessingService(
             @Value("${ingestion-flow-files.assessments.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -62,7 +62,6 @@ public class AssessmentsProcessingService extends
         this.installmentService = installmentService;
         this.receiptService = receiptService;
         this.debtPositionTypeOrgService = debtPositionTypeOrgService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public AssessmentsIngestionFlowFileResult processAssessments(
@@ -90,94 +89,83 @@ public class AssessmentsProcessingService extends
 
     @Override
     protected List<AssessmentsErrorDTO> consumeRow(long lineNumber,
-                                 AssessmentsIngestionFlowFileDTO row,
-                                 AssessmentsIngestionFlowFileResult ingestionFlowFileResult,
-                                 IngestionFlowFile ingestionFlowFile) {
-        try {
-            String ipa = ingestionFlowFileResult.getIpaCode();
-            if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
-                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
-                AssessmentsErrorDTO error = new AssessmentsErrorDTO(
-                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
-                return List.of(error);
-            }
-
-            CollectionModelInstallmentNoPII collectionInstallment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(),
-                    row.getIud(), List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED));
-            if (Objects.requireNonNull(collectionInstallment.getEmbedded()).getInstallmentNoPIIs().isEmpty()) {
-                log.error("Debt position with IUD {} not found for organization {}", row.getIud(), ingestionFlowFile.getOrganizationId());
-                AssessmentsErrorDTO error = new AssessmentsErrorDTO(
-                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(),
-                        FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.name(),
-                        FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.format(row.getIud()));
-                return List.of(error);
-            }
-
-            InstallmentNoPII installmentNoPII = collectionInstallment.getEmbedded().getInstallmentNoPIIs().getFirst();
-
-            ReceiptDTO receiptDTO = receiptService.getByReceiptId(installmentNoPII.getReceiptId());
-
-            Optional<Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(ingestionFlowFile.getOrganizationId(),
-                    row.getDebtPositionTypeOrgCode(), row.getAssessmentName());
-
-            DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), row.getDebtPositionTypeOrgCode());
-            if (debtPositionTypeOrg == null) {
-                log.error("Debt position type org not found for org {} and code {}", ingestionFlowFile.getOrganizationId(), row.getDebtPositionTypeOrgCode());
-                AssessmentsErrorDTO error = new AssessmentsErrorDTO(
-                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(),
-                        FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.name(),
-                        FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.format(row.getDebtPositionTypeOrgCode()));
-                return List.of(error);
-            }
-
-            Assessments assessments;
-            if (assessmentsOptional.isEmpty()) {
-                AssessmentsRequestBody assessmentsRequestBody = AssessmentsRequestBody.builder()
-                        .organizationId(Objects.requireNonNull(ingestionFlowFile.getOrganizationId()))
-                        .debtPositionTypeOrgCode(row.getDebtPositionTypeOrgCode())
-                        .debtPositionTypeOrgId(Objects.requireNonNull(debtPositionTypeOrg.getDebtPositionTypeOrgId()))
-                        .assessmentName(row.getAssessmentName())
-                        .status(AssessmentStatus.CLOSED)
-                        .printed(false)
-                        .flagManualGeneration(true)
-                        .operatorExternalUserId(ingestionFlowFile.getOperatorExternalId())
-                        .build();
-
-                assessments = assessmentsService.createAssessment(assessmentsRequestBody);
-            } else
-                assessments = assessmentsOptional.get();
-
-            AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(row, ingestionFlowFile.getOrganizationId(), assessments.getAssessmentId(), receiptDTO, debtPositionTypeOrg.getDebtPositionTypeOrgId());
-
-            assessmentsDetailService.createAssessmentDetail(assessmentsDetailRequestBody);
-
-            return Collections.emptyList();
-
-        } catch (Exception e) {
-            log.error("Error processing row {} in file {}: {}", lineNumber, ingestionFlowFile.getFileName(), e.getMessage(), e);
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            AssessmentsErrorDTO error = new AssessmentsErrorDTO(
-                    ingestionFlowFile.getFileName(),
-                    lineNumber,
-                    row.getAssessmentCode(),
-                    row.getOrganizationIpaCode(),
-                    errorDetails.getErrorCode(), errorDetails.getErrorMessage());
+                                                   AssessmentsIngestionFlowFileDTO row,
+                                                   AssessmentsIngestionFlowFileResult ingestionFlowFileResult,
+                                                   IngestionFlowFile ingestionFlowFile) {
+        String ipa = ingestionFlowFileResult.getIpaCode();
+        if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
+            log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
+            AssessmentsErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
             return List.of(error);
         }
+
+        CollectionModelInstallmentNoPII collectionInstallment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(),
+                row.getIud(), List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED));
+        if (CollectionUtils.isEmpty(Objects.requireNonNull(collectionInstallment.getEmbedded()).getInstallmentNoPIIs())) {
+            log.error("Debt position with IUD {} not found for organization {}", row.getIud(), ingestionFlowFile.getOrganizationId());
+            AssessmentsErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.name(),
+                    FileErrorCode.DEBT_POSITION_BY_IUD_NOT_FOUND.format(row.getIud()));
+            return List.of(error);
+        }
+
+        InstallmentNoPII installmentNoPII = collectionInstallment.getEmbedded().getInstallmentNoPIIs().getFirst();
+
+        ReceiptDTO receiptDTO = receiptService.getByReceiptId(installmentNoPII.getReceiptId());
+
+        Optional<Assessments> assessmentsOptional = assessmentsService.findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(ingestionFlowFile.getOrganizationId(),
+                row.getDebtPositionTypeOrgCode(), row.getAssessmentName());
+
+        DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService.getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), row.getDebtPositionTypeOrgCode());
+        if (debtPositionTypeOrg == null) {
+            log.error("Debt position type org not found for org {} and code {}", ingestionFlowFile.getOrganizationId(), row.getDebtPositionTypeOrgCode());
+            AssessmentsErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.name(),
+                    FileErrorCode.DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND.format(row.getDebtPositionTypeOrgCode()));
+            return List.of(error);
+        }
+
+        Assessments assessments;
+        if (assessmentsOptional.isEmpty()) {
+            AssessmentsRequestBody assessmentsRequestBody = AssessmentsRequestBody.builder()
+                    .organizationId(Objects.requireNonNull(ingestionFlowFile.getOrganizationId()))
+                    .debtPositionTypeOrgCode(row.getDebtPositionTypeOrgCode())
+                    .debtPositionTypeOrgId(Objects.requireNonNull(debtPositionTypeOrg.getDebtPositionTypeOrgId()))
+                    .assessmentName(row.getAssessmentName())
+                    .status(AssessmentStatus.CLOSED)
+                    .printed(false)
+                    .flagManualGeneration(true)
+                    .operatorExternalUserId(ingestionFlowFile.getOperatorExternalId())
+                    .build();
+
+            assessments = assessmentsService.createAssessment(assessmentsRequestBody);
+        } else
+            assessments = assessmentsOptional.get();
+
+        AssessmentsDetailRequestBody assessmentsDetailRequestBody = assessmentsDetailMapper.map2AssessmentsDetailRequestBody(row, ingestionFlowFile.getOrganizationId(), assessments.getAssessmentId(), receiptDTO, debtPositionTypeOrg.getDebtPositionTypeOrgId());
+
+        assessmentsDetailService.createAssessmentDetail(assessmentsDetailRequestBody);
+
+        return Collections.emptyList();
     }
 
     @Override
-    protected AssessmentsErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return AssessmentsErrorDTO.builder()
-                .fileName(fileName)
+    protected AssessmentsErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, AssessmentsIngestionFlowFileDTO row, String errorCode, String message) {
+        AssessmentsErrorDTO errorDTO = AssessmentsErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setAssessmentCode(row.getAssessmentCode());
+            errorDTO.setOrganizationIpaCode(row.getOrganizationIpaCode());
+        }
+        return errorDTO;
     }
 }

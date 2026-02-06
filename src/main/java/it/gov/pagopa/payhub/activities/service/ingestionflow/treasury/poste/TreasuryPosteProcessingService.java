@@ -33,7 +33,6 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
 
     private final TreasuryPosteMapper treasuryPosteMapper;
     private final TreasuryService treasuryService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public TreasuryPosteProcessingService(
             @Value("${ingestion-flow-files.treasuries.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -46,7 +45,6 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
         super(maxConcurrentProcessingRows, treasuryPosteErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.treasuryPosteMapper = treasuryPosteMapper;
         this.treasuryService = treasuryService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public TreasuryIufIngestionFlowFileResult processTreasuryPoste(
@@ -87,46 +85,38 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
         String iban = treasuryPosteIngestionFlowFileResult.getIban();
         String ipa = treasuryPosteIngestionFlowFileResult.getIpaCode();
 
-        try {
-            TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), iuf);
+        TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(treasuryPosteIngestionFlowFileResult.getOrganizationId(), iuf);
 
-            if (existingTreasury != null) {
-                boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(),billCode) || !Objects.equals(existingTreasury.getBillYear(), billYear);
-                if (treasuryMatch) {
-                    log.error("IUF {} already associated to another treasury for organization with IPA code {}", iuf, ipa);
-                    TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(
-                            ingestionFlowFile.getFileName(), iuf,
-                            lineNumber,
-                            FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
-                            FileErrorCode.IUF_ALREADY_ASSOCIATED.format(iuf, ipa));
-                    return List.of(error);
-                }
+        if (existingTreasury != null) {
+            boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(), billCode) || !Objects.equals(existingTreasury.getBillYear(), billYear);
+            if (treasuryMatch) {
+                log.error("IUF {} already associated to another treasury for organization with IPA code {}", iuf, ipa);
+                TreasuryPosteErrorDTO error = buildErrorDto(
+                        ingestionFlowFile, lineNumber, row,
+                        FileErrorCode.IUF_ALREADY_ASSOCIATED.name(),
+                        FileErrorCode.IUF_ALREADY_ASSOCIATED.format(iuf, ipa));
+                return List.of(error);
             }
-
-            Treasury treasury = treasuryService.insert(
-                    treasuryPosteMapper.map(row, iban, iuf, billCode, billDate, ingestionFlowFile));
-
-            treasuryPosteIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
-            return Collections.emptyList();
-        } catch (Exception e) {
-            log.error("Error processing treasury poste with iuf {}: {}",
-                    iuf,
-                    e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            TreasuryPosteErrorDTO error = new TreasuryPosteErrorDTO(
-                    ingestionFlowFile.getFileName(), iuf,
-                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            return List.of(error);
         }
+
+        Treasury treasury = treasuryService.insert(
+                treasuryPosteMapper.map(row, iban, iuf, billCode, billDate, ingestionFlowFile));
+
+        treasuryPosteIngestionFlowFileResult.getIuf2TreasuryIdMap().put(treasury.getIuf(), treasury.getTreasuryId());
+        return Collections.emptyList();
     }
 
     @Override
-    protected TreasuryPosteErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return TreasuryPosteErrorDTO.builder()
-                .fileName(fileName)
+    protected TreasuryPosteErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, TreasuryPosteIngestionFlowFileDTO row, String errorCode, String message) {
+        TreasuryPosteErrorDTO errorDTO = TreasuryPosteErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIuf(TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF));
+        }
+        return errorDTO;
     }
 }

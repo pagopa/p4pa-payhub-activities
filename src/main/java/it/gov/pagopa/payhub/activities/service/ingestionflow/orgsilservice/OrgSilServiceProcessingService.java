@@ -32,7 +32,6 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
 
     private final OrgSilServiceMapper orgSilServiceMapper;
     private final OrgSilServiceService orgSilServiceService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public OrgSilServiceProcessingService(
             @Value("${ingestion-flow-files.org-sil-services.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -44,7 +43,6 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
         super(maxConcurrentProcessingRows, orgSilServiceErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.orgSilServiceMapper = orgSilServiceMapper;
         this.orgSilServiceService = orgSilServiceService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public OrgSilServiceIngestionFlowFileResult processOrgSilService(
@@ -71,62 +69,51 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
 
     @Override
     protected List<OrgSilServiceErrorDTO> consumeRow(long lineNumber,
-                                OrgSilServiceIngestionFlowFileDTO row,
-                                OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult,
-                                IngestionFlowFile ingestionFlowFile) {
+                                                     OrgSilServiceIngestionFlowFileDTO row,
+                                                     OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult,
+                                                     IngestionFlowFile ingestionFlowFile) {
 
-        try {
-            String ipa = ingestionFlowFileResult.getIpaCode();
-            if (!row.getIpaCode().equalsIgnoreCase(ipa)) {
-                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getIpaCode(), ipa);
-                OrgSilServiceErrorDTO error = new OrgSilServiceErrorDTO(
-                        ingestionFlowFile.getFileName(), row.getIpaCode(), row.getApplicationName(),
-                        lineNumber,
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getIpaCode(), ipa));
-                return List.of(error);
-
-            }
-
-            List<OrgSilService> existingServices = orgSilServiceService.getAllByOrganizationIdAndServiceType(
-                    ingestionFlowFile.getOrganizationId(), OrgSilServiceType.valueOf(row.getServiceType()));
-            OrgSilServiceDTO orgSilServiceMapped = orgSilServiceMapper.map(row, ingestionFlowFile.getOrganizationId());
-
-            if (!existingServices.isEmpty()) {
-                existingServices.stream()
-                        .filter(s -> s.getApplicationName().equalsIgnoreCase(row.getApplicationName()))
-                        .findFirst()
-                        .ifPresent(s -> {
-                            log.info("Found existing OrgSilService with same applicationName: {}. Updating orgSilServiceId.", row.getApplicationName());
-                            orgSilServiceMapped.setOrgSilServiceId(s.getOrgSilServiceId());
-                        });
-            }
-
-            orgSilServiceService.createOrUpdateOrgSilService(orgSilServiceMapped);
-            return Collections.emptyList();
-
-        } catch (Exception e) {
-            log.error("Error processing org sil service with organization ipa code:{} and application name {}: {}", row.getIpaCode(), row.getApplicationName(), e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            OrgSilServiceErrorDTO error = OrgSilServiceErrorDTO.builder()
-                    .fileName(ingestionFlowFile.getFileName())
-                    .ipaCode(row.getIpaCode())
-                    .applicationName(row.getApplicationName())
-                    .errorCode(errorDetails.getErrorCode())
-                    .errorMessage(errorDetails.getErrorMessage())
-                    .rowNumber(lineNumber)
-                    .build();
+        String ipa = ingestionFlowFileResult.getIpaCode();
+        if (!row.getIpaCode().equalsIgnoreCase(ipa)) {
+            log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getIpaCode(), ipa);
+            OrgSilServiceErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getIpaCode(), ipa));
             return List.of(error);
+
         }
+
+        List<OrgSilService> existingServices = orgSilServiceService.getAllByOrganizationIdAndServiceType(
+                ingestionFlowFile.getOrganizationId(), OrgSilServiceType.valueOf(row.getServiceType()));
+        OrgSilServiceDTO orgSilServiceMapped = orgSilServiceMapper.map(row, ingestionFlowFile.getOrganizationId());
+
+        if (!existingServices.isEmpty()) {
+            existingServices.stream()
+                    .filter(s -> s.getApplicationName().equalsIgnoreCase(row.getApplicationName()))
+                    .findFirst()
+                    .ifPresent(s -> {
+                        log.info("Found existing OrgSilService with same applicationName: {}. Updating orgSilServiceId.", row.getApplicationName());
+                        orgSilServiceMapped.setOrgSilServiceId(s.getOrgSilServiceId());
+                    });
+        }
+
+        orgSilServiceService.createOrUpdateOrgSilService(orgSilServiceMapped);
+        return Collections.emptyList();
     }
 
     @Override
-    protected OrgSilServiceErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return OrgSilServiceErrorDTO.builder()
-                .fileName(fileName)
+    protected OrgSilServiceErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, OrgSilServiceIngestionFlowFileDTO row, String errorCode, String message) {
+        OrgSilServiceErrorDTO errorDTO = OrgSilServiceErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIpaCode(row.getIpaCode());
+            errorDTO.setApplicationName(row.getApplicationName());
+        }
+        return errorDTO;
     }
 }

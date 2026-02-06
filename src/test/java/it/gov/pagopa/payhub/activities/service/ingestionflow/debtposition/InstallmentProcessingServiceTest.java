@@ -2,43 +2,36 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.InstallmentSynchronizeMapper;
+import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
-import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
-import uk.co.jemos.podam.api.PodamFactory;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static it.gov.pagopa.payhub.activities.util.faker.InstallmentIngestionFlowFileDTOFaker.buildInstallmentIngestionFlowFileDTO;
-import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class InstallmentProcessingServiceTest {
+class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<InstallmentIngestionFlowFileDTO, InstallmentIngestionFlowFileResult, InstallmentErrorDTO> {
 
     @Mock
     private DebtPositionService debtPositionServiceMock;
@@ -48,28 +41,29 @@ class InstallmentProcessingServiceTest {
     private InstallmentErrorsArchiverService installmentErrorsArchiverServiceMock;
     @Mock
     private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
-    @Mock
-    private OrganizationService organizationServiceMock;
 
-    private InstallmentProcessingService service;
+    private InstallmentProcessingService serviceSpy;
 
-    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+    protected InstallmentProcessingServiceTest() {
+        super(false);
+    }
 
     @BeforeEach
-    void setUp(){
+    void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new InstallmentProcessingService(1,
+        serviceSpy = Mockito.spy(new InstallmentProcessingService(
+                MAX_CONCURRENT_PROCESSING_ROWS,
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
                 installmentErrorsArchiverServiceMock,
                 dpInstallmentsWorkflowCompletionServiceMock,
                 organizationServiceMock,
                 fileExceptionHandlerService
-                );
+        ));
     }
 
     @AfterEach
-    void verifyNoMoreInteractions(){
+    void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
@@ -78,181 +72,107 @@ class InstallmentProcessingServiceTest {
                 organizationServiceMock);
     }
 
-    @Test
-    void whenGetSequencingIdThenReturnExpectedValue() {
-        // Given
-        InstallmentIngestionFlowFileDTO row = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
-
-        // When
-        String result = service.getSequencingId(row);
-
-        // Then
-        assertEquals(row.getIupdOrg(), result);
+    @Override
+    protected IngestionFlowProcessingService<InstallmentIngestionFlowFileDTO, InstallmentIngestionFlowFileResult, InstallmentErrorDTO> getServiceSpy() {
+        return serviceSpy;
     }
 
-    @Test
-    void whenNoIupdOrgGetSequencingIdThenReturnExpectedValue() {
-        // Given
-        InstallmentIngestionFlowFileDTO row = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
-        row.setIupdOrg(null);
-
-        // When
-        String result = service.getSequencingId(row);
-
-        // Then
-        assertEquals(row.getIud(), result);
+    @Override
+    protected ErrorArchiverService<InstallmentErrorDTO> getErrorsArchiverServiceMock() {
+        return installmentErrorsArchiverServiceMock;
     }
 
-    @Test
-    void whenProcessInstallmentsThenSuccess(){
-        // Given
-        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
-        InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    @Override
+    protected InstallmentIngestionFlowFileResult startProcess(Iterator<InstallmentIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+        return serviceSpy.processInstallments(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+    }
+
+    @Override
+    protected InstallmentIngestionFlowFileDTO buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber) {
+        InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+        dto.setIupdOrg("IUPDORG-" + sequencingId);
+        dto.setIud("IUD-" + sequencingId);
+        if (sequencingId > 1) {
+            dto.setIupdOrg(null);
+        }
+
+        InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         String workflowId = "workflow-123";
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
                 .massive(true)
                 .partialChange(true)
                 .build();
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L,1L, ingestionFlowFile.getFileName()))
-                .thenReturn(installmentSynchronizeDTO);
+        Mockito.doReturn(installmentSynchronizeDTO)
+                .when(installmentSynchronizeMapperMock)
+                .map(dto, ingestionFlowFile.getIngestionFlowFileId(), rowNumber, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFileName());
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
-                .thenReturn(workflowId);
+        Mockito.doReturn(workflowId)
+                .when(debtPositionServiceMock)
+                .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName()))
-                .thenReturn(Collections.emptyList());
+        Mockito.doReturn(Collections.emptyList())
+                .when(dpInstallmentsWorkflowCompletionServiceMock)
+                .waitForWorkflowCompletion(workflowId, dto, rowNumber, ingestionFlowFile.getFileName());
 
-        // When
-        InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(),
-                ingestionFlowFile,
-                Path.of("/tmp")
-        );
-
-        // Then
-        assertSame(ingestionFlowFile.getFileVersion(), result.getFileVersion());
-        assertEquals(1, result.getProcessedRows());
-        assertEquals(1, result.getTotalRows());
-        assertEquals(1, result.getOrganizationId());
-        assertNull(result.getErrorDescription());
-        assertNull(result.getDiscardedFileName());
+        return dto;
     }
 
-    @Test
-    void givenWorkflowNotCompletedWhenProcessInstallmentsThenSuccess(){
-        // Given
-        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
-        InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        Path workingDirectory = Path.of("/tmp");
+    @Override
+    protected List<Pair<InstallmentIngestionFlowFileDTO, List<InstallmentErrorDTO>>> buildAndConfigureUnhappyUseCases(IngestionFlowFile ingestionFlowFile, long previousRowNumber) {
+        return List.of(
+                configureUnhappyUseCaseWaitWorkflowErrors(ingestionFlowFile, ++previousRowNumber),
+                configureUnhappyUseCaseDebtPositionNotFound(ingestionFlowFile, ++previousRowNumber)
+        );
+    }
+
+    private Pair<InstallmentIngestionFlowFileDTO, List<InstallmentErrorDTO>> configureUnhappyUseCaseWaitWorkflowErrors(IngestionFlowFile ingestionFlowFile, long rowNumber) {
+        InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+        InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         String workflowId = "workflow-123";
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
                 .massive(true)
                 .partialChange(true)
                 .build();
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, ingestionFlowFile.getFileName()))
-                .thenReturn(installmentSynchronizeDTO);
+        Mockito.doReturn(installmentSynchronizeDTO)
+                .when(installmentSynchronizeMapperMock)
+                .map(dto, ingestionFlowFile.getIngestionFlowFileId(), rowNumber, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFileName());
 
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
-                .thenReturn(workflowId);
+        Mockito.doReturn(workflowId)
+                .when(debtPositionServiceMock)
+                .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
-        List<InstallmentErrorDTO> errors = List.of(InstallmentErrorDTO.builder().errorCode("DUMMY_ERROR").build());
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(workflowId, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName()))
-                .thenReturn(errors);
+        List<InstallmentErrorDTO> expectedErrors = List.of(InstallmentErrorDTO.builder().errorCode("DUMMY_ERROR").build());
+        Mockito.doReturn(expectedErrors)
+                .when(dpInstallmentsWorkflowCompletionServiceMock)
+                .waitForWorkflowCompletion(workflowId, dto, rowNumber, ingestionFlowFile.getFileName());
 
-        Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-                .thenReturn("zipFileName.csv");
-
-        // When
-        InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(),
-                ingestionFlowFile,
-                workingDirectory
-        );
-
-        // Then
-        assertEquals(0, result.getProcessedRows());
-        assertEquals(1, result.getTotalRows());
-
-        verify(installmentErrorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, errors);
+        return Pair.of(dto, expectedErrors);
     }
 
-    @Test
-    void givenWorkflowIdNullWhenProcessInstallmentsThenSuccess(){
-        // Given
-        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
-        InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    private Pair<InstallmentIngestionFlowFileDTO, List<InstallmentErrorDTO>> configureUnhappyUseCaseDebtPositionNotFound(IngestionFlowFile ingestionFlowFile, long rowNumber) {
+        InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+        InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
                 .massive(true)
                 .partialChange(true)
                 .build();
 
-        Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 1L, 1L, ingestionFlowFile.getFileName()))
-                .thenReturn(installmentSynchronizeDTO);
-
-        Mockito.when(debtPositionServiceMock.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId()))
-                .thenReturn(null);
-
-        Mockito.when(dpInstallmentsWorkflowCompletionServiceMock.waitForWorkflowCompletion(null, installmentIngestionFlowFileDTO, 1L, ingestionFlowFile.getFileName()))
-                .thenReturn(Collections.emptyList());
-
-        // When
-        InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(),
-                ingestionFlowFile,
-                Path.of("/tmp")
-        );
-
-        // Then
-        assertEquals(1, result.getProcessedRows());
-        assertEquals(1, result.getTotalRows());
-        assertNull(result.getErrorDescription());
-        assertNull(result.getDiscardedFileName());
-    }
-
-    @Test
-    void givenThrowExceptionWhenProcessInstallmentsThenAddError() throws URISyntaxException {
-        // Given
-        InstallmentIngestionFlowFileDTO installmentIngestionFlowFileDTO = buildInstallmentIngestionFlowFileDTO();
-        InstallmentSynchronizeDTO installmentSynchronizeDTO = buildInstallmentSynchronizeDTO();
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
-                .massive(true)
-                .partialChange(true)
-                .build();
-        Path workingDirectory = Path.of(new URI("file:///tmp"));
-
-                Mockito.when(installmentSynchronizeMapperMock.map(installmentIngestionFlowFileDTO, 1L, 2L, 1L, ingestionFlowFile.getFileName()))
-                .thenReturn(installmentSynchronizeDTO);
+        Mockito.doReturn(installmentSynchronizeDTO)
+                .when(installmentSynchronizeMapperMock)
+                .map(dto, ingestionFlowFile.getIngestionFlowFileId(), rowNumber, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFileName());
 
         Mockito.doThrow(new RestClientException("[DEBT_POSITION_NOT_FOUND] debt position not found"))
-                        .when(debtPositionServiceMock).installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
+                .when(debtPositionServiceMock)
+                .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
-        Mockito.when(installmentErrorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-                .thenReturn("zipFileName.csv");
-
-        // When
-        InstallmentIngestionFlowFileResult result = service.processInstallments(
-                Stream.of(installmentIngestionFlowFileDTO).iterator(), List.of(new CsvException("DUMMYERROR")),
-                ingestionFlowFile,
-                workingDirectory
+        List<InstallmentErrorDTO> expectedErrors = List.of(
+                new InstallmentErrorDTO(
+                        ingestionFlowFile.getFileName(), dto.getIupdOrg(), dto.getIud(), null, rowNumber,
+                        FileErrorCode.DEBT_POSITION_NOT_FOUND.name(),
+                        FileErrorCode.DEBT_POSITION_NOT_FOUND.getMessage())
         );
-
-        // Then
-        assertEquals(0, result.getProcessedRows());
-        assertEquals(2, result.getTotalRows());
-        assertEquals("Some rows have failed", result.getErrorDescription());
-        assertEquals("zipFileName.csv", result.getDiscardedFileName());
-
-        verify(installmentErrorsArchiverServiceMock).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), null, null, null, -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
-                new InstallmentErrorDTO(ingestionFlowFile.getFileName(), installmentSynchronizeDTO.getIupdOrg(),
-                        installmentSynchronizeDTO.getIud(), null, 2L,
-                        FileErrorCode.DEBT_POSITION_NOT_FOUND.name(), FileErrorCode.DEBT_POSITION_NOT_FOUND.getMessage())
-        ));
+        return Pair.of(dto, expectedErrors);
     }
 }

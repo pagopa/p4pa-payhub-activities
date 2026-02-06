@@ -34,7 +34,6 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     private final DebtPositionService debtPositionService;
     private final InstallmentSynchronizeMapper installmentSynchronizeMapper;
     private final DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public InstallmentProcessingService(
             @Value("${ingestion-flow-files.dp-installments.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
@@ -48,7 +47,6 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         this.debtPositionService = debtPositionService;
         this.installmentSynchronizeMapper = installmentSynchronizeMapper;
         this.dpInstallmentsWorkflowCompletionService = dpInstallmentsWorkflowCompletionService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     /**
@@ -79,43 +77,38 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
 
     @Override
     protected List<InstallmentErrorDTO> consumeRow(long lineNumber,
-                          InstallmentIngestionFlowFileDTO installment,
-                          InstallmentIngestionFlowFileResult ingestionFlowFileResult,
-                          IngestionFlowFile ingestionFlowFile) {
-        try {
-            setDefaultValues(installment);
-            InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
-                    installment,
-                    ingestionFlowFile.getIngestionFlowFileId(),
-                    lineNumber,
-                    ingestionFlowFile.getOrganizationId(),
-                    ingestionFlowFile.getFileName()
-            );
-            WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
-            wfExecutionParameters.setMassive(true);
-            wfExecutionParameters.setPartialChange(true);
+                                                   InstallmentIngestionFlowFileDTO installment,
+                                                   InstallmentIngestionFlowFileResult ingestionFlowFileResult,
+                                                   IngestionFlowFile ingestionFlowFile) {
+        setDefaultValues(installment);
+        InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
+                installment,
+                ingestionFlowFile.getIngestionFlowFileId(),
+                lineNumber,
+                ingestionFlowFile.getOrganizationId(),
+                ingestionFlowFile.getFileName()
+        );
+        WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
+        wfExecutionParameters.setMassive(true);
+        wfExecutionParameters.setPartialChange(true);
 
-            String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
-            return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber, ingestionFlowFile.getFileName());
-        } catch (Exception e) {
-            log.error("Error processing installment {}: {}", installment.getIud(), e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            InstallmentErrorDTO error = new InstallmentErrorDTO(
-                    ingestionFlowFile.getFileName(),
-                    installment.getIupdOrg(), installment.getIud(), null,
-                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            return List.of(error);
-        }
+        String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
+        return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber, ingestionFlowFile.getFileName());
     }
 
     @Override
-    protected InstallmentErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return InstallmentErrorDTO.builder()
-                .fileName(fileName)
+    protected InstallmentErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, InstallmentIngestionFlowFileDTO row, String errorCode, String message) {
+        InstallmentErrorDTO errorDTO = InstallmentErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIupdOrg(row.getIupdOrg());
+            errorDTO.setIud(row.getIud());
+        }
+        return errorDTO;
     }
 
 }
