@@ -3,63 +3,59 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
-import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
-import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMapper;
+import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
-import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.co.jemos.podam.api.PodamFactory;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
-
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.verify;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class ReceiptProcessingServiceTest {
+class ReceiptProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<ReceiptIngestionFlowFileDTO, ReceiptIngestionFlowFileResult, ReceiptErrorDTO> {
 
     @Mock
     private ReceiptErrorsArchiverService errorsArchiverServiceMock;
     @Mock
     private ReceiptService receiptServiceMock;
     @Mock
-    private Path workingDirectory;
-    @Mock
     private ReceiptMapper mapperMock;
-    @Mock
-    private OrganizationService organizationServiceMock;
     @Mock
     private ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorServiceMock;
 
-    private ReceiptProcessingService service;
+    private ReceiptProcessingService serviceSpy;
 
-    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+    protected ReceiptProcessingServiceTest() {
+        super(false);
+    }
 
     @BeforeEach
-    void setUp() {
+    void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new ReceiptProcessingService(1, mapperMock, errorsArchiverServiceMock, receiptServiceMock, organizationServiceMock, fileExceptionHandlerService, requiredFieldsValidatorServiceMock);
+        serviceSpy = Mockito.spy(new ReceiptProcessingService(
+                MAX_CONCURRENT_PROCESSING_ROWS,
+                mapperMock,
+                errorsArchiverServiceMock,
+                receiptServiceMock,
+                organizationServiceMock,
+                fileExceptionHandlerService,
+                requiredFieldsValidatorServiceMock
+        ));
     }
 
     @AfterEach
@@ -68,80 +64,77 @@ class ReceiptProcessingServiceTest {
                 mapperMock,
                 errorsArchiverServiceMock,
                 receiptServiceMock,
-                organizationServiceMock);
+                organizationServiceMock,
+                requiredFieldsValidatorServiceMock
+        );
     }
 
-    @Test
-    void whenGetSequencingIdThenReturnExpectedValue() {
-        // Given
-        ReceiptIngestionFlowFileDTO row = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
-
-        // When
-        String result = service.getSequencingId(row);
-
-        // Then
-        assertEquals(row.getIuv(), result);
+    @Override
+    protected ReceiptProcessingService getServiceSpy() {
+        return serviceSpy;
     }
 
-    @Test
-    void whenProcessReceiptThenOk() {
-        //given
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
+    @Override
+    protected ErrorArchiverService<ReceiptErrorDTO> getErrorsArchiverServiceMock() {
+        return errorsArchiverServiceMock;
+    }
+
+    @Override
+    protected ReceiptIngestionFlowFileResult startProcess(Iterator<ReceiptIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+        return serviceSpy.processReceipts(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+    }
+
+    @Override
+    protected ReceiptIngestionFlowFileDTO buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber) {
         ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
-        dto.setIuv("IUV");
-        dto.setCreditorReferenceId("IUV");
+        dto.setIuv("IUV" + sequencingId);
+        dto.setCreditorReferenceId(dto.getIuv());
+
         ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
 
-        Mockito.doNothing().when(requiredFieldsValidatorServiceMock).validateIngestionFile(ingestionFlowFile, dto);
-        Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
-        Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(new ReceiptDTO());
+        Mockito.doNothing()
+                .when(requiredFieldsValidatorServiceMock)
+                .validateIngestionFile(ingestionFlowFile, dto);
+        Mockito.doReturn(receiptWithAdditionalNodeDataDTO)
+                .when(mapperMock)
+                .map(ingestionFlowFile, dto);
+        Mockito.doReturn(new ReceiptDTO())
+                .when(receiptServiceMock)
+                .createReceipt(receiptWithAdditionalNodeDataDTO);
 
-        //when
-        ReceiptIngestionFlowFileResult result = service.processReceipts(
-                Stream.of(dto).iterator(), List.of(),
-                ingestionFlowFile, workingDirectory);
-
-        //then
-        Assertions.assertEquals(1L, result.getProcessedRows());
-        Assertions.assertEquals(1L, result.getTotalRows());
+        return dto;
     }
 
-    @Test
-    void givenIncorrectDataWhenProcessReceiptThenError() throws URISyntaxException {
-        // Given
+    @Override
+    protected List<Pair<ReceiptIngestionFlowFileDTO, List<ReceiptErrorDTO>>> buildAndConfigureUnhappyUseCases(IngestionFlowFile ingestionFlowFile, long previousRowNumber) {
+        return List.of(
+                configureUnhappyUseCaseValidatorFail(ingestionFlowFile, ++previousRowNumber)
+        );
+    }
+
+    private Pair<ReceiptIngestionFlowFileDTO, List<ReceiptErrorDTO>> configureUnhappyUseCaseValidatorFail(IngestionFlowFile ingestionFlowFile, long rowNumber) {
         ReceiptIngestionFlowFileDTO dto = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
-        dto.setIuv("IUV");
-        dto.setCreditorReferenceId("IUV");
-        ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = podamFactory.manufacturePojo(ReceiptWithAdditionalNodeDataDTO.class);
+        dto.setOrgFiscalCode(organization.getOrgFiscalCode());
+        dto.setFiscalCodePA(organization.getOrgFiscalCode());
 
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        workingDirectory = Path.of(new URI("file:///tmp"));
+        Mockito.doAnswer(a -> {
+                    ReceiptIngestionFlowFileDTO validatingRow = a.getArgument(1);
+                    Mockito.doReturn(Optional.of(organization)).when(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
+                    new ReceiptIngestionFlowFileRequiredFieldsValidatorService(organizationServiceMock, null).validateIngestionFile(ingestionFlowFile, validatingRow);
+                    return true;
+                })
+                .when(requiredFieldsValidatorServiceMock)
+                .validateIngestionFile(ingestionFlowFile, dto);
 
-        Mockito.doNothing().when(requiredFieldsValidatorServiceMock).validateIngestionFile(ingestionFlowFile, dto);
-        Mockito.when(mapperMock.map(ingestionFlowFile, dto)).thenReturn(receiptWithAdditionalNodeDataDTO);
-        Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO))
-                .thenThrow(new RuntimeException("DUMMYPROCESSINGERROR"));
-
-        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectory, ingestionFlowFile))
-                .thenReturn("zipFileName.csv");
-
-        // When
-        ReceiptIngestionFlowFileResult result = service.processReceipts(
-                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
-                ingestionFlowFile,
-                workingDirectory
+        List<ReceiptErrorDTO> expectedErrors = List.of(
+                ReceiptErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(rowNumber)
+                        .errorCode("RECEIPT_IUV_MISMATCH")
+                        .errorMessage("I campi codIuv e identificativoUnivocoVersamento devono essere uguali")
+                        .build()
         );
 
-        // Then
-        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-        assertEquals(2, result.getTotalRows());
-        assertEquals(0, result.getProcessedRows());
-        assertEquals("Some rows have failed", result.getErrorDescription());
-        assertEquals("zipFileName.csv", result.getDiscardedFileName());
-
-        verify(errorsArchiverServiceMock).writeErrors(same(workingDirectory), same(ingestionFlowFile), eq(List.of(
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), -1L, FileErrorCode.CSV_GENERIC_ERROR.name(), "Errore generico nella lettura del file: DUMMYERROR"),
-                new ReceiptErrorDTO(ingestionFlowFile.getFileName(), 2L, FileErrorCode.PROCESSING_ERROR.name(), "DUMMYPROCESSINGERROR")
-        )));
+        return Pair.of(dto, expectedErrors);
     }
 }

@@ -106,6 +106,11 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
     /** Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead */
     protected abstract List<Pair<C, List<E>>> buildAndConfigureUnhappyUseCases(IngestionFlowFile ingestionFlowFile, long previousRowNumber);
 
+    /** To override in order to test in case of extension to test.<BR />If the result is collecting data based on rows, the order cannot be guaranteed (just record having the same sequencingId would be ordered) */
+    protected void assertIngestionFlowFileResultExtension(R result, List<C> happyUseCases) {
+        // By default, no extension is expected
+    }
+
     @Test
     void givenOrganizationNotFoundErrorWhenProcessThenThrowException(){
         if(shouldRetrieveOrganization) {
@@ -187,6 +192,8 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         assertEquals(ingestionFlowFile.getFileVersion(), result.getFileVersion());
         assertEquals(ingestionFlowFile.getOperatorExternalId(), result.getOperatorExternalUserId());
 
+        assertIngestionFlowFileResultExtension(result, List.of(happyUseCase));
+
         Mockito.verify(getErrorsArchiverServiceMock()).writeErrors(workingDirectory, ingestionFlowFile, Stream.concat(
                         Stream.of(
                                 buildCsvGenericErrorDto(ingestionFlowFile, csvException1),
@@ -241,8 +248,10 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
                 .when(getServiceSpy())
                 .consumeRow(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any());
 
+        List<C> rows = sequencingId2Rows.stream().map(Pair::getValue).toList();
+
         // When
-        R result = startProcess(sequencingId2Rows.stream().map(Pair::getValue).iterator(), List.of(), ingestionFlowFile, workingDirectory);
+        R result = startProcess(rows.iterator(), List.of(), ingestionFlowFile, workingDirectory);
 
         // Then
         assertEquals(sequencingId2Rows.size(), result.getTotalRows());
@@ -252,6 +261,8 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         assertEquals(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
         assertEquals(ingestionFlowFile.getFileVersion(), result.getFileVersion());
         assertEquals(ingestionFlowFile.getOperatorExternalId(), result.getOperatorExternalUserId());
+
+        assertIngestionFlowFileResultExtension(result, rows);
 
         Map<C, Invocation> row2Invocation = Mockito.mockingDetails(getServiceSpy()).getInvocations().stream()
                 .filter(i -> i.getMethod().getName().equals("consumeRow"))

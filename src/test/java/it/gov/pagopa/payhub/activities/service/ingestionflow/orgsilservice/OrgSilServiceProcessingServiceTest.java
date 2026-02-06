@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -96,7 +97,7 @@ class OrgSilServiceProcessingServiceTest extends BaseIngestionFlowProcessingServ
                 .map(dto, ingestionFlowFile.getOrganizationId());
 
         Mockito.doAnswer(a -> {
-                    if(sequencingId == 1){
+                    if (sequencingId == 1) {
                         OrgSilServiceDTO savingEntity = a.getArgument(0);
                         Assertions.assertEquals(existingOrgSilServiceId, savingEntity.getOrgSilServiceId());
                     }
@@ -105,8 +106,11 @@ class OrgSilServiceProcessingServiceTest extends BaseIngestionFlowProcessingServ
                 .when(orgSilServiceServiceMock)
                 .createOrUpdateOrgSilService(orgSilServiceDTOMapped);
 
-        // testing just for sequencingId due to the limit on possible useCases caused by ServiceType enum
+        // due to the limit on possible useCases caused by ServiceType enum, the retrieve operation has been configured just once per enum value used
+
+        // Using ACTUALIZATION service type to configure the useCase of existing serviceType
         if (!sequencingIdAlreadySent && sequencingId == 1) {
+            // configuring useCase of matching applicationName just for sequencingId 1
             OrgSilService existingMatchIfSequencing1 = podamFactory.manufacturePojo(OrgSilService.class);
             existingMatchIfSequencing1.setOrgSilServiceId(existingOrgSilServiceId);
             existingMatchIfSequencing1.setApplicationName(dto.getApplicationName());
@@ -116,6 +120,18 @@ class OrgSilServiceProcessingServiceTest extends BaseIngestionFlowProcessingServ
             Mockito.doReturn(List.of(existingMatchIfSequencing1, existingNotMatch))
                     .when(orgSilServiceServiceMock)
                     .getAllByOrganizationIdAndServiceType(ingestionFlowFile.getOrganizationId(), serviceType);
+        }
+
+        // Using PAID_NOTIFICATION_OUTCOME service type to configure the useCase of not existing serviceType
+        if (sequencingId == 2) {
+            serviceType = OrgSilServiceType.PAID_NOTIFICATION_OUTCOME;
+            dto.setServiceType(serviceType.getValue());
+
+            if (!sequencingIdAlreadySent) {
+                Mockito.doReturn(Collections.emptyList())
+                        .when(orgSilServiceServiceMock)
+                        .getAllByOrganizationIdAndServiceType(ingestionFlowFile.getOrganizationId(), serviceType);
+            }
         }
 
         return dto;

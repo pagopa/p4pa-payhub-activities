@@ -48,10 +48,12 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
     public TreasuryIufIngestionFlowFileResult processTreasuryCsv(
             Iterator<TreasuryCsvIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory) {
         List<TreasuryCsvErrorDTO> errorList = new ArrayList<>();
         TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
+        ingestionFlowFileResult.setIpaCode(getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId()));
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
@@ -67,15 +69,16 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
                                                    TreasuryCsvIngestionFlowFileDTO row,
                                                    TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
                                                    IngestionFlowFile ingestionFlowFile) {
-        String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+        String ipa = ingestionFlowFileResult.getIpaCode();
         String rowIuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
 
         if (rowIuf != null) {
             TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFile.getOrganizationId(), rowIuf);
 
             if (existingTreasury != null) {
-                boolean treasuryMatch = !existingTreasury.getBillCode().equals(row.getBillCode()) || !existingTreasury.getBillYear().equals(row.getBillYear());
-                if (treasuryMatch) {
+                boolean treasuryMatch = Objects.equals(existingTreasury.getBillCode(), row.getBillCode()) &&
+                        Objects.equals(existingTreasury.getBillYear(), row.getBillYear());
+                if (!treasuryMatch) {
                     log.error("IUF {} already associated to another treasury for organization with IPA code {}", rowIuf, ipa);
                     TreasuryCsvErrorDTO error = buildErrorDto(
                             ingestionFlowFile, lineNumber, row,

@@ -54,6 +54,7 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
         List<TreasuryXlsErrorDTO> errorList = new ArrayList<>();
         TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
+        ingestionFlowFileResult.setIpaCode(getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId()));
 
         process(iterator, new ArrayList<>(), ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
@@ -64,7 +65,7 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
                                                    TreasuryXlsIngestionFlowFileDTO row,
                                                    TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
                                                    IngestionFlowFile ingestionFlowFile) {
-        String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
+        String ipa = ingestionFlowFileResult.getIpaCode();
         String rowIuf = TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
         LocalDate billDate = row.getBillDate();
 
