@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static it.gov.pagopa.payhub.activities.util.Utilities.INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER;
 
 class UtilitiesTest {
 
@@ -236,11 +237,26 @@ class UtilitiesTest {
         allValues.put("key2", "value2");
 
         return Stream.of(
-                Arguments.of(emptyMap, false),
-                Arguments.of(allNullValues, false),
-                Arguments.of(oneNullValue, false),
-                Arguments.of(oneBlankValue, false),
-                Arguments.of(allValues, true)
+            Arguments.of(emptyMap, false),
+            Arguments.of(allNullValues, false),
+            Arguments.of(oneNullValue, false),
+            Arguments.of(oneBlankValue, false),
+            Arguments.of(allValues, true)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRemittanceInformation")
+    void testResolveRemittanceInformation(String remittanceInformation, String originalRemittanceInformation, String expectedResult) {
+        String result = Utilities.resolveRemittanceInformation(remittanceInformation, originalRemittanceInformation);
+        Assertions.assertEquals(expectedResult, result);
+    }
+
+    private static Stream<Arguments> provideRemittanceInformation() {
+        return Stream.of(
+            Arguments.of("remittanceInformation", null, "remittanceInformation"),
+            Arguments.of("remittanceInformation", "originalRemittanceInformation", "remittanceInformation"),
+            Arguments.of(INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER + " with remittanceInformation", "originalRemittanceInformation", "originalRemittanceInformation")
         );
     }
 }
