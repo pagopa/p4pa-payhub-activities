@@ -100,7 +100,7 @@ public class SendNotificationProcessingService extends
                                     ingestionFlowFile.getFilePathName() + "/" + lineNumber
                             );
 
-                            if (payment.getPagoPa() != null && !Objects.isNull(payment.getPagoPa().getAttachment())) {
+                            if (payment.getPagoPa() != null && payment.getPagoPa().getAttachment() != null) {
                                 sendNotificationService.startSendNotification(sendNotificationDTO.getSendNotificationId(),
                                         new LoadFileRequest(payment.getPagoPa().getAttachment().getDigest(),
                                                 payment.getPagoPa().getAttachment().getFileName()));

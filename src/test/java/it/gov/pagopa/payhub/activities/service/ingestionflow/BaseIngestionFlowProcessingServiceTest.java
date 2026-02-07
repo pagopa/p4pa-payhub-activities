@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
@@ -99,21 +100,31 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
     }
 
     protected abstract IngestionFlowProcessingService<C, R, E> getServiceSpy();
+
     protected abstract ErrorArchiverService<E> getErrorsArchiverServiceMock();
+
     protected abstract R startProcess(Iterator<C> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory);
-    /** It should build and configure a happy use case configuring sequencingId related mock invocations just once (or if the invocations are related to data changing anyway, as the entire dto).<BR />Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead */
+
+    /**
+     * It should build and configure a happy use case configuring sequencingId related mock invocations just once (or if the invocations are related to data changing anyway, as the entire dto).<BR />Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead
+     */
     protected abstract C buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber);
-    /** Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead */
+
+    /**
+     * Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead
+     */
     protected abstract List<Pair<C, List<E>>> buildAndConfigureUnhappyUseCases(IngestionFlowFile ingestionFlowFile, long previousRowNumber);
 
-    /** To override in order to test in case of extension to test.<BR />If the result is collecting data based on rows, the order cannot be guaranteed (just record having the same sequencingId would be ordered) */
+    /**
+     * To override in order to test in case of extension to test.<BR />If the result is collecting data based on rows, the order cannot be guaranteed (just record having the same sequencingId would be ordered)
+     */
     protected void assertIngestionFlowFileResultExtension(R result, List<C> happyUseCases) {
         // By default, no extension is expected
     }
 
     @Test
-    void givenOrganizationNotFoundErrorWhenProcessThenThrowException(){
-        if(shouldRetrieveOrganization) {
+    void givenOrganizationNotFoundErrorWhenProcessThenThrowException() {
+        if (shouldRetrieveOrganization) {
             // Given
             Iterator<C> rowIterator = Stream.<C>empty().iterator();
             List<CsvException> readerExceptions = List.of();
@@ -128,13 +139,9 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
     }
 
     @Test
-    void givenReaderExceptionAndNoProcessedRowsWhenProcessThenWriteError() {
+    protected void givenReaderExceptionAndNoProcessedRowsWhenProcessThenWriteError() {
         // Given
-        CsvException csvException1 = new CsvException("DUMMYERROR1");
-        csvException1.setLineNumber(-1L);
-        CsvException csvException2 = new CsvException("DUMMYERROR2");
-        csvException1.setLineNumber(-2L);
-        List<CsvException> readerExceptions = List.of(csvException1, csvException2);
+        List<CsvException> readerExceptions = buildReaderExceptions();
 
         Mockito.when(getErrorsArchiverServiceMock().archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
@@ -151,20 +158,27 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         assertEquals(ingestionFlowFile.getFileVersion(), result.getFileVersion());
         assertEquals(ingestionFlowFile.getOperatorExternalId(), result.getOperatorExternalUserId());
 
-        Mockito.verify(getErrorsArchiverServiceMock()).writeErrors(workingDirectory, ingestionFlowFile, List.of(
-                buildCsvGenericErrorDto(ingestionFlowFile, csvException1),
-                buildCsvGenericErrorDto(ingestionFlowFile, csvException2)
-        ));
+        Mockito.verify(getErrorsArchiverServiceMock()).writeErrors(workingDirectory, ingestionFlowFile,
+                readerExceptions.stream()
+                        .map(e -> buildCsvGenericErrorDto(ingestionFlowFile, e))
+                        .toList()
+        );
+    }
+
+    protected List<CsvException> buildReaderExceptions() {
+        return IntStream.rangeClosed(1, 2)
+                .mapToObj(i -> {
+                    CsvException csvException = new CsvException("DUMMYERROR" + i);
+                    csvException.setLineNumber(-i);
+                    return csvException;
+                })
+                .toList();
     }
 
     @Test
     void givenReaderExceptionAndProcessedRowsWhenProcessThenWriteError() {
         // Given
-        CsvException csvException1 = new CsvException("DUMMYERROR1");
-        csvException1.setLineNumber(-1L);
-        CsvException csvException2 = new CsvException("DUMMYERROR2");
-        csvException1.setLineNumber(-2L);
-        List<CsvException> readerExceptions = List.of(csvException1, csvException2);
+        List<CsvException> readerExceptions = buildReaderExceptions();
 
         Mockito.when(getErrorsArchiverServiceMock().archiveErrorFiles(workingDirectory, ingestionFlowFile))
                 .thenReturn("zipFileName.csv");
@@ -195,10 +209,11 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         assertIngestionFlowFileResultExtension(result, List.of(happyUseCase));
 
         Mockito.verify(getErrorsArchiverServiceMock()).writeErrors(workingDirectory, ingestionFlowFile, Stream.concat(
-                        Stream.of(
-                                buildCsvGenericErrorDto(ingestionFlowFile, csvException1),
-                                buildCsvGenericErrorDto(ingestionFlowFile, csvException2),
-                                buildGenericErrorDto(ingestionFlowFile, readerExceptions.size()+2, unexpectedExceptionUseCase, "PROCESSING_ERROR", "DUMMYCONSUMEROWEXCEPTION")
+                        Stream.concat(
+                                readerExceptions.stream().map(e -> buildCsvGenericErrorDto(ingestionFlowFile, e)),
+                                Stream.of(
+                                        buildGenericErrorDto(ingestionFlowFile, readerExceptions.size() + 2, unexpectedExceptionUseCase, "PROCESSING_ERROR", "DUMMYCONSUMEROWEXCEPTION")
+                                )
                         ),
                         unhappyUseCases.stream().flatMap(p -> p.getRight().stream())
                 ).toList()
@@ -236,7 +251,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
                 buildAndConfigureHappyUseCasePairWithSequencingId(ingestionFlowFile, 12, false, ++rowNumber),// taskProcessing: 10
                 buildAndConfigureHappyUseCasePairWithSequencingId(ingestionFlowFile, 13, false, ++rowNumber),// waiting because MAX_CONCURRENT_PROCESSING_ROWS has been reached. taskProcessing: 1
                 buildAndConfigureHappyUseCasePairWithSequencingId(ingestionFlowFile, 3, true, ++rowNumber)   // taskProcessing: 2
-                                                                                                // waiting because rows are terminated
+                // waiting because rows are terminated
         );
 
         String[] lineNumberThreadNames = new String[sequencingId2Rows.size()];
@@ -288,7 +303,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
                     List<Triple<Integer, Long, String>> processedOrder2lineNumber = sameSequencingIdRows.stream()
                             .map(sequencingId2Row -> row2Invocation.get(sequencingId2Row.getRight()))
                             .map(i -> Pair.of(i.getSequenceNumber(), getLineNumberFromConsumeRowInvocation(i)))
-                            .map(p -> Triple.of(p.getLeft(), p.getRight(), lineNumberThreadNames[p.getRight().intValue()-1]))
+                            .map(p -> Triple.of(p.getLeft(), p.getRight(), lineNumberThreadNames[p.getRight().intValue() - 1]))
                             .toList();
 
                     log.debug("{} has been executed on the following order [(processedOrder,lineNumber,threadName)]:{}", sequencingId, processedOrder2lineNumber);

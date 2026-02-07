@@ -42,11 +42,6 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
         this.treasuryService = treasuryService;
     }
 
-    @Override
-    protected String getSequencingId(TreasuryXlsIngestionFlowFileDTO row) {
-        return TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
-    }
-
     public TreasuryIufIngestionFlowFileResult processTreasuryXls(
             Iterator<TreasuryXlsIngestionFlowFileDTO> iterator,
             IngestionFlowFile ingestionFlowFile,
@@ -56,8 +51,13 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
         ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
         ingestionFlowFileResult.setIpaCode(getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId()));
 
-        process(iterator, new ArrayList<>(), ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
+        process(iterator, Collections.emptyList(), ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
+    }
+
+    @Override
+    protected String getSequencingId(TreasuryXlsIngestionFlowFileDTO row) {
+        return TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
     }
 
     @Override
@@ -66,14 +66,18 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
                                                    TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
                                                    IngestionFlowFile ingestionFlowFile) {
         String ipa = ingestionFlowFileResult.getIpaCode();
-        String rowIuf = TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF);
+        String rowIuf = Objects.requireNonNull(
+                TreasuryUtils.getIdentificativo(row.getExtendedRemittanceDescription(), TreasuryUtils.IUF),
+                "Cannot extract IUF from extendedRemittanceDescription"
+        );
         LocalDate billDate = row.getBillDate();
 
         TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFile.getOrganizationId(), rowIuf);
 
         if (existingTreasury != null) {
-            boolean treasuryNotMatch = !existingTreasury.getBillCode().equals(TreasuryUtils.generateBillCode(rowIuf)) || !existingTreasury.getBillYear().equals(String.valueOf(billDate.getYear()));
-            if (treasuryNotMatch) {
+            boolean treasuryMatch = Objects.equals(existingTreasury.getBillCode(), TreasuryUtils.generateBillCode(rowIuf)) &&
+                    Objects.equals(existingTreasury.getBillYear(), String.valueOf(billDate.getYear()));
+            if (!treasuryMatch) {
                 log.error("IUF {} already associated to another treasury for organization with IPA code {}", rowIuf, ipa);
                 TreasuryXlsErrorDTO error = buildErrorDto(
                         ingestionFlowFile, lineNumber, row,
