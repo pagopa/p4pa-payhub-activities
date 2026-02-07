@@ -73,7 +73,10 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
                                                      TreasuryPosteIngestionFlowFileDTO row,
                                                      TreasuryIufIngestionFlowFileResult ingestionFlowFileResult,
                                                      IngestionFlowFile ingestionFlowFile) {
-        String iuf = TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF);
+        String iuf = Objects.requireNonNull(
+                TreasuryUtils.getIdentificativo(row.getRemittanceDescription(), TreasuryUtils.IUF),
+                "Cannot extract IUF from remittanceDescription"
+        );
 
         LocalDate billDate = LocalDate.parse(row.getBillDate(), POSTE_DATE_FORMAT);
         String billCode = TreasuryUtils.generateBillCode(iuf);
@@ -86,8 +89,8 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
         TreasuryIuf existingTreasury = treasuryService.getByOrganizationIdAndIuf(ingestionFlowFile.getOrganizationId(), iuf);
 
         if (existingTreasury != null) {
-            boolean treasuryMatch = !Objects.equals(existingTreasury.getBillCode(), billCode) || !Objects.equals(existingTreasury.getBillYear(), billYear);
-            if (treasuryMatch) {
+            boolean treasuryMatch = Objects.equals(existingTreasury.getBillCode(), billCode) && Objects.equals(existingTreasury.getBillYear(), billYear);
+            if (!treasuryMatch) {
                 log.error("IUF {} already associated to another treasury for organization with IPA code {}", iuf, ipa);
                 TreasuryPosteErrorDTO error = buildErrorDto(
                         ingestionFlowFile, lineNumber, row,

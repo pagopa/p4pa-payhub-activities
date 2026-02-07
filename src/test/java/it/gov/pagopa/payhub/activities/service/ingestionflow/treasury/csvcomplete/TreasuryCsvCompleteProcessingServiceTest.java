@@ -182,10 +182,10 @@ class TreasuryCsvCompleteProcessingServiceTest extends BaseIngestionFlowProcessi
     private Pair<TreasuryCsvCompleteIngestionFlowFileDTO, List<TreasuryCsvCompleteErrorDTO>> configureUnhappyUseCaseIufAlreadyAssociated(IngestionFlowFile ingestionFlowFile, long rowNumber, boolean matchBillCode) {
         TreasuryCsvCompleteIngestionFlowFileDTO dto = podamFactory.manufacturePojo(TreasuryCsvCompleteIngestionFlowFileDTO.class);
         dto.setOrganizationIpaCode(organization.getIpaCode());
-
-        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
         dto.setBillCode("BILLCODE"+rowNumber);
         dto.setBillYear("BILLYEAR"+rowNumber);
+
+        TreasuryIuf existingTreasuryIuf = new TreasuryIuf();
         if(matchBillCode) {
             existingTreasuryIuf.setBillCode(dto.getBillCode());
         } else {
