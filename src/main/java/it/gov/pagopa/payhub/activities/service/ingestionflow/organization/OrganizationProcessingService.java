@@ -12,14 +12,12 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Lazy
@@ -27,15 +25,15 @@ import java.util.Optional;
 public class OrganizationProcessingService extends IngestionFlowProcessingService<OrganizationIngestionFlowFileDTO, OrganizationIngestionFlowFileResult, OrganizationErrorDTO> {
 
     private final OrganizationMapper organizationMapper;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public OrganizationProcessingService(
+            @Value("${ingestion-flow-files.organizations.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             OrganizationMapper organizationMapper,
             OrganizationErrorsArchiverService organizationErrorsArchiverService,
             OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
-        super(organizationErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, organizationErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.organizationMapper = organizationMapper;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public OrganizationIngestionFlowFileResult processOrganization(
@@ -45,69 +43,66 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
         List<OrganizationErrorDTO> errorList = new ArrayList<>();
         OrganizationIngestionFlowFileResult ingestionFlowFileResult = new OrganizationIngestionFlowFileResult();
 
-        Optional<Organization> organizationBroker = organizationService.getOrganizationById(ingestionFlowFile.getOrganizationId());
-        Long brokerId = organizationBroker.map(Organization::getBrokerId).orElse(null);
+        Organization organizationBroker = getOrganizationById(ingestionFlowFile.getOrganizationId());
+        Long brokerId = organizationBroker.getBrokerId();
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            ingestionFlowFileResult.setErrorDescription("Broker not found");
+            ingestionFlowFileResult.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
             return ingestionFlowFileResult;
         }
-        ingestionFlowFileResult.setBrokerId(organizationBroker.get().getBrokerId());
-        ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.get().getOrgFiscalCode());
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
+        ingestionFlowFileResult.setBrokerId(organizationBroker.getBrokerId());
+        ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.getOrgFiscalCode());
 
         process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
         return ingestionFlowFileResult;
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, OrganizationIngestionFlowFileDTO organizationDTO, OrganizationIngestionFlowFileResult ingestionFlowFileResult, List<OrganizationErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
-        try {
-            if (!ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())) {
-                log.error("Broker with fiscal code {} is not related to organization having fiscal code {}", ingestionFlowFileResult.getBrokerFiscalCode(), organizationDTO.getOrgFiscalCode());
-                OrganizationErrorDTO error = new OrganizationErrorDTO(
-                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, FileErrorCode.BROKER_MISMATCH.name(),
-                        FileErrorCode.BROKER_MISMATCH.getMessage());
-                errorList.add(error);
-                return false;
-            }
-
-            Optional<Organization> existingOrg = organizationService.getOrganizationByFiscalCode(organizationDTO.getOrgFiscalCode());
-            if (existingOrg.isPresent()) {
-                OrganizationErrorDTO error = new OrganizationErrorDTO(
-                        ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                        lineNumber, FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(),
-                        FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage());
-                errorList.add(error);
-                return false;
-            }
-
-            organizationService.createOrganization(
-                    organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
-
-            return true;
-
-        } catch (Exception e) {
-            log.error("Error processing organization with ipa code {}: {}", organizationDTO.getIpaCode(), e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            OrganizationErrorDTO error = new OrganizationErrorDTO(
-                    ingestionFlowFile.getFileName(), organizationDTO.getIpaCode(),
-                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
-        }
+    protected String getSequencingId(OrganizationIngestionFlowFileDTO row) {
+        return row.getOrgFiscalCode();
     }
 
     @Override
-    protected OrganizationErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return OrganizationErrorDTO.builder()
-                .fileName(fileName)
+    protected List<OrganizationErrorDTO> consumeRow(long lineNumber,
+                                                    OrganizationIngestionFlowFileDTO organizationDTO,
+                                                    OrganizationIngestionFlowFileResult ingestionFlowFileResult,
+                                                    IngestionFlowFile ingestionFlowFile) {
+        if (!ingestionFlowFileResult.getBrokerFiscalCode().equals(organizationDTO.getBrokerCf())) {
+            log.error("Broker with fiscal code {} is not related to organization having fiscal code {}", ingestionFlowFileResult.getBrokerFiscalCode(), organizationDTO.getOrgFiscalCode());
+            OrganizationErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, organizationDTO,
+                    FileErrorCode.BROKER_MISMATCH.name(),
+                    FileErrorCode.BROKER_MISMATCH.getMessage());
+            return List.of(error);
+        }
+
+        Optional<Organization> existingOrg = organizationService.getOrganizationByFiscalCode(organizationDTO.getOrgFiscalCode());
+        if (existingOrg.isPresent()) {
+            OrganizationErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, organizationDTO,
+                    FileErrorCode.ORGANIZATION_ALREADY_EXISTS.name(),
+                    FileErrorCode.ORGANIZATION_ALREADY_EXISTS.getMessage());
+            return List.of(error);
+        }
+
+        organizationService.createOrganization(
+                organizationMapper.map(organizationDTO, ingestionFlowFileResult.getBrokerId()));
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    protected OrganizationErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, OrganizationIngestionFlowFileDTO row, String errorCode, String message) {
+        OrganizationErrorDTO errorDTO = OrganizationErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIpaCode(row.getIpaCode());
+        }
+        return errorDTO;
     }
 
 }

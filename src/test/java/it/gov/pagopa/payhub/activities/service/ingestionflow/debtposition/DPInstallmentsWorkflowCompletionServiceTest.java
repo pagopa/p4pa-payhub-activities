@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
@@ -50,7 +49,6 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     void whenWaitForWorkflowCompletionThenSuccess() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-        List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
         workflowStatusDTO.setStatus(WORKFLOW_EXECUTION_STATUS_COMPLETED);
@@ -59,32 +57,28 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(workflowStatusDTO);
 
         // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME);
 
         // Then
-        assertTrue(result, "Workflow succeeded");
-        assertTrue(errorList.isEmpty(), "Error list is empty");
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void givenWorkflowIdNullWhenWaitForWorkflowCompletionThenReturnTrue() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-        List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         // When
-        boolean result = service.waitForWorkflowCompletion(null, installment, 1L, FILE_NAME, errorList);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(null, installment, 1L, FILE_NAME);
 
         // Then
-        assertTrue(result, "Workflow succeeded");
-        assertTrue(errorList.isEmpty(), "Error list is empty");
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void givenStatusFailedWhenWaitForWorkflowCompletionThenAddErrorList() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-        List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
         workflowStatusDTO.setStatus(WORKFLOW_EXECUTION_STATUS_FAILED);
@@ -93,32 +87,30 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(workflowStatusDTO);
 
         // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME);
 
         // Then
-        assertFalse(result);
-        assertNotNull(errorList);
-        assertEquals(WORKFLOW_EXECUTION_STATUS_FAILED.name(), errorList.getFirst().getWorkflowStatus());
-        assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(), errorList.getFirst().getErrorCode());
-        assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage(), errorList.getFirst().getErrorMessage());
+        assertFalse(result.isEmpty());
+        assertEquals(WORKFLOW_EXECUTION_STATUS_FAILED.name(), result.getFirst().getWorkflowStatus());
+        assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(), result.getFirst().getErrorCode());
+        assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage(), result.getFirst().getErrorMessage());
     }
 
     @Test
     void givenRetryReachedLimitWhenWaitForWorkflowCompletionThenCatchTooManyAttemptsExceptionAndAddError() {
         // Given
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
-        List<InstallmentErrorDTO> errorList = new ArrayList<>();
 
         Mockito.doThrow(new RestClientException("Error"))
                 .when(workflowHubServiceMock).waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs);
 
         // When
-        boolean result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME, errorList);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME);
 
         // Then
-        assertFalse(result);
-        assertEquals(1, errorList.size());
-        assertEquals(FileErrorCode.WORKFLOW_TIMEOUT.name(), errorList.getFirst().getErrorCode());
-        assertEquals(FileErrorCode.WORKFLOW_TIMEOUT.getMessage(), errorList.getFirst().getErrorMessage());
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(FileErrorCode.WORKFLOW_TIMEOUT.name(), result.getFirst().getErrorCode());
+        assertEquals(FileErrorCode.WORKFLOW_TIMEOUT.getMessage(), result.getFirst().getErrorMessage());
     }
 }

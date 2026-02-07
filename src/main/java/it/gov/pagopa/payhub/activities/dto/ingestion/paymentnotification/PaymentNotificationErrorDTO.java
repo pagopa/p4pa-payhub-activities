@@ -14,20 +14,18 @@ public class PaymentNotificationErrorDTO extends ErrorFileDTO {
 
     private String iuv;
     private String iud;
-    private Long rowNumber;
 
     public PaymentNotificationErrorDTO(String fileName, String iuv, String iud, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
+        super(fileName, rowNumber, errorCode, errorMessage);
         this.iuv = iuv;
         this.iud = iud;
-        this.rowNumber = rowNumber;
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(), iuv, iud,
-                rowNumber.toString(),
+                getRowNumber().toString(),
                 getErrorCode(), getErrorMessage()
         };
     }

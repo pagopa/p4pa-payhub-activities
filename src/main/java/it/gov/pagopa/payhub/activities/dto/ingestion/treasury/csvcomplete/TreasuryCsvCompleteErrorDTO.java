@@ -14,20 +14,18 @@ public class TreasuryCsvCompleteErrorDTO extends ErrorFileDTO {
 
     private String iuv;
     private String iuf;
-    private Long rowNumber;
 
     public TreasuryCsvCompleteErrorDTO(String fileName, String iuv, String iuf, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
+        super(fileName, rowNumber, errorCode, errorMessage);
         this.iuv = iuv;
         this.iuf = iuf;
-        this.rowNumber = rowNumber;
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(), iuv, iuf,
-                rowNumber.toString(),
+                getRowNumber().toString(),
                 getErrorCode(), getErrorMessage()
         };
     }

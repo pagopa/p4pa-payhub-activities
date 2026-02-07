@@ -15,21 +15,19 @@ public class InstallmentErrorDTO extends ErrorFileDTO {
     private String iupdOrg;
     private String iud;
     private String workflowStatus;
-    private Long rowNumber;
 
     public InstallmentErrorDTO(String fileName, String iupdOrg, String iud, String workflowStatus, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
+        super(fileName, rowNumber, errorCode, errorMessage);
         this.iupdOrg = iupdOrg;
         this.iud = iud;
         this.workflowStatus = workflowStatus;
-        this.rowNumber = rowNumber;
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(), iupdOrg, iud, workflowStatus,
-                rowNumber.toString(),
+                getRowNumber().toString(),
                 getErrorCode(), getErrorMessage()
         };
     }

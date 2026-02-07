@@ -39,6 +39,7 @@ public enum FileErrorCode {
     ORGANIZATION_NOT_FOUND("L'ente non esiste"),
     ORGANIZATION_ALREADY_EXISTS("L'ente esiste gia'"),
     ORG_SIL_SERVICE_NOT_FOUND("L'Org Sil Service non e' stato trovato"),
+    ORG_SIL_SERVICE_TYPE_INVALID("L'Org Sil Service type indicato non e' valido: %s"),
     INVALID_ORGANIZATION_STATUS("L'ente non e' attivo"),
     INVALID_SEGREGATION_CODE("Codice di segregazione non valido"),
     MISSING_ORGANIZATION_FIELDS("Il logo, l'iban e il codice di segregazione dell'ente sono obbligatori"),

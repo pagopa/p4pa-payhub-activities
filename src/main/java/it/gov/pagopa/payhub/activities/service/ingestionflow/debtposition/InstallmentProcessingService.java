@@ -13,6 +13,7 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
@@ -32,18 +34,19 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     private final DebtPositionService debtPositionService;
     private final InstallmentSynchronizeMapper installmentSynchronizeMapper;
     private final DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
-    public InstallmentProcessingService(DebtPositionService debtPositionService,
-                                        InstallmentSynchronizeMapper installmentSynchronizeMapper,
-                                        InstallmentErrorsArchiverService installmentErrorsArchiverService,
-                                        DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService,
-                                        OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
-        super(installmentErrorsArchiverService, organizationService, fileExceptionHandlerService);
+    public InstallmentProcessingService(
+            @Value("${ingestion-flow-files.dp-installments.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
+            DebtPositionService debtPositionService,
+            InstallmentSynchronizeMapper installmentSynchronizeMapper,
+            InstallmentErrorsArchiverService installmentErrorsArchiverService,
+            DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService,
+            OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService) {
+        super(maxConcurrentProcessingRows, installmentErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.debtPositionService = debtPositionService;
         this.installmentSynchronizeMapper = installmentSynchronizeMapper;
         this.dpInstallmentsWorkflowCompletionService = dpInstallmentsWorkflowCompletionService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     /**
@@ -62,49 +65,48 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
         InstallmentIngestionFlowFileResult result = new InstallmentIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
-        result.setFileVersion(ingestionFlowFile.getFileVersion());
-        result.setOrganizationId(ingestionFlowFile.getOrganizationId());
         return result;
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber, InstallmentIngestionFlowFileDTO installment, InstallmentIngestionFlowFileResult ingestionFlowFileResult, List<InstallmentErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
-        try {
-            setDefaultValues(installment);
-            InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
-                    installment,
-                    ingestionFlowFile.getIngestionFlowFileId(),
-                    lineNumber,
-                    ingestionFlowFile.getOrganizationId(),
-                    ingestionFlowFile.getFileName()
-            );
-            WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
-            wfExecutionParameters.setMassive(true);
-            wfExecutionParameters.setPartialChange(true);
-
-            String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
-            return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber, ingestionFlowFile.getFileName(), errorList);
-        } catch (Exception e) {
-            log.error("Error processing installment {}: {}", installment.getIud(), e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            InstallmentErrorDTO error = new InstallmentErrorDTO(
-                    ingestionFlowFile.getFileName(),
-                    installment.getIupdOrg(), installment.getIud(), null,
-                    lineNumber, errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
-        }
+    protected String getSequencingId(InstallmentIngestionFlowFileDTO row) {
+        return Objects.requireNonNullElse(row.getIupdOrg(), row.getIud());
     }
 
     @Override
-    protected InstallmentErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
-        return InstallmentErrorDTO.builder()
-                .fileName(fileName)
+    protected List<InstallmentErrorDTO> consumeRow(long lineNumber,
+                                                   InstallmentIngestionFlowFileDTO installment,
+                                                   InstallmentIngestionFlowFileResult ingestionFlowFileResult,
+                                                   IngestionFlowFile ingestionFlowFile) {
+        setDefaultValues(installment);
+        InstallmentSynchronizeDTO installmentSynchronizeDTO = installmentSynchronizeMapper.map(
+                installment,
+                ingestionFlowFile.getIngestionFlowFileId(),
+                lineNumber,
+                ingestionFlowFile.getOrganizationId(),
+                ingestionFlowFile.getFileName()
+        );
+        WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
+        wfExecutionParameters.setMassive(true);
+        wfExecutionParameters.setPartialChange(true);
+
+        String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
+        return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber, ingestionFlowFile.getFileName());
+    }
+
+    @Override
+    protected InstallmentErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, InstallmentIngestionFlowFileDTO row, String errorCode, String message) {
+        InstallmentErrorDTO errorDTO = InstallmentErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setIupdOrg(row.getIupdOrg());
+            errorDTO.setIud(row.getIud());
+        }
+        return errorDTO;
     }
 
 }

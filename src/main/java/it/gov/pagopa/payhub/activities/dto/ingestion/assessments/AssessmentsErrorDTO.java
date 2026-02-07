@@ -14,15 +14,13 @@ import java.util.Objects;
 @ToString(callSuper = true)
 public class AssessmentsErrorDTO extends ErrorFileDTO {
 
-    private Long rowNumber;
     private String assessmentCode;
     private String organizationIpaCode;
 
     public AssessmentsErrorDTO(String fileName,
                                Long rowNumber, String assessmentCode, String organizationIpaCode,
                                String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
-        this.rowNumber = rowNumber;
+        super(fileName, rowNumber, errorCode, errorMessage);
         this.assessmentCode = assessmentCode;
         this.organizationIpaCode = organizationIpaCode;
     }

@@ -17,19 +17,17 @@ import lombok.experimental.SuperBuilder;
 public class OrganizationErrorDTO extends ErrorFileDTO {
 
     private String ipaCode;
-    private Long rowNumber;
 
     public OrganizationErrorDTO(String fileName, String ipaCode, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
+        super(fileName, rowNumber, errorCode, errorMessage);
         this.ipaCode = ipaCode;
-        this.rowNumber = rowNumber;
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(), ipaCode,
-                rowNumber.toString(),
+                getRowNumber().toString(),
                 getErrorCode(), getErrorMessage()
         };
     }

@@ -11,6 +11,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString(callSuper = true)
 public class DebtPositionTypeOrgIngestionFlowFileResult extends IngestionFlowFileResult {
-  private String brokerFiscalCode;
   private Long brokerId;
+  private String orgIpaCode;
 }
