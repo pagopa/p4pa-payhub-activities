@@ -2,130 +2,95 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.assessmentsregistr
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsRegistryService;
-import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemanticKey;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessmentsregistry.AssessmentsRegistryIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsregistry.AssessmentsRegistryMapper;
+import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
-import it.gov.pagopa.payhub.activities.util.TestUtils;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.co.jemos.podam.api.PodamFactory;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static it.gov.pagopa.payhub.activities.util.faker.AssessmentsRegistryFaker.buildAssessmentsRegistry;
-import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class AssessmentRegistryProcessingServiceTest {
+class AssessmentRegistryProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<AssessmentsRegistryIngestionFlowFileDTO, AssessmentsRegistryIngestionFlowFileResult, AssessmentsRegistryErrorDTO> {
 
     @Mock
     private AssessmentsRegistryErrorsArchiverService errorsArchiverServiceMock;
     @Mock
-    private Path workingDirectoryMock;
-    @Mock
     private AssessmentsRegistryMapper mapperMock;
     @Mock
     private AssessmentsRegistryService assessmentsRegistryServiceMock;
-    @Mock
-    private OrganizationService organizationServiceMock;
 
-    private AssessmentsRegistryProcessingService service;
+    private AssessmentsRegistryProcessingService serviceSpy;
 
-    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+    protected AssessmentRegistryProcessingServiceTest() {
+        super(true);
+    }
 
     @BeforeEach
-    void setUp() {
+    void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        service = new AssessmentsRegistryProcessingService(mapperMock, errorsArchiverServiceMock,
-                assessmentsRegistryServiceMock, organizationServiceMock, fileExceptionHandlerService);
+        serviceSpy = Mockito.spy(new AssessmentsRegistryProcessingService(
+                MAX_CONCURRENT_PROCESSING_ROWS,
+                mapperMock,
+                errorsArchiverServiceMock,
+                assessmentsRegistryServiceMock,
+                organizationServiceMock,
+                fileExceptionHandlerService
+        ));
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
-                errorsArchiverServiceMock,
-                workingDirectoryMock,
                 mapperMock,
+                errorsArchiverServiceMock,
                 assessmentsRegistryServiceMock,
-                organizationServiceMock);
+                organizationServiceMock
+        );
     }
 
-    @Test
-    void processAssessmentsRegistryWithIpaErrors() {
-        // Given
-        String ipaCode = "IPA123";
-        String ipaWrong = "IPA123_WRONG";
-
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        ingestionFlowFile.setOrganizationId(123L);
-        AssessmentsRegistryIngestionFlowFileDTO dto = mock(AssessmentsRegistryIngestionFlowFileDTO.class);
-        Mockito.when(dto.getOrganizationIpaCode()).thenReturn(ipaCode);
-
-        Organization organization = new Organization();
-        organization.setIpaCode(ipaWrong);
-        Optional<Organization> organizationOptional = Optional.of(organization);
-
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-
-        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectoryMock, ingestionFlowFile))
-                .thenReturn("zipFileName.csv");
-
-        // When
-        AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
-                Stream.of(dto).iterator(), List.of(),
-                ingestionFlowFile, workingDirectoryMock);
-
-        // Then
-        Assertions.assertSame(ingestionFlowFile.getOrganizationId(), result.getOrganizationId());
-        Assertions.assertEquals(0L, result.getProcessedRows());
-        Assertions.assertEquals(1L, result.getTotalRows());
-
-        Mockito.verify(errorsArchiverServiceMock)
-                .writeErrors(workingDirectoryMock, ingestionFlowFile, List.of(
-                        AssessmentsRegistryErrorDTO.builder()
-                                .fileName(ingestionFlowFile.getFileName())
-                                .errorCode(FileErrorCode.ORGANIZATION_IPA_MISMATCH.name())
-                                .errorMessage("Il codice IPA IPA123 dell'ente non corrisponde a quello del file IPA123_WRONG")
-                                .rowNumber(1L)
-                                .organizationIpaCode(ipaCode)
-                                .build())
-                );
+    @Override
+    protected AssessmentsRegistryProcessingService getServiceSpy() {
+        return serviceSpy;
     }
 
-    @Test
-    void consumeRowWithMatchingIpaCodeProcessesSuccessfully() {
-        // Given
-        long lineNumber = 1L;
-        AssessmentsRegistryIngestionFlowFileDTO row = mock(AssessmentsRegistryIngestionFlowFileDTO.class);
-        Mockito.when(row.getOrganizationIpaCode()).thenReturn("IPA123");
+    @Override
+    protected ErrorArchiverService<AssessmentsRegistryErrorDTO> getErrorsArchiverServiceMock() {
+        return errorsArchiverServiceMock;
+    }
 
-        AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsRegistryIngestionFlowFileResult();
-        ingestionFlowFileResult.setIpaCode("IPA123");
-        ingestionFlowFileResult.setOrganizationId(123L);
+    @Override
+    protected AssessmentsRegistryIngestionFlowFileResult startProcess(Iterator<AssessmentsRegistryIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+        return serviceSpy.processAssessmentsRegistry(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+    }
 
-        IngestionFlowFile ingestionFlowFile = mock(IngestionFlowFile.class);
+    @Override
+    protected AssessmentsRegistryIngestionFlowFileDTO buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber) {
+        AssessmentsRegistryIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsRegistryIngestionFlowFileDTO.class);
+        dto.setOrganizationIpaCode(organization.getIpaCode());
+        dto.setDebtPositionTypeOrgCode("DTOCODE" + sequencingId);
+        dto.setSectionCode("SECTIONCODE" + sequencingId);
+        dto.setOfficeCode("OFFICECODE" + sequencingId);
+        dto.setAssessmentCode("ASSESSMENTCODE" + sequencingId);
+        dto.setOperatingYear(String.valueOf(2020 + sequencingId));
 
         AssessmentsRegistry assessmentsRegistry = podamFactory.manufacturePojo(AssessmentsRegistry.class);
         AssessmentsRegistrySemanticKey registrySemanticKey = AssessmentsRegistrySemanticKey.builder()
@@ -137,30 +102,48 @@ class AssessmentRegistryProcessingServiceTest {
                 .operatingYear(assessmentsRegistry.getOperatingYear())
                 .build();
 
-        Mockito.when(mapperMock.map(row, 123L)).thenReturn(assessmentsRegistry);
-        Mockito.when(assessmentsRegistryServiceMock.searchAssessmentsRegistryBySemanticKey(registrySemanticKey))
-                .thenReturn(Optional.empty());
+        Mockito.doReturn(assessmentsRegistry)
+                .when(mapperMock)
+                .map(dto, ingestionFlowFile.getOrganizationId());
+        Mockito.doReturn(Optional.empty())
+                .when(assessmentsRegistryServiceMock)
+                .searchAssessmentsRegistryBySemanticKey(registrySemanticKey);
 
-        List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
+        Mockito.doNothing()
+                .when(assessmentsRegistryServiceMock)
+                .createAssessmentsRegistry(assessmentsRegistry);
 
-        // When
-        boolean result = service.consumeRow(lineNumber, row, ingestionFlowFileResult, errorList, ingestionFlowFile);
-
-        // Then
-        Assertions.assertTrue(result);
-        Mockito.verify(assessmentsRegistryServiceMock).createAssessmentsRegistry(assessmentsRegistry);
-        Assertions.assertTrue(errorList.isEmpty());
+        return dto;
     }
 
-    @Test
-    void processAssessmentsRegistryWithErrors() {
-        // Given
-        String ipaCode = "IPA123";
+    @Override
+    protected List<Pair<AssessmentsRegistryIngestionFlowFileDTO, List<AssessmentsRegistryErrorDTO>>> buildAndConfigureUnhappyUseCases(IngestionFlowFile ingestionFlowFile, long previousRowNumber) {
+        return List.of(
+                configureUnhappyUseCaseIpaMismatch(ingestionFlowFile, ++previousRowNumber),
+                configureUnhappyUseCaseAlreadyExists(ingestionFlowFile, ++previousRowNumber)
+        );
+    }
 
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        ingestionFlowFile.setOrganizationId(123L);
+    private Pair<AssessmentsRegistryIngestionFlowFileDTO, List<AssessmentsRegistryErrorDTO>> configureUnhappyUseCaseIpaMismatch(IngestionFlowFile ingestionFlowFile, long rowNumber) {
         AssessmentsRegistryIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsRegistryIngestionFlowFileDTO.class);
-        dto.setOrganizationIpaCode(ipaCode);
+        dto.setOrganizationIpaCode("WRONGIPACODE");
+
+        List<AssessmentsRegistryErrorDTO> expectedErrors = List.of(
+                AssessmentsRegistryErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .errorCode(FileErrorCode.ORGANIZATION_IPA_MISMATCH.name())
+                        .errorMessage("Il codice IPA WRONGIPACODE dell'ente non corrisponde a quello del file " + organization.getIpaCode())
+                        .rowNumber(rowNumber)
+                        .organizationIpaCode(dto.getOrganizationIpaCode())
+                        .assessmentCode(dto.getAssessmentCode())
+                        .build()
+        );
+        return Pair.of(dto, expectedErrors);
+    }
+
+    private Pair<AssessmentsRegistryIngestionFlowFileDTO, List<AssessmentsRegistryErrorDTO>> configureUnhappyUseCaseAlreadyExists(IngestionFlowFile ingestionFlowFile, long rowNumber) {
+        AssessmentsRegistryIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsRegistryIngestionFlowFileDTO.class);
+        dto.setOrganizationIpaCode(organization.getIpaCode());
 
         AssessmentsRegistry assessmentsRegistry = buildAssessmentsRegistry();
         AssessmentsRegistrySemanticKey registrySemanticKey = AssessmentsRegistrySemanticKey.builder()
@@ -172,107 +155,24 @@ class AssessmentRegistryProcessingServiceTest {
                 .operatingYear(assessmentsRegistry.getOperatingYear())
                 .build();
 
-        Mockito.when(mapperMock.map(dto, 123L)).thenReturn(assessmentsRegistry);
+        Mockito.doReturn(assessmentsRegistry)
+                .when(mapperMock)
+                .map(dto, ingestionFlowFile.getOrganizationId());
 
-        Organization organization = new Organization();
-        organization.setIpaCode(ipaCode);
-        Optional<Organization> organizationOptional = Optional.of(organization);
+        Mockito.doReturn(Optional.of(assessmentsRegistry))
+                .when(assessmentsRegistryServiceMock)
+                .searchAssessmentsRegistryBySemanticKey(registrySemanticKey);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-
-        Mockito.when(assessmentsRegistryServiceMock.searchAssessmentsRegistryBySemanticKey(registrySemanticKey))
-                        .thenReturn(Optional.empty());
-
-        doThrow(new RuntimeException("Processing error"))
-                .when(assessmentsRegistryServiceMock).createAssessmentsRegistry(assessmentsRegistry);
-
-        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectoryMock, ingestionFlowFile))
-                .thenReturn("zipFileName.csv");
-
-        // When
-        AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
-                Stream.of(dto).iterator(), List.of(new CsvException("DUMMYERROR")),
-                ingestionFlowFile, workingDirectoryMock);
-
-        // Then
-        assertEquals(2, result.getTotalRows());
-        assertEquals(0, result.getProcessedRows());
-        assertEquals("Some rows have failed", result.getErrorDescription());
-        assertEquals("zipFileName.csv", result.getDiscardedFileName());
-
-        Mockito.verify(errorsArchiverServiceMock)
-                .writeErrors(workingDirectoryMock, ingestionFlowFile, List.of(
-                        AssessmentsRegistryErrorDTO.builder()
-                                .fileName(ingestionFlowFile.getFileName())
-                                .errorCode(FileErrorCode.CSV_GENERIC_ERROR.name())
-                                .errorMessage("Errore generico nella lettura del file: DUMMYERROR")
-                                .rowNumber(-1L)
-                                .build(),
-                        AssessmentsRegistryErrorDTO.builder()
-                                .fileName(ingestionFlowFile.getFileName())
-                                .errorCode(FileErrorCode.GENERIC_ERROR.name())
-                                .errorMessage("Processing error")
-                                .rowNumber(2L)
-                                .organizationIpaCode(ipaCode)
-                                .assessmentCode(dto.getAssessmentCode())
-                                .build())
-                );
-    }
-    @Test
-    void processAssessmentsRegistryWithDuplicateErrors() {
-        // Given
-        String ipaCode = "IPA123";
-
-        IngestionFlowFile ingestionFlowFile = buildIngestionFlowFile();
-        ingestionFlowFile.setOrganizationId(123L);
-        AssessmentsRegistryIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsRegistryIngestionFlowFileDTO.class);
-        dto.setOrganizationIpaCode(ipaCode);
-
-        AssessmentsRegistry assessmentsRegistry = buildAssessmentsRegistry();
-        AssessmentsRegistrySemanticKey registrySemanticKey = AssessmentsRegistrySemanticKey.builder()
-                .organizationId(assessmentsRegistry.getOrganizationId())
-                .debtPositionTypeOrgCode(assessmentsRegistry.getDebtPositionTypeOrgCode())
-                .sectionCode(assessmentsRegistry.getSectionCode())
-                .officeCode(assessmentsRegistry.getOfficeCode())
-                .assessmentCode(assessmentsRegistry.getAssessmentCode())
-                .operatingYear(assessmentsRegistry.getOperatingYear())
-                .build();
-
-        Mockito.when(mapperMock.map(dto, 123L)).thenReturn(assessmentsRegistry);
-
-        Organization organization = new Organization();
-        organization.setIpaCode(ipaCode);
-        Optional<Organization> organizationOptional = Optional.of(organization);
-
-        Mockito.when(organizationServiceMock.getOrganizationById(any())).thenReturn(organizationOptional);
-
-        Mockito.when(assessmentsRegistryServiceMock.searchAssessmentsRegistryBySemanticKey(registrySemanticKey))
-                .thenReturn(Optional.of(assessmentsRegistry));
-
-        Mockito.when(errorsArchiverServiceMock.archiveErrorFiles(workingDirectoryMock, ingestionFlowFile))
-                .thenReturn("zipFileName.csv");
-
-        // When
-        AssessmentsRegistryIngestionFlowFileResult result = service.processAssessmentsRegistry(
-                Stream.of(dto).iterator(), List.of(),
-                ingestionFlowFile, workingDirectoryMock);
-
-        // Then
-        assertEquals(1, result.getTotalRows());
-        assertEquals(0, result.getProcessedRows());
-        assertEquals("Some rows have failed", result.getErrorDescription());
-        assertEquals("zipFileName.csv", result.getDiscardedFileName());
-
-        Mockito.verify(errorsArchiverServiceMock)
-                .writeErrors(workingDirectoryMock, ingestionFlowFile, List.of(
-                        AssessmentsRegistryErrorDTO.builder()
-                                .fileName(ingestionFlowFile.getFileName())
-                                .errorCode(FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name())
-                                .errorMessage(FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage())
-                                .rowNumber(1L)
-                                .organizationIpaCode(ipaCode)
-                                .assessmentCode(assessmentsRegistry.getAssessmentCode())
-                                .build())
-                );
+        List<AssessmentsRegistryErrorDTO> expectedErrors = List.of(
+                AssessmentsRegistryErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .errorCode(FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name())
+                        .errorMessage(FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage())
+                        .rowNumber(rowNumber)
+                        .organizationIpaCode(dto.getOrganizationIpaCode())
+                        .assessmentCode(dto.getAssessmentCode())
+                        .build()
+        );
+        return Pair.of(dto, expectedErrors);
     }
 }

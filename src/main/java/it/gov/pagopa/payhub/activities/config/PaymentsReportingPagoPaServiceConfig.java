@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PaymentsReportingPagoPaServiceConfig {
 
-	private final Boolean isLegacyFeatureActive;
+	private final boolean isLegacyFeatureActive;
 
 	public PaymentsReportingPagoPaServiceConfig(
-			@Value("${ingestion-flow-files.payments-reporting.legacy-feature-flags}") Boolean legacyFeatureFlag) {
+			@Value("${ingestion-flow-files.payments-reporting.legacy-feature-flags}") boolean legacyFeatureFlag) {
 		this.isLegacyFeatureActive = legacyFeatureFlag;
 	}
 

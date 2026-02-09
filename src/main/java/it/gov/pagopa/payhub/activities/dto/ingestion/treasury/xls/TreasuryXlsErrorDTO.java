@@ -13,19 +13,17 @@ import lombok.experimental.SuperBuilder;
 public class TreasuryXlsErrorDTO extends ErrorFileDTO {
 
     private String iuf;
-    private Long rowNumber;
 
     public TreasuryXlsErrorDTO(String fileName, String iuf, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
+        super(fileName, rowNumber, errorCode, errorMessage);
         this.iuf = iuf;
-        this.rowNumber = rowNumber;
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(), iuf,
-                rowNumber.toString(),
+                getRowNumber().toString(),
                 getErrorCode(), getErrorMessage()
         };
     }

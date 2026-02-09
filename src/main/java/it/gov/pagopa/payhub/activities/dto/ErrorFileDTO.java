@@ -14,6 +14,7 @@ import java.io.Serializable;
 public abstract class ErrorFileDTO implements Serializable {
 
     private String fileName;
+    private Long rowNumber;
     private String errorCode;
     private String errorMessage;
     public abstract String[] toCsvRow();

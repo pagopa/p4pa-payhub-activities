@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AssessmentsRegistryMapper {
 
-    public AssessmentsRegistry map(AssessmentsRegistryIngestionFlowFileDTO dto, Long ingestionFlowFileResultOrganizationId) {
+    public AssessmentsRegistry map(AssessmentsRegistryIngestionFlowFileDTO dto, Long organizationId) {
 
         return AssessmentsRegistry.builder()
 
@@ -21,7 +21,7 @@ public class AssessmentsRegistryMapper {
                 .officeDescription(dto.getOfficeDescription())
 
                 .operatingYear(dto.getOperatingYear())
-                .organizationId(ingestionFlowFileResultOrganizationId)
+                .organizationId(organizationId)
 
                 .sectionCode(dto.getSectionCode())
                 .sectionDescription(dto.getSectionDescription())

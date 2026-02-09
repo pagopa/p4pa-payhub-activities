@@ -16,6 +16,7 @@ import java.util.Map;
 @SuperBuilder
 @ToString(callSuper = true)
 public class TreasuryIufIngestionFlowFileResult extends IngestionFlowFileResult {
+    private String ipaCode;
     /** Map of IUFs and their corresponding Treasury IDs */
     private Map<String, String> iuf2TreasuryIdMap;
 }

@@ -12,12 +12,35 @@ spring:
           required: "\${MAIL_SMTP_STARTTLS_REQUIRED:true}"
 
 ingestion-flow-files:
+  default:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS:10}"
+  assessments:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_ASSESSMENTS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  assessments-registry:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_ASSESSMENTS_REGISTRY_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
   dp-installments:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_DP_INSTALLMENTS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
     wf-await:
       max-waiting-minutes: 5
       retry-delays-ms: 1000
+  dp-types:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_DP_TYPE_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  dp-type-orgs:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_DP_TYPE_ORG_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  organizations:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_ORGANIZATIONS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  org-sil-services:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_ORG_SIL_SERVICES_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  payment-notifications:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_PAYMENT_NOTIFICATIONS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
   payments-reporting:
     legacy-feature-flags: "\${INGEST_FLOW_FILES_PAYMENTS_REPORTING_LEGACY_FEATURE_FLAGS:false}"
+  receipts:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_RECEIPTS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  send-notifications:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_SEND_NOTIFICATIONS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  treasuries:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_TREASURIES_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
 
 export-flow-files:
   page-request-thresholds:

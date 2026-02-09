@@ -14,14 +14,12 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Lazy
@@ -31,17 +29,17 @@ public class AssessmentsRegistryProcessingService extends
 
     private final AssessmentsRegistryMapper assessmentsRegistryMapper;
     private final AssessmentsRegistryService assessmentsRegistryService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
     public AssessmentsRegistryProcessingService(
+            @Value("${ingestion-flow-files.assessments-registry.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
             AssessmentsRegistryMapper assessmentsRegistryMapper,
             AssessmentsRegistryErrorsArchiverService assessmentsRegistryErrorsArchiverService,
             AssessmentsRegistryService assessmentsRegistryService, OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService) {
-        super(assessmentsRegistryErrorsArchiverService, organizationService, fileExceptionHandlerService);
+        super(maxConcurrentProcessingRows, assessmentsRegistryErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.assessmentsRegistryMapper = assessmentsRegistryMapper;
         this.assessmentsRegistryService = assessmentsRegistryService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     public AssessmentsRegistryIngestionFlowFileResult processAssessmentsRegistry(
@@ -52,8 +50,6 @@ public class AssessmentsRegistryProcessingService extends
         List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
 
         AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsRegistryIngestionFlowFileResult();
-        ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
-        ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipaCode);
@@ -63,75 +59,69 @@ public class AssessmentsRegistryProcessingService extends
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber,
-                                 AssessmentsRegistryIngestionFlowFileDTO row,
-                                 AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult,
-                                 List<AssessmentsRegistryErrorDTO> errorList, IngestionFlowFile ingestionFlowFile) {
-        try {
-            String ipa = ingestionFlowFileResult.getIpaCode();
-            if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
-                log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
-                AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
-                        ingestionFlowFile.getFileName(), lineNumber, row.getAssessmentCode(),
-                        row.getOrganizationIpaCode(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
-                        FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
-                errorList.add(error);
-                return false;
-
-            }
-
-            AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
-                    row, ingestionFlowFileResult.getOrganizationId());
-
-            Optional<AssessmentsRegistry> assessmentsRegistryOptional =
-                    assessmentsRegistryService.searchAssessmentsRegistryBySemanticKey(
-                            AssessmentsRegistrySemanticKey.builder()
-                                    .organizationId(assessmentsRegistry.getOrganizationId())
-                                    .debtPositionTypeOrgCode(assessmentsRegistry.getDebtPositionTypeOrgCode())
-                                    .sectionCode(assessmentsRegistry.getSectionCode())
-                                    .officeCode(assessmentsRegistry.getOfficeCode())
-                                    .assessmentCode(assessmentsRegistry.getAssessmentCode())
-                                    .operatingYear(assessmentsRegistry.getOperatingYear())
-                                    .build()
-                    );
-            if (assessmentsRegistryOptional.isPresent()) {
-                AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
-                        ingestionFlowFile.getFileName(), lineNumber, assessmentsRegistry.getAssessmentCode(),
-                        row.getOrganizationIpaCode(),
-                        FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name(),
-                        FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage());
-                errorList.add(error);
-                return false;
-            }
-
-            assessmentsRegistryService.createAssessmentsRegistry(assessmentsRegistry);
-            return true;
-
-        } catch (Exception e) {
-            log.error("Error processing row {} in file {}: {}", lineNumber, ingestionFlowFile.getFileName(), e.getMessage(), e);
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            AssessmentsRegistryErrorDTO error = new AssessmentsRegistryErrorDTO(
-                    ingestionFlowFile.getFileName(),
-                    lineNumber,
-                    row.getAssessmentCode(),
-                    row.getOrganizationIpaCode(),
-                    errorDetails.getErrorCode(), errorDetails.getErrorMessage());
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
-        }
+    protected String getSequencingId(AssessmentsRegistryIngestionFlowFileDTO row) {
+        return row.getDebtPositionTypeOrgCode() +
+                "-" + row.getSectionCode() +
+                "-" + row.getOfficeCode() +
+                "-" + row.getAssessmentCode() +
+                "-" + row.getOperatingYear();
     }
 
     @Override
-    protected AssessmentsRegistryErrorDTO buildErrorDto(String fileName, long lineNumber,
+    protected List<AssessmentsRegistryErrorDTO> consumeRow(long lineNumber,
+                                                           AssessmentsRegistryIngestionFlowFileDTO row,
+                                                           AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult,
+                                                           IngestionFlowFile ingestionFlowFile) {
+        String ipa = ingestionFlowFileResult.getIpaCode();
+        if (!row.getOrganizationIpaCode().equalsIgnoreCase(ipa)) {
+            log.error("Organization IPA code {} does not match with the one in the ingestion flow file {}", row.getOrganizationIpaCode(), ipa);
+            AssessmentsRegistryErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.name(),
+                    FileErrorCode.ORGANIZATION_IPA_MISMATCH.format(row.getOrganizationIpaCode(), ipa));
+            return List.of(error);
+        }
+
+        AssessmentsRegistry assessmentsRegistry = assessmentsRegistryMapper.map(
+                row, ingestionFlowFile.getOrganizationId());
+
+        Optional<AssessmentsRegistry> assessmentsRegistryOptional =
+                assessmentsRegistryService.searchAssessmentsRegistryBySemanticKey(
+                        AssessmentsRegistrySemanticKey.builder()
+                                .organizationId(assessmentsRegistry.getOrganizationId())
+                                .debtPositionTypeOrgCode(assessmentsRegistry.getDebtPositionTypeOrgCode())
+                                .sectionCode(assessmentsRegistry.getSectionCode())
+                                .officeCode(assessmentsRegistry.getOfficeCode())
+                                .assessmentCode(assessmentsRegistry.getAssessmentCode())
+                                .operatingYear(assessmentsRegistry.getOperatingYear())
+                                .build()
+                );
+        if (assessmentsRegistryOptional.isPresent()) {
+            AssessmentsRegistryErrorDTO error = buildErrorDto(
+                    ingestionFlowFile, lineNumber, row,
+                    FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.name(),
+                    FileErrorCode.ASSESSMENTS_REGISTRY_ALREADY_EXISTS.getMessage());
+            return List.of(error);
+        }
+
+        assessmentsRegistryService.createAssessmentsRegistry(assessmentsRegistry);
+        return Collections.emptyList();
+    }
+
+    @Override
+    protected AssessmentsRegistryErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, AssessmentsRegistryIngestionFlowFileDTO row,
                                                         String errorCode, String message) {
-        return AssessmentsRegistryErrorDTO.builder()
-                .fileName(fileName)
+        AssessmentsRegistryErrorDTO errorDTO = AssessmentsRegistryErrorDTO.builder()
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
+        if (row != null) {
+            errorDTO.setAssessmentCode(row.getAssessmentCode());
+            errorDTO.setOrganizationIpaCode(row.getOrganizationIpaCode());
+        }
+        return errorDTO;
     }
 }
 
