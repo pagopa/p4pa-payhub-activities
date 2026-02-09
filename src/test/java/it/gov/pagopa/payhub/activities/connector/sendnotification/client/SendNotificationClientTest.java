@@ -180,17 +180,17 @@ class SendNotificationClientTest {
     void givenValidRequestWhenFindSendStreamThenOk() {
         //Given
         String accessToken = "ACCESSTOKEN";
-        Long organizationId = 1L;
+        String sendStreamId = "sendStreamId";
 
         SendStreamDTO expectedResult = new SendStreamDTO();
 
         Mockito.when(sendApisHolderMock.getSendStreamsApi(accessToken))
                 .thenReturn(sendStreamsApiMock);
-        Mockito.when(sendStreamsApiMock.getStreamByOrganizationId(organizationId))
+        Mockito.when(sendStreamsApiMock.getStream(sendStreamId))
                 .thenReturn(expectedResult);
 
         //When
-        SendStreamDTO actualResult = client.findSendStream(organizationId, accessToken);
+        SendStreamDTO actualResult = client.findSendStream(sendStreamId, accessToken);
 
         //Then
         Assertions.assertEquals(expectedResult, actualResult);
