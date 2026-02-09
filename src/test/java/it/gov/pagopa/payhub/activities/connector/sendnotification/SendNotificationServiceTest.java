@@ -117,17 +117,17 @@ class SendNotificationServiceTest {
     void givenValidRequestWhenFindSendStreamThenOk() {
         // Given
         String accessToken = "ACCESSTOKEN";
-        Long organizationId = 1L;
+        String sendStreamId = "sendStreamId";
 
         SendStreamDTO expectedResult = new SendStreamDTO();
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(clientMock.findSendStream(organizationId, accessToken))
+        Mockito.when(clientMock.findSendStream(sendStreamId, accessToken))
                 .thenReturn(expectedResult);
 
         // When
-        SendStreamDTO result = service.findSendStream(organizationId);
+        SendStreamDTO result = service.findSendStream(sendStreamId);
 
         // Then
         Assertions.assertEquals(expectedResult, result);

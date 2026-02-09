@@ -35,15 +35,15 @@ class GetSendStreamActivityTest {
 	@Test
 	void testFetchSendStream() {
 		// Given
-		Long organizationId = 1L;
+		String sendStreamId = "sendStreamId";
 
 		SendStreamDTO expectedResult = new SendStreamDTO();
 
-		Mockito.when(serviceMock.findSendStream(organizationId))
+		Mockito.when(serviceMock.findSendStream(sendStreamId))
 				.thenReturn(expectedResult);
 
 		// When
-		SendStreamDTO actualResult = activity.fetchSendStream(organizationId);
+		SendStreamDTO actualResult = activity.fetchSendStream(sendStreamId);
 
 		// Then
 		Assertions.assertSame(expectedResult, actualResult);

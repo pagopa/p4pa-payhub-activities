@@ -55,9 +55,9 @@ public class SendNotificationClient {
           .startNotification(sendNotificationId, loadFileRequest);
   }
 
-  public SendStreamDTO findSendStream(Long organizationId, String accessToken) {
+  public SendStreamDTO findSendStream(String sendStreamId, String accessToken) {
     return sendApisHolder.getSendStreamsApi(accessToken)
-            .getStreamByOrganizationId(organizationId);
+            .getStream(sendStreamId);
   }
 
   public List<ProgressResponseElementV25DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String lastEventId, String accessToken) {
