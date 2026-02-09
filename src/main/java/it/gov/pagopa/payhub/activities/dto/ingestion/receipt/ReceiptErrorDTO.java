@@ -7,23 +7,19 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
 public class ReceiptErrorDTO extends ErrorFileDTO {
 
-    private Long rowNumber;
-
     public ReceiptErrorDTO(String fileName, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
-        this.rowNumber = rowNumber;
+        super(fileName, rowNumber, errorCode, errorMessage);
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(),
-                rowNumber.toString(),
+                getRowNumber().toString(),
                 getErrorCode(), getErrorMessage()
         };
     }

@@ -160,7 +160,6 @@ class DebtPositionTypeOrgIngestionActivityTest {
         .totalRows(30L)
         .discardedFileName("dicardedFileName")
         .errorDescription("errorDescription")
-        .brokerFiscalCode("BrokerFiscalCode")
         .operatorExternalUserId("OPERATORID")
         .fileSize(100L)
         .build();
