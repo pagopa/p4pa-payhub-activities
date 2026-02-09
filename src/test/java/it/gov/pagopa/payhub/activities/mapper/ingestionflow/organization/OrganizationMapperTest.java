@@ -70,6 +70,6 @@ class OrganizationMapperTest {
         Assertions.assertSame(dto.getGenerateNoticeApiKey(), result.getGenerateNoticeApiKey());
 
         TestUtils.checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-                "updateTraceId", "organizationId", "password");
+                "updateTraceId", "organizationId", "password", "flagPaymentsReporting", "flagClassification");
     }
 }
