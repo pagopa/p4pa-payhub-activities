@@ -18,20 +18,18 @@ public class DebtPositionTypeOrgErrorDTO extends ErrorFileDTO {
 
     private String debtPositionTypeCode;
     private Long organizationId;
-    private Long rowNumber;
 
     public DebtPositionTypeOrgErrorDTO(String fileName, String debtPositionTypeCode, Long organizationId, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, errorCode, errorMessage);
+        super(fileName, rowNumber, errorCode, errorMessage);
         this.debtPositionTypeCode = debtPositionTypeCode;
         this.organizationId = organizationId;
-        this.rowNumber = rowNumber;
     }
 
     @Override
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(), debtPositionTypeCode,
-                organizationId.toString(),rowNumber.toString(),
+                organizationId.toString(),getRowNumber().toString(),
                 getErrorCode(), getErrorMessage()
         };
     }
