@@ -139,9 +139,20 @@ See [config/application.yml](src/main/resources/config/application.yml) for each
 | CLASSIFICATIONS_EXPORT_FLOW_FILE_SIZE_PAGE      | Page size configured when exporting classifications                                               | 10000   |
 
 ##### IngestFile
-| ENV                                                        | DESCRIPTION                                                                          | DEFAULT |
-|------------------------------------------------------------|--------------------------------------------------------------------------------------|---------|
-| INGEST_FLOW_FILES_PAYMENTS_REPORTING_LEGACY_FEATURE_FLAGS  | Select between legacy SOAP or new REST PaymentsReportingPagoPaService implementation | false   |
+| ENV                                                                       | DESCRIPTION                                                                           | DEFAULT                                                        |
+|---------------------------------------------------------------------------|---------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| INGEST_FLOW_FILES_PAYMENTS_REPORTING_LEGACY_FEATURE_FLAGS                 | Select between legacy SOAP or new REST PaymentsReportingPagoPaService implementation  | false                                                          |
+| INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS               | Default maximum number of rows to process concurrently                                | 10                                                             |
+| INGESTION_FLOW_FILES_ASSESSMENTS_MAX_CONCURRENT_PROCESSING_ROWS           | Maximum number of rows to process concurrently during ASSESSMENTS ingestion           | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_ASSESSMENTS_REGISTRY_MAX_CONCURRENT_PROCESSING_ROWS  | Maximum number of rows to process concurrently during ASSESSMENTS_REGISTRY ingestion  | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_DP_INSTALLMENTS_MAX_CONCURRENT_PROCESSING_ROWS       | Maximum number of rows to process concurrently during DP_INSTALLMENTS ingestion       | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_DP_TYPE_MAX_CONCURRENT_PROCESSING_ROWS               | Maximum number of rows to process concurrently during DP_TYPE ingestion               | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_DP_TYPE_ORG_MAX_CONCURRENT_PROCESSING_ROWS           | Maximum number of rows to process concurrently during DP_TYPE_ORG ingestion           | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_ORGANIZATIONS_MAX_CONCURRENT_PROCESSING_ROWS         | Maximum number of rows to process concurrently during ORGANIZATIONS ingestion         | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_ORG_SIL_SERVICES_MAX_CONCURRENT_PROCESSING_ROWS      | Maximum number of rows to process concurrently during ORG_SIL_SERVICES ingestion      | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_PAYMENT_NOTIFICATIONS_MAX_CONCURRENT_PROCESSING_ROWS | Maximum number of rows to process concurrently during PAYMENT_NOTIFICATIONS ingestion | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_RECEIPTS_MAX_CONCURRENT_PROCESSING_ROWS              | Maximum number of rows to process concurrently during RECEIPTS ingestion              | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
+| INGESTION_FLOW_FILES_SEND_NOTIFICATIONS_MAX_CONCURRENT_PROCESSING_ROWS    | Maximum number of rows to process concurrently during SEND_NOTIFICATIONS ingestion    | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
 
 #### 🔑 keys
 | ENV                   | DESCRIPTION                                                              | DEFAULT |

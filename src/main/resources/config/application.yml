@@ -39,6 +39,8 @@ ingestion-flow-files:
     max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_RECEIPTS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
   send-notifications:
     max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_SEND_NOTIFICATIONS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
+  treasuries:
+    max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_TREASURIES_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
 
 export-flow-files:
   page-request-thresholds:
