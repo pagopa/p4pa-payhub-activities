@@ -12,11 +12,13 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProces
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,18 +32,19 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
     private final ReceiptService receiptService;
     private final ReceiptMapper receiptMapper;
     private final ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService;
-    private final FileExceptionHandlerService fileExceptionHandlerService;
 
-    public ReceiptProcessingService(ReceiptMapper receiptMapper,
-                                    ReceiptErrorsArchiverService receiptErrorsArchiverService,
-                                    ReceiptService receiptService,
-                                    OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService,
-                                    ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService) {
-        super(receiptErrorsArchiverService, organizationService, fileExceptionHandlerService);
+    public ReceiptProcessingService(
+            @Value("${ingestion-flow-files.receipts.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
+
+            ReceiptMapper receiptMapper,
+            ReceiptErrorsArchiverService receiptErrorsArchiverService,
+            ReceiptService receiptService,
+            OrganizationService organizationService, FileExceptionHandlerService fileExceptionHandlerService,
+            ReceiptIngestionFlowFileRequiredFieldsValidatorService requiredFieldsValidatorService) {
+        super(maxConcurrentProcessingRows, receiptErrorsArchiverService, organizationService, fileExceptionHandlerService);
         this.receiptService = receiptService;
         this.receiptMapper = receiptMapper;
         this.requiredFieldsValidatorService = requiredFieldsValidatorService;
-        this.fileExceptionHandlerService = fileExceptionHandlerService;
     }
 
     /**
@@ -60,43 +63,30 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
         List<ReceiptErrorDTO> errorList = new ArrayList<>();
         ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
-        result.setFileVersion(ingestionFlowFile.getFileVersion());
-        result.setOrganizationId(ingestionFlowFile.getOrganizationId());
         return result;
     }
 
     @Override
-    protected boolean consumeRow(long lineNumber,
-                                 ReceiptIngestionFlowFileDTO receipt,
-                                 ReceiptIngestionFlowFileResult ingestionFlowFileResult,
-                                 List<ReceiptErrorDTO> errorList,
-                                 IngestionFlowFile ingestionFlowFile) {
-        try {
-            requiredFieldsValidatorService.validateIngestionFile(ingestionFlowFile, receipt);
-            setDefaultValues(receipt);
-            ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
-            receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
-            return true;
-        } catch (Exception e) {
-            log.error("Error processing receipt: {}", e.getMessage());
-            FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
-            ReceiptErrorDTO error = ReceiptErrorDTO.builder()
-                    .fileName(ingestionFlowFile.getFileName())
-                    .rowNumber(lineNumber)
-                    .errorCode(errorDetails.getErrorCode())
-                    .errorMessage(errorDetails.getErrorMessage())
-                    .build();
-
-            errorList.add(error);
-            log.info("Current error list size after handleProcessingError: {}", errorList.size());
-            return false;
-        }
+    protected String getSequencingId(ReceiptIngestionFlowFileDTO row) {
+        return row.getIuv();
     }
 
     @Override
-    protected ReceiptErrorDTO buildErrorDto(String fileName, long lineNumber, String errorCode, String message) {
+    protected List<ReceiptErrorDTO> consumeRow(long lineNumber,
+                                               ReceiptIngestionFlowFileDTO receipt,
+                                               ReceiptIngestionFlowFileResult ingestionFlowFileResult,
+                                               IngestionFlowFile ingestionFlowFile) {
+        requiredFieldsValidatorService.validateIngestionFile(ingestionFlowFile, receipt);
+        setDefaultValues(receipt);
+        ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = receiptMapper.map(ingestionFlowFile, receipt);
+        receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
+        return Collections.emptyList();
+    }
+
+    @Override
+    protected ReceiptErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, ReceiptIngestionFlowFileDTO row, String errorCode, String message) {
         return ReceiptErrorDTO.builder()
-                .fileName(fileName)
+                .fileName(ingestionFlowFile.getFileName())
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
