@@ -24,6 +24,7 @@ public class Utilities {
 
     public static final ZoneId ZONEID = ZoneId.of("Europe/Rome");
     public static final TimeZone DEFAULT_TIMEZONE = TimeZone.getTimeZone(ZONEID);
+    public static final String INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER = "Pagamento on-the-fly";
 
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
     public static final int IBAN_LENGTH = 27;
@@ -84,8 +85,8 @@ public class Utilities {
         GregorianCalendar gregorianCalendar = xmlGregorianCalendar.toGregorianCalendar();
 
         return LocalDate.ofInstant(
-                gregorianCalendar.toInstant(),
-                gregorianCalendar.getTimeZone().toZoneId()
+            gregorianCalendar.toInstant(),
+            gregorianCalendar.getTimeZone().toZoneId()
         );
     }
 
@@ -98,25 +99,25 @@ public class Utilities {
     }
 
     public static OffsetDateTime toOffsetDateTime(XMLGregorianCalendar xmlGregorianCalendar) {
-	    if (xmlGregorianCalendar == null) {
-		    return null;
-	    }
-	    return xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toOffsetDateTime()
-	        .withOffsetSameInstant(ZONEID.getRules().getOffset(Instant.now()));
+        if (xmlGregorianCalendar == null) {
+            return null;
+        }
+        return xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toOffsetDateTime()
+            .withOffsetSameInstant(ZONEID.getRules().getOffset(Instant.now()));
     }
 
     public static OffsetDateTime toOffsetDateTime(LocalDateTime localDateTime) {
-	    if (localDateTime == null) {
-		    return null;
-	    }
-	    return localDateTime.atZone(ZONEID).toOffsetDateTime();
+        if (localDateTime == null) {
+            return null;
+        }
+        return localDateTime.atZone(ZONEID).toOffsetDateTime();
     }
 
     public static OffsetDateTime toOffsetDateTimeStartOfTheDay(LocalDate localDate) {
-	    if (localDate == null) {
-		    return null;
-	    }
-	    return localDate.atStartOfDay(ZONEID).toOffsetDateTime();
+        if (localDate == null) {
+            return null;
+        }
+        return localDate.atStartOfDay(ZONEID).toOffsetDateTime();
     }
 
     public static OffsetDateTime toOffsetDateTimeEndOfTheDay(LocalDate localDate) {
@@ -130,16 +131,16 @@ public class Utilities {
     /** It will convert a {@link LocalDateIntervalFilter} into an {@link OffsetDateTimeIntervalFilter} configured from the start of the <i>from</i> day to the end of the <i>to</i> day */
     public static OffsetDateTimeIntervalFilter toRangeClosedOffsetDateTimeIntervalFilter(LocalDateIntervalFilter localDateIntervalFilter){
 
-       return OffsetDateTimeIntervalFilter.builder()
-                .from(localDateIntervalFilter != null ? toOffsetDateTimeStartOfTheDay(localDateIntervalFilter.getFrom()): null)
-                .to(localDateIntervalFilter != null ? toOffsetDateTimeEndOfTheDay(localDateIntervalFilter.getTo()): null)
-                .build();
+        return OffsetDateTimeIntervalFilter.builder()
+            .from(localDateIntervalFilter != null ? toOffsetDateTimeStartOfTheDay(localDateIntervalFilter.getFrom()): null)
+            .to(localDateIntervalFilter != null ? toOffsetDateTimeEndOfTheDay(localDateIntervalFilter.getTo()): null)
+            .build();
     }
 
     public static String removePiiFromURI(URI uri){
         return uri != null
-                ? uri.toString().replaceAll("=[^&]*", "=***")
-                : null;
+            ? uri.toString().replaceAll("=[^&]*", "=***")
+            : null;
     }
 
     public static BigDecimal longCentsToBigDecimalEuro(Long centsAmount) {
@@ -165,7 +166,7 @@ public class Utilities {
 
     public static boolean hasAllValues(MultiValuedMap<String, String> map) {
         return !map.isEmpty() && map.entries().stream()
-                .allMatch(e -> e.getValue() != null && !e.getValue().isBlank());
+            .allMatch(e -> e.getValue() != null && !e.getValue().isBlank());
     }
 
     public static LocalDateTime toLocalDateTime(OffsetDateTime offsetDateTime) {
@@ -174,5 +175,13 @@ public class Utilities {
 
     public static LocalDate toLocalDate(OffsetDateTime offsetDateTime) {
         return offsetDateTime != null ? offsetDateTime.toLocalDate() : null;
+    }
+
+    public static String resolveRemittanceInformation(String remittanceInformation, String originalRemittanceInformation) {
+        if (originalRemittanceInformation != null &&
+            remittanceInformation.startsWith(INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER)) {
+            remittanceInformation = originalRemittanceInformation;
+        }
+        return remittanceInformation;
     }
 }

@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptArchivingView;
 import org.springframework.context.annotation.Lazy;
@@ -23,23 +24,25 @@ public class ReceiptsArchivingExportFlowFileDTOMapper {
         PersonDTO payer = receiptArchivingView.getPayer();
 
         ReceiptsArchivingExportFlowFileDTO.ReceiptsArchivingExportFlowFileDTOBuilder receiptsArchivingExportFlowFileDTOBuilder = ReceiptsArchivingExportFlowFileDTO.builder()
-                .receiptXml(rtFileHandlerService.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
-                .paymentDateTime(receiptArchivingView.getPaymentDateTime() != null
-                        ? receiptArchivingView.getPaymentDateTime().toLocalDateTime()
-                        : null)
-                .paymentReceiptId(receiptArchivingView.getPaymentReceiptId())
-                .remittanceInformation(receiptArchivingView.getRemittanceInformation())
-                .orgFiscalCode(receiptArchivingView.getOrgFiscalCode())
-                .iuv(receiptArchivingView.getIuv())
-                .paymentOutcome(PAYMENT_OUTCOME)
-                .creditorReferenceId(receiptArchivingView.getCreditorReferenceId());
+            .receiptXml(rtFileHandlerService.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+            .paymentDateTime(receiptArchivingView.getPaymentDateTime() != null
+                ? receiptArchivingView.getPaymentDateTime().toLocalDateTime()
+                : null)
+            .paymentReceiptId(receiptArchivingView.getPaymentReceiptId())
+            .remittanceInformation(Utilities.resolveRemittanceInformation(
+                receiptArchivingView.getRemittanceInformation(),
+                receiptArchivingView.getOriginalRemittanceInformation()))
+            .orgFiscalCode(receiptArchivingView.getOrgFiscalCode())
+            .iuv(receiptArchivingView.getIuv())
+            .paymentOutcome(PAYMENT_OUTCOME)
+            .creditorReferenceId(receiptArchivingView.getCreditorReferenceId());
 
         if (debtor != null){
             receiptsArchivingExportFlowFileDTOBuilder
-                    .debtorEntityType(debtor.getEntityType())
-                    .debtorFullName(debtor.getFullName())
-                    .debtorUniqueIdentifierCode(debtor.getFiscalCode())
-                    .debtorEmail(debtor.getEmail());
+                .debtorEntityType(debtor.getEntityType())
+                .debtorFullName(debtor.getFullName())
+                .debtorUniqueIdentifierCode(debtor.getFiscalCode())
+                .debtorEmail(debtor.getEmail());
         }
 
         if (payer != null) {
