@@ -40,8 +40,8 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     }
 
     @Override
-    public SendStreamDTO findSendStream(Long organizationId) {
-        return sendNotificationClient.findSendStream(organizationId, authnService.getAccessToken());
+    public SendStreamDTO findSendStream(String sendStreamId) {
+        return sendNotificationClient.findSendStream(sendStreamId, authnService.getAccessToken());
     }
 
     @Override
