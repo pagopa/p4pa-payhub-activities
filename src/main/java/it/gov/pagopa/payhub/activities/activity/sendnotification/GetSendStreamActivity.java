@@ -10,10 +10,10 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 @ActivityInterface
 public interface GetSendStreamActivity {
 	/**
-	 * Fetch SEND stream for a given organization.
+	 * Fetch SEND stream for a given streamId.
 	 *
-	 * @param organizationId the ID of the organization (required)
+	 * @param sendStreamId the ID of the stream (required)
 	 */
 	@ActivityMethod
-	SendStreamDTO fetchSendStream(Long organizationId);
+	SendStreamDTO fetchSendStream(String sendStreamId);
 }

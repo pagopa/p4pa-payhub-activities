@@ -9,6 +9,6 @@ public interface SendNotificationService {
   CreateNotificationResponse createSendNotification(CreateNotificationRequest createNotificationRequest);
   SendNotificationDTO findSendNotificationByOrgIdAndNav(Long organizationId, String nav);
   StartNotificationResponse startSendNotification(String sendNotificationId, LoadFileRequest loadFileRequest);
-  SendStreamDTO findSendStream(Long organizationId);
+  SendStreamDTO findSendStream(String sendStreamId);
   List<ProgressResponseElementV25DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String lastEventId);
 }

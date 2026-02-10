@@ -18,8 +18,8 @@ public class GetSendStreamActivityImpl implements GetSendStreamActivity {
 	}
 
 	@Override
-	public SendStreamDTO fetchSendStream(Long organizationId) {
-		log.info("Retrieve SEND stream for organization {}", organizationId);
-		return sendNotificationService.findSendStream(organizationId);
+	public SendStreamDTO fetchSendStream(String sendStreamId) {
+		log.info("Retrieve SEND stream for streamId {}", sendStreamId);
+		return sendNotificationService.findSendStream(sendStreamId);
 	}
 }

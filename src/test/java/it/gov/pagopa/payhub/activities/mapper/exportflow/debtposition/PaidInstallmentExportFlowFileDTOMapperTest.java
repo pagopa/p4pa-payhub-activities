@@ -10,13 +10,19 @@ import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static it.gov.pagopa.payhub.activities.util.Utilities.INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER;
 
 @ExtendWith(MockitoExtension.class)
 class PaidInstallmentExportFlowFileDTOMapperTest {
@@ -229,7 +235,7 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals("0", exportFlowFileDTO.getSinglePaymentOutcome());
         assertEquals(paidViewDTO.getPaymentDateTime().toLocalDate(), exportFlowFileDTO.getSinglePaymentOutcomeDate());
         assertEquals(paidViewDTO.getPaymentReceiptId(), exportFlowFileDTO.getUniqueCollectionIdentifier());
-        assertEquals(paidViewDTO.getRemittanceInformation(), exportFlowFileDTO.getPaymentReason());
+        assertEquals(Utilities.resolveRemittanceInformation(paidViewDTO.getRemittanceInformation(), paidViewDTO.getOriginalRemittanceInformation()), exportFlowFileDTO.getPaymentReason());
         assertEquals("9/"+ paidViewDTO.getCategory(), exportFlowFileDTO.getCollectionSpecificData());
         assertEquals(paidViewDTO.getCode(), exportFlowFileDTO.getDueType());
         assertNull(exportFlowFileDTO.getSignatureType());
@@ -243,6 +249,33 @@ class PaidInstallmentExportFlowFileDTOMapperTest {
         assertEquals(paidViewDTO.getCompanyName(), exportFlowFileDTO.getOrgName());
         assertEquals(paidViewDTO.getCategory(), exportFlowFileDTO.getDueTaxonomicCode());
 
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideRemittanceCases")
+    void givenRemittanceCases_whenMap_thenExpected(String remittance, String originalRemittance, String expectedResult) {
+        // Given
+        InstallmentPaidViewDTO installmentPaidViewDTO = podamFactory.manufacturePojo(InstallmentPaidViewDTO.class);
+        installmentPaidViewDTO.setRemittanceInformation(remittance);
+        installmentPaidViewDTO.setOriginalRemittanceInformation(originalRemittance);
+
+        Mockito.when(rtFileHandlerServiceMock.read(installmentPaidViewDTO.getOrganizationId(), installmentPaidViewDTO.getRtFilePath()))
+                .thenReturn("RTXML");
+
+        // When
+        PaidInstallmentExportFlowFileDTO result = installmentExportFlowFileDTOMapper.map(installmentPaidViewDTO);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(expectedResult, result.getPaymentReason());
+    }
+
+    private static Stream<Arguments> provideRemittanceCases() {
+        return Stream.of(
+                Arguments.of("Standard remittance", null, "Standard remittance"),
+                Arguments.of("Standard remittance", "Original remittance", "Standard remittance"),
+                Arguments.of(INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER + " - generated", "Original remittance", "Original remittance")
+        );
     }
 
 }
