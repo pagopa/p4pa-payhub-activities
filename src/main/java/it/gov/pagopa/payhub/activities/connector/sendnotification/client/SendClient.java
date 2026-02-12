@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -40,5 +41,10 @@ public class SendClient {
   public SendNotificationDTO retrieveNotificationByNotificationRequestId(String notificationRequestId, String accessToken) {
     return sendApisHolder.getSendNotificationApi(accessToken)
             .getSendNotificationByNotificationRequestId(notificationRequestId);
+  }
+
+  public LegalFactDownloadMetadataDTO retrieveLegalFactDownloadMetadata(String sendNotificationId, String legalFactId, String accessToken) {
+    return sendApisHolder.getSendApi(accessToken)
+            .retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId);
   }
 }

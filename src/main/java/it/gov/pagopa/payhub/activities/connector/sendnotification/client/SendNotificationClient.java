@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.io.File;
 import java.util.List;
 
 @Lazy
@@ -63,5 +64,10 @@ public class SendNotificationClient {
   public List<ProgressResponseElementV25DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String lastEventId, String accessToken) {
     return sendApisHolder.getSendStreamsApi(accessToken)
             .getStreamEvents(organizationId, sendStreamId, lastEventId);
+  }
+
+  public void uploadSendLegalFact(String sendNotificationId, LegalFactCategoryDTO category, String fileName, File legalFactFile, String accessToken) {
+    sendApisHolder.getSendNotificationApi(accessToken)
+            .uploadSendLegalFact(sendNotificationId, category, fileName, legalFactFile);
   }
 }

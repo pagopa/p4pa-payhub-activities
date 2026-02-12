@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,5 +138,29 @@ class SendServiceTest {
 
         // Then
         assertSame(expectedResponse, result);
+    }
+
+    @Test
+    void givenValidRequestWhenRetrieveLegalFactDownloadMetadataThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+        String legalFactId = "sendLegalFact.pdf";
+
+        LegalFactDownloadMetadataDTO expectedResponse = new LegalFactDownloadMetadataDTO();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(sendClientMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        LegalFactDownloadMetadataDTO actualResult = sendService.retrieveLegalFactDownloadMetadata(
+                sendNotificationId,
+                legalFactId
+        );
+
+        // Then
+        assertSame(expectedResponse, actualResult);
     }
 }
