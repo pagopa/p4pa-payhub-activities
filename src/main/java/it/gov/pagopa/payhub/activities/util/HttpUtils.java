@@ -11,13 +11,11 @@ import org.apache.hc.core5.util.Timeout;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class HttpUtils {
     private HttpUtils() {
@@ -43,29 +41,19 @@ public class HttpUtils {
                         .setConnectionManager(getPooledConnectionManagerBuilder(httpClientConfig, tlsSocketStrategy).build()));
     }
 
+    public static class HttpPreSignedGetRequestException extends RuntimeException {
+        public HttpPreSignedGetRequestException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     public static HttpResponse<Path> fetchFromPreSignedUrl(URI preSignedURI, Path pathFile) {
         try (HttpClient httpClient = HttpClient.newHttpClient()) {
             HttpRequest getRequest = HttpRequest.newBuilder(preSignedURI).GET().build();
             return httpClient.send(getRequest, HttpResponse.BodyHandlers.ofFile(pathFile));
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Error in downloading file %s from URI %s".formatted(
-                pathFile.getFileName(),
-                stripQueryParamFromPreSignedURI(preSignedURI).orElse("unknownUrl")
-            ));
-        }
-    }
-
-    private static Optional<String> stripQueryParamFromPreSignedURI(URI preSignedUrl) {
-        try {
-            return Optional.of(new URI(
-                preSignedUrl.getScheme(),
-                preSignedUrl.getAuthority(),
-                preSignedUrl.getPath(),
-                null,
-                null
-            ).toString());
         } catch (Exception e) {
-            return Optional.empty();
+            String formattedErrorMessage = "Error in downloading file %s".formatted(pathFile.getFileName());
+            throw new HttpPreSignedGetRequestException(formattedErrorMessage, e);
         }
     }
 }

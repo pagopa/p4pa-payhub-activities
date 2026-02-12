@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpResponse;
@@ -39,12 +40,12 @@ public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivit
 			return;
 		}
 		String preSignedUrl = legalFactDownloadMetadataDTO.getUrl();
-		Path tempFile = Files.createTempFile("sendLegalFactDownload-%s-".formatted(legalFactId), ".tmp");
+		File tempFile = File.createTempFile("sendLegalFactDownload-%s-".formatted(legalFactId), ".tmp", new File("/mySecureDirectory"));
 		try {
-			HttpResponse<Path> legalFactsPathHttpResponse = HttpUtils.fetchFromPreSignedUrl(URI.create(preSignedUrl), tempFile);
+			HttpResponse<Path> legalFactsPathHttpResponse = HttpUtils.fetchFromPreSignedUrl(URI.create(preSignedUrl), tempFile.toPath());
 			sendNotificationService.uploadSendLegalFact(sendNotificationId, category, legalFactId, legalFactsPathHttpResponse.body().toFile());
 		} finally {
-			Files.deleteIfExists(tempFile);
+			Files.deleteIfExists(tempFile.toPath());
 		}
 	}
 }

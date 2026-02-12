@@ -41,16 +41,14 @@ class FetchSendLegalFactActivityImplTest {
 	}
 
 	@Test
-	void givenNullPreSignedUrlWhenDownloadAndCacheSendLegalFactThenReturn() throws IOException {
+	void givenNullLegalFactDownloadMetadataDTOWhenDownloadAndCacheSendLegalFactThenReturn() throws IOException {
 		//GIVEN
 		String sendNotificationId = "sendNotificationId";
 		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
 		String legalFactId = "sendLegalFact.pdf";
 
-		LegalFactDownloadMetadataDTO legalFactDownloadMetadataDTO = new LegalFactDownloadMetadataDTO();
-
 		Mockito.when(sendServiceMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
-			.thenReturn(legalFactDownloadMetadataDTO);
+			.thenReturn(null);
 
 		//WHEN
 		fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(
@@ -63,6 +61,38 @@ class FetchSendLegalFactActivityImplTest {
 		Mockito.verify(sendServiceMock).retrieveLegalFactDownloadMetadata(
 			sendNotificationId,
 			legalFactId
+		);
+		Mockito.verify(sendNotificationServiceMock, Mockito.times(0)).uploadSendLegalFact(
+				sendNotificationId,
+				category,
+				legalFactId,
+				null
+		);
+	}
+
+	@Test
+	void givenNullPreSignedUrlWhenDownloadAndCacheSendLegalFactThenReturn() throws IOException {
+		//GIVEN
+		String sendNotificationId = "sendNotificationId";
+		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
+		String legalFactId = "sendLegalFact.pdf";
+
+		LegalFactDownloadMetadataDTO legalFactDownloadMetadataDTO = new LegalFactDownloadMetadataDTO();
+
+		Mockito.when(sendServiceMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
+				.thenReturn(legalFactDownloadMetadataDTO);
+
+		//WHEN
+		fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(
+				sendNotificationId,
+				category,
+				legalFactId
+		);
+
+		//THEN
+		Mockito.verify(sendServiceMock).retrieveLegalFactDownloadMetadata(
+				sendNotificationId,
+				legalFactId
 		);
 		Mockito.verify(sendNotificationServiceMock, Mockito.times(0)).uploadSendLegalFact(
 				sendNotificationId,
@@ -117,6 +147,5 @@ class FetchSendLegalFactActivityImplTest {
 			pathMock.toFile()
 		);
 	}
-
 
 }

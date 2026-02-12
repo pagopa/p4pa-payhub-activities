@@ -10,10 +10,15 @@ import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.util.Timeout;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.http.HttpResponse;
+import java.nio.file.Path;
 
 class HttpUtilsTest {
 
@@ -74,5 +79,65 @@ class HttpUtilsTest {
         Assertions.assertEquals(Timeout.ofMilliseconds(1_000), connectionConfig.getConnectTimeout());
         Assertions.assertEquals(Timeout.ofMilliseconds(3_000), connectionConfig.getSocketTimeout());
         Assertions.assertEquals(Timeout.ofMilliseconds(180_000), connectionConfig.getTimeToLive());
+    }
+
+    @Test
+    void givenCorrectRequestWhenFetchFromPreSignedUrlThenOk() throws IOException, InterruptedException {
+        //GIVEN
+        try (MockedStatic<java.net.http.HttpClient> httpClientStaticMock = Mockito.mockStatic(java.net.http.HttpClient.class);
+             MockedStatic<java.net.http.HttpRequest> httpRequestStaticMock = Mockito.mockStatic(java.net.http.HttpRequest.class);
+             java.net.http.HttpClient httpClientMock = Mockito.mock(java.net.http.HttpClient.class)) {
+
+            java.net.http.HttpRequest.Builder httpRequestBuilderMock = Mockito.mock(java.net.http.HttpRequest.Builder.class);
+            java.net.http.HttpRequest httpRequestMock = Mockito.mock(java.net.http.HttpRequest.class);
+
+            httpClientStaticMock.when(java.net.http.HttpClient::newHttpClient)
+                    .thenReturn(httpClientMock);
+
+            httpRequestStaticMock.when(() -> java.net.http.HttpRequest.newBuilder(Mockito.isA(URI.class)))
+                    .thenReturn(httpRequestBuilderMock);
+            Mockito.when(httpRequestBuilderMock.GET()).thenReturn(httpRequestBuilderMock);
+            Mockito.when(httpRequestBuilderMock.build()).thenReturn(httpRequestMock);
+
+            Path expectedPath = Mockito.mock(Path.class);
+
+            HttpResponse<Path> httpResponseMock = HttpTestUtils.basicHttpOkResponse(expectedPath, null, null);
+            Mockito.when(httpClientMock.send(Mockito.eq(httpRequestMock), Mockito.<HttpResponse.BodyHandler<Path>>any()))
+                    .thenReturn(httpResponseMock);
+
+            URI uri = Mockito.mock(URI.class);
+            Path path = Mockito.mock(Path.class);
+
+            //WHEN
+            HttpResponse<Path> actualResult = HttpUtils.fetchFromPreSignedUrl(uri, path);
+
+            //THEN
+            Assertions.assertNotNull(actualResult);
+            Assertions.assertSame(expectedPath, actualResult.body());
+        }
+    }
+
+    @Test
+    void givenExceptionWhenFetchFromPreSignedUrlThenThrowHttpPreSignedGetRequestException() {
+        //GIVEN
+        try (MockedStatic<java.net.http.HttpClient> httpClientStaticMock = Mockito.mockStatic(java.net.http.HttpClient.class)) {
+            httpClientStaticMock.when(java.net.http.HttpClient::newHttpClient)
+                    .thenThrow(new RuntimeException());
+
+            URI uri = Mockito.mock(URI.class);
+            Path path = Mockito.mock(Path.class);
+            Path fileNamePath = Path.of("fileName.txt");
+            Mockito.when(path.getFileName()).thenReturn(fileNamePath);
+
+            //WHEN
+            HttpUtils.HttpPreSignedGetRequestException httpPreSignedGetRequestException =
+                    Assertions.assertThrows(HttpUtils.HttpPreSignedGetRequestException.class, () -> HttpUtils.fetchFromPreSignedUrl(uri, path));
+
+            //THEN
+            Assertions.assertEquals(
+                "Error in downloading file %s".formatted(fileNamePath),
+                httpPreSignedGetRequestException.getMessage()
+            );
+        }
     }
 }

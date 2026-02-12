@@ -15,7 +15,7 @@ public class HttpTestUtils {
 		@SuppressWarnings("unchecked")
 		HttpResponse<R> response = mock(HttpResponse.class);
 		if(headers != null)
-			when(response.headers()).thenReturn(HttpHeaders.of(new HashMap<>(), (_a, _b) -> true));
+			when(response.headers()).thenReturn(HttpHeaders.of(new HashMap<>(), (headerName, headerValue) -> true));
 		if(responseBody != null)
 			when(response.body()).thenReturn(responseBody);
 		if(status != null)
