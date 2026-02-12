@@ -2,23 +2,19 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificationService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.payhub.activities.util.HttpTestUtils;
 import it.gov.pagopa.payhub.activities.util.HttpUtils;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @ExtendWith(MockitoExtension.class)
@@ -112,20 +108,25 @@ class FetchSendLegalFactActivityImplTest {
 		LegalFactDownloadMetadataDTO legalFactDownloadMetadataDTO = new LegalFactDownloadMetadataDTO();
 		legalFactDownloadMetadataDTO.setUrl("http://localhost:8080");
 
-		Path pathMock = Mockito.mock(Path.class);
-		File fileMock = Mockito.mock(File.class);
-		Mockito.when(pathMock.toFile()).thenReturn(fileMock);
+		Path tmpDirectoryPath = Path.of(FetchSendLegalFactActivityImpl.TMP_DIRECTORY_PATH_STRING);
+		if(!tmpDirectoryPath.toFile().exists()) {
+			Files.createDirectories(tmpDirectoryPath);
+		}
 
-		HttpResponse<Path> httpResponse = HttpTestUtils.basicHttpOkResponse(pathMock, null, null);
+		try (MockedStatic<HttpUtils> utilities = Mockito.mockStatic(HttpUtils.class);
+			MockedStatic<File> fileMocked = Mockito.mockStatic(File.class)) {
+			utilities.when(() -> HttpUtils.downloadFromPreSignedUrl(Mockito.isA(URI.class), Mockito.isA(Path.class)))
+				.thenAnswer(i -> null);
+			fileMocked.when(() -> File.createTempFile(
+					Mockito.eq("sendLegalFactDownload-%s-".formatted(legalFactId)),
+					Mockito.eq(".tmp"),
+					Mockito.eq(Path.of(FetchSendLegalFactActivityImpl.TMP_DIRECTORY_PATH_STRING).toFile()))
+				).thenCallRealMethod();
 
-		try (MockedStatic<HttpUtils> utilities = Mockito.mockStatic(HttpUtils.class)) {
-			utilities.when(() -> HttpUtils.fetchFromPreSignedUrl(Mockito.isA(URI.class), Mockito.isA(Path.class)))
-					.thenReturn(httpResponse);
+			ArgumentCaptor<File> fileArgumentCaptor = ArgumentCaptor.forClass(File.class);
 
 			Mockito.when(sendServiceMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
 				.thenReturn(legalFactDownloadMetadataDTO);
-			Mockito.doNothing().when(sendNotificationServiceMock)
-				.uploadSendLegalFact(sendNotificationId, category, legalFactId, fileMock);
 
 			//WHEN
 			fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(
@@ -133,19 +134,27 @@ class FetchSendLegalFactActivityImplTest {
 				category,
 				legalFactId
 			);
-		}
 
-		//THEN
-		Mockito.verify(sendServiceMock).retrieveLegalFactDownloadMetadata(
-			sendNotificationId,
-			legalFactId
-		);
-		Mockito.verify(sendNotificationServiceMock).uploadSendLegalFact(
-			sendNotificationId,
-			category,
-			legalFactId,
-			pathMock.toFile()
-		);
+			//THEN
+			fileMocked.verify(
+					() -> File.createTempFile(
+							Mockito.eq("sendLegalFactDownload-%s-".formatted(legalFactId)),
+							Mockito.eq(".tmp"),
+							fileArgumentCaptor.capture()
+					)
+			);
+
+			Mockito.verify(sendServiceMock).retrieveLegalFactDownloadMetadata(
+				sendNotificationId,
+				legalFactId
+			);
+			Mockito.verify(sendNotificationServiceMock).uploadSendLegalFact(
+				Mockito.eq(sendNotificationId),
+				Mockito.eq(category),
+				Mockito.eq(legalFactId),
+				fileArgumentCaptor.capture()
+			);
+		}
 	}
 
 }

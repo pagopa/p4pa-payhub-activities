@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -20,6 +19,8 @@ import java.nio.file.Path;
 @Component
 @Lazy
 public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivity {
+
+	public static final String TMP_DIRECTORY_PATH_STRING = "send-legal-facts-tmp-directory";
 
 	private final SendService sendService;
 	private final SendNotificationService sendNotificationService;
@@ -40,10 +41,14 @@ public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivit
 			return;
 		}
 		String preSignedUrl = legalFactDownloadMetadataDTO.getUrl();
-		File tempFile = File.createTempFile("sendLegalFactDownload-%s-".formatted(legalFactId), ".tmp", new File("/mySecureDirectory"));
+		Path tmpDirectoryPath = Path.of(TMP_DIRECTORY_PATH_STRING);
+		if(!tmpDirectoryPath.toFile().exists()) {
+			Files.createDirectories(tmpDirectoryPath);
+		}
+		File tempFile = File.createTempFile("sendLegalFactDownload-%s-".formatted(legalFactId), ".tmp", tmpDirectoryPath.toFile());
 		try {
-			HttpResponse<Path> legalFactsPathHttpResponse = HttpUtils.fetchFromPreSignedUrl(URI.create(preSignedUrl), tempFile.toPath());
-			sendNotificationService.uploadSendLegalFact(sendNotificationId, category, legalFactId, legalFactsPathHttpResponse.body().toFile());
+			HttpUtils.downloadFromPreSignedUrl(URI.create(preSignedUrl), tempFile.toPath());
+			sendNotificationService.uploadSendLegalFact(sendNotificationId, category, legalFactId, tempFile);
 		} finally {
 			Files.deleteIfExists(tempFile.toPath());
 		}
