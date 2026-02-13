@@ -15,10 +15,11 @@ public interface FetchSendLegalFactActivity {
 	/**
 	 * Fetch SEND Legal Fact.
 	 *
-	 * @param sendNotificationId the ID of send notification
+	 * @param notificationRequestId the ID of send notification request
+	 * @param category the LegalFactCategoryDTO of the send legal fact
 	 * @param legalFactId the ID of send legal fact
 	 */
 	@ActivityMethod
-	void downloadAndCacheSendLegalFact(String sendNotificationId, LegalFactCategoryDTO category, String legalFactId) throws IOException;
+	void downloadAndCacheSendLegalFact(String notificationRequestId, LegalFactCategoryDTO category, String legalFactId) throws IOException;
 
 }

@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.util.HttpUtils;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,14 @@ public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivit
 	}
 
 	@Override
-	public void downloadAndCacheSendLegalFact(String sendNotificationId, LegalFactCategoryDTO category, String legalFactId) throws IOException {
+	public void downloadAndCacheSendLegalFact(String notificationRequestId, LegalFactCategoryDTO category, String legalFactId) throws IOException {
+		SendNotificationDTO sendNotificationDTO = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
+		if(sendNotificationDTO == null) {
+			String formattedErrorMessage = "Error in fetching SEND notification by notificationRequestId %s".formatted(notificationRequestId);
+			log.error(formattedErrorMessage);
+			return;
+		}
+		String sendNotificationId = sendNotificationDTO.getSendNotificationId();
 		LegalFactDownloadMetadataDTO legalFactDownloadMetadataDTO =
 				sendService.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId);
 		if(legalFactDownloadMetadataDTO == null || legalFactDownloadMetadataDTO.getUrl() == null) {
