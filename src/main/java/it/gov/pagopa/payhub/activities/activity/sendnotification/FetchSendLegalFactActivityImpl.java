@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +22,16 @@ import java.nio.file.Path;
 @Lazy
 public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivity {
 
-	public static final String TMP_DIRECTORY_PATH_STRING = "tmp";
-
 	private final SendService sendService;
 	private final SendNotificationService sendNotificationService;
 
-	public FetchSendLegalFactActivityImpl(SendService sendService, SendNotificationService sendNotificationService) {
+	private final Path tempDirectoryPath;
+
+	public FetchSendLegalFactActivityImpl(
+			@Value("${folders.tmp}") String tempFolder,
+			SendService sendService,
+			SendNotificationService sendNotificationService) {
+		this.tempDirectoryPath = Path.of(tempFolder);
 		this.sendService = sendService;
 		this.sendNotificationService = sendNotificationService;
 	}
@@ -49,11 +54,15 @@ public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivit
 			return;
 		}
 		String preSignedUrl = legalFactDownloadMetadataDTO.getUrl();
-		Path tmpDirectoryPath = Path.of(TMP_DIRECTORY_PATH_STRING);
-		if(!tmpDirectoryPath.toFile().exists()) {
-			Files.createDirectories(tmpDirectoryPath);
+		Path tmpTargetDirPath = tempDirectoryPath
+				.resolve(String.valueOf(sendNotificationDTO.getOrganizationId()))
+				.resolve("send-legal-fact");
+
+		if (!Files.exists(tmpTargetDirPath)) {
+			Files.createDirectories(tmpTargetDirPath);
 		}
-		File tempFile = File.createTempFile("sendLegalFactDownload-%s-".formatted(legalFactId), ".tmp", tmpDirectoryPath.toFile());
+
+		File tempFile = File.createTempFile("sendLegalFactDownload-%s-".formatted(legalFactId), ".tmp", tmpTargetDirPath.toFile());
 		try {
 			HttpUtils.downloadFromPreSignedUrl(URI.create(preSignedUrl), tempFile.toPath());
 			sendNotificationService.uploadSendLegalFact(sendNotificationId, category, legalFactId, tempFile);
