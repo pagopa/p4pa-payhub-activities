@@ -120,6 +120,11 @@ class HttpUtilsTest {
             HttpUtils.downloadFromPreSignedUrl(uri, path);
 
             //THEN
+            Mockito.verify(httpClientMock)
+                .execute(
+                    Mockito.isA(HttpGet.class),
+                    Mockito.eq(classicHttpResponseArgumentCaptor.getValue())
+                );
         }
     }
 

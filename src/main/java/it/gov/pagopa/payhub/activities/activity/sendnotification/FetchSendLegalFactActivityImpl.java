@@ -21,7 +21,7 @@ import java.nio.file.Path;
 @Lazy
 public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivity {
 
-	public static final String TMP_DIRECTORY_PATH_STRING = "send-legal-facts-tmp-directory";
+	public static final String TMP_DIRECTORY_PATH_STRING = "tmp";
 
 	private final SendService sendService;
 	private final SendNotificationService sendNotificationService;
