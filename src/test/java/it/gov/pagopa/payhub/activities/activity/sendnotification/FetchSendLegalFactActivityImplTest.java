@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.util.HttpUtils;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,18 +38,58 @@ class FetchSendLegalFactActivityImplTest {
 	}
 
 	@Test
-	void givenNullLegalFactDownloadMetadataDTOWhenDownloadAndCacheSendLegalFactThenReturn() throws IOException {
+	void givenNullSendNotificationDTOWhenDownloadAndCacheSendLegalFactThenReturn() throws IOException {
 		//GIVEN
+		String notificationRequestId = "notificationRequestId";
 		String sendNotificationId = "sendNotificationId";
 		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
 		String legalFactId = "sendLegalFact.pdf";
 
+		SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+		sendNotificationDTO.setSendNotificationId(sendNotificationId);
+
+		Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId))
+				.thenReturn(null);
+
+		//WHEN
+		fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(
+				notificationRequestId,
+				category,
+				legalFactId
+		);
+
+		//THEN
+		Mockito.verify(sendServiceMock, Mockito.times(0)).retrieveLegalFactDownloadMetadata(
+				sendNotificationId,
+				legalFactId
+		);
+		Mockito.verify(sendNotificationServiceMock, Mockito.times(0)).uploadSendLegalFact(
+				sendNotificationId,
+				category,
+				legalFactId,
+				null
+		);
+	}
+
+	@Test
+	void givenNullLegalFactDownloadMetadataDTOWhenDownloadAndCacheSendLegalFactThenReturn() throws IOException {
+		//GIVEN
+		String notificationRequestId = "notificationRequestId";
+		String sendNotificationId = "sendNotificationId";
+		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
+		String legalFactId = "sendLegalFact.pdf";
+
+		SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+		sendNotificationDTO.setSendNotificationId(sendNotificationId);
+
+		Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId))
+				.thenReturn(sendNotificationDTO);
 		Mockito.when(sendServiceMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
 			.thenReturn(null);
 
 		//WHEN
 		fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(
-			sendNotificationId,
+			notificationRequestId,
 			category,
 			legalFactId
 		);
@@ -69,18 +110,24 @@ class FetchSendLegalFactActivityImplTest {
 	@Test
 	void givenNullPreSignedUrlWhenDownloadAndCacheSendLegalFactThenReturn() throws IOException {
 		//GIVEN
+		String notificationRequestId = "notificationRequestId";
 		String sendNotificationId = "sendNotificationId";
 		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
 		String legalFactId = "sendLegalFact.pdf";
 
 		LegalFactDownloadMetadataDTO legalFactDownloadMetadataDTO = new LegalFactDownloadMetadataDTO();
 
+		SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+		sendNotificationDTO.setSendNotificationId(sendNotificationId);
+
+		Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId))
+				.thenReturn(sendNotificationDTO);
 		Mockito.when(sendServiceMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
 				.thenReturn(legalFactDownloadMetadataDTO);
 
 		//WHEN
 		fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(
-				sendNotificationId,
+				notificationRequestId,
 				category,
 				legalFactId
 		);
@@ -101,6 +148,7 @@ class FetchSendLegalFactActivityImplTest {
 	@Test
 	void givenCorrectPreSignedUrlWhenDownloadAndCacheSendLegalFactThenReturnOk() throws IOException {
 		//GIVEN
+		String notificationRequestId = "notificationRequestId";
 		String sendNotificationId = "sendNotificationId";
 		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
 		String legalFactId = "sendLegalFact.pdf";
@@ -125,12 +173,17 @@ class FetchSendLegalFactActivityImplTest {
 
 			ArgumentCaptor<File> fileArgumentCaptor = ArgumentCaptor.forClass(File.class);
 
+			SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+			sendNotificationDTO.setSendNotificationId(sendNotificationId);
+
+			Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId))
+					.thenReturn(sendNotificationDTO);
 			Mockito.when(sendServiceMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
 				.thenReturn(legalFactDownloadMetadataDTO);
 
 			//WHEN
 			fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(
-				sendNotificationId,
+				notificationRequestId,
 				category,
 				legalFactId
 			);
