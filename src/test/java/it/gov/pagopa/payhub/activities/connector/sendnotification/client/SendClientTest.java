@@ -3,8 +3,10 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -133,6 +135,31 @@ class SendClientTest {
 
         // Then
         Mockito.verify(notificationApi).getSendNotificationByNotificationRequestId(notificationRequestId);
+    }
+
+    @Test
+    void givenValidRequestWhenRetrieveLegalFactDownloadMetadataThenOk() {
+        //Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+        String legalFactId = "fileName.pdf";
+
+        LegalFactDownloadMetadataDTO expectedResult = new LegalFactDownloadMetadataDTO();
+
+        Mockito.when(sendApisHolderMock.getSendApi(accessToken))
+                .thenReturn(sendApiMock);
+        Mockito.when(sendApiMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
+                .thenReturn(expectedResult);
+
+        //When
+        LegalFactDownloadMetadataDTO actualResult = sendClient.retrieveLegalFactDownloadMetadata(
+                sendNotificationId,
+                legalFactId,
+                accessToken
+        );
+
+        //Then
+        Assertions.assertSame(expectedResult, actualResult);
     }
 
 }

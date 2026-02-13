@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -155,4 +156,39 @@ class SendNotificationServiceTest {
         Assertions.assertEquals(expectedResult, result);
     }
 
+    @Test
+    void givenValidRequestWhenUploadSendLegalFactThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+        LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
+        String fileName = "legalFactFile.pdf";
+        File legalFactFile = Mockito.mock(File.class);
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.doNothing().when(clientMock).uploadSendLegalFact(
+                sendNotificationId,
+                category,
+                fileName,
+                legalFactFile,
+                accessToken
+        );
+
+        // When
+        service.uploadSendLegalFact(
+                sendNotificationId,
+                category,
+                fileName,
+                legalFactFile
+        );
+
+        // Then
+        Mockito.verify(clientMock).uploadSendLegalFact(
+                sendNotificationId,
+                category, fileName,
+                legalFactFile,
+                accessToken
+        );
+    }
 }
