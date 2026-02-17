@@ -40,8 +40,11 @@ public class DebtPositionTypeOrgIngestionFlowFileDTO {
     @CsvBindByName(column = "settoreOrganizzazione")
     private String orgSector;
 
-    @CsvBindByName(column = "rifDefinizioneXsd")
-    private String xsdDefinitionRef;
+    @CsvBindByName(column = "codicePagamentoSpontaneo")
+    private String spontaneousFormCode;
+
+    @CsvBindByName(column = "strutturaPagamentoSpontaneo")
+    private String spontaneousFormStructure;
 
     @CsvBindByName(column = "importoCentesimi")
     private Long amountCents;
