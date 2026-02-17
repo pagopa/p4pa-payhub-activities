@@ -163,6 +163,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
                         .map(e -> buildCsvGenericErrorDto(ingestionFlowFile, e))
                         .toList()
         );
+        Mockito.verify(getErrorsArchiverServiceMock()).archiveErrorFiles(workingDirectory, ingestionFlowFile);
     }
 
     protected List<CsvException> buildReaderExceptions() {
@@ -218,6 +219,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
                         unhappyUseCases.stream().flatMap(p -> p.getRight().stream())
                 ).toList()
         );
+        Mockito.verify(getErrorsArchiverServiceMock()).archiveErrorFiles(workingDirectory, ingestionFlowFile);
     }
 
     private E buildCsvGenericErrorDto(IngestionFlowFile ingestionFlowFile, CsvException csvException) {
