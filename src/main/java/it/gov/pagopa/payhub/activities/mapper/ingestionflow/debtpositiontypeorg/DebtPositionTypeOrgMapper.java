@@ -29,7 +29,6 @@ public class DebtPositionTypeOrgMapper {
         .postalAccountCode(dto.getPostalAccountCode())
         .holderPostalCc(dto.getHolderPostalCc())
         .orgSector(dto.getOrgSector())
-        .xsdDefinitionRef(dto.getXsdDefinitionRef())
         .amountCents(dto.getAmountCents())
         .externalPaymentUrl(dto.getExternalPaymentUrl())
         .flagAnonymousFiscalCode(dto.isFlagAnonymousFiscalCode())
