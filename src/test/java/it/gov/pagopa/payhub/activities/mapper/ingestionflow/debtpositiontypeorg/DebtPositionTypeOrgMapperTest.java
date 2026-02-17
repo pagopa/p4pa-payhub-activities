@@ -54,7 +54,7 @@ class DebtPositionTypeOrgMapperTest {
     Assertions.assertEquals(111L, result.getNotifyOutcomePushOrgSilServiceId());
     Assertions.assertEquals(222L, result.getAmountActualizationOrgSilServiceId());
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "debtPositionTypeOrgId", "spontaneousFormId");
+        "updateTraceId", "debtPositionTypeOrgId", "spontaneousFormId", "allowedEntityType");
   }
 
 }

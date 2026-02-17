@@ -240,4 +240,22 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
             new ParameterizedTypeReference<>() {},
             debtPositionApisHolder::unload);
     }
+
+    @Test
+    void whenGetSpontaneousFormApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> debtPositionApisHolder.getSpontaneousFormApi(accessToken)
+                .createSpontaneousForm(new SpontaneousForm()),
+            new ParameterizedTypeReference<>() {},
+            debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetSpontaneousFormSearchControllerApiThenAuthenticationShouldBeSetInThreadSafe() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+            accessToken -> debtPositionApisHolder.getSpontaneousFormSearchControllerApi(accessToken)
+                .crudSpontaneousFormsFindByOrganizationIdAndCode(1L, "code"),
+            new ParameterizedTypeReference<>() {},
+            debtPositionApisHolder::unload);
+    }
 }

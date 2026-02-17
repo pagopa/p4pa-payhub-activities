@@ -31,6 +31,8 @@ public class DebtPositionApisHolder {
     private final PaymentOptionEntityExtendedControllerApi paymentOptionEntityExtendedControllerApi;
     private final DebtPositionTypeEntityControllerApi debtPositionTypeEntityControllerApi;
     private final DebtPositionTypeSearchControllerApi debtPositionTypeSearchControllerApi;
+    private final SpontaneousFormApi spontaneousFormApi;
+    private final SpontaneousFormSearchControllerApi spontaneousFormSearchControllerApi;
 
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
@@ -68,6 +70,8 @@ public class DebtPositionApisHolder {
         this.paymentOptionEntityExtendedControllerApi = new PaymentOptionEntityExtendedControllerApi(apiClient);
         this.debtPositionTypeEntityControllerApi = new DebtPositionTypeEntityControllerApi(apiClient);
         this.debtPositionTypeSearchControllerApi = new DebtPositionTypeSearchControllerApi(apiClient);
+        this.spontaneousFormApi = new SpontaneousFormApi(apiClient);
+        this.spontaneousFormSearchControllerApi = new SpontaneousFormSearchControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -149,6 +153,14 @@ public class DebtPositionApisHolder {
 
     public DebtPositionTypeSearchControllerApi getDebtPositionTypeSearchControllerApi(String accessToken) {
         return getApi(accessToken, null, debtPositionTypeSearchControllerApi);
+    }
+
+    public SpontaneousFormApi getSpontaneousFormApi(String accessToken) {
+        return getApi(accessToken, null, spontaneousFormApi);
+    }
+
+    public SpontaneousFormSearchControllerApi getSpontaneousFormSearchControllerApi(String accessToken) {
+        return getApi(accessToken, null, spontaneousFormSearchControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, String mappedExternalUserId, T api) {
