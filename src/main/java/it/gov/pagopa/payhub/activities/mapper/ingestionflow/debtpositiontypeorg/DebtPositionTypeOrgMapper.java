@@ -16,7 +16,7 @@ public class DebtPositionTypeOrgMapper {
         this.orgSilServiceService = orgSilServiceService;
     }
 
-    public DebtPositionTypeOrgRequestBody map(DebtPositionTypeOrgIngestionFlowFileDTO dto,Long debtPositionTypeId, Long organizationId) {
+    public DebtPositionTypeOrgRequestBody map(DebtPositionTypeOrgIngestionFlowFileDTO dto,Long debtPositionTypeId, Long organizationId, Long spontaneousFormId) {
 
     return DebtPositionTypeOrgRequestBody.builder()
         .debtPositionTypeId(debtPositionTypeId)
@@ -44,6 +44,7 @@ public class DebtPositionTypeOrgMapper {
         .notifyOutcomePushOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.PAID_NOTIFICATION_OUTCOME,dto.getNotifyOutcomePushOrgSilServiceCode()))
         .amountActualizationOrgSilServiceId(getOrgSilServiceId(organizationId, OrgSilServiceType.ACTUALIZATION,dto.getAmountActualizationOrgSilServiceCode()))
         .serviceId(dto.getServiceCode())
+        .spontaneousFormId(spontaneousFormId)
         .build();
   }
 
