@@ -139,20 +139,43 @@ class SendNotificationServiceTest {
         String accessToken = "ACCESSTOKEN";
         Long organizationId = 1L;
         String streamId = "streamId";
-        String lastEventId = "lastEventId";
 
         List<ProgressResponseElementV25DTO> expectedResult = List.of(new ProgressResponseElementV25DTO());
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(clientMock.readSendStreamEvents(organizationId, streamId, lastEventId, accessToken))
+        Mockito.when(clientMock.readSendStreamEvents(organizationId, streamId, accessToken))
                 .thenReturn(expectedResult);
 
         // When
-        List<ProgressResponseElementV25DTO> result = service.readSendStreamEvents(organizationId, streamId, lastEventId);
+        List<ProgressResponseElementV25DTO> result = service.readSendStreamEvents(organizationId, streamId);
 
         // Then
         Assertions.assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void givenValidRequestWhenUpdateLastProcessedStreamEventIdThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String streamId = "streamId";
+        String lastEventId = "lastEventId";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.doNothing()
+                .when(clientMock).updateLastProcessedStreamEventId(streamId, lastEventId, accessToken);
+
+        // When
+        service.updateLastProcessedStreamEventId(streamId, lastEventId);
+
+        // Then
+        Mockito.verify(clientMock)
+                .updateLastProcessedStreamEventId(
+                    streamId,
+                    lastEventId,
+                    accessToken
+                );
     }
 
 }
