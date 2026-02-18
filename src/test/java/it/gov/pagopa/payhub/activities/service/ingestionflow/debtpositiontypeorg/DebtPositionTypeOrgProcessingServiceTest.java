@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtpositiontypeor
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileResult;
@@ -12,6 +11,7 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg.
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform.SpontaneousFormHandlerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -46,7 +45,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
     @Mock
     private DebtPositionTypeService debtPositionTypeServiceMock;
     @Mock
-    private SpontaneousFormService spontaneousFormServiceMock;
+    private SpontaneousFormHandlerService spontaneousFormHandlerServiceMock;
 
     private DebtPositionTypeOrgProcessingService serviceSpy;
 
@@ -64,7 +63,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                 debtPositionTypeOrgServiceMock,
                 debtPositionTypeServiceMock,
                 organizationServiceMock,
-                spontaneousFormServiceMock,
+                spontaneousFormHandlerServiceMock,
                 fileExceptionHandlerService
         ));
     }
@@ -76,8 +75,8 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                 errorsArchiverServiceMock,
                 debtPositionTypeOrgServiceMock,
                 debtPositionTypeServiceMock,
-                spontaneousFormServiceMock,
-                organizationServiceMock
+                organizationServiceMock,
+                spontaneousFormHandlerServiceMock
         );
     }
 
@@ -99,18 +98,15 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
     @Override
     protected DebtPositionTypeOrgIngestionFlowFileDTO buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber) {
         long dpTypeId = 10L * sequencingId;
+        Long spontaneousFormId = 100L * sequencingId;
 
-        SpontaneousFormStructure spontaneousFormStructure = podamFactory.manufacturePojo(SpontaneousFormStructure.class);
         DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         dto.setIpaCode(organization.getIpaCode());
         dto.setCode("CODE" + sequencingId);
-        dto.setSpontaneousFormCode("SF_CODE" + sequencingId);
-        dto.setSpontaneousFormStructure(new JsonMapper().writeValueAsString(spontaneousFormStructure));
 
         DebtPositionTypeOrgRequestBody mappedDebtPosType = podamFactory.manufacturePojo(DebtPositionTypeOrgRequestBody.class);
         DebtPositionTypeOrg createdDebtPosType = podamFactory.manufacturePojo(DebtPositionTypeOrg.class);
 
-        long spontaneousFormId;
         if (!sequencingIdAlreadySent) {
             DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
             dpType.setDebtPositionTypeId(dpTypeId);
@@ -127,13 +123,11 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
             Mockito.doReturn(null)
                     .when(debtPositionTypeOrgServiceMock)
                     .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
-
-            spontaneousFormId = configureSpontaneousFormMocks(dto, rowNumber % 2 == 0);
-        } else {
-            // Reuse the spontaneousFormId from the first occurrence of this sequencingId
-            // The actual value doesn't matter as the mapper mock will be configured with it
-            spontaneousFormId = 1L;
         }
+
+        Mockito.doReturn(spontaneousFormId)
+                .when(spontaneousFormHandlerServiceMock)
+                .handleSpontaneousForm(ingestionFlowFile.getOrganizationId(), dto);
 
         Mockito.doReturn(mappedDebtPosType)
                 .when(mapperMock)
@@ -151,71 +145,8 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                 configureUnhappyUseCaseIpaMissmatch(ingestionFlowFile, ++previousRowNumber),
                 configureUnhappyUseCaseAlreadyExists(ingestionFlowFile, ++previousRowNumber),
                 configureUnhappyUseCaseDPTypeNotFound(ingestionFlowFile, ++previousRowNumber),
-                configureUnhappyUseCaseJsonParsingException(ingestionFlowFile, ++previousRowNumber)
+                configureUnhappyUseCaseSpontaneousFormParsingError(ingestionFlowFile, ++previousRowNumber)
         );
-    }
-
-    private long configureSpontaneousFormMocks(DebtPositionTypeOrgIngestionFlowFileDTO dto, boolean useExistingForm) {
-        SpontaneousForm form;
-
-        if (useExistingForm) {
-            // Configure existing form scenario
-            form = podamFactory.manufacturePojo(SpontaneousForm.class);
-            form.setSpontaneousFormId(1L); // Ensure ID is not null
-            Mockito.doReturn(form)
-                .when(spontaneousFormServiceMock)
-                .findByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getSpontaneousFormCode());
-        } else {
-            // Configure new form creation scenario
-            Mockito.doReturn(null)
-                .when(spontaneousFormServiceMock)
-                .findByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getSpontaneousFormCode());
-
-            form = podamFactory.manufacturePojo(SpontaneousForm.class);
-            form.setSpontaneousFormId(2L); // Ensure ID is not null
-            Mockito.doReturn(form)
-                .when(spontaneousFormServiceMock)
-                .createSpontaneousForm(Mockito.any());
-        }
-        Long spontaneousFormId = form.getSpontaneousFormId();
-        Assertions.assertNotNull(spontaneousFormId, "SpontaneousFormId should not be null in this scenario");
-        return spontaneousFormId;
-    }
-
-    private Pair<DebtPositionTypeOrgIngestionFlowFileDTO, List<DebtPositionTypeOrgErrorDTO>> configureUnhappyUseCaseJsonParsingException(IngestionFlowFile ingestionFlowFile, long rowNumber) {
-        DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
-        dto.setIpaCode(organization.getIpaCode());
-        dto.setSpontaneousFormStructure("INVALID_STRUCTURE");
-
-        // Mock that DebtPositionTypeOrg doesn't exist yet
-        Mockito.doReturn(null)
-                .when(debtPositionTypeOrgServiceMock)
-                .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
-
-        // Mock that DebtPositionType exists (so we can reach the JSON parsing code)
-        DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
-        dpType.setDebtPositionTypeId(999L);
-        CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
-                .embedded(PagedModelDebtPositionTypeEmbedded.builder()
-                        .debtPositionTypes(List.of(dpType))
-                        .build())
-                .build();
-        Mockito.doReturn(existingCollectionModel)
-                .when(debtPositionTypeServiceMock)
-                .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
-
-        List<DebtPositionTypeOrgErrorDTO> expectedErrors = List.of(
-                DebtPositionTypeOrgErrorDTO.builder()
-                        .fileName(ingestionFlowFile.getFileName())
-                        .rowNumber(rowNumber)
-                        .errorCode(FileErrorCode.SPONTANEOUS_FORM_PARSING_ERROR.name())
-                        .errorMessage(FileErrorCode.SPONTANEOUS_FORM_PARSING_ERROR.getMessage().formatted(dto.getSpontaneousFormCode()))
-                        .debtPositionTypeCode(dto.getCode())
-                        .organizationId(ingestionFlowFile.getOrganizationId())
-                        .build()
-        );
-
-        return Pair.of(dto, expectedErrors);
     }
 
     private Pair<DebtPositionTypeOrgIngestionFlowFileDTO, List<DebtPositionTypeOrgErrorDTO>> configureUnhappyUseCaseAlreadyExists(IngestionFlowFile ingestionFlowFile, long rowNumber) {
@@ -277,6 +208,45 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                         .rowNumber(rowNumber)
                         .errorCode(FileErrorCode.ORGANIZATION_IPA_MISMATCH.name())
                         .errorMessage(FileErrorCode.ORGANIZATION_IPA_MISMATCH.getMessage().formatted(dto.getIpaCode(), organization.getIpaCode()))
+                        .debtPositionTypeCode(dto.getCode())
+                        .organizationId(ingestionFlowFile.getOrganizationId())
+                        .build()
+        );
+
+        return Pair.of(dto, expectedErrors);
+    }
+
+    private Pair<DebtPositionTypeOrgIngestionFlowFileDTO, List<DebtPositionTypeOrgErrorDTO>> configureUnhappyUseCaseSpontaneousFormParsingError(IngestionFlowFile ingestionFlowFile, long rowNumber) {
+        DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        dto.setIpaCode(organization.getIpaCode());
+
+        Mockito.doReturn(null)
+                .when(debtPositionTypeOrgServiceMock)
+                .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
+
+        DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
+        dpType.setDebtPositionTypeId(999L);
+
+        CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
+                .embedded(PagedModelDebtPositionTypeEmbedded.builder()
+                        .debtPositionTypes(List.of(dpType))
+                        .build())
+                .build();
+        Mockito.doReturn(existingCollectionModel)
+                .when(debtPositionTypeServiceMock)
+                .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
+
+        String exceptionMessage = "Error parsing JSON for spontaneous form";
+        Mockito.doThrow(new RuntimeException(exceptionMessage))
+                .when(spontaneousFormHandlerServiceMock)
+                .handleSpontaneousForm(ingestionFlowFile.getOrganizationId(), dto);
+
+        List<DebtPositionTypeOrgErrorDTO> expectedErrors = List.of(
+                DebtPositionTypeOrgErrorDTO.builder()
+                        .fileName(ingestionFlowFile.getFileName())
+                        .rowNumber(rowNumber)
+                        .errorCode(FileErrorCode.SPONTANEOUS_FORM_PARSING_ERROR.name())
+                        .errorMessage(exceptionMessage)
                         .debtPositionTypeCode(dto.getCode())
                         .organizationId(ingestionFlowFile.getOrganizationId())
                         .build()
