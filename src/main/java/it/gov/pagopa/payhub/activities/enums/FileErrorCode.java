@@ -111,6 +111,7 @@ public enum FileErrorCode {
     DEBT_POSITION_TYPE_ORG_BY_CODE_NOT_FOUND("Il tipo posizione debitoria impostato con codice %s non e' stato trovato per l'ente"),
     INVALID_DEBT_POSITION_TYPE_ORG_CODE("Il tipo posizione debitoria impostato non e' valido per l'ente"),
     DEBT_POSITION_TYPE_ORG_UNAUTHORIZED("L'operatore non e' abilitato al tipo posizione debitoria impostato"),
+    SPONTANEOUS_FORM_PARSING_ERROR("Errore durante il parsing del JSON della form spontanea con codice %s"),
 
     //classification
     ASSESSMENTS_REGISTRY_ALREADY_EXISTS("Il registro degli accertamenti esiste gia'"),

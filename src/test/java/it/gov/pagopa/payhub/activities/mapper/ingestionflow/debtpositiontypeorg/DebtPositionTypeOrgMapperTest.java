@@ -32,11 +32,11 @@ class DebtPositionTypeOrgMapperTest {
 
   @Test
   void givenDebtPositionTypeIngestionFlowFileWithPodamFactoryWhenMapThenOk() {
-    DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(
-            DebtPositionTypeOrgIngestionFlowFileDTO.class);
     Long debtPositionTypeId = 123L;
     Long organizationId = 456L;
-
+    Long spontaneousFormId = 789L;
+    DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(
+            DebtPositionTypeOrgIngestionFlowFileDTO.class);
     OrgSilService orgSilServicePaidNotificationOutcome = new OrgSilService();
     orgSilServicePaidNotificationOutcome.setOrgSilServiceId(111L);
     orgSilServicePaidNotificationOutcome.setApplicationName(dto.getNotifyOutcomePushOrgSilServiceCode());
@@ -48,13 +48,14 @@ class DebtPositionTypeOrgMapperTest {
     when(orgSilServiceServiceMock.getAllByOrganizationIdAndServiceType(organizationId, OrgSilServiceType.ACTUALIZATION))
         .thenReturn(Collections.singletonList(orgSilServiceActualization));
 
-    var result = debtPositionTypeMapper.map(dto, debtPositionTypeId, organizationId);
+    var result = debtPositionTypeMapper.map(dto, debtPositionTypeId, organizationId, spontaneousFormId);
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals(111L, result.getNotifyOutcomePushOrgSilServiceId());
     Assertions.assertEquals(222L, result.getAmountActualizationOrgSilServiceId());
+    Assertions.assertEquals(789L, result.getSpontaneousFormId());
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "debtPositionTypeOrgId", "spontaneousFormId", "allowedEntityType");
+        "updateTraceId", "debtPositionTypeOrgId", "allowedEntityType");
   }
 
 }
