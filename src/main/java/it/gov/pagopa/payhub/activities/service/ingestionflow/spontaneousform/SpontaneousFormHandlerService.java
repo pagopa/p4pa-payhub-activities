@@ -52,7 +52,7 @@ public class SpontaneousFormHandlerService {
 			return Optional.ofNullable(spontaneousFormService.createSpontaneousForm(newForm))
 				.map(SpontaneousForm::getSpontaneousFormId)
 				.orElse(null);
-		} catch (JacksonException e) {
+		} catch (IllegalArgumentException | JacksonException e) {
 			String errorMessage = "Error parsing spontaneous form JSON structure for code "+ row.getSpontaneousFormCode() + ": " + ExceptionUtils.getRootCauseMessage(e);
 			log.error(errorMessage, e);
 			throw new InvalidValueException(errorMessage);

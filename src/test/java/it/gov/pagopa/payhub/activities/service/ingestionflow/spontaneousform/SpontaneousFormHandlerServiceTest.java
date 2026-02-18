@@ -4,19 +4,17 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormSer
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
+import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousFormStructure;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,6 +54,7 @@ class SpontaneousFormHandlerServiceTest {
         SpontaneousForm existingForm = SpontaneousForm.builder()
             .spontaneousFormId(expectedId)
             .organizationId(organizationId)
+            .structure(new SpontaneousFormStructure())
             .code(code)
             .build();
 
@@ -86,6 +85,7 @@ class SpontaneousFormHandlerServiceTest {
         SpontaneousForm createdForm = SpontaneousForm.builder()
             .spontaneousFormId(expectedId)
             .organizationId(organizationId)
+            .structure(new SpontaneousFormStructure())
             .code(code)
             .build();
 
