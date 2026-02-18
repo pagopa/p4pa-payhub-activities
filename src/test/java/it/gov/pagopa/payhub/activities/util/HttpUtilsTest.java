@@ -3,29 +3,17 @@ package it.gov.pagopa.payhub.activities.util;
 import it.gov.pagopa.payhub.activities.config.rest.HttpClientConfig;
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.ConnectionConfig;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.function.Resolver;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.util.Timeout;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URI;
-import java.nio.file.Path;
 
 class HttpUtilsTest {
 
@@ -86,69 +74,5 @@ class HttpUtilsTest {
         Assertions.assertEquals(Timeout.ofMilliseconds(1_000), connectionConfig.getConnectTimeout());
         Assertions.assertEquals(Timeout.ofMilliseconds(3_000), connectionConfig.getSocketTimeout());
         Assertions.assertEquals(Timeout.ofMilliseconds(180_000), connectionConfig.getTimeToLive());
-    }
-
-    @Test
-    void givenCorrectRequestWhenDownloadFromPreSignedUrlThenOk() throws IOException {
-        //GIVEN
-        try (MockedStatic<HttpClients> httpClientStaticMock = Mockito.mockStatic(HttpClients.class);
-             CloseableHttpClient httpClientMock = Mockito.mock(CloseableHttpClient.class)) {
-
-            HttpClientBuilder httpClientBuilderMock = Mockito.mock(HttpClientBuilder.class);
-
-            httpClientStaticMock.when(HttpClients::custom)
-                    .thenReturn(httpClientBuilderMock);
-            Mockito.when(httpClientBuilderMock.setDefaultRequestConfig(Mockito.isA(RequestConfig.class)))
-                    .thenReturn(httpClientBuilderMock);
-            Mockito.when(httpClientBuilderMock.build())
-                    .thenReturn(httpClientMock);
-
-            ArgumentCaptor<HttpClientResponseHandler<ClassicHttpResponse>> classicHttpResponseArgumentCaptor =
-                    ArgumentCaptor.forClass(HttpClientResponseHandler.class);
-
-            Mockito.when(
-                httpClientMock.execute(
-                    Mockito.isA(HttpGet.class),
-                    classicHttpResponseArgumentCaptor.capture()
-                )
-            ).thenAnswer(i -> null);
-
-            URI uri = Mockito.mock(URI.class);
-            Path path = Path.of("./custom-tmp/testFile.txt");
-
-            //WHEN
-            HttpUtils.downloadFromPreSignedUrl(uri, path);
-
-            //THEN
-            Mockito.verify(httpClientMock)
-                .execute(
-                    Mockito.isA(HttpGet.class),
-                    Mockito.eq(classicHttpResponseArgumentCaptor.getValue())
-                );
-        }
-    }
-
-    @Test
-    void givenExceptionWhenDownloadFromPreSignedUrlThenThrowHttpPreSignedGetRequestException() {
-        //GIVEN
-        try (MockedStatic<HttpClients> httpClientStaticMock = Mockito.mockStatic(HttpClients.class)) {
-            httpClientStaticMock.when(HttpClients::custom)
-                    .thenThrow(new RuntimeException());
-
-            URI uri = Mockito.mock(URI.class);
-            Path path = Mockito.mock(Path.class);
-            Path fileNamePath = Path.of("fileName.txt");
-            Mockito.when(path.getFileName()).thenReturn(fileNamePath);
-
-            //WHEN
-            HttpUtils.HttpPreSignedGetRequestException httpPreSignedGetRequestException =
-                    Assertions.assertThrows(HttpUtils.HttpPreSignedGetRequestException.class, () -> HttpUtils.downloadFromPreSignedUrl(uri, path));
-
-            //THEN
-            Assertions.assertEquals(
-                "Error in downloading file %s".formatted(fileNamePath),
-                httpPreSignedGetRequestException.getMessage()
-            );
-        }
     }
 }

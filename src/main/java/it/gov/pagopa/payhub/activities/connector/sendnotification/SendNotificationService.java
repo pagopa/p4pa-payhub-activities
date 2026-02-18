@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 
-import java.io.File;
 import java.util.List;
 
 public interface SendNotificationService {
@@ -12,5 +11,4 @@ public interface SendNotificationService {
   StartNotificationResponse startSendNotification(String sendNotificationId, LoadFileRequest loadFileRequest);
   SendStreamDTO findSendStream(String sendStreamId);
   List<ProgressResponseElementV25DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String lastEventId);
-  void uploadSendLegalFact(String sendNotificationId, LegalFactCategoryDTO category, String fileName, File legalFactFile);
 }

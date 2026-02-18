@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.io.File;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -217,39 +216,6 @@ class SendNotificationClientTest {
 
         //Then
         Assertions.assertEquals(expectedResult, actualResult);
-    }
-
-    @Test
-    void givenValidRequestWhenUploadSendLegalFactThenOk() {
-        //Given
-        String accessToken = "ACCESSTOKEN";
-        String sendNotificationId = "sendNotificationId";
-        String fileName = "fileName.pdf";
-        File file = Mockito.mock(File.class);
-
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
-                .thenReturn(sendNotificationApiMock);
-        Mockito.doNothing()
-                .when(sendNotificationApiMock)
-                .uploadSendLegalFact(sendNotificationId, LegalFactCategoryDTO.ANALOG_DELIVERY, fileName, file);
-
-        //When
-        client.uploadSendLegalFact(
-                sendNotificationId,
-                LegalFactCategoryDTO.ANALOG_DELIVERY,
-                fileName,
-                file,
-                accessToken
-        );
-
-        //Then
-        Mockito.verify(sendNotificationApiMock)
-                .uploadSendLegalFact(
-                        sendNotificationId,
-                        LegalFactCategoryDTO.ANALOG_DELIVERY,
-                        fileName,
-                        file
-                );
     }
 
 }

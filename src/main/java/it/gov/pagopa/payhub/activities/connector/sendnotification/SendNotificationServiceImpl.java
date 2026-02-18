@@ -6,7 +6,6 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.List;
 
 @Lazy
@@ -48,10 +47,5 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     @Override
     public List<ProgressResponseElementV25DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String lastEventId) {
         return sendNotificationClient.readSendStreamEvents(organizationId, sendStreamId, lastEventId, authnService.getAccessToken());
-    }
-
-    @Override
-    public void uploadSendLegalFact(String sendNotificationId, LegalFactCategoryDTO category, String fileName, File legalFactFile) {
-        sendNotificationClient.uploadSendLegalFact(sendNotificationId, category, fileName, legalFactFile, authnService.getAccessToken());
     }
 }

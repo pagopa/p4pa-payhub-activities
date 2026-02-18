@@ -3,10 +3,9 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
-import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactDownloadMetadataDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -138,28 +137,38 @@ class SendClientTest {
     }
 
     @Test
-    void givenValidRequestWhenRetrieveLegalFactDownloadMetadataThenOk() {
+    void givenValidRequestWhenDownloadAndArchiveSendLegalFactThenOk() {
         //Given
         String accessToken = "ACCESSTOKEN";
-        String sendNotificationId = "sendNotificationId";
+        String notificationRequestId = "notificationRequestId";
+        LegalFactCategoryDTO legalFactCategory = LegalFactCategoryDTO.ANALOG_DELIVERY;
         String legalFactId = "fileName.pdf";
-
-        LegalFactDownloadMetadataDTO expectedResult = new LegalFactDownloadMetadataDTO();
 
         Mockito.when(sendApisHolderMock.getSendApi(accessToken))
                 .thenReturn(sendApiMock);
-        Mockito.when(sendApiMock.retrieveLegalFactDownloadMetadata(sendNotificationId, legalFactId))
-                .thenReturn(expectedResult);
+        Mockito.doNothing()
+                .when(sendApiMock)
+                .downloadAndArchiveSendLegalFact(
+                    notificationRequestId,
+                    legalFactCategory,
+                    legalFactId
+                );
 
         //When
-        LegalFactDownloadMetadataDTO actualResult = sendClient.retrieveLegalFactDownloadMetadata(
-                sendNotificationId,
+        sendClient.downloadAndArchiveSendLegalFact(
+                notificationRequestId,
+                legalFactCategory,
                 legalFactId,
                 accessToken
         );
 
         //Then
-        Assertions.assertSame(expectedResult, actualResult);
+        Mockito.verify(sendApiMock)
+                .downloadAndArchiveSendLegalFact(
+                    notificationRequestId,
+                        legalFactCategory,
+                    legalFactId
+                );
     }
 
 }
