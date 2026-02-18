@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositio
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
 import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -65,6 +66,22 @@ public class DebtPositionTypeOrgClient {
     public DebtPositionTypeOrg createDebtPositionTypeOrg(DebtPositionTypeOrgRequestBody debtPositionTypeOrgRequestBody, String accessToken) {
         return debtPositionApisHolder.getDebtPositionTypeOrgEntityApi(accessToken)
                 .crudCreateDebtpositiontypeorg(debtPositionTypeOrgRequestBody);
+    }
+
+    public SpontaneousForm findSpontaneousFormByOrganizationIdAndCode(Long organizationId, String code, String accessToken) {
+        try {
+            return debtPositionApisHolder.getSpontaneousFormSearchControllerApi(accessToken)
+                    .crudSpontaneousFormsFindByOrganizationIdAndCode(organizationId, code);
+        } catch (HttpClientErrorException.NotFound e) {
+            log.debug("SpontaneousForm not found for organizationId: {} and code: {}", organizationId, code);
+            return null;
+        }
+    }
+
+    public SpontaneousForm createSpontaneousForm(SpontaneousForm spontaneousForm, String accessToken) {
+        log.info("Creating SpontaneousForm with code: {}", spontaneousForm.getCode());
+        return debtPositionApisHolder.getSpontaneousFormApi(accessToken)
+                .createSpontaneousForm(spontaneousForm);
     }
 
 }
