@@ -236,8 +236,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                 .when(debtPositionTypeServiceMock)
                 .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
 
-        String exceptionMessage = "Error parsing JSON for spontaneous form";
-        Mockito.doThrow(new RuntimeException(exceptionMessage))
+        Mockito.doThrow(new RuntimeException("Error parsing JSON for spontaneous form"))
                 .when(spontaneousFormHandlerServiceMock)
                 .handleSpontaneousForm(ingestionFlowFile.getOrganizationId(), dto);
 
@@ -246,7 +245,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                         .fileName(ingestionFlowFile.getFileName())
                         .rowNumber(rowNumber)
                         .errorCode(FileErrorCode.SPONTANEOUS_FORM_PARSING_ERROR.name())
-                        .errorMessage(exceptionMessage)
+                        .errorMessage(FileErrorCode.SPONTANEOUS_FORM_PARSING_ERROR.getMessage().formatted(dto.getSpontaneousFormCode()))
                         .debtPositionTypeCode(dto.getCode())
                         .organizationId(ingestionFlowFile.getOrganizationId())
                         .build()
