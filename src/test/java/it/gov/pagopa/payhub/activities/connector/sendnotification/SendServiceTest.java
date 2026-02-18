@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -138,4 +139,41 @@ class SendServiceTest {
         // Then
         assertSame(expectedResponse, result);
     }
+
+    @Test
+    void givenValidRequestWhenUploadSendLegalFactThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String notificationRequestId = "notificationRequestId";
+        LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
+        String legalFactId = "legalFactFile.pdf";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.doNothing()
+                .when(sendClientMock)
+                .downloadAndArchiveSendLegalFact(
+                    notificationRequestId,
+                    category,
+                    legalFactId,
+                    accessToken
+                );
+
+        // When
+        sendService.downloadAndArchiveSendLegalFact(
+                notificationRequestId,
+                category,
+                legalFactId
+        );
+
+        // Then
+        Mockito.verify(sendClientMock)
+                .downloadAndArchiveSendLegalFact(
+                    notificationRequestId,
+                    category,
+                    legalFactId,
+                    accessToken
+                );
+    }
+
 }

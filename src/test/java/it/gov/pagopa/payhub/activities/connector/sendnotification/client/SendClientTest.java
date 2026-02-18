@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -133,6 +134,41 @@ class SendClientTest {
 
         // Then
         Mockito.verify(notificationApi).getSendNotificationByNotificationRequestId(notificationRequestId);
+    }
+
+    @Test
+    void givenValidRequestWhenDownloadAndArchiveSendLegalFactThenOk() {
+        //Given
+        String accessToken = "ACCESSTOKEN";
+        String notificationRequestId = "notificationRequestId";
+        LegalFactCategoryDTO legalFactCategory = LegalFactCategoryDTO.ANALOG_DELIVERY;
+        String legalFactId = "fileName.pdf";
+
+        Mockito.when(sendApisHolderMock.getSendApi(accessToken))
+                .thenReturn(sendApiMock);
+        Mockito.doNothing()
+                .when(sendApiMock)
+                .downloadAndArchiveSendLegalFact(
+                    notificationRequestId,
+                    legalFactCategory,
+                    legalFactId
+                );
+
+        //When
+        sendClient.downloadAndArchiveSendLegalFact(
+                notificationRequestId,
+                legalFactCategory,
+                legalFactId,
+                accessToken
+        );
+
+        //Then
+        Mockito.verify(sendApiMock)
+                .downloadAndArchiveSendLegalFact(
+                    notificationRequestId,
+                        legalFactCategory,
+                    legalFactId
+                );
     }
 
 }
