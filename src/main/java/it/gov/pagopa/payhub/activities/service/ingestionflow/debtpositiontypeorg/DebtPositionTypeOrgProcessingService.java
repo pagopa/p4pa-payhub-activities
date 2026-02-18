@@ -124,7 +124,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
 		    DebtPositionTypeOrgErrorDTO error = buildErrorDto(
 			    ingestionFlowFile, lineNumber, row,
 			    FileErrorCode.SPONTANEOUS_FORM_PARSING_ERROR.name(),
-			    e.getMessage());
+			    FileErrorCode.SPONTANEOUS_FORM_PARSING_ERROR.format(row.getSpontaneousFormCode()));
 		    return List.of(error);
 	    }
 
