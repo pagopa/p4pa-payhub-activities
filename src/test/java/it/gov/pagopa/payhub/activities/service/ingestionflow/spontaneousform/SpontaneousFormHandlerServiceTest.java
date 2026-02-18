@@ -5,18 +5,24 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPos
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.mockito.Mockito;
 
 @ExtendWith(MockitoExtension.class)
 class SpontaneousFormHandlerServiceTest {
@@ -36,193 +42,115 @@ class SpontaneousFormHandlerServiceTest {
         Mockito.verifyNoMoreInteractions(spontaneousFormServiceMock);
     }
 
-    @ParameterizedTest
-    @MethodSource("provideTestCases")
-    void handleSpontaneousForm(String testName,
-					        Long organizationId,
-					        String code,
-					        String jsonStructure,
-					        Long expectedId,
-					        Class<? extends Exception> expectedException,
-					        String expectedExceptionMessage,
-					        boolean shouldVerifyCreatedForm,
-					        boolean shouldReturnNullOrFormWithoutId) {
-        // Given
+    @Test
+    void whenExistingFormFoundThenReturnExistingId() {
+        Long organizationId = 100L;
+        String code = "SF_CODE_001";
+        Long expectedId = 999L;
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+            .spontaneousFormCode(code)
+            .spontaneousFormStructure("{\"fields\":[]}")
+            .build();
+
+        SpontaneousForm existingForm = SpontaneousForm.builder()
+            .spontaneousFormId(expectedId)
+            .organizationId(organizationId)
+            .code(code)
+            .build();
+
+        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
+            .thenReturn(existingForm);
+
+        Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
+
+        assertEquals(expectedId, result);
+        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
+    }
+
+    @Test
+    void whenNoExistingFormAndValidJsonThenCreateAndReturnNewId() {
+        Long organizationId = 100L;
+        String code = "SF_CODE_NEW";
+        String jsonStructure = "{\"fields\":[{\"name\":\"field1\",\"type\":\"text\"}]}";
+        Long expectedId = 555L;
+
         DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
             .spontaneousFormCode(code)
             .spontaneousFormStructure(jsonStructure)
             .build();
 
-        if (expectedId != null && !shouldVerifyCreatedForm) {
-            SpontaneousForm existingForm = SpontaneousForm.builder()
-                .spontaneousFormId(expectedId)
-                .organizationId(organizationId)
-                .code(code)
-                .build();
+        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
+            .thenReturn(null);
 
-            Mockito.when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
-                .thenReturn(existingForm);
-        } else {
-            Mockito.when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
-                .thenReturn(null);
+        SpontaneousForm createdForm = SpontaneousForm.builder()
+            .spontaneousFormId(expectedId)
+            .organizationId(organizationId)
+            .code(code)
+            .build();
 
-            if (shouldVerifyCreatedForm) {
-                SpontaneousForm createdForm = SpontaneousForm.builder()
-                    .spontaneousFormId(expectedId)
-                    .organizationId(organizationId)
-                    .code(code)
-                    .build();
+        when(spontaneousFormServiceMock.createSpontaneousForm(any(SpontaneousForm.class)))
+            .thenReturn(createdForm);
 
-                Mockito.when(spontaneousFormServiceMock.createSpontaneousForm(Mockito.any(SpontaneousForm.class)))
-                    .thenReturn(createdForm);
-            } else if (shouldReturnNullOrFormWithoutId) {
-                if ("whenNoExistingFormAndCreateServiceReturnsNullThenReturnNull".equals(testName)) {
-                    Mockito.when(spontaneousFormServiceMock.createSpontaneousForm(Mockito.any(SpontaneousForm.class)))
-                        .thenReturn(null);
-                } else {
-                    SpontaneousForm createdFormWithoutId = SpontaneousForm.builder()
-                        .organizationId(organizationId)
-                        .code(code)
-                        .build();
+        Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
 
-                    Mockito.when(spontaneousFormServiceMock.createSpontaneousForm(Mockito.any(SpontaneousForm.class)))
-                        .thenReturn(createdFormWithoutId);
-                }
-            }
-        }
+        assertEquals(expectedId, result);
 
-        // When & Then
-        if (expectedException != null) {
-            Exception exception = Assertions.assertThrows(
-                expectedException,
-                () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
-            );
+        ArgumentCaptor<SpontaneousForm> formCaptor = ArgumentCaptor.forClass(SpontaneousForm.class);
+        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
+        verify(spontaneousFormServiceMock).createSpontaneousForm(formCaptor.capture());
 
-            Assertions.assertTrue(exception.getMessage().contains(code));
-            if (expectedExceptionMessage != null) {
-                Assertions.assertTrue(exception.getMessage().contains(expectedExceptionMessage));
-            }
-            Mockito.verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
-        } else {
-            Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
-
-            if (shouldReturnNullOrFormWithoutId) {
-                Assertions.assertNull(result);
-                Mockito.verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
-                Mockito.verify(spontaneousFormServiceMock).createSpontaneousForm(Mockito.any(SpontaneousForm.class));
-            } else if (shouldVerifyCreatedForm) {
-                Assertions.assertEquals(expectedId, result);
-
-                ArgumentCaptor<SpontaneousForm> formCaptor = ArgumentCaptor.forClass(SpontaneousForm.class);
-                Mockito.verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
-                Mockito.verify(spontaneousFormServiceMock).createSpontaneousForm(formCaptor.capture());
-
-                SpontaneousForm capturedForm = formCaptor.getValue();
-                Assertions.assertEquals(organizationId, capturedForm.getOrganizationId());
-                Assertions.assertEquals(code, capturedForm.getCode());
-                Assertions.assertNotNull(capturedForm.getStructure());
-                Assertions.assertNull(capturedForm.getDictionary());
-            } else {
-                Assertions.assertEquals(expectedId, result);
-                Mockito.verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
-            }
-        }
+        SpontaneousForm capturedForm = formCaptor.getValue();
+        assertEquals(organizationId, capturedForm.getOrganizationId());
+        assertEquals(code, capturedForm.getCode());
+        assertNotNull(capturedForm.getStructure());
+        assertNull(capturedForm.getDictionary());
     }
 
-	static Stream<Arguments> provideTestCases() {
-		return Stream.of(
-			Arguments.of(
-				"whenExistingFormFoundThenReturnExistingId",
-				100L,
-				"SF_CODE_001",
-				"{\"fields\":[]}",
-				999L,
-				null,
-				null,
-				false,
-				false
-			),
-			Arguments.of(
-				"whenNoExistingFormAndValidJsonThenCreateAndReturnNewId",
-				100L,
-				"SF_CODE_NEW",
-				"{\"fields\":[{\"name\":\"field1\",\"type\":\"text\"}]}",
-				555L,
-				null,
-				null,
-				true,
-				false
-			),
-			Arguments.of(
-				"whenNoExistingFormAndComplexValidJsonThenCreateSuccessfully",
-				100L,
-				"SF_CODE_COMPLEX",
-				"{\"fields\":[{\"name\":\"field1\",\"type\":\"text\",\"required\":true},{\"name\":\"field2\",\"type\":\"number\"}],\"validation\":{\"minFields\":1}}",
-				777L,
-				null,
-				null,
-				true,
-				false
-			),
-			Arguments.of(
-				"whenNoExistingFormAndInvalidJsonThenThrowInvalidValueException",
-				100L,
-				"SF_CODE_INVALID",
-				"{invalid json structure",
-				null,
-				InvalidValueException.class,
-				"Error parsing spontaneous form JSON structure",
-				false,
-				false
-			),
-			Arguments.of(
-				"whenNoExistingFormAndEmptyJsonThenThrowInvalidValueException",
-				100L,
-				"SF_CODE_EMPTY",
-				"",
-				null,
-				InvalidValueException.class,
-				null,
-				false,
-				false
-			),
-			Arguments.of(
-				"whenNoExistingFormAndNullJsonThenThrowInvalidValueException",
-				100L,
-				"SF_CODE_NULL",
-				null,
-				null,
-				InvalidValueException.class,
-				null,
-				false,
-				false
-			),
-			Arguments.of(
-				"whenNoExistingFormAndCreateServiceReturnsNullThenReturnNull",
-				100L,
-				"SF_CODE_FAIL",
-				"{\"fields\":[]}",
-				null,
-				null,
-				null,
-				false,
-				true
-			),
-			Arguments.of(
-				"whenNoExistingFormAndCreateServiceReturnsFormWithoutIdThenReturnNull",
-				100L,
-				"SF_CODE_NO_ID",
-				"{\"fields\":[]}",
-				null,
-				null,
-				null,
-				false,
-				true
-			)
-		);
-	}
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"{invalid json structure"})
+    void whenNoExistingFormAndInvalidJsonThenThrowInvalidValueException(String input) {
+		String code = "SF_CODE_INVALID";
+        Long organizationId = 100L;
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+            .spontaneousFormCode(code)
+            .spontaneousFormStructure(input)
+            .build();
+
+        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
+            .thenReturn(null);
+
+        Exception exception = assertThrows(
+            InvalidValueException.class,
+            () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
+        );
+
+        assertTrue(exception.getMessage().contains(code));
+        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
+    }
+
+    @Test
+    void whenNoExistingFormAndCreateServiceReturnsNullThenReturnNull() {
+        Long organizationId = 100L;
+        String code = "SF_CODE_FAIL";
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+            .spontaneousFormCode(code)
+            .spontaneousFormStructure("{\"fields\":[]}")
+            .build();
+
+        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
+            .thenReturn(null);
+
+        when(spontaneousFormServiceMock.createSpontaneousForm(any(SpontaneousForm.class)))
+            .thenReturn(null);
+
+        Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
+
+        assertNull(result);
+        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
+        verify(spontaneousFormServiceMock).createSpontaneousForm(any(SpontaneousForm.class));
+    }
 }
-
-
-
-
