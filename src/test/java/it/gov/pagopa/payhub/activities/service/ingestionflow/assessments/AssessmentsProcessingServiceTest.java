@@ -38,7 +38,7 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
     private static final List<InstallmentStatus> INSTALLMENT_STATUSES = List.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
 
     @Mock
-    private AssessmentsErrorArchiverServcie errorsArchiverServiceMock;
+    private AssessmentsErrorArchiverService errorsArchiverServiceMock;
     @Mock
     private AssessmentsDetailMapper mapperMock;
     @Mock
@@ -95,7 +95,7 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
     }
 
     @Override
-    protected ErrorArchiverService<AssessmentsErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<AssessmentsErrorDTO, AssessmentsIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

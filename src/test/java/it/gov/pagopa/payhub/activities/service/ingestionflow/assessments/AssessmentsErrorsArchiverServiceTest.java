@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.assessments;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -21,8 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class AssessmentsErrorsArchiverServiceTest {
@@ -33,7 +33,7 @@ class AssessmentsErrorsArchiverServiceTest {
     @Mock
     private CsvService csvServiceMock;
 
-    private AssessmentsErrorArchiverServcie service;
+    private AssessmentsErrorArchiverService service;
 
     public static final String FILE_NAME = "fileName";
     public static final String ERROR_CODE = "errorCode";
@@ -43,7 +43,7 @@ class AssessmentsErrorsArchiverServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new AssessmentsErrorArchiverServcie(sharedDirectory, errorFolder, fileArchiverServiceMock, csvServiceMock);
+        service = new AssessmentsErrorArchiverService(sharedDirectory, errorFolder, fileArchiverServiceMock, csvServiceMock);
     }
 
     @Test
@@ -55,9 +55,10 @@ class AssessmentsErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        AssessmentsIngestionFlowFileResult result = new AssessmentsIngestionFlowFileResult();
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList, result);
 
         // Then
         Mockito.verify(csvServiceMock)
@@ -69,9 +70,10 @@ class AssessmentsErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        AssessmentsIngestionFlowFileResult result = new AssessmentsIngestionFlowFileResult();
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of());
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of(), result);
 
         // Then
         Mockito.verify(csvServiceMock, Mockito.times(0))
@@ -86,6 +88,7 @@ class AssessmentsErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        AssessmentsIngestionFlowFileResult result = new AssessmentsIngestionFlowFileResult();
 
         Mockito.doThrow(new IOException("Error creating CSV"))
                 .when(csvServiceMock)
@@ -93,7 +96,7 @@ class AssessmentsErrorsArchiverServiceTest {
 
         // When & Then
         NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
+                service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList, result));
         assertEquals("Error creating CSV", exception.getMessage());
     }
 

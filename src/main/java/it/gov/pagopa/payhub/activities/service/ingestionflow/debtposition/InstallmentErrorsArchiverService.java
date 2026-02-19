@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -8,12 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 @Lazy
 @Service
-public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorDTO> {
+public class InstallmentErrorsArchiverService extends ErrorArchiverService<InstallmentErrorDTO, InstallmentIngestionFlowFileResult> {
 
     protected InstallmentErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                                @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
@@ -23,8 +25,14 @@ public class InstallmentErrorsArchiverService extends ErrorArchiverService<Insta
     }
 
     @Override
-    protected List<String[]> getHeaders() {
-        return Collections.singletonList(
-                new String[]{"File Name", "IUPD", "IUD", "Workflow Status", "Row Number", "Error Code", "Error Message"});
+    protected List<String[]> getHeaders(InstallmentIngestionFlowFileResult result) {
+        String[] baseHeader = result.getOriginalHeader() != null ? result.getOriginalHeader() : new String[0];
+
+        String[] errorHeader = Arrays.copyOf(baseHeader, baseHeader.length + 2);
+
+        errorHeader[errorHeader.length - 2] = "cod_rifiuto";
+        errorHeader[errorHeader.length - 1] = "de_rifiuto";
+
+        return Collections.singletonList(errorHeader);
     }
 }

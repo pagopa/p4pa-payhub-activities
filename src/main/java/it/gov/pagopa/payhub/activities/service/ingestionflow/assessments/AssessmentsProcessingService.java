@@ -46,7 +46,7 @@ public class AssessmentsProcessingService extends
     public AssessmentsProcessingService(
             @Value("${ingestion-flow-files.assessments.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
 
-            ErrorArchiverService<AssessmentsErrorDTO> errorArchiverService,
+            ErrorArchiverService<AssessmentsErrorDTO, AssessmentsIngestionFlowFileResult> errorArchiverService,
             OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService,
             AssessmentsService assessmentsService,

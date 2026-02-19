@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.csv;
 
 import com.opencsv.exceptions.CsvException;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import org.junit.jupiter.api.Test;
@@ -245,6 +246,36 @@ class CsvServiceTest {
 
         assertEquals("Invalid CSV row: Field 'column1' is mandatory but no value was provided.", ex.getMessage());
 
+    }
+
+    @Test
+    void testReadCsv_setsOriginalHeader_whenResultImplementsCsvHeaderAware() throws IOException {
+        // Given
+        Path filePath = Path.of("build", "tmp", "test", "installment_header.csv");
+
+        String[] header = new String[]{"col1", "col2"};
+        List<String[]> headerList = new ArrayList<>(List.of());
+        headerList.add(header);
+        List<String[]> data = Arrays.asList(new String[]{"Data1", "Data2"}, new String[]{"Data3", "Data4"});
+
+        csvService.createCsv(filePath, headerList, data);
+
+        // When
+        InstallmentIngestionFlowFileResult result =
+                csvService.readCsv(
+                        filePath,
+                        TestCsv.class,
+                        (iterator, readerExceptions) -> {
+                            InstallmentIngestionFlowFileResult r = new InstallmentIngestionFlowFileResult();
+                            iterator.forEachRemaining(e -> {});
+                            return r;
+                        },
+                        "default"
+                );
+
+        // Then
+        assertNotNull(result.getOriginalHeader());
+        assertArrayEquals(header, result.getOriginalHeader());
     }
 
 }

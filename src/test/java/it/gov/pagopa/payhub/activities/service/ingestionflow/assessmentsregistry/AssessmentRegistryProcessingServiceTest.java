@@ -73,7 +73,7 @@ class AssessmentRegistryProcessingServiceTest extends BaseIngestionFlowProcessin
     }
 
     @Override
-    protected ErrorArchiverService<AssessmentsRegistryErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<AssessmentsRegistryErrorDTO, AssessmentsRegistryIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

@@ -70,7 +70,7 @@ class OrganizationProcessingServiceTest extends BaseIngestionFlowProcessingServi
     }
 
     @Override
-    protected ErrorArchiverService<OrganizationErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<OrganizationErrorDTO, OrganizationIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

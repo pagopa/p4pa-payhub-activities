@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.sendnotification;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.sendnotification.SendNotificationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Lazy
 @Service
-public class SendNotificationErrorArchiverService extends ErrorArchiverService<SendNotificationErrorDTO> {
+public class SendNotificationErrorArchiverService extends ErrorArchiverService<SendNotificationErrorDTO, SendNotificationIngestionFlowFileResult> {
 
   protected SendNotificationErrorArchiverService(@Value("${folders.shared}") String sharedFolder,
       @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
@@ -22,7 +23,7 @@ public class SendNotificationErrorArchiverService extends ErrorArchiverService<S
   }
 
   @Override
-  protected List<String[]> getHeaders() {
+  protected List<String[]> getHeaders(SendNotificationIngestionFlowFileResult result) {
     return Collections.singletonList(
         new String[]{"File Name", "Row Number", "Error Code", "Error Message"});
   }

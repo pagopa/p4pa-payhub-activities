@@ -4,6 +4,8 @@ import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Arrays;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
@@ -12,23 +14,19 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class InstallmentErrorDTO extends ErrorFileDTO {
 
-    private String iupdOrg;
-    private String iud;
-    private String workflowStatus;
-
-    public InstallmentErrorDTO(String fileName, String iupdOrg, String iud, String workflowStatus, Long rowNumber, String errorCode, String errorMessage) {
-        super(fileName, rowNumber, errorCode, errorMessage);
-        this.iupdOrg = iupdOrg;
-        this.iud = iud;
-        this.workflowStatus = workflowStatus;
-    }
+    private String[] csvRow;
+    private String errorCode;
+    private String errorMessage;
 
     @Override
     public String[] toCsvRow() {
-        return new String[]{
-                getFileName(), iupdOrg, iud, workflowStatus,
-                getRowNumber().toString(),
-                getErrorCode(), getErrorMessage()
-        };
+        String[] baseRow = csvRow != null ? csvRow : new String[0];
+
+        String[] result = Arrays.copyOf(baseRow, baseRow.length + 2);
+        result[result.length - 2] = errorCode;
+        result[result.length - 1] = errorMessage;
+
+        return result;
     }
+
 }

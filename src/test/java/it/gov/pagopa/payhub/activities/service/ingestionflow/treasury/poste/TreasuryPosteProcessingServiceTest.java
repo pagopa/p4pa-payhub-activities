@@ -75,7 +75,7 @@ class TreasuryPosteProcessingServiceTest extends BaseIngestionFlowProcessingServ
     }
 
     @Override
-    protected ErrorArchiverService<TreasuryPosteErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<TreasuryPosteErrorDTO, TreasuryIufIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

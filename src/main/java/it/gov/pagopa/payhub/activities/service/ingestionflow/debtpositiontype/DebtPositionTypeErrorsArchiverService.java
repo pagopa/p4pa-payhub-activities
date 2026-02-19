@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtpositiontype;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Lazy
 @Service
 public class DebtPositionTypeErrorsArchiverService extends
-    ErrorArchiverService<DebtPositionTypeErrorDTO> {
+    ErrorArchiverService<DebtPositionTypeErrorDTO, DebtPositionTypeIngestionFlowFileResult> {
 
   protected DebtPositionTypeErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
       @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
@@ -23,7 +24,7 @@ public class DebtPositionTypeErrorsArchiverService extends
   }
 
   @Override
-  protected List<String[]> getHeaders() {
+  protected List<String[]> getHeaders(DebtPositionTypeIngestionFlowFileResult result) {
     return Collections.singletonList(
         new String[]{"File Name", "Debt Position Type Code", "Broker CF", "Row Number", "Error Code", "Error Message"});
   }

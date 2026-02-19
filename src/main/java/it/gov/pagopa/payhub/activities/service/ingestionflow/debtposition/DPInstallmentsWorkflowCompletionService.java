@@ -37,11 +37,10 @@ public class DPInstallmentsWorkflowCompletionService {
      *
      * @param workflowId  The ID of the workflow to monitor.
      * @param installment The installment ingestion flow file DTO associated with the workflow.
-     * @param fileName    The name of the file being processed.
      * @return {@code true} if the workflow completed successfully, {@code false} if it terminated with an error or exceeded the retry limit.
      */
-    public List<InstallmentErrorDTO> waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
-                                             String fileName) {
+    public List<InstallmentErrorDTO> waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
+                                                               Long ingestionFlowFileLineNumber) {
         try {
             if (workflowId == null) {
                 return Collections.emptyList();
@@ -50,8 +49,8 @@ public class DPInstallmentsWorkflowCompletionService {
                     workflowId, maxAttempts, retryDelayMs).getStatus();
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
-                return List.of(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber,
-                        workflowStatus.name(),
+                return List.of(buildInstallmentErrorDTO(installment,
+                        ingestionFlowFileLineNumber,
                         FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(),
                         FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage()));
             }
@@ -59,19 +58,18 @@ public class DPInstallmentsWorkflowCompletionService {
             return Collections.emptyList();
         } catch (Exception e) {
             log.warn("Workflow {} did not complete within retry limits.", workflowId);
-            return List.of(buildInstallmentErrorDTO(fileName, installment, ingestionFlowFileLineNumber, null,
+            return List.of(buildInstallmentErrorDTO(installment,
+                    ingestionFlowFileLineNumber,
                     FileErrorCode.WORKFLOW_TIMEOUT.name(),
                     FileErrorCode.WORKFLOW_TIMEOUT.getMessage()));
         }
     }
 
-    private InstallmentErrorDTO buildInstallmentErrorDTO(String fileName, InstallmentIngestionFlowFileDTO installment, Long ingestionFlowFileLineNumber,
-                                                         String workflowStatus, String errorCode, String errorMessage) {
+    private InstallmentErrorDTO buildInstallmentErrorDTO(InstallmentIngestionFlowFileDTO installment,
+                                                         Long ingestionFlowFileLineNumber,
+                                                         String errorCode, String errorMessage) {
         return InstallmentErrorDTO.builder()
-                .fileName(fileName)
-                .iupdOrg(installment.getIupdOrg())
-                .iud(installment.getIud())
-                .workflowStatus(workflowStatus)
+                .csvRow(installment != null ? installment.getRow(): null)
                 .rowNumber(ingestionFlowFileLineNumber)
                 .errorCode(errorCode)
                 .errorMessage(errorMessage)

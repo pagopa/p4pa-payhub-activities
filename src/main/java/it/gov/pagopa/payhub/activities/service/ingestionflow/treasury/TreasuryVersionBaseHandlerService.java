@@ -13,7 +13,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -77,7 +80,7 @@ public abstract class TreasuryVersionBaseHandlerService<T> implements TreasuryVe
         log.debug("file flussoGiornaleDiCassa with name {} parsed successfully using mapper {} ", ingestionFlowFileDTO.getFileName(), getClass().getSimpleName());
         List<Treasury> deleteTreasuries = handleDeletes(ingestionFlowFileDTO, result, errorDTOList);
 
-        treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList);
+        treasuryErrorsArchiverService.writeErrors(input.toPath().getParent(), ingestionFlowFileDTO, errorDTOList, null);
 
         List<Treasury> newTreasuries = Objects.requireNonNullElse(result.get(TreasuryOperationEnum.INSERT), List.of());
         int processedRows =

@@ -27,13 +27,13 @@ import java.util.concurrent.Future;
 public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowFileResult, E extends ErrorFileDTO> {
 
     private final int maxConcurrentProcessingRows;
-    private final ErrorArchiverService<E> errorArchiverService;
+    private final ErrorArchiverService<E, R> errorArchiverService;
     protected final OrganizationService organizationService;
     private final FileExceptionHandlerService fileExceptionHandlerService;
 
     protected IngestionFlowProcessingService(
             int maxConcurrentProcessingRows,
-            ErrorArchiverService<E> errorArchiverService,
+            ErrorArchiverService<E, R> errorArchiverService,
             OrganizationService organizationService,
             FileExceptionHandlerService fileExceptionHandlerService) {
         this.maxConcurrentProcessingRows = Math.max(1, maxConcurrentProcessingRows);
@@ -105,7 +105,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         }
         totalRows = processReaderExceptions(readerExceptions, ingestionFlowFile, previousReaderExceptionSize, errorList, totalRows);
 
-        String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList);
+        String errorsZipFileName = archiveErrorFiles(ingestionFlowFile, workingDirectory, errorList, ingestionFlowFileResult);
 
         ingestionFlowFileResult.setOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setFileVersion(ingestionFlowFile.getFileVersion());
@@ -190,13 +190,13 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         return totalRows;
     }
 
-    private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList) {
+    private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList, R result) {
         if (errorList.isEmpty()) {
             log.info("No errors to archive for file: {}", ingestionFlowFile.getFileName());
             return null;
         }
 
-        errorArchiverService.writeErrors(workingDirectory, ingestionFlowFile, errorList);
+        errorArchiverService.writeErrors(workingDirectory, ingestionFlowFile, errorList, result);
         String errorsZipFileName = errorArchiverService.archiveErrorFiles(workingDirectory, ingestionFlowFile);
         log.info("Error file archived at: {}", errorsZipFileName);
 

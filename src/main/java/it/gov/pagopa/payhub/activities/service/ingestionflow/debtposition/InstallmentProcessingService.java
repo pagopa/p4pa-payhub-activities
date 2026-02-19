@@ -91,22 +91,17 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         wfExecutionParameters.setPartialChange(true);
 
         String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
-        return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber, ingestionFlowFile.getFileName());
+        return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber);
     }
 
     @Override
     protected InstallmentErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, InstallmentIngestionFlowFileDTO row, String errorCode, String message) {
-        InstallmentErrorDTO errorDTO = InstallmentErrorDTO.builder()
-                .fileName(ingestionFlowFile.getFileName())
+        return InstallmentErrorDTO.builder()
+                .csvRow(row != null ? row.getRow() : null)
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
                 .build();
-        if (row != null) {
-            errorDTO.setIupdOrg(row.getIupdOrg());
-            errorDTO.setIud(row.getIud());
-        }
-        return errorDTO;
     }
 
 }

@@ -72,7 +72,7 @@ class OrgSilServiceProcessingServiceTest extends BaseIngestionFlowProcessingServ
     }
 
     @Override
-    protected ErrorArchiverService<OrgSilServiceErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<OrgSilServiceErrorDTO, OrgSilServiceIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

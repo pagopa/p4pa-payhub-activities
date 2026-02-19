@@ -34,7 +34,7 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
      *
      * @param ingestionFlowFileService          DAO for accessing ingestion flow file records.
      * @param ingestionFlowFileRetrieverService Service for retrieving and unzipping ingestion flow files.
-     * @param fileArchiverService  Service for archiving files.
+     * @param fileArchiverService               Service for archiving files.
      * @param csvService                        Service for handling CSV file operations.
      * @param installmentProcessingService      Service for processing installments.
      */
@@ -61,7 +61,7 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
 
         try {
             return csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
-                    installmentProcessingService.processInstallments(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory),
+                            installmentProcessingService.processInstallments(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory),
                     ingestionFlowFileDTO.getFileVersion());
         } catch (Exception e) {
             log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);

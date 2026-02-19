@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class TreasuryErrorsArchiverService extends ErrorArchiverService<TreasuryErrorDTO> {
+public class TreasuryErrorsArchiverService extends ErrorArchiverService<TreasuryErrorDTO, TreasuryIufIngestionFlowFileResult> {
 
     public TreasuryErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
                                          @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
@@ -23,7 +24,7 @@ public class TreasuryErrorsArchiverService extends ErrorArchiverService<Treasury
     }
 
     @Override
-    protected List<String[]> getHeaders() {
+    protected List<String[]> getHeaders(TreasuryIufIngestionFlowFileResult result) {
         return Collections.singletonList(
                 new String[]{"FileName", "Anno Bolletta", "Codice Bolletta", "Error Code", "Error Message"});
     }

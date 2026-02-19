@@ -75,7 +75,7 @@ class TreasuryXlsProcessingServiceTest extends BaseIngestionFlowProcessingServic
     }
 
     @Override
-    protected ErrorArchiverService<TreasuryXlsErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<TreasuryXlsErrorDTO, TreasuryIufIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

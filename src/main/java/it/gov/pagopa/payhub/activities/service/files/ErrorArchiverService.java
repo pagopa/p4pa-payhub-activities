@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  * @param <T> The type of the error DTO.
  */
 @Slf4j
-public abstract class ErrorArchiverService<T extends ErrorFileDTO> {
+public abstract class ErrorArchiverService<T extends ErrorFileDTO, R> {
 
     private static final String ERRORFILE_PREFIX = "ERROR-";
 
@@ -43,16 +43,17 @@ public abstract class ErrorArchiverService<T extends ErrorFileDTO> {
     }
 
 
-    protected abstract List<String[]> getHeaders();
+    protected abstract List<String[]> getHeaders(R result);
 
     /**
      * Writes error data into a CSV file.
      *
      * @param workingDirectory  The directory where the file should be created.
      * @param ingestionFlowFile The metadata of the ingestion file.
-     * @param errorList         The list of errors to write.
+     * @param errorList         The list of errors to write
+     * @param result            The result of ingestion file
      */
-    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile, List<T> errorList) {
+    public void writeErrors(Path workingDirectory, IngestionFlowFile ingestionFlowFile, List<T> errorList, R result) {
 
         if(CollectionUtils.isEmpty(errorList)){
             return;
@@ -66,7 +67,7 @@ public abstract class ErrorArchiverService<T extends ErrorFileDTO> {
             String errorFileName = ERRORFILE_PREFIX + Utilities.replaceFileExtension(ingestionFlowFile.getFileName(), ".csv");
             Path errorCsvFilePath = workingDirectory.resolve(errorFileName);
 
-            csvService.createCsv(errorCsvFilePath, getHeaders(), data);
+            csvService.createCsv(errorCsvFilePath, getHeaders(result), data);
             log.info("Error CSV created: {}", errorCsvFilePath);
 
         } catch (IOException e) {

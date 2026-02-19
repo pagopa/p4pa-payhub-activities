@@ -75,7 +75,7 @@ class ReceiptProcessingServiceTest extends BaseIngestionFlowProcessingServiceTes
     }
 
     @Override
-    protected ErrorArchiverService<ReceiptErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<ReceiptErrorDTO, ReceiptIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

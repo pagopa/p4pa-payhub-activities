@@ -74,7 +74,7 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
     }
 
     @Override
-    protected ErrorArchiverService<SendNotificationErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<SendNotificationErrorDTO, SendNotificationIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorArchiverServiceMock;
     }
 

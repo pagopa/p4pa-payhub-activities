@@ -107,7 +107,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         assertNotNull(result);
         Assertions.assertEquals(expectedResult, result);
         Mockito.verify(treasuryErrorsArchiverServiceMock)
-                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
+                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS), Mockito.same(null));
     }
 
     @Test
@@ -227,7 +227,7 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         Assertions.assertTrue(result.getRight().isEmpty());
         verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode());
         Mockito.verify(treasuryErrorsArchiverServiceMock)
-                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
+                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS), Mockito.same(null));
     }
 
     @Test
@@ -270,6 +270,6 @@ public abstract class TreasuryVersionBaseHandlerServiceTest<T> {
         verify(treasuryServiceMock, times(1)).deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(treasuryDTO.getOrganizationId(), treasuryDTO.getBillCode(), treasuryDTO.getBillYear(), treasuryDTO.getOrgBtCode(), treasuryDTO.getOrgIstatCode());
 
         Mockito.verify(treasuryErrorsArchiverServiceMock)
-                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS));
+                .writeErrors(Mockito.eq(fileFolder), Mockito.same(ingestionFlowFileDTO), Mockito.same(errorDTOS), Mockito.same(null));
     }
 }
