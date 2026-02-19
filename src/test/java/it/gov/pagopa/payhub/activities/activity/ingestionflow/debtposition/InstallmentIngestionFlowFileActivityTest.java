@@ -49,8 +49,6 @@ class InstallmentIngestionFlowFileActivityTest {
     private IngestionFlowFileRetrieverService ingestionFlowFileRetrieverServiceMock;
     @Mock
     private FileArchiverService fileArchiverServiceMock;
-    @Mock
-    private InstallmentErrorsArchiverService installmentErrorsArchiverServiceMock;
 
     private InstallmentIngestionFlowFileActivity activity;
 
@@ -61,8 +59,7 @@ class InstallmentIngestionFlowFileActivityTest {
                 ingestionFlowFileRetrieverServiceMock,
                 fileArchiverServiceMock,
                 csvServiceMock,
-                installmentProcessingServiceMock,
-                installmentErrorsArchiverServiceMock
+                installmentProcessingServiceMock
         );
     }
 
@@ -73,8 +70,7 @@ class InstallmentIngestionFlowFileActivityTest {
                 ingestionFlowFileRetrieverServiceMock,
                 fileArchiverServiceMock,
                 csvServiceMock,
-                installmentProcessingServiceMock,
-                installmentErrorsArchiverServiceMock
+                installmentProcessingServiceMock
         );
     }
 
