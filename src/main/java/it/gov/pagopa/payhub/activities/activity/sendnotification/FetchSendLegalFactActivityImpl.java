@@ -25,7 +25,7 @@ public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivit
 			sendService.downloadAndArchiveSendLegalFact(notificationRequestId, legalFactCategory, legalFactId);
 		} catch (HttpClientErrorException.BadRequest e) {
 			throw new NotRetryableActivityException(
-				"Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s".formatted(notificationRequestId, legalFactCategory, legalFactId),
+				"Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message %s".formatted(notificationRequestId, legalFactCategory, legalFactId, e.getMessage()),
 				e
 			);
 		}

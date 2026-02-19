@@ -87,7 +87,7 @@ class FetchSendLegalFactActivityImplTest {
 		//THEN
 		Assertions.assertNotNull(notRetryableActivityException);
 		Assertions.assertEquals(
-				"Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s".formatted(notificationRequestId, LegalFactCategoryDTO.ANALOG_DELIVERY, legalFactId),
+				"Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message 400 BadRequest".formatted(notificationRequestId, LegalFactCategoryDTO.ANALOG_DELIVERY, legalFactId),
 			notRetryableActivityException.getMessage()
 		);
 		Mockito.verify(sendServiceMock)

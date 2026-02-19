@@ -30,7 +30,7 @@ public class UpdateSendNotificationStatusActivityImpl implements UpdateSendNotif
 			sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
 		} catch (HttpClientErrorException.NotFound e) {
 			throw new SendNotificationNotFoundException(
-				"Notification for notificationRequestId %s not found".formatted(notificationRequestId),
+				"Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage()),
 				e
 			);
 		}

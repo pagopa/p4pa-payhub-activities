@@ -77,7 +77,7 @@ class UpdateSendNotificationStatusActivityTest {
 		// Then
 		Assertions.assertNotNull(notRetryableActivityException);
 		Assertions.assertEquals(
-				"Notification for notificationRequestId %s not found".formatted(notificationRequestId),
+				"Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId),
 				notRetryableActivityException.getMessage()
 		);
 	}
