@@ -2,10 +2,12 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationNotFoundException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Slf4j
 @Component
@@ -23,7 +25,15 @@ public class UpdateSendNotificationStatusActivityImpl implements UpdateSendNotif
 	@Override
 	public SendNotificationDTO updateSendNotificationStatus(String notificationRequestId) {
 		log.info("Starting updateSendNotificationStatus for notificationRequestId {}", notificationRequestId);
-		SendNotificationDTO sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
+		SendNotificationDTO sendNotificationDTOByRequestId;
+		try {
+			sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
+		} catch (HttpClientErrorException.NotFound e) {
+			throw new SendNotificationNotFoundException(
+				"Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage()),
+				e
+			);
+		}
 		if(sendNotificationDTOByRequestId == null) {
 			return null;
 		}
