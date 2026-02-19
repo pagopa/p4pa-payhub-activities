@@ -69,7 +69,7 @@ class PaymentNotificationProcessingServiceTest extends BaseIngestionFlowProcessi
     }
 
     @Override
-    protected ErrorArchiverService<PaymentNotificationErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<PaymentNotificationErrorDTO, PaymentNotificationIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

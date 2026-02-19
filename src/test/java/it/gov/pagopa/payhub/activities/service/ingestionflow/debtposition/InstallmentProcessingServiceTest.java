@@ -78,7 +78,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
     }
 
     @Override
-    protected ErrorArchiverService<InstallmentErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<InstallmentErrorDTO, InstallmentIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 
@@ -113,7 +113,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
         Mockito.doReturn(Collections.emptyList())
                 .when(dpInstallmentsWorkflowCompletionServiceMock)
-                .waitForWorkflowCompletion(workflowId, dto);
+                .waitForWorkflowCompletion(workflowId, dto, rowNumber);
 
         return dto;
     }
@@ -128,6 +128,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
     private Pair<InstallmentIngestionFlowFileDTO, List<InstallmentErrorDTO>> configureUnhappyUseCaseWaitWorkflowErrors(IngestionFlowFile ingestionFlowFile, long rowNumber) {
         InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+        dto.setRow(new String[]{"test"});
         InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         String workflowId = "workflow-123";
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
@@ -143,16 +144,17 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
                 .when(debtPositionServiceMock)
                 .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
-        List<InstallmentErrorDTO> expectedErrors = List.of(InstallmentErrorDTO.builder().errorCode("DUMMY_ERROR").build());
+        List<InstallmentErrorDTO> expectedErrors = List.of(InstallmentErrorDTO.builder().errorCode("DUMMY_ERROR").csvRow(new String[]{"test"}).build());
         Mockito.doReturn(expectedErrors)
                 .when(dpInstallmentsWorkflowCompletionServiceMock)
-                .waitForWorkflowCompletion(workflowId, dto);
+                .waitForWorkflowCompletion(workflowId, dto, rowNumber);
 
         return Pair.of(dto, expectedErrors);
     }
 
     private Pair<InstallmentIngestionFlowFileDTO, List<InstallmentErrorDTO>> configureUnhappyUseCaseDebtPositionNotFound(IngestionFlowFile ingestionFlowFile, long rowNumber) {
         InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+        dto.setRow(new String[]{"test"});
         InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
                 .massive(true)
@@ -168,11 +170,22 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
                 .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
         List<InstallmentErrorDTO> expectedErrors = List.of(
-                new InstallmentErrorDTO(
-                        new String[]{},
+                serviceSpy.buildErrorDto(
+                        ingestionFlowFile,
+                        rowNumber,
+                        dto,
                         FileErrorCode.DEBT_POSITION_NOT_FOUND.name(),
-                        FileErrorCode.DEBT_POSITION_NOT_FOUND.getMessage())
+                        FileErrorCode.DEBT_POSITION_NOT_FOUND.getMessage()
+                )
         );
         return Pair.of(dto, expectedErrors);
+    }
+
+    @Override
+    protected InstallmentIngestionFlowFileDTO buildAndConfigureUnexpectedUseCase(){
+        InstallmentIngestionFlowFileDTO dto =
+                podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
+        dto.setRow(new String[]{"test"});
+        return dto;
     }
 }

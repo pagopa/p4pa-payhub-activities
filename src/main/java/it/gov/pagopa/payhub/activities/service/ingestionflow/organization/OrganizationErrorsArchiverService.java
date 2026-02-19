@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.organization;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Lazy
 @Service
 public class OrganizationErrorsArchiverService extends
-    ErrorArchiverService<OrganizationErrorDTO> {
+    ErrorArchiverService<OrganizationErrorDTO, OrganizationIngestionFlowFileResult> {
 
   protected OrganizationErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
       @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
@@ -23,7 +24,7 @@ public class OrganizationErrorsArchiverService extends
   }
 
   @Override
-  protected List<String[]> getHeaders() {
+  protected List<String[]> getHeaders(OrganizationIngestionFlowFileResult result) {
     return Collections.singletonList(
         new String[]{"File Name", "Ipa Code", "Row Number", "Error Code", "Error Message"});
   }

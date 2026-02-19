@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtpositiontypeorg;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -14,7 +15,7 @@ import java.util.List;
 @Lazy
 @Service
 public class DebtPositionTypeOrgErrorsArchiverService extends
-    ErrorArchiverService<DebtPositionTypeOrgErrorDTO> {
+    ErrorArchiverService<DebtPositionTypeOrgErrorDTO, DebtPositionTypeOrgIngestionFlowFileResult> {
 
   protected DebtPositionTypeOrgErrorsArchiverService(@Value("${folders.shared}") String sharedFolder,
       @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
@@ -24,7 +25,7 @@ public class DebtPositionTypeOrgErrorsArchiverService extends
   }
 
   @Override
-  protected List<String[]> getHeaders() {
+  protected List<String[]> getHeaders(DebtPositionTypeOrgIngestionFlowFileResult debtPositionTypeOrgIngestionFlowFileResult) {
     return Collections.singletonList(
         new String[]{"File Name", "Debt Position Type Code", "Organization Id", "Row Number", "Error Code", "Error Message"});
   }

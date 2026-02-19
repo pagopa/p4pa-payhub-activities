@@ -39,7 +39,8 @@ public class DPInstallmentsWorkflowCompletionService {
      * @param installment The installment ingestion flow file DTO associated with the workflow.
      * @return {@code true} if the workflow completed successfully, {@code false} if it terminated with an error or exceeded the retry limit.
      */
-    public List<InstallmentErrorDTO> waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment) {
+    public List<InstallmentErrorDTO> waitForWorkflowCompletion(String workflowId, InstallmentIngestionFlowFileDTO installment,
+                                                               Long ingestionFlowFileLineNumber) {
         try {
             if (workflowId == null) {
                 return Collections.emptyList();
@@ -49,6 +50,7 @@ public class DPInstallmentsWorkflowCompletionService {
 
             if (!WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(workflowStatus)) {
                 return List.of(buildInstallmentErrorDTO(installment,
+                        ingestionFlowFileLineNumber,
                         FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(),
                         FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage()));
             }
@@ -57,15 +59,18 @@ public class DPInstallmentsWorkflowCompletionService {
         } catch (Exception e) {
             log.warn("Workflow {} did not complete within retry limits.", workflowId);
             return List.of(buildInstallmentErrorDTO(installment,
+                    ingestionFlowFileLineNumber,
                     FileErrorCode.WORKFLOW_TIMEOUT.name(),
                     FileErrorCode.WORKFLOW_TIMEOUT.getMessage()));
         }
     }
 
     private InstallmentErrorDTO buildInstallmentErrorDTO(InstallmentIngestionFlowFileDTO installment,
+                                                         Long ingestionFlowFileLineNumber,
                                                          String errorCode, String errorMessage) {
         return InstallmentErrorDTO.builder()
-                .csvRow(installment.getRow())
+                .csvRow(installment != null ? installment.getRow(): null)
+                .rowNumber(ingestionFlowFileLineNumber)
                 .errorCode(errorCode)
                 .errorMessage(errorMessage)
                 .build();

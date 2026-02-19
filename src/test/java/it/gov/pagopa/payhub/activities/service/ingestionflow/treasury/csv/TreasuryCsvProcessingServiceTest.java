@@ -73,7 +73,7 @@ class TreasuryCsvProcessingServiceTest extends BaseIngestionFlowProcessingServic
     }
 
     @Override
-    protected ErrorArchiverService<TreasuryCsvErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<TreasuryCsvErrorDTO, TreasuryIufIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

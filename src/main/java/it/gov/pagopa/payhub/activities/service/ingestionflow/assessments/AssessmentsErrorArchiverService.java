@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.assessments;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -13,18 +14,18 @@ import java.util.List;
 
 @Lazy
 @Service
-public class AssessmentsErrorArchiverServcie extends
-        ErrorArchiverService<AssessmentsErrorDTO> {
+public class AssessmentsErrorArchiverService extends
+        ErrorArchiverService<AssessmentsErrorDTO, AssessmentsIngestionFlowFileResult> {
 
-    protected AssessmentsErrorArchiverServcie(@Value("${folders.shared}") String sharedFolder,
-                                                       @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
-                                                       FileArchiverService fileArchiverService,
-                                                       CsvService csvService) {
+    protected AssessmentsErrorArchiverService(@Value("${folders.shared}") String sharedFolder,
+                                              @Value("${folders.process-target-sub-folders.errors}") String errorFolder,
+                                              FileArchiverService fileArchiverService,
+                                              CsvService csvService) {
         super(sharedFolder, errorFolder, fileArchiverService, csvService);
     }
 
     @Override
-    protected List<String[]> getHeaders() {
+    protected List<String[]> getHeaders(AssessmentsIngestionFlowFileResult result) {
         return Collections.singletonList(
                 new String[]{"File Name", "Row Number", "Assessment code", "Organization IPA code", "Error Code", "Error Message"});
     }

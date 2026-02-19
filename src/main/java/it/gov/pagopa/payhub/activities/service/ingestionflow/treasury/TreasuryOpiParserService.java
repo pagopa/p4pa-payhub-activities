@@ -54,7 +54,7 @@ public class TreasuryOpiParserService {
                     treasuryErrorsArchiverService.writeErrors(
                             ingestionFlowFile.toPath().getParent(),
                             ingestionFlowFileDTO,
-                            uniqueErrors);
+                            uniqueErrors, null);
 
                     throw new TreasuryOpiInvalidFileException("Cannot parse treasury Opi file " + ingestionFlowFile);
                 });

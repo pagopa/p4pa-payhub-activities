@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.treasury;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -52,9 +53,10 @@ class TreasuryErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        TreasuryIufIngestionFlowFileResult result = new TreasuryIufIngestionFlowFileResult();
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList, result);
 
         // Then
         Mockito.verify(csvServiceMock)
@@ -70,14 +72,15 @@ class TreasuryErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        TreasuryIufIngestionFlowFileResult result = new TreasuryIufIngestionFlowFileResult();
 
-            Mockito.doThrow(new IOException("Error creating CSV"))
+        Mockito.doThrow(new IOException("Error creating CSV"))
                     .when(csvServiceMock)
                     .createCsv(eq(expectedErrorFilePath), any(), any());
 
             // When & Then
             NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                    service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
+                    service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList, result));
             assertEquals("Error creating CSV", exception.getMessage());
     }
 

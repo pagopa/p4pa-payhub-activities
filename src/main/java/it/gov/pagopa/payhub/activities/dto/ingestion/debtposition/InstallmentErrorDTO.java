@@ -10,12 +10,13 @@ import java.util.Arrays;
 @Data
 @SuperBuilder
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString(callSuper = true)
 public class InstallmentErrorDTO extends ErrorFileDTO {
 
-    private final String[] csvRow;
-    private final String errorCode;
-    private final String errorMessage;
+    private String[] csvRow;
+    private String errorCode;
+    private String errorMessage;
 
     @Override
     public String[] toCsvRow() {

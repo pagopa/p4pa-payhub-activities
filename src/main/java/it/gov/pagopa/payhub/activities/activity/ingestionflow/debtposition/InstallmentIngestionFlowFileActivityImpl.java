@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionF
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
 
     private final CsvService csvService;
     private final InstallmentProcessingService installmentProcessingService;
-    private final InstallmentErrorsArchiverService installmentErrorsArchiverService;
 
     /**
      * Constructor to initialize dependencies for Installments ingestion.
@@ -44,11 +42,10 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
                                                     IngestionFlowFileRetrieverService ingestionFlowFileRetrieverService,
                                                     FileArchiverService fileArchiverService,
                                                     CsvService csvService,
-                                                    InstallmentProcessingService installmentProcessingService, InstallmentErrorsArchiverService installmentErrorsArchiverService) {
+                                                    InstallmentProcessingService installmentProcessingService) {
         super(ingestionFlowFileService, ingestionFlowFileRetrieverService, fileArchiverService);
         this.csvService = csvService;
         this.installmentProcessingService = installmentProcessingService;
-        this.installmentErrorsArchiverService = installmentErrorsArchiverService;
     }
 
     @Override
@@ -63,12 +60,9 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
         log.info("Processing file: {}", filePath);
 
         try {
-            InstallmentIngestionFlowFileResult result = csvService.readCsvWithAwareRow(filePath, InstallmentIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
+            return csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
                             installmentProcessingService.processInstallments(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory),
                     ingestionFlowFileDTO.getFileVersion());
-
-            installmentErrorsArchiverService.setOriginalHeader(result.getOriginalHeader());
-            return result;
         } catch (Exception e) {
             log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
             throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));

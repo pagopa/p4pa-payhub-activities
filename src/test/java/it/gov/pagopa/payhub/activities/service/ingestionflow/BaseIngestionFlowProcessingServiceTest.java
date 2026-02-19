@@ -101,7 +101,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
 
     protected abstract IngestionFlowProcessingService<C, R, E> getServiceSpy();
 
-    protected abstract ErrorArchiverService<E> getErrorsArchiverServiceMock();
+    protected abstract ErrorArchiverService<E, R> getErrorsArchiverServiceMock();
 
     protected abstract R startProcess(Iterator<C> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory);
 
@@ -110,6 +110,9 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
      */
     protected abstract C buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber);
 
+    protected C buildAndConfigureUnexpectedUseCase() {
+        return podamFactory.manufacturePojo(rowDtoClass);
+    }
     /**
      * Don't use Mockito.when() construct, use instead Mockito.doReturn().when() instead
      */
@@ -161,7 +164,8 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         Mockito.verify(getErrorsArchiverServiceMock()).writeErrors(workingDirectory, ingestionFlowFile,
                 readerExceptions.stream()
                         .map(e -> buildCsvGenericErrorDto(ingestionFlowFile, e))
-                        .toList()
+                        .toList(),
+                result
         );
     }
 
@@ -184,7 +188,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
                 .thenReturn("zipFileName.csv");
 
         C happyUseCase = buildAndConfigureHappyUseCase(ingestionFlowFile, 1, false, readerExceptions.size() + 1L);
-        C unexpectedExceptionUseCase = podamFactory.manufacturePojo(rowDtoClass);
+        C unexpectedExceptionUseCase = buildAndConfigureUnexpectedUseCase();
         List<Pair<C, List<E>>> unhappyUseCases = buildAndConfigureUnhappyUseCases(ingestionFlowFile, readerExceptions.size() + 2L);
 
         Mockito.doThrow(new RuntimeException("DUMMYCONSUMEROWEXCEPTION"))
@@ -216,16 +220,17 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
                                 )
                         ),
                         unhappyUseCases.stream().flatMap(p -> p.getRight().stream())
-                ).toList()
+                ).toList(),
+                result
         );
     }
 
-    private E buildCsvGenericErrorDto(IngestionFlowFile ingestionFlowFile, CsvException csvException) {
+    protected E buildCsvGenericErrorDto(IngestionFlowFile ingestionFlowFile, CsvException csvException) {
         return buildGenericErrorDto(ingestionFlowFile, csvException.getLineNumber(), null,
                 "CSV_GENERIC_ERROR", "Errore generico nella lettura del file: " + csvException.getMessage());
     }
 
-    private E buildGenericErrorDto(IngestionFlowFile ingestionFlowFile, long rowNumber, C row, String errorCode, String errorMessage) {
+    protected E buildGenericErrorDto(IngestionFlowFile ingestionFlowFile, long rowNumber, C row, String errorCode, String errorMessage) {
         return getServiceSpy().buildErrorDto(ingestionFlowFile, rowNumber, row, errorCode, errorMessage);
     }
 

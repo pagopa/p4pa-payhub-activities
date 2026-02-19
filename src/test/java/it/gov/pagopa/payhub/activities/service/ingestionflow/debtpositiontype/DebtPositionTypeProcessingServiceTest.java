@@ -77,7 +77,7 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
     }
 
     @Override
-    protected ErrorArchiverService<DebtPositionTypeErrorDTO> getErrorsArchiverServiceMock() {
+    protected ErrorArchiverService<DebtPositionTypeErrorDTO, DebtPositionTypeIngestionFlowFileResult> getErrorsArchiverServiceMock() {
         return errorsArchiverServiceMock;
     }
 

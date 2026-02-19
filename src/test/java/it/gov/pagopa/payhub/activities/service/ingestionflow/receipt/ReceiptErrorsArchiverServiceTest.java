@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.receipt;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptErrorDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
@@ -54,9 +55,10 @@ class ReceiptErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList);
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList, result);
 
         // Then
         Mockito.verify(csvServiceMock)
@@ -68,9 +70,10 @@ class ReceiptErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
 
         // When
-        service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of());
+        service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of(), result);
 
         // Then
         Mockito.verify(csvServiceMock, Mockito.times(0))
@@ -85,6 +88,7 @@ class ReceiptErrorsArchiverServiceTest {
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
+        ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
 
         Mockito.doThrow(new IOException("Error creating CSV"))
                 .when(csvServiceMock)
@@ -92,7 +96,7 @@ class ReceiptErrorsArchiverServiceTest {
 
         // When & Then
         NotRetryableActivityException exception = assertThrows(NotRetryableActivityException.class, () ->
-                service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList));
+                service.writeErrors(workingDirectory, ingestionFlowFileDTO, errorDTOList, result));
         assertEquals("Error creating CSV", exception.getMessage());
     }
 

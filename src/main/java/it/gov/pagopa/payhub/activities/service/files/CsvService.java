@@ -223,21 +223,15 @@ public class CsvService {
      * @throws IOException If an error occurs while reading the file.
      */
     public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile) throws IOException {
-        HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
-        strategy.setProfile(csvProfile);
-        strategy.setType(typeClass);
-
-        return readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, 0);
-    }
-
-    public <T, R extends CsvHeaderAware> R readCsvWithAwareRow(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile) throws IOException {
         RowAwareHeaderColumnNameMappingStrategy<T> strategy = new RowAwareHeaderColumnNameMappingStrategy<>();
         strategy.setProfile(csvProfile);
         strategy.setType(typeClass);
 
         R result = readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, 0);
 
-        result.setOriginalHeader(strategy.getOriginalHeader());
+        if(result instanceof CsvHeaderAware aware) {
+            aware.setOriginalHeader(strategy.getOriginalHeader());
+        }
 
         return result;
     }

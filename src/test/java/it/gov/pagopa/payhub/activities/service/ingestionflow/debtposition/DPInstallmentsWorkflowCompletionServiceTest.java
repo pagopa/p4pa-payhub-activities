@@ -56,7 +56,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(workflowStatusDTO);
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L);
 
         // Then
         assertTrue(result.isEmpty());
@@ -68,7 +68,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(null, installment);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(null, installment, 1L);
 
         // Then
         assertTrue(result.isEmpty());
@@ -86,7 +86,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(workflowStatusDTO);
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L);
 
         // Then
         assertFalse(result.isEmpty());
@@ -103,7 +103,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .when(workflowHubServiceMock).waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs);
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L);
 
         // Then
         assertFalse(result.isEmpty());

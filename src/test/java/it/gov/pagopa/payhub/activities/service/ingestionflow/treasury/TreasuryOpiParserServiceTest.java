@@ -120,7 +120,8 @@ class TreasuryOpiParserServiceTest {
                 any(Path.class),
                 eq(ingestionFlowFileDTO),
                 argThat(errors -> errors.size() == 1 &&
-                        errors.stream().anyMatch(e -> e.getErrorCode().equals(FileErrorCode.XML_GENERIC_ERROR.name())))
+                        errors.stream().anyMatch(e -> e.getErrorCode().equals(FileErrorCode.XML_GENERIC_ERROR.name()))),
+                eq(null)
         );
     }
 
