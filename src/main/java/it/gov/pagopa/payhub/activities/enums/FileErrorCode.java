@@ -184,8 +184,7 @@ public enum FileErrorCode {
     FILE_NOT_FOUND("File non trovato"),
     INVALID_SIGNATURE("Il file non ha una firma valida"),
 
-    IMMUTABLE_FIELD("Campi non modificabili"),
-    TODO;
+    IMMUTABLE_FIELD("Campi non modificabili");
 
     private final String message;
 

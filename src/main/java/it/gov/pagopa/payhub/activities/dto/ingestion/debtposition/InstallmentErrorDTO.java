@@ -20,9 +20,12 @@ public class InstallmentErrorDTO extends ErrorFileDTO {
 
     @Override
     public String[] toCsvRow() {
-        String[] result = Arrays.copyOf(csvRow, csvRow.length + 2);
+        String[] baseRow = csvRow != null ? csvRow : new String[0];
+
+        String[] result = Arrays.copyOf(baseRow, baseRow.length + 2);
         result[result.length - 2] = errorCode;
         result[result.length - 1] = errorMessage;
+
         return result;
     }
 

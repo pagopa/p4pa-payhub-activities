@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionF
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRetrieverService;
-import it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentErrorsArchiverService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentProcessingService;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;

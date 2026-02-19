@@ -26,7 +26,9 @@ public class InstallmentErrorsArchiverService extends ErrorArchiverService<Insta
 
     @Override
     protected List<String[]> getHeaders(InstallmentIngestionFlowFileResult result) {
-        String[] errorHeader = Arrays.copyOf(result.getOriginalHeader(), result.getOriginalHeader().length + 2);
+        String[] baseHeader = result.getOriginalHeader() != null ? result.getOriginalHeader() : new String[0];
+
+        String[] errorHeader = Arrays.copyOf(baseHeader, baseHeader.length + 2);
 
         errorHeader[errorHeader.length - 2] = "cod_rifiuto";
         errorHeader[errorHeader.length - 1] = "de_rifiuto";
