@@ -2,23 +2,26 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationNotFoundException;
 import it.gov.pagopa.pu.debtposition.dto.generated.UpdateInstallmentNotificationDateRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collections;
 import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.faker.SendNotificationFaker.buildSendNotificationDTO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationDateRetrieveActivityTest {
@@ -131,7 +134,6 @@ class SendNotificationDateRetrieveActivityTest {
         Mockito.verifyNoInteractions(debtPositionServiceMock);
     }
 
-
     @Test
     void givenNoNotificationWhenRetrieveNotificationDateThenReturnNull() {
         // Given
@@ -145,6 +147,31 @@ class SendNotificationDateRetrieveActivityTest {
 
         // Then
         assertNull(result);
+        Mockito.verify(sendServiceMock, Mockito.times(0)).retrieveNotificationDate(notificationRequestId);
+        Mockito.verifyNoInteractions(debtPositionServiceMock);
+    }
+
+    @Test
+    void givenNotFoundNotificationWhenRetrieveNotificationDateThenThrowSendNotificationNotFoundException() {
+        // Given
+        String notificationRequestId = "notificationRequestId";
+
+        Mockito.doThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null))
+                .when(sendServiceMock)
+                .retrieveNotificationByNotificationRequestId(notificationRequestId);
+
+        // When
+        SendNotificationNotFoundException notRetryableActivityException = Assertions.assertThrows(
+                SendNotificationNotFoundException.class,
+                () -> sendNotificationDateRetrieve.sendNotificationDateRetrieve(notificationRequestId)
+        );
+
+        // Then
+        assertNotNull(notRetryableActivityException);
+        assertEquals(
+            "Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId),
+            notRetryableActivityException.getMessage()
+        );
         Mockito.verify(sendServiceMock, Mockito.times(0)).retrieveNotificationDate(notificationRequestId);
         Mockito.verifyNoInteractions(debtPositionServiceMock);
     }
