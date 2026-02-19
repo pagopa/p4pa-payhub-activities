@@ -49,8 +49,8 @@ class InstallmentErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
         List<InstallmentErrorDTO> errorDTOList = List.of(
-                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE),
-                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+                new InstallmentErrorDTO(new String[]{}, ERROR_CODE, ERROR_MESSAGE),
+                new InstallmentErrorDTO(new String[]{}, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -81,7 +81,7 @@ class InstallmentErrorsArchiverServiceTest {
     @Test
     void testWriteErrors_whenIOException_thenThrowsActivitiesException() throws IOException {
         List<InstallmentErrorDTO> errorDTOList = List.of(
-                new InstallmentErrorDTO(FILE_NAME, "iupdOrg", "iud", WORKFLOW_STATUS, 1L, ERROR_CODE, ERROR_MESSAGE)
+                new InstallmentErrorDTO(new String[]{}, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();

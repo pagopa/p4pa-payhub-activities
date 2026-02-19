@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmen
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,12 +125,12 @@ public class InstallmentFaker {
                 .email(debtor.getEmail())
                 .dueDate(dto.getDueDate())
                 .amount(longCentsToBigDecimalEuro(dto.getAmountCents()))
-                .paCommissionCents(dto.getNotificationFeeCents())
+                .paCommission(new BigDecimal(0))
                 .debtPositionTypeCode("code")
                 .remittanceInformation(dto.getRemittanceInformation())
                 .legacyPaymentMetadata(dto.getLegacyPaymentMetadata())
                 .balance(dto.getBalance())
-                .flagPuPagoPaPayment(Boolean.TRUE)
+                .generateNotice(Boolean.TRUE)
                 .action(I)
                 .build();
     }

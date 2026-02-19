@@ -230,6 +230,18 @@ public class CsvService {
         return readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, 0);
     }
 
+    public <T, R extends CsvHeaderAware> R readCsvWithAwareRow(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile) throws IOException {
+        RowAwareHeaderColumnNameMappingStrategy<T> strategy = new RowAwareHeaderColumnNameMappingStrategy<>();
+        strategy.setProfile(csvProfile);
+        strategy.setType(typeClass);
+
+        R result = readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, 0);
+
+        result.setOriginalHeader(strategy.getOriginalHeader());
+
+        return result;
+    }
+
     /**
      * Reads a CSV file with positional binding and processes it using a provided row processor.
      *

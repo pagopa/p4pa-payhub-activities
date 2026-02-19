@@ -29,7 +29,6 @@ class DPInstallmentsWorkflowCompletionServiceTest {
     private DPInstallmentsWorkflowCompletionService service;
 
     private static final String WORKFLOW_ID = "workflow-123";
-    private static final String FILE_NAME = "fileName";
     private int retryDelayMs;
     private int maxRetries;
 
@@ -57,7 +56,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(workflowStatusDTO);
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment);
 
         // Then
         assertTrue(result.isEmpty());
@@ -69,7 +68,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
         InstallmentIngestionFlowFileDTO installment = buildInstallmentIngestionFlowFileDTO();
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(null, installment, 1L, FILE_NAME);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(null, installment);
 
         // Then
         assertTrue(result.isEmpty());
@@ -87,11 +86,10 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .thenReturn(workflowStatusDTO);
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment);
 
         // Then
         assertFalse(result.isEmpty());
-        assertEquals(WORKFLOW_EXECUTION_STATUS_FAILED.name(), result.getFirst().getWorkflowStatus());
         assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.name(), result.getFirst().getErrorCode());
         assertEquals(FileErrorCode.WORKFLOW_TERMINATED_WITH_FAILURE.getMessage(), result.getFirst().getErrorMessage());
     }
@@ -105,7 +103,7 @@ class DPInstallmentsWorkflowCompletionServiceTest {
                 .when(workflowHubServiceMock).waitWorkflowCompletion(WORKFLOW_ID, maxRetries, retryDelayMs);
 
         // When
-        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment, 1L, FILE_NAME);
+        List<InstallmentErrorDTO> result = service.waitForWorkflowCompletion(WORKFLOW_ID, installment);
 
         // Then
         assertFalse(result.isEmpty());

@@ -113,7 +113,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
         Mockito.doReturn(Collections.emptyList())
                 .when(dpInstallmentsWorkflowCompletionServiceMock)
-                .waitForWorkflowCompletion(workflowId, dto, rowNumber, ingestionFlowFile.getFileName());
+                .waitForWorkflowCompletion(workflowId, dto);
 
         return dto;
     }
@@ -146,7 +146,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
         List<InstallmentErrorDTO> expectedErrors = List.of(InstallmentErrorDTO.builder().errorCode("DUMMY_ERROR").build());
         Mockito.doReturn(expectedErrors)
                 .when(dpInstallmentsWorkflowCompletionServiceMock)
-                .waitForWorkflowCompletion(workflowId, dto, rowNumber, ingestionFlowFile.getFileName());
+                .waitForWorkflowCompletion(workflowId, dto);
 
         return Pair.of(dto, expectedErrors);
     }
@@ -169,7 +169,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
         List<InstallmentErrorDTO> expectedErrors = List.of(
                 new InstallmentErrorDTO(
-                        ingestionFlowFile.getFileName(), dto.getIupdOrg(), dto.getIud(), null, rowNumber,
+                        new String[]{},
                         FileErrorCode.DEBT_POSITION_NOT_FOUND.name(),
                         FileErrorCode.DEBT_POSITION_NOT_FOUND.getMessage())
         );

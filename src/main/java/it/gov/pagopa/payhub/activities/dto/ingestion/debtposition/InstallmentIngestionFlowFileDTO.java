@@ -3,12 +3,10 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
+import it.gov.pagopa.payhub.activities.service.files.CsvRowAware;
 import it.gov.pagopa.pu.debtposition.dto.generated.Action;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.commons.collections4.MultiValuedMap;
 
 import java.math.BigDecimal;
@@ -20,7 +18,9 @@ import static it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.Install
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InstallmentIngestionFlowFileDTO {
+public class InstallmentIngestionFlowFileDTO implements CsvRowAware {
+
+    private String[] row;
 
     @CsvBindByName(column = "IUPD", profiles = V2_0)
     @CsvBindByName(column = "iupdOrg", profiles = V2_0_ENG)
