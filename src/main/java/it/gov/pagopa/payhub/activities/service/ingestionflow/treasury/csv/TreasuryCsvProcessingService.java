@@ -49,14 +49,14 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             Iterator<TreasuryCsvIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
             IngestionFlowFile ingestionFlowFile,
-            Path workingDirectory) {
+            Path workingDirectory,
+            TreasuryIufIngestionFlowFileResult result) {
         List<TreasuryCsvErrorDTO> errorList = new ArrayList<>();
-        TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
-        ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
-        ingestionFlowFileResult.setIpaCode(getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId()));
+        result.setIuf2TreasuryIdMap(new HashMap<>());
+        result.setIpaCode(getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId()));
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

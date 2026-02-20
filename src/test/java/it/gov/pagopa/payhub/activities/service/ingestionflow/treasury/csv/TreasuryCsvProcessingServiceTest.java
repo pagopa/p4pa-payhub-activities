@@ -79,7 +79,7 @@ class TreasuryCsvProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
     @Override
     protected TreasuryIufIngestionFlowFileResult startProcess(Iterator<TreasuryCsvIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processTreasuryCsv(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processTreasuryCsv(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new TreasuryIufIngestionFlowFileResult());
     }
 
     @Override

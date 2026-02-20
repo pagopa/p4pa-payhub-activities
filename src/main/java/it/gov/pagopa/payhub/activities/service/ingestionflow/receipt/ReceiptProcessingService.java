@@ -59,9 +59,9 @@ public class ReceiptProcessingService extends IngestionFlowProcessingService<Rec
     public ReceiptIngestionFlowFileResult processReceipts(Iterator<ReceiptIngestionFlowFileDTO> iterator,
                                                           List<CsvException> readerExceptions,
                                                           IngestionFlowFile ingestionFlowFile,
-                                                          Path workingDirectory) {
+                                                          Path workingDirectory,
+                                                          ReceiptIngestionFlowFileResult result) {
         List<ReceiptErrorDTO> errorList = new ArrayList<>();
-        ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
         return result;
     }

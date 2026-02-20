@@ -39,22 +39,23 @@ public class OrganizationProcessingService extends IngestionFlowProcessingServic
     public OrganizationIngestionFlowFileResult processOrganization(
             Iterator<OrganizationIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory,
+            OrganizationIngestionFlowFileResult result) {
         List<OrganizationErrorDTO> errorList = new ArrayList<>();
-        OrganizationIngestionFlowFileResult ingestionFlowFileResult = new OrganizationIngestionFlowFileResult();
 
         Organization organizationBroker = getOrganizationById(ingestionFlowFile.getOrganizationId());
         Long brokerId = organizationBroker.getBrokerId();
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            ingestionFlowFileResult.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
-            return ingestionFlowFileResult;
+            result.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
+            return result;
         }
-        ingestionFlowFileResult.setBrokerId(organizationBroker.getBrokerId());
-        ingestionFlowFileResult.setBrokerFiscalCode(organizationBroker.getOrgFiscalCode());
+        result.setBrokerId(organizationBroker.getBrokerId());
+        result.setBrokerFiscalCode(organizationBroker.getOrgFiscalCode());
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

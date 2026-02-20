@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util.csv;
 
 import com.opencsv.exceptions.CsvException;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
@@ -30,7 +31,7 @@ class CsvServiceTest {
         // Give
         Path filePath = Path.of("build", "tmp", "test", "output.csv");
 
-        String[] headerArray= new String[]{"Header1", "Header2"};
+        String[] headerArray = new String[]{"Header1", "Header2"};
         List<String[]> header = new ArrayList<>(List.of());
         header.add(headerArray);
         List<String[]> data = Arrays.asList(new String[]{"Data1", "Data2"}, new String[]{"Data3", "Data4"});
@@ -48,7 +49,7 @@ class CsvServiceTest {
     void testCreateCsv_noData() throws IOException {
         // Give
         Path filePath = Path.of("build", "tmp", "test", "empty.csv");
-        String[] headerArray= new String[]{"Header1", "Header2"};
+        String[] headerArray = new String[]{"Header1", "Header2"};
         List<String[]> header = new ArrayList<>(List.of());
         header.add(headerArray);
         List<String[]> data = List.of();
@@ -95,6 +96,7 @@ class CsvServiceTest {
 
         csvService.createCsv(filePath, headerList, data);
         List<CsvException> totalReaderExceptions = new ArrayList<>();
+        List<TestCsv> result = new ArrayList<>();
 
         // When
         List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, (iterator, readerException) -> {
@@ -103,7 +105,7 @@ class CsvServiceTest {
             totalReaderExceptions.clear();
             totalReaderExceptions.addAll(readerException);
             return list;
-        }, "default");
+        }, result, "default");
 
         // Then
         List<String[]> actualData = resultList.stream()
@@ -130,15 +132,19 @@ class CsvServiceTest {
         headerList.add(headers.toArray(new String[0]));
         List<String[]> data = List.of();
 
+        List<TestCsv> result = new ArrayList<>();
+
         csvService.createCsv(filePath, headerList, data);
 
         // When
-        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class, (iterator, readerExceptions) -> {
-            List<TestCsv> list = new ArrayList<>();
-            iterator.forEachRemaining(list::add);
-            return list;
-        }, "default");
-
+        List<TestCsv> resultList = csvService.readCsv(filePath, TestCsv.class,
+                (iterator, readerExceptions) -> {
+                    List<TestCsv> list = new ArrayList<>();
+                    iterator.forEachRemaining(list::add);
+                    return list;
+                },
+                result,
+                "default");
         // Then
         assertEquals(0, resultList.size());
     }
@@ -151,6 +157,7 @@ class CsvServiceTest {
         List<String[]> headerList = new ArrayList<>();
         headerList.add(headers.toArray(new String[0]));
         List<String[]> data = List.of();
+        List<TestCsv> result = new ArrayList<>();
 
         csvService.createCsv(filePath, headerList, data);
 
@@ -160,7 +167,7 @@ class CsvServiceTest {
                     List<TestCsv> list = new ArrayList<>();
                     iterator.forEachRemaining(list::add);
                     return list;
-                }, "default")
+                }, result, "default")
         );
     }
 
@@ -169,6 +176,7 @@ class CsvServiceTest {
     void testReadCsv_invalidFile() {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "nonexistent.csv");
+        List<TestCsv> result = new ArrayList<>();
 
         // When & Then
         assertThrows(IOException.class, () ->
@@ -176,7 +184,7 @@ class CsvServiceTest {
                     List<TestCsv> list = new ArrayList<>();
                     iterator.forEachRemaining(list::add);
                     return list;
-                }, "default")
+                }, result, "default")
         );
     }
 
@@ -201,7 +209,7 @@ class CsvServiceTest {
             }
         };
         // When
-        csvService.createCsv(filePath,TestCsv.class, csvRowsSupplier, "v1");
+        csvService.createCsv(filePath, TestCsv.class, csvRowsSupplier, "v1");
 
         // Then
         File file = filePath.toFile();
@@ -223,7 +231,7 @@ class CsvServiceTest {
 
         // When
         IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-                csvService.createCsv(filePath,TestCsv.class,() -> testCsvList, "v1"));
+                csvService.createCsv(filePath, TestCsv.class, () -> testCsvList, "v1"));
 
         // Then
         File file = filePath.toFile();
@@ -233,7 +241,7 @@ class CsvServiceTest {
     }
 
     @Test
-    void testCreateCsv_whenCsvRequiredFieldEmptyException_thenThrowInvalidCsvRowException(){
+    void testCreateCsv_whenCsvRequiredFieldEmptyException_thenThrowInvalidCsvRowException() {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "EXPORT.csv");
 
@@ -253,24 +261,26 @@ class CsvServiceTest {
         // Given
         Path filePath = Path.of("build", "tmp", "test", "installment_header.csv");
 
-        String[] header = new String[]{"col1", "col2"};
+        String[] header = new String[]{"iud", "codIuv"};
         List<String[]> headerList = new ArrayList<>(List.of());
         headerList.add(header);
         List<String[]> data = Arrays.asList(new String[]{"Data1", "Data2"}, new String[]{"Data3", "Data4"});
 
         csvService.createCsv(filePath, headerList, data);
 
+        InstallmentIngestionFlowFileResult res = new InstallmentIngestionFlowFileResult();
+
         // When
         InstallmentIngestionFlowFileResult result =
                 csvService.readCsv(
                         filePath,
-                        TestCsv.class,
+                        InstallmentIngestionFlowFileDTO.class,
                         (iterator, readerExceptions) -> {
-                            InstallmentIngestionFlowFileResult r = new InstallmentIngestionFlowFileResult();
-                            iterator.forEachRemaining(e -> {});
-                            return r;
-                        },
-                        "default"
+                            iterator.forEachRemaining(e -> {
+                            });
+                            return res;
+                        }, res,
+                        "1.0"
                 );
 
         // Then

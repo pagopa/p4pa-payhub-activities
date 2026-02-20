@@ -45,13 +45,14 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
     public PaymentNotificationIngestionFlowFileResult processPaymentNotification(
             Iterator<PaymentNotificationIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory,
+            PaymentNotificationIngestionFlowFileResult result) {
         List<PaymentNotificationErrorDTO> errorList = new ArrayList<>();
-        PaymentNotificationIngestionFlowFileResult ingestionFlowFileResult = new PaymentNotificationIngestionFlowFileResult();
-        ingestionFlowFileResult.setIudList(new ArrayList<>());
+        result.setIudList(new ArrayList<>());
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

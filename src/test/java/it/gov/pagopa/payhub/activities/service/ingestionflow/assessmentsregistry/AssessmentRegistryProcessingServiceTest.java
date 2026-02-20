@@ -79,7 +79,7 @@ class AssessmentRegistryProcessingServiceTest extends BaseIngestionFlowProcessin
 
     @Override
     protected AssessmentsRegistryIngestionFlowFileResult startProcess(Iterator<AssessmentsRegistryIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processAssessmentsRegistry(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processAssessmentsRegistry(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new AssessmentsRegistryIngestionFlowFileResult());
     }
 
     @Override

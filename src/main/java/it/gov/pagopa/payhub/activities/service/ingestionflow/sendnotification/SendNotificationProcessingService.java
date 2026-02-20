@@ -58,9 +58,9 @@ public class SendNotificationProcessingService extends
             Iterator<SendNotificationIngestionFlowFileDTO> iterator,
             List<CsvException> readerExceptions,
             IngestionFlowFile ingestionFlowFile,
-            Path workingDirectory) {
+            Path workingDirectory,
+            SendNotificationIngestionFlowFileResult result) {
         List<SendNotificationErrorDTO> errorList = new ArrayList<>();
-        SendNotificationIngestionFlowFileResult result = new SendNotificationIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
         return result;
     }

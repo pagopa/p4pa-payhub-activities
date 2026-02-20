@@ -63,8 +63,11 @@ public class SendNotificationIngestionActivityImpl extends BaseIngestionFlowFile
     log.info("Processing file: {}", filePath);
 
     try {
+      SendNotificationIngestionFlowFileResult result = new SendNotificationIngestionFlowFileResult();
       return csvService.readCsv(filePath, SendNotificationIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
-          sendNotificationProcessingService.processSendNotifications(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
+          sendNotificationProcessingService.processSendNotifications(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory, result),
+              result,
+              ingestionFlowFileDTO.getFileVersion());
     } catch (Exception e) {
       log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
       throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));

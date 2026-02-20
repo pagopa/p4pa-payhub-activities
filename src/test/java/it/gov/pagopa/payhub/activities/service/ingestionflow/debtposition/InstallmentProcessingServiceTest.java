@@ -84,7 +84,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
     @Override
     protected InstallmentIngestionFlowFileResult startProcess(Iterator<InstallmentIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processInstallments(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processInstallments(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new InstallmentIngestionFlowFileResult());
     }
 
     @Override

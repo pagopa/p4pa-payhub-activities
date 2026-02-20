@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
 
 @Slf4j
@@ -59,11 +60,13 @@ public class AssessmentsRegistryIngestionActivityImpl extends
         log.info("Processing file: {}", filePath);
 
         try {
+            AssessmentsRegistryIngestionFlowFileResult result = new AssessmentsRegistryIngestionFlowFileResult();
             return csvService.readCsv(filePath,
                     AssessmentsRegistryIngestionFlowFileDTO.class, (csvIterator, readerException) ->
                             assessmentsRegistryProcessingService.processAssessmentsRegistry(csvIterator,
-                                    readerException,
-                                    ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
+                                    readerException, ingestionFlowFileDTO, workingDirectory, result),
+                    result,
+                    ingestionFlowFileDTO.getFileVersion());
         } catch (Exception e) {
             log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
             throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));

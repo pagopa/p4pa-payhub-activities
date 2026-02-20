@@ -88,6 +88,7 @@ class OrgSilServiceIngestionActivityTest {
         ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<OrgSilServiceIngestionFlowFileDTO> iterator = buildOrgSilServiceIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
+        OrgSilServiceIngestionFlowFileResult res = new OrgSilServiceIngestionFlowFileResult();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -98,22 +99,20 @@ class OrgSilServiceIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrgSilServiceIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrgSilServiceIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<OrgSilServiceIngestionFlowFileDTO>, List<CsvException>, OrgSilServiceIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(orgSilServiceProcessingServiceMock.processOrgSilService(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(orgSilServiceProcessingServiceMock.processOrgSilService(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
                 .thenReturn(buildOrgSilServiceIngestionFlowFileResult());
 
         // When
         OrgSilServiceIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
         // Then
-        Assertions.assertEquals(
-                buildOrgSilServiceIngestionFlowFileResult(),
-                result);
+        Assertions.assertEquals(buildOrgSilServiceIngestionFlowFileResult(), result);
         Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
         Assertions.assertFalse(filePath.toFile().exists());
     }
@@ -131,6 +130,7 @@ class OrgSilServiceIngestionActivityTest {
         ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<OrgSilServiceIngestionFlowFileDTO> iterator = buildOrgSilServiceIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
+        OrgSilServiceIngestionFlowFileResult res = new OrgSilServiceIngestionFlowFileResult();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -141,13 +141,13 @@ class OrgSilServiceIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrgSilServiceIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(OrgSilServiceIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<OrgSilServiceIngestionFlowFileDTO>, List<CsvException>, OrgSilServiceIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(orgSilServiceProcessingServiceMock.processOrgSilService(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(orgSilServiceProcessingServiceMock.processOrgSilService(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
                 .thenThrow(new RestClientException("Error"));
 
         // When & Then

@@ -6,6 +6,8 @@ import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
+import it.gov.pagopa.payhub.activities.service.files.CsvHeaderAware;
+import it.gov.pagopa.payhub.activities.service.files.CsvRowAware;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.ThreadUtils;

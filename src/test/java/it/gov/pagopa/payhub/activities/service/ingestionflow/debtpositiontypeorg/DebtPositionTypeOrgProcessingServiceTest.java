@@ -92,7 +92,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
 
     @Override
     protected DebtPositionTypeOrgIngestionFlowFileResult startProcess(Iterator<DebtPositionTypeOrgIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processDebtPositionTypeOrg(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processDebtPositionTypeOrg(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new DebtPositionTypeOrgIngestionFlowFileResult());
     }
 
     @Override
@@ -258,6 +258,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
     void givenBrokerOrganizationNotFoundWhenProcessDebtPositionTypeOrgThenSetErrorDescription() {
         // Given
         DebtPositionTypeOrgIngestionFlowFileDTO dto = mock(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        DebtPositionTypeOrgIngestionFlowFileResult expectedResult = new DebtPositionTypeOrgIngestionFlowFileResult();
 
         Mockito.reset(organizationServiceMock);
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
@@ -266,7 +267,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         // When
         DebtPositionTypeOrgIngestionFlowFileResult result = serviceSpy.processDebtPositionTypeOrg(
                 Stream.of(dto).iterator(), List.of(),
-                ingestionFlowFile, workingDirectory);
+                ingestionFlowFile, workingDirectory, expectedResult);
 
         // Then
         Assertions.assertNull(result.getBrokerId());

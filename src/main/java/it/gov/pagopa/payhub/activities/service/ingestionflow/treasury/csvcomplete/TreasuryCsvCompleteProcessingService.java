@@ -47,16 +47,17 @@ public class TreasuryCsvCompleteProcessingService extends IngestionFlowProcessin
     public TreasuryIufIngestionFlowFileResult processTreasuryCsvComplete(
             Iterator<TreasuryCsvCompleteIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory,
+            TreasuryIufIngestionFlowFileResult result) {
         List<TreasuryCsvCompleteErrorDTO> errorList = new ArrayList<>();
-        TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
-        ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
+        result.setIuf2TreasuryIdMap(new HashMap<>());
 
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
-        ingestionFlowFileResult.setIpaCode(ipaCode);
+        result.setIpaCode(ipaCode);
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

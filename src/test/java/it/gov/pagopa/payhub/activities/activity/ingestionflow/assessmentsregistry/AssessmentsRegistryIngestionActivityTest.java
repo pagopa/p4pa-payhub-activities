@@ -88,6 +88,7 @@ class AssessmentsRegistryIngestionActivityTest {
         ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<AssessmentsRegistryIngestionFlowFileDTO> iterator = buildAssessmentsRegistryIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
+        AssessmentsRegistryIngestionFlowFileResult res = new AssessmentsRegistryIngestionFlowFileResult();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -98,22 +99,20 @@ class AssessmentsRegistryIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsRegistryIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsRegistryIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<AssessmentsRegistryIngestionFlowFileDTO>, List<CsvException>, AssessmentsRegistryIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(debtPositionTypeProcessingServiceMock.processAssessmentsRegistry(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(debtPositionTypeProcessingServiceMock.processAssessmentsRegistry(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
                 .thenReturn(buildAssessmentsRegistryIngestionFlowFileResult());
 
         // When
         AssessmentsRegistryIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
         // Then
-        Assertions.assertEquals(
-                buildAssessmentsRegistryIngestionFlowFileResult(),
-                result);
+        Assertions.assertEquals(buildAssessmentsRegistryIngestionFlowFileResult(), result);
         Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
         Assertions.assertFalse(filePath.toFile().exists());
     }
@@ -131,6 +130,7 @@ class AssessmentsRegistryIngestionActivityTest {
         ingestionFlowFileDTO.setFileVersion("1.0");
         Iterator<AssessmentsRegistryIngestionFlowFileDTO> iterator = buildAssessmentsRegistryIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
+        AssessmentsRegistryIngestionFlowFileResult res = new AssessmentsRegistryIngestionFlowFileResult();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -141,13 +141,13 @@ class AssessmentsRegistryIngestionActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsRegistryIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(AssessmentsRegistryIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<AssessmentsRegistryIngestionFlowFileDTO>, List<CsvException>, AssessmentsRegistryIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(debtPositionTypeProcessingServiceMock.processAssessmentsRegistry(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(debtPositionTypeProcessingServiceMock.processAssessmentsRegistry(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
                 .thenThrow(new RestClientException("Error"));
 
         // When & Then

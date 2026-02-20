@@ -60,8 +60,10 @@ public class InstallmentIngestionFlowFileActivityImpl extends BaseIngestionFlowF
         log.info("Processing file: {}", filePath);
 
         try {
+            InstallmentIngestionFlowFileResult result = new InstallmentIngestionFlowFileResult();
             return csvService.readCsv(filePath, InstallmentIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
-                            installmentProcessingService.processInstallments(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory),
+                            installmentProcessingService.processInstallments(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory, result),
+                    result,
                     ingestionFlowFileDTO.getFileVersion());
         } catch (Exception e) {
             log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
