@@ -63,8 +63,8 @@ public class InstallmentIngestionFlowFileDTO implements CsvRowAware {
     @CsvBindByName(column = "iuv", profiles = V2_0_ENG)
     private String iuv;
 
-    @CsvBindByName(column = "tipoIdentificativoUnivoco", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "entityType", profiles = V2_0_ENG)
+    @CsvBindByName(column = "tipoIdentificativoUnivoco", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "entityType", required = true, profiles = V2_0_ENG)
     private PersonEntityType entityType;
 
     @CsvBindByName(column = "codiceIdentificativoUnivoco", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
@@ -108,14 +108,13 @@ public class InstallmentIngestionFlowFileDTO implements CsvRowAware {
     @CsvDate(value = "yyyy-MM-dd")
     private LocalDate dueDate;
 
-    @CsvBindByName(column = "importoDovuto", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
-    @CsvBindByName(column = "amount", profiles = V2_0_ENG)
+    @CsvBindByName(column = "importoDovuto", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "amount", required = true, profiles = V2_0_ENG)
     private BigDecimal amount;
 
     @CsvBindByName(column = "tipoDovuto", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "debtPositionTypeCode", required = true, profiles = V2_0_ENG)
     private String debtPositionTypeCode;
-
 
     @CsvBindByName(column = "causaleVersamento", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "remittanceInformation", required = true, profiles = V2_0_ENG)
