@@ -53,6 +53,7 @@ public class IUVArchivingExportFileService {
                 .orElseThrow(() -> new IngestionFlowFileNotFoundException(String.format("IngestionFlowFile with id %s was not found", ingestionFlowFileId)));
 
         Path csvFilePath = resolveCsvFilePath(ingestionFlowFile);
+        String profile = ingestionFlowFile.getFileVersion();
 
         List<IUVInstallmentsExportFlowFileDTO> csvRows = filterAndMap(debtPositions, ingestionFlowFileId);
 
@@ -68,7 +69,7 @@ public class IUVArchivingExportFileService {
                         }
                         return List.of();
                     },
-                    null);
+                    profile);
         } catch (IOException e) {
             throw new IllegalStateException("Error writing to CSV file: " + e.getMessage(), e);
         }

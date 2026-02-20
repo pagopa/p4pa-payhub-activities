@@ -1,25 +1,20 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
-import static com.opencsv.enums.CSVReaderNullFieldIndicator.EMPTY_SEPARATORS;
-
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
-import com.opencsv.bean.MappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidCsvRowException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import it.gov.pagopa.payhub.activities.service.files.xls.OrderedHeaderColumnNameMappingStrategy;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,12 +24,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import it.gov.pagopa.payhub.activities.service.files.xls.OrderedHeaderColumnNameMappingStrategy;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
+import static com.opencsv.enums.CSVReaderNullFieldIndicator.EMPTY_SEPARATORS;
 
 @Lazy
 @Service
@@ -175,7 +165,7 @@ public class CsvService {
      * @return The result produced by the row processor.
      * @throws IOException If an error occurs while reading the file.
      */
-    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile, MappingStrategy<T> strategy, int skipLines) throws IOException {
+    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, R result, String csvProfile, MappingStrategy<T> strategy, int skipLines) throws IOException {
         try (FileReader fileReader = new FileReader(csvFilePath.toFile())) {
 
             CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(fileReader)
@@ -190,18 +180,28 @@ public class CsvService {
                 .withSkipLines(skipLines)
                 .build();
 
-                return rowProcessor.apply(csvToBean.iterator(), csvToBean.getCapturedExceptions());
+            Iterator<T> iterator = csvToBean.iterator();
+            setOriginalHeader(result, strategy);
 
+            return rowProcessor.apply(iterator, csvToBean.getCapturedExceptions());
         } catch (Exception e) {
             if (e.getCause() instanceof CsvRequiredFieldEmptyException csvRequiredFieldEmptyException) {
                 csvRequiredFieldEmptyException.setLineNumber(0);
 
+                setOriginalHeader(result, strategy);
                 List<CsvException> headerExceptions = new ArrayList<>();
                 headerExceptions.add(csvRequiredFieldEmptyException);
                 return rowProcessor.apply(Collections.emptyIterator(), headerExceptions);
             }
 
             throw new IOException("Error while reading csv file: " + e.getMessage(), e);
+        }
+    }
+
+    private <T, R> void setOriginalHeader(R result, MappingStrategy<T> strategy){
+        if (result instanceof CsvHeaderAware aware
+                && strategy instanceof RowAwareHeaderColumnNameMappingStrategy<T> rowAwareStrategy) {
+            aware.setOriginalHeader(rowAwareStrategy.getOriginalHeader());
         }
     }
 
@@ -222,18 +222,12 @@ public class CsvService {
      * @return The result produced by the row processor.
      * @throws IOException If an error occurs while reading the file.
      */
-    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, String csvProfile) throws IOException {
+    public <T, R> R readCsv(Path csvFilePath, Class<T> typeClass, BiFunction<Iterator<T>, List<CsvException>, R> rowProcessor, R result, String csvProfile) throws IOException {
         RowAwareHeaderColumnNameMappingStrategy<T> strategy = new RowAwareHeaderColumnNameMappingStrategy<>();
         strategy.setProfile(csvProfile);
         strategy.setType(typeClass);
 
-        R result = readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, 0);
-
-        if(result instanceof CsvHeaderAware aware) {
-            aware.setOriginalHeader(strategy.getOriginalHeader());
-        }
-
-        return result;
+        return readCsv(csvFilePath, typeClass, rowProcessor, result, csvProfile, strategy, 0);
     }
 
     /**
@@ -259,6 +253,6 @@ public class CsvService {
         strategy.setProfile(csvProfile);
         strategy.setType(typeClass);
 
-        return readCsv(csvFilePath, typeClass, rowProcessor, csvProfile, strategy, skipLines);
+        return readCsv(csvFilePath, typeClass, rowProcessor, null, csvProfile, strategy, skipLines);
     }
 }

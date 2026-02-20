@@ -81,7 +81,7 @@ class ReceiptProcessingServiceTest extends BaseIngestionFlowProcessingServiceTes
 
     @Override
     protected ReceiptIngestionFlowFileResult startProcess(Iterator<ReceiptIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processReceipts(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processReceipts(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new ReceiptIngestionFlowFileResult());
     }
 
     @Override

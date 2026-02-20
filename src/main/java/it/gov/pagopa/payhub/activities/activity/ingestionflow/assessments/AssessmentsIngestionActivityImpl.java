@@ -59,11 +59,12 @@ public class AssessmentsIngestionActivityImpl extends
         log.info("Processing file: {}", filePath);
 
         try {
+            AssessmentsIngestionFlowFileResult result = new AssessmentsIngestionFlowFileResult();
             return csvService.readCsv(filePath,
                     AssessmentsIngestionFlowFileDTO.class, (csvIterator, readerException) ->
-                            assessmentsProcessingService.processAssessments(csvIterator,
-                                    readerException,
-                                    ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
+                            assessmentsProcessingService.processAssessments(csvIterator, readerException, ingestionFlowFileDTO, workingDirectory, result),
+                    result,
+                    ingestionFlowFileDTO.getFileVersion());
         } catch (Exception e) {
             log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
             throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));

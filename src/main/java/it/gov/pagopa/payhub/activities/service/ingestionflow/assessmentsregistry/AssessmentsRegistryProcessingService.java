@@ -45,17 +45,17 @@ public class AssessmentsRegistryProcessingService extends
     public AssessmentsRegistryIngestionFlowFileResult processAssessmentsRegistry(
             Iterator<AssessmentsRegistryIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory,
+            AssessmentsRegistryIngestionFlowFileResult result) {
 
         List<AssessmentsRegistryErrorDTO> errorList = new ArrayList<>();
 
-        AssessmentsRegistryIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsRegistryIngestionFlowFileResult();
-
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
-        ingestionFlowFileResult.setIpaCode(ipaCode);
+        result.setIpaCode(ipaCode);
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

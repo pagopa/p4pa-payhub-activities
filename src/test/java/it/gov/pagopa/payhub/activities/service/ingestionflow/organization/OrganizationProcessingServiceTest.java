@@ -76,7 +76,7 @@ class OrganizationProcessingServiceTest extends BaseIngestionFlowProcessingServi
 
     @Override
     protected OrganizationIngestionFlowFileResult startProcess(Iterator<OrganizationIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processOrganization(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processOrganization(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new OrganizationIngestionFlowFileResult());
     }
 
     @Override
@@ -156,6 +156,7 @@ class OrganizationProcessingServiceTest extends BaseIngestionFlowProcessingServi
     void givenBrokerOrganizationNotFoundWhenProcessThenSetErrorDescription() {
         // Given
         OrganizationIngestionFlowFileDTO dto = podamFactory.manufacturePojo(OrganizationIngestionFlowFileDTO.class);
+        OrganizationIngestionFlowFileResult expectedResult = new OrganizationIngestionFlowFileResult();
 
         Mockito.reset(organizationServiceMock);
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
@@ -164,7 +165,7 @@ class OrganizationProcessingServiceTest extends BaseIngestionFlowProcessingServi
         // When
         OrganizationIngestionFlowFileResult result = serviceSpy.processOrganization(
                 Stream.of(dto).iterator(), List.of(),
-                ingestionFlowFile, workingDirectory);
+                ingestionFlowFile, workingDirectory, expectedResult);
 
         // Then
         Assertions.assertNull(result.getBrokerId());

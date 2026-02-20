@@ -29,7 +29,7 @@ public class IngestionFlowFileFaker {
                 .fileSize(100L)
                 .operatorExternalId("OPERATORID")
                 .fileOrigin("PAGOPA")
-                .fileVersion("FILEVERSION");
+                .fileVersion("1.0");
     }
 
 }

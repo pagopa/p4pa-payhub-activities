@@ -78,7 +78,7 @@ class OrgSilServiceProcessingServiceTest extends BaseIngestionFlowProcessingServ
 
     @Override
     protected OrgSilServiceIngestionFlowFileResult startProcess(Iterator<OrgSilServiceIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processOrgSilService(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processOrgSilService(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new OrgSilServiceIngestionFlowFileResult());
     }
 
     @Override

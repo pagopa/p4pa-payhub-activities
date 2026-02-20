@@ -55,23 +55,23 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
         Iterator<DebtPositionTypeOrgIngestionFlowFileDTO> iterator,
         List<CsvException> readerException,
         IngestionFlowFile ingestionFlowFile,
-        Path workingDirectory) {
+        Path workingDirectory,
+        DebtPositionTypeOrgIngestionFlowFileResult result) {
 
         List<DebtPositionTypeOrgErrorDTO> errorList = new ArrayList<>();
-        DebtPositionTypeOrgIngestionFlowFileResult ingestionFlowFileResult = new DebtPositionTypeOrgIngestionFlowFileResult();
 
         Organization organization = getOrganizationById(ingestionFlowFile.getOrganizationId());
         Long brokerId = organization.getBrokerId();
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            ingestionFlowFileResult.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
-            return ingestionFlowFileResult;
+            result.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
+            return result;
         }
-        ingestionFlowFileResult.setBrokerId(brokerId);
-        ingestionFlowFileResult.setOrgIpaCode(organization.getIpaCode());
+        result.setBrokerId(brokerId);
+        result.setOrgIpaCode(organization.getIpaCode());
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

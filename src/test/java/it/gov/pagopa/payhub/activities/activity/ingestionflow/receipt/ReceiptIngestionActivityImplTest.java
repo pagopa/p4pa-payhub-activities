@@ -85,6 +85,7 @@ class ReceiptIngestionActivityImplTest {
 		Iterator<ReceiptIngestionFlowFileDTO> iterator = buildReceiptIngestionFlowFileDTO();
 		List<CsvException> readerExceptions = List.of();
 		ReceiptIngestionFlowFileResult expectedResult = TestUtils.getPodamFactory().manufacturePojo(ReceiptIngestionFlowFileResult.class);
+		ReceiptIngestionFlowFileResult res = new ReceiptIngestionFlowFileResult();
 
 		Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);
@@ -95,13 +96,13 @@ class ReceiptIngestionActivityImplTest {
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
 				.retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-		Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(ReceiptIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+		Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(ReceiptIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
 				.thenAnswer(invocation -> {
 					BiFunction<Iterator<ReceiptIngestionFlowFileDTO>, List<CsvException>, ReceiptIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
 					return rowProcessor.apply(iterator, readerExceptions);
 				});
 
-		Mockito.when(receiptProcessingServiceMock.processReceipts(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+		Mockito.when(receiptProcessingServiceMock.processReceipts(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
 				.thenReturn(expectedResult);
 
 		// When
@@ -122,6 +123,7 @@ class ReceiptIngestionActivityImplTest {
 		ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT);
 		Iterator<ReceiptIngestionFlowFileDTO> iterator = buildReceiptIngestionFlowFileDTO();
 		List<CsvException> readerExceptions = List.of();
+		ReceiptIngestionFlowFileResult res = new ReceiptIngestionFlowFileResult();
 
 		Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
 		List<Path> mockedListPath = List.of(filePath);
@@ -132,13 +134,13 @@ class ReceiptIngestionActivityImplTest {
 		doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
 				.retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-		Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(ReceiptIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+		Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(ReceiptIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
 				.thenAnswer(invocation -> {
 					BiFunction<Iterator<ReceiptIngestionFlowFileDTO>, List<CsvException>, ReceiptIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
 					return rowProcessor.apply(iterator, readerExceptions);
 				});
 
-		Mockito.when(receiptProcessingServiceMock.processReceipts(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+		Mockito.when(receiptProcessingServiceMock.processReceipts(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
 				.thenThrow(new RestClientException("Error"));
 
 		// When & Then

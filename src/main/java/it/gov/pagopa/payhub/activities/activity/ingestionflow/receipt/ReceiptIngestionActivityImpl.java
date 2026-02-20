@@ -60,8 +60,11 @@ public class ReceiptIngestionActivityImpl extends BaseIngestionFlowFileActivity<
         log.info("Processing file: {}", filePath);
 
         try {
+            ReceiptIngestionFlowFileResult result = new ReceiptIngestionFlowFileResult();
             return csvService.readCsv(filePath, ReceiptIngestionFlowFileDTO.class, (csvIterator, readerExceptions) ->
-                    receiptProcessingService.processReceipts(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
+                    receiptProcessingService.processReceipts(csvIterator, readerExceptions, ingestionFlowFileDTO, workingDirectory, result),
+                    result,
+                    ingestionFlowFileDTO.getFileVersion());
         } catch (Exception e) {
             log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
             throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));

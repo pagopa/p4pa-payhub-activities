@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.orgsilservice;
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.organization.OrgSilServiceService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.organization.OrganizationIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.orgsilservice.OrgSilServiceIngestionFlowFileResult;
@@ -48,15 +49,16 @@ public class OrgSilServiceProcessingService extends IngestionFlowProcessingServi
     public OrgSilServiceIngestionFlowFileResult processOrgSilService(
             Iterator<OrgSilServiceIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory,
+            OrgSilServiceIngestionFlowFileResult result) {
+
         List<OrgSilServiceErrorDTO> errorList = new ArrayList<>();
-        OrgSilServiceIngestionFlowFileResult ingestionFlowFileResult = new OrgSilServiceIngestionFlowFileResult();
-
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
-        ingestionFlowFileResult.setIpaCode(ipaCode);
+        result.setIpaCode(ipaCode);
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

@@ -75,7 +75,7 @@ class PaymentNotificationProcessingServiceTest extends BaseIngestionFlowProcessi
 
     @Override
     protected PaymentNotificationIngestionFlowFileResult startProcess(Iterator<PaymentNotificationIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processPaymentNotification(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processPaymentNotification(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new PaymentNotificationIngestionFlowFileResult());
     }
 
     @Override

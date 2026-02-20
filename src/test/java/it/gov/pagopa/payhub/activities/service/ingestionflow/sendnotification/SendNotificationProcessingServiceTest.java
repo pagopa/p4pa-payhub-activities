@@ -80,7 +80,7 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
 
     @Override
     protected SendNotificationIngestionFlowFileResult startProcess(Iterator<SendNotificationIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processSendNotifications(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processSendNotifications(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new SendNotificationIngestionFlowFileResult());
     }
 
     @Override

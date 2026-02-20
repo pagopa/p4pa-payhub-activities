@@ -67,17 +67,17 @@ public class AssessmentsProcessingService extends
     public AssessmentsIngestionFlowFileResult processAssessments(
             Iterator<AssessmentsIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory,
+            AssessmentsIngestionFlowFileResult result) {
 
         List<AssessmentsErrorDTO> errorList = new ArrayList<>();
 
-        AssessmentsIngestionFlowFileResult ingestionFlowFileResult = new AssessmentsIngestionFlowFileResult();
-
         String ipaCode = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
-        ingestionFlowFileResult.setIpaCode(ipaCode);
+        result.setIpaCode(ipaCode);
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

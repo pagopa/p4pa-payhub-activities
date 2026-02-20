@@ -101,7 +101,7 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
     @Override
     protected AssessmentsIngestionFlowFileResult startProcess(Iterator<AssessmentsIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processAssessments(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processAssessments(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new AssessmentsIngestionFlowFileResult());
     }
 
     @Override

@@ -51,24 +51,24 @@ public class DebtPositionTypeProcessingService extends
     public DebtPositionTypeIngestionFlowFileResult processDebtPositionType(
             Iterator<DebtPositionTypeIngestionFlowFileDTO> iterator,
             List<CsvException> readerException,
-            IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+            IngestionFlowFile ingestionFlowFile,
+            Path workingDirectory,
+            DebtPositionTypeIngestionFlowFileResult result) {
 
         List<DebtPositionTypeErrorDTO> errorList = new ArrayList<>();
-        DebtPositionTypeIngestionFlowFileResult ingestionFlowFileResult = new DebtPositionTypeIngestionFlowFileResult();
 
         Organization organization = getOrganizationById(ingestionFlowFile.getOrganizationId());
         Long brokerId = organization.getBrokerId();
         if (brokerId == null) {
             log.error("Broker for organization id {} not found", ingestionFlowFile.getOrganizationId());
-            ingestionFlowFileResult.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
-            return ingestionFlowFileResult;
+            result.setErrorDescription(FileErrorCode.BROKER_NOT_FOUND.getMessage());
+            return result;
         }
-        ingestionFlowFileResult.setBrokerId(brokerId);
-        ingestionFlowFileResult.setBrokerFiscalCode(organization.getOrgFiscalCode());
+        result.setBrokerId(brokerId);
+        result.setBrokerFiscalCode(organization.getOrgFiscalCode());
 
-        process(iterator, readerException, ingestionFlowFileResult, ingestionFlowFile, errorList,
-                workingDirectory);
-        return ingestionFlowFileResult;
+        process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
+        return result;
     }
 
     @Override

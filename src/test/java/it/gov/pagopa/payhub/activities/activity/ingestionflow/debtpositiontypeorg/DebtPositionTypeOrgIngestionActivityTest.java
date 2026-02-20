@@ -87,6 +87,7 @@ class DebtPositionTypeOrgIngestionActivityTest {
     ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE_ORG);
     Iterator<DebtPositionTypeOrgIngestionFlowFileDTO> iterator = buildDebtPositionTypeOrgIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
+    DebtPositionTypeOrgIngestionFlowFileResult res = new DebtPositionTypeOrgIngestionFlowFileResult();
 
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
@@ -97,22 +98,20 @@ class DebtPositionTypeOrgIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<DebtPositionTypeOrgIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeOrgIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
         });
 
-    Mockito.when(debtPositionTypeOrgProcessingServiceMock.processDebtPositionTypeOrg(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+    Mockito.when(debtPositionTypeOrgProcessingServiceMock.processDebtPositionTypeOrg(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
         .thenReturn(buildDebtPositionTypeOrgIngestionFlowFileResult());
 
     // When
     DebtPositionTypeOrgIngestionFlowFileResult result = activity.processFile(ingestionFlowFileId);
 
     // Then
-    Assertions.assertEquals(
-        buildDebtPositionTypeOrgIngestionFlowFileResult(),
-        result);
+    Assertions.assertEquals(buildDebtPositionTypeOrgIngestionFlowFileResult(), result);
     Mockito.verify(fileArchiverServiceMock, Mockito.times(1)).archive(ingestionFlowFileDTO);
     Assertions.assertFalse(filePath.toFile().exists());
   }
@@ -130,6 +129,8 @@ class DebtPositionTypeOrgIngestionActivityTest {
     ingestionFlowFileDTO.setFileVersion("1.0");
     Iterator<DebtPositionTypeOrgIngestionFlowFileDTO> iterator = buildDebtPositionTypeOrgIngestionFlowFileDTO();
     List<CsvException> readerExceptions = List.of();
+    DebtPositionTypeOrgIngestionFlowFileResult res = new DebtPositionTypeOrgIngestionFlowFileResult();
+
 
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
@@ -140,13 +141,13 @@ class DebtPositionTypeOrgIngestionActivityTest {
     doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
         .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+    Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(DebtPositionTypeOrgIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
         .thenAnswer(invocation -> {
           BiFunction<Iterator<DebtPositionTypeOrgIngestionFlowFileDTO>, List<CsvException>, DebtPositionTypeOrgIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
           return rowProcessor.apply(iterator, readerExceptions);
         });
 
-    Mockito.when(debtPositionTypeOrgProcessingServiceMock.processDebtPositionTypeOrg(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+    Mockito.when(debtPositionTypeOrgProcessingServiceMock.processDebtPositionTypeOrg(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
         .thenThrow(new RestClientException("Error"));
 
     // When & Then

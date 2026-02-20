@@ -83,7 +83,7 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
 
     @Override
     protected DebtPositionTypeIngestionFlowFileResult startProcess(Iterator<DebtPositionTypeIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
-        return serviceSpy.processDebtPositionType(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory);
+        return serviceSpy.processDebtPositionType(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new DebtPositionTypeIngestionFlowFileResult());
     }
 
     @Override
@@ -164,6 +164,7 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
     void givenBrokerOrganizationNotFoundWhenProcessDebtPositionTypeThenSetErrorDescription() {
         // Given
         DebtPositionTypeIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeIngestionFlowFileDTO.class);
+        DebtPositionTypeIngestionFlowFileResult expectedResult = new DebtPositionTypeIngestionFlowFileResult();
 
         Mockito.reset(organizationServiceMock);
         Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
@@ -172,7 +173,9 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
         // When
         DebtPositionTypeIngestionFlowFileResult result = serviceSpy.processDebtPositionType(
                 Stream.of(dto).iterator(), List.of(),
-                ingestionFlowFile, workingDirectory);
+                ingestionFlowFile, workingDirectory,
+                expectedResult
+                );
 
         // Then
         Assertions.assertNull(result.getBrokerId());

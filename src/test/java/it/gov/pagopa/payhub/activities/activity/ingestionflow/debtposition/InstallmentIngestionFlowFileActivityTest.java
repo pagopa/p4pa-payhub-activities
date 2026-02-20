@@ -86,6 +86,7 @@ class InstallmentIngestionFlowFileActivityTest {
         Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
         InstallmentIngestionFlowFileResult expectedResult = buildInstallmentIngestionFlowFileResult();
+        InstallmentIngestionFlowFileResult res = new InstallmentIngestionFlowFileResult();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -96,13 +97,13 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<InstallmentIngestionFlowFileDTO>, List<CsvException>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(installmentProcessingServiceMock.processInstallments(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(installmentProcessingServiceMock.processInstallments(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
                 .thenReturn(expectedResult);
 
         // When
@@ -123,6 +124,7 @@ class InstallmentIngestionFlowFileActivityTest {
         ingestionFlowFileDTO.setIngestionFlowFileType(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS);
         Iterator<InstallmentIngestionFlowFileDTO> iterator = buildInstallmentIngestionFlowFileDTO();
         List<CsvException> readerExceptions = List.of();
+        InstallmentIngestionFlowFileResult res = new InstallmentIngestionFlowFileResult();
 
         Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
         List<Path> mockedListPath = List.of(filePath);
@@ -133,13 +135,13 @@ class InstallmentIngestionFlowFileActivityTest {
         doReturn(mockedListPath).when(ingestionFlowFileRetrieverServiceMock)
                 .retrieveAndUnzipFile(ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
 
-        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any(), eq(ingestionFlowFileDTO.getFileVersion())))
+        Mockito.when(csvServiceMock.readCsv(eq(filePath), eq(InstallmentIngestionFlowFileDTO.class), any(), eq(res), eq(ingestionFlowFileDTO.getFileVersion())))
                 .thenAnswer(invocation -> {
                     BiFunction<Iterator<InstallmentIngestionFlowFileDTO>, List<CsvException>, InstallmentIngestionFlowFileResult> rowProcessor = invocation.getArgument(2);
                     return rowProcessor.apply(iterator, readerExceptions);
                 });
 
-        Mockito.when(installmentProcessingServiceMock.processInstallments(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent())))
+        Mockito.when(installmentProcessingServiceMock.processInstallments(same(iterator), same(readerExceptions), eq(ingestionFlowFileDTO), eq(filePath.getParent()), eq(res)))
                 .thenThrow(new RestClientException("Error"));
 
         // When & Then
@@ -150,8 +152,11 @@ class InstallmentIngestionFlowFileActivityTest {
         return InstallmentIngestionFlowFileResult.builder()
                 .totalRows(2L)
                 .processedRows(2L)
+                .organizationId(1L)
                 .errorDescription("errorDescription")
                 .discardedFileName("discardedFileName")
+                .operatorExternalUserId("OPERATORID")
+                .fileSize(100L)
                 .build();
     }
 

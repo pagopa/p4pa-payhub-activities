@@ -51,11 +51,13 @@ public class DebtPositionTypeOrgIngestionActivityImpl extends
         log.info("Processing file: {}", filePath);
 
         try {
+            DebtPositionTypeOrgIngestionFlowFileResult result = new DebtPositionTypeOrgIngestionFlowFileResult();
             return csvService.readCsv(filePath,
                     DebtPositionTypeOrgIngestionFlowFileDTO.class, (csvIterator, readerException) ->
                             debtPositionTypeOrgProcessingService.processDebtPositionTypeOrg(csvIterator,
-                                    readerException,
-                                    ingestionFlowFileDTO, workingDirectory), ingestionFlowFileDTO.getFileVersion());
+                                    readerException, ingestionFlowFileDTO, workingDirectory, result),
+                    result,
+                    ingestionFlowFileDTO.getFileVersion());
         } catch (Exception e) {
             log.error("Error processing file {} with version {}: {}", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage(), e);
             throw new InvalidIngestionFileException(String.format("Error processing file %s with version %s: %s", filePath, ingestionFlowFileDTO.getFileVersion(), e.getMessage()));

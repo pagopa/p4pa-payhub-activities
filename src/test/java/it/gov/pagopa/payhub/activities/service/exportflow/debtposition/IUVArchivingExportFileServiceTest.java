@@ -99,7 +99,7 @@ class IUVArchivingExportFileServiceTest {
             Supplier<List<IUVInstallmentsExportFlowFileDTO>> supplier = invocation.getArgument(2);
             supplier.get();
             return null;
-        }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), eq("1.0"));
 
         Mockito.when(foldersPathsConfigMock.getShared())
                 .thenReturn(Path.of("/shared"));
@@ -161,7 +161,7 @@ class IUVArchivingExportFileServiceTest {
                 .thenReturn(Path.of("/tmp"));
 
         doThrow(new IOException("Error"))
-                .when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
+                .when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), eq("1.0"));
 
         List<DebtPositionDTO> dpList = List.of(debtPositionDTO);
 
@@ -195,7 +195,7 @@ class IUVArchivingExportFileServiceTest {
             Supplier<List<IUVInstallmentsExportFlowFileDTO>> supplier = invocation.getArgument(2);
             supplier.get();
             return null;
-        }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), isNull());
+        }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), eq("1.0"));
 
         Mockito.when(foldersPathsConfigMock.getShared())
                 .thenReturn(Path.of("/shared"));

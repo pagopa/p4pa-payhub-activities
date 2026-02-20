@@ -61,9 +61,9 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     public InstallmentIngestionFlowFileResult processInstallments(Iterator<InstallmentIngestionFlowFileDTO> iterator,
                                                                   List<CsvException> readerExceptions,
                                                                   IngestionFlowFile ingestionFlowFile,
-                                                                  Path workingDirectory) {
+                                                                  Path workingDirectory,
+                                                                  InstallmentIngestionFlowFileResult result) {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
-        InstallmentIngestionFlowFileResult result = new InstallmentIngestionFlowFileResult();
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
         return result;
     }
