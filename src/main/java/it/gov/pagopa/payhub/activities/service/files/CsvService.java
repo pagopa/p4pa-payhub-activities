@@ -181,26 +181,27 @@ public class CsvService {
                 .build();
 
             Iterator<T> iterator = csvToBean.iterator();
-            if (result instanceof CsvHeaderAware aware
-                    && strategy instanceof RowAwareHeaderColumnNameMappingStrategy<T> rowAwareStrategy) {
-                aware.setOriginalHeader(rowAwareStrategy.getOriginalHeader());
-            }
+            setOriginalHeader(result, strategy);
 
             return rowProcessor.apply(iterator, csvToBean.getCapturedExceptions());
         } catch (Exception e) {
             if (e.getCause() instanceof CsvRequiredFieldEmptyException csvRequiredFieldEmptyException) {
                 csvRequiredFieldEmptyException.setLineNumber(0);
 
-                if (result instanceof CsvHeaderAware aware
-                        && strategy instanceof RowAwareHeaderColumnNameMappingStrategy<T> rowAwareStrategy) {
-                    aware.setOriginalHeader(rowAwareStrategy.getOriginalHeader());
-                }
+                setOriginalHeader(result, strategy);
                 List<CsvException> headerExceptions = new ArrayList<>();
                 headerExceptions.add(csvRequiredFieldEmptyException);
                 return rowProcessor.apply(Collections.emptyIterator(), headerExceptions);
             }
 
             throw new IOException("Error while reading csv file: " + e.getMessage(), e);
+        }
+    }
+
+    private <T, R> void setOriginalHeader(R result, MappingStrategy<T> strategy){
+        if (result instanceof CsvHeaderAware aware
+                && strategy instanceof RowAwareHeaderColumnNameMappingStrategy<T> rowAwareStrategy) {
+            aware.setOriginalHeader(rowAwareStrategy.getOriginalHeader());
         }
     }
 
