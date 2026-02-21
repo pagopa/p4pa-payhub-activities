@@ -10,6 +10,7 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -60,7 +61,7 @@ public abstract class ErrorArchiverService<T extends ErrorFileDTO, R> {
         }
 
         List<String[]> data = errorList.stream()
-                .map(ErrorFileDTO::toCsvRow)
+                .map(e -> getCsvRow(e.toCsvRow(), result))
                 .toList();
 
         try {
@@ -73,6 +74,18 @@ public abstract class ErrorArchiverService<T extends ErrorFileDTO, R> {
         } catch (IOException e) {
             throw new NotRetryableActivityException(e.getMessage());
         }
+    }
+
+    private String[] getCsvRow(String[] row, R result){
+        if (result instanceof CsvHeaderAware aware
+                && aware.getOriginalHeader() != null
+                && row.length < aware.getOriginalHeader().length + 2) {
+            return Stream.concat(Stream.generate(() -> "")
+                            .limit(aware.getOriginalHeader().length),
+                    Arrays.stream(row, row.length - 2, row.length)
+            ).toArray(String[]::new);
+        }
+        return row;
     }
 
     /**
