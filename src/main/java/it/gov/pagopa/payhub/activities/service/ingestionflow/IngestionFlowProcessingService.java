@@ -6,8 +6,6 @@ import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
-import it.gov.pagopa.payhub.activities.service.files.CsvHeaderAware;
-import it.gov.pagopa.payhub.activities.service.files.CsvRowAware;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.ThreadUtils;
@@ -172,10 +170,10 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
             newExceptions.forEach(e -> {
                 FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapCsvExceptionToErrorCodeAndMessage(e);
 
-                errorList.add(buildErrorDto(
+                errorList.add(buildReaderErrorDto(
                         ingestionFlowFile,
                         e.getLineNumber(),
-                        null,
+                        e.getLine(),
                         errorDetails.getErrorCode(),
                         errorDetails.getErrorMessage()
                 ));
@@ -190,6 +188,10 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
             previousReaderExceptionSize[0] = readerExceptions.size();
         }
         return totalRows;
+    }
+
+    protected E buildReaderErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, String[] rawRow, String errorCode, String message) {
+        return buildErrorDto(ingestionFlowFile, lineNumber, null, errorCode, message);
     }
 
     private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList, R result) {
