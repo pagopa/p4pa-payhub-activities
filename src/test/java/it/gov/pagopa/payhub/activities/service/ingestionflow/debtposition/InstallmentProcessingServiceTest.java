@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 
@@ -187,5 +188,16 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
                 podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
         dto.setRow(new String[]{"test"});
         return dto;
+    }
+
+    @Override
+    protected List<CsvException> buildReaderExceptions() {
+        return IntStream.rangeClosed(0, 1)
+                .mapToObj(i -> {
+                    CsvException csvException = new CsvException("DUMMYERROR" + i);
+                    csvException.setLineNumber(i);
+                    return csvException;
+                })
+                .toList();
     }
 }

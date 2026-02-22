@@ -198,7 +198,6 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     }
 
 
-
     private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList, R result) {
         if (errorList.isEmpty()) {
             log.info("No errors to archive for file: {}", ingestionFlowFile.getFileName());

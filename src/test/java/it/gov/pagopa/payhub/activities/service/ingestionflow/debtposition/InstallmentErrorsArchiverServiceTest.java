@@ -50,7 +50,7 @@ class InstallmentErrorsArchiverServiceTest {
     void testWriteErrors_whenValidInput_thenCreatesAndArchivesCsv() throws IOException {
         List<InstallmentErrorDTO> errorDTOList = List.of(
                 new InstallmentErrorDTO(new String[]{"data1"}, ERROR_CODE, ERROR_MESSAGE),
-                new InstallmentErrorDTO(new String[]{"data2"}, ERROR_CODE, ERROR_MESSAGE)
+                new InstallmentErrorDTO(new String[]{}, ERROR_CODE, ERROR_MESSAGE)
         );
         Path workingDirectory = Path.of("build", "test");
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
@@ -72,7 +72,6 @@ class InstallmentErrorsArchiverServiceTest {
         IngestionFlowFile ingestionFlowFileDTO = IngestionFlowFileFaker.buildIngestionFlowFile();
         Path expectedErrorFilePath = workingDirectory.resolve("ERROR-fileName.csv");
         InstallmentIngestionFlowFileResult result = new InstallmentIngestionFlowFileResult();
-        result.setOriginalHeader(new String[]{});
 
         // When
         service.writeErrors(workingDirectory, ingestionFlowFileDTO, List.of(), result);
