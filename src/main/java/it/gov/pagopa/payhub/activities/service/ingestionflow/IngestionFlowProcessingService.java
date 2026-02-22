@@ -122,6 +122,13 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     protected abstract List<E> consumeRow(long lineNumber, C row, R ingestionFlowFileResult, IngestionFlowFile ingestionFlowFile);
     /** Function to build an instance of the ErrorDTO with the configured params */
     protected abstract E buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, C row, String errorCode, String message);
+    /** Function to build an instance of the ErrorDTO with the configured params
+     *
+     * @param rawRow the raw CSV row from the reader exception, available for subclasses to use
+     */
+    protected E buildReaderErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, String[] rawRow, String errorCode, String message) {
+        return buildErrorDto(ingestionFlowFile, lineNumber, null, errorCode, message);
+    }
 
     private int retrieveTasksResults(LinkedHashMap<String, Triple<Long, C, Future<List<E>>>> rowProcessingTasks, IngestionFlowFile ingestionFlowFile, List<E> errorList) {
         log.debug("Retrieving results for {} tasks for ingestionFlowFileId {}",
@@ -190,9 +197,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         return totalRows;
     }
 
-    protected E buildReaderErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, String[] rawRow, String errorCode, String message) {
-        return buildErrorDto(ingestionFlowFile, lineNumber, null, errorCode, message);
-    }
+
 
     private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList, R result) {
         if (errorList.isEmpty()) {
