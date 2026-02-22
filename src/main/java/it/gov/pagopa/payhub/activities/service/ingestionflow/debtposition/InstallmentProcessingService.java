@@ -107,7 +107,7 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     @Override
     protected InstallmentErrorDTO buildReaderErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, String[] rawRow, String errorCode, String message) {
         return InstallmentErrorDTO.builder()
-                .csvRow(rawRow)
+                .csvRow(lineNumber < 1 ? null : rawRow)
                 .rowNumber(lineNumber)
                 .errorCode(errorCode)
                 .errorMessage(message)
