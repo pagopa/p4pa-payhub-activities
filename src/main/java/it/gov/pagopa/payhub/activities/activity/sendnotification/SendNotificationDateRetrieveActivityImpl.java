@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationNotFoundException;
 import it.gov.pagopa.pu.debtposition.dto.generated.UpdateInstallmentNotificationDateRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
@@ -31,10 +32,8 @@ public class SendNotificationDateRetrieveActivityImpl implements SendNotificatio
         try {
             sendNotificationDTO = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
         } catch (HttpClientErrorException.NotFound e) {
-            throw new SendNotificationNotFoundException(
-                "Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage()),
-                e
-            );
+            SendNotificationNotFoundException cause = new SendNotificationNotFoundException("Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage()));
+            throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(SendNotificationDateRetrieveActivity.class.getSimpleName(), cause.getMessage()));
         }
         if(sendNotificationDTO == null) {
             return null;

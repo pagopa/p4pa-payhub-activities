@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -24,10 +24,8 @@ public class FetchSendLegalFactActivityImpl implements FetchSendLegalFactActivit
 		try {
 			sendService.downloadAndArchiveSendLegalFact(notificationRequestId, legalFactCategory, legalFactId);
 		} catch (HttpClientErrorException.BadRequest e) {
-			throw new NotRetryableActivityException(
-				"Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message %s".formatted(notificationRequestId, legalFactCategory, legalFactId, e.getMessage()),
-				e
-			);
+			String errorMessage = "Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message %s".formatted(notificationRequestId, legalFactCategory, legalFactId, e.getMessage());
+			throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(FetchSendLegalFactActivity.class.getSimpleName(), errorMessage));
 		}
 	}
 }
