@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.debtposition.dto.generated.UpdateInstallmentNotificationDateRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
@@ -161,16 +161,17 @@ class SendNotificationDateRetrieveActivityTest {
                 .retrieveNotificationByNotificationRequestId(notificationRequestId);
 
         // When
-        SendNotificationNotFoundException notRetryableActivityException = Assertions.assertThrows(
-                SendNotificationNotFoundException.class,
+        SendStreamSkippedEventException sendStreamSkippedEventException = Assertions.assertThrows(
+                SendStreamSkippedEventException.class,
                 () -> sendNotificationDateRetrieve.sendNotificationDateRetrieve(notificationRequestId)
         );
 
         // Then
-        assertNotNull(notRetryableActivityException);
+        assertNotNull(sendStreamSkippedEventException);
+        String causeErrorMessage = "Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId);
         assertEquals(
-            "Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId),
-            notRetryableActivityException.getMessage()
+            "Skipped an error during execution of activity %s: %s".formatted(SendNotificationDateRetrieveActivity.class.getSimpleName(), causeErrorMessage),
+            sendStreamSkippedEventException.getMessage()
         );
         Mockito.verify(sendServiceMock, Mockito.times(0)).retrieveNotificationDate(notificationRequestId);
         Mockito.verifyNoInteractions(debtPositionServiceMock);

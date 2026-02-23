@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -75,8 +75,8 @@ class FetchSendLegalFactActivityImplTest {
 				);
 
 		//WHEN
-		NotRetryableActivityException notRetryableActivityException = Assertions.assertThrows(
-			NotRetryableActivityException.class, () ->
+		SendStreamSkippedEventException sendStreamSkippedEventException = Assertions.assertThrows(
+				SendStreamSkippedEventException.class, () ->
 				fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
 					notificationRequestId,
 					category,
@@ -85,10 +85,11 @@ class FetchSendLegalFactActivityImplTest {
 		);
 
 		//THEN
-		Assertions.assertNotNull(notRetryableActivityException);
+		Assertions.assertNotNull(sendStreamSkippedEventException);
+		String causeErrorMessage = "Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message 400 BadRequest".formatted(notificationRequestId, LegalFactCategoryDTO.ANALOG_DELIVERY, legalFactId);
 		Assertions.assertEquals(
-				"Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message 400 BadRequest".formatted(notificationRequestId, LegalFactCategoryDTO.ANALOG_DELIVERY, legalFactId),
-			notRetryableActivityException.getMessage()
+			"Skipped an error during execution of activity %s: %s".formatted(FetchSendLegalFactActivity.class.getSimpleName(), causeErrorMessage),
+			sendStreamSkippedEventException.getMessage()
 		);
 		Mockito.verify(sendServiceMock)
 				.downloadAndArchiveSendLegalFact(

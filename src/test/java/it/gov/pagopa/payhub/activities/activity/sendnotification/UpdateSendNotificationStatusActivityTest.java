@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationNotFoundException;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import org.junit.jupiter.api.Assertions;
@@ -69,16 +69,17 @@ class UpdateSendNotificationStatusActivityTest {
 				.retrieveNotificationByNotificationRequestId(notificationRequestId);
 
 		// When
-		SendNotificationNotFoundException notRetryableActivityException = Assertions.assertThrows(
-				SendNotificationNotFoundException.class,
+		SendStreamSkippedEventException sendStreamSkippedEventException = Assertions.assertThrows(
+				SendStreamSkippedEventException.class,
 				() -> updateSendNotificationStatusActivity.updateSendNotificationStatus(notificationRequestId)
 		);
 
 		// Then
-		Assertions.assertNotNull(notRetryableActivityException);
+		Assertions.assertNotNull(sendStreamSkippedEventException);
+		String causeErrorMessage = "Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId);
 		Assertions.assertEquals(
-				"Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId),
-				notRetryableActivityException.getMessage()
+				"Skipped an error during execution of activity %s: %s".formatted(UpdateSendNotificationStatusActivity.class.getSimpleName(), causeErrorMessage),
+			sendStreamSkippedEventException.getMessage()
 		);
 	}
 
