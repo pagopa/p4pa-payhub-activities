@@ -80,10 +80,11 @@ public abstract class ErrorArchiverService<T extends ErrorFileDTO, R> {
         if (result instanceof CsvHeaderAware aware
                 && aware.getOriginalHeader() != null
                 && row.length < aware.getOriginalHeader().length + 2) {
-            return Stream.concat(Stream.generate(() -> "")
-                            .limit(aware.getOriginalHeader().length),
-                    Arrays.stream(row, row.length - 2, row.length)
-            ).toArray(String[]::new);
+            String[] rowPadded = new String[aware.getOriginalHeader().length + 2];
+            Arrays.fill(rowPadded, "");
+            rowPadded[rowPadded.length - 2] = row[row.length - 2];
+            rowPadded[rowPadded.length - 1] = row[row.length - 1];
+            return rowPadded;
         }
         return row;
     }
