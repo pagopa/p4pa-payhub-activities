@@ -56,10 +56,10 @@ public class InstallmentIngestionFlowFileDTO implements CsvRowAware {
     @CsvBindByName(column = "paymentOptionDescription", profiles = V2_0_ENG)
     private String paymentOptionDescription;
 
-    @CsvBindByName(column = "iud", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0, V2_0_ENG})
+    @CsvBindByName(column = "IUD", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0, V2_0_ENG})
     private String iud;
 
-    @CsvBindByName(column = "codIUV", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "codIuv", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "iuv", profiles = V2_0_ENG)
     private String iuv;
 
@@ -120,7 +120,7 @@ public class InstallmentIngestionFlowFileDTO implements CsvRowAware {
     @CsvBindByName(column = "remittanceInformation", required = true, profiles = V2_0_ENG)
     private String remittanceInformation;
 
-    @CsvBindByName(column = "datiSpecificiRiscossione", profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
+    @CsvBindByName(column = "datiSpecificiRiscossione", required = true, profiles = {V1_0, V1_1, V1_2, V1_3, V1_4, V2_0})
     @CsvBindByName(column = "legacyPaymentMetadata", profiles = V2_0_ENG)
     private String legacyPaymentMetadata;
 
