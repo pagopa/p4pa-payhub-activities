@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationNotFoundException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -30,8 +29,8 @@ public class UpdateSendNotificationStatusActivityImpl implements UpdateSendNotif
 		try {
 			sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
 		} catch (HttpClientErrorException.NotFound e) {
-			SendNotificationNotFoundException cause = new SendNotificationNotFoundException("Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage()));
-			throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(UpdateSendNotificationStatusActivity.class.getSimpleName(), cause.getMessage()));
+			String errorMessage = "Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage());
+			throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(UpdateSendNotificationStatusActivity.class.getSimpleName(), errorMessage));
 		}
 		if(sendNotificationDTOByRequestId == null) {
 			return null;
