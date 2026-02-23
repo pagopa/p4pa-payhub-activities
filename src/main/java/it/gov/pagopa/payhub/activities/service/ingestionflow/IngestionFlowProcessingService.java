@@ -6,8 +6,6 @@ import it.gov.pagopa.payhub.activities.dto.ErrorFileDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
-import it.gov.pagopa.payhub.activities.service.files.CsvHeaderAware;
-import it.gov.pagopa.payhub.activities.service.files.CsvRowAware;
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.util.ThreadUtils;
@@ -124,6 +122,13 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     protected abstract List<E> consumeRow(long lineNumber, C row, R ingestionFlowFileResult, IngestionFlowFile ingestionFlowFile);
     /** Function to build an instance of the ErrorDTO with the configured params */
     protected abstract E buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, C row, String errorCode, String message);
+    /** Function to build an instance of the ErrorDTO with the configured params
+     *
+     * @param rawRow the raw CSV row from the reader exception, available for subclasses to use
+     */
+    protected E buildReaderErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, String[] rawRow, String errorCode, String message) {
+        return buildErrorDto(ingestionFlowFile, lineNumber, null, errorCode, message);
+    }
 
     private int retrieveTasksResults(LinkedHashMap<String, Triple<Long, C, Future<List<E>>>> rowProcessingTasks, IngestionFlowFile ingestionFlowFile, List<E> errorList) {
         log.debug("Retrieving results for {} tasks for ingestionFlowFileId {}",
@@ -172,10 +177,10 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
             newExceptions.forEach(e -> {
                 FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapCsvExceptionToErrorCodeAndMessage(e);
 
-                errorList.add(buildErrorDto(
+                errorList.add(buildReaderErrorDto(
                         ingestionFlowFile,
                         e.getLineNumber(),
-                        null,
+                        e.getLine(),
                         errorDetails.getErrorCode(),
                         errorDetails.getErrorMessage()
                 ));
@@ -191,6 +196,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
         }
         return totalRows;
     }
+
 
     private String archiveErrorFiles(IngestionFlowFile ingestionFlowFile, Path workingDirectory, List<E> errorList, R result) {
         if (errorList.isEmpty()) {
