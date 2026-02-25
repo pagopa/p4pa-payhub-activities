@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificationService;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV25DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,13 +37,13 @@ class GetSendNotificationEventsFromStreamActivityTest {
 		Long organizationId = 1L;
 		String streamId = "streamId";
 
-		List<ProgressResponseElementV25DTO> expectedResult = List.of(new ProgressResponseElementV25DTO());
+		List<ProgressResponseElementV28DTO> expectedResult = List.of(new ProgressResponseElementV28DTO());
 
 		Mockito.when(serviceMock.readSendStreamEvents(organizationId, streamId))
 				.thenReturn(expectedResult);
 
 		// When
-		List<ProgressResponseElementV25DTO> actualResult = activity.fetchSendNotificationEventsFromStream(organizationId, streamId);
+		List<ProgressResponseElementV28DTO> actualResult = activity.fetchSendNotificationEventsFromStream(organizationId, streamId);
 
 		// Then
 		Assertions.assertSame(expectedResult, actualResult);

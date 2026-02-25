@@ -203,7 +203,7 @@ class SendNotificationClientTest {
         Long organizationId = 1L;
         String streamId = "streamId";
 
-        List<ProgressResponseElementV25DTO> expectedResult = List.of(new ProgressResponseElementV25DTO());
+        List<ProgressResponseElementV28DTO> expectedResult = List.of(new ProgressResponseElementV28DTO());
 
         Mockito.when(sendApisHolderMock.getSendStreamsApi(accessToken))
                 .thenReturn(sendStreamsApiMock);
@@ -211,7 +211,7 @@ class SendNotificationClientTest {
                 .thenReturn(expectedResult);
 
         //When
-        List<ProgressResponseElementV25DTO> actualResult = client.readSendStreamEvents(organizationId, streamId, accessToken);
+        List<ProgressResponseElementV28DTO> actualResult = client.readSendStreamEvents(organizationId, streamId, accessToken);
 
         //Then
         Assertions.assertEquals(expectedResult, actualResult);

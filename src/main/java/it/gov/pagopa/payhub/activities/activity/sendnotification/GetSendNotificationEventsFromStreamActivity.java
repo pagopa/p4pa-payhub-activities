@@ -2,7 +2,8 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV25DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
+
 import java.util.List;
 
 /**
@@ -16,6 +17,6 @@ public interface GetSendNotificationEventsFromStreamActivity {
 	 * @param sendStreamId the ID of send notification stream
 	 */
 	@ActivityMethod
-	List<ProgressResponseElementV25DTO> fetchSendNotificationEventsFromStream(Long organizationId, String sendStreamId);
+	List<ProgressResponseElementV28DTO> fetchSendNotificationEventsFromStream(Long organizationId, String sendStreamId);
 
 }
