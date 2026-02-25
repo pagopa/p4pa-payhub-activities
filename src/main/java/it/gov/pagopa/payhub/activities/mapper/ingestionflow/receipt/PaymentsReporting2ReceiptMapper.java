@@ -28,6 +28,7 @@ public class PaymentsReporting2ReceiptMapper {
         PersonDTO personDTO = !installmentDebtorDTOS.isEmpty() ? installmentDebtorDTOS.getFirst().getDebtor() : buildAnonymousPerson();
 
         return new ReceiptWithAdditionalNodeDataDTO()
+                .organizationId(paymentsReporting.getOrganizationId())
                 .ingestionFlowFileId(paymentsReporting.getIngestionFlowFileId())
                 .receiptOrigin(ReceiptOriginType.PAYMENTS_REPORTING)
                 .paymentReceiptId(paymentsReporting.getIur())
