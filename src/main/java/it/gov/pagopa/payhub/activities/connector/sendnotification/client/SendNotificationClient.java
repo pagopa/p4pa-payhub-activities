@@ -60,7 +60,7 @@ public class SendNotificationClient {
             .getStream(sendStreamId);
   }
 
-  public List<ProgressResponseElementV25DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String accessToken) {
+  public List<ProgressResponseElementV28DTO> readSendStreamEvents(Long organizationId, String sendStreamId, String accessToken) {
     return sendApisHolder.getSendStreamsApi(accessToken)
             .getStreamEvents(organizationId, sendStreamId);
   }
