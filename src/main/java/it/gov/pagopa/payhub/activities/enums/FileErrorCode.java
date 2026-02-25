@@ -98,7 +98,7 @@ public enum FileErrorCode {
     RECEIPT_NOT_FOUND("La ricevuta non e' stata trovata"),
     RECEIPT_IUV_MISMATCH("I campi codIuv e identificativoUnivocoVersamento devono essere uguali"),
     RECEIPT_ALREADY_ASSOCIATED_TO_ANOTHER_IUV("La ricevuta caricata e' gia' associata ad un altro IUV"),
-    RECEIPT_ORG_MISMATCH("I campi identificativoDominio e cod_fiscale_pa1 devono essere uguali all'ente della ricevuta"),
+    RECEIPT_ORG_MISMATCH("I campi identificativoDominio e cod_fiscale_pa1 devono essere uguali al codice fiscale dell'ente che carica la ricevuta"),
 
     // debt position type
     DEBT_POSITION_TYPE_ALREADY_EXISTS("Il tipo posizione debitoria gia' esiste"),

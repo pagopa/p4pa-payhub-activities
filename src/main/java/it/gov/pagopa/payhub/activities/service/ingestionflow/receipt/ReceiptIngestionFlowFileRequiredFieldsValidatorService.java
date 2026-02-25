@@ -80,9 +80,8 @@ public class ReceiptIngestionFlowFileRequiredFieldsValidatorService {
         }
 
         if (!isValid) {
-            throw new IllegalArgumentException(
-                    FileErrorCode.RECEIPT_ORG_MISMATCH.name() + " Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA)."
-            );
+            throw new IllegalArgumentException(String.format("[%s] Organization fiscal codes must all be equal (organization, receipt.orgFiscalCode, receipt.fiscalCodePA).",
+                    FileErrorCode.RECEIPT_ORG_MISMATCH.name()));
         }
 
         if(StringUtils.isBlank(receiptIngestionFlowFileDTO.getCompanyName())){
