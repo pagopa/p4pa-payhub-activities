@@ -52,6 +52,7 @@ public class ReceiptMapper {
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization with id " + organizationId + " not found."));
 
         return new ReceiptWithAdditionalNodeDataDTO()
+                .organizationId(organizationId)
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .receiptOrigin(ReceiptOriginType.RECEIPT_PAGOPA)
                 .paymentReceiptId(rec.getReceiptId())
@@ -86,6 +87,7 @@ public class ReceiptMapper {
 
     public ReceiptWithAdditionalNodeDataDTO map(IngestionFlowFile ingestionFlowFile, ReceiptIngestionFlowFileDTO receipt) {
         return ReceiptWithAdditionalNodeDataDTO.builder()
+                .organizationId(ingestionFlowFile.getOrganizationId())
                 .ingestionFlowFileId(ingestionFlowFile.getIngestionFlowFileId())
                 .receiptOrigin(ReceiptOriginType.RECEIPT_FILE)
                 .sourceFlowName(receipt.getSourceFlowName() != null ? receipt.getSourceFlowName() : ingestionFlowFile.getFileName())

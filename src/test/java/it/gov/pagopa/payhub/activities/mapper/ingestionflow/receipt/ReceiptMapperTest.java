@@ -95,6 +95,7 @@ class ReceiptMapperTest {
         IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
         ingestionFlowFile.setIngestionFlowFileId(10L);
         ingestionFlowFile.setFileName("rtFileName.csv");
+        ingestionFlowFile.setOrganizationId(1L);
 
         ReceiptIngestionFlowFileDTO request = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
         if (codPaymentResult) {
@@ -147,6 +148,7 @@ class ReceiptMapperTest {
         IngestionFlowFile ingestionFlowFile = new IngestionFlowFile();
         ingestionFlowFile.setIngestionFlowFileId(10L);
         ingestionFlowFile.setFileName("rtFileName.csv");
+        ingestionFlowFile.setOrganizationId(1L);
 
         ReceiptIngestionFlowFileDTO request = podamFactory.manufacturePojo(ReceiptIngestionFlowFileDTO.class);
 
