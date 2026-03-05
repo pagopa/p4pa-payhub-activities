@@ -33,6 +33,6 @@ public class TransferSearchClient {
 
     public CollectionModelTransfer findByInstallmentId(Long installmentId, String accessToken) {
         return debtPositionApisHolder.getTransferSearchControllerApi(accessToken)
-                .crudTransfersFindByInstallmentId(installmentId.toString());
+                .crudTransfersFindByInstallmentId(installmentId);
     }
 }

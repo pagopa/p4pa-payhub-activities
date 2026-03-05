@@ -196,7 +196,7 @@ class IngestionFlowFileClientTest {
         PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
         when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileSearchControllerApiMock);
-        when(ingestionFlowFileSearchControllerApiMock.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), exptectedCreationDateFrom, null, null, null, null, null, null, null))
+        when(ingestionFlowFileSearchControllerApiMock.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, List.of(flowFileType.getValue()), exptectedCreationDateFrom, null, null, null, null, null, null, null))
                 .thenReturn(expectedResponse);
 
         // When
@@ -217,7 +217,7 @@ class IngestionFlowFileClientTest {
         PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
         when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileSearchControllerApiMock);
-        when(ingestionFlowFileSearchControllerApiMock.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null))
+        when(ingestionFlowFileSearchControllerApiMock.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null))
                 .thenReturn(expectedResponse);
 
         // When
