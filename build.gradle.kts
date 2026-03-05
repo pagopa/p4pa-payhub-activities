@@ -92,6 +92,7 @@ val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
 val httpClientVersion = "5.6"
+val httpCoreVersion = "5.4.1"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
@@ -113,6 +114,7 @@ dependencies {
     implementation("commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
+  implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
     // openApi
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
     implementation("org.springframework.data:spring-data-commons")
