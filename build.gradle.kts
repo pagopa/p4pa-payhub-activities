@@ -7,15 +7,15 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
-    id("org.springframework.boot") version "4.0.0"
+    id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.sonarqube") version "7.2.1.6560"
+    id("org.sonarqube") version "7.2.3.7755"
     `java-library`
     `maven-publish`
     jacoco
     id("com.intershop.gradle.jaxb") version "8.0.1"
-    id("org.openapi.generator") version "7.17.0"
-    id("com.github.jk1.dependency-license-report") version "3.0.1"
+    id("org.openapi.generator") version "7.20.0"
+    id("com.github.jk1.dependency-license-report") version "3.1.1"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -61,8 +61,8 @@ dependencies {
 tasks {
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
-    testLogging.events = setOf(TestLogEvent.FAILED)
-    testLogging.exceptionFormat = TestExceptionFormat.FULL
+        testLogging.events = setOf(TestLogEvent.FAILED)
+        testLogging.exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
@@ -83,18 +83,22 @@ val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.6"
 val jaxbApiVersion = "4.0.4"
 val jsoupVersion = "1.21.2"
-val openApiToolsVersion = "0.2.8"
-val temporalVersion = "1.32.1"
-val protobufJavaVersion = "4.33.2"
-val grpcBomVersion = "1.77.0"
+val openApiToolsVersion = "0.2.9"
+val temporalVersion = "1.33.0"
+val protobufJavaVersion = "4.34.0"
+val grpcBomVersion = "1.79.0"
 val guavaVersion = "33.5.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
-val httpClientVersion = "5.5.1"
+val httpClientVersion = "5.6"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
+
+// fix cve
+val jackson2CoreVersion = "2.21.1"
+val jackson3CoreVersion = "3.1.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -141,6 +145,10 @@ dependencies {
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:$jaxbApiVersion")
     implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
     runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+
+    // CVE fix
+    implementation("tools.jackson.core:jackson-core:$jackson3CoreVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jackson2CoreVersion")
 
     compileOnly("org.projectlombok:lombok")
 
