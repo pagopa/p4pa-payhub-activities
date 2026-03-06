@@ -79,7 +79,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     void whenGetIngestionFlowFileSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken -> processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                    .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(1L, List.of(IngestionFlowFileTypeEnum.PAYMENTS_REPORTING.getValue()), LocalDateTime.now().minusDays(1L), null, null, null, null, null, null, null),
+                    .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(1L, List.of(IngestionFlowFileTypeEnum.PAYMENTS_REPORTING.getValue()), LocalDateTime.now().minusDays(1L), LocalDateTime.now().minusDays(1L), null, null, null, null, null, null),
             new ParameterizedTypeReference<>() {},
             processExecutionsApisHolder::unload);
     }
