@@ -66,12 +66,12 @@ public class IngestionFlowFileClient {
             creationDateFromLocalDateTime = creationDateFrom.atZoneSameInstant(Utilities.ZONEID).toLocalDateTime();
         }
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), creationDateFromLocalDateTime, null, null, null, null, null, null, null);
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, List.of(flowFileType.getValue()), creationDateFromLocalDateTime, null, null, null, null, null, null, null);
     }
 
     public PagedModelIngestionFlowFile findByOrganizationIDFlowTypeFilename(Long organizationId, IngestionFlowFileTypeEnum flowFileType, String fileName, String accessToken) {
         return processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
-                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(String.valueOf(organizationId), List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null);
+                .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, List.of(flowFileType.getValue()), null, null, null, fileName, null, null, null, null);
     }
 
     public Integer updateProcessingIfNoOtherProcessing(Long ingestionFlowFileId, String accessToken) {

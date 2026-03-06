@@ -16,6 +16,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
@@ -166,7 +167,7 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         assertAuthenticationShouldBeSetInThreadSafeMode(
             accessToken ->
                 debtPositionApisHolder.getInstallmentNoPiiSearchControllerApi(accessToken)
-                    .crudInstallmentsGetByOrganizationIdAndReceiptId(0L, 1L, null),
+                    .crudInstallmentsGetByOrganizationIdAndReceiptId(0L, 1L, List.of()),
             new ParameterizedTypeReference<>() {},
             debtPositionApisHolder::unload
         );

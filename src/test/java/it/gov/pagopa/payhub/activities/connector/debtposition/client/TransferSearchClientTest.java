@@ -110,7 +110,7 @@ class TransferSearchClientTest {
 		CollectionModelTransfer expectedResult = TransferFaker.buildCollectionModelTransfer();
 
 		when(debtPositionApisHolderMock.getTransferSearchControllerApi(accessToken)).thenReturn(transferSearchControllerApiMock);
-		when(transferSearchControllerApiMock.crudTransfersFindByInstallmentId(installmentId.toString())
+		when(transferSearchControllerApiMock.crudTransfersFindByInstallmentId(installmentId)
 		).thenReturn(expectedResult);
 
 		// When
