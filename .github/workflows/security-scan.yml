@@ -36,7 +36,7 @@ jobs:
 
       - name: Run the Trivy scan action itself with GitHub Advanced Security code scanning integration enabled
         id: scan
-        uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # 0.28.0
+        uses: aquasecurity/trivy-action@97e0b3872f55f89b95b2f65b3dbab56962816478 # 0.34.2
         with:
           scan-type: 'fs'  # Scan from filesystem
           format: 'sarif'
