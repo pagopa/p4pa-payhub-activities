@@ -21,6 +21,7 @@ public enum FileErrorCode {
     XML_MISSING_REQUIRED_FIELD,
     XML_VALIDATION_ERROR,
     XML_CONSTRAINT_VIOLATION,
+    XML_UNMARSHALLING_ERROR("Errore durante la conversione del file XML"),
 
     // CONNECTOR ERROR
     GENERIC_ERROR,
