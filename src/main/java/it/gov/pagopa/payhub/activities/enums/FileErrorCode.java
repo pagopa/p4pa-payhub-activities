@@ -115,6 +115,7 @@ public enum FileErrorCode {
 
     //classification
     ASSESSMENTS_REGISTRY_ALREADY_EXISTS("Il registro degli accertamenti esiste gia'"),
+    XML_UNMARSHALLING_ERROR("Errore durante il parsing del bilancio"),
 
     IUF_ALREADY_ASSOCIATED("Lo IUF %s e' gia' associato ad un'altra tesoreria per l'ente con codice IPA %s"),
 
