@@ -21,7 +21,6 @@ public enum FileErrorCode {
     XML_MISSING_REQUIRED_FIELD,
     XML_VALIDATION_ERROR,
     XML_CONSTRAINT_VIOLATION,
-    XML_UNMARSHALLING_ERROR("Errore durante la conversione del file XML"),
 
     // CONNECTOR ERROR
     GENERIC_ERROR,
@@ -116,6 +115,7 @@ public enum FileErrorCode {
 
     //classification
     ASSESSMENTS_REGISTRY_ALREADY_EXISTS("Il registro degli accertamenti esiste gia'"),
+    XML_UNMARSHALLING_ERROR("Errore durante il parsing del bilancio"),
 
     IUF_ALREADY_ASSOCIATED("Lo IUF %s e' gia' associato ad un'altra tesoreria per l'ente con codice IPA %s"),
 
