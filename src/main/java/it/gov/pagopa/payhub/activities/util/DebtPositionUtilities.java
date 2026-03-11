@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.util;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 
@@ -21,8 +22,23 @@ public class DebtPositionUtilities {
     );
     public static final Set<InstallmentStatus> INSTALLMENT_PAID_STATUSES_SET = Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED);
     public static final List<InstallmentStatus> INSTALLMENT_PAID_STATUSES_LIST = List.copyOf(INSTALLMENT_PAID_STATUSES_SET);
-    public static final Set<InstallmentStatus> UNPAID_OR_PAID_INSTALLMENT_STATUSES_SET = Stream.concat(INSTALLMENT_PAID_STATUSES_SET.stream(), Stream.of(InstallmentStatus.UNPAID,InstallmentStatus.EXPIRED)).collect(Collectors.toSet());
+    public static final Set<InstallmentStatus> UNPAID_OR_PAID_INSTALLMENT_STATUSES_SET = Stream.concat(
+            INSTALLMENT_PAID_STATUSES_SET.stream(),
+            Stream.of(
+                    InstallmentStatus.UNPAID,
+                    InstallmentStatus.EXPIRED)
+            )
+            .collect(Collectors.toSet());
     public static final List<InstallmentStatus> UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST = List.copyOf(UNPAID_OR_PAID_INSTALLMENT_STATUSES_SET);
+
+    public static final List<DebtPositionOrigin> ORDINARY_DEBT_POSITION_ORIGINS = List.of(
+            DebtPositionOrigin.ORDINARY,
+            DebtPositionOrigin.ORDINARY_SIL,
+            DebtPositionOrigin.SPONTANEOUS,
+            DebtPositionOrigin.SPONTANEOUS_SIL,
+            DebtPositionOrigin.RECEIPT_FILE
+    );
+
 
     /** It will return the min dueDate of all active installments */
     public static LocalDate calcDebtPositionNextDueDate(DebtPositionDTO debtPositionDTO){

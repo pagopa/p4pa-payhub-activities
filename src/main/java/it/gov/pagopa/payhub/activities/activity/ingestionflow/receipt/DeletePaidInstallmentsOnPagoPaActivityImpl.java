@@ -14,17 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Objects;
+
+import static it.gov.pagopa.payhub.activities.util.DebtPositionUtilities.ORDINARY_DEBT_POSITION_ORIGINS;
 
 @Slf4j
 @Component
 @Lazy
 @RequiredArgsConstructor
 public class DeletePaidInstallmentsOnPagoPaActivityImpl implements DeletePaidInstallmentsOnPagoPaActivity {
-
-    private static final List<DebtPositionOrigin> ORDINARY_DEBT_POSITION_ORIGINS = List.of(DebtPositionOrigin.ORDINARY,
-            DebtPositionOrigin.ORDINARY_SIL, DebtPositionOrigin.SPONTANEOUS, DebtPositionOrigin.SPONTANEOUS_SIL, DebtPositionOrigin.RECEIPT_FILE);
 
     private final ReceiptService receiptService;
     private final OrganizationService organizationService;
