@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
+package it.gov.pagopa.payhub.activities.activity.ingestionflow.notice;
 
 import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
