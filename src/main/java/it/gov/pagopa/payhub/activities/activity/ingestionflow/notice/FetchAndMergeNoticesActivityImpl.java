@@ -25,8 +25,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Lazy
@@ -63,12 +63,10 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
 
         Long organizationId = ingestionFlowFile.getOrganizationId();
 
-        Optional<List<String>> signedUrlsOpt = retrieveSignedUrls(ingestionFlowFile, organizationId);
-        if (signedUrlsOpt.isEmpty()) {
+        List<String> signedUrls = retrieveSignedUrls(ingestionFlowFile, organizationId);
+        if (signedUrls.isEmpty()) {
             return 0;
         }
-
-        List<String> signedUrls = signedUrlsOpt.get();
 
         Path tmpDir = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getTmp(), organizationId)
                 .resolve(ingestionFlowFile.getFilePathName())
@@ -90,11 +88,11 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         }
     }
 
-    private Optional<List<String>> retrieveSignedUrls(IngestionFlowFile file, Long organizationId) {
+    private List<String> retrieveSignedUrls(IngestionFlowFile file, Long organizationId) {
         String pdfGeneratedId = file.getPdfGeneratedId();
         if (pdfGeneratedId == null) {
             log.info("No folderId found for ingestionFlowFileId: {}", file.getIngestionFlowFileId());
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
         List<String> urls = new ArrayList<>();
@@ -105,10 +103,11 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
                 SignedUrlResultDTO dto = printPaymentNoticeService.getSignedUrl(organizationId, folderId.trim());
                 urls.add(dto.getSignedUrl());
             } catch (HttpClientErrorException.NotFound e) {
-                return Optional.empty();
+                return Collections.emptyList();
             }
         }
-        return Optional.of(urls);
+
+        return urls;
     }
 
     private List<Path> downloadAndExtractAllNotices(Long organizationId, Long ingestionFlowFileId, List<String> signedUrls, Path tmpDir) {
