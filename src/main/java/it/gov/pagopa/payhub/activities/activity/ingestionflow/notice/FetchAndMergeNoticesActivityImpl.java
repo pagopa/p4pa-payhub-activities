@@ -71,7 +71,7 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         try {
             Files.createDirectories(tmpDir);
 
-            List<Path> allExtractedNotices = downloadAndExtractAllNotices(organizationId, ingestionFlowFileId, signedUrls, tmpDir);
+            List<Path> allExtractedNotices = downloadAndExtractAllNotices(signedUrls, tmpDir);
             if (allExtractedNotices.isEmpty()) {
                 return 0;
             }
@@ -108,15 +108,15 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         return urls;
     }
 
-    private List<Path> downloadAndExtractAllNotices(Long organizationId, Long ingestionFlowFileId, List<String> signedUrls, Path tmpDir) {
+    private List<Path> downloadAndExtractAllNotices(List<String> signedUrls, Path tmpDir) {
         return IntStream.range(0, signedUrls.size())
-                .mapToObj(i -> downloadAndExtractSingleNotice(organizationId, ingestionFlowFileId, signedUrls.get(i), tmpDir, i))
+                .mapToObj(i -> downloadAndExtractSingleNotice(signedUrls.get(i), tmpDir, i))
                 .flatMap(List::stream)
                 .toList();
     }
 
-    private List<Path> downloadAndExtractSingleNotice(Long organizationId, Long ingestionFlowFileId, String url, Path tmpDir, int index) {
-        byte[] downloadedBytes = signedUrlService.downloadArchive(organizationId, ingestionFlowFileId, url);
+    private List<Path> downloadAndExtractSingleNotice(String url, Path tmpDir, int index) {
+        byte[] downloadedBytes = signedUrlService.downloadFileFromSignedUrl(url);
 
         Path downloadedZipPath = tmpDir.resolve("downloaded_" + index + ".zip");
         Path extractDirPath = tmpDir.resolve("extracted_" + index);

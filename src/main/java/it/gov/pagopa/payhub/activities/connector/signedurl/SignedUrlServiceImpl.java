@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -31,19 +30,14 @@ public class SignedUrlServiceImpl implements SignedUrlService {
     }
 
     @Override
-    public byte[] downloadArchive(Long organizationId, Long ingestionFlowFileId, String signedUrl) {
-        try {
-            URI uri = URI.create(signedUrl);
+    public byte[] downloadFileFromSignedUrl(String signedUrl) {
+        URI uri = URI.create(signedUrl);
 
-            ResponseEntity<byte[]> response = noRedirectRestTemplate.getForEntity(uri, byte[].class);
-            if (response.getBody() == null) {
-                throw new IllegalStateException(String.format("[INVALID_FILE_EMPTY] Downloaded file from signed url: %s for ingestionFlowFileId: %s is empty", signedUrl, ingestionFlowFileId));
-            }
-
-            return response.getBody();
-        } catch (RestClientException e) {
-            log.error("Error downloading archive for organizationId {} and fileId {}", organizationId, ingestionFlowFileId, e);
-            throw e;
+        ResponseEntity<byte[]> response = noRedirectRestTemplate.getForEntity(uri, byte[].class);
+        if (response.getBody() == null) {
+            throw new IllegalStateException(String.format("[INVALID_FILE_EMPTY] Downloaded file from signed url: %s", signedUrl));
         }
+
+        return response.getBody();
     }
 }

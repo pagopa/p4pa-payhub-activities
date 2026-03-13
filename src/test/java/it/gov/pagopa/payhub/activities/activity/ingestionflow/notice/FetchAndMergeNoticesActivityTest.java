@@ -141,8 +141,8 @@ class FetchAndMergeNoticesActivityTest {
                         .build());
 
         byte[] dummyBytes = "dummy_zip_content".getBytes();
-        Mockito.when(signedUrlServiceMock.downloadArchive(organizationId, ingestionFlowFileId, "http://url1")).thenReturn(dummyBytes);
-        Mockito.when(signedUrlServiceMock.downloadArchive(organizationId, ingestionFlowFileId, "http://url2")).thenReturn(dummyBytes);
+        Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1")).thenReturn(dummyBytes);
+        Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url2")).thenReturn(dummyBytes);
 
         Path extracted1 = Path.of("extracted1.pdf");
         Path extracted2 = Path.of("extracted2.pdf");
@@ -176,7 +176,7 @@ class FetchAndMergeNoticesActivityTest {
 
         Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
 
-        Mockito.when(signedUrlServiceMock.downloadArchive(organizationId, ingestionFlowFileId, "http://url1"))
+        Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1"))
                 .thenThrow(new RestClientException("Connection timed out"));
 
         Assertions.assertThrows(RestClientException.class, () -> activity.fetchAndMergeNotices(ingestionFlowFileId));
