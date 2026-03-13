@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -85,6 +86,8 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
             return allExtractedNotices.size();
         } catch (IOException e) {
             throw new IllegalStateException("Cannot process and merge notices in working directory: " + tmpDir, e);
+        } finally {
+            cleanupTmpDir(tmpDir);
         }
     }
 
@@ -156,6 +159,14 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
                 .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
 
         fileArchiverService.compressAndArchive(allExtractedFiles, tmpZipFilePath, sharedTargetPath);
+    }
+
+    private void cleanupTmpDir(Path tmpDir) {
+        try {
+            FileSystemUtils.deleteRecursively(tmpDir);
+        } catch (IOException e) {
+            log.info("Failed to clean up temporary directory: {}", tmpDir, e);
+        }
     }
 
     private RestTemplate createNoRedirectRestTemplate() {
