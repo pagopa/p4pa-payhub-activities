@@ -97,12 +97,11 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         String[] folderIds = pdfGeneratedId.split(",");
 
         for (String folderId : folderIds) {
-            try {
-                SignedUrlResultDTO dto = printPaymentNoticeService.getSignedUrl(organizationId, folderId.trim());
-                urls.add(dto.getSignedUrl());
-            } catch (HttpClientErrorException.NotFound e) {
+            SignedUrlResultDTO dto = printPaymentNoticeService.getSignedUrl(organizationId, folderId.trim());
+            if (dto == null) {
                 return Collections.emptyList();
             }
+            urls.add(dto.getSignedUrl());
         }
 
         return urls;

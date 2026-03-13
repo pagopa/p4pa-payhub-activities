@@ -92,7 +92,7 @@ class FetchAndMergeNoticesActivityTest {
     }
 
     @Test
-    void givenSignedUrlReturns404WhenFetchAndMergeNoticesThenReturnsZero() {
+    void givenSignedUrlReturnsNullWhenFetchAndMergeNoticesThenReturnsZero() {
         Long ingestionFlowFileId = 1L;
         Long organizationId = 1L;
 
@@ -102,9 +102,7 @@ class FetchAndMergeNoticesActivityTest {
         file.setPdfGeneratedId("folderId1,folderId2");
 
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
-
-        HttpClientErrorException notFoundException = HttpClientErrorException.create(HttpStatus.NOT_FOUND, "Not Found", null, null, null);
-        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenThrow(notFoundException);
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(null);
 
         Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
 
