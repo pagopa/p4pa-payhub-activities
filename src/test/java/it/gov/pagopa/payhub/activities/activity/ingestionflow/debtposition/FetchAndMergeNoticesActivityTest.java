@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -160,5 +161,29 @@ class FetchAndMergeNoticesActivityTest {
         Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
 
         Assertions.assertEquals(2, result);
+    }
+
+    @Test
+    void givenDownloadFailsWhenFetchAndMergeNoticesThenThrowsException() {
+        Long ingestionFlowFileId = 1L;
+        Long organizationId = 1L;
+
+        IngestionFlowFile file = new IngestionFlowFile();
+        file.setIngestionFlowFileId(ingestionFlowFileId);
+        file.setOrganizationId(organizationId);
+        file.setPdfGeneratedId("folderId1");
+        file.setFilePathName("filePathName");
+
+        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
+
+        SignedUrlResultDTO dto1 = new SignedUrlResultDTO(); dto1.setSignedUrl("http://url1");
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(dto1);
+
+        Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
+
+        Mockito.when(restTemplateMock.getForEntity(URI.create("http://url1"), byte[].class))
+                .thenThrow(new RestClientException("Connection timed out"));
+
+        Assertions.assertThrows(RestClientException.class, () -> activity.fetchAndMergeNotices(ingestionFlowFileId));
     }
 }
