@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.notice;
 import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.connector.signedurl.SignedUrlService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.ZipFileService;
@@ -44,7 +45,7 @@ class FetchAndMergeNoticesActivityTest {
     @Mock
     private FileArchiverService fileArchiverServiceMock;
     @Mock
-    private RestTemplate restTemplateMock;
+    private SignedUrlService signedUrlServiceMock;
 
     private FetchAndMergeNoticesActivity activity;
 
@@ -55,10 +56,9 @@ class FetchAndMergeNoticesActivityTest {
                 ingestionFlowFileServiceMock,
                 foldersPathsConfigMock,
                 zipFileServiceMock,
-                fileArchiverServiceMock
+                fileArchiverServiceMock,
+                signedUrlServiceMock
         );
-
-        ReflectionTestUtils.setField(activity, "noRedirectRestTemplate", restTemplateMock);
     }
 
     @AfterEach
@@ -69,7 +69,7 @@ class FetchAndMergeNoticesActivityTest {
                 foldersPathsConfigMock,
                 zipFileServiceMock,
                 fileArchiverServiceMock,
-                restTemplateMock
+                signedUrlServiceMock
         );
     }
 
@@ -145,9 +145,8 @@ class FetchAndMergeNoticesActivityTest {
                         .build());
 
         byte[] dummyBytes = "dummy_zip_content".getBytes();
-        ResponseEntity<byte[]> responseEntity = ResponseEntity.ok(dummyBytes);
-        Mockito.when(restTemplateMock.getForEntity(URI.create("http://url1"), byte[].class)).thenReturn(responseEntity);
-        Mockito.when(restTemplateMock.getForEntity(URI.create("http://url2"), byte[].class)).thenReturn(responseEntity);
+        Mockito.when(signedUrlServiceMock.downloadArchive(organizationId, ingestionFlowFileId, "http://url1")).thenReturn(dummyBytes);
+        Mockito.when(signedUrlServiceMock.downloadArchive(organizationId, ingestionFlowFileId, "http://url2")).thenReturn(dummyBytes);
 
         Path extracted1 = Path.of("extracted1.pdf");
         Path extracted2 = Path.of("extracted2.pdf");
@@ -181,7 +180,7 @@ class FetchAndMergeNoticesActivityTest {
 
         Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
 
-        Mockito.when(restTemplateMock.getForEntity(URI.create("http://url1"), byte[].class))
+        Mockito.when(signedUrlServiceMock.downloadArchive(organizationId, ingestionFlowFileId, "http://url1"))
                 .thenThrow(new RestClientException("Connection timed out"));
 
         Assertions.assertThrows(RestClientException.class, () -> activity.fetchAndMergeNotices(ingestionFlowFileId));

@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.notice;
 import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.connector.signedurl.SignedUrlService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.ZipFileService;
@@ -10,19 +11,12 @@ import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,21 +33,22 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
     private final FoldersPathsConfig foldersPathsConfig;
     private final ZipFileService zipFileService;
     private final FileArchiverService fileArchiverService;
-    private final RestTemplate noRedirectRestTemplate;
+    private final SignedUrlService signedUrlService;
 
     public FetchAndMergeNoticesActivityImpl(
             PrintPaymentNoticeService printPaymentNoticeService,
             IngestionFlowFileService ingestionFlowFileService,
             FoldersPathsConfig foldersPathsConfig,
             ZipFileService zipFileService,
-            FileArchiverService fileArchiverService
+            FileArchiverService fileArchiverService,
+            SignedUrlService signedUrlService
     ) {
         this.printPaymentNoticeService = printPaymentNoticeService;
         this.ingestionFlowFileService = ingestionFlowFileService;
         this.foldersPathsConfig = foldersPathsConfig;
         this.zipFileService = zipFileService;
         this.fileArchiverService = fileArchiverService;
-        this.noRedirectRestTemplate = createNoRedirectRestTemplate();
+        this.signedUrlService = signedUrlService;
     }
 
     @Override
@@ -121,7 +116,7 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
     }
 
     private List<Path> downloadAndExtractSingleNotice(Long organizationId, Long ingestionFlowFileId, String url, Path tmpDir, int index) {
-        byte[] downloadedBytes = downloadNoticeArchive(organizationId, ingestionFlowFileId, url);
+        byte[] downloadedBytes = signedUrlService.downloadArchive(organizationId, ingestionFlowFileId, url);
 
         Path downloadedZipPath = tmpDir.resolve("downloaded_" + index + ".zip");
         Path extractDirPath = tmpDir.resolve("extracted_" + index);
@@ -131,22 +126,6 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
             return zipFileService.unzip(downloadedZipPath, extractDirPath);
         } catch (IOException e) {
             throw new IllegalStateException("Error writing or extracting zip: " + downloadedZipPath, e);
-        }
-    }
-
-    private byte[] downloadNoticeArchive(Long organizationId, Long ingestionFlowFileId, String signedUrl) {
-        try {
-            URI uri = URI.create(signedUrl);
-
-            ResponseEntity<byte[]> response = noRedirectRestTemplate.getForEntity(uri, byte[].class);
-            if (response.getBody() == null) {
-                throw new IllegalStateException(String.format("[INVALID_FILE_EMPTY] Downloaded file from signed url: %s for ingestionFlowFileId: %s is empty", signedUrl, ingestionFlowFileId));
-            }
-
-            return response.getBody();
-        } catch (RestClientException e) {
-            log.error("Error downloading archive for organizationId {} and fileId {}", organizationId, ingestionFlowFileId, e);
-            throw e;
         }
     }
 
@@ -167,13 +146,5 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         } catch (IOException e) {
             log.info("Failed to clean up temporary directory: {}", tmpDir, e);
         }
-    }
-
-    private RestTemplate createNoRedirectRestTemplate() {
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .disableRedirectHandling()
-                .build();
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        return new RestTemplate(factory);
     }
 }
