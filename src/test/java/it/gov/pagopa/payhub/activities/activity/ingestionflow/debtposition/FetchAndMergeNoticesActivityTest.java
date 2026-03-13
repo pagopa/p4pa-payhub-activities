@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlow
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.ZipFileService;
+import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -15,10 +16,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 
 @ExtendWith(MockitoExtension.class)
 class FetchAndMergeNoticesActivityTest {
@@ -82,5 +92,73 @@ class FetchAndMergeNoticesActivityTest {
         Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
 
         Assertions.assertEquals(0, result);
+    }
+
+    @Test
+    void givenSignedUrlReturns404WhenFetchAndMergeNoticesThenReturnsZero() {
+        Long ingestionFlowFileId = 1L;
+        Long organizationId = 1L;
+
+        IngestionFlowFile file = new IngestionFlowFile();
+        file.setIngestionFlowFileId(ingestionFlowFileId);
+        file.setOrganizationId(organizationId);
+        file.setPdfGeneratedId("folderId1,folderId2");
+
+        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
+
+        HttpClientErrorException notFoundException = HttpClientErrorException.create(HttpStatus.NOT_FOUND, "Not Found", null, null, null);
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenThrow(notFoundException);
+
+        Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
+
+        Assertions.assertEquals(0, result);
+    }
+
+    @Test
+    void givenAllSignedUrlsFetchedWhenFetchAndMergeNoticesThenDownloadsAndMergesSuccessfully() throws Exception {
+        Long ingestionFlowFileId = 1L;
+        Long organizationId = 2L;
+
+        IngestionFlowFile file = new IngestionFlowFile();
+        file.setIngestionFlowFileId(ingestionFlowFileId);
+        file.setOrganizationId(organizationId);
+        file.setPdfGeneratedId("folderId1,folderId2");
+        file.setFilePathName("filePathName");
+        file.setFileName("ingestionFile.zip");
+
+        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
+
+        SignedUrlResultDTO dto1 = new SignedUrlResultDTO();
+        dto1.setSignedUrl("http://url1");
+        SignedUrlResultDTO dto2 = new SignedUrlResultDTO();
+        dto2.setSignedUrl("http://url2");
+
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(dto1);
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId2")).thenReturn(dto2);
+
+        Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
+        Mockito.when(foldersPathsConfigMock.getShared()).thenReturn(Path.of("/shared"));
+        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
+                .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
+                        .archive("archive")
+                        .build());
+
+        byte[] dummyBytes = "dummy_zip_content".getBytes();
+        ResponseEntity<byte[]> responseEntity = ResponseEntity.ok(dummyBytes);
+        Mockito.when(restTemplateMock.getForEntity(URI.create("http://url1"), byte[].class)).thenReturn(responseEntity);
+        Mockito.when(restTemplateMock.getForEntity(URI.create("http://url2"), byte[].class)).thenReturn(responseEntity);
+
+        Path extracted1 = Path.of("extracted1.pdf");
+        Path extracted2 = Path.of("extracted2.pdf");
+
+        Mockito.when(zipFileServiceMock.unzip(any(Path.class), any(Path.class)))
+                .thenReturn(List.of(extracted1))
+                .thenReturn(List.of(extracted2));
+
+        Mockito.when(fileArchiverServiceMock.compressAndArchive(anyList(), any(Path.class), any(Path.class))).thenReturn(100L);
+
+        Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
+
+        Assertions.assertEquals(2, result);
     }
 }
