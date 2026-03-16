@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Service
@@ -21,6 +22,10 @@ public class PrintPaymentNoticeClient {
 	}
 
 	public SignedUrlResultDTO getSignedUrl(Long organizationId, String pdfGeneratedId, String accessToken) {
-		return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).getSignedUrl(organizationId, pdfGeneratedId);
+        try {
+            return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).getSignedUrl(organizationId, pdfGeneratedId);
+        } catch (HttpClientErrorException.NotFound e) {
+            return null;
+        }
 	}
 }
