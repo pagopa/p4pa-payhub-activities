@@ -18,15 +18,13 @@ public class SignedUrlServiceImpl implements SignedUrlService {
     private final RestTemplate noRedirectRestTemplate;
 
     public SignedUrlServiceImpl() {
-        this.noRedirectRestTemplate = createNoRedirectRestTemplate();
-    }
-
-    private RestTemplate createNoRedirectRestTemplate() {
         CloseableHttpClient httpClient = HttpClients.custom()
                 .disableRedirectHandling()
                 .build();
+
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        return new RestTemplate(factory);
+
+        this.noRedirectRestTemplate = new RestTemplate(factory);
     }
 
     @Override
