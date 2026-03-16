@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.notice;
 import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.connector.signedurl.SignedUrlService;
+import it.gov.pagopa.payhub.activities.connector.printnotice.SignedUrlService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.ZipFileService;
@@ -96,8 +96,10 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         String[] folderIds = pdfGeneratedId.split(",");
 
         for (String folderId : folderIds) {
-            SignedUrlResultDTO dto = printPaymentNoticeService.getSignedUrl(organizationId, folderId.trim());
+            String trimmedFolderId = folderId.trim();
+            SignedUrlResultDTO dto = printPaymentNoticeService.getSignedUrl(organizationId, trimmedFolderId);
             if (dto == null) {
+                log.info("File not ready for folderId: {}", trimmedFolderId);
                 return Collections.emptyList();
             }
             urls.add(dto.getSignedUrl());

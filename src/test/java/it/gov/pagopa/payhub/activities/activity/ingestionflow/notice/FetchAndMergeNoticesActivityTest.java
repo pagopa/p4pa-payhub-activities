@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.notice;
 import it.gov.pagopa.payhub.activities.config.FoldersPathsConfig;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
-import it.gov.pagopa.payhub.activities.connector.signedurl.SignedUrlService;
+import it.gov.pagopa.payhub.activities.connector.printnotice.SignedUrlService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.ZipFileService;

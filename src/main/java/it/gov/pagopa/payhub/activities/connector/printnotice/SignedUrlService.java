@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.connector.signedurl;
+package it.gov.pagopa.payhub.activities.connector.printnotice;
 
 public interface SignedUrlService {
     byte[] downloadFileFromSignedUrl(String signedUrl);

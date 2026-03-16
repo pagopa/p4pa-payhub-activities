@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.connector.signedurl;
+package it.gov.pagopa.payhub.activities.connector.printnotice;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

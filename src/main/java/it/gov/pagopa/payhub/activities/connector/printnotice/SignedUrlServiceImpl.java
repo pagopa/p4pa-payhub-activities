@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.connector.signedurl;
+package it.gov.pagopa.payhub.activities.connector.printnotice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
