@@ -130,7 +130,7 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
     }
 
     private void archiveMergedNotices(IngestionFlowFile file, List<Path> allExtractedFiles, Path tmpDir) throws IOException {
-        String mergedFileName = file.getFileName().replace(".zip", "_notice.zip");
+        String mergedFileName = buildNoticeFileName(file);
         Path tmpZipFilePath = tmpDir.resolve(mergedFileName);
 
         Path sharedTargetPath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), file.getOrganizationId())
@@ -138,6 +138,10 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
                 .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
 
         fileArchiverService.compressAndArchive(allExtractedFiles, tmpZipFilePath, sharedTargetPath);
+    }
+
+    public static String buildNoticeFileName(IngestionFlowFile file) {
+        return file.getFileName().replace(".zip", "_notice.zip");
     }
 
     private void cleanupTmpDir(Path tmpDir) {
