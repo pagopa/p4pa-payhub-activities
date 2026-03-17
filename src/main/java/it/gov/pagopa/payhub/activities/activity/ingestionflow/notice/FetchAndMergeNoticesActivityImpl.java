@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFile
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.ZipFileService;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
-import it.gov.pagopa.payhub.activities.util.NoticeFileUtils;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -131,7 +130,7 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
     }
 
     private void archiveMergedNotices(IngestionFlowFile file, List<Path> allExtractedFiles, Path tmpDir) throws IOException {
-        String mergedFileName = NoticeFileUtils.buildNoticeFileName(file);
+        String mergedFileName = buildNoticeFileName(file);
         Path tmpZipFilePath = tmpDir.resolve(mergedFileName);
 
         Path sharedTargetPath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), file.getOrganizationId())
@@ -139,6 +138,10 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
                 .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
 
         fileArchiverService.compressAndArchive(allExtractedFiles, tmpZipFilePath, sharedTargetPath);
+    }
+
+    public static String buildNoticeFileName(IngestionFlowFile file) {
+        return file.getFileName().replace(".zip", "_notice.zip");
     }
 
     private void cleanupTmpDir(Path tmpDir) {

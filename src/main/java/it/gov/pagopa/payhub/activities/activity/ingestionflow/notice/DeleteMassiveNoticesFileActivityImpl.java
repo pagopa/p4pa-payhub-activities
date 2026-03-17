@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlow
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
-import it.gov.pagopa.payhub.activities.util.NoticeFileUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static it.gov.pagopa.payhub.activities.activity.ingestionflow.notice.FetchAndMergeNoticesActivityImpl.buildNoticeFileName;
 
 @Lazy
 @Slf4j
@@ -53,6 +54,6 @@ public class DeleteMassiveNoticesFileActivityImpl implements DeleteMassiveNotice
         return FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), ingestionFlowFile.getOrganizationId())
                 .resolve(ingestionFlowFile.getFilePathName())
                 .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive())
-                .resolve(NoticeFileUtils.buildNoticeFileName(ingestionFlowFile) + AESUtils.CIPHER_EXTENSION);
+                .resolve(buildNoticeFileName(ingestionFlowFile) + AESUtils.CIPHER_EXTENSION);
     }
 }
