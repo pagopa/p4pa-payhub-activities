@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlow
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFileNotFoundException;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
+import it.gov.pagopa.payhub.activities.util.NoticeFileUtils;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -17,18 +18,18 @@ import java.nio.file.Path;
 @Lazy
 @Slf4j
 @Service
-public class DeleteNoticeRetentionFileActivityImpl implements DeleteNoticeRetentionFileActivity {
+public class DeleteMassiveNoticesFileActivityImpl implements DeleteMassiveNoticesFileActivity {
 
     private final IngestionFlowFileService ingestionFlowFileService;
     private final FoldersPathsConfig foldersPathsConfig;
 
-    public DeleteNoticeRetentionFileActivityImpl(IngestionFlowFileService ingestionFlowFileService, FoldersPathsConfig foldersPathsConfig) {
+    public DeleteMassiveNoticesFileActivityImpl(IngestionFlowFileService ingestionFlowFileService, FoldersPathsConfig foldersPathsConfig) {
         this.ingestionFlowFileService = ingestionFlowFileService;
         this.foldersPathsConfig = foldersPathsConfig;
     }
 
     @Override
-    public void deleteNoticeRetentionFile(Long ingestionFlowFileId) {
+    public void deleteMassiveNoticesFile(Long ingestionFlowFileId) {
 
         IngestionFlowFile ingestionFlowFile = ingestionFlowFileService
                 .findById(ingestionFlowFileId)
@@ -52,6 +53,6 @@ public class DeleteNoticeRetentionFileActivityImpl implements DeleteNoticeRetent
         return FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), ingestionFlowFile.getOrganizationId())
                 .resolve(ingestionFlowFile.getFilePathName())
                 .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive())
-                .resolve(ingestionFlowFile.getFileName().replace(".zip", "_notice.zip") + AESUtils.CIPHER_EXTENSION);
+                .resolve(NoticeFileUtils.buildNoticeFileName(ingestionFlowFile) + AESUtils.CIPHER_EXTENSION);
     }
 }

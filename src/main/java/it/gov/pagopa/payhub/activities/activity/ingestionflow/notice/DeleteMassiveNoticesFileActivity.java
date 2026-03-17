@@ -4,9 +4,9 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 @ActivityInterface
-public interface DeleteNoticeRetentionFileActivity {
+public interface DeleteMassiveNoticesFileActivity {
 
     @ActivityMethod
-    void deleteNoticeRetentionFile(Long ingestionFlowFileId);
+    void deleteMassiveNoticesFile(Long ingestionFlowFileId);
 
 }

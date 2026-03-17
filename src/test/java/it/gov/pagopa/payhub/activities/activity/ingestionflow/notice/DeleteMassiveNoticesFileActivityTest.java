@@ -22,20 +22,20 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteNoticeRetentionFileActivityTest {
+class DeleteMassiveNoticesFileActivityTest {
 
     @Mock
     private IngestionFlowFileService ingestionFlowFileServiceMock;
     @Mock
     private FoldersPathsConfig foldersPathsConfigMock;
 
-    private DeleteNoticeRetentionFileActivity activity;
+    private DeleteMassiveNoticesFileActivity activity;
 
     private static final Path SHARED_PATH = Path.of("/shared");
 
     @BeforeEach
     void setUp() {
-        activity = new DeleteNoticeRetentionFileActivityImpl(ingestionFlowFileServiceMock, foldersPathsConfigMock);
+        activity = new DeleteMassiveNoticesFileActivityImpl(ingestionFlowFileServiceMock, foldersPathsConfigMock);
     }
 
     @AfterEach
@@ -52,7 +52,7 @@ class DeleteNoticeRetentionFileActivityTest {
 
         Assertions.assertThrows(
                 IngestionFlowFileNotFoundException.class,
-                () -> activity.deleteNoticeRetentionFile(ingestionFlowFileId)
+                () -> activity.deleteMassiveNoticesFile(ingestionFlowFileId)
         );
     }
 
@@ -87,7 +87,7 @@ class DeleteNoticeRetentionFileActivityTest {
         try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
             filesMock.when(() -> Files.exists(expectedPath)).thenReturn(false);
 
-            activity.deleteNoticeRetentionFile(ingestionFlowFileId);
+            activity.deleteMassiveNoticesFile(ingestionFlowFileId);
 
             filesMock.verify(() -> Files.exists(expectedPath));
             filesMock.verifyNoMoreInteractions();
@@ -126,7 +126,7 @@ class DeleteNoticeRetentionFileActivityTest {
             filesMock.when(() -> Files.exists(expectedPath)).thenReturn(true);
             filesMock.when(() -> Files.delete(expectedPath)).thenAnswer(invocation -> null);
 
-            activity.deleteNoticeRetentionFile(ingestionFlowFileId);
+            activity.deleteMassiveNoticesFile(ingestionFlowFileId);
 
             filesMock.verify(() -> Files.exists(expectedPath));
             filesMock.verify(() -> Files.delete(expectedPath));
@@ -168,7 +168,7 @@ class DeleteNoticeRetentionFileActivityTest {
 
             Assertions.assertThrows(
                     IllegalStateException.class,
-                    () -> activity.deleteNoticeRetentionFile(ingestionFlowFileId)
+                    () -> activity.deleteMassiveNoticesFile(ingestionFlowFileId)
             );
 
             filesMock.verify(() -> Files.exists(expectedPath));
