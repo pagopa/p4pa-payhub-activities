@@ -66,8 +66,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         int currentPage = 0;
         boolean hasMorePages = true;
 
-        List<DebtPositionDTO> debtPositionsGenerateNotices = new ArrayList<>();
-        List<String> iuvListGenerateNotices = new ArrayList<>();
+        Map<String, DebtPositionDTO> iuvToDebtPositionMap = new HashMap<>();
         List<DebtPositionDTO> debtPositionsExportIuv = new ArrayList<>();
         List<InstallmentStatus> statusToExclude = List.of(InstallmentStatus.DRAFT);
 
@@ -96,7 +95,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     } else {
                         if (debtPosition.getFlagPuPagoPaPayment()) {
                             debtPositionsExportIuv.add(debtPosition);
-                            addIuvListToGenerateNotice(ingestionFlowFileId, debtPosition, debtPositionsGenerateNotices, iuvListGenerateNotices);
+                            addIuvToGenerateNoticeMap(ingestionFlowFileId, debtPosition, iuvToDebtPositionMap);
                         }
                     }
                 } catch (Exception e) {
@@ -113,7 +112,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
         log.info("Synchronization of all debt positions related to ingestion flow file id {} completed", ingestionFlowFileId);
 
-        String pdfGeneratedId = retrievePdfGeneratedIdFromGenerateNotice(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices, errors);
+        String pdfGeneratedId = retrievePdfGeneratedIdFromGenerateNotice(ingestionFlowFileId, iuvToDebtPositionMap, errors);
         Path csvPath = createIuvArchivingExportFile(ingestionFlowFileId, debtPositionsExportIuv);
 
         return SyncIngestedDebtPositionDTO.builder()
@@ -124,32 +123,28 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     }
 
     private Path createIuvArchivingExportFile(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionExportIuv) {
-        Path csvPath = null;
-        if (!debtPositionExportIuv.isEmpty()) {
-            csvPath = iuvArchivingExportFileService.executeExport(debtPositionExportIuv, ingestionFlowFileId);
+        if (debtPositionExportIuv.isEmpty()) {
+            return null;
         }
-        return csvPath;
+        return iuvArchivingExportFileService.executeExport(debtPositionExportIuv, ingestionFlowFileId);
     }
 
-    private String retrievePdfGeneratedIdFromGenerateNotice(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices, StringBuilder errors) {
-        if (debtPositionsGenerateNotices.isEmpty() || iuvListGenerateNotices.isEmpty()) {
+    private String retrievePdfGeneratedIdFromGenerateNotice(Long ingestionFlowFileId, Map<String, DebtPositionDTO> iuvToDebtPositionMap, StringBuilder errors) {
+        if (iuvToDebtPositionMap.isEmpty()) {
             return null;
         }
 
         List<String> folderIds = new ArrayList<>();
 
         try {
-            List<List<String>> chunks = partition(iuvListGenerateNotices);
+            List<String> allIuvs = new ArrayList<>(iuvToDebtPositionMap.keySet());
+            List<List<String>> chunks = partition(allIuvs);
 
             for (List<String> chunk : chunks) {
-                // Filter the debtPositions that contain at least one IUV from the chunk
-                Set<String> chunkSet = new HashSet<>(chunk);
-                List<DebtPositionDTO> filteredDebtPositions = debtPositionsGenerateNotices.stream()
-                        .filter(dp -> dp.getPaymentOptions().stream()
-                                .flatMap(po -> po.getInstallments().stream())
-                                .map(InstallmentDTO::getIuv)
-                                .anyMatch(chunkSet::contains)
-                        )
+                List<DebtPositionDTO> filteredDebtPositions = chunk.stream()
+                        .map(iuvToDebtPositionMap::get)
+                        .filter(Objects::nonNull)
+                        .distinct()
                         .toList();
 
                 if (filteredDebtPositions.isEmpty()) {
@@ -180,19 +175,16 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         return result;
     }
 
-    private void addIuvListToGenerateNotice(Long ingestionFlowFileId, DebtPositionDTO debtPosition, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices) {
-        List<String> iuvList = debtPosition.getPaymentOptions().stream()
-                .flatMap(paymentOption -> paymentOption.getInstallments().stream()
-                        .filter(installment -> Boolean.TRUE.equals(installment.getGenerateNotice()) &&
+    private void addIuvToGenerateNoticeMap(Long ingestionFlowFileId, DebtPositionDTO debtPosition, Map<String, DebtPositionDTO> iuvToDebtPositionMap) {
+        debtPosition.getPaymentOptions().stream()
+                .flatMap(po -> po.getInstallments().stream())
+                .filter(installment ->
+                        Boolean.TRUE.equals(installment.getGenerateNotice()) &&
                                 ingestionFlowFileId.equals(installment.getIngestionFlowFileId()) &&
-                                !InstallmentStatus.CANCELLED.equals(Objects.requireNonNull(installment.getSyncStatus()).getSyncStatusTo()))
-                        .map(InstallmentDTO::getIuv))
-                .toList();
-
-        if (!iuvList.isEmpty()) {
-            debtPositionsGenerateNotices.add(debtPosition);
-            iuvListGenerateNotices.addAll(iuvList);
-        }
+                                !InstallmentStatus.CANCELLED.equals(
+                                        Objects.requireNonNull(installment.getSyncStatus()).getSyncStatusTo()))
+                .map(InstallmentDTO::getIuv)
+                .forEach(iuv -> iuvToDebtPositionMap.put(iuv, debtPosition));
     }
 
     private List<Pair<DebtPositionDTO, WorkflowCreatedDTO>> syncDebtPositions(Long ingestionFlowFileId, PagedDebtPositions pagedDebtPositions, StringBuilder errors) {
@@ -233,7 +225,6 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                                         .newStatus(installment.getSyncStatus().getSyncStatusTo())
                                         .build())
                 )
-                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
     }
 }
