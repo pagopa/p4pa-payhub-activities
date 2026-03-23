@@ -81,7 +81,7 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         } catch (IOException e) {
             throw new IllegalStateException("Cannot process and merge notices in working directory: " + tmpDir, e);
         } finally {
-            cleanupTmpDir(tmpDir);
+//            cleanupTmpDir(tmpDir);
         }
     }
 
