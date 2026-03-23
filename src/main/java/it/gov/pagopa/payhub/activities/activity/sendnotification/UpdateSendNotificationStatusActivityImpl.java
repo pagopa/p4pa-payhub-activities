@@ -1,45 +1,24 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification;
 
-import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
-import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.payhub.activities.connector.sendnotification.SendNotificationService;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Slf4j
 @Component
 @Lazy
 public class UpdateSendNotificationStatusActivityImpl implements UpdateSendNotificationStatusActivity {
 
-	private final SendService sendService;
-	private final InstallmentService installmentService;
+    private final SendNotificationService sendNotificationService;
 
-	public UpdateSendNotificationStatusActivityImpl(SendService sendService, InstallmentService installmentService) {
-		this.sendService = sendService;
-		this.installmentService = installmentService;
-	}
+    public UpdateSendNotificationStatusActivityImpl(SendNotificationService sendNotificationService) {
+        this.sendNotificationService = sendNotificationService;
+    }
 
-	@Override
-	public SendNotificationDTO updateSendNotificationStatus(String notificationRequestId) {
-		log.info("Starting updateSendNotificationStatus for notificationRequestId {}", notificationRequestId);
-		SendNotificationDTO sendNotificationDTOByRequestId;
-		try {
-			sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
-		} catch (HttpClientErrorException.NotFound e) {
-			String errorMessage = "Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage());
-			throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(UpdateSendNotificationStatusActivity.class.getSimpleName(), errorMessage));
-		}
-		if(sendNotificationDTOByRequestId == null) {
-			return null;
-		}
-		SendNotificationDTO sendNotificationDTO = sendService.notificationStatus(sendNotificationDTOByRequestId.getSendNotificationId());
-		if(sendNotificationDTO!=null && sendNotificationDTO.getIun()!=null) {
-			sendNotificationDTO.getPayments().forEach(p ->
-					installmentService.updateIunByDebtPositionId(p.getDebtPositionId(), sendNotificationDTO.getIun()));
-		}
-		return sendNotificationDTO;
-	}
+    @Override
+    public void UpdateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus) {
+        sendNotificationService.updateSendNotificationStatus(notificationRequestId, newStatus);
+    }
 }

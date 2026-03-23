@@ -21,18 +21,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
-class UpdateSendNotificationStatusActivityTest {
+class SendNotificationStatusValidityActivityTest {
 
 	@Mock
 	private SendService sendServiceMock;
 	@Mock
 	private InstallmentService installmentServiceMock;
 
-	private UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity;
+	private SendNotificationStatusValidityActivity sendNotificationStatusValidityActivity;
 
 	@BeforeEach
 	void init() {
-		updateSendNotificationStatusActivity = new UpdateSendNotificationStatusActivityImpl(
+		sendNotificationStatusValidityActivity = new SendNotificationStatusValidityActivityImpl(
 				sendServiceMock,
 				installmentServiceMock
 		);
@@ -50,7 +50,7 @@ class UpdateSendNotificationStatusActivityTest {
 		Mockito.when(sendServiceMock.notificationStatus(notificationId)).thenReturn(expectedResponse);
 
 		// When
-		SendNotificationDTO result = updateSendNotificationStatusActivity.updateSendNotificationStatus(notificationRequestId);
+		SendNotificationDTO result = sendNotificationStatusValidityActivity.sendNotificationStatusValidity(notificationRequestId);
 
 		// Then
 		assertSame(expectedResponse, result);
@@ -71,14 +71,14 @@ class UpdateSendNotificationStatusActivityTest {
 		// When
 		SendStreamSkippedEventException sendStreamSkippedEventException = Assertions.assertThrows(
 				SendStreamSkippedEventException.class,
-				() -> updateSendNotificationStatusActivity.updateSendNotificationStatus(notificationRequestId)
+				() -> sendNotificationStatusValidityActivity.sendNotificationStatusValidity(notificationRequestId)
 		);
 
 		// Then
 		Assertions.assertNotNull(sendStreamSkippedEventException);
 		String causeErrorMessage = "Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId);
 		Assertions.assertEquals(
-				"Skipped an error during execution of activity %s: %s".formatted(UpdateSendNotificationStatusActivity.class.getSimpleName(), causeErrorMessage),
+				"Skipped an error during execution of activity %s: %s".formatted(SendNotificationStatusValidityActivity.class.getSimpleName(), causeErrorMessage),
 			sendStreamSkippedEventException.getMessage()
 		);
 	}
@@ -103,7 +103,7 @@ class UpdateSendNotificationStatusActivityTest {
 		Mockito.when(sendServiceMock.notificationStatus(notificationId)).thenReturn(sendNotificationDTO);
 
 		// When
-		SendNotificationDTO result = updateSendNotificationStatusActivity.updateSendNotificationStatus(notificationRequestId);
+		SendNotificationDTO result = sendNotificationStatusValidityActivity.sendNotificationStatusValidity(notificationRequestId);
 
 		// Then
 		assertSame(sendNotificationDTO, result);
@@ -120,7 +120,7 @@ class UpdateSendNotificationStatusActivityTest {
 		Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(null);
 
 		// When
-		SendNotificationDTO result = updateSendNotificationStatusActivity.updateSendNotificationStatus(notificationRequestId);
+		SendNotificationDTO result = sendNotificationStatusValidityActivity.sendNotificationStatusValidity(notificationRequestId);
 
 		// Then
 		assertNull(result);
@@ -142,7 +142,7 @@ class UpdateSendNotificationStatusActivityTest {
 		Mockito.when(sendServiceMock.notificationStatus(notificationId)).thenReturn(null);
 
 		// When
-		SendNotificationDTO result = updateSendNotificationStatusActivity.updateSendNotificationStatus(notificationRequestId);
+		SendNotificationDTO result = sendNotificationStatusValidityActivity.sendNotificationStatusValidity(notificationRequestId);
 
 		// Then
 		assertNull(result);
@@ -162,7 +162,7 @@ class UpdateSendNotificationStatusActivityTest {
 		Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(sendNotificationDTO);
 		Mockito.when(sendServiceMock.notificationStatus(notificationId)).thenReturn(sendNotificationDTO);
 		// When
-		SendNotificationDTO result = updateSendNotificationStatusActivity.updateSendNotificationStatus(notificationRequestId);
+		SendNotificationDTO result = sendNotificationStatusValidityActivity.sendNotificationStatusValidity(notificationRequestId);
 		// Then
 		assertSame(sendNotificationDTO, result);
 		Mockito.verify(sendServiceMock).notificationStatus(notificationId);

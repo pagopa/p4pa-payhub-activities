@@ -69,4 +69,9 @@ public class SendNotificationClient {
     sendApisHolder.getSendStreamsApi(accessToken)
             .updateStreamLastEventId(sendStreamId, lastEventId);
   }
+
+  public void updateSendNotificationStatus(String NotificationRequestId, NotificationStatus newStatus, String accessToken) {
+    sendApisHolder.getSendNotificationApi(accessToken)
+            .updateNotificationStatus(NotificationRequestId, newStatus);
+  }
 }

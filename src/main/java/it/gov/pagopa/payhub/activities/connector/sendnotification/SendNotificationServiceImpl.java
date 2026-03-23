@@ -53,4 +53,9 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     public void updateLastProcessedStreamEventId(String sendStreamId, String lastEventId) {
         sendNotificationClient.updateLastProcessedStreamEventId(sendStreamId, lastEventId, authnService.getAccessToken());
     }
+
+    @Override
+    public void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus) {
+        sendNotificationClient.updateSendNotificationStatus(notificationRequestId, newStatus, authnService.getAccessToken());
+    }
 }
