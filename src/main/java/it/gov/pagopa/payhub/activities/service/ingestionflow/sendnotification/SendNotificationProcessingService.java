@@ -148,7 +148,7 @@ public class SendNotificationProcessingService extends
                 .filter(Objects::nonNull)
                 .anyMatch(notificationDTO ->
                         notificationDTO.getStatus().equals(NotificationStatus.UPLOADED) ||
-                                notificationDTO.getStatus().equals(NotificationStatus.COMPLETE) ||
+                                notificationDTO.getStatus().equals(NotificationStatus.IN_VALIDATION) ||
                                 notificationDTO.getStatus().equals(NotificationStatus.ACCEPTED)
                 );
     }
