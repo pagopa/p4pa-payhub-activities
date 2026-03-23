@@ -15,5 +15,5 @@ public interface UpdateSendNotificationStatusActivity {
 	 * @param notificationRequestId the ID of send notification request
 	 */
 	@ActivityMethod
-	void UpdateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus);
+	void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus);
 }

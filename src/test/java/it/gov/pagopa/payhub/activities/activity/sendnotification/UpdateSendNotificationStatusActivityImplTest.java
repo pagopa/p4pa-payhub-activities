@@ -39,7 +39,7 @@ class UpdateSendNotificationStatusActivityImplTest {
                 );
 
         //WHEN
-        activity.UpdateSendNotificationStatus(notificationRequestId, NotificationStatus.REGISTERED);
+        activity.updateSendNotificationStatus(notificationRequestId, NotificationStatus.REGISTERED);
 
         //THEN
         Mockito.verify(sendNotificationServiceMock)

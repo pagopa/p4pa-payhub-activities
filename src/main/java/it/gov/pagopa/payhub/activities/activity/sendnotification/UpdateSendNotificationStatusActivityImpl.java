@@ -18,7 +18,7 @@ public class UpdateSendNotificationStatusActivityImpl implements UpdateSendNotif
     }
 
     @Override
-    public void UpdateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus) {
+    public void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus) {
         sendNotificationService.updateSendNotificationStatus(notificationRequestId, newStatus);
     }
 }
