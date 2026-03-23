@@ -13,6 +13,7 @@ import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -66,7 +67,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         int currentPage = 0;
         boolean hasMorePages = true;
 
-        Map<String, DebtPositionDTO> iuvToDebtPositionMap = new HashMap<>();
+        Map<String, DebtPositionDTO> iuvToDebtPositionMap = new LinkedHashMap<>();
         List<DebtPositionDTO> debtPositionsExportIuv = new ArrayList<>();
         List<InstallmentStatus> statusToExclude = List.of(InstallmentStatus.DRAFT);
 
@@ -138,7 +139,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
         try {
             List<String> allIuvs = new ArrayList<>(iuvToDebtPositionMap.keySet());
-            List<List<String>> chunks = partition(allIuvs);
+            List<List<String>> chunks = ListUtils.partition(allIuvs, MAX_NOTICES_PER_CALL);
 
             for (List<String> chunk : chunks) {
                 List<DebtPositionDTO> filteredDebtPositions = chunk.stream()
@@ -165,14 +166,6 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         }
 
         return folderIds.isEmpty() ? null : String.join(",", folderIds);
-    }
-
-    private <T> List<List<T>> partition(List<T> list) {
-        List<List<T>> result = new ArrayList<>();
-        for (int i = 0; i < list.size(); i += MAX_NOTICES_PER_CALL) {
-            result.add(list.subList(i, Math.min(i + MAX_NOTICES_PER_CALL, list.size())));
-        }
-        return result;
     }
 
     private void addIuvToGenerateNoticeMap(Long ingestionFlowFileId, DebtPositionDTO debtPosition, Map<String, DebtPositionDTO> iuvToDebtPositionMap) {
