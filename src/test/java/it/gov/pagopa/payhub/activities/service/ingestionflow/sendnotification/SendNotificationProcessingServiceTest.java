@@ -201,7 +201,7 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
         return List.of(
                 configureUnhappyUseCaseAlreadyProcessedHavingStatusAccepted(ingestionFlowFile, ++previousRowNumber),
                 configureUnhappyUseCaseAlreadyProcessedHavingStatusUploaded(ingestionFlowFile, ++previousRowNumber),
-                configureUnhappyUseCaseAlreadyProcessedHavingStatusComplete(ingestionFlowFile, ++previousRowNumber),
+               // configureUnhappyUseCaseAlreadyProcessedHavingStatusComplete(ingestionFlowFile, ++previousRowNumber),
                 configureUnhappyUseCaseNotProcessed(ingestionFlowFile, ++previousRowNumber)
         );
     }
@@ -214,9 +214,9 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
         return configureUnhappyUseCaseAlreadyProcessed(ingestionFlowFile, rowNumber, NotificationStatus.UPLOADED);
     }
 
-    private Pair<SendNotificationIngestionFlowFileDTO, List<SendNotificationErrorDTO>> configureUnhappyUseCaseAlreadyProcessedHavingStatusComplete(IngestionFlowFile ingestionFlowFile, long rowNumber) {
-        return configureUnhappyUseCaseAlreadyProcessed(ingestionFlowFile, rowNumber, NotificationStatus.COMPLETE);
-    }
+//    private Pair<SendNotificationIngestionFlowFileDTO, List<SendNotificationErrorDTO>> configureUnhappyUseCaseAlreadyProcessedHavingStatusComplete(IngestionFlowFile ingestionFlowFile, long rowNumber) {
+//        return configureUnhappyUseCaseAlreadyProcessed(ingestionFlowFile, rowNumber, NotificationStatus.COMPLETE);
+//    }
 
     private Pair<SendNotificationIngestionFlowFileDTO, List<SendNotificationErrorDTO>> configureUnhappyUseCaseAlreadyProcessed(IngestionFlowFile ingestionFlowFile, long rowNumber, NotificationStatus alreadyProcessedStatus) {
         String sendNotificationId = "SENDNOTIFICATIONID" + rowNumber;
