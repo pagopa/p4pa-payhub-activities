@@ -8,12 +8,12 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
  * Interface for validity send notification status.
  */
 @ActivityInterface
-public interface SendNotificationStatusValidityActivity {
+public interface ValidateSendNotificationStatusActivity {
 	/**
 	 * Validate notification status from send notification.
 	 *
 	 * @param notificationRequestId the ID of send notification request
 	 */
 	@ActivityMethod
-	SendNotificationDTO sendNotificationStatusValidity(String notificationRequestId);
+	SendNotificationDTO validateSendNotificationStatus(String notificationRequestId);
 }

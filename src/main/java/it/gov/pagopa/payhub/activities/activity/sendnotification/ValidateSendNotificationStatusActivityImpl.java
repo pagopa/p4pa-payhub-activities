@@ -12,25 +12,25 @@ import org.springframework.web.client.HttpClientErrorException;
 @Slf4j
 @Component
 @Lazy
-public class SendNotificationStatusValidityActivityImpl implements SendNotificationStatusValidityActivity {
+public class ValidateSendNotificationStatusActivityImpl implements ValidateSendNotificationStatusActivity {
 
 	private final SendService sendService;
 	private final InstallmentService installmentService;
 
-	public SendNotificationStatusValidityActivityImpl(SendService sendService, InstallmentService installmentService) {
+	public ValidateSendNotificationStatusActivityImpl(SendService sendService, InstallmentService installmentService) {
 		this.sendService = sendService;
 		this.installmentService = installmentService;
 	}
 
 	@Override
-	public SendNotificationDTO sendNotificationStatusValidity(String notificationRequestId) {
+	public SendNotificationDTO validateSendNotificationStatus(String notificationRequestId) {
 		log.info("Starting sendNotificationStatusValidity for notificationRequestId {}", notificationRequestId);
 		SendNotificationDTO sendNotificationDTOByRequestId;
 		try {
 			sendNotificationDTOByRequestId = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
 		} catch (HttpClientErrorException.NotFound e) {
 			String errorMessage = "Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage());
-			throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(SendNotificationStatusValidityActivity.class.getSimpleName(), errorMessage));
+			throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(ValidateSendNotificationStatusActivity.class.getSimpleName(), errorMessage));
 		}
 		if(sendNotificationDTOByRequestId == null) {
 			return null;
