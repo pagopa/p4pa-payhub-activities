@@ -19,10 +19,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.temporal.api.enums.v1.WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED;
@@ -43,6 +40,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     private final IUVArchivingExportFileService iuvArchivingExportFileService;
 
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
+    private static final int MAX_NOTICES_PER_CALL = 1000;
 
     public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowHubService workflowHubService, GenerateNoticeService generateNoticeService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
                                                        @Value("${query-limits.debt-positions.size}") Integer pageSize,
@@ -134,19 +132,52 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     }
 
     private String retrievePdfGeneratedIdFromGenerateNotice(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices, StringBuilder errors) {
-        String pdfGeneratedId = null;
-
-        if (!debtPositionsGenerateNotices.isEmpty()) {
-            try {
-                pdfGeneratedId = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices);
-            } catch (Exception e) {
-                log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}", ingestionFlowFileId, e);
-                errors.append("\nError on generate notice massive for ingestionFlowFileId ")
-                        .append(ingestionFlowFileId).append(": ")
-                        .append(e.getMessage());
-            }
+        if (debtPositionsGenerateNotices.isEmpty() || iuvListGenerateNotices.isEmpty()) {
+            return null;
         }
-        return pdfGeneratedId;
+
+        List<String> folderIds = new ArrayList<>();
+
+        try {
+            List<List<String>> chunks = partition(iuvListGenerateNotices);
+
+            for (List<String> chunk : chunks) {
+                // Filter the debtPositions that contain at least one IUV from the chunk
+                Set<String> chunkSet = new HashSet<>(chunk);
+                List<DebtPositionDTO> filteredDebtPositions = debtPositionsGenerateNotices.stream()
+                        .filter(dp -> dp.getPaymentOptions().stream()
+                                .flatMap(po -> po.getInstallments().stream())
+                                .map(InstallmentDTO::getIuv)
+                                .anyMatch(chunkSet::contains)
+                        )
+                        .toList();
+
+                if (filteredDebtPositions.isEmpty()) {
+                    continue;
+                }
+
+                String folderId = generateNoticeService.generateNotices(ingestionFlowFileId, filteredDebtPositions, chunk);
+
+                if (folderId != null) {
+                    folderIds.add(folderId);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}", ingestionFlowFileId, e);
+            errors.append("\nError on generate notice massive for ingestionFlowFileId ")
+                    .append(ingestionFlowFileId).append(": ")
+                    .append(e.getMessage());
+        }
+
+        return folderIds.isEmpty() ? null : String.join(",", folderIds);
+    }
+
+    private <T> List<List<T>> partition(List<T> list) {
+        List<List<T>> result = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += MAX_NOTICES_PER_CALL) {
+            result.add(list.subList(i, Math.min(i + MAX_NOTICES_PER_CALL, list.size())));
+        }
+        return result;
     }
 
     private void addIuvListToGenerateNotice(Long ingestionFlowFileId, DebtPositionDTO debtPosition, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices) {
