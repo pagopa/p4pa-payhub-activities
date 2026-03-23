@@ -178,4 +178,27 @@ class SendNotificationServiceTest {
                 );
     }
 
+    @Test
+    void givenValidRequestWhenUpdateSendNotificationStatusThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String requestId = "requestId";
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.doNothing()
+                .when(clientMock).updateSendNotificationStatus(requestId, NotificationStatus.PAID, accessToken);
+
+        // When
+        service.updateSendNotificationStatus(requestId, NotificationStatus.PAID);
+
+        // Then
+        Mockito.verify(clientMock)
+                .updateSendNotificationStatus(
+                        requestId,
+                        NotificationStatus.PAID,
+                        accessToken
+                );
+    }
+
 }

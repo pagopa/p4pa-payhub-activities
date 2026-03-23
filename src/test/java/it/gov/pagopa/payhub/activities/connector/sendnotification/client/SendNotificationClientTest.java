@@ -241,4 +241,27 @@ class SendNotificationClientTest {
                 );
     }
 
+    @Test
+    void givenValidRequestWhenUpdateSendNotificationStatusThenOk() {
+        //Given
+        String accessToken = "ACCESSTOKEN";
+        String notificationRequestId = "requestId";
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+                .thenReturn(sendNotificationApiMock);
+        Mockito.doNothing()
+                .when(sendNotificationApiMock)
+                .updateNotificationStatus(notificationRequestId, NotificationStatus.DELIVERED);
+
+        //When
+        client.updateSendNotificationStatus(notificationRequestId, NotificationStatus.DELIVERED, accessToken);
+
+        //Then
+        Mockito.verify(sendNotificationApiMock)
+                .updateNotificationStatus(
+                        notificationRequestId,
+                        NotificationStatus.DELIVERED
+                );
+    }
+
 }
