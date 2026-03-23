@@ -139,10 +139,10 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
         try {
             List<String> allIuvs = new ArrayList<>(iuvToDebtPositionMap.keySet());
-            List<List<String>> chunks = ListUtils.partition(allIuvs, MAX_NOTICES_PER_CALL);
+            List<List<String>> iuvchunks = ListUtils.partition(allIuvs, MAX_NOTICES_PER_CALL);
 
-            for (List<String> chunk : chunks) {
-                List<DebtPositionDTO> filteredDebtPositions = chunk.stream()
+            for (List<String> iuvchunk : iuvchunks) {
+                List<DebtPositionDTO> filteredDebtPositions = iuvchunk.stream()
                         .map(iuvToDebtPositionMap::get)
                         .filter(Objects::nonNull)
                         .distinct()
@@ -152,7 +152,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     continue;
                 }
 
-                String folderId = generateNoticeService.generateNotices(ingestionFlowFileId, filteredDebtPositions, chunk);
+                String folderId = generateNoticeService.generateNotices(ingestionFlowFileId, filteredDebtPositions, iuvchunk);
 
                 if (folderId != null) {
                     folderIds.add(folderId);
