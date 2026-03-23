@@ -215,7 +215,7 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
     }
 
     private Pair<SendNotificationIngestionFlowFileDTO, List<SendNotificationErrorDTO>> configureUnhappyUseCaseAlreadyProcessedHavingStatusComplete(IngestionFlowFile ingestionFlowFile, long rowNumber) {
-        return configureUnhappyUseCaseAlreadyProcessed(ingestionFlowFile, rowNumber, NotificationStatus.COMPLETE);
+        return configureUnhappyUseCaseAlreadyProcessed(ingestionFlowFile, rowNumber, NotificationStatus.IN_VALIDATION);
     }
 
     private Pair<SendNotificationIngestionFlowFileDTO, List<SendNotificationErrorDTO>> configureUnhappyUseCaseAlreadyProcessed(IngestionFlowFile ingestionFlowFile, long rowNumber, NotificationStatus alreadyProcessedStatus) {
