@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
@@ -35,6 +36,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     private final WorkflowHubService workflowHubService;
     private final GenerateNoticeService generateNoticeService;
     private final DebtPositionOperationTypeResolver debtPositionOperationTypeResolver;
+    private final IngestionFlowFileService ingestionFlowFileService;
+
     private final Integer pageSize;
     private final int maxAttempts;
     private final int retryDelayMs;
@@ -43,7 +46,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
     private static final List<String> DEFAULT_ORDERING = List.of("debtPositionId,asc");
     private static final int MAX_NOTICES_PER_CALL = 1000;
 
-    public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowHubService workflowHubService, GenerateNoticeService generateNoticeService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver,
+    public SynchronizeIngestedDebtPositionActivityImpl(DebtPositionService debtPositionService, WorkflowDebtPositionService workflowDebtPositionService, WorkflowHubService workflowHubService, GenerateNoticeService generateNoticeService, DebtPositionOperationTypeResolver debtPositionOperationTypeResolver, IngestionFlowFileService ingestionFlowFileService,
                                                        @Value("${query-limits.debt-positions.size}") Integer pageSize,
                                                        @Value("${ingestion-flow-files.dp-installments.wf-await.max-waiting-minutes}") int maxWaitingMinutes,
                                                        @Value("${ingestion-flow-files.dp-installments.wf-await.retry-delays-ms}") int retryDelayMs, IUVArchivingExportFileService iuvArchivingExportFileService) {
@@ -52,6 +55,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         this.workflowHubService = workflowHubService;
         this.generateNoticeService = generateNoticeService;
         this.debtPositionOperationTypeResolver = debtPositionOperationTypeResolver;
+        this.ingestionFlowFileService = ingestionFlowFileService;
         this.pageSize = pageSize;
         this.iuvArchivingExportFileService = iuvArchivingExportFileService;
         this.maxAttempts = (int) (((double) maxWaitingMinutes * 60_000) / retryDelayMs);
@@ -114,6 +118,15 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
         log.info("Synchronization of all debt positions related to ingestion flow file id {} completed", ingestionFlowFileId);
 
         String pdfGeneratedId = retrievePdfGeneratedIdFromGenerateNotice(ingestionFlowFileId, iuvToDebtPositionMap, errors);
+
+        if (pdfGeneratedId != null) {
+            ingestionFlowFileService.updatePdfGenerated(
+                    ingestionFlowFileId,
+                    (long) iuvToDebtPositionMap.size(),
+                    pdfGeneratedId
+            );
+        }
+
         Path csvPath = createIuvArchivingExportFile(ingestionFlowFileId, debtPositionsExportIuv);
 
         return SyncIngestedDebtPositionDTO.builder()
