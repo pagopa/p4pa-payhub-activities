@@ -119,14 +119,6 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
 
         String pdfGeneratedId = retrievePdfGeneratedIdFromGenerateNotice(ingestionFlowFileId, iuvToDebtPositionMap, errors);
 
-        if (pdfGeneratedId != null) {
-            ingestionFlowFileService.updatePdfGenerated(
-                    ingestionFlowFileId,
-                    (long) iuvToDebtPositionMap.size(),
-                    pdfGeneratedId
-            );
-        }
-
         Path csvPath = createIuvArchivingExportFile(ingestionFlowFileId, debtPositionsExportIuv);
 
         return SyncIngestedDebtPositionDTO.builder()
@@ -178,7 +170,17 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     .append(e.getMessage());
         }
 
-        return folderIds.isEmpty() ? null : String.join(",", folderIds);
+        String pdfGeneratedId = folderIds.isEmpty() ? null : String.join(",", folderIds);
+
+        if (pdfGeneratedId != null) {
+            ingestionFlowFileService.updatePdfGenerated(
+                    ingestionFlowFileId,
+                    (long) iuvToDebtPositionMap.size(),
+                    pdfGeneratedId
+            );
+        }
+
+        return pdfGeneratedId;
     }
 
     private void addIuvToGenerateNoticeMap(Long ingestionFlowFileId, DebtPositionDTO debtPosition, Map<String, DebtPositionDTO> iuvToDebtPositionMap) {
