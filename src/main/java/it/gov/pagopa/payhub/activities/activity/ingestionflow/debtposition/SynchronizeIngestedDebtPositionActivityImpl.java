@@ -146,9 +146,9 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             List<String> allIuvs = new ArrayList<>(iuvToDebtPositionMap.keySet());
             List<List<String>> iuvchunks = ListUtils.partition(allIuvs, MAX_NOTICES_PER_CALL);
 
-            for (int chunkIndex = 0; chunkIndex < iuvchunks.size(); chunkIndex++) {
-                List<String> iuvchunk = iuvchunks.get(chunkIndex);
+            int chunkIndex = 0;
 
+            for (List<String> iuvchunk : iuvchunks) {
                 List<DebtPositionDTO> filteredDebtPositions = iuvchunk.stream()
                         .map(iuvToDebtPositionMap::get)
                         .filter(Objects::nonNull)
@@ -156,6 +156,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                         .toList();
 
                 if (filteredDebtPositions.isEmpty()) {
+                    chunkIndex++;
                     continue;
                 }
 
@@ -164,6 +165,8 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                 if (folderId != null) {
                     folderIds.add(folderId);
                 }
+
+                chunkIndex++;
             }
         } catch (Exception e) {
             log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}", ingestionFlowFileId, e);
