@@ -157,7 +157,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(new WorkflowCreatedDTO("workflowId", "runId"));
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowStatusDTO);
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList()))
+        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenReturn("folderId");
         Mockito.when(iuvArchivingExportFileServiceMock.executeExport(anyList(), eq(ingestionFlowFileId)))
                 .thenReturn(path);
@@ -380,7 +380,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowStatusDTO);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList()))
+        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenReturn("folderId");
         Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsExportIuv, ingestionFlowFileId))
                 .thenReturn(path);
@@ -427,7 +427,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), anyInt(), anyInt()))
                 .thenReturn(status);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList()))
+        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenThrow(new IllegalStateException("ERROR"));
 
         Mockito.when(iuvArchivingExportFileServiceMock.executeExport(anyList(), anyLong()))
@@ -487,7 +487,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
         Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), anyInt(), anyInt()))
                 .thenReturn(status);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList()))
+        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenReturn("folder1", "folder2");
 
         Mockito.when(iuvArchivingExportFileServiceMock.executeExport(anyList(), anyLong()))
@@ -500,7 +500,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1500L, "folder1,folder2");
         Mockito.verify(generateNoticeServiceMock, Mockito.times(2))
-                .generateNotices(anyLong(), anyList(), anyList());
+                .generateNotices(anyLong(), anyList(), anyList(), anyInt());
     }
 
     private void enableGenerateNotice(DebtPositionDTO dp, Long ingestionFlowFileId) {

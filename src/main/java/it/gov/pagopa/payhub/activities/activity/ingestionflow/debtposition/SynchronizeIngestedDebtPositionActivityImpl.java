@@ -146,7 +146,9 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
             List<String> allIuvs = new ArrayList<>(iuvToDebtPositionMap.keySet());
             List<List<String>> iuvchunks = ListUtils.partition(allIuvs, MAX_NOTICES_PER_CALL);
 
-            for (List<String> iuvchunk : iuvchunks) {
+            for (int chunkIndex = 0; chunkIndex < iuvchunks.size(); chunkIndex++) {
+                List<String> iuvchunk = iuvchunks.get(chunkIndex);
+
                 List<DebtPositionDTO> filteredDebtPositions = iuvchunk.stream()
                         .map(iuvToDebtPositionMap::get)
                         .filter(Objects::nonNull)
@@ -157,7 +159,7 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                     continue;
                 }
 
-                String folderId = generateNoticeService.generateNotices(ingestionFlowFileId, filteredDebtPositions, iuvchunk);
+                String folderId = generateNoticeService.generateNotices(ingestionFlowFileId, filteredDebtPositions, iuvchunk, chunkIndex);
 
                 if (folderId != null) {
                     folderIds.add(folderId);
