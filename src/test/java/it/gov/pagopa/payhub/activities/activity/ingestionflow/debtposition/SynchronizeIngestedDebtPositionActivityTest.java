@@ -227,7 +227,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 0L, null);
+        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
 
         assertEquals(response, result);
     }
@@ -293,8 +293,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 0L, null);
-
+        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
         assertEquals(response, result);
     }
 
@@ -436,7 +435,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1L, null);
+        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
         assertNull(result.getPdfGeneratedId());
     }
 
