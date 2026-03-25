@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowDebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.WorkflowHubService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
@@ -52,6 +53,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
     private DebtPositionOperationTypeResolver debtPositionOperationTypeResolverMock;
     @Mock
     private IUVArchivingExportFileService iuvArchivingExportFileServiceMock;
+    @Mock
+    private IngestionFlowFileService ingestionFlowFileServiceMock;
 
     private final ObjectMapper objectMapper = new JsonConfig().objectMapper();
 
@@ -62,14 +65,14 @@ class SynchronizeIngestedDebtPositionActivityTest {
     private static final int MAX_ATTEMPTS = (int) (((double) MAX_WAITING_MINUTES * 60_000) / RETRY_DELAY);
     private static final List<InstallmentStatus> statusToExclude = List.of(InstallmentStatus.DRAFT);
 
-
     private SynchronizeIngestedDebtPositionActivity activity;
 
     @BeforeEach
     void setUp() {
         activity = new SynchronizeIngestedDebtPositionActivityImpl(
                 debtPositionServiceMock, workflowDebtPositionServiceMock, workflowHubServiceMock, generateNoticeServiceMock,
-                debtPositionOperationTypeResolverMock, PAGE_SIZE, MAX_WAITING_MINUTES, RETRY_DELAY, iuvArchivingExportFileServiceMock
+                debtPositionOperationTypeResolverMock, ingestionFlowFileServiceMock,
+                PAGE_SIZE, MAX_WAITING_MINUTES, RETRY_DELAY, iuvArchivingExportFileServiceMock
         );
     }
 
@@ -81,7 +84,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 workflowHubServiceMock,
                 debtPositionOperationTypeResolverMock,
                 iuvArchivingExportFileServiceMock,
-                generateNoticeServiceMock
+                generateNoticeServiceMock,
+                ingestionFlowFileServiceMock
         );
     }
 
@@ -93,6 +97,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
     void testSynchronizeIngestedDebtPositionWithoutErrors_SuccessfulResult() {
         testSynchronizeIngestedDebtPositionWithoutErrors(true);
     }
+
     @SneakyThrows
     void testSynchronizeIngestedDebtPositionWithoutErrors(boolean hasWfResult) {
         Long ingestionFlowFileId = 1L;
@@ -159,6 +164,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
+        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1L, "folderId");
+
         assertEquals("folderId", result.getPdfGeneratedId());
     }
 
@@ -219,6 +226,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .thenReturn(worflowStatusDTO);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
+
+        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
 
         assertEquals(response, result);
     }
@@ -284,6 +293,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
+        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
         assertEquals(response, result);
     }
 
@@ -377,6 +387,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
+        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(eq(ingestionFlowFileId), anyLong(), eq("folderId"));
         assertEquals(response, result);
     }
 
@@ -424,6 +435,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
+        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
         assertNull(result.getPdfGeneratedId());
     }
 
@@ -486,6 +498,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         assertEquals("folder1,folder2", result.getPdfGeneratedId());
 
+        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1500L, "folder1,folder2");
         Mockito.verify(generateNoticeServiceMock, Mockito.times(2))
                 .generateNotices(anyLong(), anyList(), anyList());
     }

@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
-import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +15,9 @@ import java.util.List;
 @Slf4j
 public class GenerateNoticeService {
     private final PrintPaymentNoticeService printPaymentNoticeService;
-    private final IngestionFlowFileService ingestionFlowFileService;
 
-    public GenerateNoticeService(PrintPaymentNoticeService printPaymentNoticeService, IngestionFlowFileService ingestionFlowFileService) {
+    public GenerateNoticeService(PrintPaymentNoticeService printPaymentNoticeService) {
         this.printPaymentNoticeService = printPaymentNoticeService;
-        this.ingestionFlowFileService = ingestionFlowFileService;
     }
 
     public String generateNotices(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices) {
@@ -35,11 +31,6 @@ public class GenerateNoticeService {
                 .build();
         GeneratedNoticeMassiveFolderDTO folderDTO = printPaymentNoticeService.generateMassive(request);
 
-        ingestionFlowFileService.updatePdfGenerated(
-                ingestionFlowFileId,
-                (long) iuvListGenerateNotices.size(),
-                folderDTO.getFolderId()
-        );
         return folderDTO.getFolderId();
     }
 }
