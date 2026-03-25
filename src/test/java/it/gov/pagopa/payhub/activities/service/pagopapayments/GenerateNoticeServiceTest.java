@@ -47,7 +47,7 @@ class GenerateNoticeServiceTest {
         List<String> iuvListGenerateNotices = List.of("iuv", "iuv");
         long pdfGenerated = 2;
 
-        String requestId = "PU_" + debtPosition1.getOrganizationId() + "_" + ingestionFlowFileId;
+        String requestId = "PU_" + debtPosition1.getOrganizationId() + "_" + debtPosition1.getDebtPositionId() + "_" + ingestionFlowFileId;
 
         NoticeRequestMassiveDTO requestMassive = NoticeRequestMassiveDTO.builder()
             .debtPositions(debtPositionsGenerateNotices)

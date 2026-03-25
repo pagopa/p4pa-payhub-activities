@@ -21,7 +21,7 @@ public class GenerateNoticeService {
     }
 
     public String generateNotices(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices) {
-        String requestId = "PU_" + debtPositionsGenerateNotices.getFirst().getOrganizationId() + "_" + ingestionFlowFileId;
+        String requestId = "PU_" + debtPositionsGenerateNotices.getFirst().getOrganizationId() + "_" + debtPositionsGenerateNotices.getFirst().getDebtPositionId() + "_" + ingestionFlowFileId;
         log.info("Triggering notice generateNotices for {} debtPositions with requestId {}", debtPositionsGenerateNotices.size(), requestId);
 
         NoticeRequestMassiveDTO request = NoticeRequestMassiveDTO.builder()
@@ -29,6 +29,7 @@ public class GenerateNoticeService {
                 .iuvList(iuvListGenerateNotices)
                 .requestId(requestId)
                 .build();
+
         GeneratedNoticeMassiveFolderDTO folderDTO = printPaymentNoticeService.generateMassive(request);
 
         return folderDTO.getFolderId();
