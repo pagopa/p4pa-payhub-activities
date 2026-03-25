@@ -156,17 +156,14 @@ public class SynchronizeIngestedDebtPositionActivityImpl implements SynchronizeI
                         .toList();
 
                 if (filteredDebtPositions.isEmpty()) {
-                    chunkIndex++;
                     continue;
                 }
 
-                String folderId = generateNoticeService.generateNotices(ingestionFlowFileId, filteredDebtPositions, iuvchunk, chunkIndex);
+                String folderId = generateNoticeService.generateNotices(ingestionFlowFileId, filteredDebtPositions, iuvchunk, chunkIndex++);
 
                 if (folderId != null) {
                     folderIds.add(folderId);
                 }
-
-                chunkIndex++;
             }
         } catch (Exception e) {
             log.error("Error calling generateMassiveNotices for ingestionFlowFileId: {}", ingestionFlowFileId, e);
