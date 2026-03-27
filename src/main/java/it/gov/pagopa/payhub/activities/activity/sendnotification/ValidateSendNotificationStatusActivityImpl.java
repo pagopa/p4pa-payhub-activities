@@ -37,8 +37,15 @@ public class ValidateSendNotificationStatusActivityImpl implements ValidateSendN
 		}
 		SendNotificationDTO sendNotificationDTO = sendService.notificationStatus(sendNotificationDTOByRequestId.getSendNotificationId());
 		if(sendNotificationDTO!=null && sendNotificationDTO.getIun()!=null) {
-			sendNotificationDTO.getPayments().forEach(p ->
-					installmentService.updateIunByDebtPositionId(p.getDebtPositionId(), sendNotificationDTO.getIun()));
+			sendNotificationDTOByRequestId.getPayments()
+					.stream()
+					.filter(p -> p.getDebtPositionId() != null)
+					.forEach(p ->
+							installmentService.updateIunByDebtPositionId(
+									p.getDebtPositionId(),
+									sendNotificationDTO.getIun()
+							)
+					);
 		}
 		return sendNotificationDTO;
 	}
