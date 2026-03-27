@@ -39,7 +39,7 @@ public class SendNotificationDateRetrieveActivityImpl implements SendNotificatio
         }
         sendNotificationDTO = sendService.retrieveNotificationDate(sendNotificationDTO.getSendNotificationId());
         sendNotificationDTO.getPayments().stream()
-                .filter(payment -> payment.getNotificationDate() != null)
+                .filter(payment -> payment.getNotificationDate() != null && payment.getDebtPositionId()!=null)
                 .forEach(sendNotificationPayments -> {
                     UpdateInstallmentNotificationDateRequest request = UpdateInstallmentNotificationDateRequest.builder()
                             .debtPositionId(sendNotificationPayments.getDebtPositionId())
