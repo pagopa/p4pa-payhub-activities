@@ -450,7 +450,7 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         for (int i = 0; i < 1500; i++) {
             InstallmentDTO inst = new InstallmentDTO();
-            inst.setIuv("iuv-" + i);
+            inst.setNav("nav-" + i);
             inst.setGenerateNotice(true);
             inst.setIngestionFlowFileId(ingestionFlowFileId);
             inst.setSyncStatus(

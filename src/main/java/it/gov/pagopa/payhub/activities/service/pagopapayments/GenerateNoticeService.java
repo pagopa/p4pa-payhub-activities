@@ -20,13 +20,13 @@ public class GenerateNoticeService {
         this.printPaymentNoticeService = printPaymentNoticeService;
     }
 
-    public String generateNotices(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> iuvListGenerateNotices, int chunkIndex) {
+    public String generateNotices(Long ingestionFlowFileId, List<DebtPositionDTO> debtPositionsGenerateNotices, List<String> navListGenerateNotices, int chunkIndex) {
         String requestId = "PU_" + debtPositionsGenerateNotices.getFirst().getOrganizationId() + "_" + ingestionFlowFileId + "_" + chunkIndex;
         log.info("Triggering notice generateNotices for {} debtPositions with requestId {}", debtPositionsGenerateNotices.size(), requestId);
 
         NoticeRequestMassiveDTO request = NoticeRequestMassiveDTO.builder()
                 .debtPositions(debtPositionsGenerateNotices)
-                .iuvList(iuvListGenerateNotices)
+                .navList(navListGenerateNotices)
                 .requestId(requestId)
                 .build();
 
