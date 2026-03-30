@@ -44,14 +44,14 @@ class GenerateNoticeServiceTest {
         debtPosition2.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentStatus.UNPAID);
 
         List<DebtPositionDTO> debtPositionsGenerateNotices = List.of(debtPosition1, debtPosition2);
-        List<String> iuvListGenerateNotices = List.of("iuv", "iuv");
+        List<String> navListGenerateNotices = List.of("nav", "nav2");
         long pdfGenerated = 2;
 
         String requestId = "PU_" + debtPosition1.getOrganizationId() + "_" + ingestionFlowFileId + "_1";
 
         NoticeRequestMassiveDTO requestMassive = NoticeRequestMassiveDTO.builder()
             .debtPositions(debtPositionsGenerateNotices)
-            .iuvList(iuvListGenerateNotices)
+            .navList(navListGenerateNotices)
             .requestId(requestId)
             .build();
         GeneratedNoticeMassiveFolderDTO responseFolder = GeneratedNoticeMassiveFolderDTO.builder()
@@ -61,7 +61,7 @@ class GenerateNoticeServiceTest {
         Mockito.when(printPaymentNoticeServiceMock.generateMassive(requestMassive))
             .thenReturn(responseFolder);
 
-        String result = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, iuvListGenerateNotices, 1);
+        String result = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, navListGenerateNotices, 1);
 
         assertEquals(folderId, result);
         assertEquals(2, pdfGenerated);
