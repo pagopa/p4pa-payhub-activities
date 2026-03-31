@@ -117,11 +117,7 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
   void givenValidTemplateWhenBuildTemplateParamsThenOk() {
     //given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
-      .companyName("NAME")
-      .orgFiscalCode("ORGFC")
-      .noticeNumber("NAV")
-      .paymentAmountCents(123456L)
-      .paymentDateTime(OffsetDateTime.of(2025, 2, 21, 10, 30, 23, 0, ZoneOffset.UTC));
+      .debtor(new PersonDTO().fullName("NAME"));
 
     //when
     Map<String, String> result = receiptPagopaEmailConfigurerService.buildTemplateParams(receiptWithAdditionalNodeDataDTO);
@@ -129,11 +125,11 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
     //verify
     Assertions.assertEquals(
             Map.of(
-                    "companyName", "NAME",
-                    "orgFiscalCode", "ORGFC",
-                    "noticeNumber", "NAV",
-                    "amount", "1.234,56 €",
-                    "paymentDate", "21/02/2025 10:30:23"
+                    "name", "NAME",
+                    "linkToMoreInformation", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+                    "cieUrlLink", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+                    "urlLegal", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+                    "urlCieFAQ", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/"
             ),
             result
     );

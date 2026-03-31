@@ -38,11 +38,11 @@ public class ReceiptPagoPaEmailConfigurerService {
 
   public Map<String, String> buildTemplateParams(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     return Map.of(
-      "companyName", StringUtils.firstNonBlank(receiptDTO.getCompanyName(),"-"),
-      "orgFiscalCode", receiptDTO.getOrgFiscalCode(),
-      "noticeNumber", receiptDTO.getNoticeNumber(),
-      "amount", NumberFormat.getCurrencyInstance(Locale.ITALY).format(Utilities.longCentsToBigDecimalEuro(receiptDTO.getPaymentAmountCents())),
-      "paymentDate", MAILDATETIMEFORMATTER.format(receiptDTO.getPaymentDateTime())
+      "name", StringUtils.firstNonBlank(receiptDTO.getDebtor().getFullName(),"-"),
+      "linkToMoreInformation", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+      "cieUrlLink", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+      "urlLegal", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+      "urlCieFAQ", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/"
     );
   }
 }
