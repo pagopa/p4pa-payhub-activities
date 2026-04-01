@@ -126,7 +126,7 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
     Assertions.assertEquals(
             Map.of(
                     "name", "NAME",
-                    "linkToMoreInformation", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+                    "linkToMoreInformation", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-minorenni/",
                     "cieUrlLink", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
                     "urlLegal", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
                     "urlCieFAQ", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/"
