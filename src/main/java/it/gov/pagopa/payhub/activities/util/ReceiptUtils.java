@@ -6,6 +6,8 @@ public class ReceiptUtils {
 
 	public static final String DEFAULT_RECEIPT_FILE_EXTENSION = "pdf";
 
+	private ReceiptUtils() {}
+
 	public static String buildReceiptFileName(ReceiptWithAdditionalNodeDataDTO receiptDTO, String originalFilename) {
 		return receiptDTO == null || receiptDTO.getPaymentDateTime() == null ?
 				originalFilename :
