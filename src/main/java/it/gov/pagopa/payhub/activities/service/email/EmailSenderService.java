@@ -50,7 +50,7 @@ public class EmailSenderService {
                     emailDTO.getAttachment().getFileName(),
                     emailDTO.getAttachment().getResource());
             }
-			try (InputStream is = getClass().getResourceAsStream("CIE-sorgente.png")) {
+			try (InputStream is = getClass().getResourceAsStream("/CIE-sorgente.png")) {
                 if(is !=null) {
                     byte[] logoBytes = is.readAllBytes();
 			        message.addInline("logo-cie", new ByteArrayResource(logoBytes), "image/jpeg");
