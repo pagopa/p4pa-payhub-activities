@@ -16,7 +16,6 @@ import org.springframework.web.client.HttpClientErrorException;
 @Slf4j
 @Service
 public class ReceiptClient {
-    public static final String DEFAULT_RECEIPT_FILE_EXTENSION = "pdf";
     private final DebtPositionApisHolder debtPositionApisHolder;
 
     public ReceiptClient(DebtPositionApisHolder debtPositionApisHolder) {
@@ -61,29 +60,15 @@ public class ReceiptClient {
         try {
             ResponseEntity<Resource> resourceResponseEntity = debtPositionApisHolder.getReceiptApi(accessToken)
                     .getReceiptPdfWithHttpInfo(receiptId, organizationId);
-            ReceiptDTO receiptDTO = debtPositionApisHolder.getReceiptApi(accessToken)
-                    .getReceipt(receiptId);
             String originalFilename = resourceResponseEntity.getHeaders().getContentDisposition().getFilename();
             return FileResourceDTO.builder()
               .resource(resourceResponseEntity.getBody())
-              .fileName(buildReceiptFileName(receiptDTO, originalFilename))
+              .fileName(originalFilename)
               .build();
         } catch (HttpClientErrorException.NotFound e) {
             log.info("Receipt having receiptId [{}] and organizationId [{}] not found", receiptId, organizationId);
             return null;
         }
-    }
-
-    private String buildReceiptFileName(ReceiptDTO receiptDTO, String originalFilename) {
-        return receiptDTO == null || receiptDTO.getPaymentDateTime() == null ?
-                originalFilename :
-                receiptDTO.getPaymentDateTime().toLocalDate() + "-" + receiptDTO.getNoticeNumber() + "." + extractReceiptFileExtension(originalFilename);
-    }
-
-    private String extractReceiptFileExtension(String originalFilename) {
-        if(originalFilename == null)
-            return DEFAULT_RECEIPT_FILE_EXTENSION;
-        return originalFilename.split("\\.")[originalFilename.lastIndexOf(".")];
     }
 
 
