@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 @Slf4j
 @Service
 public class ReceiptClient {
+    public static final String DEFAULT_RECEIPT_FILE_EXTENSION = "pdf";
     private final DebtPositionApisHolder debtPositionApisHolder;
 
     public ReceiptClient(DebtPositionApisHolder debtPositionApisHolder) {
@@ -58,15 +59,32 @@ public class ReceiptClient {
 
     public FileResourceDTO getReceiptPdf(String accessToken, Long receiptId, Long organizationId) {
         try {
-          ResponseEntity<Resource> resourceResponseEntity = debtPositionApisHolder.getReceiptApi(accessToken)
-              .getReceiptPdfWithHttpInfo(receiptId, organizationId);
-          return FileResourceDTO.builder()
+            ResponseEntity<Resource> resourceResponseEntity = debtPositionApisHolder.getReceiptApi(accessToken)
+                    .getReceiptPdfWithHttpInfo(receiptId, organizationId);
+            ReceiptDTO receiptDTO = debtPositionApisHolder.getReceiptApi(accessToken)
+                    .getReceipt(receiptId);
+            String originalFilename = resourceResponseEntity.getHeaders().getContentDisposition().getFilename();
+            return FileResourceDTO.builder()
               .resource(resourceResponseEntity.getBody())
-              .fileName(resourceResponseEntity.getHeaders().getContentDisposition().getFilename())
+              .fileName(buildReceiptFileName(receiptDTO, originalFilename))
               .build();
         } catch (HttpClientErrorException.NotFound e) {
             log.info("Receipt having receiptId [{}] and organizationId [{}] not found", receiptId, organizationId);
             return null;
         }
     }
+
+    private String buildReceiptFileName(ReceiptDTO receiptDTO, String originalFilename) {
+        return receiptDTO == null || receiptDTO.getPaymentDateTime() == null ?
+                originalFilename :
+                receiptDTO.getPaymentDateTime().toLocalDate() + "-" + receiptDTO.getNoticeNumber() + "." + extractReceiptFileExtension(originalFilename);
+    }
+
+    private String extractReceiptFileExtension(String originalFilename) {
+        if(originalFilename == null)
+            return DEFAULT_RECEIPT_FILE_EXTENSION;
+        return originalFilename.split("\\.")[originalFilename.lastIndexOf(".")];
+    }
+
+
 }
