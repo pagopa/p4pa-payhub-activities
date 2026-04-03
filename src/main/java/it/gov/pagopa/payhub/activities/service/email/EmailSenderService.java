@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -16,15 +19,16 @@ public class EmailSenderService {
 
     private final String senderMailAddress;
     private final JavaMailSender mailSender;
+    private final ResourceLoader resourceLoader;
 
     public EmailSenderService(
             @Value("${mail.sender-address:}") String senderMailAddress,
-
-            JavaMailSender mailSender
+            JavaMailSender mailSender,
+            ResourceLoader resourceLoader
     ) {
         this.senderMailAddress = senderMailAddress;
-
         this.mailSender = mailSender;
+        this.resourceLoader = resourceLoader;
     }
 
     /**
@@ -47,6 +51,15 @@ public class EmailSenderService {
                     emailDTO.getAttachment().getFileName(),
                     emailDTO.getAttachment().getResource());
             }
+            if(emailDTO.isCieEmail()) {
+                Resource resource = resourceLoader.getResource("classpath:CIE/logo/CIE-logo.svg");
+                if(resource.exists()) {
+                    byte[] logoBytes = resource.getContentAsByteArray();
+                    message.addInline("logo-cie", new ByteArrayResource(logoBytes), "image/svg+xml");
+                } else {
+                    log.warn("Error in loading CIE logo from classpath");
+                }
+			}
             log.debug("sending mail message");
         });
     }

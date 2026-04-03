@@ -13,8 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -117,11 +115,7 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
   void givenValidTemplateWhenBuildTemplateParamsThenOk() {
     //given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
-      .companyName("NAME")
-      .orgFiscalCode("ORGFC")
-      .noticeNumber("NAV")
-      .paymentAmountCents(123456L)
-      .paymentDateTime(OffsetDateTime.of(2025, 2, 21, 10, 30, 23, 0, ZoneOffset.UTC));
+      .debtor(new PersonDTO().fullName("NAME"));
 
     //when
     Map<String, String> result = receiptPagopaEmailConfigurerService.buildTemplateParams(receiptWithAdditionalNodeDataDTO);
@@ -129,11 +123,11 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
     //verify
     Assertions.assertEquals(
             Map.of(
-                    "companyName", "NAME",
-                    "orgFiscalCode", "ORGFC",
-                    "noticeNumber", "NAV",
-                    "amount", "1.234,56 €",
-                    "paymentDate", "21/02/2025 10:30:23"
+                    "debtorName", "NAME",
+                    "cieForMinorsUrl", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-minorenni/",
+                    "cieUrl", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+                    "cieUrlInfo", "https://www.pagacie.cartaidentita.interno.gov.it",
+                    "cieUrlFAQ", "https://www.pagacie.cartaidentita.interno.gov.it/faq"
             ),
             result
     );

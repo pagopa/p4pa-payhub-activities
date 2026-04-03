@@ -20,4 +20,5 @@ public class EmailDTO {
     private String mailSubject;
     private String htmlText;
     private FileResourceDTO attachment;
+    private boolean isCieEmail = false;
 }

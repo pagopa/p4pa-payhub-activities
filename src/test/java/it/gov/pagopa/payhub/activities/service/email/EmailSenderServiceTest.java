@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
@@ -32,21 +33,23 @@ class EmailSenderServiceTest {
 
     @Mock
     private JavaMailSender javaMailSenderMock;
+    @Mock
+    private ResourceLoader resourceLoaderMock;
 
     private EmailSenderService service;
 
     @BeforeEach
     void init() {
-        service = new EmailSenderService(FROM_ADDRESS, javaMailSenderMock);
+        service = new EmailSenderService(FROM_ADDRESS, javaMailSenderMock, resourceLoaderMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(javaMailSenderMock);
+        Mockito.verifyNoMoreInteractions(javaMailSenderMock, resourceLoaderMock);
     }
 
     @Test
-    void whenSendThenOk() throws MessagingException, IOException {
+    void givenPuEmailWhenSendThenOk() throws MessagingException, IOException {
         // Given
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
@@ -67,27 +70,97 @@ class EmailSenderServiceTest {
         service.send(emailDTO);
 
         // Then
-        checkResultMessage(result[0], emailDTO);
-        Assertions.assertEquals(emailDTO.getHtmlText(), ((MimeMultipart)((MimeMultipart)result[0].getContent()).getBodyPart(0).getContent()).getBodyPart(0).getContent());
+        MimeMessage resultMessage = result[0];
+        checkResultMessage(resultMessage, emailDTO);
+
+        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
+        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
+        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
     }
 
     @Test
-    void whenSendWithAttachmentThenOk() throws MessagingException, IOException {
+    void givenCieEmailWhenSendThenOk() throws MessagingException, IOException {
         // Given
-        Path workingDirectory = Path.of("build", "test");
-        Files.createDirectories(workingDirectory);
+        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+        emailDTO.setCieEmail(true);
+        MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
 
-        String fileContent = "This is a test attachment content.";
-        String fileName = "receipt.txt";
+        Mockito.doNothing()
+                .when(javaMailSenderMock)
+                .send(Mockito.<MimeMessagePreparator>argThat(m -> {
+                    try {
+                        m.prepare(result[0]);
+                    } catch (Exception e) {
+                        throw new IllegalStateException(e);
+                    }
 
-        byte[] fileBytes = fileContent.getBytes(StandardCharsets.UTF_8);
+                    return true;
+                }));
 
-        Resource testResource = new ByteArrayResource(fileBytes);
+        Resource resourceMock = Mockito.mock(Resource.class);
+        Mockito.when(resourceMock.getContentAsByteArray()).thenReturn(new byte[0]);
+        Mockito.when(resourceMock.exists()).thenReturn(true);
+        Mockito.when(resourceLoaderMock.getResource("classpath:CIE/logo/CIE-logo.svg"))
+                .thenReturn(resourceMock);
 
-        FileResourceDTO expectedAttachment = FileResourceDTO.builder()
-            .fileName(fileName)
-            .resource(testResource)
-            .build();
+        // When
+        service.send(emailDTO);
+
+        // Then
+        MimeMessage resultMessage = result[0];
+        checkResultMessage(resultMessage, emailDTO);
+
+        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
+        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
+        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
+
+        BodyPart logoInline = emailBodyMultipart.getBodyPart("<logo-cie>");
+        Assertions.assertNotNull(logoInline);
+    }
+
+    @Test
+    void givenCieEmailWithNonExistingLogoResourceWhenSendThenSendWithNoLogo() throws MessagingException, IOException {
+        // Given
+        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+        emailDTO.setCieEmail(true);
+        MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
+
+        Mockito.doNothing()
+                .when(javaMailSenderMock)
+                .send(Mockito.<MimeMessagePreparator>argThat(m -> {
+                    try {
+                        m.prepare(result[0]);
+                    } catch (Exception e) {
+                        throw new IllegalStateException(e);
+                    }
+
+                    return true;
+                }));
+
+        Resource resourceMock = Mockito.mock(Resource.class);
+        Mockito.when(resourceMock.exists()).thenReturn(false);
+        Mockito.when(resourceLoaderMock.getResource("classpath:CIE/logo/CIE-logo.svg"))
+                .thenReturn(resourceMock);
+
+        // When
+        service.send(emailDTO);
+
+        // Then
+        MimeMessage resultMessage = result[0];
+        checkResultMessage(resultMessage, emailDTO);
+
+        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
+        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
+        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
+
+        BodyPart logoInline = emailBodyMultipart.getBodyPart("<logo-cie>");
+        Assertions.assertNull(logoInline);
+    }
+
+    @Test
+    void givenPuEmailWithAttachmentWhenSendThenOk() throws MessagingException, IOException {
+        // Given
+        FileResourceDTO expectedAttachment = prepareAttachment();
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setAttachment(expectedAttachment);
@@ -118,13 +191,30 @@ class EmailSenderServiceTest {
         Assertions.assertEquals(emailDTO.getHtmlText(), ((MimeMultipart) (mainMultipart).getBodyPart(0).getContent()).getBodyPart(0).getContent());
 
         BodyPart attachmentPart = mainMultipart.getBodyPart(1);
-        Assertions.assertEquals(fileName, attachmentPart.getFileName());
+        Assertions.assertEquals(expectedAttachment.getFileName(), attachmentPart.getFileName());
 
         String actualAttachmentContent = new String(
             attachmentPart.getInputStream().readAllBytes(),
             StandardCharsets.UTF_8
         );
-        Assertions.assertEquals(fileContent, actualAttachmentContent);
+        Assertions.assertEquals(expectedAttachment.getResource().getContentAsString(StandardCharsets.UTF_8), actualAttachmentContent);
+    }
+
+    private FileResourceDTO prepareAttachment() throws IOException {
+        Path workingDirectory = Path.of("build", "test");
+        Files.createDirectories(workingDirectory);
+
+        String fileContent = "This is a test attachment content.";
+        String fileName = "receipt.txt";
+
+        byte[] fileBytes = fileContent.getBytes(StandardCharsets.UTF_8);
+
+        Resource testResource = new ByteArrayResource(fileBytes);
+
+        return FileResourceDTO.builder()
+                .fileName(fileName)
+                .resource(testResource)
+                .build();
     }
 
     private static void checkResultMessage(MimeMessage resultMessage, EmailDTO emailDTO) throws MessagingException {

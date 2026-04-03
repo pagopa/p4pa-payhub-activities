@@ -58,9 +58,9 @@ public class ReceiptClient {
 
     public FileResourceDTO getReceiptPdf(String accessToken, Long receiptId, Long organizationId) {
         try {
-          ResponseEntity<Resource> resourceResponseEntity = debtPositionApisHolder.getReceiptApi(accessToken)
-              .getReceiptPdfWithHttpInfo(receiptId, organizationId);
-          return FileResourceDTO.builder()
+            ResponseEntity<Resource> resourceResponseEntity = debtPositionApisHolder.getReceiptApi(accessToken)
+                    .getReceiptPdfWithHttpInfo(receiptId, organizationId);
+            return FileResourceDTO.builder()
               .resource(resourceResponseEntity.getBody())
               .fileName(resourceResponseEntity.getHeaders().getContentDisposition().getFilename())
               .build();

@@ -10,9 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.safety.Safelist;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +38,10 @@ public class SendEmailActivityImpl implements SendEmailActivity {
 
         emailDTO.setMailSubject(resolvePlaceholders(template.getSubject(), templatedEmail.getParams()));
         String mailBody = resolvePlaceholders(template.getBody(), templatedEmail.getParams());
-        emailDTO.setHtmlText(Jsoup.clean(mailBody, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false)));
+        emailDTO.setHtmlText(mailBody.replace("%%","%"));
 
         emailDTO.setAttachment(templatedEmail.getAttachment());
+        emailDTO.setCieEmail(templatedEmail.isCieEmail());
 
         sendEmail(emailDTO);
     }
