@@ -108,6 +108,32 @@ class MassiveIbanUpdateActivityTest {
         assertTrue(result);
     }
 
+    @Test
+    void givenDebtPositionsToUpdateWhenMassiveIbanUpdateRetrieveAndUpdateDpThenUpdateAndReturnFalse() {
+        UpdateTransferIbansAndSyncDebtPositionRequestDTO updateTransferIbansAndSyncDebtPositionRequestDTO = UpdateTransferIbansAndSyncDebtPositionRequestDTO.builder()
+                .oldIban(oldIban)
+                .newIban(newIban)
+                .oldPostalIban(oldPostalIban)
+                .newPostalIban(newPostalIban)
+                .build();
+
+        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
+                        expectedFilterForUpdate, PageRequest.of(0, 100)))
+                .thenReturn(buildPagedModelDebtPositionIdView(1L))
+                .thenReturn(buildPagedModelDebtPositionIdView());
+
+        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
+                        expectedFilterForCheck, PageRequest.of(0, 1)))
+                .thenReturn(buildPagedModelDebtPositionIdView());
+
+        Mockito.doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
+                1L, updateTransferIbansAndSyncDebtPositionRequestDTO);
+
+        Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+        assertFalse(result);
+    }
+
     private PagedModelDebtPositionIdView buildPagedModelDebtPositionIdView(Long... ids) {
         List<DebtPositionIdView> debtPositionIdViews = ids.length == 0
                 ? Collections.emptyList()
