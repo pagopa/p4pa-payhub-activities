@@ -49,9 +49,7 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
                     .map(PagedModelDebtPositionIdViewEmbedded::getDebtPositionIdViews)
                     .orElse(Collections.emptyList());
 
-            debtPositionIdViewsToUpdate.forEach(dpIdView -> {
-                debtPositionService.updateTransferIbansAndSyncDebtPosition(dpIdView.getDebtPositionId(), updateTransferIbansAndSyncDebtPositionRequestDTO);
-            });
+            debtPositionIdViewsToUpdate.forEach(dpIdView -> debtPositionService.updateTransferIbansAndSyncDebtPosition(dpIdView.getDebtPositionId(), updateTransferIbansAndSyncDebtPositionRequestDTO));
         } while(!debtPositionIdViewsToUpdate.isEmpty());
 
         return checkIfWfIsToReschedule(orgId, dptoId, oldIban, oldPostalIban);
