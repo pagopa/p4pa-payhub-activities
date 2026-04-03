@@ -33,6 +33,7 @@ public class DebtPositionApisHolder {
     private final DebtPositionTypeSearchControllerApi debtPositionTypeSearchControllerApi;
     private final SpontaneousFormApi spontaneousFormApi;
     private final SpontaneousFormSearchControllerApi spontaneousFormSearchControllerApi;
+    private final DebtPositionIdViewSearchControllerApi debtPositionIdViewSearchControllerApi;
 
     /** it will store the actual accessToken and mappedExternalUserId */
     private final ThreadLocal<Pair<String, String>> authContextHolder = new ThreadLocal<>();
@@ -72,6 +73,7 @@ public class DebtPositionApisHolder {
         this.debtPositionTypeSearchControllerApi = new DebtPositionTypeSearchControllerApi(apiClient);
         this.spontaneousFormApi = new SpontaneousFormApi(apiClient);
         this.spontaneousFormSearchControllerApi = new SpontaneousFormSearchControllerApi(apiClient);
+        this.debtPositionIdViewSearchControllerApi = new DebtPositionIdViewSearchControllerApi(apiClient);
     }
 
     @PreDestroy
@@ -161,6 +163,10 @@ public class DebtPositionApisHolder {
 
     public SpontaneousFormSearchControllerApi getSpontaneousFormSearchControllerApi(String accessToken) {
         return getApi(accessToken, null, spontaneousFormSearchControllerApi);
+    }
+
+    public DebtPositionIdViewSearchControllerApi getDebtPositionIdViewSearchControllerApi(String accessToken) {
+        return getApi(accessToken, null, debtPositionIdViewSearchControllerApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, String mappedExternalUserId, T api) {

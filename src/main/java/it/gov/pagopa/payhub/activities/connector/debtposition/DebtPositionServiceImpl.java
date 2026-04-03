@@ -3,9 +3,11 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionClient;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -66,5 +68,17 @@ public class DebtPositionServiceImpl implements DebtPositionService {
     public Optional<DebtPosition> getDebtPositionByInstallmentId(Long installmentId) {
         String accessToken = authnService.getAccessToken();
         return Optional.ofNullable(debtPositionClient.getDebtPositionByInstallmentId(accessToken, installmentId));
+    }
+
+    @Override
+    public void updateTransferIbansAndSyncDebtPosition(Long debtPositionId, UpdateTransferIbansAndSyncDebtPositionRequestDTO updateTransferIbansAndSyncDebtPositionRequestDTO) {
+        String accessToken = authnService.getAccessToken();
+        debtPositionClient.updateTransferIbansAndSyncDebtPosition(debtPositionId, updateTransferIbansAndSyncDebtPositionRequestDTO, accessToken);
+    }
+
+    @Override
+    public PagedModelDebtPositionIdView getDebtPositionsIdView(DebtPositionIdViewFilters debtPositionIdViewFilters, Pageable pageable) {
+        String accessToken = authnService.getAccessToken();
+        return debtPositionClient.getDebtPositionsIdView(debtPositionIdViewFilters, pageable, accessToken);
     }
 }
