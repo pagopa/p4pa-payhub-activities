@@ -9,6 +9,7 @@ public class EmailDTOFaker {
             .to(new String[]{"test_receiver@mailtest.com"})
             .cc(new String[]{"test_cc@mailtest.com"})
             .htmlText("Html Text")
+            .isCieEmail(false)
             .build();
     }
 }

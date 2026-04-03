@@ -60,16 +60,13 @@ public class ReceiptClient {
         try {
             ResponseEntity<Resource> resourceResponseEntity = debtPositionApisHolder.getReceiptApi(accessToken)
                     .getReceiptPdfWithHttpInfo(receiptId, organizationId);
-            String originalFilename = resourceResponseEntity.getHeaders().getContentDisposition().getFilename();
             return FileResourceDTO.builder()
               .resource(resourceResponseEntity.getBody())
-              .fileName(originalFilename)
+              .fileName(resourceResponseEntity.getHeaders().getContentDisposition().getFilename())
               .build();
         } catch (HttpClientErrorException.NotFound e) {
             log.info("Receipt having receiptId [{}] and organizationId [{}] not found", receiptId, organizationId);
             return null;
         }
     }
-
-
 }
