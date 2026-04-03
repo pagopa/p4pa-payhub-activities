@@ -3,14 +3,18 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionClient;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -244,5 +248,33 @@ class DebtPositionServiceTest {
 
         // Then
         assertEquals(debtPosition, result.get());
+    }
+
+    @Test
+    void whenUpdateTransferIbansAndSyncDebtPositionThenOk() {
+        String accessToken = "ACCESSTOKEN";
+        Long debtPositionId = 1L;
+        UpdateTransferIbansAndSyncDebtPositionRequestDTO requestDTO = new UpdateTransferIbansAndSyncDebtPositionRequestDTO();
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.doNothing().when(debtPositionClientMock).updateTransferIbansAndSyncDebtPosition(debtPositionId, requestDTO, accessToken);
+
+        Assertions.assertDoesNotThrow(() -> debtPositionService.updateTransferIbansAndSyncDebtPosition(debtPositionId, requestDTO));
+    }
+
+    @Test
+    void whenGetDebtPositionsIdViewThenReturnPagedModel() {
+        String accessToken = "ACCESSTOKEN";
+        Pageable pageable = PageRequest.of(0, 10);
+        DebtPositionIdViewFilters filters = new DebtPositionIdViewFilters();
+        PagedModelDebtPositionIdView expectedResponse = new PagedModelDebtPositionIdView();
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.when(debtPositionClientMock.getDebtPositionsIdView(filters, pageable, accessToken))
+                .thenReturn(expectedResponse);
+
+        PagedModelDebtPositionIdView result = debtPositionService.getDebtPositionsIdView(filters, pageable);
+
+        assertEquals(expectedResponse, result);
     }
 }

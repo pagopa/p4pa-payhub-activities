@@ -1,7 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -62,4 +64,8 @@ public interface DebtPositionService {
      * @return {@link DebtPosition} object.
      */
     Optional<DebtPosition> getDebtPositionByInstallmentId(Long installmentId);
+
+    void updateTransferIbansAndSyncDebtPosition(Long debtPositionId, UpdateTransferIbansAndSyncDebtPositionRequestDTO updateTransferIbansAndSyncDebtPositionRequestDTO);
+
+    PagedModelDebtPositionIdView getDebtPositionsIdView(DebtPositionIdViewFilters debtPositionIdViewFilters, Pageable pageable);
 }
