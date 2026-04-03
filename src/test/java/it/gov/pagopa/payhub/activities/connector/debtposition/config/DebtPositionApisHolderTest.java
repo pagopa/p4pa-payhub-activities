@@ -16,6 +16,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -258,5 +259,14 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
                 .crudSpontaneousFormsFindByOrganizationIdAndCode(1L, "code"),
             new ParameterizedTypeReference<>() {},
             debtPositionApisHolder::unload);
+    }
+
+    @Test
+    void whenGetDebtPositionIdViewSearchControllerApiThenAuthenticationShouldBeSetInThreadSafe() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> debtPositionApisHolder.getDebtPositionIdViewSearchControllerApi(accessToken)
+                        .crudDebtPositionIdViewGetDebtPositionIdsByIbansAndDptoId(1L, "iban", true, Collections.emptyList(), "postalIban", 1L, 0, 10, Collections.emptyList()),
+                new ParameterizedTypeReference<>() {},
+                debtPositionApisHolder::unload);
     }
 }

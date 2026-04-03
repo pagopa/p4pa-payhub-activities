@@ -2,7 +2,9 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionApi;
+import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionIdViewSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionSearchControllerApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +29,7 @@ import java.util.Collections;
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentSynchronizeDTOFaker.buildInstallmentSynchronizeDTO;
 import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +40,8 @@ class DebtPositionClientTest {
     private DebtPositionApi debtPositionApiMock;
     @Mock
     private DebtPositionSearchControllerApi debtPositionSearchControllerApiMock;
+    @Mock
+    private DebtPositionIdViewSearchControllerApi debtPositionIdViewSearchControllerApiMock;
 
     private DebtPositionClient debtPositionClient;
 
@@ -244,5 +251,53 @@ class DebtPositionClientTest {
 
         // Then
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void whenUpdateTransferIbansAndSyncDebtPositionThenOk() {
+        String accessToken = "ACCESSTOKEN";
+        Long debtPositionId = 1L;
+        UpdateTransferIbansAndSyncDebtPositionRequestDTO requestDTO = new UpdateTransferIbansAndSyncDebtPositionRequestDTO();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionApi(accessToken)).thenReturn(debtPositionApiMock);
+        Mockito.doNothing().when(debtPositionApiMock).updateTransferIbansAndSyncDebtPosition(debtPositionId, requestDTO);
+
+        Assertions.assertDoesNotThrow(() ->
+                debtPositionClient.updateTransferIbansAndSyncDebtPosition(debtPositionId, requestDTO, accessToken)
+        );
+    }
+
+    @Test
+    void whenGetDebtPositionsIdViewThenOk() {
+        String accessToken = "ACCESSTOKEN";
+        DebtPositionIdViewFilters debtPositionIdViewFilters = DebtPositionIdViewFilters.builder()
+                .organizationId(1L)
+                .iban("iban")
+                .syncError(true)
+                .installmentStatuses(Collections.emptyList())
+                .postalIban("postalIban")
+                .dptoId(1L)
+                .build();
+
+        Pageable pageable = PageRequest.of(0, 10);
+        PagedModelDebtPositionIdView expectedResponse = new PagedModelDebtPositionIdView();
+
+        Mockito.when(debtPositionApisHolderMock.getDebtPositionIdViewSearchControllerApi(accessToken)).thenReturn(debtPositionIdViewSearchControllerApiMock);
+        Mockito.when(debtPositionIdViewSearchControllerApiMock.crudDebtPositionIdViewGetDebtPositionIdsByIbansAndDptoId(
+                        debtPositionIdViewFilters.getOrganizationId(),
+                        debtPositionIdViewFilters.getIban(),
+                        debtPositionIdViewFilters.getSyncError(),
+                        debtPositionIdViewFilters.getInstallmentStatuses(),
+                        debtPositionIdViewFilters.getPostalIban(),
+                        debtPositionIdViewFilters.getDptoId(),
+                        0,
+                        10,
+                        Collections.emptyList()
+                ))
+                .thenReturn(expectedResponse);
+
+        PagedModelDebtPositionIdView result = debtPositionClient.getDebtPositionsIdView(debtPositionIdViewFilters, pageable, accessToken);
+
+        Assertions.assertEquals(expectedResponse, result);
     }
 }

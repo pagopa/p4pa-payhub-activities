@@ -2,9 +2,12 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
+import it.gov.pagopa.payhub.activities.util.PageUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -65,5 +68,33 @@ public class DebtPositionClient {
             log.info("Cannot find DebtPosition having installmentId: {}", installmentId);
             return null;
         }
+    }
+
+    public void updateTransferIbansAndSyncDebtPosition(
+            Long debtPositionId,
+            UpdateTransferIbansAndSyncDebtPositionRequestDTO updateTransferIbansAndSyncDebtPositionRequestDTO,
+            String accessToken
+    ) {
+        debtPositionApisHolder.getDebtPositionApi(accessToken)
+                .updateTransferIbansAndSyncDebtPosition(debtPositionId, updateTransferIbansAndSyncDebtPositionRequestDTO);
+    }
+
+    public PagedModelDebtPositionIdView getDebtPositionsIdView(
+            DebtPositionIdViewFilters debtPositionIdViewFilters,
+            Pageable pageable,
+            String accessToken
+    ) {
+        return debtPositionApisHolder.getDebtPositionIdViewSearchControllerApi(accessToken)
+                .crudDebtPositionIdViewGetDebtPositionIdsByIbansAndDptoId(
+                        debtPositionIdViewFilters.getOrganizationId(),
+                        debtPositionIdViewFilters.getIban(),
+                        debtPositionIdViewFilters.getSyncError(),
+                        debtPositionIdViewFilters.getInstallmentStatuses(),
+                        debtPositionIdViewFilters.getPostalIban(),
+                        debtPositionIdViewFilters.getDptoId(),
+                        PageUtils.getPageNumber(pageable),
+                        PageUtils.getPageSize(pageable),
+                        PageUtils.getSortList(pageable)
+                );
     }
 }
