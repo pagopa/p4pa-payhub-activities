@@ -68,11 +68,11 @@ class MassiveIbanUpdateActivityTest {
     @Test
     void givenNoDebtPositionsToUpdateWhenMassiveIbanUpdateRetrieveAndUpdateDpThenDoNotUpdateAndReturnFalse() {
         Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        Mockito.eq(expectedFilterForUpdate), Mockito.eq(PageRequest.of(0, 100))))
+                        expectedFilterForUpdate, PageRequest.of(0, 100)))
                 .thenReturn(buildPagedModelDebtPositionIdView());
 
         Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        Mockito.eq(expectedFilterForCheck), Mockito.eq(PageRequest.of(0, 1))))
+                        expectedFilterForCheck, PageRequest.of(0, 1)))
                 .thenReturn(buildPagedModelDebtPositionIdView());
 
         Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
@@ -90,18 +90,18 @@ class MassiveIbanUpdateActivityTest {
                 .build();
 
         Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        Mockito.eq(expectedFilterForUpdate), Mockito.eq(PageRequest.of(0, 100))))
+                        expectedFilterForUpdate, PageRequest.of(0, 100)))
                 .thenReturn(buildPagedModelDebtPositionIdView(1L, 2L))
                 .thenReturn(buildPagedModelDebtPositionIdView());
 
         Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        Mockito.eq(expectedFilterForCheck), Mockito.eq(PageRequest.of(0, 1))))
+                        expectedFilterForCheck, PageRequest.of(0, 1)))
                 .thenReturn(buildPagedModelDebtPositionIdView(3L));
 
         Mockito.doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
-                Mockito.eq(1L), Mockito.eq(updateTransferIbansAndSyncDebtPositionRequestDTO));
+                1L, updateTransferIbansAndSyncDebtPositionRequestDTO);
         Mockito.doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
-                Mockito.eq(2L), Mockito.eq(updateTransferIbansAndSyncDebtPositionRequestDTO));
+               2L, updateTransferIbansAndSyncDebtPositionRequestDTO);
 
         Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
