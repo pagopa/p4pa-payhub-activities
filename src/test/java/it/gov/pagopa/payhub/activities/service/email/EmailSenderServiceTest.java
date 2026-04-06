@@ -100,7 +100,7 @@ class EmailSenderServiceTest {
         Resource resourceMock = Mockito.mock(Resource.class);
         Mockito.when(resourceMock.getContentAsByteArray()).thenReturn(new byte[0]);
         Mockito.when(resourceMock.exists()).thenReturn(true);
-        Mockito.when(resourceLoaderMock.getResource("classpath:CIE/logo/CIE-logo.svg"))
+        Mockito.when(resourceLoaderMock.getResource("classpath:CIE-logo.svg"))
                 .thenReturn(resourceMock);
 
         // When
@@ -139,7 +139,7 @@ class EmailSenderServiceTest {
 
         Resource resourceMock = Mockito.mock(Resource.class);
         Mockito.when(resourceMock.exists()).thenReturn(false);
-        Mockito.when(resourceLoaderMock.getResource("classpath:CIE/logo/CIE-logo.svg"))
+        Mockito.when(resourceLoaderMock.getResource("classpath:CIE-logo.svg"))
                 .thenReturn(resourceMock);
 
         // When
