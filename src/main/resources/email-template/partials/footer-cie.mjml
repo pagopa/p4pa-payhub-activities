@@ -1,0 +1,39 @@
+<mj-section css-class="section" padding="0px">
+  <mj-column>
+    <mj-text
+      css-class="text-secondary"
+      font-size="14px"
+      line-height="20px"
+      font-weight="regular"
+      color="#5C6F82"
+      padding="0px"
+    >
+      <p>
+        Ricevi questa comunicazione perché hai usato il servizio di pagamento per la Carta di Identità Elettronica.
+      </p>
+      <p>
+        Per leggere l'informativa sul trattamento dei dati personali
+        <a
+            href="%cieUrlInfo%"
+            style="color: #0073e6"
+            class="link"
+        >premi qui</a>.
+      </p>
+      <p>
+        Per altre informazioni sul pagamento della CIE leggi le
+        <a
+            href="%cieUrlFAQ%"
+            style="color: #0073e6"
+            class="link"
+        >domande frequenti</a>.
+      </p>
+      <p>
+        <strong>
+          Non rispondere a questo indirizzo email: è utilizzato solo per l'invio
+          di comunicazioni e, non essendo monitorato, non riceverai
+          risposta.
+        </strong>
+      </p>
+    </mj-text>
+  </mj-column>
+</mj-section>

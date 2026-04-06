@@ -1,0 +1,117 @@
+<mjml lang="it">
+  <mj-head>
+    <mj-title>Conferma il tuo indirizzo email</mj-title>
+    <mj-font
+      name="Titillium Web"
+      href="https://selfcare.pagopa.it/assets/font/selfhostedfonts.css"
+    />
+    <mj-attributes>
+      <mj-all font-family="Titillium Web, system-ui, sans-serif" />
+    </mj-attributes>
+    <mj-raw>
+      <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+    </mj-raw>
+  </mj-head>
+  <mj-body css-class="mail-body">
+    <mj-include path="../style.css" type="css" />
+    <mj-wrapper padding-right="20px" padding-left="20px">
+      <!-- App IO Logo -->
+      <mj-include path="../partials/cie-logo.mjml" />
+      <mj-section css-class="section" padding="0px">
+        <mj-column>
+          <!-- Title & Main Message -->
+          <mj-text
+            css-class="title"
+            font-weight="bold"
+            align="left"
+            padding-top="24px"
+            padding-bottom="8px"
+            color="#17324D"
+            padding-left="0px"
+            padding-right="0px"
+          >
+            <!-- H4 Desktop (from MUI Italia)-->
+            <h1 style="font-size: 32px; line-height: 40px; margin: 0">
+              Ecco la tua ricevuta
+            </h1>
+          </mj-text>
+          <mj-text
+            css-class="text"
+            font-size="16px"
+            line-height="24px"
+            font-weight="regular"
+            align="left"
+            padding-top="8px"
+            padding-bottom="0px"
+            padding-left="0px"
+            padding-right="0px"
+            color="#17324D"
+          >
+            <p style="margin-bottom: 0px">Ciao %debtorName%,</p>
+          </mj-text>
+          <mj-text
+            css-class="text"
+            font-size="16px"
+            line-height="24px"
+            font-weight="regular"
+            align="left"
+            color="#17324D"
+            padding="0px"
+          >
+            <!-- Body 1 Desktop (from MUI Italia)-->
+            <p>
+              ecco la ricevuta del pagamento, portala con te il giorno della richiesta o del rinnovo della tua Carta di Identità Elettronica (CIE).
+            </p>
+            <p>
+              Questo documento è valido nel Comune che hai scelto e non vale come prenotazione.
+            </p>
+            <p style="font-size: 24px; padding: 15px 10px 0px 0px">
+              <strong>Cosa fare ora</strong>
+            </p>
+            <p><strong>Se hai già un appuntamento</strong></p>
+            <p>Presentati allo sportello il giorno e all'orario prenotati.</p>
+            <p>Portati con te:</p>
+            <ul>
+                <li>la <strong>ricevuta</strong> allegata a questa email;</li>
+                <li>un <strong>documento di identità</strong> in corso di validità;</li>
+                <li>il Codice fiscale o la tessera Sanitaria;</li>
+                <li>una fototessera recente;</li>
+                <li>la vecchia Carta di Identità o la denuncia di smarrimento o furto.</li>
+            </ul>
+            <p><strong>Se non hai un appuntamento</strong></p>
+            <p>Visita il sito del tuo Comune o contattalo direttamente per verificare se è necessaria una prenotazione.</p>
+            <p><strong>Stai chiedendo la carta per un minore?</strong></p>
+            <p>Le condizioni e i documenti necessari potrebbero variare in base all'età: trovi più informazioni
+            <a
+                href="%cieForMinorsUrl%"
+                style="color: #0073e6"
+                class="link"
+            >in questa pagina</a>.
+            </p>
+            <p>Per saperne di più sulla CIE e su cosa portare il giorno dell'appuntamento, visita il sito ufficiale.</p>
+          </mj-text>
+          <mj-button
+            font-family="Titillium Web, system-ui, sans-serif"
+            background-color="#0073E6"
+            font-size="16px"
+            font-weight="bold"
+            color="white"
+            align="left"
+            inner-padding="14px 24px"
+            border-radius="4px"
+            href="%cieUrl%"
+            css-class="cta"
+            padding-left="0px"
+            padding-right="0px"
+          >
+            Vai al sito CIE
+          </mj-button>
+        </mj-column>
+      </mj-section>
+      <!-- Divider -->
+      <mj-include path="../partials/divider.mjml"/>
+      <!-- Footer -->
+      <mj-include path="../partials/footer-cie.mjml"/>
+    </mj-wrapper>
+  </mj-body>
+</mjml>
