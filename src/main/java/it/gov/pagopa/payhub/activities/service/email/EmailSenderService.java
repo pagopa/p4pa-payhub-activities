@@ -6,12 +6,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.io.InputStream;
 
 @Lazy
 @Service
@@ -20,16 +19,13 @@ public class EmailSenderService {
 
     private final String senderMailAddress;
     private final JavaMailSender mailSender;
-    private final ResourceLoader resourceLoader;
 
     public EmailSenderService(
             @Value("${mail.sender-address:}") String senderMailAddress,
-            JavaMailSender mailSender,
-            ResourceLoader resourceLoader
+            JavaMailSender mailSender
     ) {
         this.senderMailAddress = senderMailAddress;
         this.mailSender = mailSender;
-        this.resourceLoader = resourceLoader;
     }
 
     /**
@@ -53,26 +49,23 @@ public class EmailSenderService {
                     emailDTO.getAttachment().getResource());
             }
             if(emailDTO.isCieEmail()) {
-                Resource resource = resourceLoader.getResource("classpath:CIE-logo.svg");
-                if(resource.exists()) {
-                    try {
-                        byte[] logoBytes = resource.getContentAsByteArray();
+                try(InputStream is = getClassLoader().getResourceAsStream("/CIE-logo.svg")) {
+                    if(is == null) {
+                        log.warn("Error in finding CIE logo");
+                    } else {
+                        byte[] logoBytes = is.readAllBytes();
                         message.addInline("logo-cie", new ByteArrayResource(logoBytes), "image/svg+xml");
-                    } catch (Exception e) {
-                        log.warn("Error during loading of CIE logo: {}", e.getMessage());
                     }
-                } else {
-                    log.warn("Error in finding CIE logo in classpath");
+			    } catch (Exception e) {
+                    log.warn("Error during loading of CIE logo: {}", e.getMessage());
                 }
-			}
+            }
             log.debug("sending mail message");
         });
     }
 
-    public static void main(String[] args) {
-        DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader();
-        Resource resource = defaultResourceLoader.getResource("classpath:CIE/logo/CIE-logo.svg");
-        System.out.println(resource.exists());
+    protected ClassLoader getClassLoader() {
+        return getClass().getClassLoader(); //extracted for testing purpose
     }
 
 }

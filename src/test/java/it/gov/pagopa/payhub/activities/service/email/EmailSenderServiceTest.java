@@ -9,6 +9,7 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +23,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
@@ -33,19 +33,17 @@ class EmailSenderServiceTest {
 
     @Mock
     private JavaMailSender javaMailSenderMock;
-    @Mock
-    private ResourceLoader resourceLoaderMock;
 
     private EmailSenderService service;
 
     @BeforeEach
     void init() {
-        service = new EmailSenderService(FROM_ADDRESS, javaMailSenderMock, resourceLoaderMock);
+        service = new EmailSenderService(FROM_ADDRESS, javaMailSenderMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(javaMailSenderMock, resourceLoaderMock);
+        Mockito.verifyNoMoreInteractions(javaMailSenderMock);
     }
 
     @Test
@@ -81,6 +79,8 @@ class EmailSenderServiceTest {
     @Test
     void givenCieEmailWhenSendThenOk() throws MessagingException, IOException {
         // Given
+        EmailSenderService spiedService = Mockito.spy(service);
+
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setCieEmail(true);
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
@@ -97,14 +97,18 @@ class EmailSenderServiceTest {
                     return true;
                 }));
 
-        Resource resourceMock = Mockito.mock(Resource.class);
-        Mockito.when(resourceMock.getContentAsByteArray()).thenReturn(new byte[0]);
-        Mockito.when(resourceMock.exists()).thenReturn(true);
-        Mockito.when(resourceLoaderMock.getResource("classpath:CIE-logo.svg"))
-                .thenReturn(resourceMock);
+        ClassLoader mockedClassloader = Mockito.mock(ClassLoader.class);
+        InputStream mockedInputStream = Mockito.mock(InputStream.class);
+        Mockito.when(mockedInputStream.readAllBytes())
+                        .thenReturn(new byte[0]);
+
+        Mockito.when(mockedClassloader.getResourceAsStream(Mockito.anyString()))
+                .thenReturn(mockedInputStream);
+        Mockito.when(spiedService.getClassLoader())
+                .thenReturn(mockedClassloader);
 
         // When
-        service.send(emailDTO);
+        spiedService.send(emailDTO);
 
         // Then
         MimeMessage resultMessage = result[0];
@@ -121,6 +125,8 @@ class EmailSenderServiceTest {
     @Test
     void givenCieEmailWithNonExistingLogoResourceWhenSendThenSendWithNoLogo() throws MessagingException, IOException {
         // Given
+        EmailSenderService spiedService = Mockito.spy(service);
+
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setCieEmail(true);
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
@@ -137,13 +143,15 @@ class EmailSenderServiceTest {
                     return true;
                 }));
 
-        Resource resourceMock = Mockito.mock(Resource.class);
-        Mockito.when(resourceMock.exists()).thenReturn(false);
-        Mockito.when(resourceLoaderMock.getResource("classpath:CIE-logo.svg"))
-                .thenReturn(resourceMock);
+        ClassLoader mockedClassloader = Mockito.mock(ClassLoader.class);
+
+        Mockito.when(mockedClassloader.getResourceAsStream(Mockito.anyString()))
+                .thenReturn(null);
+        Mockito.when(spiedService.getClassLoader())
+                .thenReturn(mockedClassloader);
 
         // When
-        service.send(emailDTO);
+        spiedService.send(emailDTO);
 
         // Then
         MimeMessage resultMessage = result[0];
