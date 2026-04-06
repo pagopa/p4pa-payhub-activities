@@ -166,6 +166,52 @@ class EmailSenderServiceTest {
     }
 
     @Test
+    void givenCieEmailWithErrorInLoadingLogoResourceWhenSendThenSendWithNoLogo() throws MessagingException, IOException {
+        // Given
+        EmailSenderService spiedService = Mockito.spy(service);
+
+        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+        emailDTO.setCieEmail(true);
+        MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
+
+        Mockito.doNothing()
+                .when(javaMailSenderMock)
+                .send(Mockito.<MimeMessagePreparator>argThat(m -> {
+                    try {
+                        m.prepare(result[0]);
+                    } catch (Exception e) {
+                        throw new IllegalStateException(e);
+                    }
+
+                    return true;
+                }));
+
+        ClassLoader mockedClassloader = Mockito.mock(ClassLoader.class);
+        InputStream mockedInputStream = Mockito.mock(InputStream.class);
+        Mockito.when(mockedInputStream.readAllBytes())
+                .thenReturn(null);
+
+        Mockito.when(mockedClassloader.getResourceAsStream(Mockito.anyString()))
+                .thenReturn(mockedInputStream);
+        Mockito.when(spiedService.getClassLoader())
+                .thenReturn(mockedClassloader);
+
+        // When
+        spiedService.send(emailDTO);
+
+        // Then
+        MimeMessage resultMessage = result[0];
+        checkResultMessage(resultMessage, emailDTO);
+
+        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
+        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
+        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
+
+        BodyPart logoInline = emailBodyMultipart.getBodyPart("<logo-cie>");
+        Assertions.assertNull(logoInline);
+    }
+
+    @Test
     void givenPuEmailWithAttachmentWhenSendThenOk() throws MessagingException, IOException {
         // Given
         FileResourceDTO expectedAttachment = prepareAttachment();

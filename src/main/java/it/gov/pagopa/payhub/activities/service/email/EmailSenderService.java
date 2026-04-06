@@ -48,9 +48,9 @@ public class EmailSenderService {
                     emailDTO.getAttachment().getFileName(),
                     emailDTO.getAttachment().getResource());
             }
-            if(emailDTO.isCieEmail()) {
-                try(InputStream is = getClassLoader().getResourceAsStream("/CIE-logo.svg")) {
-                    if(is == null) {
+            if (emailDTO.isCieEmail()) {
+                try (InputStream is = getClassLoader().getResourceAsStream("/CIE-logo.svg")) {
+                    if (is == null) {
                         log.warn("Error in finding CIE logo");
                     } else {
                         byte[] logoBytes = is.readAllBytes();
