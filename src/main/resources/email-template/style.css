@@ -10,7 +10,6 @@ body,
 
 .header {
   background-color: #FFFFFF;
-  /* border-top: 8px solid #0073E6; */
 }
 
 .section {
@@ -67,7 +66,6 @@ p {
 
   .light-img,
   [data-ogsc] .light-img {
-    display: block;
     display: block !important;
   }
 }
@@ -92,7 +90,6 @@ p {
 
   .header {
     background-color: #323232;
-    /* border-top: 8px solid #3da2ff; */
   }
 
   .section {
@@ -150,7 +147,6 @@ p {
 
   .light-img,
   [data-ogsc] .light-img {
-    display: none;
     display: none !important;
     mso-hide: all !important;
   }
