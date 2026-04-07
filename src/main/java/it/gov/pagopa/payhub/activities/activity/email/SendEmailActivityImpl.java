@@ -41,7 +41,6 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         emailDTO.setHtmlText(mailBody.replace("%%","%"));
 
         emailDTO.setAttachment(templatedEmail.getAttachment());
-        emailDTO.setCieEmail(templatedEmail.isCieEmail());
 
         sendEmail(emailDTO);
     }

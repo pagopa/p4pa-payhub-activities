@@ -9,7 +9,6 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,7 +46,7 @@ class EmailSenderServiceTest {
     }
 
     @Test
-    void givenPuEmailWhenSendThenOk() throws MessagingException, IOException {
+    void whenSendThenOk() throws MessagingException, IOException {
         // Given
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
@@ -68,153 +67,27 @@ class EmailSenderServiceTest {
         service.send(emailDTO);
 
         // Then
-        MimeMessage resultMessage = result[0];
-        checkResultMessage(resultMessage, emailDTO);
-
-        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
-        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
-        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
+        checkResultMessage(result[0], emailDTO);
+        Assertions.assertEquals(emailDTO.getHtmlText(), ((MimeMultipart)((MimeMultipart)result[0].getContent()).getBodyPart(0).getContent()).getBodyPart(0).getContent());
     }
 
     @Test
-    void givenCieEmailWhenSendThenOk() throws MessagingException, IOException {
+    void whenSendWithAttachmentThenOk() throws MessagingException, IOException {
         // Given
-        EmailSenderService spiedService = Mockito.spy(service);
+        Path workingDirectory = Path.of("build", "test");
+        Files.createDirectories(workingDirectory);
 
-        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
-        emailDTO.setCieEmail(true);
-        MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
+        String fileContent = "This is a test attachment content.";
+        String fileName = "receipt.txt";
 
-        Mockito.doNothing()
-                .when(javaMailSenderMock)
-                .send(Mockito.<MimeMessagePreparator>argThat(m -> {
-                    try {
-                        m.prepare(result[0]);
-                    } catch (Exception e) {
-                        throw new IllegalStateException(e);
-                    }
+        byte[] fileBytes = fileContent.getBytes(StandardCharsets.UTF_8);
 
-                    return true;
-                }));
+        Resource testResource = new ByteArrayResource(fileBytes);
 
-        ClassLoader mockedClassloader = Mockito.mock(ClassLoader.class);
-        InputStream mockedInputStream = Mockito.mock(InputStream.class);
-        Mockito.when(mockedInputStream.readAllBytes())
-                        .thenReturn(new byte[0]);
-
-        Mockito.when(mockedClassloader.getResourceAsStream(Mockito.anyString()))
-                .thenReturn(mockedInputStream);
-        Mockito.when(spiedService.getClassLoader())
-                .thenReturn(mockedClassloader);
-
-        // When
-        spiedService.send(emailDTO);
-
-        // Then
-        MimeMessage resultMessage = result[0];
-        checkResultMessage(resultMessage, emailDTO);
-
-        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
-        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
-        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
-
-        BodyPart logoInline = emailBodyMultipart.getBodyPart("<logo-cie>");
-        Assertions.assertNotNull(logoInline);
-    }
-
-    @Test
-    void givenCieEmailWithNonExistingLogoResourceWhenSendThenSendWithNoLogo() throws MessagingException, IOException {
-        // Given
-        EmailSenderService spiedService = Mockito.spy(service);
-
-        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
-        emailDTO.setCieEmail(true);
-        MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
-
-        Mockito.doNothing()
-                .when(javaMailSenderMock)
-                .send(Mockito.<MimeMessagePreparator>argThat(m -> {
-                    try {
-                        m.prepare(result[0]);
-                    } catch (Exception e) {
-                        throw new IllegalStateException(e);
-                    }
-
-                    return true;
-                }));
-
-        ClassLoader mockedClassloader = Mockito.mock(ClassLoader.class);
-
-        Mockito.when(mockedClassloader.getResourceAsStream(Mockito.anyString()))
-                .thenReturn(null);
-        Mockito.when(spiedService.getClassLoader())
-                .thenReturn(mockedClassloader);
-
-        // When
-        spiedService.send(emailDTO);
-
-        // Then
-        MimeMessage resultMessage = result[0];
-        checkResultMessage(resultMessage, emailDTO);
-
-        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
-        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
-        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
-
-        BodyPart logoInline = emailBodyMultipart.getBodyPart("<logo-cie>");
-        Assertions.assertNull(logoInline);
-    }
-
-    @Test
-    void givenCieEmailWithErrorInLoadingLogoResourceWhenSendThenSendWithNoLogo() throws MessagingException, IOException {
-        // Given
-        EmailSenderService spiedService = Mockito.spy(service);
-
-        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
-        emailDTO.setCieEmail(true);
-        MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
-
-        Mockito.doNothing()
-                .when(javaMailSenderMock)
-                .send(Mockito.<MimeMessagePreparator>argThat(m -> {
-                    try {
-                        m.prepare(result[0]);
-                    } catch (Exception e) {
-                        throw new IllegalStateException(e);
-                    }
-
-                    return true;
-                }));
-
-        ClassLoader mockedClassloader = Mockito.mock(ClassLoader.class);
-        InputStream mockedInputStream = Mockito.mock(InputStream.class);
-        Mockito.when(mockedInputStream.readAllBytes())
-                .thenReturn(null);
-
-        Mockito.when(mockedClassloader.getResourceAsStream(Mockito.anyString()))
-                .thenReturn(mockedInputStream);
-        Mockito.when(spiedService.getClassLoader())
-                .thenReturn(mockedClassloader);
-
-        // When
-        spiedService.send(emailDTO);
-
-        // Then
-        MimeMessage resultMessage = result[0];
-        checkResultMessage(resultMessage, emailDTO);
-
-        MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
-        MimeMultipart emailBodyMultipart = (MimeMultipart) mainMultipart.getBodyPart(0).getContent();
-        Assertions.assertEquals(emailDTO.getHtmlText(), emailBodyMultipart.getBodyPart(0).getContent());
-
-        BodyPart logoInline = emailBodyMultipart.getBodyPart("<logo-cie>");
-        Assertions.assertNull(logoInline);
-    }
-
-    @Test
-    void givenPuEmailWithAttachmentWhenSendThenOk() throws MessagingException, IOException {
-        // Given
-        FileResourceDTO expectedAttachment = prepareAttachment();
+        FileResourceDTO expectedAttachment = FileResourceDTO.builder()
+            .fileName(fileName)
+            .resource(testResource)
+            .build();
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setAttachment(expectedAttachment);
@@ -245,30 +118,13 @@ class EmailSenderServiceTest {
         Assertions.assertEquals(emailDTO.getHtmlText(), ((MimeMultipart) (mainMultipart).getBodyPart(0).getContent()).getBodyPart(0).getContent());
 
         BodyPart attachmentPart = mainMultipart.getBodyPart(1);
-        Assertions.assertEquals(expectedAttachment.getFileName(), attachmentPart.getFileName());
+        Assertions.assertEquals(fileName, attachmentPart.getFileName());
 
         String actualAttachmentContent = new String(
             attachmentPart.getInputStream().readAllBytes(),
             StandardCharsets.UTF_8
         );
-        Assertions.assertEquals(expectedAttachment.getResource().getContentAsString(StandardCharsets.UTF_8), actualAttachmentContent);
-    }
-
-    private FileResourceDTO prepareAttachment() throws IOException {
-        Path workingDirectory = Path.of("build", "test");
-        Files.createDirectories(workingDirectory);
-
-        String fileContent = "This is a test attachment content.";
-        String fileName = "receipt.txt";
-
-        byte[] fileBytes = fileContent.getBytes(StandardCharsets.UTF_8);
-
-        Resource testResource = new ByteArrayResource(fileBytes);
-
-        return FileResourceDTO.builder()
-                .fileName(fileName)
-                .resource(testResource)
-                .build();
+        Assertions.assertEquals(fileContent, actualAttachmentContent);
     }
 
     private static void checkResultMessage(MimeMessage resultMessage, EmailDTO emailDTO) throws MessagingException {

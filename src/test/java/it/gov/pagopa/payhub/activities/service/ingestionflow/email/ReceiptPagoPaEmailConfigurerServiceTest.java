@@ -123,11 +123,7 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
     //verify
     Assertions.assertEquals(
             Map.of(
-                    "debtorName", "NAME",
-                    "cieForMinorsUrl", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-minorenni/",
-                    "cieUrl", "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
-                    "cieUrlInfo", "https://www.pagacie.cartaidentita.interno.gov.it",
-                    "cieUrlFAQ", "https://www.pagacie.cartaidentita.interno.gov.it/faq"
+                    "debtorName", "NAME"
             ),
             result
     );
