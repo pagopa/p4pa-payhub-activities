@@ -22,7 +22,7 @@ public class TemplatedEmailDTO {
     private String[] cc;
     private Map<String, String> params;
     private FileResourceDTO attachment;
-    private boolean isCieEmail = false;
+    private boolean isCieEmail;
 
     public TemplatedEmailDTO(EmailTemplateName templateName, String[] to, String[] cc, Map<String, String> params, FileResourceDTO attachment) {
         this.templateName = templateName;
