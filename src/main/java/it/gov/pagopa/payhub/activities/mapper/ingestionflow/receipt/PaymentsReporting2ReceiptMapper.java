@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,12 @@ public class PaymentsReporting2ReceiptMapper {
      */
     public static final String DEFAULT_TRANSFER_CATEGORY = "9/0801100AP/";
 
+    private final String auxDigit;
+
+    public PaymentsReporting2ReceiptMapper(@Value("${nav.aux-digit}") String auxDigit) {
+        this.auxDigit = auxDigit;
+    }
+
     public ReceiptWithAdditionalNodeDataDTO map2Receipt(PaymentsReporting paymentsReporting, Organization organization,
                                                         List<InstallmentDebtorDTO> installmentDebtorDTOS) {
 
@@ -35,7 +42,7 @@ public class PaymentsReporting2ReceiptMapper {
                 .creditorReferenceId(paymentsReporting.getIuv())
                 .orgFiscalCode(paymentsReporting.getReceiverOrganizationCode())
                 .outcome(paymentsReporting.getPaymentOutcomeCode())
-                .noticeNumber(DebtPositionUtilities.iuv2nav(paymentsReporting.getIuv()))
+                .noticeNumber(DebtPositionUtilities.iuv2nav(paymentsReporting.getIuv(), auxDigit))
                 .paymentAmountCents(paymentsReporting.getAmountPaidCents())
                 .description(paymentsReporting.getIuf())
                 .companyName(organization.getOrgName())

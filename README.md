@@ -119,6 +119,10 @@ See [config/application.yml](src/main/resources/config/application.yml) for each
 | WORKFLOW_HUB_PRINT_BODY_WHEN_ERROR       | To print body when an error occurs                  | true    |
 
 #### 💼 Business logic
+| ENV           | DESCRIPTION          | DEFAULT |
+|---------------|----------------------|---------|
+| NAV_AUX_DIGIT | The aux digit of NAV | 3       |
+
 
 ##### File
 | ENV                       | DESCRIPTION                               | DEFAULT  |

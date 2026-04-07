@@ -9,7 +9,7 @@ class DebtPositionUtilitiesTest {
 	@Test
 	void iuv2navShouldPrependAuxDigit() {
 		String iuv = "12345";
-		String result = DebtPositionUtilities.iuv2nav(iuv);
+		String result = DebtPositionUtilities.iuv2nav(iuv, "3");
 		assertEquals("312345", result);
 	}
 }

@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 public class DebtPositionUtilities {
     private DebtPositionUtilities(){}
 
-    private static final String AUX_DIGIT = "3";
     private static final Set<InstallmentStatus> expirableStatuses = Set.of(
             InstallmentStatus.UNPAID
     );
@@ -51,5 +50,7 @@ public class DebtPositionUtilities {
                 .orElse(null);
     }
 
-    public static String iuv2nav(String iuv) { return AUX_DIGIT + iuv;    }
+    public static String iuv2nav(String iuv, String auxDigit) {
+        return auxDigit + iuv;
+    }
 }
