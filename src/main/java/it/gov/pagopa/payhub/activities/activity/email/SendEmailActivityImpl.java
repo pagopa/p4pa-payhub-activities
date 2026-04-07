@@ -38,7 +38,7 @@ public class SendEmailActivityImpl implements SendEmailActivity {
 
         emailDTO.setMailSubject(resolvePlaceholders(template.getSubject(), templatedEmail.getParams()));
         String mailBody = resolvePlaceholders(template.getBody(), templatedEmail.getParams());
-        emailDTO.setHtmlText(mailBody.replace("%%","%"));
+        emailDTO.setHtmlText(mailBody);
 
         emailDTO.setAttachment(templatedEmail.getAttachment());
 
@@ -46,7 +46,7 @@ public class SendEmailActivityImpl implements SendEmailActivity {
     }
 
     private static String resolvePlaceholders(String text, Map<String, String> params) {
-        return StringSubstitutor.replace(text, params, "%", "%");
+        return StringSubstitutor.replace(text, params, "$[", "]");
     }
 
     @Override

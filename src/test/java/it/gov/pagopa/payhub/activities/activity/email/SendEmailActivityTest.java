@@ -110,7 +110,7 @@ class SendEmailActivityTest {
         FileResourceDTO attachment = new FileResourceDTO(expectedResource, expectedFileName);
         TemplatedEmailDTO templatedEmailDTO = new TemplatedEmailDTO(templateName, new String[]{"TO"}, new String[]{"CC"}, params, attachment);
 
-        EmailTemplate template = new EmailTemplate("SUBJECT %var1% %var2%", "BODY %var3% %var4%");
+        EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]");
         Mockito.when(templateResolverServiceMock.resolve(templateName))
                 .thenReturn(template);
 
