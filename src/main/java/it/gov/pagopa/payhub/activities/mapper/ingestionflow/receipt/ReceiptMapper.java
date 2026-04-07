@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -38,11 +39,14 @@ public class ReceiptMapper {
 
     private final RtFileHandlerService rtFileHandlerService;
     private final OrganizationService organizationService;
+    private final String auxDigit;
 
     public ReceiptMapper(RtFileHandlerService rtFileHandlerService,
-                         OrganizationService organizationService) {
+                         OrganizationService organizationService,
+                         @Value("${nav.aux-digit}") String auxDigit) {
         this.rtFileHandlerService = rtFileHandlerService;
         this.organizationService = organizationService;
+        this.auxDigit = auxDigit;
     }
 
     public ReceiptWithAdditionalNodeDataDTO map(IngestionFlowFile ingestionFlowFile, PaSendRTV2Request paSendRTV2Request) {
@@ -93,7 +97,7 @@ public class ReceiptMapper {
                 .sourceFlowName(receipt.getSourceFlowName() != null ? receipt.getSourceFlowName() : ingestionFlowFile.getFileName())
                 .rtFilePath(StringUtils.isNotBlank(receipt.getRt()) ? rtFileHandlerService.store(ingestionFlowFile.getOrganizationId(), receipt.getRt(), ingestionFlowFile.getFileName()) : null)
                 .iud(receipt.getIud())
-                .noticeNumber(DebtPositionUtilities.iuv2nav(receipt.getIuv()))
+                .noticeNumber(DebtPositionUtilities.iuv2nav(receipt.getIuv(), auxDigit))
                 .orgFiscalCode(receipt.getOrgFiscalCode())
                 .paymentReceiptId(receipt.getPaymentReceiptId())
                 .paymentDateTime(Utilities.toOffsetDateTime(receipt.getPaymentDateTime()))

@@ -84,6 +84,9 @@ zip-file:
   max-uncompressed-size: "\${ZIP_MAX_UNCOMPRESSED_SIZE:209715200}" # 200MB
   max-compression-ratio: "\${ZIP_MAX_COMPRESSION_RATIO:100}" # Allowing file having at most a compression ratio 100:1
 
+nav:
+  aux-digit: "\${NAV_AUX_DIGIT:3}"
+
 rest:
   defaults:
     connection-pool:
