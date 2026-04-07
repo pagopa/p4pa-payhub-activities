@@ -13,6 +13,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -115,7 +117,12 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
   void givenValidTemplateWhenBuildTemplateParamsThenOk() {
     //given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
-      .debtor(new PersonDTO().fullName("NAME"));
+      .debtor(new PersonDTO().fullName("DEBTOR_NAME"))
+      .companyName("NAME")
+      .orgFiscalCode("ORGFC")
+      .noticeNumber("NAV")
+      .paymentAmountCents(123456L)
+      .paymentDateTime(OffsetDateTime.of(2025, 2, 21, 10, 30, 23, 0, ZoneOffset.UTC));
 
     //when
     Map<String, String> result = receiptPagopaEmailConfigurerService.buildTemplateParams(receiptWithAdditionalNodeDataDTO);
@@ -123,7 +130,12 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
     //verify
     Assertions.assertEquals(
             Map.of(
-                    "debtorName", "NAME"
+                    "debtorName", "DEBTOR_NAME",
+                    "companyName", "NAME",
+                    "orgFiscalCode", "ORGFC",
+                    "noticeNumber", "NAV",
+                    "amount", "1.234,56 €",
+                    "paymentDate", "21/02/2025 10:30:23"
             ),
             result
     );
