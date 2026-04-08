@@ -38,6 +38,7 @@ public class ReceiptPagoPaEmailConfigurerService {
 
   public Map<String, String> buildTemplateParams(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
     return Map.of(
+      "debtorName", StringUtils.firstNonBlank(receiptDTO.getDebtor().getFullName(),"-"),
       "companyName", StringUtils.firstNonBlank(receiptDTO.getCompanyName(),"-"),
       "orgFiscalCode", receiptDTO.getOrgFiscalCode(),
       "noticeNumber", receiptDTO.getNoticeNumber(),

@@ -117,6 +117,7 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
   void givenValidTemplateWhenBuildTemplateParamsThenOk() {
     //given
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO()
+      .debtor(new PersonDTO().fullName("DEBTOR_NAME"))
       .companyName("NAME")
       .orgFiscalCode("ORGFC")
       .noticeNumber("NAV")
@@ -129,6 +130,7 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
     //verify
     Assertions.assertEquals(
             Map.of(
+                    "debtorName", "DEBTOR_NAME",
                     "companyName", "NAME",
                     "orgFiscalCode", "ORGFC",
                     "noticeNumber", "NAV",

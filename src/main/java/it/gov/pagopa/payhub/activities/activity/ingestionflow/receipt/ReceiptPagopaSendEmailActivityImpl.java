@@ -27,6 +27,8 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
   private final OrganizationService organizationService;
   private final SendEmailActivity sendEmailActivity;
 
+  public static final String DEFAULT_RECEIPT_FILE_EXTENSION = "pdf";
+
   public ReceiptPagopaSendEmailActivityImpl(ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService, ReceiptService receiptService, OrganizationService organizationService, SendEmailActivity sendEmailActivity) {
     this.receiptPagopaEmailConfigurerService = receiptPagopaEmailConfigurerService;
     this.receiptService = receiptService;
@@ -71,10 +73,23 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
 
     Long organizationId = organization.get().getOrganizationId();
     FileResourceDTO attachment = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
+    attachment.setFileName(buildReceiptFileName(receiptDTO, attachment.getFileName()));
     sendEmailActivity.sendTemplatedEmail(new TemplatedEmailDTO(
         EmailTemplateName.INGESTION_PAGOPA_RT, recipients.toArray(new String[0]), null, params, attachment)
     );
     //configure email
+  }
+
+  private static String buildReceiptFileName(ReceiptWithAdditionalNodeDataDTO receiptDTO, String originalFilename) {
+    return receiptDTO.getPaymentDateTime() == null ?
+            originalFilename :
+            receiptDTO.getPaymentDateTime().toLocalDate() + "-" + receiptDTO.getNoticeNumber() + "." + extractReceiptFileExtension(originalFilename);
+  }
+
+  private static String extractReceiptFileExtension(String originalFilename) {
+    if(originalFilename == null)
+      return DEFAULT_RECEIPT_FILE_EXTENSION;
+    return originalFilename.substring(originalFilename.lastIndexOf(".")+1);
   }
 
 }
