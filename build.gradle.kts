@@ -7,15 +7,15 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
-    id("org.springframework.boot") version "4.0.3"
+    id("org.springframework.boot") version "4.0.5"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.sonarqube") version "7.2.3.7755"
     `java-library`
     `maven-publish`
     jacoco
     id("com.intershop.gradle.jaxb") version "8.0.1"
-    id("org.openapi.generator") version "7.20.0"
-    id("com.github.jk1.dependency-license-report") version "3.1.1"
+    id("org.openapi.generator") version "7.21.0"
+    id("com.github.jk1.dependency-license-report") version "3.1.2"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -80,25 +80,24 @@ val commonsCompressVersion = "1.28.0"
 val commonsLang3Version = "3.20.0"
 val commonsTextVersion = "1.15.0"
 val activationVersion = "2.1.4"
-val jaxbVersion = "4.0.6"
-val jaxbApiVersion = "4.0.4"
+val jaxbVersion = "4.0.7"
+val jaxbApiVersion = "4.0.5"
 val jsoupVersion = "1.21.2"
-val openApiToolsVersion = "0.2.9"
-val temporalVersion = "1.33.0"
-val protobufJavaVersion = "4.34.0"
-val grpcBomVersion = "1.79.0"
+val openApiToolsVersion = "0.2.10"
+val temporalVersion = "1.34.0"
+val protobufJavaVersion = "4.34.1"
+val grpcBomVersion = "1.80.0"
 val guavaVersion = "33.5.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
 val httpClientVersion = "5.6"
-val httpCoreVersion = "5.4.1"
+val httpCoreVersion = "5.4.2"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
 
 // fix cve
-val jackson2CoreVersion = "2.21.1"
 val jackson3CoreVersion = "3.1.1"
 
 dependencies {
@@ -150,7 +149,6 @@ dependencies {
 
     // CVE fix
     implementation("tools.jackson.core:jackson-core:$jackson3CoreVersion")
-    implementation("com.fasterxml.jackson.core:jackson-core:$jackson2CoreVersion")
 
     compileOnly("org.projectlombok:lombok")
 
