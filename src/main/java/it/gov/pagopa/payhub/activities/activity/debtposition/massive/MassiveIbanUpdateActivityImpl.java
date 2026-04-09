@@ -29,7 +29,7 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
                 .dptoId(dptoId)
                 .iban(oldIban)
                 .postalIban(oldPostalIban)
-                .installmentStatuses(List.of(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID, InstallmentStatus.UNPAYABLE, InstallmentStatus.TO_SYNC))
+                .installmentStatuses(List.of(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID, InstallmentStatus.UNPAYABLE, InstallmentStatus.TO_SYNC, InstallmentStatus.EXPIRED))
                 .syncError(true)
                 .build();
 
