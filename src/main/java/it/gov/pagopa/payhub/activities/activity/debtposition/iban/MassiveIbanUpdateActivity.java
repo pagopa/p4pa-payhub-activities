@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.massive;
+package it.gov.pagopa.payhub.activities.activity.debtposition.iban;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.debtposition.massive;
+package it.gov.pagopa.payhub.activities.activity.debtposition.iban;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
