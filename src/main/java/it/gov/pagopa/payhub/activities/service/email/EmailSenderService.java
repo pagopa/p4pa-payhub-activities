@@ -35,7 +35,7 @@ public class EmailSenderService {
     public void send(EmailDTO emailDTO) {
         mailSender.send(mimeMessage -> {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            message.setFrom(senderMailAddress);
+            message.setFrom(emailDTO.getFrom() == null ? senderMailAddress : emailDTO.getFrom());
             message.setTo(emailDTO.getTo());
             if (ArrayUtils.isNotEmpty(emailDTO.getCc())){
                 message.setCc(emailDTO.getCc());

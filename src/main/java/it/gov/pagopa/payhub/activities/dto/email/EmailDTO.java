@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 @AllArgsConstructor
 @Lazy
 public class EmailDTO {
+    private String from;
     private String[] to;
     private String[] cc;
     private String mailSubject;
