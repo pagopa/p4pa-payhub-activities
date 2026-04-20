@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.organization.client;
 
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApisHolder;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelBroker;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,10 @@ public class BrokerClient {
 
 	public Broker getById(Long brokerId, String accessToken) {
 		return organizationApisHolder.getBrokerEntityControllerApi(accessToken).crudGetBroker(brokerId.toString());
+	}
+
+	public BrokerConfiguration getBrokerConfigurationById(Long brokerId, String accessToken) {
+		return organizationApisHolder.getBrokerConfigurationEntityControllerApi(accessToken)
+				.crudGetBrokerconfiguration(brokerId.toString());
 	}
 }

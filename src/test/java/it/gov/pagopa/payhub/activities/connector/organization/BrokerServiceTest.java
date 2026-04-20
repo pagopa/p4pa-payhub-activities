@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.organization;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.organization.client.BrokerClient;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelBroker;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelBrokerEmbedded;
 import org.junit.jupiter.api.AfterEach;
@@ -84,6 +85,25 @@ class BrokerServiceTest {
 		assertEquals(expectedBroker, result);
 		verify(authnServiceMock, times(1)).getAccessToken();
 		verify(brokerClientMock, times(1)).getById(brokerId, accessToken);
+	}
+
+	@Test
+	void testGetBrokerConfigurationsById() {
+		// Given
+		Long brokerId = 1L;
+		String accessToken = "accessToken";
+		BrokerConfiguration expectedBrokerConfiguration = mock(BrokerConfiguration.class);
+
+		when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+		when(brokerClientMock.getBrokerConfigurationById(brokerId, accessToken)).thenReturn(expectedBrokerConfiguration);
+
+		// When
+		BrokerConfiguration result = service.getBrokerConfigurationsById(brokerId);
+
+		// Then
+		assertEquals(expectedBrokerConfiguration, result);
+		verify(authnServiceMock).getAccessToken();
+		verify(brokerClientMock).getBrokerConfigurationById(brokerId, accessToken);
 	}
 
 }
