@@ -33,6 +33,7 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         EmailTemplate template = templateResolverService.resolve(templatedEmail.getTemplateName());
 
         EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setFrom(templatedEmail.getFrom());
         emailDTO.setTo(templatedEmail.getTo());
         emailDTO.setCc(templatedEmail.getCc());
 

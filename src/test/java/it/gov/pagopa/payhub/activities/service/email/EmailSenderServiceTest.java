@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,7 +30,7 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 @ExtendWith(MockitoExtension.class)
 class EmailSenderServiceTest {
 
-    private static final String FROM_ADDRESS = "FROMADDRESS";
+    private static final String DEFAULT_FROM_ADDRESS = "FROMADDRESS";
 
     @Mock
     private JavaMailSender javaMailSenderMock;
@@ -37,7 +39,7 @@ class EmailSenderServiceTest {
 
     @BeforeEach
     void init() {
-        service = new EmailSenderService(FROM_ADDRESS, javaMailSenderMock);
+        service = new EmailSenderService(DEFAULT_FROM_ADDRESS, javaMailSenderMock);
     }
 
     @AfterEach
@@ -45,10 +47,12 @@ class EmailSenderServiceTest {
         Mockito.verifyNoMoreInteractions(javaMailSenderMock);
     }
 
-    @Test
-    void whenSendThenOk() throws MessagingException, IOException {
+    @ParameterizedTest
+    @ValueSource(strings = {"", "test_sender@mailtest.com"})
+    void whenSendThenOk(String senderEmail) throws MessagingException, IOException {
         // Given
-        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+        String expectedSenderEmail = senderEmail.isEmpty() ? null : senderEmail;
+        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO(expectedSenderEmail);
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
 
         Mockito.doNothing()
@@ -133,7 +137,7 @@ class EmailSenderServiceTest {
         Assertions.assertEquals(1, resultMessage.getHeader("CC").length);
         Assertions.assertEquals(1, resultMessage.getHeader("Subject").length);
 
-        Assertions.assertEquals(FROM_ADDRESS, resultMessage.getHeader("From")[0]);
+        Assertions.assertEquals(emailDTO.getFrom()==null ? DEFAULT_FROM_ADDRESS : emailDTO.getFrom(), resultMessage.getHeader("From")[0]);
         Assertions.assertEquals(emailDTO.getTo()[0], resultMessage.getHeader("To")[0]);
         Assertions.assertEquals(emailDTO.getCc()[0], resultMessage.getHeader("CC")[0]);
         Assertions.assertEquals(emailDTO.getMailSubject(), resultMessage.getHeader("Subject")[0]);
