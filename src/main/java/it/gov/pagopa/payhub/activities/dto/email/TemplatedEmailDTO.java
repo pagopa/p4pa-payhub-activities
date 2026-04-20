@@ -21,12 +21,4 @@ public class TemplatedEmailDTO {
     private String[] cc;
     private Map<String, String> params;
     private FileResourceDTO attachment;
-
-    public TemplatedEmailDTO(EmailTemplateName templateName, String[] to, String[] cc, Map<String, String> params, FileResourceDTO attachment) {
-        this.templateName = templateName;
-        this.to = to;
-        this.cc = cc;
-        this.params = params;
-        this.attachment = attachment;
-    }
 }
