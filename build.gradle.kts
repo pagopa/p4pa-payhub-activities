@@ -59,6 +59,12 @@ dependencies {
     mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
 }
 tasks {
+    jar {
+        from("${rootProject.projectDir}") {
+            include("LICENSE.md")
+            into("META-INF")
+        }
+    }
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}")
         testLogging.events = setOf(TestLogEvent.FAILED)
@@ -113,7 +119,7 @@ dependencies {
     implementation("commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
-  implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
+    implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
     // openApi
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
     implementation("org.springframework.data:spring-data-commons")
