@@ -252,4 +252,35 @@ class ReceiptPagopaSendEmailActivityTest {
     Assertions.assertEquals(MAIL_SENDER_ADDRESS, templatedEmailDTO.getFrom());
   }
 
+  @Test
+  void givenEmptyBrokerConfigurationWhenSendReceiptHandledEmailMailThenSendWithNullMailSenderAddress() {
+    // Given
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = getReceiptWithAdditionalNodeData(OffsetDateTime.now(), "noticeNumber");
+    InstallmentDTO installmentDTO = new InstallmentDTO();
+    List<String> recipients = List.of("recipient1");
+    FileResourceDTO attachment = mock(FileResourceDTO.class);
+
+    ArgumentCaptor<TemplatedEmailDTO> templatedEmailDTOArgumentCaptor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
+
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(receiptWithAdditionalNodeDataDTO.getOrgFiscalCode())).thenReturn(Optional.of(new Organization().organizationId(1L).brokerId(1L)));
+    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptWithAdditionalNodeDataDTO.getReceiptId()), anyLong())).thenReturn(attachment);
+    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(null);
+
+    // When
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+
+    // Then
+    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
+    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(templatedEmailDTOArgumentCaptor.capture());
+
+    TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
+
+    Assertions.assertArrayEquals(templatedEmailDTO.getTo(), recipients.toArray(new String[0]));
+    Assertions.assertEquals(EmailTemplateName.INGESTION_PAGOPA_RT, templatedEmailDTO.getTemplateName());
+    Assertions.assertNull(templatedEmailDTO.getFrom());
+  }
+
+
 }
