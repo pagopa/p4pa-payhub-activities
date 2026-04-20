@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.organization;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.organization.client.BrokerClient;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.PagedModelBroker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -42,5 +43,10 @@ public class BrokerServiceImpl implements BrokerService {
 		return brokerClient.getById(brokerId, authnService.getAccessToken());
 	}
 
+	@Override
+	public BrokerConfiguration getBrokerConfigurationsById(Long brokerId) {
+		log.debug("Get Broker configurations by brokerId: {}", brokerId);
+		return brokerClient.getBrokerConfigurationById(brokerId, authnService.getAccessToken());
+	}
 
 }

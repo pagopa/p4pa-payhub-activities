@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface BrokerService {
 	Broker getBrokerByFiscalCode(String fiscalCode);
 
 	Broker getBrokerById(Long brokerId);
+
+	BrokerConfiguration getBrokerConfigurationsById(Long brokerId);
 }
