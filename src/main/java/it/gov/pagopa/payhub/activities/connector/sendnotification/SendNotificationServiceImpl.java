@@ -58,4 +58,9 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     public void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus) {
         sendNotificationClient.updateSendNotificationStatus(notificationRequestId, newStatus, authnService.getAccessToken());
     }
+
+    @Override
+    public FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId) {
+        return sendNotificationClient.deleteExpiredLegalFacts(sendNotificationId, authnService.getAccessToken());
+    }
 }

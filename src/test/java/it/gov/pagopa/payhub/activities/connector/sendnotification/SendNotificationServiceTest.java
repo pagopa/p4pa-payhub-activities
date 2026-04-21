@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -199,6 +200,21 @@ class SendNotificationServiceTest {
                         NotificationStatus.PAID,
                         accessToken
                 );
+    }
+
+    @Test
+    void whenDeleteExpiredLegalFactsThenOk() {
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+        FileExpirationResponseDTO expectedResponse = new FileExpirationResponseDTO(OffsetDateTime.now());
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(clientMock.deleteExpiredLegalFacts(sendNotificationId,accessToken)).thenReturn(expectedResponse);
+
+        FileExpirationResponseDTO response = service.deleteExpiredLegalFacts(sendNotificationId);
+
+        Assertions.assertEquals(expectedResponse, response);
     }
 
 }
