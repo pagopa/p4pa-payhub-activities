@@ -264,4 +264,34 @@ class SendNotificationClientTest {
                 );
     }
 
+    @Test
+    void whenDeleteExpiredLegalFactsThenInvokeWithAccessToken() {
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+        FileExpirationResponseDTO expectedResult = new FileExpirationResponseDTO();
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+                .thenReturn(sendNotificationApiMock);
+        Mockito.when(sendNotificationApiMock.deleteExpiredLegalFacts(sendNotificationId))
+                .thenReturn(expectedResult);
+
+        FileExpirationResponseDTO result = client.deleteExpiredLegalFacts(sendNotificationId, accessToken);
+
+        Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNotFoundWhenDeleteExpiredLegalFactsThenReturnNull() {
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+
+        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+                .thenReturn(sendNotificationApiMock);
+        Mockito.when(sendNotificationApiMock.deleteExpiredLegalFacts(sendNotificationId))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+        FileExpirationResponseDTO result = client.deleteExpiredLegalFacts(sendNotificationId, accessToken);
+
+        Assertions.assertNull(result);
+    }
 }

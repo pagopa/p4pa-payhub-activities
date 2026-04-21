@@ -74,4 +74,13 @@ public class SendNotificationClient {
     sendApisHolder.getSendNotificationApi(accessToken)
             .updateNotificationStatus(notificationRequestId, newStatus);
   }
+
+  public FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId, String accessToken) {
+    try {
+      return sendApisHolder.getSendNotificationApi(accessToken).deleteExpiredLegalFacts(sendNotificationId);
+    } catch (HttpClientErrorException.NotFound e){
+      log.info("Could not find SendNotification legal facts to delete having sendNotificationId {}", sendNotificationId);
+      return null;
+    }
+  }
 }

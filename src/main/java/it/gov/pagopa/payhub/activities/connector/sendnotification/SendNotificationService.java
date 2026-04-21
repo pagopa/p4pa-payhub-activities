@@ -13,4 +13,5 @@ public interface SendNotificationService {
   List<ProgressResponseElementV28DTO> readSendStreamEvents(Long organizationId, String sendStreamId);
   void updateLastProcessedStreamEventId(String sendStreamId, String lastEventId);
   void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus);
+  FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId);
 }
