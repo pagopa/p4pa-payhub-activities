@@ -217,4 +217,18 @@ class SendNotificationServiceTest {
         Assertions.assertEquals(expectedResponse, response);
     }
 
+    @Test
+    void whenDeleteExpiredDocumentsThenOk() {
+        String accessToken = "ACCESSTOKEN";
+        String sendNotificationId = "sendNotificationId";
+        FileExpirationResponseDTO expectedResponse = new FileExpirationResponseDTO(OffsetDateTime.now());
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(clientMock.deleteExpiredDocuments(sendNotificationId,accessToken)).thenReturn(expectedResponse);
+
+        FileExpirationResponseDTO response = service.deleteExpiredDocuments(sendNotificationId);
+
+        Assertions.assertEquals(expectedResponse, response);
+    }
 }

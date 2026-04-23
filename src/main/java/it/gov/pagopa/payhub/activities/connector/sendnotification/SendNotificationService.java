@@ -14,4 +14,5 @@ public interface SendNotificationService {
   void updateLastProcessedStreamEventId(String sendStreamId, String lastEventId);
   void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus);
   FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId);
+  FileExpirationResponseDTO deleteExpiredDocuments(String sendNotificationId);
 }
