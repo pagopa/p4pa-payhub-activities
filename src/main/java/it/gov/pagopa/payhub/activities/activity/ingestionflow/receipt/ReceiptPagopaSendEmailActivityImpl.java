@@ -75,16 +75,16 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
       log.info("Not sending email for receipt id[{}] [{}/{}]: organization not found", receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber());
       return;
     }
-    Optional<Broker> brokerOpt = Optional.ofNullable(brokerService.getBrokerById(organization.get().getBrokerId()));
 
     Long organizationId = organization.get().getOrganizationId();
-    String mailSenderAddress = Optional.ofNullable(brokerService.getBrokerConfigurationsById(organization.get().getBrokerId()))
+    Long brokerId = organization.get().getBrokerId();
+    String mailSenderAddress = Optional.ofNullable(brokerService.getBrokerConfigurationsById(brokerId))
             .map(BrokerConfiguration::getMailSenderAddress)
             .orElse(null);
     FileResourceDTO attachment = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
     attachment.setFileName(buildReceiptFileName(receiptDTO, attachment.getFileName()));
     sendEmailActivity.sendTemplatedEmail(
-            brokerOpt.map(Broker::getBrokerId).orElse(null),
+            brokerId,
             new TemplatedEmailDTO(
                     EmailTemplateName.INGESTION_PAGOPA_RT,
                     mailSenderAddress,

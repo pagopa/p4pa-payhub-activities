@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
+import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
+import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,15 +24,18 @@ public class SendEmailActivityImpl implements SendEmailActivity {
 
     private final EmailTemplateResolverService templateResolverService;
     private final EmailSenderService emailSenderService;
+    private final BrokerService brokerService;
 
-    public SendEmailActivityImpl(EmailTemplateResolverService templateResolverService, EmailSenderService emailSenderService) {
+    public SendEmailActivityImpl(EmailTemplateResolverService templateResolverService, EmailSenderService emailSenderService, BrokerService brokerService) {
         this.templateResolverService = templateResolverService;
         this.emailSenderService = emailSenderService;
+        this.brokerService = brokerService;
     }
 
     @Override
     public void sendTemplatedEmail(Long brokerId, TemplatedEmailDTO templatedEmail) {
-        EmailTemplate template = templateResolverService.resolve(brokerId, templatedEmail.getTemplateName());
+        Broker broker = brokerService.getBrokerById(brokerId);
+        EmailTemplate template = templateResolverService.resolve(broker.getExternalId(), templatedEmail.getTemplateName());
 
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setFrom(templatedEmail.getFrom());

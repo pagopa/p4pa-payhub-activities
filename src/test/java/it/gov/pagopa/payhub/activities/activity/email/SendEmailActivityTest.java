@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
+import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
@@ -11,6 +12,7 @@ import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
 import java.util.Map;
 
 import it.gov.pagopa.payhub.activities.util.faker.TemplatedEmailDTOFaker;
+import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,17 +29,19 @@ class SendEmailActivityTest {
     private EmailTemplateResolverService templateResolverServiceMock;
     @Mock
     private EmailSenderService emailSenderServiceMock;
+    @Mock
+    private BrokerService brokerServiceMock;
 
     private SendEmailActivity activity;
 
     @BeforeEach
     void init(){
-        activity = new SendEmailActivityImpl(templateResolverServiceMock, emailSenderServiceMock);
+        activity = new SendEmailActivityImpl(templateResolverServiceMock, emailSenderServiceMock, brokerServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions(){
-        Mockito.verifyNoMoreInteractions(templateResolverServiceMock, emailSenderServiceMock);
+        Mockito.verifyNoMoreInteractions(templateResolverServiceMock, emailSenderServiceMock, brokerServiceMock);
     }
 
     @Test
@@ -99,6 +103,7 @@ class SendEmailActivityTest {
         // Given
         EmailTemplateName templateName = EmailTemplateName.INGESTION_PAGOPA_RT;
         Long brokerId = 1L;
+        String brokerExternalId = "BROKER_EXTERNAL_ID";
         Map<String, String> params = Map.of(
                 "var1", "VALUE1",
                 "var2", "VALUE2",
@@ -109,7 +114,11 @@ class SendEmailActivityTest {
         TemplatedEmailDTO templatedEmailDTO = TemplatedEmailDTOFaker.buildTemplatedEmailDTO(templateName, params);
 
         EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]");
-        Mockito.when(templateResolverServiceMock.resolve(brokerId, templateName))
+        Broker broker = Mockito.mock(Broker.class);
+        Mockito.when(broker.getExternalId()).thenReturn(brokerExternalId);
+        Mockito.when(brokerServiceMock.getBrokerById(brokerId))
+                        .thenReturn(broker);
+        Mockito.when(templateResolverServiceMock.resolve(brokerExternalId, templateName))
                 .thenReturn(template);
 
         // When

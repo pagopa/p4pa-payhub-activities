@@ -4,5 +4,5 @@ import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 
 public interface EmailTemplateRetrieverService {
-    EmailTemplate retrieveTemplate(Long brokerId, EmailTemplateName emailTemplateName);
+    EmailTemplate retrieveTemplate(String brokerExternalId, EmailTemplateName emailTemplateName);
 }
