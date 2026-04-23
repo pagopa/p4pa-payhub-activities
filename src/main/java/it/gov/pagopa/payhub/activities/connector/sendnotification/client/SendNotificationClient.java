@@ -83,4 +83,13 @@ public class SendNotificationClient {
       return null;
     }
   }
+
+  public FileExpirationResponseDTO deleteExpiredDocuments(String sendNotificationId, String accessToken) {
+    try {
+      return sendApisHolder.getSendNotificationApi(accessToken).deleteExpiredDocuments(sendNotificationId);
+    } catch (HttpClientErrorException.NotFound e){
+      log.info("Could not find SendNotification documents to delete having sendNotificationId {}", sendNotificationId);
+      return null;
+    }
+  }
 }
