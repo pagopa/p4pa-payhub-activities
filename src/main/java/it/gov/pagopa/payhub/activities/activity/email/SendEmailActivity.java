@@ -11,7 +11,7 @@ import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 @ActivityInterface
 public interface SendEmailActivity {
     @ActivityMethod
-    void sendTemplatedEmail(TemplatedEmailDTO email);
+    void sendTemplatedEmail(Long brokerId, TemplatedEmailDTO email);
     @ActivityMethod
     void sendEmail(EmailDTO email);
 }

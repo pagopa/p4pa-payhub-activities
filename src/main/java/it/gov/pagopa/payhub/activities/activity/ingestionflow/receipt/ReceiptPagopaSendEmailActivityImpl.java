@@ -76,12 +76,14 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
     }
 
     Long organizationId = organization.get().getOrganizationId();
-    String mailSenderAddress = Optional.ofNullable(brokerService.getBrokerConfigurationsById(organization.get().getBrokerId()))
+    Long brokerId = organization.get().getBrokerId();
+    String mailSenderAddress = Optional.ofNullable(brokerService.getBrokerConfigurationsById(brokerId))
             .map(BrokerConfiguration::getMailSenderAddress)
             .orElse(null);
     FileResourceDTO attachment = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
     attachment.setFileName(buildReceiptFileName(receiptDTO, attachment.getFileName()));
     sendEmailActivity.sendTemplatedEmail(
+            brokerId,
             new TemplatedEmailDTO(
                     EmailTemplateName.INGESTION_PAGOPA_RT,
                     mailSenderAddress,

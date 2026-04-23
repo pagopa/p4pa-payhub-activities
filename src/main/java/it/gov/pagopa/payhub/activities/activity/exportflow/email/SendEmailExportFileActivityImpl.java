@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow.email;
 
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
+import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
@@ -10,6 +11,7 @@ import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFou
 import it.gov.pagopa.payhub.activities.service.exportflow.email.ExportFileEmailContentConfigurerService;
 import it.gov.pagopa.payhub.activities.service.exportflow.email.ExportFileEmailDestinationRetrieverService;
 import it.gov.pagopa.payhub.activities.service.exportflow.email.ExportFlowFileEmailTemplateResolverService;
+import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Lazy
 @Slf4j
@@ -25,17 +28,19 @@ public class SendEmailExportFileActivityImpl implements SendEmailExportFileActiv
 
     private final ExportFileService exportFileService;
     private final OrganizationService organizationService;
+    private final BrokerService brokerService;
     private final ExportFileEmailDestinationRetrieverService destinationRetrieverService;
     private final ExportFileEmailContentConfigurerService contentConfigurerService;
     private final ExportFlowFileEmailTemplateResolverService exportFlowFileEmailTemplateResolverService;
     private final SendEmailActivity sendEmailActivity;
 
-    public SendEmailExportFileActivityImpl(ExportFileService exportFileService, OrganizationService organizationService,
+    public SendEmailExportFileActivityImpl(ExportFileService exportFileService, OrganizationService organizationService, BrokerService brokerService,
                                            ExportFileEmailDestinationRetrieverService destinationRetrieverService,
                                            ExportFileEmailContentConfigurerService contentConfigurerService, ExportFlowFileEmailTemplateResolverService exportFlowFileEmailTemplateResolverService,
                                            SendEmailActivity sendEmailActivity) {
         this.exportFileService = exportFileService;
         this.organizationService = organizationService;
+        this.brokerService = brokerService;
         this.destinationRetrieverService = destinationRetrieverService;
         this.contentConfigurerService = contentConfigurerService;
         this.exportFlowFileEmailTemplateResolverService = exportFlowFileEmailTemplateResolverService;
@@ -49,14 +54,19 @@ public class SendEmailExportFileActivityImpl implements SendEmailExportFileActiv
         ExportFile exportFile = retrieveExportFile(exportFileId);
 
         Organization organization = retrieveOrganization(exportFile.getOrganizationId());
+        String mailSenderAddress = Optional.ofNullable(brokerService.getBrokerConfigurationsById(organization.getBrokerId()))
+                .map(BrokerConfiguration::getMailSenderAddress)
+                .orElse(null);
 
         EmailTemplateName emailTemplateName = exportFlowFileEmailTemplateResolverService.resolve(exportFile, success);
         Map<String, String> params = contentConfigurerService.configureParams(exportFile, organization, success);
-        TemplatedEmailDTO templatedEmailDTO = destinationRetrieverService.retrieveEmailDestinations(exportFile, organization);
 
+        TemplatedEmailDTO templatedEmailDTO = destinationRetrieverService.retrieveEmailDestinations(exportFile, organization);
         templatedEmailDTO.setTemplateName(emailTemplateName);
         templatedEmailDTO.setParams(params);
-        sendEmailActivity.sendTemplatedEmail(templatedEmailDTO);
+        templatedEmailDTO.setFrom(mailSenderAddress);
+
+        sendEmailActivity.sendTemplatedEmail(organization.getBrokerId(), templatedEmailDTO);
     }
 
     private ExportFile retrieveExportFile(Long exportFileId) {

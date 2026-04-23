@@ -90,8 +90,16 @@ class ReceiptPagopaSendEmailActivityTest {
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock, Mockito.times(1)).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock, Mockito.times(1)).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
     Mockito.verify(sendEmailActivityMock, Mockito.times(1)).sendTemplatedEmail(
-      Mockito.argThat(e -> Arrays.equals(e.getTo(), recipients.toArray(new String[0])) &&
-              e.getParams() == params && EmailTemplateName.INGESTION_PAGOPA_RT.equals(e.getTemplateName()) && e.getFrom().equals(MAIL_SENDER_ADDRESS)));
+      Mockito.eq(1L),
+      Mockito.argThat(
+              e ->
+                      Arrays.equals(
+                              e.getTo(), recipients.toArray(new String[0])) &&
+                              e.getParams() == params &&
+                              EmailTemplateName.INGESTION_PAGOPA_RT.equals(e.getTemplateName()) &&
+                              e.getFrom().equals(MAIL_SENDER_ADDRESS)
+      )
+    );
   }
 
   @Test
@@ -162,7 +170,7 @@ class ReceiptPagopaSendEmailActivityTest {
     // Then
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(templatedEmailDTOArgumentCaptor.capture());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
 
     TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
 
@@ -206,7 +214,7 @@ class ReceiptPagopaSendEmailActivityTest {
     // Then
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(templatedEmailDTOArgumentCaptor.capture());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
 
     TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
 
@@ -242,7 +250,7 @@ class ReceiptPagopaSendEmailActivityTest {
     // Then
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(templatedEmailDTOArgumentCaptor.capture());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
 
     TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
 
@@ -273,7 +281,7 @@ class ReceiptPagopaSendEmailActivityTest {
     // Then
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
     Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(templatedEmailDTOArgumentCaptor.capture());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
 
     TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
 
