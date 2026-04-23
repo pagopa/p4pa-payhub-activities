@@ -29,8 +29,8 @@ public class SendEmailActivityImpl implements SendEmailActivity {
     }
 
     @Override
-    public void sendTemplatedEmail(String brokerExternalId, TemplatedEmailDTO templatedEmail) {
-        EmailTemplate template = templateResolverService.resolve(brokerExternalId, templatedEmail.getTemplateName());
+    public void sendTemplatedEmail(Long brokerId, TemplatedEmailDTO templatedEmail) {
+        EmailTemplate template = templateResolverService.resolve(brokerId, templatedEmail.getTemplateName());
 
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setFrom(templatedEmail.getFrom());

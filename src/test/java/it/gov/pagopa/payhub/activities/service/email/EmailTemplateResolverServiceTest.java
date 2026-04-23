@@ -21,6 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @EnableConfigurationProperties(value = EmailTemplatesConfiguration.class)
 class EmailTemplateResolverServiceTest {
 
+    public static final long BROKER_ID = 1L;
     @Autowired
     private EmailTemplatesConfiguration emailTemplatesConfiguration;
     @Mock
@@ -41,7 +42,7 @@ class EmailTemplateResolverServiceTest {
     @ParameterizedTest
     @EnumSource(EmailTemplateName.class)
     void givenEnumWhenResolveThenReturnExpectedTemplate(EmailTemplateName templateName) {
-        EmailTemplate template = service.resolve("BROKER_EXTERNAL_ID", templateName);
+        EmailTemplate template = service.resolve(BROKER_ID, templateName);
 
         assertPropertyValue(template.getSubject());
         assertPropertyValue(template.getBody());
@@ -56,11 +57,11 @@ class EmailTemplateResolverServiceTest {
     void givenFoundTemplateOnRepositoryWhenResolveThenReturnExpectedTemplate() {
         //GIVEN
         EmailTemplate expectedEmailTemplate = new EmailTemplate("REPO_SUBJECT", "REPO_BODY");
-        Mockito.when(emailTemplateRetrieverService.retrieveTemplate("BROKER_EXTERNAL_ID", EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK))
+        Mockito.when(emailTemplateRetrieverService.retrieveTemplate(BROKER_ID, EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK))
                 .thenReturn(expectedEmailTemplate);
 
         //WHEN
-        EmailTemplate template = service.resolve("BROKER_EXTERNAL_ID", EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK);
+        EmailTemplate template = service.resolve(BROKER_ID, EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK);
 
         //THEN
         Assertions.assertEquals(expectedEmailTemplate.getSubject(), template.getSubject());

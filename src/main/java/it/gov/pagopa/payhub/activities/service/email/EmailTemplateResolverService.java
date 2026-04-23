@@ -18,8 +18,8 @@ public class EmailTemplateResolverService {
         this.emailTemplateRetriever = emailTemplateRetriever;
     }
 
-    public EmailTemplate resolve(String brokerExternalId, EmailTemplateName emailTemplateName) {
-        EmailTemplate emailTemplate = emailTemplateRetriever.retrieveTemplate(brokerExternalId, emailTemplateName);
+    public EmailTemplate resolve(Long brokerId, EmailTemplateName emailTemplateName) {
+        EmailTemplate emailTemplate = emailTemplateRetriever.retrieveTemplate(brokerId, emailTemplateName);
         if(emailTemplate!=null) {
             return emailTemplate;
         }

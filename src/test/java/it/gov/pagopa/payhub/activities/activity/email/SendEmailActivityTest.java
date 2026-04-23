@@ -98,7 +98,7 @@ class SendEmailActivityTest {
     void whenSendTemplatedEmailThenOk(){
         // Given
         EmailTemplateName templateName = EmailTemplateName.INGESTION_PAGOPA_RT;
-        String brokerExternalId = "BROKER_EXTERNAL_ID";
+        Long brokerId = 1L;
         Map<String, String> params = Map.of(
                 "var1", "VALUE1",
                 "var2", "VALUE2",
@@ -109,11 +109,11 @@ class SendEmailActivityTest {
         TemplatedEmailDTO templatedEmailDTO = TemplatedEmailDTOFaker.buildTemplatedEmailDTO(templateName, params);
 
         EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]");
-        Mockito.when(templateResolverServiceMock.resolve(brokerExternalId, templateName))
+        Mockito.when(templateResolverServiceMock.resolve(brokerId, templateName))
                 .thenReturn(template);
 
         // When
-        activity.sendTemplatedEmail(brokerExternalId, templatedEmailDTO);
+        activity.sendTemplatedEmail(brokerId, templatedEmailDTO);
 
         // Then
         Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
