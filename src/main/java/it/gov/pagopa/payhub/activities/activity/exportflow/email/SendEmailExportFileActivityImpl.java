@@ -56,7 +56,7 @@ public class SendEmailExportFileActivityImpl implements SendEmailExportFileActiv
 
         templatedEmailDTO.setTemplateName(emailTemplateName);
         templatedEmailDTO.setParams(params);
-        sendEmailActivity.sendTemplatedEmail(templatedEmailDTO);
+        sendEmailActivity.sendTemplatedEmail(null, templatedEmailDTO);
     }
 
     private ExportFile retrieveExportFile(Long exportFileId) {

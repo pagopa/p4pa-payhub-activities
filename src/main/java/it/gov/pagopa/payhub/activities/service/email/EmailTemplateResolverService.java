@@ -11,13 +11,23 @@ import org.springframework.stereotype.Service;
 public class EmailTemplateResolverService {
 
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
+    private final EmailTemplateRetrieverService emailTemplateRetriever;
 
-    public EmailTemplateResolverService(EmailTemplatesConfiguration emailTemplatesConfiguration) {
+    public EmailTemplateResolverService(EmailTemplatesConfiguration emailTemplatesConfiguration, EmailTemplateRetrieverService emailTemplateRetriever) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
+        this.emailTemplateRetriever = emailTemplateRetriever;
     }
 
-    public EmailTemplate resolve(EmailTemplateName templateName) {
-        return switch (templateName){
+    public EmailTemplate resolve(String brokerExternalId, EmailTemplateName emailTemplateName) {
+        EmailTemplate emailTemplate = emailTemplateRetriever.retrieveTemplate(brokerExternalId, emailTemplateName);
+        if(emailTemplate!=null) {
+            return emailTemplate;
+        }
+        return getDefaultEmailTemplate(emailTemplateName);
+    }
+
+    private EmailTemplate getDefaultEmailTemplate(EmailTemplateName emailTemplateName) {
+        return switch (emailTemplateName) {
             case INGESTION_PAYMENTS_REPORTING_OK -> emailTemplatesConfiguration.getPaymentsReportingFlow().getOk();
             case INGESTION_PAYMENTS_REPORTING_KO -> emailTemplatesConfiguration.getPaymentsReportingFlow().getKo();
             case INGESTION_PAYMENTS_REPORTING_PAGOPA_OK -> emailTemplatesConfiguration.getPaymentsReportingFlow().getOk();

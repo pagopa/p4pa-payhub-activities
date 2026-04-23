@@ -136,7 +136,7 @@ class SendEmailExportFileActivityImplTest {
         sendEmailExportFileActivity.sendExportCompletedEmail(exportFile.getExportFileId(), success);
 
         // Then
-        Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(expectedTemplatedEmail);
+        Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(null, expectedTemplatedEmail);
 
     }
 }

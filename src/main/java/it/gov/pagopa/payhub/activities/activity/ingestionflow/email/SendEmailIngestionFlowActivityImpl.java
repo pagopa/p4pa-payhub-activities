@@ -45,9 +45,8 @@ public class SendEmailIngestionFlowActivityImpl implements SendEmailIngestionFlo
         Map<String, String> params = contentConfigurerService.configureParams(ingestionFlowFileDTO, success);
         Pair<String[], String[]> destinations = destinationRetrieverService.retrieveEmailDestinations(ingestionFlowFileDTO);
 
-        sendEmailActivity.sendTemplatedEmail(new TemplatedEmailDTO(
-                templateName, null, destinations.getKey(), destinations.getValue(), params, null
-        ));
+        TemplatedEmailDTO templatedEmail = new TemplatedEmailDTO(templateName, null, destinations.getKey(), destinations.getValue(), params, null);
+        sendEmailActivity.sendTemplatedEmail(null, templatedEmail);
     }
 
     private IngestionFlowFile retrieveIngestionFlowFileRecord(Long ingestionFlowFileId) {

@@ -99,7 +99,7 @@ class SendEmailIngestionFlowActivityTest {
         activity.sendIngestionFlowFileCompleteEmail(ingestionFlowFileDTO.getIngestionFlowFileId(), success);
 
         // Then
-        Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(expectedTemplatedEmail);
+        Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(null, expectedTemplatedEmail);
 
     }
 

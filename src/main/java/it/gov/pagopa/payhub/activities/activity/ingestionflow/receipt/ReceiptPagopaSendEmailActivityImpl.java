@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPaEmailConfigurerService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import java.util.List;
@@ -74,6 +75,7 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
       log.info("Not sending email for receipt id[{}] [{}/{}]: organization not found", receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber());
       return;
     }
+    Optional<Broker> brokerOpt = Optional.ofNullable(brokerService.getBrokerById(organization.get().getBrokerId()));
 
     Long organizationId = organization.get().getOrganizationId();
     String mailSenderAddress = Optional.ofNullable(brokerService.getBrokerConfigurationsById(organization.get().getBrokerId()))
@@ -82,6 +84,7 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
     FileResourceDTO attachment = receiptService.getReceiptPdf(receiptDTO.getReceiptId(), organizationId);
     attachment.setFileName(buildReceiptFileName(receiptDTO, attachment.getFileName()));
     sendEmailActivity.sendTemplatedEmail(
+            brokerOpt.map(Broker::getExternalId).orElse(null),
             new TemplatedEmailDTO(
                     EmailTemplateName.INGESTION_PAGOPA_RT,
                     mailSenderAddress,
