@@ -143,7 +143,8 @@ public class EmailTemplateRetrieverServiceImpl implements EmailTemplateRetriever
             return Collections.emptyList();
         }
         return Arrays.stream(new String(attachmentFileResource).split("\n"))
-                    .toList();
+                .map(String::trim)
+                .toList();
     }
 
 }
