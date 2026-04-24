@@ -68,7 +68,7 @@ class EmailSenderServiceTest {
                 }));
 
         // When
-        service.send(emailDTO);
+        service.send(emailDTO, null);
 
         // Then
         checkResultMessage(result[0], emailDTO);
@@ -111,7 +111,7 @@ class EmailSenderServiceTest {
             }));
 
         // When
-        service.send(emailDTO);
+        service.send(emailDTO, null);
 
         // Then
         MimeMessage resultMessage = result[0];

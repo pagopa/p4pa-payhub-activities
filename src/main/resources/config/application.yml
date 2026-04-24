@@ -61,6 +61,9 @@ export-flow-files:
 
 mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
+  template:
+    repo-base-url: "\${MAIL_TEMPLATE_REPO_BASE_URL:https://raw.githubusercontent.com/pagopa/p4pa-email-templates/refs/heads/main}"
+    folder-base-path: "\${MAIL_TEMPLATE_FOLDER_BASE_PATH:/tmp}"
 
 folders:
   shared: "\${SHARED_FOLDER_ROOT:/shared}"

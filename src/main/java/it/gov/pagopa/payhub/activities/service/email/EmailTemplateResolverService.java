@@ -19,11 +19,16 @@ public class EmailTemplateResolverService {
     }
 
     public EmailTemplate resolve(String brokerExternalId, EmailTemplateName emailTemplateName) {
-        EmailTemplate emailTemplate = emailTemplateRetriever.retrieveTemplate(brokerExternalId, emailTemplateName);
+        EmailTemplate defaultEmailTemplate = getDefaultEmailTemplate(emailTemplateName);
+        EmailTemplate emailTemplate = emailTemplateRetriever.retrieveTemplate(
+                brokerExternalId,
+                emailTemplateName,
+                defaultEmailTemplate.getSubject()
+        );
         if(emailTemplate!=null) {
             return emailTemplate;
         }
-        return getDefaultEmailTemplate(emailTemplateName);
+        return defaultEmailTemplate;
     }
 
     private EmailTemplate getDefaultEmailTemplate(EmailTemplateName emailTemplateName) {

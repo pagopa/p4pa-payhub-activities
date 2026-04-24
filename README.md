@@ -56,18 +56,20 @@ See [config/application.yml](src/main/resources/config/application.yml) for each
 #### 🔁 Integrations
 
 ##### 🗄️ Resources
-| ENV                         | DESCRIPTION                                           | DEFAULT                          |
-|-----------------------------|-------------------------------------------------------|----------------------------------|
-| SHARED_FOLDER_ROOT          | Absolute path towards shared folder on file system    | /shared                          |
-| TMP_FOLDER                  | Absolute path towards temporary folder on file system | /tmp                             |
-| MAIL_HOST                   | Mail server host                                      |                                  |
-| MAIL_PORT                   | Mail server port                                      | 587                              |
-| MAIL_USERNAME               | Mail server username                                  |                                  |
-| MAIL_PASSWORD               | Mail server password                                  |                                  |
-| MAIL_SMTP_AUTH              | To use authentication                                 | true                             |
-| MAIL_SMTP_STARTTLS          | To use TLS protocol if supported by the Mail server   | true                             |
-| MAIL_SMTP_STARTTLS_REQUIRED | To require TLS protocol                               | true                             |
-| MAIL_SENDER_ADDRESS         | Mail address used as sender                           | piattaforma-unitaria@noreply.com |
+| ENV                            | DESCRIPTION                                           | DEFAULT                                                                       |
+|--------------------------------|-------------------------------------------------------|-------------------------------------------------------------------------------|
+| SHARED_FOLDER_ROOT             | Absolute path towards shared folder on file system    | /shared                                                                       |
+| TMP_FOLDER                     | Absolute path towards temporary folder on file system | /tmp                                                                          |
+| MAIL_HOST                      | Mail server host                                      |                                                                               |
+| MAIL_PORT                      | Mail server port                                      | 587                                                                           |
+| MAIL_USERNAME                  | Mail server username                                  |                                                                               |
+| MAIL_PASSWORD                  | Mail server password                                  |                                                                               |
+| MAIL_SMTP_AUTH                 | To use authentication                                 | true                                                                          |
+| MAIL_SMTP_STARTTLS             | To use TLS protocol if supported by the Mail server   | true                                                                          |
+| MAIL_SMTP_STARTTLS_REQUIRED    | To require TLS protocol                               | true                                                                          |
+| MAIL_SENDER_ADDRESS            | Mail address used as sender                           | piattaforma-unitaria@noreply.com                                              |
+| MAIL_TEMPLATE_REPO_BASE_URL    | Base URL for email template repository                | https://raw.githubusercontent.com/pagopa/p4pa-email-templates/refs/heads/main |
+| MAIL_TEMPLATE_FOLDER_BASE_PATH | Base path for email template POD folder               | /tmp                                                                          |
 
 ##### 🔗 REST
 | ENV                                               | DESCRIPTION                               | DEFAULT |
