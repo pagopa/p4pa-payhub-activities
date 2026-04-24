@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.service.email;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
-import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,15 +51,19 @@ public class EmailSenderService {
                     emailDTO.getAttachment().getResource());
             }
             if(inlines != null) {
-                inlines.forEach(i -> {
-                    try {
-                        message.addInline(i.getFileName(), i.getResource());
-                    } catch (MessagingException e) {
-                        log.warn("Error in loading inline with CID {} for email {}", i.getFileName(), emailDTO.getMailSubject());
-                    }
-                });
+                addInlines(emailDTO, inlines, message);
             }
             log.debug("sending mail message");
+        });
+    }
+
+    void addInlines(EmailDTO emailDTO, List<FileResourceDTO> inlines, MimeMessageHelper message) {
+        inlines.forEach(i -> {
+            try {
+                message.addInline(i.getFileName(), i.getResource());
+            } catch (Exception e) {
+                log.warn("Error in loading inline with CID {} for email {}", i.getFileName(), emailDTO.getMailSubject());
+            }
         });
     }
 
