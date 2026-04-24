@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ByteArrayResource;
@@ -48,28 +49,36 @@ public class EmailTemplateRetrieverServiceImpl implements EmailTemplateRetriever
         }
         Path templateFolderPath = buildTemplateFolderPath(brokerExternalId, templateName);
         if(Files.exists(Path.of(templateFolderPath + "/" + INDEX_HTML))) {
-            byte[] emailTemplateBytes = fetchCachedEmailTemplateFile(templateFolderPath, INDEX_HTML);
-            if(emailTemplateBytes == null || emailTemplateBytes.length == 0) {
-                templateFoundOnRepo.put(templateRepoUrl, false);
-                return null;
-            }
-            templateFoundOnRepo.put(templateRepoUrl, true);
-            List<FileResourceDTO> attachmentFiles = fetchCachedAttachments(templateFolderPath);
-            return new EmailTemplate(
-                    emailSubject,
-                    new String(emailTemplateBytes),
-                    attachmentFiles
-            );
+            return fetchCachedEmailTemplate(emailSubject, templateFolderPath);
         } else {
-            byte[] emailTemplateBytes = fetchAndCacheEmailTemplateFile(templateRepoUrl, templateFolderPath, "index.html");
-            if(emailTemplateBytes == null || emailTemplateBytes.length == 0) return null;
-            List<FileResourceDTO> attachmentFiles = fetchAndCacheAllAttachments(templateRepoUrl, templateFolderPath);
-            return new EmailTemplate(
-                    emailSubject,
-                    new String(emailTemplateBytes),
-                    attachmentFiles
-            );
+            return fetchAndCacheEmailTemplate(emailSubject, templateRepoUrl, templateFolderPath);
         }
+    }
+
+    private EmailTemplate fetchAndCacheEmailTemplate(String emailSubject, String templateRepoUrl, Path templateFolderPath) {
+        byte[] emailTemplateBytes = fetchAndCacheEmailTemplateFile(templateRepoUrl, templateFolderPath, "index.html");
+        if(emailTemplateBytes == null || emailTemplateBytes.length == 0) {
+            templateFoundOnRepo.put(templateRepoUrl, false);
+            return null;
+        }
+        templateFoundOnRepo.put(templateRepoUrl, true);
+        List<FileResourceDTO> attachmentFiles = fetchAndCacheAllAttachments(templateRepoUrl, templateFolderPath);
+        return new EmailTemplate(
+                emailSubject,
+                new String(emailTemplateBytes),
+                attachmentFiles
+        );
+    }
+
+    private EmailTemplate fetchCachedEmailTemplate(String emailSubject, Path templateFolderPath) {
+        byte[] emailTemplateBytes = fetchCachedEmailTemplateFile(templateFolderPath, INDEX_HTML);
+        if(emailTemplateBytes == null || emailTemplateBytes.length == 0) return null;
+        List<FileResourceDTO> attachmentFiles = fetchCachedAttachments(templateFolderPath);
+        return new EmailTemplate(
+                emailSubject,
+                new String(emailTemplateBytes),
+                attachmentFiles
+        );
     }
 
     private List<FileResourceDTO> fetchAndCacheAllAttachments(String templateRepoUrl, Path templateFolderPath) {
