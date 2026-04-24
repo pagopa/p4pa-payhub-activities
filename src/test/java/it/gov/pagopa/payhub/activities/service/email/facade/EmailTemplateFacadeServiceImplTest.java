@@ -1,9 +1,8 @@
-package it.gov.pagopa.payhub.activities.service.email;
+package it.gov.pagopa.payhub.activities.service.email.facade;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.email.cache.EmailTemplateCacheService;
-import it.gov.pagopa.payhub.activities.service.email.facade.EmailTemplateFacadeServiceImpl;
 import it.gov.pagopa.payhub.activities.service.email.retriever.EmailTemplateRetrieverService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
