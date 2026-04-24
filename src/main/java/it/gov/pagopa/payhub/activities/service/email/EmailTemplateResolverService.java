@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.email;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import it.gov.pagopa.payhub.activities.service.email.facade.EmailTemplateFacadeService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +12,16 @@ import org.springframework.stereotype.Service;
 public class EmailTemplateResolverService {
 
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
-    private final EmailTemplateRetrieverService emailTemplateRetriever;
+    private final EmailTemplateFacadeService emailTemplateFacade;
 
-    public EmailTemplateResolverService(EmailTemplatesConfiguration emailTemplatesConfiguration, EmailTemplateRetrieverService emailTemplateRetriever) {
+    public EmailTemplateResolverService(EmailTemplatesConfiguration emailTemplatesConfiguration, EmailTemplateFacadeService emailTemplateFacade) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
-        this.emailTemplateRetriever = emailTemplateRetriever;
+        this.emailTemplateFacade = emailTemplateFacade;
     }
 
     public EmailTemplate resolve(String brokerExternalId, EmailTemplateName emailTemplateName) {
         EmailTemplate defaultEmailTemplate = getDefaultEmailTemplate(emailTemplateName);
-        EmailTemplate emailTemplate = emailTemplateRetriever.retrieveTemplate(
+        EmailTemplate emailTemplate = emailTemplateFacade.retrieveTemplate(
                 brokerExternalId,
                 emailTemplateName,
                 defaultEmailTemplate.getSubject()

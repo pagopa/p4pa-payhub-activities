@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.emailtemplates;
 
+import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,38 +39,43 @@ class DownloadTemplateFileClientImplTest {
         ResponseEntity<byte[]> responseEntity = ResponseEntity.ok(expectedContent);
         Mockito.when(restTemplateMock.getForEntity(URI.create("TEMPLATE_URL"+"/"+"filename"), byte[].class)).thenReturn(responseEntity);
 
-        Optional<byte[]> actualContent = downloadTemplateFileClient.downloadTemplateFile(TEMPLATE_URL, FILENAME);
+        Optional<byte[]> actualContent = downloadTemplateFileClient.downloadTemplateFile(FILE_TEMPLATE_URI.toString());
 
         Assertions.assertTrue(actualContent.isPresent());
         Assertions.assertEquals(expectedContent, actualContent.get());
     }
 
     @Test
-    void givenEmptyResponseBodyWhenDownloadFileFromSignedUrlThenReturnOptionalEmpty() {
-        ResponseEntity<byte[]> responseEntity = ResponseEntity.ok(null);
+    void given404StatusCodeWhenDownloadTemplateFileThenReturnOptionalEmpty() {
+        ResponseEntity<byte[]> responseEntity = ResponseEntity.status(404).build();
         Mockito.when(restTemplateMock.getForEntity(FILE_TEMPLATE_URI, byte[].class)).thenReturn(responseEntity);
 
-        Optional<byte[]> actualContent = downloadTemplateFileClient.downloadTemplateFile(TEMPLATE_URL, FILENAME);
+        Optional<byte[]> actualContent = downloadTemplateFileClient.downloadTemplateFile(FILE_TEMPLATE_URI.toString());
 
         Assertions.assertTrue(actualContent.isEmpty());
     }
 
     @Test
-    void given5xxResponseStatusCodeWhenDownloadFileFromSignedUrlThenReturnOptionalEmpty() {
+    void given5xxResponseStatusCodeWhenDownloadTemplateFileThenThrowsException() {
         ResponseEntity<byte[]> responseEntity = ResponseEntity.internalServerError().body(null);
         Mockito.when(restTemplateMock.getForEntity(FILE_TEMPLATE_URI, byte[].class)).thenReturn(responseEntity);
 
-        Optional<byte[]> actualContent = downloadTemplateFileClient.downloadTemplateFile(TEMPLATE_URL, FILENAME);
+        RetryableActivityException retryableActivityException =
+                Assertions.assertThrows(RetryableActivityException.class, () -> downloadTemplateFileClient.downloadTemplateFile(FILE_TEMPLATE_URI.toString()));
 
-        Assertions.assertTrue(actualContent.isEmpty());
+        Assertions.assertEquals("Error in downloading template file \"%s\"".formatted(FILE_TEMPLATE_URI), retryableActivityException.getMessage());
     }
 
     @Test
-    void givenExceptionWhenDownloadFileFromSignedUrlThenReturnOptionalEmpty() {
-        Mockito.when(restTemplateMock.getForEntity(FILE_TEMPLATE_URI, byte[].class)).thenThrow(new RestClientException("error"));
+    void givenExceptionWhenWhenDownloadTemplateFileThenThrowsException() {
+        RestClientException expectedCause = new RestClientException("error");
+        Mockito.when(restTemplateMock.getForEntity(FILE_TEMPLATE_URI, byte[].class)).thenThrow(expectedCause);
 
-        Optional<byte[]> actualContent = downloadTemplateFileClient.downloadTemplateFile(TEMPLATE_URL, FILENAME);
+        RetryableActivityException retryableActivityException =
+                Assertions.assertThrows(RetryableActivityException.class, () -> downloadTemplateFileClient.downloadTemplateFile(FILE_TEMPLATE_URI.toString()));
 
-        Assertions.assertTrue(actualContent.isEmpty());
+        Assertions.assertEquals("Error in GET call to URI \"%s\"".formatted(FILE_TEMPLATE_URI), retryableActivityException.getMessage());
+        Assertions.assertNotNull(retryableActivityException.getCause());
+        Assertions.assertEquals(expectedCause, retryableActivityException.getCause());
     }
 }

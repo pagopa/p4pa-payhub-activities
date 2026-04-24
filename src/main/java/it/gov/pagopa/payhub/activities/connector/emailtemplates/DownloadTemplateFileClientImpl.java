@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.emailtemplates;
 
+import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -31,17 +32,23 @@ public class DownloadTemplateFileClientImpl implements DownloadTemplateFileClien
     }
 
     @Override
-    public Optional<byte[]> downloadTemplateFile(String templateRepoUrl, String filename) {
-        URI uri = URI.create(templateRepoUrl + "/" + filename);
+    public Optional<byte[]> downloadTemplateFile(String templateFileUrl) {
+        ResponseEntity<byte[]> response = getFromPublicUri(URI.create(templateFileUrl));
+        if(response.getStatusCode().value() == 404) {
+            return Optional.empty(); // if template not found return empty optional for communicating its absence
+        }
+        if(!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            throw new RetryableActivityException("Error in downloading template file \"%s\"".formatted(templateFileUrl));
+        }
+        return Optional.of(response.getBody());
+    }
+
+    private ResponseEntity<byte[]> getFromPublicUri(URI publicUri) {
         try {
-            ResponseEntity<byte[]> response = restTemplate.getForEntity(uri, byte[].class);
-            if(!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-                return Optional.empty();
-            }
-            return Optional.of(response.getBody());
+            return restTemplate.getForEntity(publicUri, byte[].class);
         } catch (RestClientException e) {
-            log.warn("Error in downloading file \"%s\": %s".formatted(templateRepoUrl + "/" + filename, e.getMessage()));
-            return Optional.empty();
+            log.error("Error in GET call to URI \"{}\": {}", publicUri, e.getMessage());
+            throw new RetryableActivityException("Error in GET call to URI \"%s\"".formatted(publicUri), e);
         }
     }
 
