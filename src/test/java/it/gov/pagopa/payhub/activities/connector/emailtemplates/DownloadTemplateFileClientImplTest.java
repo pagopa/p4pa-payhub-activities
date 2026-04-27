@@ -60,8 +60,9 @@ class DownloadTemplateFileClientImplTest {
         ResponseEntity<byte[]> responseEntity = ResponseEntity.internalServerError().body(null);
         Mockito.when(restTemplateMock.getForEntity(FILE_TEMPLATE_URI, byte[].class)).thenReturn(responseEntity);
 
+        String fileTemplateUriString = FILE_TEMPLATE_URI.toString();
         RetryableActivityException retryableActivityException =
-                Assertions.assertThrows(RetryableActivityException.class, () -> downloadTemplateFileClient.downloadTemplateFile(FILE_TEMPLATE_URI.toString()));
+                Assertions.assertThrows(RetryableActivityException.class, () -> downloadTemplateFileClient.downloadTemplateFile(fileTemplateUriString));
 
         Assertions.assertEquals("Error in downloading template file \"%s\"".formatted(FILE_TEMPLATE_URI), retryableActivityException.getMessage());
     }
@@ -71,8 +72,9 @@ class DownloadTemplateFileClientImplTest {
         RestClientException expectedCause = new RestClientException("error");
         Mockito.when(restTemplateMock.getForEntity(FILE_TEMPLATE_URI, byte[].class)).thenThrow(expectedCause);
 
+        String fileTemplateUriString = FILE_TEMPLATE_URI.toString();
         RetryableActivityException retryableActivityException =
-                Assertions.assertThrows(RetryableActivityException.class, () -> downloadTemplateFileClient.downloadTemplateFile(FILE_TEMPLATE_URI.toString()));
+                Assertions.assertThrows(RetryableActivityException.class, () -> downloadTemplateFileClient.downloadTemplateFile(fileTemplateUriString));
 
         Assertions.assertEquals("Error in GET call to URI \"%s\"".formatted(FILE_TEMPLATE_URI), retryableActivityException.getMessage());
         Assertions.assertNotNull(retryableActivityException.getCause());

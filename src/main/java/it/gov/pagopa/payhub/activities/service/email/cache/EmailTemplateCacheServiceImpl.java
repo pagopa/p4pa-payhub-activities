@@ -42,7 +42,7 @@ public class EmailTemplateCacheServiceImpl implements EmailTemplateCacheService 
             SerializableEmailTemplate serializableEmailTemplate = emailTemplateMapper.mapToSerializable(template);
             oos.writeObject(serializableEmailTemplate);
             isTemplateInCacheMap.put(templateFolderPath.toString(), true);
-        } catch (IOException e) {
+        } catch (IllegalStateException | IOException e) {
             log.warn("Error in saving template file \"{}\" into folder \"{}\": {}", emailTemplateName, templateFolderPath.getFileName(), e.getMessage());
             isTemplateInCacheMap.put(templateFolderPath.toString(), false);
         }

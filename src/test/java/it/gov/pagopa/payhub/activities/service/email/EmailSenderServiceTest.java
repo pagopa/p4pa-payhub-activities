@@ -125,11 +125,12 @@ class EmailSenderServiceTest {
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         MimeMessageHelper mimeMessageHelperMock = Mockito.mock(MimeMessageHelper.class);
-        Mockito.doThrow(new MessagingException("error")).when(mimeMessageHelperMock)
+        String errorMessage = "error";
+        Mockito.doThrow(new MessagingException(errorMessage)).when(mimeMessageHelperMock)
                 .addInline(Mockito.anyString(), Mockito.any(Resource.class));
 
-        //When
-        service.addInlines(emailDTO, inlines, mimeMessageHelperMock);
+        //When - Then
+        Assertions.assertDoesNotThrow(() -> service.addInlines(emailDTO, inlines, mimeMessageHelperMock));
     }
 
     private void capturePreparedEmail(MimeMessage[] result) {
