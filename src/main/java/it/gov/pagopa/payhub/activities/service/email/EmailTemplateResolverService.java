@@ -21,7 +21,7 @@ public class EmailTemplateResolverService {
 
     public EmailTemplate resolve(String brokerExternalId, EmailTemplateName emailTemplateName) {
         EmailTemplate defaultEmailTemplate = getDefaultEmailTemplate(emailTemplateName);
-        EmailTemplate emailTemplate = emailTemplateFacade.retrieveTemplate(
+        EmailTemplate emailTemplate = emailTemplateFacade.fetchTemplate(
                 brokerExternalId,
                 emailTemplateName,
                 defaultEmailTemplate.getSubject()

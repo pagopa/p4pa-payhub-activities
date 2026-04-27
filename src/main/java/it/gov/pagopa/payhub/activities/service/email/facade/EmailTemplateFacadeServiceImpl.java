@@ -22,7 +22,7 @@ public class EmailTemplateFacadeServiceImpl implements EmailTemplateFacadeServic
     }
 
     @Override
-    public EmailTemplate retrieveTemplate(String brokerExternalId, EmailTemplateName templateName, String emailSubject) {
+    public EmailTemplate fetchTemplate(String brokerExternalId, EmailTemplateName templateName, String emailSubject) {
         if(brokerExternalId == null || emailTemplateRetrieverService.isTemplateAlreadyNotFound(brokerExternalId, templateName)) {
             return null;
         }

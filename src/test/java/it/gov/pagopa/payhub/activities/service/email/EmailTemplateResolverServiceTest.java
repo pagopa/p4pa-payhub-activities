@@ -58,7 +58,7 @@ class EmailTemplateResolverServiceTest {
     void givenFoundTemplateOnRepositoryWhenResolveThenReturnExpectedTemplate() {
         //GIVEN
         EmailTemplate expectedEmailTemplate = new EmailTemplate("REPO_SUBJECT", "REPO_BODY", null);
-        Mockito.when(emailTemplateFacadeService.retrieveTemplate(BROKER_EXTERNAL_ID, EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK, "Pagamenti notificati: Resoconto Caricamento file: $[fileName]"))
+        Mockito.when(emailTemplateFacadeService.fetchTemplate(BROKER_EXTERNAL_ID, EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK, "Pagamenti notificati: Resoconto Caricamento file: $[fileName]"))
                 .thenReturn(expectedEmailTemplate);
 
         //WHEN
