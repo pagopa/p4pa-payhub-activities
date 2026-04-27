@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailTemplate{
+public class SerializableEmailTemplate implements Serializable {
     private String subject;
     private String body;
-    private List<FileResourceDTO> inlines;
+    private List<SerializableFileResourceDTO> inlines;
 }
