@@ -79,7 +79,7 @@ class EmailTemplateFacadeServiceImplTest {
     }
 
     @Test
-    void givenTemplateIsNotInCacheWhenFetchTemplateThenOk() {
+    void givenTemplateIsNotInCacheAndTemplateIsFoundOnRepoWhenFetchTemplateThenOk() {
         //GIVEN
         String brokerExternalId = "BROKER_EXTERNAL_ID";
         EmailTemplateName templateName = EmailTemplateName.INGESTION_RECEIPT_OK;
@@ -97,6 +97,27 @@ class EmailTemplateFacadeServiceImplTest {
         Assertions.assertNotNull(actualeEmailTemplate);
         Assertions.assertEquals(emailTemplateMock, actualeEmailTemplate);
         Mockito.verify(emailTemplateCacheServiceMock).saveInCache(emailTemplateMock, brokerExternalId, templateName);
+    }
+
+    @Test
+    void givenTemplateIsNotInCacheAndTemplateIsNotFoundOnRepoWhenFetchTemplateThenOk() {
+        //GIVEN
+        String brokerExternalId = "BROKER_EXTERNAL_ID";
+        EmailTemplateName templateName = EmailTemplateName.INGESTION_RECEIPT_OK;
+        String emailSubject = "EMAIL_SUBJECT";
+        Mockito.when(emailTemplateRetrieverServiceMock.isTemplateAlreadyNotFound(brokerExternalId, templateName))
+                .thenReturn(false);
+        EmailTemplate emailTemplateMock = Mockito.mock(EmailTemplate.class);
+        Mockito.when(emailTemplateCacheServiceMock.isTemplateInCache(brokerExternalId, templateName))
+                .thenReturn(false);
+        Mockito.when(emailTemplateRetrieverServiceMock.retrieve(brokerExternalId, templateName, emailSubject))
+                .thenReturn(null);
+        //WHEN
+        EmailTemplate actualeEmailTemplate = emailTemplateFacadeService.fetchTemplate(brokerExternalId, templateName, emailSubject);
+        //THEN
+        Assertions.assertNull(actualeEmailTemplate);
+        Mockito.verify(emailTemplateCacheServiceMock, Mockito.times(0))
+                .saveInCache(emailTemplateMock, brokerExternalId, templateName);
     }
 
 }
