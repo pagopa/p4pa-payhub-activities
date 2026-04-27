@@ -58,7 +58,7 @@ public class EmailTemplateRetrieverServiceImpl implements EmailTemplateRetriever
     private List<FileResourceDTO> fetchAndCacheAllAttachments(String templateRepoUrl) {
         Optional<byte[]> attachmentsFileBytes = downloadTemplateFileClient.downloadTemplateFile(templateRepoUrl + "/" + TemplateEmailUtils.ATTACHMENTS_FILENAME);
         if(attachmentsFileBytes.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
         List<String> attachmentFileNames = TemplateEmailUtils.splitAttachmentFileNames(attachmentsFileBytes.get());
         return attachmentFileNames.stream()

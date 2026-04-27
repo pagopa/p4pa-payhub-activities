@@ -13,6 +13,8 @@ public class TemplateEmailUtils {
     public static final String TEMPLATE_HTML_FILENAME = "index.html";
     public static final String ATTACHMENTS_FILENAME = "attachments.html";
 
+    private TemplateEmailUtils() {}
+
     public static Path buildTemplateFolderPath(String templateFolderBasePath, String brokerExternalId, EmailTemplateName templateName) {
         return Path.of(StringUtils.joinWith("/", templateFolderBasePath, brokerExternalId, templateName.name()));
     }
