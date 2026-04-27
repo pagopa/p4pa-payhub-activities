@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.email;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import it.gov.pagopa.payhub.activities.service.email.facade.EmailTemplateFacadeService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,13 +26,13 @@ class EmailTemplateResolverServiceTest {
     @Autowired
     private EmailTemplatesConfiguration emailTemplatesConfiguration;
     @Mock
-    private EmailTemplateRetrieverService emailTemplateRetrieverService;
+    private EmailTemplateFacadeService emailTemplateFacadeService;
 
     private EmailTemplateResolverService service;
 
     @BeforeEach
     void init(){
-        service = new EmailTemplateResolverService(emailTemplatesConfiguration, emailTemplateRetrieverService);
+        service = new EmailTemplateResolverService(emailTemplatesConfiguration, emailTemplateFacadeService);
     }
 
     @Test
@@ -56,8 +57,8 @@ class EmailTemplateResolverServiceTest {
     @Test
     void givenFoundTemplateOnRepositoryWhenResolveThenReturnExpectedTemplate() {
         //GIVEN
-        EmailTemplate expectedEmailTemplate = new EmailTemplate("REPO_SUBJECT", "REPO_BODY");
-        Mockito.when(emailTemplateRetrieverService.retrieveTemplate(BROKER_EXTERNAL_ID, EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK))
+        EmailTemplate expectedEmailTemplate = new EmailTemplate("REPO_SUBJECT", "REPO_BODY", null);
+        Mockito.when(emailTemplateFacadeService.fetchTemplate(BROKER_EXTERNAL_ID, EmailTemplateName.INGESTION_PAYMENT_NOTIFICATION_OK, "Pagamenti notificati: Resoconto Caricamento file: $[fileName]"))
                 .thenReturn(expectedEmailTemplate);
 
         //WHEN
