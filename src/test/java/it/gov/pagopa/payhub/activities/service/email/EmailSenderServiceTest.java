@@ -115,6 +115,24 @@ class EmailSenderServiceTest {
     }
 
     @Test
+    void givenThrowExceptionWhenAddAttachmentsThenContinue() throws MessagingException {
+        // Given
+        List<FileResourceDTO> attachments = new ArrayList<>();
+        FileResourceDTO attachment = Mockito.mock(FileResourceDTO.class);
+        Mockito.when(attachment.getFileName()).thenReturn("filename.txt");
+        Mockito.when(attachment.getResource()).thenReturn(new ByteArrayResource(new byte[0]));
+        attachments.add(attachment);
+
+        MimeMessageHelper mimeMessageHelperMock = Mockito.mock(MimeMessageHelper.class);
+        String errorMessage = "error";
+        Mockito.doThrow(new MessagingException(errorMessage)).when(mimeMessageHelperMock)
+                .addAttachment(Mockito.anyString(), Mockito.any(Resource.class));
+
+        //When - Then
+        Assertions.assertDoesNotThrow(() -> service.addAttachments(mimeMessageHelperMock, attachments));
+    }
+
+    @Test
     void givenThrowExceptionWhenAddInlinesThenContinue() throws MessagingException {
         // Given
         List<FileResourceDTO> inlines = new ArrayList<>();
