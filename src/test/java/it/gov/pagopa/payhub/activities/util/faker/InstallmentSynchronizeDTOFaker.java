@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import it.gov.pagopa.pu.debtposition.dto.generated.Action;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.util.List;
 
