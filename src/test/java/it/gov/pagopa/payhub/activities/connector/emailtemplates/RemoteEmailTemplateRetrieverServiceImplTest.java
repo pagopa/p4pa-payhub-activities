@@ -19,7 +19,7 @@ import java.util.Optional;
 class RemoteEmailTemplateRetrieverServiceImplTest {
 
     private static final String TEMPLATE_HTML_FILENAME = "index.html";
-    private static final String ATTACHMENTS_FILENAME = "attachments.html";
+    private static final String ATTACHMENTS_FILENAME = "attachments.txt";
 
 
     private static final String BROKER_EXTERNAL_ID = "BROKER_EXTERNAL_ID";
