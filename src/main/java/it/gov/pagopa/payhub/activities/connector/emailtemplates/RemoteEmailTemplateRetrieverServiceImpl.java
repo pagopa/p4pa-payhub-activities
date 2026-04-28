@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadE
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -15,11 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Lazy
-@Slf4j
 public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTemplateRetrieverService {
 
     private static final String TEMPLATE_HTML_FILENAME = "index.html";
-    private static final String ATTACHMENTS_FILENAME = "attachments.html";
+    private static final String ATTACHMENTS_FILENAME = "attachments.txt";
 
     private final Map<String, Boolean> templateNotFoundOnRepoMap = new ConcurrentHashMap<>();
 

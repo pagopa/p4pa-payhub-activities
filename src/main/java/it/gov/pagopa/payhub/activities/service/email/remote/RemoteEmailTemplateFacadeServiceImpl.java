@@ -4,13 +4,11 @@ import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.email.remote.cache.RemoteEmailTemplateCacheService;
 import it.gov.pagopa.payhub.activities.connector.emailtemplates.RemoteEmailTemplateRetrieverService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Lazy
 @Service
-@Slf4j
 public class RemoteEmailTemplateFacadeServiceImpl implements RemoteEmailTemplateFacadeService {
 
     private final RemoteEmailTemplateCacheService remoteEmailTemplateCacheService;
