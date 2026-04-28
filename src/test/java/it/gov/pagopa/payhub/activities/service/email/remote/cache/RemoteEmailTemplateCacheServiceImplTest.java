@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.email.remote.cache;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
-import it.gov.pagopa.payhub.activities.util.AESUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
+@Slf4j
 class RemoteEmailTemplateCacheServiceImplTest {
 
     private static final String TEMPLATE_FOLDER_BASE_PATH = "/tmp/email-template";
@@ -54,14 +55,18 @@ class RemoteEmailTemplateCacheServiceImplTest {
     void tearDownFolder() {
         try {
             FileUtils.deleteDirectory(Path.of(TEMPLATE_FOLDER_BASE_PATH, BROKER_EXTERNAL_ID, TEMPLATE_NAME.name()).toFile());
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            log.warn("Error in deleting tests files", e);
+        }
     }
 
     @AfterAll
     static void tearDownCache() {
         try {
             FileUtils.deleteDirectory(Path.of(TEMPLATE_FOLDER_BASE_PATH).toFile());
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            log.warn("Error in deleting tests files", e);
+        }
     }
 
     @Test
@@ -100,7 +105,7 @@ class RemoteEmailTemplateCacheServiceImplTest {
     }
 
     @Test
-    void givenErrorInCreatingNotExistingDirectoryWhenSaveInCacheThenDoesNotSaveTemplate() throws IOException {
+    void givenErrorInCreatingNotExistingDirectoryWhenSaveInCacheThenDoesNotSaveTemplate() {
         //GIVEN
         //WHEN
         try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
