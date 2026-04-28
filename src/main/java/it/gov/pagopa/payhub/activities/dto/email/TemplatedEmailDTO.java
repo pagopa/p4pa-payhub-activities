@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.dto.email;
 
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +22,5 @@ public class TemplatedEmailDTO {
     private String[] to;
     private String[] cc;
     private Map<String, String> params;
-    private FileResourceDTO attachment;
+    private List<FileResourceDTO> attachments;
 }

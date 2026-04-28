@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.activity.email;
 import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
@@ -16,7 +15,6 @@ import org.apache.commons.text.StringSubstitutor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -48,9 +46,9 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         String mailBody = resolvePlaceholders(template.getBody(), templatedEmail.getParams());
         emailDTO.setHtmlText(mailBody);
 
-        emailDTO.setAttachment(templatedEmail.getAttachment());
+        emailDTO.setAttachments(templatedEmail.getAttachments());
 
-        sendEmail(emailDTO, template.getInlines());
+        sendEmail(emailDTO);
     }
 
     private static String resolvePlaceholders(String text, Map<String, String> params) {
@@ -58,10 +56,10 @@ public class SendEmailActivityImpl implements SendEmailActivity {
     }
 
     @Override
-    public void sendEmail(EmailDTO email, List<FileResourceDTO> inlines) {
+    public void sendEmail(EmailDTO email) {
         log.info("Sending email");
         validate(email);
-        emailSenderService.send(email, inlines);
+        emailSenderService.send(email);
     }
 
     private void validate(EmailDTO email) {

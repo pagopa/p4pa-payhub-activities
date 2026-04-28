@@ -12,6 +12,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -90,7 +91,7 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
                     recipients.toArray(new String[0]),
                     null,
                     params,
-                    attachment
+                    List.of(attachment)
             )
     );
     //configure email

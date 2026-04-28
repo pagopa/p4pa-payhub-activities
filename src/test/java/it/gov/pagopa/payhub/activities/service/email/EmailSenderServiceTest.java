@@ -62,7 +62,7 @@ class EmailSenderServiceTest {
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO, null);
+        service.send(emailDTO);
 
         // Then
         checkResultMessage(result[0], emailDTO);
@@ -88,13 +88,13 @@ class EmailSenderServiceTest {
             .build();
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
-        emailDTO.setAttachment(expectedAttachment);
+        emailDTO.setAttachments(List.of(expectedAttachment));
 
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO, null);
+        service.send(emailDTO);
 
         // Then
         MimeMessage resultMessage = result[0];
@@ -123,14 +123,13 @@ class EmailSenderServiceTest {
         Mockito.when(inline.getResource()).thenReturn(new ByteArrayResource(new byte[0]));
         inlines.add(inline);
 
-        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         MimeMessageHelper mimeMessageHelperMock = Mockito.mock(MimeMessageHelper.class);
         String errorMessage = "error";
         Mockito.doThrow(new MessagingException(errorMessage)).when(mimeMessageHelperMock)
                 .addInline(Mockito.anyString(), Mockito.any(Resource.class));
 
         //When - Then
-        Assertions.assertDoesNotThrow(() -> service.addInlines(emailDTO, inlines, mimeMessageHelperMock));
+        Assertions.assertDoesNotThrow(() -> service.addInlines(mimeMessageHelperMock, inlines));
     }
 
     private void capturePreparedEmail(MimeMessage[] result) {
@@ -160,13 +159,14 @@ class EmailSenderServiceTest {
         inlines.add(inline);
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+        emailDTO.setInlines(inlines);
 
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
 
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO, inlines);
+        service.send(emailDTO);
 
         // Then
         MimeMessage resultMessage = result[0];

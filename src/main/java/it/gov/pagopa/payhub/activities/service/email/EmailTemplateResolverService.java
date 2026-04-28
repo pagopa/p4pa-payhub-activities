@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.email;
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
-import it.gov.pagopa.payhub.activities.service.email.facade.EmailTemplateFacadeService;
+import it.gov.pagopa.payhub.activities.service.email.remote.RemoteEmailTemplateFacadeService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 public class EmailTemplateResolverService {
 
     private final EmailTemplatesConfiguration emailTemplatesConfiguration;
-    private final EmailTemplateFacadeService emailTemplateFacade;
+    private final RemoteEmailTemplateFacadeService emailTemplateFacade;
 
-    public EmailTemplateResolverService(EmailTemplatesConfiguration emailTemplatesConfiguration, EmailTemplateFacadeService emailTemplateFacade) {
+    public EmailTemplateResolverService(EmailTemplatesConfiguration emailTemplatesConfiguration, RemoteEmailTemplateFacadeService emailTemplateFacade) {
         this.emailTemplatesConfiguration = emailTemplatesConfiguration;
         this.emailTemplateFacade = emailTemplateFacade;
     }

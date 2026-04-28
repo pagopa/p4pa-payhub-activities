@@ -63,11 +63,11 @@ mail:
   sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
   template:
     repo-base-url: "\${MAIL_TEMPLATE_REPO_BASE_URL:https://raw.githubusercontent.com/pagopa/p4pa-email-templates/refs/heads/main}"
-    folder-base-path: "\${MAIL_TEMPLATE_FOLDER_BASE_PATH:/tmp}"
 
 folders:
   shared: "\${SHARED_FOLDER_ROOT:/shared}"
   tmp: "\${TMP_FOLDER:\${java.io.tmpdir}}"
+  email-template: "\${MAIL_TEMPLATE_FOLDER_BASE_PATH:\${folders.tmp}/email-template}"
   process-target-sub-folders:
     archive: "\${PROCESS_TARGET_SUB_FOLDER_ARCHIVE:archive}"
     errors: "\${PROCESS_TARGET_SUB_FOLDER_ERRORS:errors}"
