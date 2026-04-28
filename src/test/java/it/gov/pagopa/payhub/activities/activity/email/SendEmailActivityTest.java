@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
+import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
@@ -120,7 +121,16 @@ class SendEmailActivityTest {
         TemplatedEmailDTO templatedEmailDTO = TemplatedEmailDTOFaker.buildTemplatedEmailDTO(params);
         templatedEmailDTO.setAttachments(List.of(attachment));
 
-        EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]", null);
+        String inlineFileContent = "INLINE-DATA";
+        SerializableFileResourceDTO inline = new SerializableFileResourceDTO(
+                inlineFileContent.getBytes(),
+                "inline_filename"
+        );
+        FileResourceDTO expectedInline = new FileResourceDTO(
+                new ByteArrayResource(inlineFileContent.getBytes()),
+                "inline_filename"
+        );
+        EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]", List.of(inline));
         Broker broker = Mockito.mock(Broker.class);
         Mockito.when(broker.getExternalId()).thenReturn(brokerExternalId);
         Mockito.when(brokerServiceMock.getBrokerById(brokerId))
@@ -139,7 +149,7 @@ class SendEmailActivityTest {
             Assertions.assertSame(templatedEmailDTO.getAttachments(), e.getAttachments());
             Assertions.assertEquals("SUBJECT VALUE1 VALUE2", e.getMailSubject());
             Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
-
+            Assertions.assertEquals(List.of(expectedInline), e.getInlines());
             return true;
         }));
     }
