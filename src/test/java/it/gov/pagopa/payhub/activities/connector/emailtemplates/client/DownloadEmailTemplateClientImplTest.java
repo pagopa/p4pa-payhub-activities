@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.connector.emailtemplates;
+package it.gov.pagopa.payhub.activities.connector.emailtemplates.client;
 
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;

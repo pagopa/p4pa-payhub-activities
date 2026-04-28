@@ -1,6 +1,6 @@
-package it.gov.pagopa.payhub.activities.service.email.remote.retriever;
+package it.gov.pagopa.payhub.activities.connector.emailtemplates;
 
-import it.gov.pagopa.payhub.activities.connector.emailtemplates.DownloadEmailTemplateClient;
+import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadEmailTemplateClient;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import org.junit.jupiter.api.AfterEach;

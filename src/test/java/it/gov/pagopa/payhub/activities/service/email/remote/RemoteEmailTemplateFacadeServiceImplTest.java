@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.email.remote;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.email.remote.cache.RemoteEmailTemplateCacheService;
-import it.gov.pagopa.payhub.activities.service.email.remote.retriever.RemoteEmailTemplateRetrieverService;
+import it.gov.pagopa.payhub.activities.connector.emailtemplates.RemoteEmailTemplateRetrieverService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,8 @@
-package it.gov.pagopa.payhub.activities.connector.emailtemplates;
+package it.gov.pagopa.payhub.activities.connector.emailtemplates.client;
 
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
+import it.gov.pagopa.payhub.activities.performancelogger.RestInvokePerformanceLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -14,6 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -30,6 +32,7 @@ public class DownloadEmailTemplateClientImpl implements DownloadEmailTemplateCli
                 .build();
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
         this.restTemplate = new RestTemplate(factory);
+        restTemplate.setInterceptors(List.of(new RestInvokePerformanceLogger()));
         this.templateRepoBaseUrl = templateRepoBaseUrl;
     }
 
