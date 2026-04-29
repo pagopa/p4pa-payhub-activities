@@ -1,9 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
 import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
-import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
-import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
+import it.gov.pagopa.payhub.activities.dto.email.*;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
@@ -13,6 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -45,10 +44,24 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         emailDTO.setMailSubject(resolvePlaceholders(template.getSubject(), templatedEmail.getParams()));
         String mailBody = resolvePlaceholders(template.getBody(), templatedEmail.getParams());
         emailDTO.setHtmlText(mailBody);
-
-        emailDTO.setAttachment(templatedEmail.getAttachment());
+        emailDTO.setAttachments(templatedEmail.getAttachments());
+        if (template.getInlines() != null) {
+            emailDTO.setInlines(
+                    template.getInlines()
+                            .stream()
+                            .map(this::mapToFileResource)
+                            .toList()
+            );
+        }
 
         sendEmail(emailDTO);
+    }
+
+    private FileResourceDTO mapToFileResource(SerializableFileResourceDTO serializableFileResourceDTO) {
+        return new FileResourceDTO(
+                new ByteArrayResource(serializableFileResourceDTO.getFileContent()),
+                serializableFileResourceDTO.getFileName()
+        );
     }
 
     private static String resolvePlaceholders(String text, Map<String, String> params) {

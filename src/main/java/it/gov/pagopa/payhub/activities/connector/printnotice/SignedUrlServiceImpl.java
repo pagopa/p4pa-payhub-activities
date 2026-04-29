@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.printnotice;
 
+import it.gov.pagopa.payhub.activities.performancelogger.RestInvokePerformanceLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.List;
 
 @Lazy
 @Slf4j
@@ -25,6 +27,7 @@ public class SignedUrlServiceImpl implements SignedUrlService {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
         this.noRedirectRestTemplate = new RestTemplate(factory);
+        noRedirectRestTemplate.setInterceptors(List.of(new RestInvokePerformanceLogger()));
     }
 
     @Override
