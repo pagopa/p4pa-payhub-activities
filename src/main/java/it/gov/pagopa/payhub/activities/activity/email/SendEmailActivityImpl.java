@@ -44,14 +44,15 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         emailDTO.setMailSubject(resolvePlaceholders(template.getSubject(), templatedEmail.getParams()));
         String mailBody = resolvePlaceholders(template.getBody(), templatedEmail.getParams());
         emailDTO.setHtmlText(mailBody);
-
         emailDTO.setAttachments(templatedEmail.getAttachments());
-        emailDTO.setInlines(
-                template.getInlines()
-                        .stream()
-                        .map(this::mapToFileResource)
-                        .toList()
-        );
+        if (template.getInlines() != null) {
+            emailDTO.setInlines(
+                    template.getInlines()
+                            .stream()
+                            .map(this::mapToFileResource)
+                            .toList()
+            );
+        }
 
         sendEmail(emailDTO);
     }
