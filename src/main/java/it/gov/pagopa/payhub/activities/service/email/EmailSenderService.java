@@ -69,7 +69,7 @@ public class EmailSenderService {
     void addInlines(MimeMessageHelper message, List<FileResourceDTO> inlines) {
         inlines.forEach(i -> {
             try {
-                message.addInline(i.getFileName(), i.getResource());
+                message.addInline(i.getFileName(), i.getFileName(), i.getResource());
             } catch (Exception e) {
                 log.error("Error in loading inline with CID {}: {}", i.getFileName(), e.getMessage());
             }

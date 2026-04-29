@@ -103,6 +103,49 @@ class SendEmailActivityTest {
     }
 
     @Test
+    void givenNoInlinesWhenSendTemplatedEmailThenOk(){
+        // Given
+        Long brokerId = 1L;
+        String brokerExternalId = "BROKER_EXTERNAL_ID";
+        Map<String, String> params = Map.of(
+                "var1", "VALUE1",
+                "var2", "VALUE2",
+                "var3", "VALUE3",
+                "var4", "VALUE4",
+                "var5", "VALUE5"
+        );
+        FileResourceDTO attachment = new FileResourceDTO(
+                new ByteArrayResource("PDF-DATA".getBytes()),
+                "filename"
+        );
+        TemplatedEmailDTO templatedEmailDTO = TemplatedEmailDTOFaker.buildTemplatedEmailDTO(params);
+        templatedEmailDTO.setAttachments(List.of(attachment));
+
+        EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]", null);
+        Broker broker = Mockito.mock(Broker.class);
+        Mockito.when(broker.getExternalId()).thenReturn(brokerExternalId);
+        Mockito.when(brokerServiceMock.getBrokerById(brokerId))
+                .thenReturn(broker);
+        Mockito.when(templateResolverServiceMock.resolve(brokerExternalId, templatedEmailDTO.getTemplateName()))
+                .thenReturn(template);
+
+        // When
+        activity.sendTemplatedEmail(brokerId, templatedEmailDTO);
+
+        // Then
+        Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
+            Assertions.assertSame(templatedEmailDTO.getFrom(), e.getFrom());
+            Assertions.assertSame(templatedEmailDTO.getTo(), e.getTo());
+            Assertions.assertSame(templatedEmailDTO.getCc(), e.getCc());
+            Assertions.assertSame(templatedEmailDTO.getAttachments(), e.getAttachments());
+            Assertions.assertEquals("SUBJECT VALUE1 VALUE2", e.getMailSubject());
+            Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
+            Assertions.assertNull(e.getInlines());
+            return true;
+        }));
+    }
+
+    @Test
     void whenSendTemplatedEmailThenOk(){
         // Given
         Long brokerId = 1L;

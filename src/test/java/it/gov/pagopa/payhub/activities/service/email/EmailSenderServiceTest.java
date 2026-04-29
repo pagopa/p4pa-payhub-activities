@@ -198,11 +198,12 @@ class EmailSenderServiceTest {
     }
 
     private static void checkInline(String expectedInlineContent, String expectedInlineName, MimeMultipart mainMultipart) throws MessagingException, IOException {
-        ByteArrayInputStream is = (ByteArrayInputStream)((MimeMultipart) (mainMultipart).getBodyPart(0).getContent()).getBodyPart("<"+expectedInlineName+">").getContent();
-        int isLength = is.available();
-        byte[] buffer = new byte[isLength];
-        is.read(buffer, 0, isLength);
-        String actualInlineContent = new String(buffer, StandardCharsets.UTF_8);
+        BodyPart inlinePart = ((MimeMultipart) (mainMultipart).getBodyPart(0).getContent()).getBodyPart("<" + expectedInlineName + ">");
+
+        String actualInlineName = inlinePart.getFileName();
+        Assertions.assertEquals(expectedInlineName, actualInlineName);
+
+        String actualInlineContent = (String) inlinePart.getContent();
         Assertions.assertEquals(expectedInlineContent, actualInlineContent);
     }
 
