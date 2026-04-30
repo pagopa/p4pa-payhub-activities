@@ -138,13 +138,12 @@ class ReceiptInstallmentResolverServiceTest {
 
         // Then
         Assertions.assertEquals(mixedInstallment, result.getCitizenNotifiableInstallment());
-        // MIXED ha debtPositionTypeId negativo quindi non è notifiable
         Assertions.assertEquals(1, result.getSilNotifiableInstallments().size());
         Assertions.assertEquals(normalInstallment, result.getSilNotifiableInstallments().getFirst().getInstallment());
     }
 
     @Test
-    void givenNullSilServiceIdWhenResolveInstallmentThenInstallmentNotAddedToNotifiable() {
+    void givenNullSilServiceIdWhenResolveInstallmentThenInstallmentNotAddedToSilNotifiableButStillResolvedForCitizen() {
         // Given
         ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
         Organization organization = buildOrganization();
@@ -160,7 +159,7 @@ class ReceiptInstallmentResolverServiceTest {
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
 
         // Then
-        Assertions.assertNull(result.getCitizenNotifiableInstallment());
+        Assertions.assertEquals(installment, result.getCitizenNotifiableInstallment());
         Assertions.assertTrue(result.getSilNotifiableInstallments().isEmpty());
     }
 
@@ -207,7 +206,7 @@ class ReceiptInstallmentResolverServiceTest {
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
 
         // Then
-        Assertions.assertEquals(second, result.getCitizenNotifiableInstallment()); // ultimo notifiable
+        Assertions.assertEquals(second, result.getCitizenNotifiableInstallment());
         Assertions.assertEquals(2, result.getSilNotifiableInstallments().size());
     }
 
