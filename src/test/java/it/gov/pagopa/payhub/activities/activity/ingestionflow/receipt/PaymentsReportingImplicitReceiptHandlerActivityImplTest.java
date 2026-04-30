@@ -84,6 +84,35 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 	}
 
 	@Test
+	void givenNullReceiptWhenHandleImplicitReceiptThenDoesNotCreateReceipt() {
+		// Given
+		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
+		when(paymentsReportingTransferDTO.getPaymentOutcomeCode()).thenReturn("9");
+		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
+		Organization organizationFake = OrganizationFaker.buildOrganizationDTO();
+		ReceiptWithAdditionalNodeDataDTO dummyReceiptMocked = mock(ReceiptWithAdditionalNodeDataDTO.class);
+
+		InstallmentDebtorDTO installmentDebtorDTO = mock(InstallmentDebtorDTO.class);
+		installmentDebtorDTO.setIuv(paymentsReportingFake.getIuv());
+		installmentDebtorDTO.setOrganizationId(organizationFake.getOrganizationId());
+
+		when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId(),  DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST)).thenReturn(List.of(installmentDebtorDTO));
+		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
+		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId())).thenReturn(Optional.of(organizationFake));
+		when(paymentsReporting2ReceiptMapperMock.map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO))).thenReturn(dummyReceiptMocked);
+		when(receiptServiceMock.createReceipt(dummyReceiptMocked)).thenReturn(null);
+
+		// When
+		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
+
+		// Then
+		verify(paymentsReportingServiceMock, times(1)).getByTransferSemanticKey(paymentsReportingTransferDTO);
+		verify(organizationServiceMock, times(1)).getOrganizationById(paymentsReportingFake.getOrganizationId());
+		verify(paymentsReporting2ReceiptMapperMock, times(1)).map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO));
+		verify(receiptServiceMock, times(1)).createReceipt(dummyReceiptMocked);
+	}
+
+	@Test
 	void givenInvalidOrgIdWhenHandleImplicitReceiptThenThrowsException() {
 		// Given
 		PaymentsReportingTransferDTO paymentsReportingTransferDTO = mock(PaymentsReportingTransferDTO.class);
