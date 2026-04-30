@@ -1,29 +1,19 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.email;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
-import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPaEmailConfigurerService;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptInstallmentResolverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,6 +24,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaSendEmailActivityTest {
 
@@ -41,15 +40,14 @@ class ReceiptPagopaSendEmailActivityTest {
 
   @Mock
   private ReceiptPagoPaEmailConfigurerService receiptPagoPaEmailConfigurerServiceMock;
-
   @Mock
   private SendEmailActivity sendEmailActivityMock;
   @Mock
   private ReceiptService receiptServiceMock;
   @Mock
-  private OrganizationService organizationServiceMock;
-  @Mock
   private BrokerService brokerServiceMock;
+  @Mock
+  private ReceiptInstallmentResolverService receiptInstallmentResolverServiceMock;
 
   @InjectMocks
   private ReceiptPagopaSendEmailActivityImpl receiptPagopaSendEmailActivity;
@@ -59,236 +57,211 @@ class ReceiptPagopaSendEmailActivityTest {
     Mockito.verifyNoMoreInteractions(
             sendEmailActivityMock,
             receiptServiceMock,
-            organizationServiceMock,
             brokerServiceMock
     );
   }
 
   @Test
-  void givenValidReceiptAndInstallmentWhenSendReceiptHandledEmailMailThenOk() {
+  void givenValidReceiptWhenSendReceiptHandledEmailThenOk() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptWithAdditionalNodeDataDTO.setReceiptId(1L);
-    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode("orgFiscalCode");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("orgFiscalCode", null, null);
     InstallmentDTO installmentDTO = new InstallmentDTO();
+    Organization organization = new Organization().organizationId(1L).brokerId(1L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installmentDTO, List.of(), organization);
+
     List<String> recipients = List.of("recipient1", "recipient2");
     Map<String, String> params = Map.of();
     FileResourceDTO attachment = mock(FileResourceDTO.class);
     BrokerConfiguration brokerConfiguration = mock(BrokerConfiguration.class);
+
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptDTO, installmentDTO)).thenReturn(recipients);
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.buildTemplateParams(receiptDTO)).thenReturn(params);
+    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptDTO.getReceiptId()), anyLong())).thenReturn(attachment);
+    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
     Mockito.when(brokerConfiguration.getMailSenderAddress()).thenReturn(MAIL_SENDER_ADDRESS);
 
-    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
-    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.buildTemplateParams(receiptWithAdditionalNodeDataDTO)).thenReturn(params);
-    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptWithAdditionalNodeDataDTO.getReceiptId()), anyLong())).thenReturn(attachment);
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(receiptWithAdditionalNodeDataDTO.getOrgFiscalCode())).thenReturn(Optional.of(new Organization().organizationId(1L).brokerId(1L)));
-    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
-
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
 
     // Then
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock, Mockito.times(1)).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock, Mockito.times(1)).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock, Mockito.times(1)).sendTemplatedEmail(
-      Mockito.eq(1L),
-      Mockito.argThat(
-              e ->
-                      Arrays.equals(
-                              e.getTo(), recipients.toArray(new String[0])) &&
-                              e.getParams() == params &&
-                              EmailTemplateName.INGESTION_PAGOPA_RT.equals(e.getTemplateName()) &&
-                              e.getFrom().equals(MAIL_SENDER_ADDRESS)
-      )
+    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptDTO, installmentDTO);
+    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptDTO);
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(
+            Mockito.eq(1L),
+            Mockito.argThat(e ->
+                    Arrays.equals(e.getTo(), recipients.toArray(new String[0])) &&
+                            e.getParams() == params &&
+                            EmailTemplateName.INGESTION_PAGOPA_RT.equals(e.getTemplateName()) &&
+                            e.getFrom().equals(MAIL_SENDER_ADDRESS)
+            )
     );
   }
 
   @Test
-  void givenNoInstallmentWhenSendReceiptHandledEmailMailThenNotSent() {
+  void givenResolvedInstallmentNullWhenSendReceiptHandledEmailThenNotSent() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode("11111111111");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("orgFiscalCode", null, null);
+    Organization organization = new Organization().organizationId(1L).brokerId(1L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(null, List.of(), organization);
+
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
 
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, null));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
 
     // Then
     Mockito.verifyNoInteractions(receiptPagoPaEmailConfigurerServiceMock, sendEmailActivityMock);
   }
 
   @Test
-  void givenNoRecipientsWhenSendReceiptHandledEmailMailThenNotSent() {
+  void givenEmptyResolvedResultWhenSendReceiptHandledEmailThenNotSent() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
-    InstallmentDTO installmentDTO = new InstallmentDTO();
-    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode("11111111111");
-    List<String> recipients = List.of();
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("UNKNOWN_orgFiscalCode", null, null);
 
-    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO))
+            .thenReturn(ResolvedInstallmentResult.empty());
 
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
 
     // Then
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock, Mockito.times(1)).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
+    Mockito.verifyNoInteractions(receiptPagoPaEmailConfigurerServiceMock, sendEmailActivityMock);
+  }
+
+  @Test
+  void givenNoRecipientsWhenSendReceiptHandledEmailThenNotSent() {
+    // Given
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("orgFiscalCode", null, null);
+    InstallmentDTO installmentDTO = new InstallmentDTO();
+    Organization organization = new Organization().organizationId(1L).brokerId(1L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installmentDTO, List.of(), organization);
+
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptDTO, installmentDTO)).thenReturn(List.of());
+
+    // When
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
+
+    // Then
+    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptDTO, installmentDTO);
     Mockito.verifyNoMoreInteractions(receiptPagoPaEmailConfigurerServiceMock, sendEmailActivityMock);
   }
 
-    @Test
-    void givenUnknownOrgFiscalCodeWhenSendReceiptHandledEmailThenNotSent() {
-        ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-        receiptDTO.setOrgFiscalCode("UNKNOWN_11111111111");
-        InstallmentDTO installmentDTO = new InstallmentDTO();
-
-        receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO, installmentDTO);
-
-        Mockito.verifyNoInteractions(receiptPagoPaEmailConfigurerServiceMock, organizationServiceMock, sendEmailActivityMock);
-    }
-
   @Test
-  void givenReceiptWithNullPaymentDateTimeWhenSendReceiptHandledEmailMailThenAttachmentWithOriginalFilename() {
+  void givenNullPaymentDateTimeWhenSendReceiptHandledEmailThenAttachmentWithOriginalFilename() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = getReceiptWithAdditionalNodeData(null, null);
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("orgFiscalCode", null, null);
     String expectedFilename = "original_filename.txt";
 
     InstallmentDTO installmentDTO = new InstallmentDTO();
-    List<String> recipients = List.of("recipient1");
+    Organization organization = new Organization().organizationId(1L).brokerId(1L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installmentDTO, List.of(), organization);
     FileResourceDTO attachment = new FileResourceDTO();
     attachment.setFileName(expectedFilename);
     BrokerConfiguration brokerConfiguration = mock(BrokerConfiguration.class);
+    ArgumentCaptor<TemplatedEmailDTO> captor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
+
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptDTO, installmentDTO)).thenReturn(List.of("recipient1"));
+    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptDTO.getReceiptId()), anyLong())).thenReturn(attachment);
+    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
     Mockito.when(brokerConfiguration.getMailSenderAddress()).thenReturn(MAIL_SENDER_ADDRESS);
 
-    ArgumentCaptor<TemplatedEmailDTO> templatedEmailDTOArgumentCaptor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
-
-    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(receiptWithAdditionalNodeDataDTO.getOrgFiscalCode())).thenReturn(Optional.of(new Organization().organizationId(1L).brokerId(1L)));
-    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptWithAdditionalNodeDataDTO.getReceiptId()), anyLong())).thenReturn(attachment);
-    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
-
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
 
     // Then
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
-
-    TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
-
-    Assertions.assertArrayEquals(templatedEmailDTO.getTo(), recipients.toArray(new String[0]));
-    Assertions.assertEquals(EmailTemplateName.INGESTION_PAGOPA_RT, templatedEmailDTO.getTemplateName());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), captor.capture());
     Assertions.assertEquals(expectedFilename, attachment.getFileName());
-    Assertions.assertEquals(MAIL_SENDER_ADDRESS, templatedEmailDTO.getFrom());
-  }
-
-  private static ReceiptWithAdditionalNodeDataDTO getReceiptWithAdditionalNodeData(OffsetDateTime paymentDateTime, String noticeNumber) {
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptWithAdditionalNodeDataDTO.setReceiptId(1L);
-    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode("orgFiscalCode");
-    receiptWithAdditionalNodeDataDTO.setPaymentDateTime(paymentDateTime);
-    receiptWithAdditionalNodeDataDTO.setNoticeNumber(noticeNumber);
-    return receiptWithAdditionalNodeDataDTO;
+    Assertions.assertEquals(MAIL_SENDER_ADDRESS, captor.getValue().getFrom());
   }
 
   @Test
-  void givenReceiptWithNullOriginalFilenameWhenSendReceiptHandledEmailMailThenAttachmentWithNewFilenameAndDefaultExtension() {
+  void givenNullOriginalFilenameWhenSendReceiptHandledEmailThenAttachmentWithNewFilenameAndDefaultExtension() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = getReceiptWithAdditionalNodeData(OffsetDateTime.now(), "noticeNumber");
-    String expectedFilename = receiptWithAdditionalNodeDataDTO.getPaymentDateTime().toLocalDate() + "-" + receiptWithAdditionalNodeDataDTO.getNoticeNumber() + ".pdf";
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("orgFiscalCode", OffsetDateTime.now(), "noticeNumber");
+    String expectedFilename = receiptDTO.getPaymentDateTime().toLocalDate() + "-" + receiptDTO.getNoticeNumber() + ".pdf";
 
     InstallmentDTO installmentDTO = new InstallmentDTO();
-    List<String> recipients = List.of("recipient1");
+    Organization organization = new Organization().organizationId(1L).brokerId(1L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installmentDTO, List.of(), organization);
     FileResourceDTO attachment = new FileResourceDTO();
     BrokerConfiguration brokerConfiguration = mock(BrokerConfiguration.class);
+    ArgumentCaptor<TemplatedEmailDTO> captor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
+
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptDTO, installmentDTO)).thenReturn(List.of("recipient1"));
+    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptDTO.getReceiptId()), anyLong())).thenReturn(attachment);
+    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
     Mockito.when(brokerConfiguration.getMailSenderAddress()).thenReturn(MAIL_SENDER_ADDRESS);
 
-    ArgumentCaptor<TemplatedEmailDTO> templatedEmailDTOArgumentCaptor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
-
-    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(receiptWithAdditionalNodeDataDTO.getOrgFiscalCode())).thenReturn(Optional.of(new Organization().organizationId(1L).brokerId(1L)));
-    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptWithAdditionalNodeDataDTO.getReceiptId()), anyLong())).thenReturn(attachment);
-    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
-
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
 
     // Then
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
-
-    TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
-
-    Assertions.assertArrayEquals(templatedEmailDTO.getTo(), recipients.toArray(new String[0]));
-    Assertions.assertEquals(EmailTemplateName.INGESTION_PAGOPA_RT, templatedEmailDTO.getTemplateName());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), captor.capture());
     Assertions.assertEquals(expectedFilename, attachment.getFileName());
-    Assertions.assertEquals(MAIL_SENDER_ADDRESS, templatedEmailDTO.getFrom());
   }
 
   @Test
-  void givenReceiptWithOriginalFilenameWhenSendReceiptHandledEmailMailThenAttachmentWithNewFilenameAndOriginalExtension() {
+  void givenOriginalFilenameWhenSendReceiptHandledEmailThenAttachmentWithNewFilenameAndOriginalExtension() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = getReceiptWithAdditionalNodeData(OffsetDateTime.now(), "noticeNumber");
-    String expectedFilename = receiptWithAdditionalNodeDataDTO.getPaymentDateTime().toLocalDate() + "-" + receiptWithAdditionalNodeDataDTO.getNoticeNumber() + ".txt";
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("orgFiscalCode", OffsetDateTime.now(), "noticeNumber");
+    String expectedFilename = receiptDTO.getPaymentDateTime().toLocalDate() + "-" + receiptDTO.getNoticeNumber() + ".txt";
 
     InstallmentDTO installmentDTO = new InstallmentDTO();
-    List<String> recipients = List.of("recipient1");
+    Organization organization = new Organization().organizationId(1L).brokerId(1L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installmentDTO, List.of(), organization);
     FileResourceDTO attachment = new FileResourceDTO();
     attachment.setFileName("original_filename.txt");
     BrokerConfiguration brokerConfiguration = mock(BrokerConfiguration.class);
+    ArgumentCaptor<TemplatedEmailDTO> captor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
+
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptDTO, installmentDTO)).thenReturn(List.of("recipient1"));
+    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptDTO.getReceiptId()), anyLong())).thenReturn(attachment);
+    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
     Mockito.when(brokerConfiguration.getMailSenderAddress()).thenReturn(MAIL_SENDER_ADDRESS);
 
-    ArgumentCaptor<TemplatedEmailDTO> templatedEmailDTOArgumentCaptor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
-
-    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(receiptWithAdditionalNodeDataDTO.getOrgFiscalCode())).thenReturn(Optional.of(new Organization().organizationId(1L).brokerId(1L)));
-    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptWithAdditionalNodeDataDTO.getReceiptId()), anyLong())).thenReturn(attachment);
-    Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(brokerConfiguration);
-
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
 
     // Then
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
-
-    TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
-
-    Assertions.assertArrayEquals(templatedEmailDTO.getTo(), recipients.toArray(new String[0]));
-    Assertions.assertEquals(EmailTemplateName.INGESTION_PAGOPA_RT, templatedEmailDTO.getTemplateName());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), captor.capture());
     Assertions.assertEquals(expectedFilename, attachment.getFileName());
-    Assertions.assertEquals(MAIL_SENDER_ADDRESS, templatedEmailDTO.getFrom());
   }
 
   @Test
-  void givenEmptyBrokerConfigurationWhenSendReceiptHandledEmailMailThenSendWithNullMailSenderAddress() {
+  void givenNullBrokerConfigurationWhenSendReceiptHandledEmailThenSendWithNullMailSenderAddress() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = getReceiptWithAdditionalNodeData(OffsetDateTime.now(), "noticeNumber");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("orgFiscalCode", OffsetDateTime.now(), "noticeNumber");
     InstallmentDTO installmentDTO = new InstallmentDTO();
-    List<String> recipients = List.of("recipient1");
+    Organization organization = new Organization().organizationId(1L).brokerId(1L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installmentDTO, List.of(), organization);
     FileResourceDTO attachment = mock(FileResourceDTO.class);
+    ArgumentCaptor<TemplatedEmailDTO> captor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
 
-    ArgumentCaptor<TemplatedEmailDTO> templatedEmailDTOArgumentCaptor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
-
-    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO)).thenReturn(recipients);
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode(receiptWithAdditionalNodeDataDTO.getOrgFiscalCode())).thenReturn(Optional.of(new Organization().organizationId(1L).brokerId(1L)));
-    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptWithAdditionalNodeDataDTO.getReceiptId()), anyLong())).thenReturn(attachment);
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    Mockito.when(receiptPagoPaEmailConfigurerServiceMock.retrieveRecipients(receiptDTO, installmentDTO)).thenReturn(List.of("recipient1"));
+    Mockito.when(receiptServiceMock.getReceiptPdf(eq(receiptDTO.getReceiptId()), anyLong())).thenReturn(attachment);
     Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L)).thenReturn(null);
 
     // When
-    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptWithAdditionalNodeDataDTO, installmentDTO));
+    Assertions.assertDoesNotThrow(() -> receiptPagopaSendEmailActivity.sendReceiptHandledEmail(receiptDTO));
 
     // Then
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).retrieveRecipients(receiptWithAdditionalNodeDataDTO, installmentDTO);
-    Mockito.verify(receiptPagoPaEmailConfigurerServiceMock).buildTemplateParams(receiptWithAdditionalNodeDataDTO);
-    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), templatedEmailDTOArgumentCaptor.capture());
-
-    TemplatedEmailDTO templatedEmailDTO = templatedEmailDTOArgumentCaptor.getValue();
-
-    Assertions.assertArrayEquals(templatedEmailDTO.getTo(), recipients.toArray(new String[0]));
-    Assertions.assertEquals(EmailTemplateName.INGESTION_PAGOPA_RT, templatedEmailDTO.getTemplateName());
-    Assertions.assertNull(templatedEmailDTO.getFrom());
+    Mockito.verify(sendEmailActivityMock).sendTemplatedEmail(Mockito.eq(1L), captor.capture());
+    Assertions.assertNull(captor.getValue().getFrom());
   }
 
-
+  private static ReceiptWithAdditionalNodeDataDTO buildReceipt(String orgFiscalCode,
+                                                               OffsetDateTime paymentDateTime, String noticeNumber) {
+    ReceiptWithAdditionalNodeDataDTO dto = new ReceiptWithAdditionalNodeDataDTO();
+    dto.setReceiptId(1L);
+    dto.setOrgFiscalCode(orgFiscalCode);
+    dto.setPaymentDateTime(paymentDateTime);
+    dto.setNoticeNumber(noticeNumber);
+    return dto;
+  }
 }
