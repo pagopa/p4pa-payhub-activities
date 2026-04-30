@@ -1,16 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
-import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
-import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.pu_sil.PuSilService;
-import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptInstallmentResolverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
-
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -23,69 +16,36 @@ import org.springframework.stereotype.Component;
 @Lazy
 @Component
 public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySilActivity {
-  private final OrganizationService organizationService;
-  private final DebtPositionTypeOrgService debtPositionTypeOrgService;
-  private final PuSilService puSilService;
-  private final InstallmentService installmentService;
+    private final ReceiptInstallmentResolverService receiptInstallmentResolverService;
+    private final PuSilService puSilService;
 
 
-  public ReceiptPagopaNotifySilActivityImpl(OrganizationService organizationService,
-      DebtPositionTypeOrgService debtPositionTypeOrgService, PuSilService puSilService,
-      InstallmentService installmentService) {
-    this.organizationService = organizationService;
-    this.debtPositionTypeOrgService = debtPositionTypeOrgService;
-    this.puSilService = puSilService;
-    this.installmentService = installmentService;
-  }
-
-  @Override
-  public InstallmentDTO notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
-    log.info("Notify receipt to SIL by receiptId {}", receiptDTO.getReceiptId());
-
-    String receiptOrgFiscalCode = receiptDTO.getOrgFiscalCode();
-
-    if(receiptOrgFiscalCode.startsWith("UNKNOWN_")) {
-        return null;
+    public ReceiptPagopaNotifySilActivityImpl(PuSilService puSilService,
+                                              ReceiptInstallmentResolverService receiptInstallmentResolverService) {
+        this.receiptInstallmentResolverService = receiptInstallmentResolverService;
+        this.puSilService = puSilService;
     }
 
-    Organization organization = organizationService.getOrganizationByFiscalCode(receiptOrgFiscalCode)
-        .orElseThrow(()-> new OrganizationNotFoundException("Organization with fiscalCode " + receiptOrgFiscalCode + " not found"));
+    @Override
+    public void notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
+        log.info("Notify receipt to SIL by receiptId {}", receiptDTO.getReceiptId());
 
-    if (!organization.getFlagNotifyOutcomePush()) {
-        return null;
+        ResolvedInstallmentResult resolved = receiptInstallmentResolverService.resolveInstallment(receiptDTO);
+
+        if (resolved.isEmpty()) {
+            return;
+        }
+
+        if (!resolved.getOrganization().getFlagNotifyOutcomePush()) {
+            return;
+        }
+
+        resolved.getSilNotifiableInstallments().forEach(n ->
+                puSilService.notifyPayment(
+                        n.getDebtPositionTypeOrg().getNotifyOutcomePushOrgSilServiceId(),
+                        n.getInstallment(),
+                        resolved.getOrganization().getIpaCode()
+                )
+        );
     }
-
-    return processInstallments(organization, receiptDTO.getReceiptId());
-  }
-
-  private InstallmentDTO processInstallments(Organization organization, Long receiptId) {
-      InstallmentDTO mixedInstallment = null;
-      InstallmentDTO lastNotifiedInstallment = null;
-
-      List<InstallmentDTO> installmentsToNotify = installmentService.getByOrganizationIdAndReceiptId(organization.getOrganizationId(),
-              receiptId,null);
-
-      for(InstallmentDTO installment : installmentsToNotify) {
-          DebtPositionTypeOrg debtPositionTypeOrg = debtPositionTypeOrgService
-                  .getDebtPositionTypeOrgByInstallmentId(installment.getInstallmentId());
-
-          if ("MIXED".equals(debtPositionTypeOrg.getCode())) {
-              mixedInstallment = installment;
-          }
-
-          // Ignoring technical debt position types
-          if(debtPositionTypeOrg.getDebtPositionTypeId() > 0) {
-              if (debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId() != null) {
-                  puSilService.notifyPayment(debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId(), installment, organization.getIpaCode());
-                  lastNotifiedInstallment = installment;
-              } else {
-                  log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
-                          debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
-              }
-          }
-      }
-
-      // Priority to MIXED, otherwise return lastNotifiedInstallment
-      return mixedInstallment != null ? mixedInstallment : lastNotifiedInstallment;
-  }
 }
