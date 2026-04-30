@@ -17,17 +17,17 @@ import java.util.List;
 @Builder
 public class ResolvedInstallmentResult {
 
-    InstallmentDTO installment;
-    List<NotifiableInstallment> notifiableInstallments;
-    Organization organization;
+    private InstallmentDTO citizenNotifiableInstallment;
+    private List<NotifiableInstallment> silNotifiableInstallments;
+    private Organization organization;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class NotifiableInstallment {
-        DebtPositionTypeOrg debtPositionTypeOrg;
-        InstallmentDTO installment;
+        private DebtPositionTypeOrg debtPositionTypeOrg;
+        private InstallmentDTO installment;
     }
 
     public static ResolvedInstallmentResult empty() {

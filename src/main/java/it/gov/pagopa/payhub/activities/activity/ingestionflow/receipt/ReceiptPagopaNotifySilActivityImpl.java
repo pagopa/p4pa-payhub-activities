@@ -40,7 +40,7 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
             return;
         }
 
-        resolved.getNotifiableInstallments().forEach(n ->
+        resolved.getSilNotifiableInstallments().forEach(n ->
                 puSilService.notifyPayment(
                         n.getDebtPositionTypeOrg().getNotifyOutcomePushOrgSilServiceId(),
                         n.getInstallment(),

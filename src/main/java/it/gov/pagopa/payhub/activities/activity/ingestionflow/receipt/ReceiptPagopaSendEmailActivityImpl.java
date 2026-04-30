@@ -51,7 +51,7 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
             return;
         }
 
-        if (resolved.getInstallment() == null) {
+        if (resolved.getCitizenNotifiableInstallment() == null) {
             log.info("Not sending email for receipt id[{}] [{}/{}]: installment is null",
                     receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber());
             return;
@@ -59,10 +59,10 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
 
         log.info("Starting send email for receipt id[{}] [{}/{}] and installment id[{}]",
                 receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber(),
-                resolved.getInstallment().getInstallmentId());
+                resolved.getCitizenNotifiableInstallment().getInstallmentId());
 
         List<String> recipients = receiptPagopaEmailConfigurerService
-                .retrieveRecipients(receiptDTO, resolved.getInstallment());
+                .retrieveRecipients(receiptDTO, resolved.getCitizenNotifiableInstallment());
         if (recipients.isEmpty()) {
             log.info("Not sending email for receipt id[{}] [{}/{}]: no recipient found",
                     receiptDTO.getReceiptId(), receiptDTO.getOrgFiscalCode(), receiptDTO.getNoticeNumber());

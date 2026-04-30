@@ -85,8 +85,8 @@ class ReceiptInstallmentResolverServiceTest {
 
         // Then
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertNull(result.getInstallment());
-        Assertions.assertTrue(result.getNotifiableInstallments().isEmpty());
+        Assertions.assertNull(result.getCitizenNotifiableInstallment());
+        Assertions.assertTrue(result.getSilNotifiableInstallments().isEmpty());
         Mockito.verify(organizationServiceMock).getOrganizationById(1L);
         Mockito.verify(installmentServiceMock).getByOrganizationIdAndReceiptId(1L, 99L, null);
     }
@@ -109,10 +109,10 @@ class ReceiptInstallmentResolverServiceTest {
 
         // Then
         Assertions.assertFalse(result.isEmpty());
-        Assertions.assertEquals(installment, result.getInstallment());
-        Assertions.assertEquals(1, result.getNotifiableInstallments().size());
-        Assertions.assertEquals(installment, result.getNotifiableInstallments().getFirst().getInstallment());
-        Assertions.assertEquals(dptOrg, result.getNotifiableInstallments().getFirst().getDebtPositionTypeOrg());
+        Assertions.assertEquals(installment, result.getCitizenNotifiableInstallment());
+        Assertions.assertEquals(1, result.getSilNotifiableInstallments().size());
+        Assertions.assertEquals(installment, result.getSilNotifiableInstallments().getFirst().getInstallment());
+        Assertions.assertEquals(dptOrg, result.getSilNotifiableInstallments().getFirst().getDebtPositionTypeOrg());
     }
 
     @Test
@@ -137,10 +137,10 @@ class ReceiptInstallmentResolverServiceTest {
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
 
         // Then
-        Assertions.assertEquals(mixedInstallment, result.getInstallment());
+        Assertions.assertEquals(mixedInstallment, result.getCitizenNotifiableInstallment());
         // MIXED ha debtPositionTypeId negativo quindi non è notifiable
-        Assertions.assertEquals(1, result.getNotifiableInstallments().size());
-        Assertions.assertEquals(normalInstallment, result.getNotifiableInstallments().getFirst().getInstallment());
+        Assertions.assertEquals(1, result.getSilNotifiableInstallments().size());
+        Assertions.assertEquals(normalInstallment, result.getSilNotifiableInstallments().getFirst().getInstallment());
     }
 
     @Test
@@ -160,8 +160,8 @@ class ReceiptInstallmentResolverServiceTest {
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
 
         // Then
-        Assertions.assertNull(result.getInstallment());
-        Assertions.assertTrue(result.getNotifiableInstallments().isEmpty());
+        Assertions.assertNull(result.getCitizenNotifiableInstallment());
+        Assertions.assertTrue(result.getSilNotifiableInstallments().isEmpty());
     }
 
     @Test
@@ -181,8 +181,8 @@ class ReceiptInstallmentResolverServiceTest {
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
 
         // Then
-        Assertions.assertNull(result.getInstallment());
-        Assertions.assertTrue(result.getNotifiableInstallments().isEmpty());
+        Assertions.assertNull(result.getCitizenNotifiableInstallment());
+        Assertions.assertTrue(result.getSilNotifiableInstallments().isEmpty());
     }
 
     @Test
@@ -207,8 +207,8 @@ class ReceiptInstallmentResolverServiceTest {
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
 
         // Then
-        Assertions.assertEquals(second, result.getInstallment()); // ultimo notifiable
-        Assertions.assertEquals(2, result.getNotifiableInstallments().size());
+        Assertions.assertEquals(second, result.getCitizenNotifiableInstallment()); // ultimo notifiable
+        Assertions.assertEquals(2, result.getSilNotifiableInstallments().size());
     }
 
     @Test
