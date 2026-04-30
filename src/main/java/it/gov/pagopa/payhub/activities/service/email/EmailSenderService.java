@@ -1,6 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.email;
 
 import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
+import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +10,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Lazy
 @Service
@@ -42,12 +46,33 @@ public class EmailSenderService {
             }
             message.setSubject(emailDTO.getMailSubject());
             message.setText(emailDTO.getHtmlText(), true);
-            if (emailDTO.getAttachment() != null) {
-                message.addAttachment(
-                    emailDTO.getAttachment().getFileName(),
-                    emailDTO.getAttachment().getResource());
+            if (emailDTO.getAttachments() != null) {
+                addAttachments(message, emailDTO.getAttachments());
+            }
+            if(emailDTO.getInlines() != null) {
+                addInlines(message, emailDTO.getInlines());
             }
             log.debug("sending mail message");
+        });
+    }
+
+    void addAttachments(MimeMessageHelper message, List<FileResourceDTO> attachments) {
+        attachments.forEach(i -> {
+            try {
+                message.addAttachment(i.getFileName(), i.getResource());
+            } catch (MessagingException e) {
+                log.error("Error in loading attachment with filename {}: {}", i.getFileName(), e.getMessage());
+            }
+        });
+    }
+
+    void addInlines(MimeMessageHelper message, List<FileResourceDTO> inlines) {
+        inlines.forEach(i -> {
+            try {
+                message.addInline(i.getFileName(), i.getFileName(), i.getResource());
+            } catch (Exception e) {
+                log.error("Error in loading inline with CID {}: {}", i.getFileName(), e.getMessage());
+            }
         });
     }
 

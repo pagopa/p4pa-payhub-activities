@@ -6,14 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailTemplate implements Serializable {
-    private String subject;
-    private String body;
-    private List<SerializableFileResourceDTO> inlines;
+public class SerializableFileResourceDTO implements Serializable {
+    private byte[] fileContent;
+    private String fileName;
 }

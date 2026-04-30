@@ -27,6 +27,7 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
 
     private final ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService;
     private final ReceiptService receiptService;
+  private final ReceiptService receiptService;
     private final SendEmailActivity sendEmailActivity;
     private final BrokerService brokerService;
     private final ReceiptInstallmentResolverService receiptInstallmentResolverService;
@@ -36,9 +37,11 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
     public ReceiptPagopaSendEmailActivityImpl(ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService, ReceiptService receiptService, BrokerService brokerService, SendEmailActivity sendEmailActivity, ReceiptInstallmentResolverService receiptInstallmentResolverService) {
         this.receiptPagopaEmailConfigurerService = receiptPagopaEmailConfigurerService;
         this.receiptService = receiptService;
+    this.receiptService = receiptService;
         this.sendEmailActivity = sendEmailActivity;
         this.brokerService = brokerService;
         this.receiptInstallmentResolverService = receiptInstallmentResolverService;
+  }
     }
 
     @Override
@@ -88,9 +91,10 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
                         recipients.toArray(new String[0]),
                         null,
                         params,
-                        attachment
+                    List.of(attachment)
                 )
         );
+    );
     }
 
     private static String buildReceiptFileName(ReceiptWithAdditionalNodeDataDTO receiptDTO, String originalFilename) {

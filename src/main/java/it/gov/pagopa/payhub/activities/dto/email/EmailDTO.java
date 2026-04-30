@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Utility transfer object to manage mail parameters
  */
@@ -18,5 +20,6 @@ public class EmailDTO {
     private String[] cc;
     private String mailSubject;
     private String htmlText;
-    private FileResourceDTO attachment;
+    private List<FileResourceDTO> attachments;
+    private List<FileResourceDTO> inlines;
 }
