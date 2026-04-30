@@ -1,218 +1,155 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
-import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.never;
-
-import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
-import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
-import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.pu_sil.PuSilService;
+import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
+import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptInstallmentResolverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaNotifySilActivityTest {
 
   @Mock
-  private OrganizationService organizationServiceMock;
-  @Mock
-  private DebtPositionTypeOrgService debtPositionTypeOrgServiceMock;
-  @Mock
   private PuSilService puSilServiceMock;
   @Mock
-  private InstallmentService installmentServiceMock;
+  private ReceiptInstallmentResolverService receiptInstallmentResolverServiceMock;
 
-  private ReceiptPagopaNotifySilActivity activity;
-
-  @BeforeEach
-  void setUp() {
-    activity = new ReceiptPagopaNotifySilActivityImpl(
-        organizationServiceMock,
-        debtPositionTypeOrgServiceMock,
-        puSilServiceMock,
-        installmentServiceMock
-    );
-  }
+  @InjectMocks
+  private ReceiptPagopaNotifySilActivityImpl activity;
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-        organizationServiceMock,
-        debtPositionTypeOrgServiceMock,
-        puSilServiceMock,
-        installmentServiceMock
-
+            puSilServiceMock,
+            receiptInstallmentResolverServiceMock
     );
   }
 
   @Test
-  void givenValidReceiptAndInstallmentWhenNotifyReceiptToSilThenOk() {
+  void givenValidReceiptWhenNotifyReceiptToSilThenNotifyPaymentCalled() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptDTO.setReceiptId(999L);
-    receiptDTO.setOrgFiscalCode("FISCALCODE");
-    receiptDTO.setDebtPositionTypeOrgCode("DPORGCODE");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
 
     Organization organization = new Organization();
     organization.setFlagNotifyOutcomePush(true);
-    organization.setOrganizationId(1L);
     organization.setIpaCode("IPACODE");
 
+    InstallmentDTO installment = buildInstallmentDTO();
     DebtPositionTypeOrg debtPositionTypeOrg = new DebtPositionTypeOrg();
-    debtPositionTypeOrg.setDebtPositionTypeId(1L);
     debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(2L);
 
-    InstallmentDTO mixedInstallment = buildInstallmentDTO();
-    mixedInstallment .setInstallmentId(2L);
+    List<ResolvedInstallmentResult.NotifiableInstallment> notifiable = List.of(
+            new ResolvedInstallmentResult.NotifiableInstallment(debtPositionTypeOrg, installment)
+    );
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installment, notifiable, organization);
 
-    DebtPositionTypeOrg debtPositionTypeOrgMixed = new DebtPositionTypeOrg();
-    debtPositionTypeOrgMixed.setCode("MIXED");
-    debtPositionTypeOrgMixed.setDebtPositionTypeId(-2L);
-    debtPositionTypeOrgMixed.setNotifyOutcomePushOrgSilServiceId(2L);
-
-    List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO(), mixedInstallment);
-
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
-        Optional.of(organization));
-    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(1L))
-        .thenReturn(debtPositionTypeOrg);
-    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(2L))
-        .thenReturn(debtPositionTypeOrgMixed);
-    Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
-        .thenReturn(installmentDTOs);
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
 
     // When
-    InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
+    Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
 
     // Then
-    Assertions.assertEquals(installmentDTOs.getLast(), result);
-    Mockito.verify(puSilServiceMock).notifyPayment(2L, installmentDTOs.getFirst(), "IPACODE");
-
+    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    Mockito.verify(puSilServiceMock).notifyPayment(2L, installment, "IPACODE");
   }
 
   @Test
-  void givenInvalidOrganizationWhenNotifyReceiptToSilThenOrganizationNotFound() {
+  void givenOrganizationNotFoundWhenNotifyReceiptToSilThenThrows() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptDTO.setOrgFiscalCode("FISCALCODE");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
 
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
-        Optional.empty());
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO))
+            .thenThrow(new OrganizationNotFoundException("Organization not found"));
+
     // When Then
-    Assertions.assertThrows(OrganizationNotFoundException.class, () ->
-        activity.notifyReceiptToSil(receiptDTO));
+    Assertions.assertThrows(OrganizationNotFoundException.class,
+            () -> activity.notifyReceiptToSil(receiptDTO));
+
+    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
   @Test
-  void givenFlagNotifyOutcomePushFalseWhenNotifyReceiptToSilThenVerifyNoMoreInteractions() {
+  void givenFlagNotifyOutcomePushFalseWhenNotifyReceiptToSilThenNoPaymentNotified() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptDTO.setOrgFiscalCode("FISCALCODE");
-    receiptDTO.setDebtPositionTypeOrgCode("DPORGCODE");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
 
     Organization organization = new Organization();
     organization.setFlagNotifyOutcomePush(false);
 
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
-        Optional.of(organization));
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(null, List.of(), organization);
+
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
 
     // When
-    InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
+    Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
 
     // Then
-    Assertions.assertNull(result);
-    Mockito.verifyNoMoreInteractions(debtPositionTypeOrgServiceMock);
-    Mockito.verifyNoMoreInteractions(puSilServiceMock);
+    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
   @Test
-  void givenServiceIdNullWhenNotifyReceiptToSilThenVerify() {
+  void givenUnknownOrgFiscalCodeWhenNotifyReceiptToSilThenNoPaymentNotified() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptDTO.setOrgFiscalCode("FISCALCODE");
-    receiptDTO.setDebtPositionTypeOrgCode("DPORGCODE");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("UNKNOWN_11111111111");
 
-    Organization organization = new Organization();
-    organization.setFlagNotifyOutcomePush(true);
-    organization.setOrganizationId(1L);
-    organization.setIpaCode("IPACODE");
-
-    DebtPositionTypeOrg debtPositionTypeOrg = new DebtPositionTypeOrg();
-    debtPositionTypeOrg.setDebtPositionTypeId(1L);
-    debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(null);
-
-    List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO());
-
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
-        Optional.of(organization));
-    Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
-        .thenReturn(installmentDTOs);
-    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(installmentDTOs.getFirst().getInstallmentId()))
-        .thenReturn(debtPositionTypeOrg);
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO))
+            .thenReturn(ResolvedInstallmentResult.empty());
 
     // When
-    InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
+    Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
+
     // Then
-    Assertions.assertNull(result);
-    Mockito.verify(puSilServiceMock, never()).notifyPayment(anyLong(), any(), any());
+    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
   @Test
-  void givenNegativeDebtPositionTypeIdWhenNotifyReceiptToSilThenVerify() {
+  void givenNoNotifiableInstallmentsWhenNotifyReceiptToSilThenNoPaymentNotified() {
     // Given
-    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptDTO.setOrgFiscalCode("FISCALCODE");
-    receiptDTO.setDebtPositionTypeOrgCode("DPORGCODE");
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
 
     Organization organization = new Organization();
     organization.setFlagNotifyOutcomePush(true);
-    organization.setOrganizationId(1L);
-    organization.setIpaCode("IPACODE");
 
-    DebtPositionTypeOrg debtPositionTypeOrg = new DebtPositionTypeOrg();
-    debtPositionTypeOrg.setDebtPositionTypeId(-1L);
-    debtPositionTypeOrg.setNotifyOutcomePushOrgSilServiceId(9L);
+    ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(null, List.of(), organization);
 
-    List<InstallmentDTO> installmentDTOs = List.of(buildInstallmentDTO());
-
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FISCALCODE")).thenReturn(
-        Optional.of(organization));
-    Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, receiptDTO.getReceiptId(), null))
-        .thenReturn(installmentDTOs);
-    Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(installmentDTOs.getFirst().getInstallmentId()))
-        .thenReturn(debtPositionTypeOrg);
+    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
 
     // When
-    InstallmentDTO result =activity.notifyReceiptToSil(receiptDTO);
+    Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
+
     // Then
-    Assertions.assertNull(result);
-    Mockito.verify(puSilServiceMock, never()).notifyPayment(anyLong(), any(), any());
+    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
-    @Test
-    void givenUnknownOrgFiscalCodeWhenNotifyReceiptToSilThenReturnNull() {
-        ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-        receiptDTO.setOrgFiscalCode("UNKNOWN_11111111111");
-        receiptDTO.setReceiptId(123L);
+  // --- helpers ---
 
-        InstallmentDTO result = activity.notifyReceiptToSil(receiptDTO);
+  private static ReceiptWithAdditionalNodeDataDTO buildReceipt(String orgFiscalCode) {
+    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
+    receiptDTO.setReceiptId(999L);
+    receiptDTO.setOrgFiscalCode(orgFiscalCode);
+    return receiptDTO;
+  }
 
-        Assertions.assertNull(result);
-    }
-
+  private static InstallmentDTO buildInstallmentDTO() {
+    InstallmentDTO installmentDTO = new InstallmentDTO();
+    installmentDTO.setInstallmentId(1L);
+    return installmentDTO;
+  }
 }
