@@ -114,6 +114,56 @@ class ReceiptPagopaIngestionActivityTest {
     Assertions.assertFalse(filePath.toFile().exists());
   }
 
+
+  @Test
+  void givenNullResultWhenProcessFileThenOk() throws IOException {
+    // Given
+    Long ingestionFlowFileId = 1L;
+    IngestionFlowFile ingestionFlowFileDTO = buildIngestionFlowFile(ingestionFlowFileId);
+
+    Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
+    List<Path> mockedListPath = List.of(filePath);
+
+    Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+            .thenReturn(Optional.of(ingestionFlowFileDTO));
+
+    Mockito.when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
+                    ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName()))
+            .thenReturn(mockedListPath);
+
+    Mockito.doNothing().when(fileArchiverServiceMock).archive(ingestionFlowFileDTO);
+
+    PaSendRTV2Request paSendRTV2Request = new PaSendRTV2Request();
+
+    Mockito.when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
+            .thenReturn(paSendRTV2Request);
+
+    ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
+
+    Mockito.when(receiptMapperMock.map(ingestionFlowFileDTO, paSendRTV2Request)).thenReturn(receiptWithAdditionalNodeDataDTO);
+
+    ReceiptPagopaIngestionFlowFileResult expectedResult = ReceiptPagopaIngestionFlowFileResult.builder()
+            .receiptDTO(receiptWithAdditionalNodeDataDTO)
+            .organizationId(ingestionFlowFileDTO.getOrganizationId())
+            .fileVersion("1.0.0")
+            .totalRows(1L)
+            .processedRows(1L)
+            .operatorExternalUserId("OPERATORID")
+            .fileSize(100L)
+            .build();
+
+    Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(null);
+
+    // When
+    ReceiptPagopaIngestionFlowFileResult result = receiptPagopaIngestionActivity.processFile(ingestionFlowFileId);
+
+    // Then
+    Assertions.assertEquals(expectedResult, result);
+    Assertions.assertFalse(filePath.toFile().exists());
+    Assertions.assertNull(result.getReceiptDTO().getReceiptId());
+    Assertions.assertNull(result.getReceiptDTO().getOrgFiscalCode());
+  }
+
   @Test
   void givenReceiptProcessingErrorWhenProcessFileThenError() throws IOException {
     // Given

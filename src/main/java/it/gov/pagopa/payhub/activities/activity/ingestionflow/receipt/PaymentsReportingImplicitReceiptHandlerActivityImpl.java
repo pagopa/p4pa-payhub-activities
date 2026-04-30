@@ -57,7 +57,11 @@ public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements Paym
             ReceiptWithAdditionalNodeDataDTO dummyReceipt = paymentsReporting2ReceiptMapper.map2Receipt(paymentsReporting, organization, installments);
 
 			ReceiptDTO dummyReceiptCreated = receiptService.createReceipt(dummyReceipt);
-			log.info("Dummy Receipt has been created with id: {}", dummyReceiptCreated.getReceiptId());
+			if (dummyReceiptCreated == null){
+				log.info("No Dummy Receipt has been created");
+			} else {
+				log.info("Dummy Receipt has been created with id: {}", dummyReceiptCreated.getReceiptId());
+			}
 		} else {
 			log.info("Dummy Receipt generation is not needed with payment outcome code: {} for organization id: {} and iuv: {} and iur {} and transfer index: {}", paymentsReportingTransferDTO.getPaymentOutcomeCode(),
 				paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());

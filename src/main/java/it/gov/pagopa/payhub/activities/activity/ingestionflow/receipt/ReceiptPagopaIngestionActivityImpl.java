@@ -70,10 +70,12 @@ public class ReceiptPagopaIngestionActivityImpl extends BaseIngestionFlowFileAct
     //invoke service to send receipt to debt-position for its persistence and processing
     ReceiptDTO receiptDTO = receiptService.createReceipt(receiptWithAdditionalNodeDataDTO);
 
-    //set the missing ID in the DTO
-    receiptWithAdditionalNodeDataDTO.setReceiptId(receiptDTO.getReceiptId());
+    if(receiptDTO != null) {
+      //set the missing ID in the DTO
+      receiptWithAdditionalNodeDataDTO.setReceiptId(receiptDTO.getReceiptId());
 
-    receiptWithAdditionalNodeDataDTO.setOrgFiscalCode(receiptDTO.getOrgFiscalCode());
+      receiptWithAdditionalNodeDataDTO.setOrgFiscalCode(receiptDTO.getOrgFiscalCode());
+    }
 
     return ReceiptPagopaIngestionFlowFileResult.builder()
             .organizationId(ingestionFlowFileDTO.getOrganizationId())
