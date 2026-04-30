@@ -138,8 +138,6 @@ class ReceiptPagopaNotifySilActivityTest {
     Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
-  // --- helpers ---
-
   private static ReceiptWithAdditionalNodeDataDTO buildReceipt(String orgFiscalCode) {
     ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
     receiptDTO.setReceiptId(999L);

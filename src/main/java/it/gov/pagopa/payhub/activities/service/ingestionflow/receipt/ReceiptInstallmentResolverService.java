@@ -56,10 +56,11 @@ public class ReceiptInstallmentResolverService {
             }
 
             if (debtPositionTypeOrg.getDebtPositionTypeId() > 0) {
+                lastNotifiableInstallment = installment;
                 if (debtPositionTypeOrg.getNotifyOutcomePushOrgSilServiceId() != null) {
                     notifiableInstallments.add(
                             new ResolvedInstallmentResult.NotifiableInstallment(debtPositionTypeOrg, installment));
-                    lastNotifiableInstallment = installment;
+
                 } else {
                     log.warn("OrgSilServiceId is null for DebtPositionTypeOrg with Id {} and code {}",
                             debtPositionTypeOrg.getDebtPositionTypeOrgId(), debtPositionTypeOrg.getCode());
