@@ -110,4 +110,13 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 organizationApisHolder::unload);
     }
+
+    @Test
+    void whenGetBrokerConfigurationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> organizationApisHolder.getBrokerConfigurationApi(accessToken)
+                        .getBrokerEmailServerConfig(1L),
+                new ParameterizedTypeReference<>() {},
+                organizationApisHolder::unload);
+    }
 }

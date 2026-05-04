@@ -37,7 +37,6 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         EmailTemplate template = templateResolverService.resolve(broker.getExternalId(), templatedEmail.getTemplateName());
 
         EmailDTO emailDTO = new EmailDTO();
-        emailDTO.setFrom(templatedEmail.getFrom());
         emailDTO.setTo(templatedEmail.getTo());
         emailDTO.setCc(templatedEmail.getCc());
 
@@ -54,7 +53,7 @@ public class SendEmailActivityImpl implements SendEmailActivity {
             );
         }
 
-        sendEmail(emailDTO);
+        sendEmail(emailDTO, broker.getBrokerId());
     }
 
     private FileResourceDTO mapToFileResource(SerializableFileResourceDTO serializableFileResourceDTO) {
@@ -69,10 +68,10 @@ public class SendEmailActivityImpl implements SendEmailActivity {
     }
 
     @Override
-    public void sendEmail(EmailDTO email) {
+    public void sendEmail(EmailDTO email, Long brokerId) {
         log.info("Sending email");
         validate(email);
-        emailSenderService.send(email);
+        emailSenderService.send(email, brokerId);
     }
 
     private void validate(EmailDTO email) {

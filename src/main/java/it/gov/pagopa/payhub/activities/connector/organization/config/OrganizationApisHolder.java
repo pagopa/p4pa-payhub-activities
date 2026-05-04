@@ -22,6 +22,7 @@ public class OrganizationApisHolder {
     private final OrganizationSilServiceApi orgSilServiceApi;
     private final OrgSilServiceSearchControllerApi orgSilServiceSearchControllerApi;
     private final BrokerConfigurationEntityControllerApi brokerConfigurationEntityControllerApi;
+    private final BrokerConfigurationApi brokerConfigurationApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -48,6 +49,7 @@ public class OrganizationApisHolder {
         this.orgSilServiceApi = new OrganizationSilServiceApi(apiClient);
         this.orgSilServiceSearchControllerApi = new OrgSilServiceSearchControllerApi(apiClient);
         this.brokerConfigurationEntityControllerApi = new BrokerConfigurationEntityControllerApi(apiClient);
+        this.brokerConfigurationApi = new BrokerConfigurationApi(apiClient);
     }
 
     @PreDestroy
@@ -101,10 +103,17 @@ public class OrganizationApisHolder {
     }
 
     /**
-     * It will return a {@link OrganizationApi} instrumented with the provided accessToken. Use null if auth is not required.
+     * It will return a {@link BrokerConfigurationEntityControllerApi} instrumented with the provided accessToken. Use null if auth is not required.
      */
     public BrokerConfigurationEntityControllerApi getBrokerConfigurationEntityControllerApi(String accessToken){
         return getApi(accessToken, brokerConfigurationEntityControllerApi);
+    }
+
+    /**
+     * It will return a {@link BrokerConfigurationApi} instrumented with the provided accessToken. Use null if auth is not required.
+     */
+    public BrokerConfigurationApi getBrokerConfigurationApi(String accessToken){
+        return getApi(accessToken, brokerConfigurationApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {

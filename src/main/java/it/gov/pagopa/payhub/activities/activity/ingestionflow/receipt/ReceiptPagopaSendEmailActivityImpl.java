@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
-import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
@@ -10,7 +9,6 @@ import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.email.ReceiptPagoPaEmailConfigurerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptInstallmentResolverService;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Lazy
 @Slf4j
@@ -28,16 +25,14 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
     private final ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService;
     private final ReceiptService receiptService;
     private final SendEmailActivity sendEmailActivity;
-    private final BrokerService brokerService;
     private final ReceiptInstallmentResolverService receiptInstallmentResolverService;
 
     public static final String DEFAULT_RECEIPT_FILE_EXTENSION = "pdf";
 
-    public ReceiptPagopaSendEmailActivityImpl(ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService, ReceiptService receiptService, BrokerService brokerService, SendEmailActivity sendEmailActivity, ReceiptInstallmentResolverService receiptInstallmentResolverService) {
+    public ReceiptPagopaSendEmailActivityImpl(ReceiptPagoPaEmailConfigurerService receiptPagopaEmailConfigurerService, ReceiptService receiptService, SendEmailActivity sendEmailActivity, ReceiptInstallmentResolverService receiptInstallmentResolverService) {
         this.receiptPagopaEmailConfigurerService = receiptPagopaEmailConfigurerService;
         this.receiptService = receiptService;
         this.sendEmailActivity = sendEmailActivity;
-        this.brokerService = brokerService;
         this.receiptInstallmentResolverService = receiptInstallmentResolverService;
     }
 
@@ -72,9 +67,6 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
         Organization organization = resolved.getOrganization();
         Map<String, String> params = receiptPagopaEmailConfigurerService.buildTemplateParams(receiptDTO);
         Long brokerId = organization.getBrokerId();
-        String mailSenderAddress = Optional.ofNullable(brokerService.getBrokerConfigurationsById(brokerId))
-                .map(BrokerConfiguration::getMailSenderAddress)
-                .orElse(null);
 
         FileResourceDTO attachment = receiptService.getReceiptPdf(
                 receiptDTO.getReceiptId(), organization.getOrganizationId());
@@ -84,7 +76,6 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
                 brokerId,
                 new TemplatedEmailDTO(
                         EmailTemplateName.INGESTION_PAGOPA_RT,
-                        mailSenderAddress,
                         recipients.toArray(new String[0]),
                         null,
                         params,

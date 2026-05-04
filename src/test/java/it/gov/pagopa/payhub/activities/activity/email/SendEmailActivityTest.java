@@ -1,19 +1,11 @@
 package it.gov.pagopa.payhub.activities.activity.email;
 
 import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
-import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
-import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
-import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
-import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
+import it.gov.pagopa.payhub.activities.dto.email.*;
 import it.gov.pagopa.payhub.activities.exception.email.InvalidEmailConfigurationException;
 import it.gov.pagopa.payhub.activities.service.email.EmailSenderService;
 import it.gov.pagopa.payhub.activities.service.email.EmailTemplateResolverService;
 import it.gov.pagopa.payhub.activities.util.faker.EmailDTOFaker;
-
-import java.util.List;
-import java.util.Map;
-
 import it.gov.pagopa.payhub.activities.util.faker.TemplatedEmailDTOFaker;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +17,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
+
+import java.util.List;
+import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class SendEmailActivityTest {
@@ -51,13 +46,14 @@ class SendEmailActivityTest {
     @Test
     void givenNoDestinationWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
+        long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setTo(null);
 
         // When
-        InvalidEmailConfigurationException exNullArray = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
+        InvalidEmailConfigurationException exNullArray = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
         emailDTO.setTo(new String[]{""});
-        InvalidEmailConfigurationException exEmptyDestination = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
+        InvalidEmailConfigurationException exEmptyDestination = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a recipient", exNullArray.getMessage());
@@ -67,11 +63,12 @@ class SendEmailActivityTest {
     @Test
     void givenNoSubjectWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
+        Long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setMailSubject(null);
 
         // When
-        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
+        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a subject", ex.getMessage());
@@ -80,11 +77,12 @@ class SendEmailActivityTest {
     @Test
     void givenNoBodyWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
+        Long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setHtmlText(null);
 
         // When
-        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
+        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a body", ex.getMessage());
@@ -93,13 +91,13 @@ class SendEmailActivityTest {
     @Test
     void givenCompleteConfigurationWhenSendEmailThenOk() {
         // Given
+        Long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
 
-        // When
-        activity.sendEmail(emailDTO);
+        Mockito.doNothing().when(emailSenderServiceMock).send(emailDTO,brokerId);
 
-        // Then
-        Mockito.verify(emailSenderServiceMock).send(emailDTO);
+        // When
+        Assertions.assertDoesNotThrow(()->activity.sendEmail(emailDTO, brokerId));
     }
 
     @Test
@@ -123,6 +121,7 @@ class SendEmailActivityTest {
 
         EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]", null);
         Broker broker = Mockito.mock(Broker.class);
+        Mockito.when(broker.getBrokerId()).thenReturn(brokerId);
         Mockito.when(broker.getExternalId()).thenReturn(brokerExternalId);
         Mockito.when(brokerServiceMock.getBrokerById(brokerId))
                 .thenReturn(broker);
@@ -134,7 +133,6 @@ class SendEmailActivityTest {
 
         // Then
         Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
-            Assertions.assertSame(templatedEmailDTO.getFrom(), e.getFrom());
             Assertions.assertSame(templatedEmailDTO.getTo(), e.getTo());
             Assertions.assertSame(templatedEmailDTO.getCc(), e.getCc());
             Assertions.assertSame(templatedEmailDTO.getAttachments(), e.getAttachments());
@@ -142,7 +140,7 @@ class SendEmailActivityTest {
             Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
             Assertions.assertNull(e.getInlines());
             return true;
-        }));
+        }), Mockito.eq(brokerId));
     }
 
     @Test
@@ -176,6 +174,7 @@ class SendEmailActivityTest {
         EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]", List.of(inline));
         Broker broker = Mockito.mock(Broker.class);
         Mockito.when(broker.getExternalId()).thenReturn(brokerExternalId);
+        Mockito.when(broker.getBrokerId()).thenReturn(brokerId);
         Mockito.when(brokerServiceMock.getBrokerById(brokerId))
                         .thenReturn(broker);
         Mockito.when(templateResolverServiceMock.resolve(brokerExternalId, templatedEmailDTO.getTemplateName()))
@@ -186,7 +185,6 @@ class SendEmailActivityTest {
 
         // Then
         Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
-            Assertions.assertSame(templatedEmailDTO.getFrom(), e.getFrom());
             Assertions.assertSame(templatedEmailDTO.getTo(), e.getTo());
             Assertions.assertSame(templatedEmailDTO.getCc(), e.getCc());
             Assertions.assertSame(templatedEmailDTO.getAttachments(), e.getAttachments());
@@ -194,6 +192,6 @@ class SendEmailActivityTest {
             Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
             Assertions.assertEquals(List.of(expectedInline), e.getInlines());
             return true;
-        }));
+        }),Mockito.eq(brokerId));
     }
 }

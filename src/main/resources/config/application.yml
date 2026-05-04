@@ -1,16 +1,3 @@
-spring:
-  mail:
-    host: "\${MAIL_HOST:}"
-    port: "\${MAIL_PORT:587}"
-    username: "\${MAIL_USERNAME:}"
-    password: "\${MAIL_PASSWORD:}"
-    properties:
-      mail.smtp:
-        auth: "\${MAIL_SMTP_AUTH:true}"
-        starttls:
-          enable: "\${MAIL_SMTP_STARTTLS:true}"
-          required: "\${MAIL_SMTP_STARTTLS_REQUIRED:true}"
-
 ingestion-flow-files:
   default:
     max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS:50}"
@@ -60,7 +47,6 @@ export-flow-files:
     relative-file-folder: "\${CLASSIFICATIONS_EXPORT_RELATIVE_FILE_FOLDER:export/classifications}"
 
 mail:
-  sender-address: "\${MAIL_SENDER_ADDRESS:piattaforma-unitaria@noreply.com}"
   template:
     repo-base-url: "\${MAIL_TEMPLATE_REPO_BASE_URL:}"
 
