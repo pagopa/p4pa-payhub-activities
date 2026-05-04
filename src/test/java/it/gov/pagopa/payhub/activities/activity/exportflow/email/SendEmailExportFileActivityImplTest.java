@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow.email;
 
 import it.gov.pagopa.payhub.activities.activity.email.SendEmailActivity;
-import it.gov.pagopa.payhub.activities.connector.organization.BrokerService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.ExportFileService;
 import it.gov.pagopa.payhub.activities.dto.email.TemplatedEmailDTO;
@@ -11,7 +10,6 @@ import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFou
 import it.gov.pagopa.payhub.activities.service.exportflow.email.ExportFileEmailContentConfigurerService;
 import it.gov.pagopa.payhub.activities.service.exportflow.email.ExportFileEmailDestinationRetrieverService;
 import it.gov.pagopa.payhub.activities.service.exportflow.email.ExportFlowFileEmailTemplateResolverService;
-import it.gov.pagopa.pu.organization.dto.generated.BrokerConfiguration;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import org.junit.jupiter.api.AfterEach;
@@ -31,19 +29,13 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class SendEmailExportFileActivityImplTest {
-
-    public static final String MAIL_SENDER_ADDRESS = "sender@email.com";
-
     @Mock
     private ExportFileService exportFileServiceMock;
     @Mock
     private OrganizationService organizationServiceMock;
-    @Mock
-    private BrokerService brokerServiceMock;
     @Mock
     private ExportFileEmailDestinationRetrieverService destinationRetrieverServiceMock;
     @Mock
@@ -58,7 +50,7 @@ class SendEmailExportFileActivityImplTest {
 
     @BeforeEach
     void setUp() {
-        sendEmailExportFileActivity = new SendEmailExportFileActivityImpl(exportFileServiceMock, organizationServiceMock, brokerServiceMock, destinationRetrieverServiceMock, contentConfigurerServiceMock, exportFlowFileEmailTemplateResolverServiceMock, sendEmailActivityMock);
+        sendEmailExportFileActivity = new SendEmailExportFileActivityImpl(exportFileServiceMock, organizationServiceMock, destinationRetrieverServiceMock, contentConfigurerServiceMock, exportFlowFileEmailTemplateResolverServiceMock, sendEmailActivityMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -126,21 +118,15 @@ class SendEmailExportFileActivityImplTest {
         TemplatedEmailDTO templatedEmailDTO = new TemplatedEmailDTO();
         templatedEmailDTO.setTo(to);
         templatedEmailDTO.setCc(cc);
-        templatedEmailDTO.setFrom(MAIL_SENDER_ADDRESS);
         templatedEmailDTO.setTemplateName(templateName);
         templatedEmailDTO.setParams(params);
 
         ArgumentCaptor<TemplatedEmailDTO> templatedEmailDTOArgumentCaptor = ArgumentCaptor.forClass(TemplatedEmailDTO.class);
 
-        BrokerConfiguration brokerConfiguration = mock(BrokerConfiguration.class);
-        Mockito.when(brokerConfiguration.getMailSenderAddress()).thenReturn(MAIL_SENDER_ADDRESS);
-
         Mockito.when(exportFileServiceMock.findById(exportFile.getExportFileId()))
                 .thenReturn(Optional.of(exportFile));
         Mockito.when(organizationServiceMock.getOrganizationById(organizationId))
                 .thenReturn(Optional.of(organization));
-        Mockito.when(brokerServiceMock.getBrokerConfigurationsById(1L))
-                .thenReturn(brokerConfiguration);
         Mockito.when(exportFlowFileEmailTemplateResolverServiceMock.resolve(Mockito.same(exportFile), Mockito.same(success)))
                 .thenReturn(templateName);
         Mockito.when(contentConfigurerServiceMock.configureParams(exportFile,organization, success))
@@ -158,7 +144,6 @@ class SendEmailExportFileActivityImplTest {
 
         Assertions.assertArrayEquals(templatedEmailDTO.getTo(), actualTemplatedEmailDTO.getTo());
         Assertions.assertArrayEquals(templatedEmailDTO.getCc(), actualTemplatedEmailDTO.getCc());
-        Assertions.assertEquals(MAIL_SENDER_ADDRESS, actualTemplatedEmailDTO.getFrom());
         Assertions.assertEquals(EmailTemplateName.EXPORT_PAID_OK, actualTemplatedEmailDTO.getTemplateName());
         Assertions.assertEquals(templatedEmailDTO.getParams(), actualTemplatedEmailDTO.getParams());
     }

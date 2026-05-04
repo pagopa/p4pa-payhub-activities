@@ -8,19 +8,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,47 +23,59 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 @ExtendWith(MockitoExtension.class)
 class EmailSenderServiceTest {
 
-    private static final String DEFAULT_FROM_ADDRESS = "FROMADDRESS";
-
     @Mock
     private JavaMailSender javaMailSenderMock;
+    @Mock
+    private EmailSenderConfigurationService emailSenderConfigurationServiceMock;
 
     private EmailSenderService service;
 
     @BeforeEach
     void init() {
-        service = new EmailSenderService(DEFAULT_FROM_ADDRESS, javaMailSenderMock);
+        service = new EmailSenderService(emailSenderConfigurationServiceMock);
     }
 
     @AfterEach
     void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(javaMailSenderMock);
+        Mockito.verifyNoMoreInteractions(
+                javaMailSenderMock,
+                emailSenderConfigurationServiceMock
+        );
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"", "test_sender@mailtest.com"})
-    void whenSendThenOk(String senderEmail) throws MessagingException, IOException {
+    @Test
+    void whenSendThenOk() throws MessagingException, IOException {
         // Given
-        String expectedSenderEmail = senderEmail.isEmpty() ? null : senderEmail;
-        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO(expectedSenderEmail);
-
+        Long brokerId = 1L;
+        String expectedSenderEmail = "mailSender";
+        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(brokerId)).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO);
+        service.send(emailDTO,brokerId);
 
         // Then
-        checkResultMessage(result[0], emailDTO);
+        checkResultMessage(result[0], emailDTO, expectedSenderEmail);
         Assertions.assertEquals(emailDTO.getHtmlText(), ((MimeMultipart)((MimeMultipart)result[0].getContent()).getBodyPart(0).getContent()).getBodyPart(0).getContent());
     }
 
     @Test
     void whenSendWithAttachmentThenOk() throws MessagingException, IOException {
         // Given
+        long brokerId = 1L;
+        String expectedSenderEmail = "mailSender";
         Path workingDirectory = Path.of("build", "test");
         Files.createDirectories(workingDirectory);
 
@@ -88,16 +93,16 @@ class EmailSenderServiceTest {
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setAttachments(List.of(expectedAttachment));
-
+        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(brokerId)).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO);
+        service.send(emailDTO, brokerId);
 
         // Then
         MimeMessage resultMessage = result[0];
-        checkResultMessage(resultMessage, emailDTO);
+        checkResultMessage(resultMessage, emailDTO, expectedSenderEmail);
 
         MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
         Assertions.assertEquals(2, mainMultipart.getCount(), "Expected 2 parts: text content and attachment.");
@@ -166,6 +171,8 @@ class EmailSenderServiceTest {
     @Test
     void whenSendWithInlinesThenOk() throws MessagingException, IOException {
         // Given
+        long brokerId = 1L;
+        String expectedSenderEmail = "mailSender";
         Path workingDirectory = Path.of("build", "test");
         Files.createDirectories(workingDirectory);
 
@@ -177,17 +184,17 @@ class EmailSenderServiceTest {
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setInlines(inlines);
-
+        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(brokerId)).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
 
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO);
+        service.send(emailDTO, brokerId);
 
         // Then
         MimeMessage resultMessage = result[0];
-        checkResultMessage(resultMessage, emailDTO);
+        checkResultMessage(resultMessage, emailDTO, expectedSenderEmail);
 
         MimeMultipart mainMultipart = (MimeMultipart) resultMessage.getContent();
         Assertions.assertEquals(1, mainMultipart.getCount(), "Expected 1 parts: text content.");
@@ -206,13 +213,13 @@ class EmailSenderServiceTest {
         Assertions.assertEquals(expectedInlineContent, actualInlineContent);
     }
 
-    private static void checkResultMessage(MimeMessage resultMessage, EmailDTO emailDTO) throws MessagingException {
+    private static void checkResultMessage(MimeMessage resultMessage, EmailDTO emailDTO, String expectedSenderEmail) throws MessagingException {
         Assertions.assertEquals(1, resultMessage.getHeader("From").length);
         Assertions.assertEquals(1, resultMessage.getHeader("To").length);
         Assertions.assertEquals(1, resultMessage.getHeader("CC").length);
         Assertions.assertEquals(1, resultMessage.getHeader("Subject").length);
 
-        Assertions.assertEquals(emailDTO.getFrom()==null ? DEFAULT_FROM_ADDRESS : emailDTO.getFrom(), resultMessage.getHeader("From")[0]);
+        Assertions.assertEquals(expectedSenderEmail, resultMessage.getHeader("From")[0]);
         Assertions.assertEquals(emailDTO.getTo()[0], resultMessage.getHeader("To")[0]);
         Assertions.assertEquals(emailDTO.getCc()[0], resultMessage.getHeader("CC")[0]);
         Assertions.assertEquals(emailDTO.getMailSubject(), resultMessage.getHeader("Subject")[0]);

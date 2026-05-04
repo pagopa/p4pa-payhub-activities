@@ -9,7 +9,6 @@ public class TemplatedEmailDTOFaker {
     public static TemplatedEmailDTO buildTemplatedEmailDTO(Map<String, String> params){
         return TemplatedEmailDTO.builder()
                 .templateName(EmailTemplateName.INGESTION_PAGOPA_RT)
-                .from("test_sender@mailtest.com")
                 .to(new String[]{"test_receiver@mailtest.com"})
                 .cc(new String[]{"test_cc@mailtest.com"})
                 .params(params)
