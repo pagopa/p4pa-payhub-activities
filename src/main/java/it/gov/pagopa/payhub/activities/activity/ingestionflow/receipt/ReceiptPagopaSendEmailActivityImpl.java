@@ -38,6 +38,10 @@ public class ReceiptPagopaSendEmailActivityImpl implements ReceiptPagopaSendEmai
 
     @Override
     public void sendReceiptHandledEmail(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
+        if (receiptDTO.getReceiptId() == null){
+            log.info("Not sending email, receiptDTO Id is null");
+            return;
+        }
         ResolvedInstallmentResult resolved = receiptInstallmentResolverService.resolveInstallment(receiptDTO);
 
         if (resolved.isEmpty()) {
