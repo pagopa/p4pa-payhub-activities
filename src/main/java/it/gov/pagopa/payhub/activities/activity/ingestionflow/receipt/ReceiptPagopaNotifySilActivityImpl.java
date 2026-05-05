@@ -28,6 +28,9 @@ public class ReceiptPagopaNotifySilActivityImpl implements ReceiptPagopaNotifySi
 
     @Override
     public void notifyReceiptToSil(ReceiptWithAdditionalNodeDataDTO receiptDTO) {
+        if (receiptDTO.getReceiptId() == null){
+            return;
+        }
         log.info("Notify receipt to SIL by receiptId {}", receiptDTO.getReceiptId());
 
         ResolvedInstallmentResult resolved = receiptInstallmentResolverService.resolveInstallment(receiptDTO);
