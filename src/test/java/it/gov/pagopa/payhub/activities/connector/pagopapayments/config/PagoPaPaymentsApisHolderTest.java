@@ -48,7 +48,7 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
 			accessToken -> {
 				pagoPaPaymentsApisHolder.getAcaApi(accessToken)
-					.syncAca("IUD", buildDebtPositionDTO());
+					.syncAca("IUD", buildDebtPositionDTO(), Boolean.FALSE);
 				return voidMock;
 			},
 			new ParameterizedTypeReference<>() {},

@@ -48,7 +48,7 @@ class AcaClientTest {
 
         // Then
         Mockito.verify(acaApiMock)
-                .syncAca(iud, debtPositionDTO);
+                .syncAca(iud, debtPositionDTO, Boolean.FALSE);
     }
 
 }
