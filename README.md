@@ -186,7 +186,7 @@ Ensure the following tools are installed on your machine:
 ```sh
 ./gradlew test
 ```
-
+ 
 ### ⚖️ Generate dependencies licenses
 ```sh
 ./gradlew generateLicenseReport
