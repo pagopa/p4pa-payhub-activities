@@ -72,7 +72,7 @@ public class DebtPositionFineNotificationDateProcessor {
         if (!nextDueDate.equals(installment.getDueDate())) {
             installment.setDueDate(ObjectUtils.max(nextDueDate, LocalDate.now()));
 
-            log.info("Updating installment with id: {} to new dueDate: {}", installment.getInstallmentId(), installment.getDueDate());
+            log.info("Updating installment with id: {} to new dueDate: {} ", installment.getInstallmentId(), installment.getDueDate());
             installmentService.updateDueDate(installment.getInstallmentId(), installment.getDueDate());
             return true;
         }
