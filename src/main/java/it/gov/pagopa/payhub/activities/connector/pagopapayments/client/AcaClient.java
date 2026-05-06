@@ -16,6 +16,6 @@ public class AcaClient {
     }
 
     public void syncAca(String iud, DebtPositionDTO debtPositionDTO, String accessToken) {
-        pagoPaPaymentsApisHolder.getAcaApi(accessToken).syncAca(iud, debtPositionDTO);
+        pagoPaPaymentsApisHolder.getAcaApi(accessToken).syncAca(iud, debtPositionDTO, Boolean.FALSE);
     }
 }
