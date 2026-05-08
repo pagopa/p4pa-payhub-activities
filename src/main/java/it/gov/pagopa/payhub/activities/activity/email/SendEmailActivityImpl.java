@@ -37,6 +37,7 @@ public class SendEmailActivityImpl implements SendEmailActivity {
         EmailTemplate template = templateResolverService.resolve(broker.getExternalId(), templatedEmail.getTemplateName());
 
         EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setBrokerId(brokerId);
         emailDTO.setTo(templatedEmail.getTo());
         emailDTO.setCc(templatedEmail.getCc());
 
@@ -53,7 +54,7 @@ public class SendEmailActivityImpl implements SendEmailActivity {
             );
         }
 
-        sendEmail(emailDTO, broker.getBrokerId());
+        sendEmail(emailDTO);
     }
 
     private FileResourceDTO mapToFileResource(SerializableFileResourceDTO serializableFileResourceDTO) {
@@ -68,13 +69,16 @@ public class SendEmailActivityImpl implements SendEmailActivity {
     }
 
     @Override
-    public void sendEmail(EmailDTO email, Long brokerId) {
+    public void sendEmail(EmailDTO email) {
         log.info("Sending email");
         validate(email);
-        emailSenderService.send(email, brokerId);
+        emailSenderService.send(email);
     }
 
     private void validate(EmailDTO email) {
+        if(email.getBrokerId() == null){
+            throw new InvalidEmailConfigurationException("Cannot send an email without a brokerId");
+        }
         if(ArrayUtils.isEmpty(email.getTo()) || StringUtils.isEmpty(email.getTo()[0])){
             throw new InvalidEmailConfigurationException("Cannot send an email without a recipient");
         }

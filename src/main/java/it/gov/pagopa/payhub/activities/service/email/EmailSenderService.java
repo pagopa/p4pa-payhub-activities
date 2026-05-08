@@ -29,8 +29,8 @@ public class EmailSenderService {
      *
      * @param emailDTO bean containing data to send
      */
-    public void send(EmailDTO emailDTO, Long brokerId) {
-        Pair<String, JavaMailSender> mailSender = emailSenderConfigurationService.getMailSender(brokerId);
+    public void send(EmailDTO emailDTO) {
+        Pair<String, JavaMailSender> mailSender = emailSenderConfigurationService.getMailSender(emailDTO.getBrokerId());
         mailSender.getRight().send(mimeMessage -> {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             message.setFrom(mailSender.getLeft());
