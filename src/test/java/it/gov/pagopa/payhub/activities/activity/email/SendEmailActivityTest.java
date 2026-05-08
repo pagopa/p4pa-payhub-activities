@@ -44,16 +44,28 @@ class SendEmailActivityTest {
     }
 
     @Test
+    void givenNoBrokerIdWhenSendEmailThenInvalidEmailConfigurationException() {
+        // Given
+        EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
+        emailDTO.setBrokerId(null);
+
+        // When
+        InvalidEmailConfigurationException exNullArray = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
+
+        // Then
+        Assertions.assertEquals("Cannot send an email without a brokerId", exNullArray.getMessage());
+    }
+
+    @Test
     void givenNoDestinationWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
-        long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setTo(null);
 
         // When
-        InvalidEmailConfigurationException exNullArray = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
+        InvalidEmailConfigurationException exNullArray = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
         emailDTO.setTo(new String[]{""});
-        InvalidEmailConfigurationException exEmptyDestination = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
+        InvalidEmailConfigurationException exEmptyDestination = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a recipient", exNullArray.getMessage());
@@ -63,12 +75,11 @@ class SendEmailActivityTest {
     @Test
     void givenNoSubjectWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
-        Long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setMailSubject(null);
 
         // When
-        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
+        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a subject", ex.getMessage());
@@ -77,12 +88,11 @@ class SendEmailActivityTest {
     @Test
     void givenNoBodyWhenSendEmailThenInvalidEmailConfigurationException() {
         // Given
-        Long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setHtmlText(null);
 
         // When
-        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO, brokerId));
+        InvalidEmailConfigurationException ex = Assertions.assertThrows(InvalidEmailConfigurationException.class, () -> activity.sendEmail(emailDTO));
 
         // Then
         Assertions.assertEquals("Cannot send an email without a body", ex.getMessage());
@@ -91,13 +101,12 @@ class SendEmailActivityTest {
     @Test
     void givenCompleteConfigurationWhenSendEmailThenOk() {
         // Given
-        Long brokerId = 1L;
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
 
-        Mockito.doNothing().when(emailSenderServiceMock).send(emailDTO,brokerId);
+        Mockito.doNothing().when(emailSenderServiceMock).send(emailDTO);
 
         // When
-        Assertions.assertDoesNotThrow(()->activity.sendEmail(emailDTO, brokerId));
+        Assertions.assertDoesNotThrow(()->activity.sendEmail(emailDTO));
     }
 
     @Test
@@ -121,7 +130,6 @@ class SendEmailActivityTest {
 
         EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]", null);
         Broker broker = Mockito.mock(Broker.class);
-        Mockito.when(broker.getBrokerId()).thenReturn(brokerId);
         Mockito.when(broker.getExternalId()).thenReturn(brokerExternalId);
         Mockito.when(brokerServiceMock.getBrokerById(brokerId))
                 .thenReturn(broker);
@@ -133,6 +141,7 @@ class SendEmailActivityTest {
 
         // Then
         Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
+            Assertions.assertSame(brokerId, e.getBrokerId());
             Assertions.assertSame(templatedEmailDTO.getTo(), e.getTo());
             Assertions.assertSame(templatedEmailDTO.getCc(), e.getCc());
             Assertions.assertSame(templatedEmailDTO.getAttachments(), e.getAttachments());
@@ -140,7 +149,7 @@ class SendEmailActivityTest {
             Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
             Assertions.assertNull(e.getInlines());
             return true;
-        }), Mockito.eq(brokerId));
+        }));
     }
 
     @Test
@@ -174,7 +183,6 @@ class SendEmailActivityTest {
         EmailTemplate template = new EmailTemplate("SUBJECT $[var1] $[var2]", "BODY $[var3] $[var4]", List.of(inline));
         Broker broker = Mockito.mock(Broker.class);
         Mockito.when(broker.getExternalId()).thenReturn(brokerExternalId);
-        Mockito.when(broker.getBrokerId()).thenReturn(brokerId);
         Mockito.when(brokerServiceMock.getBrokerById(brokerId))
                         .thenReturn(broker);
         Mockito.when(templateResolverServiceMock.resolve(brokerExternalId, templatedEmailDTO.getTemplateName()))
@@ -185,6 +193,7 @@ class SendEmailActivityTest {
 
         // Then
         Mockito.verify(emailSenderServiceMock).send(Mockito.argThat(e -> {
+            Assertions.assertSame(brokerId, e.getBrokerId());
             Assertions.assertSame(templatedEmailDTO.getTo(), e.getTo());
             Assertions.assertSame(templatedEmailDTO.getCc(), e.getCc());
             Assertions.assertSame(templatedEmailDTO.getAttachments(), e.getAttachments());
@@ -192,6 +201,6 @@ class SendEmailActivityTest {
             Assertions.assertEquals("BODY VALUE3 VALUE4", e.getHtmlText());
             Assertions.assertEquals(List.of(expectedInline), e.getInlines());
             return true;
-        }),Mockito.eq(brokerId));
+        }));
     }
 }

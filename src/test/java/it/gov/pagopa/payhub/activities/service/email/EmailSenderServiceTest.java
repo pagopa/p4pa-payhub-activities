@@ -56,15 +56,14 @@ class EmailSenderServiceTest {
     @Test
     void whenSendThenOk() throws MessagingException, IOException {
         // Given
-        Long brokerId = 1L;
         String expectedSenderEmail = "mailSender";
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
-        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(brokerId)).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
+        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(emailDTO.getBrokerId())).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO,brokerId);
+        service.send(emailDTO);
 
         // Then
         checkResultMessage(result[0], emailDTO, expectedSenderEmail);
@@ -74,7 +73,6 @@ class EmailSenderServiceTest {
     @Test
     void whenSendWithAttachmentThenOk() throws MessagingException, IOException {
         // Given
-        long brokerId = 1L;
         String expectedSenderEmail = "mailSender";
         Path workingDirectory = Path.of("build", "test");
         Files.createDirectories(workingDirectory);
@@ -93,12 +91,12 @@ class EmailSenderServiceTest {
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setAttachments(List.of(expectedAttachment));
-        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(brokerId)).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
+        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(emailDTO.getBrokerId())).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO, brokerId);
+        service.send(emailDTO);
 
         // Then
         MimeMessage resultMessage = result[0];
@@ -171,7 +169,6 @@ class EmailSenderServiceTest {
     @Test
     void whenSendWithInlinesThenOk() throws MessagingException, IOException {
         // Given
-        long brokerId = 1L;
         String expectedSenderEmail = "mailSender";
         Path workingDirectory = Path.of("build", "test");
         Files.createDirectories(workingDirectory);
@@ -184,13 +181,13 @@ class EmailSenderServiceTest {
 
         EmailDTO emailDTO = EmailDTOFaker.buildEmailDTO();
         emailDTO.setInlines(inlines);
-        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(brokerId)).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
+        Mockito.when(emailSenderConfigurationServiceMock.getMailSender(emailDTO.getBrokerId())).thenReturn(Pair.of(expectedSenderEmail, javaMailSenderMock));
         MimeMessage[] result = new MimeMessage[]{new MimeMessage((Session) null)};
 
         capturePreparedEmail(result);
 
         // When
-        service.send(emailDTO, brokerId);
+        service.send(emailDTO);
 
         // Then
         MimeMessage resultMessage = result[0];

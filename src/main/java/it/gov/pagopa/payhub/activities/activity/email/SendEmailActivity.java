@@ -13,5 +13,5 @@ public interface SendEmailActivity {
     @ActivityMethod
     void sendTemplatedEmail(Long brokerId, TemplatedEmailDTO email);
     @ActivityMethod
-    void sendEmail(EmailDTO email, Long brokerId);
+    void sendEmail(EmailDTO email);
 }

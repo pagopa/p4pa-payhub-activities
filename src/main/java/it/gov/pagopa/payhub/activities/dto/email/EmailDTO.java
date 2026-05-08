@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailDTO {
+    private Long brokerId;
     private String[] to;
     private String[] cc;
     private String mailSubject;
