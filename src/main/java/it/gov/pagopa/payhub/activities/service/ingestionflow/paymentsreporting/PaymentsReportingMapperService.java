@@ -49,7 +49,8 @@ public class PaymentsReportingMapperService {
 			.totalAmountCents(ctFlussoRiversamento.getImportoTotalePagamenti().movePointRight(2).longValueExact())
 			.totalPayments(ctFlussoRiversamento.getNumeroTotalePagamenti().longValueExact())
 			.bicCodePouringBank(ctFlussoRiversamento.getCodiceBicBancaDiRiversamento())
-			.revision(Optional.ofNullable(ctFlussoRiversamento.getRevisioneFlusso()).orElse(0));
+			.revision(Optional.ofNullable(ctFlussoRiversamento.getRevisioneFlusso()).orElse(0))
+			.deleted(false);
 
 		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
 			.map(item -> builder
