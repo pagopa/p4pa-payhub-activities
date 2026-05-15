@@ -23,7 +23,6 @@ public class OrganizationFaker {
                 .postalIban("postalIban")
                 .iban("iban")
                 .password("password".getBytes())
-                .segregationCode("segregationCode")
                 .cbillInterBankCode("cbillInterbankCode")
                 .orgLogo("orgLog")
                 .status(OrganizationStatus.ACTIVE)
