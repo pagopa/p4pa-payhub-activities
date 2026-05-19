@@ -51,13 +51,11 @@ public class RestTemplateConfig {
                 try {
                     super.handleError(response, statusCode, url, method);
                 } catch (HttpStatusCodeException ex) {
-                    errorBodyLogger.info("{} {} Returned status {} and resulted on exception {} - {}: {}",
-                      method,
-                      Utilities.removePiiFromURI(url),
-                      ex.getStatusCode(),
-                      ex.getClass().getSimpleName(),
-                      ex.getMessage(),
-                      ex.getResponseBodyAsString());
+                    errorBodyLogger.info("{} {} Returned status {}: {}",
+                        method,
+                        Utilities.removePiiFromURI(url),
+                        ex.getStatusCode(),
+                        ex.getResponseBodyAsString());
                     throw ex;
                 }
             }
