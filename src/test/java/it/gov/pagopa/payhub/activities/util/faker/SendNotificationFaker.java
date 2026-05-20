@@ -75,6 +75,7 @@ public class SendNotificationFaker {
                     put("documentDigest_1", "digest123");
                     put("documentContentType_1", "application/pdf");
                 }})
+                .campaignId("campaign-id-1")
                 .build();
     }
 }
