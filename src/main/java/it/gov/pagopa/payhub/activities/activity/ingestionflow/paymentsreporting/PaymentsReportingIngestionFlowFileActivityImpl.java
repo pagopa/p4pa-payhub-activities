@@ -20,10 +20,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Lazy
@@ -67,7 +65,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		paymentsReportingService.saveAll(paymentsReportings);
 
 		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
-				.map(paymentsReportingMapperService::map).collect(Collectors.toCollection(ArrayList<PaymentsReportingTransferDTO>::new));
+				.map(paymentsReportingMapperService::map).toList();
 
         PaymentsReporting first = paymentsReportings.getFirst();
 		String iuf = first.getIuf(); // The iuf is the same for entire file
