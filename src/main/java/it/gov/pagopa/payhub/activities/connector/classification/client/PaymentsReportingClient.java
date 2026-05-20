@@ -40,4 +40,9 @@ public class PaymentsReportingClient {
             .crudPaymentsReportingFindDuplicates(organizationId, iuv, transferIndex, orgFiscalCode);
     }
 
+    public List<PaymentsReporting> findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(Long organizationId, String iuf, Long ingestionFlowFileId, String accessToken){
+        return classificationApisHolder.getPaymentReportingApi(accessToken)
+                .findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId);
+    }
+
 }

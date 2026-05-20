@@ -84,6 +84,15 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 classificationApisHolder::unload);
     }
+
+    @Test
+    void whenGetPaymentsReportingApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> classificationApisHolder.getPaymentReportingApi(accessToken)
+                        .findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(1L, "IUF", 100L),
+                new ParameterizedTypeReference<>() {},
+                classificationApisHolder::unload);
+    }
 //endregion
 
 //region Treasury entity
