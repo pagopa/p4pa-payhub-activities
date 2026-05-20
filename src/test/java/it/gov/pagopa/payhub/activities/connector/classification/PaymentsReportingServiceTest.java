@@ -146,4 +146,27 @@ class PaymentsReportingServiceTest {
         verify(paymentsReportingClientMock, times(1)).findDuplicates(organizationId, iuv, transferIndex, orgFiscalCode, accessToken);
         verify(authnServiceMock, times(1)).getAccessToken();
     }
+
+    @Test
+    void testFindAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot() {
+        // Given
+        Long organizationId = 1L;
+        String iuf = "IUF";
+        Long ingestionFlowFileId = 1L;
+        String accessToken = "accessToken";
+
+        List<PaymentsReporting> expectedResponse = List.of(new PaymentsReporting());
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(paymentsReportingClientMock.findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId, accessToken))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<PaymentsReporting> result = paymentsReportingService.findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(paymentsReportingClientMock, times(1)).findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId, accessToken);
+        verify(authnServiceMock, times(1)).getAccessToken();
+    }
 }

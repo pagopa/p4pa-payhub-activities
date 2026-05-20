@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -64,10 +65,13 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		List<PaymentsReporting> paymentsReportings = version2paymentsReportings.getValue();
 		paymentsReportingService.saveAll(paymentsReportings);
 
-		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
-			.map(paymentsReportingMapperService::map).toList();
+        List<PaymentsReportingTransferDTO> transferSemanticKeys = new ArrayList<>();
+        for (PaymentsReporting paymentsReporting : paymentsReportings) {
+            PaymentsReportingTransferDTO paymentsReportingTransferDTO = paymentsReportingMapperService.map(paymentsReporting);
+            transferSemanticKeys.add(paymentsReportingTransferDTO);
+        }
 
-		PaymentsReporting first = paymentsReportings.getFirst();
+        PaymentsReporting first = paymentsReportings.getFirst();
 		String iuf = first.getIuf(); // The iuf is the same for entire file
 		Long organizationId = first.getOrganizationId(); // The organizationId is the same for entire file
 		return PaymentsReportingIngestionFlowFileActivityResult.builder()

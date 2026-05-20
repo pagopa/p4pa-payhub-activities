@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
+import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingEntityExtendedControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentsReportingSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.CollectionModelPaymentsReporting;
@@ -27,6 +28,9 @@ class PaymentsReportingClientTest {
 
     @Mock
     private PaymentsReportingSearchControllerApi paymentsReportingSearchControllerApiMock;
+
+    @Mock
+    private PaymentsReportingApi paymentsReportingApiMock;
 
     private PaymentsReportingClient paymentsReportingClient;
 
@@ -123,5 +127,29 @@ class PaymentsReportingClientTest {
         assertEquals(expectedResponse, result);
         verify(classificationApisHolderMock, times(1)).getPaymentsReportingSearchApi(accessToken);
         verify(paymentsReportingSearchControllerApiMock, times(1)).crudPaymentsReportingFindDuplicates(organizationId, iuv, transferIndex, orgFiscalCode);
+    }
+
+    @Test
+    void testFindAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot() {
+        // Given
+        Long organizationId = 1L;
+        String iuf = "IUF";
+        Long ingestionFlowFileId = 1L;
+        String accessToken = "accessToken";
+
+        List<PaymentsReporting> expectedResponse = List.of(new PaymentsReporting());
+
+        when(classificationApisHolderMock.getPaymentReportingApi(accessToken))
+                .thenReturn(paymentsReportingApiMock);
+        when(paymentsReportingApiMock.findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId))
+                .thenReturn(expectedResponse);
+
+        // When
+        List<PaymentsReporting> result = paymentsReportingClient.findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(classificationApisHolderMock, times(1)).getPaymentReportingApi(accessToken);
+        verify(paymentsReportingApiMock, times(1)).findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId);
     }
 }

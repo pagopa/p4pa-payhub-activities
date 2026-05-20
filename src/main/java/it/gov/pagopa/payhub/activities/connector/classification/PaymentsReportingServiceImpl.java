@@ -54,4 +54,9 @@ public class PaymentsReportingServiceImpl implements PaymentsReportingService {
             .toList();
     }
 
+    @Override
+    public List<PaymentsReporting> findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(Long organizationId, String iuf, Long ingestionFlowFileId) {
+        return paymentsReportingClient.findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId, authnService.getAccessToken());
+    }
+
 }

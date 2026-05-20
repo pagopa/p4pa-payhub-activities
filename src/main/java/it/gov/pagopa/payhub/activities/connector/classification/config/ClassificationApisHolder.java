@@ -21,6 +21,7 @@ public class ClassificationApisHolder {
     private final PaymentsReportingSearchControllerApi paymentsReportingSearchControllerApi;
     private final PaymentsReportingEntityControllerApi paymentsReportingEntityControllerApi;
     private final PaymentsReportingEntityExtendedControllerApi paymentsReportingEntityExtendedControllerApi;
+    private final PaymentsReportingApi paymentsReportingApi;
 
     private final TreasurySearchControllerApi treasurySearchControllerApi;
     private final TreasuryEntityControllerApi treasuryEntityControllerApi;
@@ -63,6 +64,7 @@ public class ClassificationApisHolder {
         this.paymentsReportingSearchControllerApi = new PaymentsReportingSearchControllerApi(apiClient);
         this.paymentsReportingEntityControllerApi = new PaymentsReportingEntityControllerApi(apiClient);
         this.paymentsReportingEntityExtendedControllerApi = new PaymentsReportingEntityExtendedControllerApi(apiClient);
+        this.paymentsReportingApi = new PaymentsReportingApi(apiClient);
 
         this.treasurySearchControllerApi = new TreasurySearchControllerApi(apiClient);
         this.treasuryEntityControllerApi = new TreasuryEntityControllerApi(apiClient);
@@ -111,6 +113,9 @@ public class ClassificationApisHolder {
     }
     public PaymentsReportingEntityExtendedControllerApi getPaymentsReportingEntityExtendedControllerApi(String accessToken){
         return getApi(accessToken, paymentsReportingEntityExtendedControllerApi);
+    }
+    public PaymentsReportingApi getPaymentReportingApi(String accessToken) {
+        return getApi(accessToken, paymentsReportingApi);
     }
 
     public TreasurySearchControllerApi getTreasurySearchApi(String accessToken){
