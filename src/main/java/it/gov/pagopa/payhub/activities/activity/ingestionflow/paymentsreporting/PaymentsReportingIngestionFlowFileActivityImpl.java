@@ -65,9 +65,9 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		paymentsReportingService.saveAll(paymentsReportings);
 
 		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
-				.map(paymentsReportingMapperService::map).toList();
+			.map(paymentsReportingMapperService::map).toList();
 
-        PaymentsReporting first = paymentsReportings.getFirst();
+		PaymentsReporting first = paymentsReportings.getFirst();
 		String iuf = first.getIuf(); // The iuf is the same for entire file
 		Long organizationId = first.getOrganizationId(); // The organizationId is the same for entire file
 		return PaymentsReportingIngestionFlowFileActivityResult.builder()
