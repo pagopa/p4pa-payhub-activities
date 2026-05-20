@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Lazy
@@ -65,11 +66,8 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 		List<PaymentsReporting> paymentsReportings = version2paymentsReportings.getValue();
 		paymentsReportingService.saveAll(paymentsReportings);
 
-        List<PaymentsReportingTransferDTO> transferSemanticKeys = new ArrayList<>();
-        for (PaymentsReporting paymentsReporting : paymentsReportings) {
-            PaymentsReportingTransferDTO paymentsReportingTransferDTO = paymentsReportingMapperService.map(paymentsReporting);
-            transferSemanticKeys.add(paymentsReportingTransferDTO);
-        }
+		List<PaymentsReportingTransferDTO> transferSemanticKeys = paymentsReportings.stream()
+				.map(paymentsReportingMapperService::map).collect(Collectors.toCollection(ArrayList<PaymentsReportingTransferDTO>::new));
 
         PaymentsReporting first = paymentsReportings.getFirst();
 		String iuf = first.getIuf(); // The iuf is the same for entire file
