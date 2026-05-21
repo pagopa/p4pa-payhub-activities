@@ -45,4 +45,8 @@ public class PaymentsReportingClient {
                 .findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId);
     }
 
+    public CollectionModelPaymentsReporting getByTransferSemanticKeyIncludedDeleted(Long orgId, String iuv, String iur, int transferIndex, String accessToken) {
+        return classificationApisHolder.getPaymentsReportingSearchApi(accessToken)
+                .crudPaymentsReportingFindByTransferSemanticKeyIncludedDeleted(orgId, iuv, iur, transferIndex);
+    }
 }
