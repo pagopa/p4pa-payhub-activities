@@ -152,4 +152,28 @@ class PaymentsReportingClientTest {
         verify(classificationApisHolderMock, times(1)).getPaymentReportingApi(accessToken);
         verify(paymentsReportingApiMock, times(1)).findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId);
     }
+
+    @Test
+    void whenGetByTransferSemanticKeyIncludedDeletedThenOk() {
+        // Given
+        Long orgId = 1L;
+        String iuv = "IUV123";
+        String iur = "IUR123";
+        int transferIndex = 0;
+        String accessToken = "accessToken";
+        CollectionModelPaymentsReporting expectedResponse = new CollectionModelPaymentsReporting();
+
+        when(classificationApisHolderMock.getPaymentsReportingSearchApi(accessToken))
+                .thenReturn(paymentsReportingSearchControllerApiMock);
+        when(paymentsReportingSearchControllerApiMock.crudPaymentsReportingFindByTransferSemanticKeyIncludedDeleted(orgId, iuv, iur, transferIndex))
+                .thenReturn(expectedResponse);
+
+        // When
+        CollectionModelPaymentsReporting result = paymentsReportingClient.getByTransferSemanticKeyIncludedDeleted(orgId, iuv, iur, transferIndex, accessToken);
+
+        // Then
+        assertEquals(expectedResponse, result);
+        verify(paymentsReportingSearchControllerApiMock, times(1))
+                .crudPaymentsReportingFindByTransferSemanticKeyIncludedDeleted(orgId, iuv, iur, transferIndex);
+    }
 }

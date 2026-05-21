@@ -59,4 +59,12 @@ public class PaymentsReportingServiceImpl implements PaymentsReportingService {
         return paymentsReportingClient.findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId, authnService.getAccessToken());
     }
 
+    @Override
+    public PaymentsReporting getByTransferSemanticKeyIncludedDeleted(TransferSemanticKeyDTO tSKDTO) {
+        CollectionModelPaymentsReporting collectionModelPaymentsReporting = paymentsReportingClient.getByTransferSemanticKeyIncludedDeleted(tSKDTO.getOrgId(), tSKDTO.getIuv(), tSKDTO.getIur(), tSKDTO.getTransferIndex(), authnService.getAccessToken());
+        return collectionModelPaymentsReporting.getEmbedded().getPaymentsReportings()
+                .stream()
+                .max(Comparator.comparing(PaymentsReporting::getUpdateDate))
+                .orElse(null);
+    }
 }

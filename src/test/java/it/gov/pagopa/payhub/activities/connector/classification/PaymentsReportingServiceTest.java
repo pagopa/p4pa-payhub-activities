@@ -169,4 +169,33 @@ class PaymentsReportingServiceTest {
         verify(paymentsReportingClientMock, times(1)).findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(organizationId, iuf, ingestionFlowFileId, accessToken);
         verify(authnServiceMock, times(1)).getAccessToken();
     }
+
+    @Test
+    void testGetByTransferSemanticKeyIncludedDeleted() {
+        // Given
+        Long orgId = 1L;
+        String iuv = "IUV123";
+        String iur = "IUR123";
+        int transferIndex = 0;
+        String accessToken = "accessToken";
+        CollectionModelPaymentsReporting expectedResponse = CollectionModelPaymentsReporting.builder()
+                .embedded(
+                        PagedModelPaymentsReportingEmbedded.builder()
+                                .paymentsReportings(List.of(new PaymentsReporting()))
+                                .build()
+                )
+                .build();
+        TransferSemanticKeyDTO tSKDTO = new TransferSemanticKeyDTO(orgId, iuv, iur, transferIndex);
+
+        when(paymentsReportingClientMock.getByTransferSemanticKeyIncludedDeleted(orgId, iuv, iur, transferIndex, accessToken)).thenReturn(expectedResponse);
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+
+        // When
+        PaymentsReporting result = paymentsReportingService.getByTransferSemanticKeyIncludedDeleted(tSKDTO);
+
+        // Then
+        assertEquals(expectedResponse.getEmbedded().getPaymentsReportings().getFirst(), result);
+        verify(paymentsReportingClientMock, times(1)).getByTransferSemanticKeyIncludedDeleted(orgId, iuv, iur, transferIndex, accessToken);
+    }
 }
