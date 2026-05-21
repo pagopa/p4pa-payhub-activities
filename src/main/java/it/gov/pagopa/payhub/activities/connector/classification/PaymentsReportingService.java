@@ -16,4 +16,5 @@ public interface PaymentsReportingService {
     PaymentsReporting getByTransferSemanticKey(TransferSemanticKeyDTO tSKDTO);
     List<PaymentsReporting> findDuplicates(Long organizationId, String iuv, int transferIndex, String orgFiscalCode);
     List<PaymentsReporting> findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(Long organizationId, String iuf, Long ingestionFlowFileId);
+    PaymentsReporting getByTransferSemanticKeyIncludedDeleted(TransferSemanticKeyDTO tSKDTO);
 }

@@ -68,7 +68,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
         installmentDebtorDTO.setOrganizationId(organizationFake.getOrganizationId());
 
         when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId(),  DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST)).thenReturn(List.of(installmentDebtorDTO));
-		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
+		when(paymentsReportingServiceMock.getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId())).thenReturn(Optional.of(organizationFake));
 		when(paymentsReporting2ReceiptMapperMock.map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO))).thenReturn(dummyReceiptMocked);
 		when(receiptServiceMock.createReceipt(dummyReceiptMocked)).thenReturn(dummyReceiptCreated);
@@ -77,7 +77,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
 
 		// Then
-		verify(paymentsReportingServiceMock, times(1)).getByTransferSemanticKey(paymentsReportingTransferDTO);
+		verify(paymentsReportingServiceMock, times(1)).getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO);
 		verify(organizationServiceMock, times(1)).getOrganizationById(paymentsReportingFake.getOrganizationId());
 		verify(paymentsReporting2ReceiptMapperMock, times(1)).map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO));
 		verify(receiptServiceMock, times(1)).createReceipt(dummyReceiptMocked);
@@ -97,7 +97,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		installmentDebtorDTO.setOrganizationId(organizationFake.getOrganizationId());
 
 		when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId(),  DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST)).thenReturn(List.of(installmentDebtorDTO));
-		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
+		when(paymentsReportingServiceMock.getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId())).thenReturn(Optional.of(organizationFake));
 		when(paymentsReporting2ReceiptMapperMock.map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO))).thenReturn(dummyReceiptMocked);
 		when(receiptServiceMock.createReceipt(dummyReceiptMocked)).thenReturn(null);
@@ -106,7 +106,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
 
 		// Then
-		verify(paymentsReportingServiceMock, times(1)).getByTransferSemanticKey(paymentsReportingTransferDTO);
+		verify(paymentsReportingServiceMock, times(1)).getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO);
 		verify(organizationServiceMock, times(1)).getOrganizationById(paymentsReportingFake.getOrganizationId());
 		verify(paymentsReporting2ReceiptMapperMock, times(1)).map2Receipt(paymentsReportingFake, organizationFake, List.of(installmentDebtorDTO));
 		verify(receiptServiceMock, times(1)).createReceipt(dummyReceiptMocked);
@@ -119,7 +119,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		when(paymentsReportingTransferDTO.getPaymentOutcomeCode()).thenReturn("8");
 		PaymentsReporting paymentsReportingFake = PaymentsReportingFaker.buildPaymentsReporting();
 
-		when(paymentsReportingServiceMock.getByTransferSemanticKey(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
+		when(paymentsReportingServiceMock.getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
 		when(organizationServiceMock.getOrganizationById(paymentsReportingFake.getOrganizationId()))
 			.thenThrow(InvalidValueException.class);
 
@@ -137,7 +137,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 		activity.handleImplicitReceipt(paymentsReportingTransferDTO);
 
 		// Then
-		verify(paymentsReportingServiceMock, never()).getByTransferSemanticKey(paymentsReportingTransferDTO);
+		verify(paymentsReportingServiceMock, never()).getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO);
 		verify(organizationServiceMock, never()).getOrganizationById(any());
 		verify(paymentsReporting2ReceiptMapperMock, never()).map2Receipt(any(), any(), any());
 		verify(receiptServiceMock, never()).createReceipt(any());

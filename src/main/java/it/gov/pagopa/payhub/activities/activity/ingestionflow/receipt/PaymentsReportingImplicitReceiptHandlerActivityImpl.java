@@ -47,7 +47,7 @@ public class PaymentsReportingImplicitReceiptHandlerActivityImpl implements Paym
 		if (PAYMENT_OUTCOME_CODES.contains(paymentsReportingTransferDTO.getPaymentOutcomeCode())) {
 			log.info("Retrieve payment reporting with payment outcome code {} for organization id: {} and iuv: {} and iur {} and transfer index: {}", paymentsReportingTransferDTO.getPaymentOutcomeCode(),
 				paymentsReportingTransferDTO.getOrgId(), paymentsReportingTransferDTO.getIuv(), paymentsReportingTransferDTO.getIur(), paymentsReportingTransferDTO.getTransferIndex());
-			PaymentsReporting paymentsReporting = paymentsReportingService.getByTransferSemanticKey(paymentsReportingTransferDTO);
+			PaymentsReporting paymentsReporting = paymentsReportingService.getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO);
 
 			Organization organization = organizationService.getOrganizationById(paymentsReporting.getOrganizationId())
 				.orElseThrow(() -> new InvalidValueException("Organization not found: " + paymentsReporting.getOrganizationId()));
