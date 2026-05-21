@@ -37,7 +37,7 @@ class SendNotificationMapperTest {
         CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
 
         Assertions.assertNotNull(result);
-        TestUtils.checkNotNullFields(result, "campaignId");
+        TestUtils.checkNotNullFields(result);
     }
 
     @Test
@@ -95,7 +95,7 @@ class SendNotificationMapperTest {
         CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
 
         Assertions.assertEquals(result.getDocuments(), List.of());
-        TestUtils.checkNotNullFields(result, "campaignId");
+        TestUtils.checkNotNullFields(result);
     }
 
     @ParameterizedTest
