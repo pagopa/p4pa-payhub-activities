@@ -14,7 +14,7 @@ public class IngestionFlowFileNotFoundException extends NotRetryableActivityExce
 	 *
 	 * @param message the detail message explaining the cause of the exception.
 	 */
-	public IngestionFlowFileNotFoundException(String message) {super(message);
+	public IngestionFlowFileNotFoundException(String message) {super("INGESTION_FLOW_FILE_NOT_FOUND", message);
 	}
 }
 

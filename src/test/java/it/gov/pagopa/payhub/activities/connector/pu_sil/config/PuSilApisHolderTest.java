@@ -20,15 +20,19 @@ class PuSilApisHolderTest extends BaseApiHolderTest {
   private RestTemplateBuilder restTemplateBuilderMock;
 
   private PuSilApisHolder puSilApisHolder;
+  private PuSilApiClientConfig apiClientConfig;
 
   @BeforeEach
   void setUp() {
     Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
     Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-    PuSilApiClientConfig clientConfig = PuSilApiClientConfig.builder()
+
+    apiClientConfig = PuSilApiClientConfig.builder()
         .baseUrl("http://example.com")
+            .maxAttempts(3)
         .build();
-    puSilApisHolder = new PuSilApisHolder(clientConfig, restTemplateBuilderMock);
+
+    puSilApisHolder = new PuSilApisHolder(apiClientConfig, restTemplateBuilderMock);
   }
 
   @AfterEach
@@ -36,6 +40,17 @@ class PuSilApisHolderTest extends BaseApiHolderTest {
     Mockito.verifyNoMoreInteractions(
         restTemplateBuilderMock,
         restTemplateMock
+    );
+  }
+
+  @Test
+  void testRetryConfiguration() {
+    assertRetry(apiClientConfig,
+            accessToken -> { puSilApisHolder.getNotifyPaymentApi(accessToken)
+                    .notifyPayment(1L, new InstallmentDTO());
+              return voidMock;
+            },
+            new ParameterizedTypeReference<>() {}
     );
   }
 

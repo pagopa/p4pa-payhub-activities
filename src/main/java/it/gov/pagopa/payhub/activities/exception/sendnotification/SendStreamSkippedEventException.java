@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 public class SendStreamSkippedEventException extends NotRetryableActivityException {
 
     public SendStreamSkippedEventException(String message){
-        super(message);
+        super("SEND_STREAM_EVENT_SKIP", message);
     }
 
 }

@@ -15,6 +15,6 @@ public class InvalidExportStatusException extends NotRetryableActivityException 
      * @param message The detail message explaining the reason for the exception.
      */
     public InvalidExportStatusException(String message) {
-        super(message);
+        super("INVALID_EXPORT_STATUS", message);
     }
 }

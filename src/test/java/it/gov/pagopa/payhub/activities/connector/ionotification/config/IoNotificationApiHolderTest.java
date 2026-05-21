@@ -19,15 +19,19 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private IoNotificationApisHolder ioNotificationApisHolder;
+    private IoNotificationApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        IoNotificationApiClientConfig clientConfig = IoNotificationApiClientConfig.builder()
+
+        apiClientConfig = IoNotificationApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        ioNotificationApisHolder = new IoNotificationApisHolder(clientConfig, restTemplateBuilderMock);
+
+        ioNotificationApisHolder = new IoNotificationApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -39,6 +43,15 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
     }
 
     @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> ioNotificationApisHolder.getIoNotificationApi(accessToken)
+                        .sendMessage(new NotificationRequestDTO()),
+                new ParameterizedTypeReference<>() {}
+        );
+    }
+
+    @Test
     void whenGetIoNotificationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
                 accessToken -> ioNotificationApisHolder.getIoNotificationApi(accessToken)
@@ -46,5 +59,4 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 ioNotificationApisHolder::unload);
     }
-
 }

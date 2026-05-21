@@ -14,6 +14,6 @@ public class ExportFileNotFoundException extends NotRetryableActivityException {
      * @param message the detail message explaining the cause of the exception.
      */
     public ExportFileNotFoundException(String message) {
-        super(message);
+        super("EXPORT_FILE_NOT_FOUND", message);
     }
 }

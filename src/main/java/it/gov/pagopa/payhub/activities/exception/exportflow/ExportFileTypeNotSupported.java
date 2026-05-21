@@ -15,6 +15,6 @@ public class ExportFileTypeNotSupported extends NotRetryableActivityException {
      * @param message the detail message explaining the cause of the exception.
      */
     public ExportFileTypeNotSupported(String message) {
-        super(message);
+        super("EXPORT_FILE_NOT_SUPPORTED", message);
     }
 }

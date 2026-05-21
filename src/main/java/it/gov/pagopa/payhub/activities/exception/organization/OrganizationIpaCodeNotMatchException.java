@@ -15,6 +15,6 @@ public class OrganizationIpaCodeNotMatchException extends NotRetryableActivityEx
      * @param message the detail message explaining the cause of the exception.
      */
     public OrganizationIpaCodeNotMatchException(String message) {
-        super(message);
+        super("ORGANIZATION_IPA_CODE_NOT_MATCH", message);
     }
 }
