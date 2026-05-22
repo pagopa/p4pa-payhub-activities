@@ -191,6 +191,12 @@ tasks {
     }
 }
 
+sonarqube {
+    properties {
+        property("sonar.exclusions", "it.gov.pagopa.payhub.activities.exception/**/*Exception")
+    }
+}
+
 jaxb {
     javaGen {
         register("PaymentsReport") {
