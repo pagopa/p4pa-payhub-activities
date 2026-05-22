@@ -191,12 +191,6 @@ tasks {
     }
 }
 
-sonarqube {
-    properties {
-        property("sonar.exclusions", "**/exception/**")
-    }
-}
-
 jaxb {
     javaGen {
         register("PaymentsReport") {
