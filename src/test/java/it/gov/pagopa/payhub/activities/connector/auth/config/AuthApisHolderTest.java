@@ -18,15 +18,19 @@ class AuthApisHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private AuthApisHolder authApisHolder;
+    private AuthApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        AuthApiClientConfig clientConfig = AuthApiClientConfig.builder()
+
+        apiClientConfig = AuthApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        authApisHolder = new AuthApisHolder(clientConfig, restTemplateBuilderMock);
+
+        authApisHolder = new AuthApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -34,6 +38,15 @@ class AuthApisHolderTest extends BaseApiHolderTest {
         Mockito.verifyNoMoreInteractions(
                 restTemplateBuilderMock,
                 restTemplateMock
+        );
+    }
+
+    @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> authApisHolder.getAuthnApi(accessToken)
+                        .getUserInfo(),
+                new ParameterizedTypeReference<>() {}
         );
     }
 
@@ -54,5 +67,4 @@ class AuthApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 authApisHolder::unload);
     }
-
 }

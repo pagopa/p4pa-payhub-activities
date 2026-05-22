@@ -14,6 +14,6 @@ public class InvalidCsvRowException extends NotRetryableActivityException {
    * @param message The detail message (which is saved for later retrieval by the {@link #getMessage()} method).
    */
   public InvalidCsvRowException(String message) {
-    super(message);
+    super("INVALID_CSV_ROW", message);
   }
 }

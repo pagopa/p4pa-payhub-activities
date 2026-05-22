@@ -1,15 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.List;
-
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileUpdateStatusRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +16,12 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
 
@@ -29,15 +29,19 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private ProcessExecutionsApisHolder processExecutionsApisHolder;
+    private ProcessExecutionsApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ProcessExecutionsApiClientConfig clientConfig = ProcessExecutionsApiClientConfig.builder()
+
+        apiClientConfig = ProcessExecutionsApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        processExecutionsApisHolder = new ProcessExecutionsApisHolder(clientConfig, restTemplateBuilderMock);
+
+        processExecutionsApisHolder = new ProcessExecutionsApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -45,6 +49,15 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
         Mockito.verifyNoMoreInteractions(
                 restTemplateBuilderMock,
                 restTemplateMock
+        );
+    }
+
+    @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> processExecutionsApisHolder.getClassificationsExportFileEntityControllerApi(accessToken)
+                        .crudGetClassificationsexportfile(String.valueOf(1L)),
+                new ParameterizedTypeReference<>() {}
         );
     }
 

@@ -26,15 +26,19 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private DebtPositionApisHolder debtPositionApisHolder;
+    private DebtPositionApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        DebtPositionApiClientConfig clientConfig = DebtPositionApiClientConfig.builder()
+
+        apiClientConfig = DebtPositionApiClientConfig.builder()
             .baseUrl("http://example.com")
+                .maxAttempts(3)
             .build();
-        debtPositionApisHolder = new DebtPositionApisHolder(clientConfig, restTemplateBuilderMock);
+
+        debtPositionApisHolder = new DebtPositionApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -42,6 +46,15 @@ class DebtPositionApisHolderTest extends BaseApiHolderTest {
         Mockito.verifyNoMoreInteractions(
             restTemplateBuilderMock,
             restTemplateMock
+        );
+    }
+
+    @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> debtPositionApisHolder.getSpontaneousFormSearchControllerApi(accessToken)
+                        .crudSpontaneousFormsFindByOrganizationIdAndCode(1L, "code"),
+                new ParameterizedTypeReference<>() {}
         );
     }
 

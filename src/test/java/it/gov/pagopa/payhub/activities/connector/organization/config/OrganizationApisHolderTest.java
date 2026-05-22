@@ -20,15 +20,19 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private OrganizationApisHolder organizationApisHolder;
+    private OrganizationApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        OrganizationApiClientConfig clientConfig = OrganizationApiClientConfig.builder()
+
+        apiClientConfig = OrganizationApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        organizationApisHolder = new OrganizationApisHolder(clientConfig, restTemplateBuilderMock);
+
+        organizationApisHolder = new OrganizationApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -36,6 +40,15 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
         Mockito.verifyNoMoreInteractions(
                 restTemplateBuilderMock,
                 restTemplateMock
+        );
+    }
+
+    @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> organizationApisHolder.getBrokerConfigurationApi(accessToken)
+                        .getBrokerEmailServerConfig(1L),
+                new ParameterizedTypeReference<>() {}
         );
     }
 

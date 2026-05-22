@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.exportflow.email;
 
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
-import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupported;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupportedException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,7 +25,7 @@ class ExportFlowFileEmailTemplateResolverServiceTest {
         exportFile.setExportFileType(exportFileTypeEnum);
 
         if(expectedUnsupported.contains(exportFileTypeEnum)){
-            Assertions.assertThrows(ExportFileTypeNotSupported.class, () -> service.resolve(exportFile, true));
+            Assertions.assertThrows(ExportFileTypeNotSupportedException.class, () -> service.resolve(exportFile, true));
         } else {
             // When success=true
             EmailTemplateName result = service.resolve(exportFile, true);

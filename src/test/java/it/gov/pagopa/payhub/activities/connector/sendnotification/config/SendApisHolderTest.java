@@ -18,15 +18,19 @@ class SendApisHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private SendApisHolder sendApisHolder;
+    private SendApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        SendApiClientConfig clientConfig = SendApiClientConfig.builder()
+
+        apiClientConfig = SendApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        sendApisHolder = new SendApisHolder(clientConfig, restTemplateBuilderMock);
+
+        sendApisHolder = new SendApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -34,6 +38,15 @@ class SendApisHolderTest extends BaseApiHolderTest {
         Mockito.verifyNoMoreInteractions(
                 restTemplateBuilderMock,
                 restTemplateMock
+        );
+    }
+
+    @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> sendApisHolder.getSendStreamsApi(accessToken)
+                        .getStream("sendStreamId"),
+                new ParameterizedTypeReference<>() {}
         );
     }
 

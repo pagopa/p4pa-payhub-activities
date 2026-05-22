@@ -15,7 +15,7 @@ public class IngestionFlowTypeNotSupportedException extends NotRetryableActivity
 	 * @param message the detail message explaining the cause of the exception.
 	 */
 	public IngestionFlowTypeNotSupportedException(String message) {
-		super(message);
+		super("INGESTION_FLOW_FILE_TYPE_NOT_SUPPORTED", message);
 	}
 }
 

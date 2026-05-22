@@ -23,15 +23,19 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private WorkflowHubApisHolder workflowHubApisHolder;
+    private WorkflowHubApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        WorkflowHubApiClientConfig clientConfig = WorkflowHubApiClientConfig.builder()
+
+        apiClientConfig = WorkflowHubApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        workflowHubApisHolder = new WorkflowHubApisHolder(clientConfig, restTemplateBuilderMock);
+
+        workflowHubApisHolder = new WorkflowHubApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
 
     @AfterEach
@@ -39,6 +43,15 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
         Mockito.verifyNoMoreInteractions(
                 restTemplateBuilderMock,
                 restTemplateMock
+        );
+    }
+
+    @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> workflowHubApisHolder.getDebtPositionApi(accessToken)
+                        .syncDebtPosition(new SyncDebtPositionRequestDTO(), false, false, PaymentEventType.DP_CREATED, null),
+                new ParameterizedTypeReference<>() {}
         );
     }
 

@@ -28,21 +28,34 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     private RestTemplateBuilder restTemplateBuilderMock;
 
     private ClassificationApisHolder classificationApisHolder;
+    private ClassificationApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ClassificationApiClientConfig clientConfig = ClassificationApiClientConfig.builder()
+
+        apiClientConfig = ClassificationApiClientConfig.builder()
                 .baseUrl("http://example.com")
+                .maxAttempts(3)
                 .build();
-        classificationApisHolder = new ClassificationApisHolder(clientConfig, restTemplateBuilderMock);
+
+        classificationApisHolder = new ClassificationApisHolder(apiClientConfig, restTemplateBuilderMock);
     }
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(
                 restTemplateBuilderMock,
                 restTemplateMock
+        );
+    }
+
+    @Test
+    void testRetryConfiguration() {
+        assertRetry(apiClientConfig,
+                accessToken -> classificationApisHolder.getClassificationSearchControllerApi(accessToken)
+                        .crudClassificationsFindAllByOrganizationIdAndIuvAndIud(1L, "iuv", "iud"),
+                new ParameterizedTypeReference<>() {}
         );
     }
 
@@ -294,5 +307,4 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                 classificationApisHolder::unload);
     }
 //endregion
-
 }

@@ -15,6 +15,6 @@ public class OrganizationNotFoundException extends NotRetryableActivityException
      * @param message the detail message explaining the cause of the exception.
      */
     public OrganizationNotFoundException(String message) {
-        super(message);
+        super("ORGANIZATION_NOT_FOUND", message);
     }
 }

@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -24,15 +26,22 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	private RestTemplateBuilder restTemplateBuilderMock;
 
 	private PagoPaPaymentsApisHolder pagoPaPaymentsApisHolder;
+	private PagoPaPaymentsApiClientConfig apiClientConfig;
 
 	@BeforeEach
 	void setUp() {
 		when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
 		when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-		PagoPaPaymentsApiClientConfig clientConfig = PagoPaPaymentsApiClientConfig.builder()
+
+		apiClientConfig = PagoPaPaymentsApiClientConfig.builder()
 				.baseUrl("http://example.com")
+				.maxAttempts(3)
 				.build();
-		pagoPaPaymentsApisHolder = new PagoPaPaymentsApisHolder(clientConfig, restTemplateBuilderMock);
+
+		pagoPaPaymentsApisHolder = new PagoPaPaymentsApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
+
+		Mockito.verify(restTemplateMock)
+				.setErrorHandler(Mockito.any(HttpClientErrorJsonBodyHandler.class));
 	}
 
 	@AfterEach
@@ -40,6 +49,15 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 		Mockito.verifyNoMoreInteractions(
 			restTemplateBuilderMock,
 			restTemplateMock
+		);
+	}
+
+	@Test
+	void testRetryConfiguration() {
+		assertRetry(apiClientConfig,
+				accessToken -> pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken)
+						.generateMassive(new NoticeRequestMassiveDTO()),
+				new ParameterizedTypeReference<>() {}
 		);
 	}
 
