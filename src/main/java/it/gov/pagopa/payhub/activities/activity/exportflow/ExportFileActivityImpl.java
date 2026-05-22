@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.exportflow;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
-import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupported;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.service.exportflow.classification.ClassificationsExportFileService;
 import it.gov.pagopa.payhub.activities.service.exportflow.classification.FullClassificationsExportFileService;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.PaidExportFileService;
@@ -43,7 +43,7 @@ public class ExportFileActivityImpl implements ExportFileActivity {
                     exportFileResult = classificationsExportFileService.executeExport(exportFileId);
                 }
             }
-            default -> throw new ExportFileTypeNotSupported("Invalid export file type: " + exportFileTypeEnum);
+            default -> throw new ExportFileTypeNotSupportedException("Invalid export file type: " + exportFileTypeEnum);
         }
 
         return exportFileResult;

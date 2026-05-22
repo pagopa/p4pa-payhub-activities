@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
-import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupported;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupportedException;
 import it.gov.pagopa.payhub.activities.service.exportflow.classification.ClassificationsExportFileService;
 import it.gov.pagopa.payhub.activities.service.exportflow.classification.FullClassificationsExportFileService;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.PaidExportFileService;
@@ -98,7 +98,7 @@ class ExportFileActivityImplTest {
     @Test
     void givenInvalidFlowIdAndPaidType_whenExecuteExport_thenReturnExportFlowFileTypeNotSupported(){
 
-        ExportFileTypeNotSupported ex = assertThrows(ExportFileTypeNotSupported.class, () ->
+        ExportFileTypeNotSupportedException ex = assertThrows(ExportFileTypeNotSupportedException.class, () ->
                 exportFlowFileActivity.executeExport(1L, ExportFile.ExportFileTypeEnum.PAYMENTS_REPORTING));
 
         assertEquals("Invalid export file type: PAYMENTS_REPORTING", ex.getMessage());
