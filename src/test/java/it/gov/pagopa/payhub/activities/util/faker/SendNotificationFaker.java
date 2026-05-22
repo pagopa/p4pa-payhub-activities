@@ -25,6 +25,7 @@ public class SendNotificationFaker {
                         .navList(Collections.singletonList("nav"))
                         .build()))
                 .status(NotificationStatus.ACCEPTED)
+                .campaignId("campaignId1")
                 .build();
     }
 
