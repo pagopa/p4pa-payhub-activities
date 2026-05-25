@@ -19,12 +19,12 @@ public class PaymentsReportingPagoPaClient {
 
 	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, OffsetDateTime latestFlowDate, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.restGetPaymentsReportingList(organizationId, latestFlowDate);
+				.getPaymentsReportingList(organizationId, latestFlowDate);
 	}
 
 	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.restFetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, revision, pspId);
+				.fetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, revision, pspId);
 	}
 
 }

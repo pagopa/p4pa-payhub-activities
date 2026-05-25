@@ -40,7 +40,7 @@ class PaymentsReportingPagoPaClientTest {
 		PaymentsReportingIdDTO expectedResponse = new PaymentsReportingIdDTO();
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.restGetPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
+		when(mockApi.getPaymentsReportingList(organizationId, latestReportDate)).thenReturn(List.of(expectedResponse));
 
 		// When
 		List<PaymentsReportingIdDTO> result = client.getPaymentsReportingList(organizationId, latestReportDate, accessToken);
@@ -48,7 +48,7 @@ class PaymentsReportingPagoPaClientTest {
 		// Then
 		assertEquals(List.of(expectedResponse), result);
 		verify(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken), times(1))
-			.restGetPaymentsReportingList(organizationId, latestReportDate);
+			.getPaymentsReportingList(organizationId, latestReportDate);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class PaymentsReportingPagoPaClientTest {
 
 		PaymentsReportingApi mockApi = mock(PaymentsReportingApi.class);
 		when(pagoPaPaymentsApisHolderMock.getPaymentsReportingApi(accessToken)).thenReturn(mockApi);
-		when(mockApi.restFetchPaymentReporting(organizationId, flowId, fileName, revision, pspId)).thenReturn(expectedResponse);
+		when(mockApi.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId)).thenReturn(expectedResponse);
 
 		// When
 		Long result = client.fetchPaymentReporting(organizationId, flowId, fileName, revision, pspId, accessToken);
