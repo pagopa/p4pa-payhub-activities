@@ -17,23 +17,14 @@ public class PaymentsReportingPagoPaClient {
 		this.pagoPaPaymentsApisHolder = pagoPaPaymentsApisHolder;
 	}
 
-	public List<PaymentsReportingIdDTO> restGetPaymentsReportingList(Long organizationId, OffsetDateTime latestFlowDate, String accessToken) {
+	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId, OffsetDateTime latestFlowDate, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
 				.restGetPaymentsReportingList(organizationId, latestFlowDate);
 	}
 
-	public Long restFetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
+	public Long fetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId, String accessToken) {
 		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
 				.restFetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName, revision, pspId);
 	}
 
-	public List<PaymentsReportingIdDTO> soapGetPaymentsReportingList(Long organizationId, String accessToken) {
-		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.soapGetPaymentsReportingList(organizationId);
-	}
-
-	public Long soapFetchPaymentReporting(Long organizationId, String pagopaPaymentsReportingId, String fileName, String accessToken) {
-		return pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
-				.soapFetchPaymentReporting(organizationId, pagopaPaymentsReportingId, fileName);
-	}
 }

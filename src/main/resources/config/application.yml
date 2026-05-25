@@ -20,8 +20,6 @@ ingestion-flow-files:
     max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_ORG_SIL_SERVICES_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
   payment-notifications:
     max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_PAYMENT_NOTIFICATIONS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
-  payments-reporting:
-    legacy-feature-flags: "\${INGEST_FLOW_FILES_PAYMENTS_REPORTING_LEGACY_FEATURE_FLAGS:false}"
   receipts:
     max-concurrent-processing-rows: "\${INGESTION_FLOW_FILES_RECEIPTS_MAX_CONCURRENT_PROCESSING_ROWS:\${ingestion-flow-files.default.max-concurrent-processing-rows}}"
   send-notifications:

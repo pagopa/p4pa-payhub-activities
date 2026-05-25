@@ -6,16 +6,18 @@ import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Lazy
+@Service
 @Slf4j
-public class PaymentsReportingPagoPaSoapServiceImpl implements PaymentsReportingPagoPaService {
+public class PaymentsReportingPagoPaServiceImpl implements PaymentsReportingPagoPaService {
 	private final PaymentsReportingPagoPaClient paymentsReportingPagoPaClient;
 	private final AuthnService authnService;
 
-	public PaymentsReportingPagoPaSoapServiceImpl(PaymentsReportingPagoPaClient paymentsReportingPagoPaClient, AuthnService authnService) {
+	public PaymentsReportingPagoPaServiceImpl(PaymentsReportingPagoPaClient paymentsReportingPagoPaClient, AuthnService authnService) {
 		this.paymentsReportingPagoPaClient = paymentsReportingPagoPaClient;
 		this.authnService = authnService;
 	}
@@ -23,12 +25,12 @@ public class PaymentsReportingPagoPaSoapServiceImpl implements PaymentsReporting
 	@Override
 	public List<PaymentsReportingIdDTO> getPaymentsReportingList(Long organizationId) {
 		log.info("Getting payments reporting list for organizationId: {}", organizationId);
-		return paymentsReportingPagoPaClient.soapGetPaymentsReportingList(organizationId, authnService.getAccessToken());
+		return paymentsReportingPagoPaClient.getPaymentsReportingList(organizationId, null, authnService.getAccessToken());
 	}
 
 	@Override
 	public Long fetchPaymentReporting(Organization organization, String pagopaPaymentsReportingId, String fileName, Long revision, String pspId) {
-		log.info("Fetching payment reporting for organizationId: {} and pagopaPaymentsReportingId: {} asking to store it with name: {}", organization.getOrganizationId(), pagopaPaymentsReportingId, fileName);
-		return paymentsReportingPagoPaClient.soapFetchPaymentReporting(organization.getOrganizationId(), pagopaPaymentsReportingId, fileName, authnService.getAccessToken(organization.getIpaCode()));
+		log.info("Fetching payment reporting for organizationId: {} and pagopaPaymentsReportingId: {} and revision: {} and pspId: {} asking to store it with name: {}", organization.getOrganizationId(), pagopaPaymentsReportingId, revision, pspId, fileName);
+		return paymentsReportingPagoPaClient.fetchPaymentReporting(organization.getOrganizationId(), pagopaPaymentsReportingId, fileName, revision, pspId, authnService.getAccessToken(organization.getIpaCode()));
 	}
 }
