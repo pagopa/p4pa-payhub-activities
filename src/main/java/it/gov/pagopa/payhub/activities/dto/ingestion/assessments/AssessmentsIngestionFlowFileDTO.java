@@ -30,19 +30,26 @@ public class AssessmentsIngestionFlowFileDTO {
     @CsvBindByName(column = "codUfficio")
     private String officeCode;
 
+    @CsvBindByName(column = "descrizioneCodUfficio")
+    private String officeDescription;
+
     @CsvBindByName(column = "codCapitolo", required = true)
     private String sectionCode;
 
+    @CsvBindByName(column = "descrizioneCodCapitolo")
+    private String sectionDescription;
+
     @CsvBindByName(column = "codiceAccertamento")
     private String assessmentCode;
+
+    @CsvBindByName(column = "descrizioneCodiceAccertamento")
+    private String assessmentDescription;
 
     @CsvBindByName(column = "importoCentesimi", required = true)
     private Long amountCents;
 
     @CsvBindByName(column = "importoVersato", required = true)
     private Boolean amountSubmitted;
-
-
 
 }
 

@@ -38,8 +38,8 @@ class AssessmentsMapperTest {
 
     Assertions.assertNotNull(result);
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "links", "assessmentDetailId","paymentDateTime","receiptId", "officeDescription",
-            "sectionDescription", "assessmentDescription", "classificationLabel", "dateReceipt", "dateReporting", "dateTreasury");
+        "updateTraceId", "links", "assessmentDetailId","paymentDateTime","receiptId",
+            "classificationLabel", "dateReceipt", "dateReporting", "dateTreasury");
   }
 
 }
