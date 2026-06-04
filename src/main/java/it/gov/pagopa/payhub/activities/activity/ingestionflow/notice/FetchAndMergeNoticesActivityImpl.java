@@ -110,12 +110,12 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
 
     private List<Path> downloadAndExtractAllNotices(List<String> signedUrls, Path tmpDir) {
         return IntStream.range(0, signedUrls.size())
-                .mapToObj(i -> downloadAndExtractSingleNotice(signedUrls.get(i), tmpDir, i))
+                .mapToObj(i -> downloadAndExtractNotices(signedUrls.get(i), tmpDir, i))
                 .flatMap(List::stream)
                 .toList();
     }
 
-    private List<Path> downloadAndExtractSingleNotice(String url, Path tmpDir, int index) {
+    private List<Path> downloadAndExtractNotices(String url, Path tmpDir, int index) {
         byte[] downloadedBytes = signedUrlService.downloadFileFromSignedUrl(url);
 
         Path downloadedZipPath = tmpDir.resolve("downloaded_" + index + ".zip");
