@@ -24,10 +24,12 @@ public class OrgSilServiceErrorDTO extends ErrorFileDTO {
     @Override
     public String[] toCsvRow() {
         return new String[]{
-                getFileName(), ipaCode,
+                getFileName(),
+                ipaCode,
                 applicationName,
-                getRowNumber().toString(),
-                getErrorCode(), getErrorMessage()
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
         };
     }
 }

@@ -23,8 +23,9 @@ public class TreasuryCsvErrorDTO extends ErrorFileDTO {
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(), iuf,
-                getRowNumber().toString(),
-                getErrorCode(), getErrorMessage()
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
         };
     }
 }

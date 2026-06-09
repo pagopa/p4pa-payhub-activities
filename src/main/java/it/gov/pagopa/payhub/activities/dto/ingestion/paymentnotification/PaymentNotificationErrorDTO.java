@@ -24,9 +24,12 @@ public class PaymentNotificationErrorDTO extends ErrorFileDTO {
     @Override
     public String[] toCsvRow() {
         return new String[]{
-                getFileName(), iuv, iud,
-                getRowNumber().toString(),
-                getErrorCode(), getErrorMessage()
+                getFileName(),
+                iuv,
+                iud,
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
         };
     }
 }

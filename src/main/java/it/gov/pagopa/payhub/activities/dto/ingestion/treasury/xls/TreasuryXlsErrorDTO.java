@@ -22,9 +22,11 @@ public class TreasuryXlsErrorDTO extends ErrorFileDTO {
     @Override
     public String[] toCsvRow() {
         return new String[]{
-                getFileName(), iuf,
-                getRowNumber().toString(),
-                getErrorCode(), getErrorMessage()
+                getFileName(),
+                iuf,
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
         };
     }
 }

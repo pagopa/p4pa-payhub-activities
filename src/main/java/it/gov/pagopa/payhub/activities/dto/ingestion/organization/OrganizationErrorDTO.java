@@ -26,9 +26,11 @@ public class OrganizationErrorDTO extends ErrorFileDTO {
     @Override
     public String[] toCsvRow() {
         return new String[]{
-                getFileName(), ipaCode,
-                getRowNumber().toString(),
-                getErrorCode(), getErrorMessage()
+                getFileName(),
+                ipaCode,
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
         };
     }
 }

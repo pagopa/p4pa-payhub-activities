@@ -16,19 +16,21 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class TreasuryPosteErrorDTO extends ErrorFileDTO {
 
-  private String iuf;
+    private String iuf;
 
-  public TreasuryPosteErrorDTO(String fileName, String iuf, Long rowNumber, String errorCode, String errorMessage) {
-    super(fileName, rowNumber, errorCode, errorMessage);
-    this.iuf = iuf;
-  }
+    public TreasuryPosteErrorDTO(String fileName, String iuf, Long rowNumber, String errorCode, String errorMessage) {
+        super(fileName, rowNumber, errorCode, errorMessage);
+        this.iuf = iuf;
+    }
 
-  @Override
-  public String[] toCsvRow() {
-    return new String[]{
-        getFileName(), iuf,
-        getRowNumber().toString(),
-        getErrorCode(), getErrorMessage()
-    };
-  }
+    @Override
+    public String[] toCsvRow() {
+        return new String[]{
+                getFileName(),
+                iuf,
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
+        };
+    }
 }

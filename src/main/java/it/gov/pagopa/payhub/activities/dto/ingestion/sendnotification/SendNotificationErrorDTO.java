@@ -14,16 +14,17 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class SendNotificationErrorDTO extends ErrorFileDTO {
 
-  public SendNotificationErrorDTO(String fileName, Long rowNumber, String errorCode, String errorMessage) {
-    super(fileName, rowNumber, errorCode, errorMessage);
-  }
+    public SendNotificationErrorDTO(String fileName, Long rowNumber, String errorCode, String errorMessage) {
+        super(fileName, rowNumber, errorCode, errorMessage);
+    }
 
-  @Override
-  public String[] toCsvRow() {
-    return new String[]{
-        getFileName(),
-        getRowNumber().toString(),
-        getErrorCode(), getErrorMessage()
-    };
-  }
+    @Override
+    public String[] toCsvRow() {
+        return new String[]{
+                getFileName(),
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
+        };
+    }
 }

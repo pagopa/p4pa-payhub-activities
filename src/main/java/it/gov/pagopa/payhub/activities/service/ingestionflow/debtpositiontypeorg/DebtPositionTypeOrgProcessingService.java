@@ -135,6 +135,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
     @Override
     protected DebtPositionTypeOrgErrorDTO buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, DebtPositionTypeOrgIngestionFlowFileDTO row, String errorCode, String message) {
         DebtPositionTypeOrgErrorDTO errorDTO = DebtPositionTypeOrgErrorDTO.builder()
+            .organizationId(ingestionFlowFile.getOrganizationId())
             .fileName(ingestionFlowFile.getFileName())
             .rowNumber(lineNumber)
             .errorCode(errorCode)
@@ -142,7 +143,6 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
             .build();
         if (row != null) {
             errorDTO.setDebtPositionTypeCode(row.getCode());
-            errorDTO.setOrganizationId(ingestionFlowFile.getOrganizationId());
         }
         return errorDTO;
     }

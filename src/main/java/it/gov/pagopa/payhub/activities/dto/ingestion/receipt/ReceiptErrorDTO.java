@@ -19,7 +19,7 @@ public class ReceiptErrorDTO extends ErrorFileDTO {
     public String[] toCsvRow() {
         return new String[]{
                 getFileName(),
-                getRowNumber().toString(),
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
                 getErrorCode(), getErrorMessage()
         };
     }
