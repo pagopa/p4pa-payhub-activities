@@ -28,9 +28,12 @@ public class DebtPositionTypeOrgErrorDTO extends ErrorFileDTO {
     @Override
     public String[] toCsvRow() {
         return new String[]{
-                getFileName(), debtPositionTypeCode,
-                organizationId.toString(),getRowNumber().toString(),
-                getErrorCode(), getErrorMessage()
+                getFileName(),
+                debtPositionTypeCode,
+                organizationId != null ? organizationId.toString() : "",
+                getRowNumber() != null ? String.valueOf(getRowNumber()) : "",
+                getErrorCode(),
+                getErrorMessage()
         };
     }
 }
