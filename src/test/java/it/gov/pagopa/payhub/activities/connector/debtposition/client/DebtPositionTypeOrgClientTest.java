@@ -272,19 +272,12 @@ class DebtPositionTypeOrgClientTest {
     void whenCreateSpontaneousFormThenInvokeWithAccessToken() {
         // Given
         String accessToken = "ACCESSTOKEN";
-        SpontaneousForm formToCreate = podamFactory.manufacturePojo(SpontaneousForm.class);
-
-        SpontaneousForm createdForm = SpontaneousForm.builder()
-            .spontaneousFormId(200L)
-            .organizationId(formToCreate.getOrganizationId())
-            .code(formToCreate.getCode())
-            .structure(formToCreate.getStructure())
-            .dictionary(formToCreate.getDictionary())
-            .build();
+        SpontaneousForm formToCreate = new SpontaneousForm();
+        SpontaneousForm createdForm = new SpontaneousForm();
 
         Mockito.when(debtPositionApisHolderMock.getSpontaneousFormApi(accessToken))
             .thenReturn(spontaneousFormApiMock);
-        Mockito.when(spontaneousFormApiMock.createSpontaneousForm(formToCreate))
+        Mockito.when(spontaneousFormApiMock.createSpontaneousForm(Mockito.same(formToCreate)))
             .thenReturn(createdForm);
 
         // When
