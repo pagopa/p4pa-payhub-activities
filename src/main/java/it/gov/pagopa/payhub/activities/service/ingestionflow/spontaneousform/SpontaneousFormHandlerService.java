@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
 import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousFormStructure;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class SpontaneousFormHandlerService {
 	 * @return the ID of the existing or newly created spontaneous form, or nullif creation fails
 	 */
 	public Long handleSpontaneousForm(Long organizationId, DebtPositionTypeOrgIngestionFlowFileDTO row) {
+		if(StringUtils.isEmpty(row.getSpontaneousFormCode())){
+			return null;
+		}
 
 		SpontaneousForm existingForm = spontaneousFormService.findByOrganizationIdAndCode(organizationId, row.getSpontaneousFormCode());
 
