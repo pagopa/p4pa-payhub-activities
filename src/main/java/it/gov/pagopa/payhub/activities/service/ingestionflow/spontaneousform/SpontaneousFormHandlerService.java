@@ -49,7 +49,7 @@ public class SpontaneousFormHandlerService {
 				.organizationId(organizationId)
 				.code(row.getSpontaneousFormCode())
 				.structure(new JsonMapper()
-					.readValue(row.getSpontaneousFormStructure(), SpontaneousFormStructure.class))
+					.readTree(row.getSpontaneousFormStructure()))
 				.dictionary(null)
 				.build();
 

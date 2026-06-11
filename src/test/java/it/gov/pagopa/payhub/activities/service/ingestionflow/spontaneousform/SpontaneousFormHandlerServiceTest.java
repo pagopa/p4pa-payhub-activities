@@ -1,21 +1,22 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
-import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousFormStructure;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.JsonNode;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,8 +54,8 @@ class SpontaneousFormHandlerServiceTest {
         SpontaneousForm existingForm = SpontaneousForm.builder()
             .spontaneousFormId(expectedId)
             .organizationId(organizationId)
-            .structure(new SpontaneousFormStructure())
             .code(code)
+            .structure(Mockito.mock(JsonNode.class))
             .build();
 
         when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
@@ -80,11 +81,12 @@ class SpontaneousFormHandlerServiceTest {
         when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
             .thenReturn(null);
 
+        JsonNode expectedDeserializedStructure = new JsonConfig().objectMapperJackson3().readTree(jsonStructure);
         SpontaneousForm createdForm = SpontaneousForm.builder()
             .spontaneousFormId(expectedId)
             .organizationId(organizationId)
-            .structure(new SpontaneousFormStructure())
             .code(code)
+            .structure(expectedDeserializedStructure)
             .build();
 
         ArgumentCaptor<SpontaneousForm> formCaptor = ArgumentCaptor.forClass(SpontaneousForm.class);
@@ -98,12 +100,12 @@ class SpontaneousFormHandlerServiceTest {
         SpontaneousForm capturedForm = formCaptor.getValue();
         assertEquals(organizationId, capturedForm.getOrganizationId());
         assertEquals(code, capturedForm.getCode());
-        assertNotNull(capturedForm.getStructure());
+        assertEquals(expectedDeserializedStructure, capturedForm.getStructure());
         assertNull(capturedForm.getDictionary());
     }
 
     @ParameterizedTest
-    @NullAndEmptySource
+    @NullSource
     @ValueSource(strings = {"{invalid json structure"})
     void givenNoExistingFormAndInvalidJsonWhenHandleSpontaneousFormThenThrowInvalidValueException(String input) {
 		String code = "SF_CODE_INVALID";
