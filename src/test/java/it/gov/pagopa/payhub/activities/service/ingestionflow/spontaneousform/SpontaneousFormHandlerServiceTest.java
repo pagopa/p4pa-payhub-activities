@@ -14,13 +14,12 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SpontaneousFormHandlerServiceTest {
@@ -41,7 +40,7 @@ class SpontaneousFormHandlerServiceTest {
     }
 
     @Test
-    void whenExistingFormFoundThenReturnExistingId() {
+    void givenExistingFormFoundWhenHandleSpontaneousFormThenReturnExistingId() {
         Long organizationId = 100L;
         String code = "SF_CODE_001";
         Long expectedId = 999L;
@@ -64,11 +63,10 @@ class SpontaneousFormHandlerServiceTest {
         Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
 
         assertEquals(expectedId, result);
-        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
     }
 
     @Test
-    void whenNoExistingFormAndValidJsonThenCreateAndReturnNewId() {
+    void givenNoExistingFormAndValidJsonWhenHandleSpontaneousFormThenCreateAndReturnNewId() {
         Long organizationId = 100L;
         String code = "SF_CODE_NEW";
         String jsonStructure = "{\"fields\":[{\"name\":\"field1\",\"type\":\"text\"}]}";
@@ -89,16 +87,13 @@ class SpontaneousFormHandlerServiceTest {
             .code(code)
             .build();
 
-        when(spontaneousFormServiceMock.createSpontaneousForm(any(SpontaneousForm.class)))
+        ArgumentCaptor<SpontaneousForm> formCaptor = ArgumentCaptor.forClass(SpontaneousForm.class);
+        when(spontaneousFormServiceMock.createSpontaneousForm(formCaptor.capture()))
             .thenReturn(createdForm);
 
         Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
 
         assertEquals(expectedId, result);
-
-        ArgumentCaptor<SpontaneousForm> formCaptor = ArgumentCaptor.forClass(SpontaneousForm.class);
-        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
-        verify(spontaneousFormServiceMock).createSpontaneousForm(formCaptor.capture());
 
         SpontaneousForm capturedForm = formCaptor.getValue();
         assertEquals(organizationId, capturedForm.getOrganizationId());
@@ -110,7 +105,7 @@ class SpontaneousFormHandlerServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"{invalid json structure"})
-    void whenNoExistingFormAndInvalidJsonThenThrowInvalidValueException(String input) {
+    void givenNoExistingFormAndInvalidJsonWhenHandleSpontaneousFormThenThrowInvalidValueException(String input) {
 		String code = "SF_CODE_INVALID";
         Long organizationId = 100L;
 
@@ -128,11 +123,10 @@ class SpontaneousFormHandlerServiceTest {
         );
 
         assertTrue(exception.getMessage().contains(code));
-        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
     }
 
     @Test
-    void whenNoExistingFormAndCreateServiceReturnsNullThenReturnNull() {
+    void givenNoExistingFormAndCreateServiceReturnsNullWhenHandleSpontaneousFormThenReturnNull() {
         Long organizationId = 100L;
         String code = "SF_CODE_FAIL";
 
@@ -150,7 +144,18 @@ class SpontaneousFormHandlerServiceTest {
         Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
 
         assertNull(result);
-        verify(spontaneousFormServiceMock).findByOrganizationIdAndCode(organizationId, code);
-        verify(spontaneousFormServiceMock).createSpontaneousForm(any(SpontaneousForm.class));
+    }
+
+    @Test
+    void givenNoCodeWhenHandleSpontaneousFormThenReturnNull() {
+        Long organizationId = 100L;
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+                .spontaneousFormStructure("{\"fields\":[]}")
+                .build();
+
+        Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
+
+        assertNull(result);
     }
 }
