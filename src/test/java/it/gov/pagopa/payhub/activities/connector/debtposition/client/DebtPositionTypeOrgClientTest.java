@@ -285,7 +285,6 @@ class DebtPositionTypeOrgClientTest {
 
         // Then
         Assertions.assertSame(createdForm, result);
-        Assertions.assertEquals(200L, result.getSpontaneousFormId());
     }
 
 

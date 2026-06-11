@@ -81,7 +81,7 @@ class SpontaneousFormServiceTest {
         SpontaneousForm createdForm = new SpontaneousForm();
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionTypeOrgClientMock.createSpontaneousForm(Mockito.same(createdForm), Mockito.eq(accessToken)))
+        Mockito.when(debtPositionTypeOrgClientMock.createSpontaneousForm(Mockito.same(formToCreate), Mockito.eq(accessToken)))
             .thenReturn(createdForm);
 
         // When
