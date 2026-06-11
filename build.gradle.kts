@@ -469,7 +469,8 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
         mapOf(
             "LocalDateTime" to "java.time.LocalDateTime",
             "object" to "tools.jackson.databind.JsonNode",
-            "string+binary" to "Resource"
+            "string+binary" to "Resource",
+            "SpontaneousFormStructure" to "tools.jackson.databind.JsonNode",
         )
     )
     importMappings.set(

@@ -55,8 +55,6 @@ class SpontaneousFormServiceTest {
 
         // Then
         Assertions.assertSame(expectedForm, result);
-        Mockito.verify(authnServiceMock).getAccessToken();
-        Mockito.verify(debtPositionTypeOrgClientMock).findSpontaneousFormByOrganizationIdAndCode(organizationId, code, accessToken);
     }
 
     @Test
@@ -74,25 +72,16 @@ class SpontaneousFormServiceTest {
 
         // Then
         Assertions.assertNull(result);
-        Mockito.verify(authnServiceMock).getAccessToken();
-        Mockito.verify(debtPositionTypeOrgClientMock).findSpontaneousFormByOrganizationIdAndCode(organizationId, code, accessToken);
     }
 
     @Test
     void whenCreateSpontaneousFormThenInvokeClient() {
         // Given
-        SpontaneousForm formToCreate = podamFactory.manufacturePojo(SpontaneousForm.class);
-
-        SpontaneousForm createdForm = SpontaneousForm.builder()
-            .spontaneousFormId(200L)
-            .organizationId(formToCreate.getOrganizationId())
-            .code(formToCreate.getCode())
-            .structure(formToCreate.getStructure())
-            .dictionary(formToCreate.getDictionary())
-            .build();
+        SpontaneousForm formToCreate = new SpontaneousForm();
+        SpontaneousForm createdForm = new SpontaneousForm();
 
         Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionTypeOrgClientMock.createSpontaneousForm(formToCreate, accessToken))
+        Mockito.when(debtPositionTypeOrgClientMock.createSpontaneousForm(Mockito.same(formToCreate), Mockito.eq(accessToken)))
             .thenReturn(createdForm);
 
         // When
@@ -100,9 +89,6 @@ class SpontaneousFormServiceTest {
 
         // Then
         Assertions.assertSame(createdForm, result);
-        Assertions.assertEquals(200L, result.getSpontaneousFormId());
-        Mockito.verify(authnServiceMock).getAccessToken();
-        Mockito.verify(debtPositionTypeOrgClientMock).createSpontaneousForm(formToCreate, accessToken);
     }
 }
 

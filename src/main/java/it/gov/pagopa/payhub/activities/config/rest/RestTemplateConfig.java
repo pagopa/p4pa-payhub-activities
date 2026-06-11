@@ -23,6 +23,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 
 @Slf4j
 @Configuration(proxyBeanMethods = false)
@@ -51,11 +52,12 @@ public class RestTemplateConfig {
                 try {
                     super.handleError(response, statusCode, url, method);
                 } catch (HttpStatusCodeException ex) {
+                    String bodyString = ex.getResponseBodyAsString();
                     errorBodyLogger.info("{} {} Returned status {}: {}",
                         method,
                         Utilities.removePiiFromURI(url),
                         ex.getStatusCode(),
-                        ex.getResponseBodyAsString());
+                        bodyString.replace("\n", "").replace("\r", ""));
                     throw ex;
                 }
             }
