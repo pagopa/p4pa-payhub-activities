@@ -49,7 +49,7 @@ public class DebtPositionTypeIngestionFlowFileDTO {
     @CsvBindByName(column = "ioTemplateMessage")
     private String ioTemplateMessage;
 
-    @CsvBindByName(column = "ioTemplateSubject", required = true)
+    @CsvBindByName(column = "ioTemplateSubject")
     private String ioTemplateSubject;
 
 }
