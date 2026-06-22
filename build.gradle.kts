@@ -7,15 +7,15 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     java
-    id("org.springframework.boot") version "4.0.6"
+    id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.sonarqube") version "7.2.3.7755"
+    id("org.sonarqube") version "7.3.1.8318"
     `java-library`
     `maven-publish`
     jacoco
     id("com.intershop.gradle.jaxb") version "8.0.1"
-    id("org.openapi.generator") version "7.21.0"
-    id("com.github.jk1.dependency-license-report") version "3.1.2"
+    id("org.openapi.generator") version "7.23.0"
+    id("com.github.jk1.dependency-license-report") version "3.1.4"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -82,18 +82,17 @@ tasks.jacocoTestReport {
 
 apply(plugin = "maven-publish")
 
-val janinoVersion = "3.1.12"
 val commonsCompressVersion = "1.28.0"
 val commonsLang3Version = "3.20.0"
 val commonsTextVersion = "1.15.0"
 val activationVersion = "2.1.4"
-val jaxbVersion = "4.0.7"
+val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "4.0.5"
 val jsoupVersion = "1.22.2"
 val openApiToolsVersion = "0.2.10"
-val temporalVersion = "1.34.0"
-val protobufJavaVersion = "4.34.1"
-val grpcBomVersion = "1.80.0"
+val temporalVersion = "1.35.0"
+val protobufJavaVersion = "4.35.1"
+val grpcBomVersion = "1.82.0"
 val guavaVersion = "33.6.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
@@ -109,7 +108,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
-    implementation("org.codehaus.janino:janino:$janinoVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
@@ -189,6 +187,7 @@ tasks {
             expand(projectInfo)
         }
     }
+    processResources.dependsOn("dependenciesBuild")
 }
 
 jaxb {
@@ -347,7 +346,8 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -378,7 +378,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -409,7 +410,8 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -440,7 +442,8 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -484,7 +487,8 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -523,7 +527,8 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -560,7 +565,8 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -601,7 +607,8 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useBeanValidation" to "true",
             "serializationLibrary" to "jackson",
@@ -630,7 +637,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "useOneOfInterfaces" to "true",
             "useBeanValidation" to "true",
@@ -665,7 +673,8 @@ tasks.register<GenerateTask>("openApiGeneratePUSIL") {
             "openApiNullable" to "false",
             "dateLibrary" to "java8",
             "serializableModel" to "true",
-            "useSpringBoot3" to "true",
+            "useSpringBoot4" to "true",
+            "useJackson3" to "true",
             "useJakartaEe" to "true",
             "serializationLibrary" to "jackson",
             "useOneOfInterfaces" to "true",
