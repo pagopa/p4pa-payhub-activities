@@ -13,7 +13,7 @@ import java.util.List;
 public class CampaignClient {
     private final SendApisHolder sendApisHolder;
 
-    private CampaignClient(SendApisHolder sendApisHolder) {
+    public CampaignClient(SendApisHolder sendApisHolder) {
         this.sendApisHolder = sendApisHolder;
     }
 
