@@ -78,4 +78,15 @@ class SendApisHolderTest extends BaseApiHolderTest {
                 new ParameterizedTypeReference<>() {},
                 sendApisHolder::unload);
     }
+
+    @Test
+    void whenThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+        assertAuthenticationShouldBeSetInThreadSafeMode(
+                accessToken -> sendApisHolder.getCampaignApi(accessToken)
+                        .fetchAllCampaignIds(),
+                new ParameterizedTypeReference<>() {
+                },
+                sendApisHolder::unload
+        );
+    }
 }
