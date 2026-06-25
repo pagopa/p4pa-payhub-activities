@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.sendnotification.CampaignServic
 import java.util.List;
 
 public class FetchSendCampaignsActivityImpl implements FetchSendCampaignsActivity {
-    private CampaignService campaignService;
+    private final CampaignService campaignService;
 
     public FetchSendCampaignsActivityImpl(CampaignService campaignService) {
         this.campaignService = campaignService;
