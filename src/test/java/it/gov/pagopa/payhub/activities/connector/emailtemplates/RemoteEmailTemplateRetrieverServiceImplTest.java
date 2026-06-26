@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.emailtemplates;
 import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadEmailTemplateClient;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -122,11 +124,12 @@ class RemoteEmailTemplateRetrieverServiceImplTest {
     }
 
     @Test
-    void givenTemplateFoundOnRepoWhenRetrieveThenReturnEmailWithEmptyInlines() {
+    void givenTemplateFoundOnRepoWhenRetrieveThenReturnEmailWithInlines() {
         //GIVEN
         String expectedFileContent = "file content";
-        String attachmentsFileContent = " file1.txt \n\r\n\t file2.txt ";
+        String attachmentsFileContent = " file1.txt \n\r\n\t file2.txt \n../file3.txt";
         String expectedAttachmentFile1Content = "attachment file1 content";
+        String expectedAttachmentFile2Content = "attachment file2 content";
         Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, TEMPLATE_HTML_FILENAME))
                 .thenReturn(Optional.of(expectedFileContent.getBytes(StandardCharsets.UTF_8)));
         Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, ATTACHMENTS_FILENAME))
@@ -134,6 +137,8 @@ class RemoteEmailTemplateRetrieverServiceImplTest {
         Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, "/attachments/file1.txt"))
                 .thenReturn(Optional.of(expectedAttachmentFile1Content.getBytes(StandardCharsets.UTF_8)));
         Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, "/attachments/file2.txt"))
+                .thenReturn(Optional.of(expectedAttachmentFile2Content.getBytes(StandardCharsets.UTF_8)));
+        Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, "/attachments/_file3.txt"))
                 .thenReturn(Optional.empty());
         //WHEN
         EmailTemplate actualEmailTemplate = retrieverService.retrieve(BROKER_EXTERNAL_ID, TEMPLATE_NAME, EMAIL_SUBJECT);
@@ -141,15 +146,17 @@ class RemoteEmailTemplateRetrieverServiceImplTest {
         Assertions.assertNotNull(actualEmailTemplate);
         Assertions.assertEquals(EMAIL_SUBJECT, actualEmailTemplate.getSubject());
         Assertions.assertEquals(expectedFileContent, actualEmailTemplate.getBody());
-        Assertions.assertEquals(1, actualEmailTemplate.getInlines().size());
-        Mockito.verify(downloadEmailTemplateClientMock)
-                .downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, TEMPLATE_HTML_FILENAME);
-        Mockito.verify(downloadEmailTemplateClientMock)
-                .downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, ATTACHMENTS_FILENAME);
-        Mockito.verify(downloadEmailTemplateClientMock)
-                .downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, "/attachments/file1.txt");
-        Mockito.verify(downloadEmailTemplateClientMock)
-                .downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, "/attachments/file2.txt");
+        Assertions.assertEquals(2, actualEmailTemplate.getInlines().size());
+        List<String> attachmentsFileContents = getAttachmentFileContents(actualEmailTemplate);
+        Assertions.assertTrue(attachmentsFileContents.contains(expectedAttachmentFile1Content));
+        Assertions.assertTrue(attachmentsFileContents.contains(expectedAttachmentFile2Content));
+    }
+
+    private static List<String> getAttachmentFileContents(EmailTemplate actualEmailTemplate) {
+        return actualEmailTemplate.getInlines()
+                .stream()
+                .map(res -> new String(res.getFileContent()))
+                .toList();
     }
 
 }

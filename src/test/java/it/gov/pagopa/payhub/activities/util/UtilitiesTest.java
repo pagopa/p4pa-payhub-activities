@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -258,5 +259,18 @@ class UtilitiesTest {
             Arguments.of("remittanceInformation", "originalRemittanceInformation", "remittanceInformation"),
             Arguments.of(INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER + " with remittanceInformation", "originalRemittanceInformation", "originalRemittanceInformation")
         );
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "../../file.txt, __file.txt",
+            "f!le-p@th_NAME01.pdf, f_le-p_th_NAME01.pdf"
+    })
+    void givenMaliciousFilenameWhenSanitizeFilenameThenReturnSanitizedFilename(String actualFilename, String expectedFilename) {
+        //GIVEN CsvSource
+        //WHEN
+        String sanitizedFilename = Utilities.sanitizeFilename(actualFilename);
+        //THEN
+        Assertions.assertEquals(expectedFilename, sanitizedFilename);
     }
 }

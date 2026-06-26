@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadE
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -76,8 +77,8 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
             return Collections.emptyList();
         }
         return Arrays.stream(attachmentsFileString.split(System.lineSeparator()))
-                .map(String::trim)
                 .filter(filename -> !filename.isBlank())
+                .map(Utilities::sanitizeFilename)
                 .toList();
     }
 
