@@ -184,8 +184,4 @@ public class Utilities {
         }
         return remittanceInformation;
     }
-
-    public static String sanitizeFilename(String filename) {
-        return filename.trim().replaceAll("\\.\\./|[^a-zA-Z0-9._-]", "_");
-    }
 }
