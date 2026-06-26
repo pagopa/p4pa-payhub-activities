@@ -3,7 +3,6 @@ package it.gov.pagopa.payhub.activities.connector.emailtemplates;
 import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadEmailTemplateClient;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
