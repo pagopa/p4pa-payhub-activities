@@ -126,7 +126,7 @@ class RemoteEmailTemplateRetrieverServiceImplTest {
     void givenTemplateFoundOnRepoWhenRetrieveThenReturnEmailWithInlines() {
         //GIVEN
         String expectedFileContent = "file content";
-        String attachmentsFileContent = " file1.txt \n\r\n\t file2.txt \n../file3.txt";
+        String attachmentsFileContent = " file1.txt \n\r\n\t file2.txt \n../file3.txt \n /folder/file4.txt";
         String expectedAttachmentFile1Content = "attachment file1 content";
         String expectedAttachmentFile2Content = "attachment file2 content";
         Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, TEMPLATE_HTML_FILENAME))
@@ -137,7 +137,7 @@ class RemoteEmailTemplateRetrieverServiceImplTest {
                 .thenReturn(Optional.of(expectedAttachmentFile1Content.getBytes(StandardCharsets.UTF_8)));
         Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, "/attachments/file2.txt"))
                 .thenReturn(Optional.of(expectedAttachmentFile2Content.getBytes(StandardCharsets.UTF_8)));
-        Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, "/attachments/_file3.txt"))
+        Mockito.when(downloadEmailTemplateClientMock.downloadEmailTemplate(BROKER_EXTERNAL_ID, TEMPLATE_NAME, null))
                 .thenReturn(Optional.empty());
         //WHEN
         EmailTemplate actualEmailTemplate = retrieverService.retrieve(BROKER_EXTERNAL_ID, TEMPLATE_NAME, EMAIL_SUBJECT);

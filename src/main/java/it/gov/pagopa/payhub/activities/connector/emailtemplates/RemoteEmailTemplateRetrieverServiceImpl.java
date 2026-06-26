@@ -4,12 +4,12 @@ import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadE
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
-import it.gov.pagopa.payhub.activities.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,6 +19,7 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
 
     private static final String TEMPLATE_HTML_FILENAME = "index.html";
     private static final String ATTACHMENTS_FILENAME = "attachments.txt";
+    private static final String ATTACHMENTS_FOLDER_RELATIVE_PATH = "/attachments/";
 
     private final Map<String, Boolean> templateNotFoundOnRepoMap = new ConcurrentHashMap<>();
 
@@ -63,12 +64,20 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
         List<String> attachmentFileNames = splitAttachmentFilenames(attachmentsFileBytes.get());
         return attachmentFileNames.stream()
                 .map(filename -> {
-                    Optional<byte[]> bytes = downloadEmailTemplateClient.downloadEmailTemplate(brokerExternalId, emailTemplateName, "/attachments/" + filename);
+                    Optional<byte[]> bytes = downloadEmailTemplateClient.downloadEmailTemplate(brokerExternalId, emailTemplateName, buildAttachmentRelativePath(filename));
                     return bytes.map(value -> new SerializableFileResourceDTO(value, filename))
                             .orElse(null);
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    private static String buildAttachmentRelativePath(String filename) {
+        Path attachmentRelativePath = Path.of(ATTACHMENTS_FOLDER_RELATIVE_PATH).resolve(filename).normalize();
+        if(!attachmentRelativePath.startsWith(ATTACHMENTS_FOLDER_RELATIVE_PATH) || attachmentRelativePath.getNameCount() > 2) {
+            return null;
+        }
+        return attachmentRelativePath.toString();
     }
 
     private List<String> splitAttachmentFilenames(byte[] attachmentFileResource) {
@@ -77,8 +86,8 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
             return Collections.emptyList();
         }
         return Arrays.stream(attachmentsFileString.split(System.lineSeparator()))
+                .map(String::trim)
                 .filter(filename -> !filename.isBlank())
-                .map(Utilities::sanitizeFilename)
                 .toList();
     }
 
