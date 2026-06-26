@@ -28,7 +28,7 @@ public class SendNotificationMapper {
         request.setTaxonomyCode(sendFile.getTaxonomyCode());
         request.setPaFee(sendFile.getPaFee());
         request.setVat(sendFile.getVat());
-        request.setExternalCampaignId(sendFile.getCampaignId());
+        request.setExternalCampaignId(sendFile.getExternalCampaignId());
 
         Recipient recipient = new Recipient();
         recipient.setRecipientType(RecipientTypeEnum.valueOf(sendFile.getRecipientType()));
