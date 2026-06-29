@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadE
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 @Lazy
 public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTemplateRetrieverService {
@@ -74,7 +76,8 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
 
     private static String buildAttachmentRelativePath(String filename) {
         Path attachmentRelativePath = Path.of(ATTACHMENTS_FOLDER_RELATIVE_PATH).resolve(filename).normalize();
-        if(!attachmentRelativePath.startsWith(ATTACHMENTS_FOLDER_RELATIVE_PATH) || attachmentRelativePath.getNameCount() > 2) {
+        if(!attachmentRelativePath.startsWith(ATTACHMENTS_FOLDER_RELATIVE_PATH)) {
+            log.info("Skipping download of attachment with path \"{}\", due to invalid path: file must be under folder {}", attachmentRelativePath, ATTACHMENTS_FOLDER_RELATIVE_PATH);
             return null;
         }
         return attachmentRelativePath.toString();
