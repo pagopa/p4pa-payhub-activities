@@ -82,8 +82,8 @@ public class SendNotificationIngestionFlowFileDTO {
   @CsvBindByName(column = "digitalDomicileType")
   private String digitalDomicileType;
 
-  @CsvBindByName(column = "campaignId", required = true)
-  private String campaignId;
+  @CsvBindByName(column = "externalCampaignId", required = true)
+  private String externalCampaignId;
 
   @CsvBindAndJoinByName(column = "payment.*_1", elementType = String.class)
   private MultiValuedMap<String, String> payment;
