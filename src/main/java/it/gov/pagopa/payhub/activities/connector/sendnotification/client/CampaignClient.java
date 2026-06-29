@@ -20,4 +20,8 @@ public class CampaignClient {
     public List<String> fetchAllCampaignIds(String accessToken) {
         return sendApisHolder.getCampaignApi(accessToken).fetchAllCampaignIds();
     }
+
+    public void alignCampaign(String campaignId, String accessToken) {
+        sendApisHolder.getCampaignApi(accessToken).alignCampaign(campaignId);
+    }
 }

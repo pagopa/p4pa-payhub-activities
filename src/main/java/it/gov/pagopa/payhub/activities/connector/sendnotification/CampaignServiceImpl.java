@@ -22,4 +22,9 @@ public class CampaignServiceImpl implements CampaignService {
     public List<String> fetchAllCampaignIds() {
         return campaignClient.fetchAllCampaignIds(authnService.getAccessToken());
     }
+
+    @Override
+    public void alignCampaign(String campaignId) {
+        campaignClient.alignCampaign(campaignId, authnService.getAccessToken());
+    }
 }
