@@ -44,4 +44,15 @@ class CampaignServiceTest {
 
         Assertions.assertEquals(campaignIds, actualCampaignIds);
     }
+
+    @Test
+    void whenAlignCampaignThenOk() {
+        String accessToken = "accessToken";
+        String campaignId = "campaignId";
+
+        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        Mockito.doNothing().when(campaignClientMock).alignCampaign(campaignId, accessToken);
+
+        Assertions.assertDoesNotThrow(() -> campaignService.alignCampaign(campaignId));
+    }
 }

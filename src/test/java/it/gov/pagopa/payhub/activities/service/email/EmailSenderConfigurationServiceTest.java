@@ -51,10 +51,6 @@ class EmailSenderConfigurationServiceTest {
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(brokerConfigurationServiceMock, brokerServiceMock);
-    }
-
-    @AfterEach
-    void resetEnvironmentVariables() {
         resetEnvVars();
     }
 

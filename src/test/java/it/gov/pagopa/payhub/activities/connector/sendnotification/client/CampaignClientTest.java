@@ -44,4 +44,15 @@ class CampaignClientTest {
 
         Assertions.assertEquals(campaignIds, actualIds);
     }
+
+    @Test
+    void whenAlignCampaignThenInvokeWithAccessToken() {
+        String accessToken = "accessToken";
+        String campaignId = "campaignId";
+
+        Mockito.when(sendApisHolderMock.getCampaignApi(accessToken)).thenReturn(campaignApiMock);
+        Mockito.doNothing().when(campaignApiMock).alignCampaign(campaignId);
+
+        Assertions.assertDoesNotThrow(() -> campaignClient.alignCampaign(campaignId, accessToken));
+    }
 }
