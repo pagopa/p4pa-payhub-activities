@@ -17,6 +17,7 @@ public class AlignSendCampaignActivityImpl implements AlignSendCampaignActivity 
 
     @Override
     public void alignSendCampaign(String campaignId) {
+        log.info("Align campaign with id {}", campaignId);
         campaignService.alignCampaign(campaignId);
     }
 }
