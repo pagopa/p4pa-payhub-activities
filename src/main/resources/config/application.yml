@@ -47,6 +47,8 @@ export-flow-files:
 mail:
   template:
     repo-base-url: "\${MAIL_TEMPLATE_REPO_BASE_URL:}"
+    repo-folders:
+      attachments: "\${MAIL_TEMPLATE_REPO_ATTACHMENTS_FOLDER_PATH:/attachments}"
 
 folders:
   shared: "\${SHARED_FOLDER_ROOT:/shared}"

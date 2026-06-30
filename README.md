@@ -56,12 +56,13 @@ See [config/application.yml](src/main/resources/config/application.yml) for each
 #### 🔁 Integrations
 
 ##### 🗄️ Resources
-| ENV                            | DESCRIPTION                                           | DEFAULT                          |
-|--------------------------------|-------------------------------------------------------|----------------------------------|
-| SHARED_FOLDER_ROOT             | Absolute path towards shared folder on file system    | /shared                          |
-| TMP_FOLDER                     | Absolute path towards temporary folder on file system | /tmp                             |
-| MAIL_TEMPLATE_REPO_BASE_URL    | Base URL for email template repository                |                                  |
-| MAIL_TEMPLATE_FOLDER_BASE_PATH | Base path for email template POD folder               | /tmp/email-template              |
+| ENV                                        | DESCRIPTION                                                    | DEFAULT             |
+|--------------------------------------------|----------------------------------------------------------------|---------------------|
+| SHARED_FOLDER_ROOT                         | Absolute path towards shared folder on file system             | /shared             |
+| TMP_FOLDER                                 | Absolute path towards temporary folder on file system          | /tmp                |
+| MAIL_TEMPLATE_REPO_BASE_URL                | Base URL for email template repository                         |                     |
+| MAIL_TEMPLATE_FOLDER_BASE_PATH             | Base path for email template POD folder                        | /tmp/email-template |
+| MAIL_TEMPLATE_REPO_ATTACHMENTS_FOLDER_PATH | Repository relative path for email template attachments folder | /attachments/       | 
 
 ##### 🔗 REST
 | ENV                                               | DESCRIPTION                               | DEFAULT |

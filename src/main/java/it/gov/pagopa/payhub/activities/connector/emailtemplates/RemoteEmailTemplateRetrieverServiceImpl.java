@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +22,16 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
 
     private static final String TEMPLATE_HTML_FILENAME = "index.html";
     private static final String ATTACHMENTS_FILENAME = "attachments.txt";
-    private static final String ATTACHMENTS_FOLDER_RELATIVE_PATH = "/attachments/";
+    private final String attachmentFolderRepoRelativePath;
 
     private final Map<String, Boolean> templateNotFoundOnRepoMap = new ConcurrentHashMap<>();
 
     private final DownloadEmailTemplateClient downloadEmailTemplateClient;
 
-    public RemoteEmailTemplateRetrieverServiceImpl(DownloadEmailTemplateClient downloadEmailTemplateClient) {
+    public RemoteEmailTemplateRetrieverServiceImpl(DownloadEmailTemplateClient downloadEmailTemplateClient,
+                                                   @Value(value = "${mail.template.repo-folders.attachments}") String attachmentFolderRepoRelativePath) {
         this.downloadEmailTemplateClient = downloadEmailTemplateClient;
+        this.attachmentFolderRepoRelativePath = attachmentFolderRepoRelativePath;
     }
 
     @Override
@@ -74,10 +77,10 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
                 .toList();
     }
 
-    private static String buildAttachmentRelativePath(String filename) {
-        Path attachmentRelativePath = Path.of(ATTACHMENTS_FOLDER_RELATIVE_PATH).resolve(filename).normalize();
-        if(!attachmentRelativePath.startsWith(ATTACHMENTS_FOLDER_RELATIVE_PATH)) {
-            log.info("Skipping download of attachment with path \"{}\", due to invalid path: file must be under folder {}", attachmentRelativePath, ATTACHMENTS_FOLDER_RELATIVE_PATH);
+    private String buildAttachmentRelativePath(String filename) {
+        Path attachmentRelativePath = Path.of(attachmentFolderRepoRelativePath).resolve(filename).normalize();
+        if(!attachmentRelativePath.startsWith(attachmentFolderRepoRelativePath)) {
+            log.info("Skipping download of attachment with path \"{}\", due to invalid path: file must be under folder {}", attachmentRelativePath, attachmentFolderRepoRelativePath);
             return null;
         }
         return attachmentRelativePath.toString();
