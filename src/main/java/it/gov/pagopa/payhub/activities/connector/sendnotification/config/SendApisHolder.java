@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.config;
 import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.pu.sendnotification.controller.ApiClient;
 import it.gov.pagopa.pu.sendnotification.controller.BaseApi;
+import it.gov.pagopa.pu.sendnotification.controller.generated.CampaignApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.StreamsApi;
@@ -22,6 +23,7 @@ public class SendApisHolder {
     private final SendApi sendApi;
     private final NotificationApi sendNotificationAPI;
     private final StreamsApi streamsApi;
+    private final CampaignApi campaignApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -40,6 +42,7 @@ public class SendApisHolder {
         this.sendApi = new SendApi(apiClient);
         this.sendNotificationAPI = new NotificationApi(apiClient);
         this.streamsApi = new StreamsApi(apiClient);
+        this.campaignApi = new CampaignApi(apiClient);
     }
 
     @PreDestroy
@@ -60,6 +63,11 @@ public class SendApisHolder {
     /** It will return a {@link StreamsApi} instrumented with the provided accessToken. Use null if auth is not required */
     public StreamsApi getSendStreamsApi(String accessToken){
         return getApi(accessToken, streamsApi);
+    }
+
+    /** It will return a {@link CampaignApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public CampaignApi getCampaignApi(String accessToken) {
+        return getApi(accessToken, campaignApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
