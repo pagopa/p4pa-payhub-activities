@@ -4,27 +4,34 @@ import it.gov.pagopa.payhub.activities.connector.emailtemplates.client.DownloadE
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
 import it.gov.pagopa.payhub.activities.dto.email.SerializableFileResourceDTO;
 import it.gov.pagopa.payhub.activities.enums.EmailTemplateName;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 @Lazy
 public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTemplateRetrieverService {
 
     private static final String TEMPLATE_HTML_FILENAME = "index.html";
     private static final String ATTACHMENTS_FILENAME = "attachments.txt";
+    private final String attachmentFolderRepoRelativePath;
 
     private final Map<String, Boolean> templateNotFoundOnRepoMap = new ConcurrentHashMap<>();
 
     private final DownloadEmailTemplateClient downloadEmailTemplateClient;
 
-    public RemoteEmailTemplateRetrieverServiceImpl(DownloadEmailTemplateClient downloadEmailTemplateClient) {
+    public RemoteEmailTemplateRetrieverServiceImpl(DownloadEmailTemplateClient downloadEmailTemplateClient,
+                                                   @Value(value = "${mail.template.repo-folders.attachments}") String attachmentFolderRepoRelativePath) {
         this.downloadEmailTemplateClient = downloadEmailTemplateClient;
+        this.attachmentFolderRepoRelativePath = attachmentFolderRepoRelativePath;
     }
 
     @Override
@@ -62,12 +69,21 @@ public class RemoteEmailTemplateRetrieverServiceImpl implements RemoteEmailTempl
         List<String> attachmentFileNames = splitAttachmentFilenames(attachmentsFileBytes.get());
         return attachmentFileNames.stream()
                 .map(filename -> {
-                    Optional<byte[]> bytes = downloadEmailTemplateClient.downloadEmailTemplate(brokerExternalId, emailTemplateName, "/attachments/" + filename);
+                    Optional<byte[]> bytes = downloadEmailTemplateClient.downloadEmailTemplate(brokerExternalId, emailTemplateName, buildAttachmentRelativePath(filename));
                     return bytes.map(value -> new SerializableFileResourceDTO(value, filename))
                             .orElse(null);
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    private String buildAttachmentRelativePath(String filename) {
+        Path attachmentRelativePath = Path.of(attachmentFolderRepoRelativePath).resolve(filename).normalize();
+        if(!attachmentRelativePath.startsWith(attachmentFolderRepoRelativePath)) {
+            log.info("Skipping download of attachment with path \"{}\", due to invalid path: file must be under folder {}", attachmentRelativePath, attachmentFolderRepoRelativePath);
+            return null;
+        }
+        return attachmentRelativePath.toString();
     }
 
     private List<String> splitAttachmentFilenames(byte[] attachmentFileResource) {

@@ -77,4 +77,14 @@ class DownloadEmailTemplateClientImplTest {
         Assertions.assertNotNull(retryableActivityException.getCause());
         Assertions.assertEquals(expectedCause, retryableActivityException.getCause());
     }
+
+    @Test
+    void givenNullRelativeFilePathWhenDownloadEmailTemplateThenReturnOptionalEmpty() {
+        //GIVEN
+        String relativeFilePath = null;
+        //WHEN
+        Optional<byte[]> actualContent = downloadTemplateFileClient.downloadEmailTemplate(BROKER_EXTERNAL_ID, EMAIL_TEMPLATE_NAME, relativeFilePath);
+        //THEN
+        Assertions.assertTrue(actualContent.isEmpty());
+    }
 }

@@ -38,6 +38,9 @@ public class DownloadEmailTemplateClientImpl implements DownloadEmailTemplateCli
 
     @Override
     public Optional<byte[]> downloadEmailTemplate(String brokerExternalId, EmailTemplateName templateName, String relativeFilePath) {
+        if(relativeFilePath==null) {
+            return Optional.empty();
+        }
         String templateFileUrl = buildTemplateFileRepoUrl(brokerExternalId, templateName, relativeFilePath);
         try {
             return Optional.ofNullable(restTemplate.getForEntity(templateFileUrl, byte[].class).getBody());
@@ -50,7 +53,7 @@ public class DownloadEmailTemplateClientImpl implements DownloadEmailTemplateCli
         }
     }
 
-    private String buildTemplateFileRepoUrl(String brokerExternalId, EmailTemplateName templateName, String filename) {
-        return StringUtils.joinWith("/", templateRepoBaseUrl, brokerExternalId, templateName.name(), filename);
+    private String buildTemplateFileRepoUrl(String brokerExternalId, EmailTemplateName templateName, String relativeFilePath) {
+        return StringUtils.joinWith("/", templateRepoBaseUrl, brokerExternalId, templateName.name(), relativeFilePath);
     }
 }
