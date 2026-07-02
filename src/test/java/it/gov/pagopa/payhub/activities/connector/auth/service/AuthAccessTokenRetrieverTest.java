@@ -39,6 +39,8 @@ class AuthAccessTokenRetrieverTest {
         AccessToken expectedResult = AccessToken.builder()
                 .expiresIn(10)
                 .accessToken("ACCESSTOKEN")
+                .refreshToken("REFRESHTOKEN")
+                .refreshExpiresIn(0)
                 .tokenType("TOKENTYPE")
                 .build();
 
@@ -57,6 +59,8 @@ class AuthAccessTokenRetrieverTest {
                 .expiresIn(5)
                 .accessToken("ACCESSTOKEN")
                 .tokenType("TOKENTYPE")
+                .refreshToken("REFRESHTOKEN")
+                .refreshExpiresIn(0)
                 .build();
 
         // When
