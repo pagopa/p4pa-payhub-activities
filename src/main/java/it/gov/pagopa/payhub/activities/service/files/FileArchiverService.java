@@ -9,11 +9,16 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 /**
  * Service class responsible for handling archiving ingestion files,
@@ -47,6 +52,51 @@ public class FileArchiverService {
         if (!Files.exists(sharedDirectoryPath)) {
             throw new IllegalStateException("Shared folder doesn't exist: " + sharedDirectoryPath);
         }
+    }
+
+    public ZipOutputStream createZipOutputStream(Path zipFilePath) throws IOException {
+        Files.createDirectories(zipFilePath.getParent());
+        return new ZipOutputStream(Files.newOutputStream(zipFilePath, CREATE, TRUNCATE_EXISTING));
+    }
+
+    /**
+     * Adds a single file to the already opened zip and deletes the temporary file
+     * only after the file has been successfully written into the zip.
+     *
+     * @param zipOutputStream the opened zip output stream
+     * @param fileToAdd       the temporary file to add to the zip
+     * @param zipEntryName    the name of the file inside the zip
+     */
+    public void addToZip(ZipOutputStream zipOutputStream, Path fileToAdd, String zipEntryName) throws IOException {
+        if (!Files.isRegularFile(fileToAdd)) {
+            return;
+        }
+
+        ZipEntry zipEntry = new ZipEntry(zipEntryName);
+        zipEntry.setTime(Files.getLastModifiedTime(fileToAdd).toMillis());
+
+        zipOutputStream.putNextEntry(zipEntry);
+
+        try (InputStream inputStream = Files.newInputStream(fileToAdd)) {
+            inputStream.transferTo(zipOutputStream);
+        } finally {
+            zipOutputStream.closeEntry();
+        }
+
+        Files.deleteIfExists(fileToAdd);
+    }
+
+    public Long encryptAndArchiveZip(Path zipFilePath, Path targetPath) throws IOException {
+        File zipped = zipFilePath.toFile();
+        Long zippedFileSize = zipped.length();
+
+        File encrypted = AESUtils.encrypt(dataCipherPsw, zipped);
+
+        Files.deleteIfExists(zipped.toPath());
+
+        archive(List.of(encrypted.toPath()), targetPath);
+
+        return zippedFileSize;
     }
 
     public void compressAndArchive(Path errorFilePath, Path targetDirectory) throws IOException {
@@ -114,4 +164,3 @@ public class FileArchiverService {
         }
     }
 }
-

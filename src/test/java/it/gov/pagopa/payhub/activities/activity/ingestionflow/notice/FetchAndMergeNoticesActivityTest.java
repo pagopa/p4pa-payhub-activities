@@ -19,12 +19,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.ZipOutputStream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 
 @ExtendWith(MockitoExtension.class)
 class FetchAndMergeNoticesActivityTest {
@@ -147,15 +148,34 @@ class FetchAndMergeNoticesActivityTest {
                 .thenReturn(List.of(extracted1))
                 .thenReturn(List.of(extracted2));
 
-        Mockito.when(fileArchiverServiceMock.compressAndArchive(anyList(), any(Path.class), any(Path.class))).thenReturn(100L);
+        ZipOutputStream zipOutputStream = new ZipOutputStream(new ByteArrayOutputStream());
+        Mockito.when(fileArchiverServiceMock.createZipOutputStream(any(Path.class)))
+                .thenReturn(zipOutputStream);
 
         Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
 
         Assertions.assertEquals(2, result);
+
+        Mockito.verify(fileArchiverServiceMock).addToZip(
+                Mockito.same(zipOutputStream),
+                Mockito.eq(extracted1),
+                Mockito.eq("extracted1.pdf")
+        );
+
+        Mockito.verify(fileArchiverServiceMock).addToZip(
+                Mockito.same(zipOutputStream),
+                Mockito.eq(extracted2),
+                Mockito.eq("extracted2.pdf")
+        );
+
+        Mockito.verify(fileArchiverServiceMock).encryptAndArchiveZip(
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        );
     }
 
     @Test
-    void givenDownloadFailsWhenFetchAndMergeNoticesThenThrowsException() {
+    void givenDownloadFailsWhenFetchAndMergeNoticesThenThrowsException() throws Exception {
         Long ingestionFlowFileId = 1L;
         Long organizationId = 1L;
 
@@ -164,13 +184,25 @@ class FetchAndMergeNoticesActivityTest {
         file.setOrganizationId(organizationId);
         file.setPdfGeneratedId("folderId1");
         file.setFilePathName("filePathName");
+        file.setFileName("ingestionFile.zip");
 
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
 
-        SignedUrlResultDTO dto1 = new SignedUrlResultDTO(); dto1.setSignedUrl("http://url1");
+        SignedUrlResultDTO dto1 = new SignedUrlResultDTO();
+        dto1.setSignedUrl("http://url1");
+
         Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(dto1);
 
         Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
+        Mockito.when(foldersPathsConfigMock.getShared()).thenReturn(Path.of("/shared"));
+        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
+                .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
+                        .archive("archive")
+                        .build());
+
+        ZipOutputStream zipOutputStream = new ZipOutputStream(new ByteArrayOutputStream());
+        Mockito.when(fileArchiverServiceMock.createZipOutputStream(any(Path.class)))
+                .thenReturn(zipOutputStream);
 
         Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1"))
                 .thenThrow(new RestClientException("Connection timed out"));

@@ -18,10 +18,8 @@ import org.springframework.util.FileSystemUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.zip.ZipOutputStream;
 
 @Lazy
 @Slf4j
@@ -70,19 +68,75 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         try {
             Files.createDirectories(tmpDir);
 
-            List<Path> allExtractedNotices = downloadAndExtractAllNotices(signedUrls, tmpDir);
-            if (allExtractedNotices.isEmpty()) {
+            String mergedFileName = buildNoticeFileName(ingestionFlowFile);
+            Path tmpZipFilePath = tmpDir.resolve(mergedFileName);
+
+            Path sharedTargetPath = buildArchiveTargetPath(ingestionFlowFile);
+
+            int processedFiles = 0;
+            Set<String> usedZipEntryNames = new HashSet<>();
+
+            try (ZipOutputStream zipOutputStream = fileArchiverService.createZipOutputStream(tmpZipFilePath)) {
+                for (int i = 0; i < signedUrls.size(); i++) {
+                    Path extractDirPath = tmpDir.resolve("extracted_" + i);
+
+                    List<Path> extractedNotices = downloadAndExtractNotices(signedUrls.get(i), tmpDir, i);
+
+                    for (Path noticePath : extractedNotices) {
+                        String zipEntryName = buildUniqueZipEntryName(noticePath, usedZipEntryNames);
+                        fileArchiverService.addToZip(zipOutputStream, noticePath, zipEntryName);
+                        processedFiles++;
+                    }
+
+                    cleanupTmpDir(extractDirPath);
+                }
+            }
+
+            if (processedFiles == 0) {
                 return 0;
             }
 
-            archiveMergedNotices(ingestionFlowFile, allExtractedNotices, tmpDir);
+            fileArchiverService.encryptAndArchiveZip(tmpZipFilePath, sharedTargetPath);
 
-            return allExtractedNotices.size();
+            return processedFiles;
         } catch (IOException e) {
             throw new IllegalStateException("Cannot process and merge notices in working directory: " + tmpDir, e);
         } finally {
             cleanupTmpDir(tmpDir);
         }
+    }
+
+    private Path buildArchiveTargetPath(IngestionFlowFile file) {
+        return FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), file.getOrganizationId())
+                .resolve(file.getFilePathName())
+                .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
+    }
+
+    private String buildUniqueZipEntryName(Path filePath, Set<String> usedNames) {
+        String fileName = filePath.getFileName().toString();
+
+        if (usedNames.add(fileName)) {
+            return fileName;
+        }
+
+        String baseName = fileName;
+        String extension = "";
+
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex > 0) {
+            baseName = fileName.substring(0, dotIndex);
+            extension = fileName.substring(dotIndex);
+        }
+
+        int counter = 1;
+        String candidate;
+
+        do {
+            candidate = baseName + "_" + counter + extension;
+            counter++;
+        } while (!usedNames.add(candidate));
+
+        return candidate;
     }
 
     private List<String> retrieveSignedUrls(IngestionFlowFile file, Long organizationId) {
@@ -108,13 +162,6 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         return urls;
     }
 
-    private List<Path> downloadAndExtractAllNotices(List<String> signedUrls, Path tmpDir) {
-        return IntStream.range(0, signedUrls.size())
-                .mapToObj(i -> downloadAndExtractNotices(signedUrls.get(i), tmpDir, i))
-                .flatMap(List::stream)
-                .toList();
-    }
-
     private List<Path> downloadAndExtractNotices(String url, Path tmpDir, int index) {
         byte[] downloadedBytes = signedUrlService.downloadFileFromSignedUrl(url);
 
@@ -126,18 +173,13 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
             return zipFileService.unzip(downloadedZipPath, extractDirPath);
         } catch (IOException e) {
             throw new IllegalStateException("Error writing or extracting zip: " + downloadedZipPath, e);
+        } finally {
+            try {
+                Files.deleteIfExists(downloadedZipPath);
+            } catch (IOException e) {
+                log.info("Failed to delete downloaded temporary zip: {}", downloadedZipPath, e);
+            }
         }
-    }
-
-    private void archiveMergedNotices(IngestionFlowFile file, List<Path> allExtractedFiles, Path tmpDir) throws IOException {
-        String mergedFileName = buildNoticeFileName(file);
-        Path tmpZipFilePath = tmpDir.resolve(mergedFileName);
-
-        Path sharedTargetPath = FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), file.getOrganizationId())
-                .resolve(file.getFilePathName())
-                .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
-
-        fileArchiverService.compressAndArchive(allExtractedFiles, tmpZipFilePath, sharedTargetPath);
     }
 
     public static String buildNoticeFileName(IngestionFlowFile file) {
