@@ -208,7 +208,8 @@ class PaidExportFlowFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(PaidInstallmentExportFlowFileDTO.class), any(), eq("v1"));
 
-        when(fileArchiverServiceMock.compressAndArchive(any(), any(), any())).thenReturn(2L);
+        when(fileArchiverServiceMock.compressAndArchive(
+                Mockito.<List<Path>>any(), any(Path.class), any(Path.class))).thenReturn(2L);
 
         // When
         ExportFileResult result = paidExportFlowFileService.executeExport(exportFileId);
@@ -302,7 +303,8 @@ class PaidExportFlowFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(PaidInstallmentExportFlowFileDTO.class), any(), eq("v1"));
 
-        doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
+        doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<List<Path>>any(), any(Path.class), any(Path.class));
 
         // When
         IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> paidExportFlowFileService.executeExport(exportFileId));

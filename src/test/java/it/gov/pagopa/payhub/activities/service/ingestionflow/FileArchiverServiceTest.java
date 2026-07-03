@@ -16,11 +16,19 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Queue;
+import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
@@ -142,6 +150,230 @@ class FileArchiverServiceTest {
 					archiveFile,
 					StandardCopyOption.REPLACE_EXISTING));
 			mockedFiles.verify(() -> Files.deleteIfExists(srcFile));
+		}
+	}
+
+	@Test
+	void givenZipFilePathWhenCreateZipOutputStreamThenCreatesParentDirectoryAndZipFile(@TempDir Path sourceDir) throws Exception {
+		// given
+		Path zipFilePath = sourceDir.resolve("nested").resolve("output.zip");
+
+		// when
+		try (ZipOutputStream zipOutputStream = service.createZipOutputStream(zipFilePath)) {
+			ZipEntry entry = new ZipEntry("file.txt");
+			zipOutputStream.putNextEntry(entry);
+			zipOutputStream.write("content".getBytes(StandardCharsets.UTF_8));
+			zipOutputStream.closeEntry();
+		}
+
+		// then
+		assertTrue(Files.exists(zipFilePath.getParent()));
+		assertTrue(Files.exists(zipFilePath));
+		assertTrue(Files.size(zipFilePath) > 0);
+	}
+
+	@Test
+	void givenRegularFileWhenAddToZipThenAddsFileAndDeletesSource(@TempDir Path sourceDir) throws Exception {
+		// given
+		Path fileToAdd = sourceDir.resolve("notice.pdf");
+		Files.writeString(fileToAdd, "pdf-content");
+
+		Path zipFilePath = sourceDir.resolve("output.zip");
+
+		// when
+		try (ZipOutputStream zipOutputStream = service.createZipOutputStream(zipFilePath)) {
+			service.addToZip(zipOutputStream, fileToAdd, "notice.pdf");
+		}
+
+		// then
+		assertFalse(Files.exists(fileToAdd), "source file should be deleted after being added to zip");
+		assertTrue(Files.exists(zipFilePath));
+
+		try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFilePath))) {
+			ZipEntry entry = zipInputStream.getNextEntry();
+
+			assertNotNull(entry);
+			assertEquals("notice.pdf", entry.getName());
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			zipInputStream.transferTo(outputStream);
+
+			assertEquals("pdf-content", outputStream.toString(StandardCharsets.UTF_8));
+
+			assertNull(zipInputStream.getNextEntry(), "zip should contain only one entry");
+		}
+	}
+
+	@Test
+	void givenNotRegularFileWhenAddToZipThenDoesNothing(@TempDir Path sourceDir) throws Exception {
+		// given
+		Path missingFile = sourceDir.resolve("missing.pdf");
+		Path zipFilePath = sourceDir.resolve("output.zip");
+
+		// when
+		try (ZipOutputStream zipOutputStream = service.createZipOutputStream(zipFilePath)) {
+			service.addToZip(zipOutputStream, missingFile, "missing.pdf");
+		}
+
+		// then
+		assertFalse(Files.exists(missingFile));
+		assertTrue(Files.exists(zipFilePath));
+
+		try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFilePath))) {
+			assertNull(zipInputStream.getNextEntry(), "zip should not contain entries");
+		}
+	}
+
+	@Test
+	void givenZipFileWhenEncryptAndArchiveZipThenEncryptsDeletesOriginalAndArchivesEncryptedFile(@TempDir Path sourceDir) throws Exception {
+		// given
+		Path zipFilePath = sourceDir.resolve("output.zip");
+		Files.writeString(zipFilePath, "zip-content");
+
+		long expectedZipFileSize = Files.size(zipFilePath);
+
+		Path encryptedFilePath = sourceDir.resolve("output.zip" + AESUtils.CIPHER_EXTENSION);
+		Files.writeString(encryptedFilePath, "encrypted-content");
+
+		Path targetPath = sourceDir.resolve("archive");
+
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()))
+					.thenReturn(encryptedFilePath.toFile());
+
+			// when
+			Long result = service.encryptAndArchiveZip(zipFilePath, targetPath);
+
+			// then
+			assertEquals(expectedZipFileSize, result);
+
+			assertFalse(Files.exists(zipFilePath), "original zip should be deleted");
+			assertFalse(Files.exists(encryptedFilePath), "encrypted file should be deleted from source folder after archive");
+
+			Path archivedEncryptedFile = targetPath.resolve(encryptedFilePath.getFileName());
+			assertTrue(Files.exists(archivedEncryptedFile), "encrypted file should be archived");
+			assertEquals("encrypted-content", Files.readString(archivedEncryptedFile));
+
+			mockedAESUtils.verify(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()));
+		}
+	}
+
+	@Test
+	void givenEncryptionFailsWhenEncryptAndArchiveZipThenThrowsIllegalStateException(@TempDir Path sourceDir) throws Exception {
+		// given
+		Path zipFilePath = sourceDir.resolve("output.zip");
+		Files.writeString(zipFilePath, "zip-content");
+
+		Path targetPath = sourceDir.resolve("archive");
+
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()))
+					.thenThrow(IllegalStateException.class);
+
+			// when then
+			assertThrows(
+					IllegalStateException.class,
+					() -> service.encryptAndArchiveZip(zipFilePath, targetPath)
+			);
+
+			assertTrue(Files.exists(zipFilePath), "zip should still exist if encryption fails");
+
+			mockedAESUtils.verify(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()));
+		}
+	}
+
+	@Test
+	void givenFileSupplierWhenCompressAndArchiveThenCreatesProgressiveZipEncryptsAndArchives(@TempDir Path sourceDir) throws Exception {
+		// given
+		Path file1 = sourceDir.resolve("notice1.pdf");
+		Path file2 = sourceDir.resolve("notice2.pdf");
+
+		Files.writeString(file1, "pdf-content-1");
+		Files.writeString(file2, "pdf-content-2");
+
+		Queue<Path> filesToArchive = new ArrayDeque<>(List.of(file1, file2));
+		Supplier<Path> fileSupplier = filesToArchive::poll;
+
+		Path zipFilePath = sourceDir.resolve("output.zip");
+
+		Path encryptedFilePath = sourceDir.resolve("output.zip" + AESUtils.CIPHER_EXTENSION);
+		Files.writeString(encryptedFilePath, "encrypted-content");
+
+		Path targetPath = sourceDir.resolve("archive");
+
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()))
+					.thenReturn(encryptedFilePath.toFile());
+
+			// when
+			Long result = service.compressAndArchive(fileSupplier, zipFilePath, targetPath);
+
+			// then
+			assertNotNull(result);
+			assertTrue(result > 0);
+
+			assertFalse(Files.exists(file1), "first source file should be deleted after being added to zip");
+			assertFalse(Files.exists(file2), "second source file should be deleted after being added to zip");
+
+			assertFalse(Files.exists(zipFilePath), "plain zip should be deleted after encryption");
+			assertFalse(Files.exists(encryptedFilePath), "encrypted file should be moved to archive");
+
+			Path archivedEncryptedFile = targetPath.resolve(encryptedFilePath.getFileName());
+			assertTrue(Files.exists(archivedEncryptedFile), "encrypted file should be archived");
+			assertEquals("encrypted-content", Files.readString(archivedEncryptedFile));
+
+			mockedAESUtils.verify(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()));
+		}
+	}
+
+	@Test
+	void givenEmptyFileSupplierWhenCompressAndArchiveThenReturnsZeroAndDoesNotEncrypt(@TempDir Path sourceDir) throws Exception {
+		// given
+		Supplier<Path> emptySupplier = () -> null;
+
+		Path zipFilePath = sourceDir.resolve("empty.zip");
+		Path targetPath = sourceDir.resolve("archive");
+
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			// when
+			Long result = service.compressAndArchive(emptySupplier, zipFilePath, targetPath);
+
+			// then
+			assertEquals(0L, result);
+			assertFalse(Files.exists(zipFilePath), "empty zip should be deleted");
+			assertFalse(Files.exists(targetPath), "archive folder should not be created");
+
+			mockedAESUtils.verifyNoInteractions();
+		}
+	}
+
+	@Test
+	void givenEncryptionFailsWhenCompressAndArchiveWithSupplierThenThrowsIllegalStateException(@TempDir Path sourceDir) throws Exception {
+		// given
+		Path file1 = sourceDir.resolve("notice1.pdf");
+		Files.writeString(file1, "pdf-content-1");
+
+		Queue<Path> filesToArchive = new ArrayDeque<>(List.of(file1));
+		Supplier<Path> fileSupplier = filesToArchive::poll;
+
+		Path zipFilePath = sourceDir.resolve("output.zip");
+		Path targetPath = sourceDir.resolve("archive");
+
+		try (MockedStatic<AESUtils> mockedAESUtils = mockStatic(AESUtils.class)) {
+			mockedAESUtils.when(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()))
+					.thenThrow(IllegalStateException.class);
+
+			// when then
+			assertThrows(
+					IllegalStateException.class,
+					() -> service.compressAndArchive(fileSupplier, zipFilePath, targetPath)
+			);
+
+			assertFalse(Files.exists(file1), "source file should already be deleted after being added to zip");
+			assertTrue(Files.exists(zipFilePath), "plain zip should still exist if encryption fails");
+			assertFalse(Files.exists(targetPath), "archive folder should not be created");
+
+			mockedAESUtils.verify(() -> AESUtils.encrypt(TEST_PASSWORD, zipFilePath.toFile()));
 		}
 	}
 }

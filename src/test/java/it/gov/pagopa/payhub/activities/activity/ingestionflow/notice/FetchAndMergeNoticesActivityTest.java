@@ -22,9 +22,9 @@ import org.springframework.web.client.RestClientException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 
 @ExtendWith(MockitoExtension.class)
 class FetchAndMergeNoticesActivityTest {
@@ -65,6 +65,23 @@ class FetchAndMergeNoticesActivityTest {
                 fileArchiverServiceMock,
                 signedUrlServiceMock
         );
+    }
+
+    private void mockProgressiveCompressAndArchive() throws Exception {
+        Mockito.when(fileArchiverServiceMock.compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        )).thenAnswer(invocation -> {
+            Supplier<Path> supplier = invocation.getArgument(0);
+
+            long processedFiles = 0;
+            while (supplier.get() != null) {
+                processedFiles++;
+            }
+
+            return processedFiles;
+        });
     }
 
     @Test
@@ -147,15 +164,114 @@ class FetchAndMergeNoticesActivityTest {
                 .thenReturn(List.of(extracted1))
                 .thenReturn(List.of(extracted2));
 
-        Mockito.when(fileArchiverServiceMock.compressAndArchive(anyList(), any(Path.class), any(Path.class))).thenReturn(100L);
+        mockProgressiveCompressAndArchive();
 
         Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
 
         Assertions.assertEquals(2, result);
+
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        );
     }
 
     @Test
-    void givenDownloadFailsWhenFetchAndMergeNoticesThenThrowsException() {
+    void givenNoExtractedNoticesWhenFetchAndMergeNoticesThenReturnsZero() throws Exception {
+        Long ingestionFlowFileId = 1L;
+        Long organizationId = 2L;
+
+        IngestionFlowFile file = new IngestionFlowFile();
+        file.setIngestionFlowFileId(ingestionFlowFileId);
+        file.setOrganizationId(organizationId);
+        file.setPdfGeneratedId("folderId1");
+        file.setFilePathName("filePathName");
+        file.setFileName("ingestionFile.zip");
+
+        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
+
+        SignedUrlResultDTO dto1 = new SignedUrlResultDTO();
+        dto1.setSignedUrl("http://url1");
+
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(dto1);
+
+        Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
+        Mockito.when(foldersPathsConfigMock.getShared()).thenReturn(Path.of("/shared"));
+        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
+                .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
+                        .archive("archive")
+                        .build());
+
+        byte[] dummyBytes = "dummy_zip_content".getBytes();
+        Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1")).thenReturn(dummyBytes);
+
+        Mockito.when(zipFileServiceMock.unzip(any(Path.class), any(Path.class)))
+                .thenReturn(List.of());
+
+        mockProgressiveCompressAndArchive();
+
+        Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
+
+        Assertions.assertEquals(0, result);
+
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        );
+    }
+
+    @Test
+    void givenCompressAndArchiveFailsWhenFetchAndMergeNoticesThenThrowsIllegalStateException() throws Exception {
+        Long ingestionFlowFileId = 1L;
+        Long organizationId = 2L;
+
+        IngestionFlowFile file = new IngestionFlowFile();
+        file.setIngestionFlowFileId(ingestionFlowFileId);
+        file.setOrganizationId(organizationId);
+        file.setPdfGeneratedId("folderId1");
+        file.setFilePathName("filePathName");
+        file.setFileName("ingestionFile.zip");
+
+        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
+
+        SignedUrlResultDTO dto1 = new SignedUrlResultDTO();
+        dto1.setSignedUrl("http://url1");
+
+        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(dto1);
+
+        Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
+        Mockito.when(foldersPathsConfigMock.getShared()).thenReturn(Path.of("/shared"));
+        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
+                .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
+                        .archive("archive")
+                        .build());
+
+        Mockito.doThrow(new java.io.IOException("Cannot compress and archive"))
+                .when(fileArchiverServiceMock)
+                .compressAndArchive(
+                        Mockito.<Supplier<Path>>any(),
+                        Mockito.any(Path.class),
+                        Mockito.any(Path.class)
+                );
+
+        IllegalStateException exception = Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> activity.fetchAndMergeNotices(ingestionFlowFileId)
+        );
+
+        Assertions.assertTrue(exception.getMessage().contains("Cannot process and merge notices in working directory"));
+
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        );
+    }
+
+    @Test
+    void givenDownloadFailsWhenFetchAndMergeNoticesThenThrowsException() throws Exception {
         Long ingestionFlowFileId = 1L;
         Long organizationId = 1L;
 
@@ -164,17 +280,33 @@ class FetchAndMergeNoticesActivityTest {
         file.setOrganizationId(organizationId);
         file.setPdfGeneratedId("folderId1");
         file.setFilePathName("filePathName");
+        file.setFileName("ingestionFile.zip");
 
         Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
 
-        SignedUrlResultDTO dto1 = new SignedUrlResultDTO(); dto1.setSignedUrl("http://url1");
+        SignedUrlResultDTO dto1 = new SignedUrlResultDTO();
+        dto1.setSignedUrl("http://url1");
+
         Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(dto1);
 
         Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
+        Mockito.when(foldersPathsConfigMock.getShared()).thenReturn(Path.of("/shared"));
+        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
+                .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
+                        .archive("archive")
+                        .build());
 
         Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1"))
                 .thenThrow(new RestClientException("Connection timed out"));
 
+        mockProgressiveCompressAndArchive();
+
         Assertions.assertThrows(RestClientException.class, () -> activity.fetchAndMergeNotices(ingestionFlowFileId));
+
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        );
     }
 }

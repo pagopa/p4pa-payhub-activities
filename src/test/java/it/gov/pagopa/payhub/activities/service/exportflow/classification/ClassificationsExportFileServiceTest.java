@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -242,7 +243,8 @@ class ClassificationsExportFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(ClassificationsExportFlowFileDTO.class), any(), eq("WITHOUT_NOTIFICATION_v1.3"));
 
-        when(fileArchiverServiceMock.compressAndArchive(any(), any(), any())).thenReturn(2L);
+        when(fileArchiverServiceMock.compressAndArchive(
+                Mockito.<List<Path>>any(), any(Path.class), any(Path.class))).thenReturn(2L);
 
         // When
         ExportFileResult result = classificationsExportFileService.executeExport(exportFileId);
@@ -336,7 +338,8 @@ class ClassificationsExportFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(ClassificationsExportFlowFileDTO.class), any(), eq("WITHOUT_NOTIFICATION_v1.3"));
 
-        doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
+        doThrow(IOException.class).when(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<List<Path>>any(), any(Path.class), any(Path.class));
 
         // When
         IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> classificationsExportFileService.executeExport(exportFileId));
