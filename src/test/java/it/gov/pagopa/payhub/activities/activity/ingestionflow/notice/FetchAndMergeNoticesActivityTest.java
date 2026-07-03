@@ -19,12 +19,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import java.util.zip.ZipOutputStream;
+import java.util.function.Supplier;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -67,6 +65,23 @@ class FetchAndMergeNoticesActivityTest {
                 fileArchiverServiceMock,
                 signedUrlServiceMock
         );
+    }
+
+    private void mockProgressiveCompressAndArchive() throws Exception {
+        Mockito.when(fileArchiverServiceMock.compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        )).thenAnswer(invocation -> {
+            Supplier<Path> supplier = invocation.getArgument(0);
+
+            long processedFiles = 0;
+            while (supplier.get() != null) {
+                processedFiles++;
+            }
+
+            return processedFiles;
+        });
     }
 
     @Test
@@ -149,100 +164,21 @@ class FetchAndMergeNoticesActivityTest {
                 .thenReturn(List.of(extracted1))
                 .thenReturn(List.of(extracted2));
 
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new ByteArrayOutputStream());
-        Mockito.when(fileArchiverServiceMock.createZipOutputStream(any(Path.class)))
-                .thenReturn(zipOutputStream);
+        mockProgressiveCompressAndArchive();
 
         Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
 
         Assertions.assertEquals(2, result);
 
-        Mockito.verify(fileArchiverServiceMock).addToZip(
-                Mockito.same(zipOutputStream),
-                Mockito.eq(extracted1),
-                Mockito.eq("extracted1.pdf")
-        );
-
-        Mockito.verify(fileArchiverServiceMock).addToZip(
-                Mockito.same(zipOutputStream),
-                Mockito.eq(extracted2),
-                Mockito.eq("extracted2.pdf")
-        );
-
-        Mockito.verify(fileArchiverServiceMock).encryptAndArchiveZip(
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
                 Mockito.any(Path.class),
                 Mockito.any(Path.class)
         );
     }
 
     @Test
-    void givenDuplicatedExtractedFileNamesWhenFetchAndMergeNoticesThenAddsUniqueNamesToZip() throws Exception {
-        Long ingestionFlowFileId = 1L;
-        Long organizationId = 2L;
-
-        IngestionFlowFile file = new IngestionFlowFile();
-        file.setIngestionFlowFileId(ingestionFlowFileId);
-        file.setOrganizationId(organizationId);
-        file.setPdfGeneratedId("folderId1,folderId2");
-        file.setFilePathName("filePathName");
-        file.setFileName("ingestionFile.zip");
-
-        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId)).thenReturn(Optional.of(file));
-
-        SignedUrlResultDTO dto1 = new SignedUrlResultDTO();
-        dto1.setSignedUrl("http://url1");
-        SignedUrlResultDTO dto2 = new SignedUrlResultDTO();
-        dto2.setSignedUrl("http://url2");
-
-        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId1")).thenReturn(dto1);
-        Mockito.when(printPaymentNoticeServiceMock.getSignedUrl(organizationId, "folderId2")).thenReturn(dto2);
-
-        Mockito.when(foldersPathsConfigMock.getTmp()).thenReturn(Path.of("/tmp"));
-        Mockito.when(foldersPathsConfigMock.getShared()).thenReturn(Path.of("/shared"));
-        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
-                .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
-                        .archive("archive")
-                        .build());
-
-        byte[] dummyBytes = "dummy_zip_content".getBytes();
-        Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1")).thenReturn(dummyBytes);
-        Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url2")).thenReturn(dummyBytes);
-
-        Path extracted1 = Path.of("extracted_1", "notice.pdf");
-        Path extracted2 = Path.of("extracted_2", "notice.pdf");
-
-        Mockito.when(zipFileServiceMock.unzip(any(Path.class), any(Path.class)))
-                .thenReturn(List.of(extracted1))
-                .thenReturn(List.of(extracted2));
-
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new ByteArrayOutputStream());
-        Mockito.when(fileArchiverServiceMock.createZipOutputStream(any(Path.class)))
-                .thenReturn(zipOutputStream);
-
-        Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
-
-        Assertions.assertEquals(2, result);
-
-        Mockito.verify(fileArchiverServiceMock).addToZip(
-                Mockito.same(zipOutputStream),
-                Mockito.eq(extracted1),
-                Mockito.eq("notice.pdf")
-        );
-
-        Mockito.verify(fileArchiverServiceMock).addToZip(
-                Mockito.same(zipOutputStream),
-                Mockito.eq(extracted2),
-                Mockito.eq("notice_1.pdf")
-        );
-
-        Mockito.verify(fileArchiverServiceMock).encryptAndArchiveZip(
-                Mockito.any(Path.class),
-                Mockito.any(Path.class)
-        );
-    }
-
-    @Test
-    void givenNoExtractedNoticesWhenFetchAndMergeNoticesThenReturnsZeroAndDoesNotArchive() throws Exception {
+    void givenNoExtractedNoticesWhenFetchAndMergeNoticesThenReturnsZero() throws Exception {
         Long ingestionFlowFileId = 1L;
         Long organizationId = 2L;
 
@@ -273,28 +209,21 @@ class FetchAndMergeNoticesActivityTest {
         Mockito.when(zipFileServiceMock.unzip(any(Path.class), any(Path.class)))
                 .thenReturn(List.of());
 
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new ByteArrayOutputStream());
-        Mockito.when(fileArchiverServiceMock.createZipOutputStream(any(Path.class)))
-                .thenReturn(zipOutputStream);
+        mockProgressiveCompressAndArchive();
 
         Integer result = activity.fetchAndMergeNotices(ingestionFlowFileId);
 
         Assertions.assertEquals(0, result);
 
-        Mockito.verify(fileArchiverServiceMock, Mockito.never()).addToZip(
-                Mockito.any(ZipOutputStream.class),
-                Mockito.any(Path.class),
-                Mockito.anyString()
-        );
-
-        Mockito.verify(fileArchiverServiceMock, Mockito.never()).encryptAndArchiveZip(
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
                 Mockito.any(Path.class),
                 Mockito.any(Path.class)
         );
     }
 
     @Test
-    void givenAddToZipFailsWhenFetchAndMergeNoticesThenThrowsIllegalStateException() throws Exception {
+    void givenCompressAndArchiveFailsWhenFetchAndMergeNoticesThenThrowsIllegalStateException() throws Exception {
         Long ingestionFlowFileId = 1L;
         Long organizationId = 2L;
 
@@ -319,24 +248,12 @@ class FetchAndMergeNoticesActivityTest {
                         .archive("archive")
                         .build());
 
-        byte[] dummyBytes = "dummy_zip_content".getBytes();
-        Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1")).thenReturn(dummyBytes);
-
-        Path extracted1 = Path.of("extracted1.pdf");
-
-        Mockito.when(zipFileServiceMock.unzip(any(Path.class), any(Path.class)))
-                .thenReturn(List.of(extracted1));
-
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new ByteArrayOutputStream());
-        Mockito.when(fileArchiverServiceMock.createZipOutputStream(any(Path.class)))
-                .thenReturn(zipOutputStream);
-
-        Mockito.doThrow(new IOException("Cannot add file to zip"))
+        Mockito.doThrow(new java.io.IOException("Cannot compress and archive"))
                 .when(fileArchiverServiceMock)
-                .addToZip(
-                        Mockito.same(zipOutputStream),
-                        Mockito.eq(extracted1),
-                        Mockito.eq("extracted1.pdf")
+                .compressAndArchive(
+                        Mockito.<Supplier<Path>>any(),
+                        Mockito.any(Path.class),
+                        Mockito.any(Path.class)
                 );
 
         IllegalStateException exception = Assertions.assertThrows(
@@ -346,10 +263,10 @@ class FetchAndMergeNoticesActivityTest {
 
         Assertions.assertTrue(exception.getMessage().contains("Cannot process and merge notices in working directory"));
 
-        Mockito.verify(fileArchiverServiceMock).addToZip(
-                Mockito.same(zipOutputStream),
-                Mockito.eq(extracted1),
-                Mockito.eq("extracted1.pdf")
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
         );
     }
 
@@ -379,13 +296,17 @@ class FetchAndMergeNoticesActivityTest {
                         .archive("archive")
                         .build());
 
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new ByteArrayOutputStream());
-        Mockito.when(fileArchiverServiceMock.createZipOutputStream(any(Path.class)))
-                .thenReturn(zipOutputStream);
-
         Mockito.when(signedUrlServiceMock.downloadFileFromSignedUrl("http://url1"))
                 .thenThrow(new RestClientException("Connection timed out"));
 
+        mockProgressiveCompressAndArchive();
+
         Assertions.assertThrows(RestClientException.class, () -> activity.fetchAndMergeNotices(ingestionFlowFileId));
+
+        Mockito.verify(fileArchiverServiceMock).compressAndArchive(
+                Mockito.<Supplier<Path>>any(),
+                Mockito.any(Path.class),
+                Mockito.any(Path.class)
+        );
     }
 }

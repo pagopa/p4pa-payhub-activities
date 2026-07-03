@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.zip.ZipOutputStream;
 
 @Lazy
 @Slf4j
@@ -73,32 +72,46 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
 
             Path sharedTargetPath = buildArchiveTargetPath(ingestionFlowFile);
 
-            int processedFiles = 0;
-            Set<String> usedZipEntryNames = new HashSet<>();
+            int[] processedFiles = {0};
+            int[] signedUrlIndex = {0};
+            Deque<Path> downloadedFilesToProcess = new ArrayDeque<>();
+            Path[] currentExtractDirPath = {null};
 
-            try (ZipOutputStream zipOutputStream = fileArchiverService.createZipOutputStream(tmpZipFilePath)) {
-                for (int i = 0; i < signedUrls.size(); i++) {
-                    Path extractDirPath = tmpDir.resolve("extracted_" + i);
+            fileArchiverService.compressAndArchive(
+                    () -> {
+                        while (downloadedFilesToProcess.isEmpty()) {
+                            if (currentExtractDirPath[0] != null) {
+                                cleanupTmpDir(currentExtractDirPath[0]);
+                                currentExtractDirPath[0] = null;
+                            }
 
-                    List<Path> extractedNotices = downloadAndExtractNotices(signedUrls.get(i), tmpDir, i);
+                            if (signedUrlIndex[0] == signedUrls.size()) {
+                                log.debug("Downloading of signedUrl related to ingestionFlowFileId {} completed", ingestionFlowFileId);
+                                return null;
+                            }
 
-                    for (Path noticePath : extractedNotices) {
-                        String zipEntryName = buildUniqueZipEntryName(noticePath, usedZipEntryNames);
-                        fileArchiverService.addToZip(zipOutputStream, noticePath, zipEntryName);
-                        processedFiles++;
-                    }
+                            int currentIndex = signedUrlIndex[0]++;
 
-                    cleanupTmpDir(extractDirPath);
-                }
-            }
+                            log.debug("Downloading next signedUrl {} of {} related to ingestionFlowFileId {}", currentIndex, signedUrls.size(), ingestionFlowFileId);
 
-            if (processedFiles == 0) {
-                return 0;
-            }
+                            currentExtractDirPath[0] = tmpDir.resolve("extracted_" + currentIndex);
 
-            fileArchiverService.encryptAndArchiveZip(tmpZipFilePath, sharedTargetPath);
+                            downloadedFilesToProcess.addAll(downloadAndExtractNotices(
+                                    signedUrls.get(currentIndex),
+                                    tmpDir,
+                                    currentIndex
+                            ));
+                        }
 
-            return processedFiles;
+                        processedFiles[0]++;
+                        return downloadedFilesToProcess.removeFirst();
+                    },
+                    tmpZipFilePath,
+                    sharedTargetPath
+            );
+
+            return processedFiles[0];
+
         } catch (IOException e) {
             throw new IllegalStateException("Cannot process and merge notices in working directory: " + tmpDir, e);
         } finally {
@@ -110,33 +123,6 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         return FileShareUtils.buildOrganizationBasePath(foldersPathsConfig.getShared(), file.getOrganizationId())
                 .resolve(file.getFilePathName())
                 .resolve(foldersPathsConfig.getProcessTargetSubFolders().getArchive());
-    }
-
-    private String buildUniqueZipEntryName(Path filePath, Set<String> usedNames) {
-        String fileName = filePath.getFileName().toString();
-
-        if (usedNames.add(fileName)) {
-            return fileName;
-        }
-
-        String baseName = fileName;
-        String extension = "";
-
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex > 0) {
-            baseName = fileName.substring(0, dotIndex);
-            extension = fileName.substring(dotIndex);
-        }
-
-        int counter = 1;
-        String candidate;
-
-        do {
-            candidate = baseName + "_" + counter + extension;
-            counter++;
-        } while (!usedNames.add(candidate));
-
-        return candidate;
     }
 
     private List<String> retrieveSignedUrls(IngestionFlowFile file, Long organizationId) {
