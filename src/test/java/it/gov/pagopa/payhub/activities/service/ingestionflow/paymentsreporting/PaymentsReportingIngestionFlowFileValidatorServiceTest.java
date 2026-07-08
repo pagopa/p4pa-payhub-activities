@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
@@ -25,7 +25,7 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 	@Mock
 	private OrganizationService organizationService;
 
-	private CtFlussoRiversamento ctFlussoRiversamento;
+	private FlussoRiversamento ctFlussoRiversamento;
 
 	private PaymentsReportingIngestionFlowFileValidatorService service;
 
@@ -36,7 +36,7 @@ class PaymentsReportingIngestionFlowFileValidatorServiceTest {
 		ctIdentificativoUnivocoPersonaG.setCodiceIdentificativoUnivoco("80010020011");
 		CtIstitutoRicevente istitutoRicevente = new CtIstitutoRicevente();
 		istitutoRicevente.setIdentificativoUnivocoRicevente(ctIdentificativoUnivocoPersonaG);
-		ctFlussoRiversamento = new CtFlussoRiversamento();
+		ctFlussoRiversamento = new FlussoRiversamento();
 		ctFlussoRiversamento.setIstitutoRicevente(istitutoRicevente);
 	}
 

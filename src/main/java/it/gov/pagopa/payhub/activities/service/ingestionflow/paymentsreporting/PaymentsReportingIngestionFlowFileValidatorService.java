@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.InvalidIngestionFlowFileDataException;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
@@ -31,7 +31,7 @@ public class PaymentsReportingIngestionFlowFileValidatorService {
 	 * @throws InvalidIngestionFlowFileDataException if the organization details in `ctFlussoRiversamento` do not match
 	 *                                  the expected organization in `ingestionFlowFileDTO`.
 	 */
-	public void validateData(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFile ingestionFlowFileDTO) {
+	public void validateData(FlussoRiversamento ctFlussoRiversamento, IngestionFlowFile ingestionFlowFileDTO) {
 		String fileOrgFiscalcode = ctFlussoRiversamento.getIstitutoRicevente().getIdentificativoUnivocoRicevente().getCodiceIdentificativoUnivoco();
 		Organization organization = organizationService.getOrganizationById(ingestionFlowFileDTO.getOrganizationId())
 				.orElseThrow(() -> new InvalidIngestionFlowFileDataException("Organization not found: " + ingestionFlowFileDTO.getOrganizationId()));

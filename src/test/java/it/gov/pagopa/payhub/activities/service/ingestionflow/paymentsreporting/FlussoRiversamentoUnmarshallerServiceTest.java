@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.files.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
@@ -92,7 +92,7 @@ class FlussoRiversamentoUnmarshallerServiceTest {
 			writer.write(XML_CONTENT);
 		}
 		//when
-		CtFlussoRiversamento result = handler.unmarshal(xmlFile);
+		FlussoRiversamento result = handler.unmarshal(xmlFile);
 
 		// then
 		assertNotNull(result);
@@ -117,7 +117,7 @@ class FlussoRiversamentoUnmarshallerServiceTest {
 	@Test
 	void testJAXBExceptionInConstructor() {
 		try(MockedStatic<JAXBContext> mockedStaticJAXBContext = Mockito.mockStatic(JAXBContext.class)) {
-			mockedStaticJAXBContext.when(() -> JAXBContext.newInstance(CtFlussoRiversamento.class))
+			mockedStaticJAXBContext.when(() -> JAXBContext.newInstance(FlussoRiversamento.class))
 					.thenThrow(new JAXBException("Simulated JAXBException"));
 			assertThrows(IllegalStateException.class, () -> new FlussoRiversamentoUnmarshallerService(resource, null));
 		}
