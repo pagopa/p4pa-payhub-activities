@@ -1,9 +1,11 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.agenziaentrate._2014.marcadabollo.MarcaDaBollo;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -13,6 +15,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 
@@ -61,7 +64,7 @@ class XMLUnmarshallerServiceTest {
 			        <dataEsitoSingoloPagamento>2024-12-01</dataEsitoSingoloPagamento>
 			    </datiSingoliPagamenti>
 			</FlussoRiversamento>
-                """;
+			""";
 
 	private JAXBContext jaxbContext;
 	private Schema schema;
@@ -73,7 +76,7 @@ class XMLUnmarshallerServiceTest {
 	@BeforeEach
 	void setUp() throws JAXBException {
 		service = new XMLUnmarshallerService();
-		jaxbContext = JAXBContext.newInstance(CtFlussoRiversamento.class);
+		jaxbContext = JAXBContext.newInstance(FlussoRiversamento.class);
 
 		try {
 			URL xsdUrl = getClass().getResource("/xsd/FlussoRiversamento.xsd");
@@ -87,7 +90,7 @@ class XMLUnmarshallerServiceTest {
 	}
 
 	@Test
-	void unmarshaller_validXmlWithSchemaFromResources_shouldReturnCtFlussoRiversamento() throws Exception {
+	void unmarshaller_validXmlWithSchemaFromResources_shouldReturnFlussoRiversamento() throws Exception {
 		//given
 		File xmlFile = new File(tempDir, "testFlussoRiversamento.xml");
 
@@ -96,15 +99,15 @@ class XMLUnmarshallerServiceTest {
 		}
 
 		// when
-		CtFlussoRiversamento result = service.unmarshal(xmlFile, CtFlussoRiversamento.class, jaxbContext, schema);
+		FlussoRiversamento result = service.unmarshal(xmlFile, FlussoRiversamento.class, jaxbContext, schema);
 
 		// then
 		assertNotNull(result);
 		assertEquals("2024-04-07ABI03062-315V900103811327", result.getIdentificativoFlusso());
 		assertEquals("BANCA", result.getIstitutoMittente().getDenominazioneMittente());
 		assertEquals("COMUNE DI VENEZIA", result.getIstitutoRicevente().getDenominazioneRicevente());
-		assertEquals(2, result.getDatiSingoliPagamenti().size());
-		assertEquals("01000000001122011", result.getDatiSingoliPagamenti().get(0).getIdentificativoUnivocoVersamento());
+		assertEquals(2, result.getDatiSingoliPagamentis().size());
+		assertEquals("01000000001122011", result.getDatiSingoliPagamentis().getFirst().getIdentificativoUnivocoVersamento());
 	}
 
 	@Test
@@ -116,7 +119,7 @@ class XMLUnmarshallerServiceTest {
 
 		// when then
 		assertThrows(InvalidValueException.class, () ->
-				service.unmarshal(xmlFile, CtFlussoRiversamento.class, jaxbContext, schema),
+				service.unmarshal(xmlFile, FlussoRiversamento.class, jaxbContext, schema),
 				"Error while parsing file"
 		);
 	}
@@ -131,6 +134,22 @@ class XMLUnmarshallerServiceTest {
 		}
 
 		// when then
-		assertDoesNotThrow(() -> service.unmarshal(xmlFile, CtFlussoRiversamento.class, jaxbContext,null));
+		assertDoesNotThrow(() -> service.unmarshal(xmlFile, FlussoRiversamento.class, jaxbContext,null));
+	}
+
+	@Test
+	void givenUnexpectedRootElementThenInvalidValueException() throws IOException, JAXBException {
+		File xmlFile = new File(tempDir, "testFlussoRiversamento.xml");
+
+		try (FileWriter xmlWriter = new FileWriter(xmlFile)) {
+			xmlWriter.write(XML_CONTENT);
+		}
+		jaxbContext = JAXBContext.newInstance(FlussoRiversamento.class, MarcaDaBollo.class);
+
+		// when
+		InvalidValueException resultException = Assertions.assertThrows(InvalidValueException.class, () -> service.unmarshal(xmlFile, MarcaDaBollo.class, jaxbContext,null));
+
+		// then
+		Assertions.assertEquals("Unexpected root element name: found FlussoRiversamento instead of marcaDaBollo", resultException.getMessage());
 	}
 }

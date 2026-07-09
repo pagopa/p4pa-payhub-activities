@@ -5,6 +5,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.Lazy;
@@ -42,6 +43,10 @@ public class XMLUnmarshallerService {
 				unmarshaller.setSchema(schema);
 			}
 			JAXBElement<T> element = unmarshaller.unmarshal(new StreamSource(is), clazz);
+			XmlRootElement rootElement = clazz.getAnnotation(XmlRootElement.class);
+			if(rootElement != null && !rootElement.name().equals(element.getName().getLocalPart())) {
+				throw new InvalidValueException("Unexpected root element name: found " + element.getName().getLocalPart() + " instead of " + rootElement.name());
+			}
 			return element.getValue();
 		} catch (IOException | JAXBException e) {
 			String errorMessage = "Error while parsing file " + file.getName() + ": " + ExceptionUtils.getRootCauseMessage(e);

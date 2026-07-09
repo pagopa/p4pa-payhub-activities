@@ -197,7 +197,7 @@ jaxb {
             args = listOf("-xmlschema")
             outputDir = file("$projectDir/build/generated/jaxb/java")
             schema = file("src/main/resources/xsd/FlussoRiversamento.xsd")
-            bindings = layout.files("src/main/resources/xsd/FlussoRiversamento.xjb")
+            bindings = layout.files("src/main/resources/xsd/simple-bindings.xjb")
         }
         register("Opi14TreasuryFlow") {
             extension = true
@@ -392,6 +392,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
@@ -424,6 +426,8 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
@@ -456,6 +460,8 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
@@ -501,6 +507,8 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
@@ -541,6 +549,8 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
@@ -579,6 +589,8 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
@@ -620,6 +632,8 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
@@ -651,6 +665,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGeneratePUSIL") {

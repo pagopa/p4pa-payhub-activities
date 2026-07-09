@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.pagopa.payhub.activities.service.files.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ public class FlussoRiversamentoUnmarshallerService {
 	public FlussoRiversamentoUnmarshallerService(@Value("classpath:xsd/FlussoRiversamento.xsd") Resource paymetsReportingXsdResource,
 	                                             XMLUnmarshallerService xmlUnmarshallerService) {
 		try {
-			this.jaxbContext = JAXBContext.newInstance(CtFlussoRiversamento.class);
+			this.jaxbContext = JAXBContext.newInstance(FlussoRiversamento.class);
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			this.schema = schemaFactory.newSchema(paymetsReportingXsdResource.getURL());
 			this.xmlUnmarshallerService = xmlUnmarshallerService;
@@ -50,7 +50,7 @@ public class FlussoRiversamentoUnmarshallerService {
 	 * @param file the XML file to parse
 	 * @return the unmarshalled CtFlussoRiversamento object
 	 */
-	public CtFlussoRiversamento unmarshal(File file) {
-		return xmlUnmarshallerService.unmarshal(file, CtFlussoRiversamento.class, jaxbContext, schema);
+	public FlussoRiversamento unmarshal(File file) {
+		return xmlUnmarshallerService.unmarshal(file, FlussoRiversamento.class, jaxbContext, schema);
 	}
 }
