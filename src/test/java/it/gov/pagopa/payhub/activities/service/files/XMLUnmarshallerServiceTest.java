@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
+import it.gov.agenziaentrate._2014.marcadabollo.MarcaDaBollo;
 import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import jakarta.xml.bind.JAXBContext;
@@ -63,7 +64,7 @@ class XMLUnmarshallerServiceTest {
 			        <dataEsitoSingoloPagamento>2024-12-01</dataEsitoSingoloPagamento>
 			    </datiSingoliPagamenti>
 			</FlussoRiversamento>
-                """;
+			""";
 
 	private JAXBContext jaxbContext;
 	private Schema schema;
@@ -106,7 +107,7 @@ class XMLUnmarshallerServiceTest {
 		assertEquals("BANCA", result.getIstitutoMittente().getDenominazioneMittente());
 		assertEquals("COMUNE DI VENEZIA", result.getIstitutoRicevente().getDenominazioneRicevente());
 		assertEquals(2, result.getDatiSingoliPagamentis().size());
-		assertEquals("01000000001122011", result.getDatiSingoliPagamentis().get(0).getIdentificativoUnivocoVersamento());
+		assertEquals("01000000001122011", result.getDatiSingoliPagamentis().getFirst().getIdentificativoUnivocoVersamento());
 	}
 
 	@Test
@@ -137,17 +138,18 @@ class XMLUnmarshallerServiceTest {
 	}
 
 	@Test
-	void givenUnexpectedRootElementThenInvalidValueException() throws IOException {
+	void givenUnexpectedRootElementThenInvalidValueException() throws IOException, JAXBException {
 		File xmlFile = new File(tempDir, "testFlussoRiversamento.xml");
 
 		try (FileWriter xmlWriter = new FileWriter(xmlFile)) {
 			xmlWriter.write(XML_CONTENT);
 		}
+		jaxbContext = JAXBContext.newInstance(FlussoRiversamento.class, MarcaDaBollo.class);
 
 		// when
-		InvalidValueException resultException = Assertions.assertThrows(InvalidValueException.class, () -> service.unmarshal(xmlFile, FlussoRiversamento.class, jaxbContext,null));
+		InvalidValueException resultException = Assertions.assertThrows(InvalidValueException.class, () -> service.unmarshal(xmlFile, MarcaDaBollo.class, jaxbContext,null));
 
 		// then
-		Assertions.assertEquals("Unexpected root element name: found Versamento instead of Dovuti", resultException.getMessage());
+		Assertions.assertEquals("Unexpected root element name: found FlussoRiversamento instead of marcaDaBollo", resultException.getMessage());
 	}
 }
