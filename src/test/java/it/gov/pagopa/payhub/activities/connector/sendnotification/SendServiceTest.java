@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -173,6 +178,34 @@ class SendServiceTest {
                     category,
                     legalFactId,
                     accessToken
+                );
+    }
+
+    @Test
+    void notifySendNotificationTimelineCategory() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Map<String, List<TimelineElementCategoryV27DTO>> map = new HashMap<>();
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.doNothing()
+                .when(sendClientMock)
+                .notifySendNotificationTimelineCategory(
+                    map,
+                    accessToken
+                );
+
+        // When
+        sendService.notifySendNotificationTimelineCategory(
+              map
+        );
+
+        // Then
+        Mockito.verify(sendClientMock)
+                .notifySendNotificationTimelineCategory(
+                        map,
+                        accessToken
                 );
     }
 

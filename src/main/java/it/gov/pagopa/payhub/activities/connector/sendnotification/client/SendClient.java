@@ -3,9 +3,13 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Lazy
 @Service
@@ -46,6 +50,11 @@ public class SendClient {
   public void downloadAndArchiveSendLegalFact(String notificationRequestId, LegalFactCategoryDTO legalFactCategoryDTO, String legalFactId, String accessToken) {
     sendApisHolder.getSendApi(accessToken)
             .downloadAndArchiveSendLegalFact(notificationRequestId, legalFactCategoryDTO, legalFactId);
+  }
+
+  public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody, String accessToken) {
+    sendApisHolder.getSendApi(accessToken).
+            notifySendNotificationTimelineCategory(requestBody);
   }
 
 }

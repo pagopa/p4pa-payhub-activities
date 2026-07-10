@@ -4,8 +4,12 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Lazy
 @Service
@@ -51,6 +55,11 @@ public class SendServiceImpl implements SendService {
     @Override
     public void downloadAndArchiveSendLegalFact(String notificationRequestId, LegalFactCategoryDTO legalFactCategoryDTO, String legalFactId) {
         sendClient.downloadAndArchiveSendLegalFact(notificationRequestId, legalFactCategoryDTO, legalFactId, authnService.getAccessToken());
+    }
+
+
+    public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody) {
+        sendClient.notifySendNotificationTimelineCategory(requestBody, authnService.getAccessToken());
     }
 
 }
