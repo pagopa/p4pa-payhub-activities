@@ -53,8 +53,8 @@ public class SendClient {
   }
 
   public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody, String accessToken) {
-    sendApisHolder.getSendApi(accessToken).
-            notifySendNotificationTimelineCategory(requestBody);
+    sendApisHolder.getSendApi(accessToken)
+            .notifySendNotificationTimelineCategory(requestBody);
   }
 
 }
