@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SendServiceTest {
@@ -46,14 +48,14 @@ class SendServiceTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
         sendService.preloadSendFile(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).preloadSendFile(sendNotificationId, accessToken);
+        verify(sendClientMock).preloadSendFile(sendNotificationId, accessToken);
     }
 
     @Test
@@ -62,14 +64,14 @@ class SendServiceTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
         sendService.uploadSendFile(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).uploadSendFile(sendNotificationId, accessToken);
+        verify(sendClientMock).uploadSendFile(sendNotificationId, accessToken);
     }
 
     @Test
@@ -78,14 +80,14 @@ class SendServiceTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
         sendService.deliveryNotification(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).deliveryNotification(sendNotificationId, accessToken);
+        verify(sendClientMock).deliveryNotification(sendNotificationId, accessToken);
     }
 
     @Test
@@ -95,9 +97,9 @@ class SendServiceTest {
         String sendNotificationId = "sendNotificationId";
         SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(sendClientMock.notificationStatus(sendNotificationId, accessToken))
+        when(sendClientMock.notificationStatus(sendNotificationId, accessToken))
                 .thenReturn(expectedResponse);
 
         // When
@@ -114,9 +116,9 @@ class SendServiceTest {
         String sendNotificationId = "sendNotificationId";
         SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(sendClientMock.retrieveNotificationDate(sendNotificationId, accessToken))
+        when(sendClientMock.retrieveNotificationDate(sendNotificationId, accessToken))
                 .thenReturn(expectedResponse);
 
         // When
@@ -133,9 +135,9 @@ class SendServiceTest {
         String notificationRequestId = "notificationRequestId";
         SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(sendClientMock.retrieveNotificationByNotificationRequestId(notificationRequestId, accessToken))
+        when(sendClientMock.retrieveNotificationByNotificationRequestId(notificationRequestId, accessToken))
                 .thenReturn(expectedResponse);
 
         // When
@@ -153,7 +155,7 @@ class SendServiceTest {
         LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
         String legalFactId = "legalFactFile.pdf";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
         Mockito.doNothing()
                 .when(sendClientMock)
@@ -172,7 +174,7 @@ class SendServiceTest {
         );
 
         // Then
-        Mockito.verify(sendClientMock)
+        verify(sendClientMock)
                 .downloadAndArchiveSendLegalFact(
                     notificationRequestId,
                     category,
@@ -187,7 +189,7 @@ class SendServiceTest {
         String accessToken = "ACCESSTOKEN";
         Map<String, List<TimelineElementCategoryV27DTO>> map = new HashMap<>();
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
         Mockito.doNothing()
                 .when(sendClientMock)
@@ -202,7 +204,7 @@ class SendServiceTest {
         );
 
         // Then
-        Mockito.verify(sendClientMock)
+        verify(sendClientMock)
                 .notifySendNotificationTimelineCategory(
                         map,
                         accessToken
