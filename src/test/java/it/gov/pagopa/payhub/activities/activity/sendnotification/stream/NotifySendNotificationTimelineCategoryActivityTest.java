@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.sendnotification.campaign;
+package it.gov.pagopa.payhub.activities.activity.sendnotification.stream;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;

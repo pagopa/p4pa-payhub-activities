@@ -1,4 +1,4 @@
-package it.gov.pagopa.payhub.activities.activity.sendnotification.campaign;
+package it.gov.pagopa.payhub.activities.activity.sendnotification.stream;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
