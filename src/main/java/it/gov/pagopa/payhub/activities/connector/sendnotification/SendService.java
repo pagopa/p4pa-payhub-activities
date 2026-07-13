@@ -15,5 +15,5 @@ public interface SendService {
   SendNotificationDTO retrieveNotificationDate(String sendNotificationId);
   SendNotificationDTO retrieveNotificationByNotificationRequestId(String notificationRequestId);
   void downloadAndArchiveSendLegalFact(String notificationRequestId, LegalFactCategoryDTO legalFactCategoryDTO, String legalFactId);
-  void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody);
+  void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCatogoriesMap);
 }

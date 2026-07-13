@@ -57,9 +57,9 @@ public class SendServiceImpl implements SendService {
         sendClient.downloadAndArchiveSendLegalFact(notificationRequestId, legalFactCategoryDTO, legalFactId, authnService.getAccessToken());
     }
 
-
-    public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody) {
-        sendClient.notifySendNotificationTimelineCategory(requestBody, authnService.getAccessToken());
+    @Override
+    public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCatogoriesMap) {
+        sendClient.notifySendNotificationTimelineCategory(notificationRequestIdToTimelineCatogoriesMap, authnService.getAccessToken());
     }
 
 }

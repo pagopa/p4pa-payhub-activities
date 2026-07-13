@@ -21,9 +21,9 @@ public class NotifySendNotificationTimelineCategoryActivityImpl implements Notif
     }
 
     @Override
-    public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody) {
-        log.info("Notify TimelineCategories for send notifications with following notificationRequestId: {}", requestBody.keySet());
-        sendService.notifySendNotificationTimelineCategory(requestBody);
+    public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCatogoriesMap) {
+        log.info("Notify TimelineCategories for send notifications with following notificationRequestId: {}", notificationRequestIdToTimelineCatogoriesMap.keySet());
+        sendService.notifySendNotificationTimelineCategory(notificationRequestIdToTimelineCatogoriesMap);
     }
 
 }

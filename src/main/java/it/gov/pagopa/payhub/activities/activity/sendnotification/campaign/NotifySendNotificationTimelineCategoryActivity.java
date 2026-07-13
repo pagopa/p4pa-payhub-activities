@@ -10,5 +10,5 @@ import java.util.Map;
 @ActivityInterface
 public interface NotifySendNotificationTimelineCategoryActivity {
     @ActivityMethod
-    void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody);
+    void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCatogoriesMap);
 }

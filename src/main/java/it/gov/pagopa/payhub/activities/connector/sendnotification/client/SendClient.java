@@ -52,9 +52,9 @@ public class SendClient {
             .downloadAndArchiveSendLegalFact(notificationRequestId, legalFactCategoryDTO, legalFactId);
   }
 
-  public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> requestBody, String accessToken) {
+  public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCatogoriesMap, String accessToken) {
     sendApisHolder.getSendApi(accessToken)
-            .notifySendNotificationTimelineCategory(requestBody);
+            .notifySendNotificationTimelineCategory(notificationRequestIdToTimelineCatogoriesMap);
   }
 
 }
