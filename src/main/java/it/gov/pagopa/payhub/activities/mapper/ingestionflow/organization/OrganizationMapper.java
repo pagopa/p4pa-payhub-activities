@@ -24,8 +24,8 @@ public class OrganizationMapper {
                 .orgTypeCode(dto.getOrgTypeCode())
                 .orgLogo(dto.getOrgLogo())
                 .status(OrganizationStatus.valueOf(dto.getStatus()))
-                .startDate(dto.getStartDate() != null ? dto.getStartDate().toLocalDate() : null)
-                .additionalLanguage(OrganizationAdditionalLanguage.valueOf(dto.getAdditionalLanguage()))
+                .startDate(dto.getStartDate())
+                .additionalLanguage(dto.getAdditionalLanguage() != null ? OrganizationAdditionalLanguage.valueOf(dto.getAdditionalLanguage()) : null)
 
                 .iban(dto.getIban())
                 .postalIban(dto.getPostalIban())
@@ -43,5 +43,4 @@ public class OrganizationMapper {
                 .build();
     }
 }
-
 

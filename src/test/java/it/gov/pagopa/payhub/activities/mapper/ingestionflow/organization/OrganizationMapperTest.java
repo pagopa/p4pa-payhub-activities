@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationMapperTest {
@@ -32,7 +31,7 @@ class OrganizationMapperTest {
         dto.setOrgLogo("logo");
         dto.setStatus("ACTIVE");
         dto.setAdditionalLanguage("EN");
-        dto.setStartDate(LocalDateTime.of(2024, 6, 1, 0, 0));
+        dto.setStartDate(LocalDate.of(2024, 6, 1));
         dto.setFlagNotifyIo(true);
         dto.setFlagNotifyOutcomePush(false);
         dto.setFlagTreasury(false);
