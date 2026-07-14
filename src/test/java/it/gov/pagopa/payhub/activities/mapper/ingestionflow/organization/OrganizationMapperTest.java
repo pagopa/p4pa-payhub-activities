@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationAdditionalLanguage;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
+import java.time.Month;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +32,7 @@ class OrganizationMapperTest {
         dto.setOrgLogo("logo");
         dto.setStatus("ACTIVE");
         dto.setAdditionalLanguage("EN");
-        dto.setStartDate(LocalDate.of(2024, 6, 1));
+        dto.setStartDate(LocalDate.of(2024, Month.JUNE, 1));
         dto.setFlagNotifyIo(true);
         dto.setFlagNotifyOutcomePush(false);
         dto.setFlagTreasury(false);
@@ -58,7 +59,7 @@ class OrganizationMapperTest {
         Assertions.assertEquals("logo", result.getOrgLogo());
         Assertions.assertEquals(OrganizationStatus.ACTIVE, result.getStatus());
         Assertions.assertEquals(OrganizationAdditionalLanguage.EN, result.getAdditionalLanguage());
-        Assertions.assertEquals(LocalDate.of(2024, 6, 1), result.getStartDate());
+        Assertions.assertEquals(LocalDate.of(2024, Month.JUNE, 1), result.getStartDate());
         Assertions.assertEquals(456L, result.getBrokerId());
         Assertions.assertTrue(result.getFlagNotifyIo());
         Assertions.assertFalse(result.getFlagNotifyOutcomePush());
