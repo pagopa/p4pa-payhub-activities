@@ -2,13 +2,12 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.organization;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
-
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -58,7 +57,7 @@ public class OrganizationIngestionFlowFileDTO {
 
     @CsvBindByName(column = "start_date")
     @CsvDate(value = "yyyy-MM-dd")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @CsvBindByName(column = "broker_cf")
     private String brokerCf;
