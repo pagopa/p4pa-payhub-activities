@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -15,5 +15,5 @@ public interface SendService {
   SendNotificationDTO retrieveNotificationDate(String sendNotificationId);
   SendNotificationDTO retrieveNotificationByNotificationRequestId(String notificationRequestId);
   void downloadAndArchiveSendLegalFact(String notificationRequestId, LegalFactCategoryDTO legalFactCategoryDTO, String legalFactId);
-  void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCatogoriesMap);
+  void notifySendNotificationStreamEvents(Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap);
 }

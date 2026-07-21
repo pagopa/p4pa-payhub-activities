@@ -5,7 +5,7 @@ import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
 import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -179,25 +179,25 @@ class SendClientTest {
     }
 
     @Test
-    void notifySendNotificationTimelineCategory() {
+    void givenValidRequestWhenNotifySendNotificationStreamEventsThenOk() {
         //Given
         String accessToken = "ACCESSTOKEN";
-        Map<String, List<TimelineElementCategoryV27DTO>> map = new HashMap<>();
+        Map<String, List<StreamEventSummaryDTO>> map = new HashMap<>();
 
         when(sendApisHolderMock.getSendApi(accessToken))
                 .thenReturn(sendApiMock);
         Mockito.doNothing()
                 .when(sendApiMock)
-                .notifySendNotificationTimelineCategory(map);
+                .notifySendNotificationStreamEvents(map);
 
         //When
-        sendClient.notifySendNotificationTimelineCategory(
+        sendClient.notifySendNotificationStreamEvents(
                 map,
                 accessToken
         );
 
         //Then
         verify(sendApiMock)
-                .notifySendNotificationTimelineCategory(map);
+                .notifySendNotificationStreamEvents(map);
     }
 }
