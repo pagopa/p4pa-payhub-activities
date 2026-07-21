@@ -7,9 +7,9 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,12 +32,8 @@ class SendClientTest {
     @Mock
     private NotificationApi notificationApi;
 
+    @InjectMocks
     private SendClient sendClient;
-
-    @BeforeEach
-    void setUp() {
-        sendClient = new SendClient(sendApisHolderMock);
-    }
 
     @AfterEach
     void verifyNoMoreInteractions() {
