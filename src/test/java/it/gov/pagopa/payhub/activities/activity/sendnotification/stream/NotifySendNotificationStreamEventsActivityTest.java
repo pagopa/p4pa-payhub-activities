@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification.stream;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
-import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,13 +17,13 @@ import java.util.Map;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class NotifySendNotificationTimelineCategoryActivityTest {
+class NotifySendNotificationStreamEventsActivityTest {
 
     @Mock
     private SendService sendServiceMock;
 
     @InjectMocks
-    private NotifySendNotificationTimelineCategoryActivityImpl activity;
+    private NotifySendNotificationStreamEventsActivityImpl activity;
 
     @AfterEach
     void verifyNoMoreInteractions() {
@@ -33,12 +33,12 @@ class NotifySendNotificationTimelineCategoryActivityTest {
     }
 
     @Test
-    void notifySendNotificationTimelineCategory() {
+    void givenValidRequestWhenNotifySendNotificationStreamEventsThenOk() {
         //GIVEN
-        Map<String, List<TimelineElementCategoryV27DTO>> map = new HashMap<>();
+        Map<String, List<StreamEventSummaryDTO>> map = new HashMap<>();
         //WHEN
-        activity.notifySendNotificationTimelineCategory(map);
+        activity.notifySendNotificationStreamEvents(map);
         //THEN
-        verify(sendServiceMock).notifySendNotificationTimelineCategory(map);
+        verify(sendServiceMock).notifySendNotificationStreamEvents(map);
     }
 }

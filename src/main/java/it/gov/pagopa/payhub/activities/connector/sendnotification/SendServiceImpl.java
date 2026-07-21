@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -58,8 +58,8 @@ public class SendServiceImpl implements SendService {
     }
 
     @Override
-    public void notifySendNotificationTimelineCategory(Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCatogoriesMap) {
-        sendClient.notifySendNotificationTimelineCategory(notificationRequestIdToTimelineCatogoriesMap, authnService.getAccessToken());
+    public void notifySendNotificationStreamEvents(Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap) {
+        sendClient.notifySendNotificationStreamEvents(notificationRequestIdToStreamEventsMap, authnService.getAccessToken());
     }
 
 }
