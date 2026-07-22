@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.iban;
 
+import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityExecutionContext;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
@@ -15,15 +18,20 @@ import org.springframework.data.domain.PageRequest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MassiveIbanUpdateActivityTest {
     @Mock
     private DebtPositionService debtPositionServiceMock;
+    @Mock
+    private ActivityExecutionContext activityExecutionContextMock;
 
     private MassiveIbanUpdateActivity activity;
 
@@ -67,17 +75,20 @@ class MassiveIbanUpdateActivityTest {
 
     @Test
     void givenNoDebtPositionsToUpdateWhenMassiveIbanUpdateRetrieveAndUpdateDpThenDoNotUpdateAndReturnFalse() {
-        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        expectedFilterForUpdate, PageRequest.of(0, 100)))
-                .thenReturn(buildPagedModelDebtPositionIdView());
+        try (MockedStatic<Activity> mockedActivity = Mockito.mockStatic(Activity.class)) {
+            mockedActivity.when(Activity::getExecutionContext).thenReturn(activityExecutionContextMock);
+            when(activityExecutionContextMock.getHeartbeatDetails(Integer.class)).thenReturn(Optional.empty());
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        expectedFilterForCheck, PageRequest.of(0, 1)))
-                .thenReturn(buildPagedModelDebtPositionIdView());
+            when(debtPositionServiceMock.getDebtPositionsIdView(expectedFilterForUpdate, PageRequest.of(0, 500)))
+                    .thenReturn(buildPagedModelDebtPositionIdView());
 
-        Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+            when(debtPositionServiceMock.getDebtPositionsIdView(expectedFilterForCheck, PageRequest.of(0, 1)))
+                    .thenReturn(buildPagedModelDebtPositionIdView());
 
-        assertFalse(result);
+            Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+            assertFalse(result);
+        }
     }
 
     @Test
@@ -89,23 +100,27 @@ class MassiveIbanUpdateActivityTest {
                 .newPostalIban(newPostalIban)
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        expectedFilterForUpdate, PageRequest.of(0, 100)))
-                .thenReturn(buildPagedModelDebtPositionIdView(1L, 2L))
-                .thenReturn(buildPagedModelDebtPositionIdView());
+        try (MockedStatic<Activity> mockedActivity = Mockito.mockStatic(Activity.class)) {
+            mockedActivity.when(Activity::getExecutionContext).thenReturn(activityExecutionContextMock);
+            when(activityExecutionContextMock.getHeartbeatDetails(Integer.class)).thenReturn(Optional.empty());
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        expectedFilterForCheck, PageRequest.of(0, 1)))
-                .thenReturn(buildPagedModelDebtPositionIdView(3L));
+            when(debtPositionServiceMock.getDebtPositionsIdView(expectedFilterForUpdate, PageRequest.of(0, 500)))
+                    .thenReturn(buildPagedModelDebtPositionIdView(1L, 2L))
+                    .thenReturn(buildPagedModelDebtPositionIdView());
+            when(debtPositionServiceMock.getDebtPositionsIdView(expectedFilterForCheck, PageRequest.of(0, 1)))
+                    .thenReturn(buildPagedModelDebtPositionIdView(3L));
 
-        Mockito.doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
-                1L, updateTransferIbansAndSyncDebtPositionRequestDTO);
-        Mockito.doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
-               2L, updateTransferIbansAndSyncDebtPositionRequestDTO);
+            doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
+                    1L, updateTransferIbansAndSyncDebtPositionRequestDTO);
+            doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
+                    2L, updateTransferIbansAndSyncDebtPositionRequestDTO);
 
-        Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+            Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
-        assertTrue(result);
+            assertTrue(result);
+
+            Mockito.verify(activityExecutionContextMock).heartbeat(2);
+        }
     }
 
     @Test
@@ -117,21 +132,26 @@ class MassiveIbanUpdateActivityTest {
                 .newPostalIban(newPostalIban)
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        expectedFilterForUpdate, PageRequest.of(0, 100)))
-                .thenReturn(buildPagedModelDebtPositionIdView(1L))
-                .thenReturn(buildPagedModelDebtPositionIdView());
+        try (MockedStatic<Activity> mockedActivity = Mockito.mockStatic(Activity.class)) {
+            mockedActivity.when(Activity::getExecutionContext).thenReturn(activityExecutionContextMock);
+            when(activityExecutionContextMock.getHeartbeatDetails(Integer.class)).thenReturn(Optional.empty());
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsIdView(
-                        expectedFilterForCheck, PageRequest.of(0, 1)))
-                .thenReturn(buildPagedModelDebtPositionIdView());
+            when(debtPositionServiceMock.getDebtPositionsIdView(expectedFilterForUpdate, PageRequest.of(0, 500)))
+                    .thenReturn(buildPagedModelDebtPositionIdView(1L))
+                    .thenReturn(buildPagedModelDebtPositionIdView());
 
-        Mockito.doNothing().when(debtPositionServiceMock).updateTransferIbansAndSyncDebtPosition(
-                1L, updateTransferIbansAndSyncDebtPositionRequestDTO);
+            when(debtPositionServiceMock.getDebtPositionsIdView(expectedFilterForCheck, PageRequest.of(0, 1)))
+                    .thenReturn(buildPagedModelDebtPositionIdView());
 
-        Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+            doNothing().when(debtPositionServiceMock)
+                    .updateTransferIbansAndSyncDebtPosition(1L, updateTransferIbansAndSyncDebtPositionRequestDTO);
 
-        assertFalse(result);
+            Boolean result = activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+            assertFalse(result);
+
+            Mockito.verify(activityExecutionContextMock).heartbeat(1);
+        }
     }
 
     private PagedModelDebtPositionIdView buildPagedModelDebtPositionIdView(Long... ids) {
