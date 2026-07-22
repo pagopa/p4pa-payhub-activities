@@ -23,8 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MassiveIbanUpdateActivityTest {
@@ -119,7 +118,7 @@ class MassiveIbanUpdateActivityTest {
 
             assertTrue(result);
 
-            Mockito.verify(activityExecutionContextMock).heartbeat(2);
+            verify(activityExecutionContextMock).heartbeat(2);
         }
     }
 
@@ -150,7 +149,7 @@ class MassiveIbanUpdateActivityTest {
 
             assertFalse(result);
 
-            Mockito.verify(activityExecutionContextMock).heartbeat(1);
+            verify(activityExecutionContextMock).heartbeat(1);
         }
     }
 
