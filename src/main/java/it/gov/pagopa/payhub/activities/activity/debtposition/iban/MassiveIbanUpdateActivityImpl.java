@@ -1,5 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.iban;
 
+import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityExecutionContext;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
@@ -42,14 +44,23 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
 
         List<DebtPositionIdView> debtPositionIdViewsToUpdate;
 
+        ActivityExecutionContext activityContext = Activity.getExecutionContext();
+        int totalProcessed = activityContext.getHeartbeatDetails(Integer.class).orElse(0);
+
         do {
-            PagedModelDebtPositionIdView pagedModelDebtPositionIdViewToUpdate = debtPositionService.getDebtPositionsIdView(debtPositionIdViewToUpdateFilters, PageRequest.of(0, 100));
+            PagedModelDebtPositionIdView pagedModelDebtPositionIdViewToUpdate = debtPositionService.getDebtPositionsIdView(debtPositionIdViewToUpdateFilters, PageRequest.of(0, 500));
 
             debtPositionIdViewsToUpdate = Optional.ofNullable(pagedModelDebtPositionIdViewToUpdate.getEmbedded())
                     .map(PagedModelDebtPositionIdViewEmbedded::getDebtPositionIdViews)
                     .orElse(Collections.emptyList());
 
-            debtPositionIdViewsToUpdate.forEach(dpIdView -> debtPositionService.updateTransferIbansAndSyncDebtPosition(dpIdView.getDebtPositionId(), updateTransferIbansAndSyncDebtPositionRequestDTO));
+            if (!debtPositionIdViewsToUpdate.isEmpty()) {
+                debtPositionIdViewsToUpdate.forEach(dpIdView -> debtPositionService.updateTransferIbansAndSyncDebtPosition(dpIdView.getDebtPositionId(), updateTransferIbansAndSyncDebtPositionRequestDTO));
+
+                totalProcessed += debtPositionIdViewsToUpdate.size();
+
+                activityContext.heartbeat(totalProcessed);
+            }
         } while(!debtPositionIdViewsToUpdate.isEmpty());
 
         return checkIfWfIsToReschedule(orgId, dptoId, oldIban, oldPostalIban);
