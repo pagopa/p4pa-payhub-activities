@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +45,7 @@ class MassiveIbanUpdateActivityTest {
 
     @BeforeEach
     void init() {
-        activity = new MassiveIbanUpdateActivityImpl(debtPositionServiceMock);
+        activity = new MassiveIbanUpdateActivityImpl(debtPositionServiceMock, 50);
 
         expectedFilterForUpdate = DebtPositionIdViewFilters.builder()
                 .organizationId(orgId)
@@ -150,6 +149,32 @@ class MassiveIbanUpdateActivityTest {
             assertFalse(result);
 
             verify(activityExecutionContextMock).heartbeat(1);
+        }
+    }
+
+    @Test
+    void givenExecutionExceptionWhenUpdateThenThrowRuntimeException() {
+        UpdateTransferIbansAndSyncDebtPositionRequestDTO requestDTO = UpdateTransferIbansAndSyncDebtPositionRequestDTO.builder()
+                .oldIban(oldIban)
+                .newIban(newIban)
+                .oldPostalIban(oldPostalIban)
+                .newPostalIban(newPostalIban)
+                .build();
+
+        try (MockedStatic<Activity> mockedActivity = Mockito.mockStatic(Activity.class)) {
+            mockedActivity.when(Activity::getExecutionContext).thenReturn(activityExecutionContextMock);
+            when(activityExecutionContextMock.getHeartbeatDetails(Integer.class)).thenReturn(Optional.empty());
+
+            when(debtPositionServiceMock.getDebtPositionsIdView(expectedFilterForUpdate, PageRequest.of(0, 500)))
+                    .thenReturn(buildPagedModelDebtPositionIdView(1L));
+
+            doThrow(new RuntimeException("RuntimeException"))
+                    .when(debtPositionServiceMock)
+                    .updateTransferIbansAndSyncDebtPosition(1L, requestDTO);
+
+            assertThrows(RuntimeException.class, () ->
+                    activity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban)
+            );
         }
     }
 

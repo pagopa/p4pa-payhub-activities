@@ -4,24 +4,35 @@ import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
+import it.gov.pagopa.payhub.activities.util.ThreadUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Slf4j
 @Lazy
 @Service
 public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity {
+    private final int maxConcurrentRequests;
+
     private final DebtPositionService debtPositionService;
 
-    public MassiveIbanUpdateActivityImpl(DebtPositionService debtPositionService) {
+    public MassiveIbanUpdateActivityImpl(
+            DebtPositionService debtPositionService,
+            @Value("${massive-iban-update.max-concurrent-requests}") int maxConcurrentRequests
+    ) {
         this.debtPositionService = debtPositionService;
+        this.maxConcurrentRequests = maxConcurrentRequests;
     }
 
     @Override
@@ -47,23 +58,66 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
         ActivityExecutionContext activityContext = Activity.getExecutionContext();
         int totalProcessed = activityContext.getHeartbeatDetails(Integer.class).orElse(0);
 
-        do {
-            PagedModelDebtPositionIdView pagedModelDebtPositionIdViewToUpdate = debtPositionService.getDebtPositionsIdView(debtPositionIdViewToUpdateFilters, PageRequest.of(0, 500));
+        Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
 
-            debtPositionIdViewsToUpdate = Optional.ofNullable(pagedModelDebtPositionIdViewToUpdate.getEmbedded())
-                    .map(PagedModelDebtPositionIdViewEmbedded::getDebtPositionIdViews)
-                    .orElse(Collections.emptyList());
+        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
+            do {
+                PagedModelDebtPositionIdView pagedModelDebtPositionIdViewToUpdate = debtPositionService.getDebtPositionsIdView(debtPositionIdViewToUpdateFilters, PageRequest.of(0, 500));
 
-            if (!debtPositionIdViewsToUpdate.isEmpty()) {
-                debtPositionIdViewsToUpdate.forEach(dpIdView -> debtPositionService.updateTransferIbansAndSyncDebtPosition(dpIdView.getDebtPositionId(), updateTransferIbansAndSyncDebtPositionRequestDTO));
+                debtPositionIdViewsToUpdate = Optional.ofNullable(pagedModelDebtPositionIdViewToUpdate.getEmbedded())
+                        .map(PagedModelDebtPositionIdViewEmbedded::getDebtPositionIdViews)
+                        .orElse(Collections.emptyList());
 
-                totalProcessed += debtPositionIdViewsToUpdate.size();
+                if (!debtPositionIdViewsToUpdate.isEmpty()) {
+                    List<List<DebtPositionIdView>> batches = ListUtils.partition(debtPositionIdViewsToUpdate, maxConcurrentRequests);
 
-                activityContext.heartbeat(totalProcessed);
-            }
-        } while(!debtPositionIdViewsToUpdate.isEmpty());
+                    for (List<DebtPositionIdView> batch : batches) {
+                        processBatch(batch, updateTransferIbansAndSyncDebtPositionRequestDTO, executorService, mdcContextMap);
+                    }
+
+                    totalProcessed += debtPositionIdViewsToUpdate.size();
+                    activityContext.heartbeat(totalProcessed);
+                }
+            } while (!debtPositionIdViewsToUpdate.isEmpty());
+        }
 
         return checkIfWfIsToReschedule(orgId, dptoId, oldIban, oldPostalIban);
+    }
+
+    private void processBatch(
+            List<DebtPositionIdView> batch,
+            UpdateTransferIbansAndSyncDebtPositionRequestDTO updateTransferIbansAndSyncDebtPositionRequestDTO,
+            ExecutorService executorService,
+            Map<String, String> mdcContextMap
+    ) {
+        List<Future<?>> futures = new ArrayList<>(batch.size());
+
+        for (DebtPositionIdView dpIdView : batch) {
+            futures.add(
+                    ThreadUtils.submit(executorService, () ->
+                                    debtPositionService.updateTransferIbansAndSyncDebtPosition(
+                                            dpIdView.getDebtPositionId(),
+                                            updateTransferIbansAndSyncDebtPositionRequestDTO
+                                    ),
+                            mdcContextMap
+                    )
+            );
+        }
+
+        awaitAll(futures);
+    }
+
+    private void awaitAll(List<Future<?>> futures) {
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private boolean checkIfWfIsToReschedule(Long orgId, Long dptoId, String oldIban, String oldPostalIban) {
