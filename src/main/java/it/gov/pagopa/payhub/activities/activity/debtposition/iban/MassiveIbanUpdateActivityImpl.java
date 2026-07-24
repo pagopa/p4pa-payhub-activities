@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,16 @@ import java.util.concurrent.Future;
 @Lazy
 @Service
 public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity {
-    private static final int MAX_CONCURRENT_REQUESTS = 50; // TODO: move to resource.yml
+    private final int maxConcurrentRequests;
 
     private final DebtPositionService debtPositionService;
 
-    public MassiveIbanUpdateActivityImpl(DebtPositionService debtPositionService) {
+    public MassiveIbanUpdateActivityImpl(
+            DebtPositionService debtPositionService,
+            @Value("${massive-iban-update.max-concurrent-requests}") int maxConcurrentRequests
+    ) {
         this.debtPositionService = debtPositionService;
+        this.maxConcurrentRequests = maxConcurrentRequests;
     }
 
     @Override
@@ -65,7 +70,7 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
                         .orElse(Collections.emptyList());
 
                 if (!debtPositionIdViewsToUpdate.isEmpty()) {
-                    List<List<DebtPositionIdView>> batches = ListUtils.partition(debtPositionIdViewsToUpdate, MAX_CONCURRENT_REQUESTS);
+                    List<List<DebtPositionIdView>> batches = ListUtils.partition(debtPositionIdViewsToUpdate, maxConcurrentRequests);
 
                     for (List<DebtPositionIdView> batch : batches) {
                         List<Future<?>> futures = new ArrayList<>(batch.size());

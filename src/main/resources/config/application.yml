@@ -44,6 +44,9 @@ export-flow-files:
     page-size: "\${CLASSIFICATIONS_EXPORT_FLOW_FILE_SIZE_PAGE:10000}"
     relative-file-folder: "\${CLASSIFICATIONS_EXPORT_RELATIVE_FILE_FOLDER:export/classifications}"
 
+massive-iban-update:
+  max-concurrent-requests: "\${MASSIVE_IBAN_UPDATE_MAX_CONCURRENT_REQUESTS:50}"
+
 mail:
   template:
     repo-base-url: "\${MAIL_TEMPLATE_REPO_BASE_URL:}"

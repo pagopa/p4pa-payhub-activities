@@ -46,7 +46,7 @@ class MassiveIbanUpdateActivityTest {
 
     @BeforeEach
     void init() {
-        activity = new MassiveIbanUpdateActivityImpl(debtPositionServiceMock);
+        activity = new MassiveIbanUpdateActivityImpl(debtPositionServiceMock, 50);
 
         expectedFilterForUpdate = DebtPositionIdViewFilters.builder()
                 .organizationId(orgId)
