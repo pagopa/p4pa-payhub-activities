@@ -60,7 +60,6 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
 
         Map<String, String> mdcContextMap = MDC.getCopyOfContextMap();
 
-        // TODO: Refactor into multiple methods
         try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
             do {
                 PagedModelDebtPositionIdView pagedModelDebtPositionIdViewToUpdate = debtPositionService.getDebtPositionsIdView(debtPositionIdViewToUpdateFilters, PageRequest.of(0, 500));
@@ -73,30 +72,7 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
                     List<List<DebtPositionIdView>> batches = ListUtils.partition(debtPositionIdViewsToUpdate, maxConcurrentRequests);
 
                     for (List<DebtPositionIdView> batch : batches) {
-                        List<Future<?>> futures = new ArrayList<>(batch.size());
-
-                        for (DebtPositionIdView dpIdView : batch) {
-                            futures.add(
-                                    ThreadUtils.submit(executorService, () ->
-                                                    debtPositionService.updateTransferIbansAndSyncDebtPosition(
-                                                            dpIdView.getDebtPositionId(),
-                                                            updateTransferIbansAndSyncDebtPositionRequestDTO
-                                                    ),
-                                            mdcContextMap
-                                    )
-                            );
-                        }
-
-                        for (Future<?> future : futures) {
-                            try {
-                                future.get();
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                                throw new RuntimeException(e);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
+                        processBatch(batch, updateTransferIbansAndSyncDebtPositionRequestDTO, executorService, mdcContextMap);
                     }
 
                     totalProcessed += debtPositionIdViewsToUpdate.size();
@@ -106,6 +82,42 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
         }
 
         return checkIfWfIsToReschedule(orgId, dptoId, oldIban, oldPostalIban);
+    }
+
+    private void processBatch(
+            List<DebtPositionIdView> batch,
+            UpdateTransferIbansAndSyncDebtPositionRequestDTO updateTransferIbansAndSyncDebtPositionRequestDTO,
+            ExecutorService executorService,
+            Map<String, String> mdcContextMap
+    ) {
+        List<Future<?>> futures = new ArrayList<>(batch.size());
+
+        for (DebtPositionIdView dpIdView : batch) {
+            futures.add(
+                    ThreadUtils.submit(executorService, () ->
+                                    debtPositionService.updateTransferIbansAndSyncDebtPosition(
+                                            dpIdView.getDebtPositionId(),
+                                            updateTransferIbansAndSyncDebtPositionRequestDTO
+                                    ),
+                            mdcContextMap
+                    )
+            );
+        }
+
+        awaitAll(futures);
+    }
+
+    private void awaitAll(List<Future<?>> futures) {
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private boolean checkIfWfIsToReschedule(Long orgId, Long dptoId, String oldIban, String oldPostalIban) {
