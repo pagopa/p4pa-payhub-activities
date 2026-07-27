@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 import it.gov.pagopa.payhub.activities.connector.classification.ClassificationService;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
-import it.gov.pagopa.payhub.activities.dto.classifications.DuplicatePaymentsReportingCheckDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.Classification;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
@@ -27,95 +27,97 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class DuplicatePaymentReportingCheckActivityTest {
 
-  @InjectMocks
-  private DuplicatePaymentReportingCheckActivityImpl duplicatePaymentReportingCheckActivity;
+    @InjectMocks
+    private DuplicatePaymentReportingCheckActivityImpl duplicatePaymentReportingCheckActivity;
 
-  @Mock
-  private ClassificationService classificationServiceMock;
-  @Mock
-  private PaymentsReportingService paymentsReportingServiceMock;
-  @Mock
-  private ReceiptService receiptServiceMock;
+    @Mock
+    private ClassificationService classificationServiceMock;
+    @Mock
+    private PaymentsReportingService paymentsReportingServiceMock;
+    @Mock
+    private ReceiptService receiptServiceMock;
 
-  private final PodamFactory podamFactory = TestUtils.getPodamFactory();
+    private final PodamFactory podamFactory = TestUtils.getPodamFactory();
 
-  @AfterEach
-  void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(
-        classificationServiceMock,
-        paymentsReportingServiceMock,
-        receiptServiceMock
-    );
-  }
+    @AfterEach
+    void verifyNoMoreInteractions() {
+        Mockito.verifyNoMoreInteractions(
+                classificationServiceMock,
+                paymentsReportingServiceMock,
+                receiptServiceMock
+        );
+    }
 
-  @Test
-  void givenDuplicatesPaymentsReportingWhenDuplicatePaymentsCheckThenSaveDOPPIClassifications() {
-    DuplicatePaymentsReportingCheckDTO dto = DuplicatePaymentsReportingCheckDTO.builder()
-        .orgId(1L)
-        .iuv("IUV")
-        .transferIndex(1)
-        .build();
+    @Test
+    void givenDuplicatesPaymentsReportingWhenDuplicatePaymentsCheckThenSaveDOPPIClassifications() {
+        Transfer2ClassifyDTO dto = Transfer2ClassifyDTO.builder()
+                .iuv("IUV")
+                .transferIndex(1)
+                .iur("IUR")
+                .build();
+        Long orgId = 1L;
 
-    ReceiptNoPII receipt = podamFactory.manufacturePojo(ReceiptNoPII.class);
-    when(receiptServiceMock.getByPaymentReceiptId(anyString())).thenReturn(receipt);
+        ReceiptNoPII receipt = podamFactory.manufacturePojo(ReceiptNoPII.class);
+        when(receiptServiceMock.getByPaymentReceiptId(dto.getIur())).thenReturn(receipt);
 
-    when(classificationServiceMock.deleteDuplicates(dto.getOrgId(), dto.getIuv(), dto.getTransferIndex(), receipt.getPaymentAmountCents(), receipt.getOrgFiscalCode()))
-        .thenReturn(1);
+        when(classificationServiceMock.deleteDuplicates(orgId, dto.getIuv(), dto.getTransferIndex()))
+                .thenReturn(1);
 
-    PaymentsReporting paymentsReporting1 = podamFactory.manufacturePojo(PaymentsReporting.class);
-    paymentsReporting1.setIur("IUR1");
-    PaymentsReporting paymentsReporting2 = podamFactory.manufacturePojo(PaymentsReporting.class);
-    paymentsReporting2.setIur("IUR2");
-    when(paymentsReportingServiceMock.findDuplicates(dto.getOrgId(), dto.getIuv(), dto.getTransferIndex(), receipt.getOrgFiscalCode()))
-        .thenReturn(List.of(paymentsReporting1, paymentsReporting2));
+        PaymentsReporting paymentsReporting1 = podamFactory.manufacturePojo(PaymentsReporting.class);
+        paymentsReporting1.setIur("IUR1");
+        PaymentsReporting paymentsReporting2 = podamFactory.manufacturePojo(PaymentsReporting.class);
+        paymentsReporting2.setIur("IUR2");
+        when(paymentsReportingServiceMock.findDuplicates(orgId, dto.getIuv(), dto.getTransferIndex(), receipt.getOrgFiscalCode()))
+                .thenReturn(List.of(paymentsReporting1, paymentsReporting2));
 
-    duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(dto, "IUR");
+        duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(orgId, dto);
 
-    List<Classification> expectedClassifications = List.of(
-        new Classification()
-            .paymentsReportingId(paymentsReporting1.getPaymentsReportingId())
-            .organizationId(paymentsReporting1.getOrganizationId())
-            .iuv(paymentsReporting1.getIuv())
-            .transferIndex(paymentsReporting1.getTransferIndex())
-            .iur(paymentsReporting1.getIur())
-            .label(ClassificationsEnum.DOPPI),
-        new Classification()
-            .paymentsReportingId(paymentsReporting2.getPaymentsReportingId())
-            .organizationId(paymentsReporting2.getOrganizationId())
-            .iuv(paymentsReporting2.getIuv())
-            .transferIndex(paymentsReporting2.getTransferIndex())
-            .iur(paymentsReporting2.getIur())
-            .label(ClassificationsEnum.DOPPI)
-    );
-    verify(classificationServiceMock).saveAll(expectedClassifications);
-  }
+        List<Classification> expectedClassifications = List.of(
+                new Classification()
+                        .paymentsReportingId(paymentsReporting1.getPaymentsReportingId())
+                        .organizationId(paymentsReporting1.getOrganizationId())
+                        .iuv(paymentsReporting1.getIuv())
+                        .transferIndex(paymentsReporting1.getTransferIndex())
+                        .iur(paymentsReporting1.getIur())
+                        .label(ClassificationsEnum.DOPPI),
+                new Classification()
+                        .paymentsReportingId(paymentsReporting2.getPaymentsReportingId())
+                        .organizationId(paymentsReporting2.getOrganizationId())
+                        .iuv(paymentsReporting2.getIuv())
+                        .transferIndex(paymentsReporting2.getTransferIndex())
+                        .iur(paymentsReporting2.getIur())
+                        .label(ClassificationsEnum.DOPPI)
+        );
+        verify(classificationServiceMock).saveAll(expectedClassifications);
+    }
 
-  @Test
-  void givenNoDuplicatesWhenDuplicatePaymentsCheckThenDoNothing() {
-    String iur = "IUR";
+    @Test
+    void givenNoDuplicatesWhenDuplicatePaymentsCheckThenDoNothing() {
+        String iur = "IUR";
 
-    DuplicatePaymentsReportingCheckDTO dto = DuplicatePaymentsReportingCheckDTO.builder()
-        .orgId(1L)
-        .iuv("IUV")
-        .transferIndex(1)
-        .build();
+        Transfer2ClassifyDTO dto = Transfer2ClassifyDTO.builder()
+                .iuv("IUV")
+                .transferIndex(1)
+                .iur(iur)
+                .build();
+        Long orgId = 1L;
 
-    ReceiptNoPII receipt = podamFactory.manufacturePojo(ReceiptNoPII.class);
-    when(receiptServiceMock.getByPaymentReceiptId(anyString())).thenReturn(receipt);
+        ReceiptNoPII receipt = podamFactory.manufacturePojo(ReceiptNoPII.class);
+        when(receiptServiceMock.getByPaymentReceiptId(anyString())).thenReturn(receipt);
 
-    when(classificationServiceMock.deleteDuplicates(dto.getOrgId(), dto.getIuv(), dto.getTransferIndex(), receipt.getPaymentAmountCents(), receipt.getOrgFiscalCode()))
-        .thenReturn(1);
+        when(classificationServiceMock.deleteDuplicates(orgId, dto.getIuv(), dto.getTransferIndex()))
+                .thenReturn(1);
 
-    PaymentsReporting paymentsReporting1 = podamFactory.manufacturePojo(PaymentsReporting.class);
-    PaymentsReporting paymentsReporting2 = podamFactory.manufacturePojo(PaymentsReporting.class);
-    paymentsReporting1.setIur(iur);
-    paymentsReporting2.setIur(iur);
-    when(paymentsReportingServiceMock.findDuplicates(dto.getOrgId(), dto.getIuv(), dto.getTransferIndex(), receipt.getOrgFiscalCode()))
-        .thenReturn(List.of(paymentsReporting1, paymentsReporting2));
+        PaymentsReporting paymentsReporting1 = podamFactory.manufacturePojo(PaymentsReporting.class);
+        PaymentsReporting paymentsReporting2 = podamFactory.manufacturePojo(PaymentsReporting.class);
+        paymentsReporting1.setIur(iur);
+        paymentsReporting2.setIur(iur);
+        when(paymentsReportingServiceMock.findDuplicates(orgId, dto.getIuv(), dto.getTransferIndex(), receipt.getOrgFiscalCode()))
+                .thenReturn(List.of(paymentsReporting1, paymentsReporting2));
 
-    duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(dto, iur);
+        duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(orgId, dto);
 
-    verify(classificationServiceMock, never()).saveAll(any());
-  }
+        verify(classificationServiceMock, never()).saveAll(any());
+    }
 
 }

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.classifications;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.payhub.activities.dto.classifications.DuplicatePaymentsReportingCheckDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 
 /**
  * Interface for handling duplicate Payments Reporting.
@@ -22,9 +22,9 @@ public interface DuplicatePaymentReportingCheckActivity {
    *   <li>different IUR</li>
    * </ul>
    *
-   * @param duplicatePaymentsReportingCheckDTO DTO containing information to query for duplicates Classifications and Payments Reportings
-   * @param transferIur Identifies the receipt to get missing information like receiptPaymentAmount and orgFiscalCode
+   * @param organizationId The ID of the organization
+   * @param transfer2ClassifyDTO Identifies the transfer to be classified
    */
   @ActivityMethod
-  void duplicatePaymentsCheck(DuplicatePaymentsReportingCheckDTO duplicatePaymentsReportingCheckDTO, String transferIur);
+  void duplicatePaymentsCheck(Long organizationId, Transfer2ClassifyDTO transfer2ClassifyDTO);
 }
