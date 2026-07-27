@@ -31,7 +31,7 @@ public class MassiveIbanUpdateActivityImpl implements MassiveIbanUpdateActivity 
     public MassiveIbanUpdateActivityImpl(
             DebtPositionService debtPositionService,
             @Value("${massive-iban-update.max-concurrent-requests}") int maxConcurrentRequests,
-            @Value("") int pageSize
+            @Value("${massive-iban-update.page-size}") int pageSize
     ) {
         this.debtPositionService = debtPositionService;
         this.maxConcurrentRequests = maxConcurrentRequests;
