@@ -46,6 +46,7 @@ export-flow-files:
 
 massive-iban-update:
   max-concurrent-requests: "\${MASSIVE_IBAN_UPDATE_MAX_CONCURRENT_REQUESTS:50}"
+  page-size: "\${MASSIVE_IBAN_UPDATE_PAGE_SIZE:500}"
 
 mail:
   template:
