@@ -205,21 +205,19 @@ class ClassificationServiceTest {
         Long organizationId = 1L;
         String iuv = "IUV123";
         int transferIndex = 1;
-        Long receiptPaymentAmount = 100L;
-        String receiptOrgFiscalCode = "FISCAL_CODE";
         String accessToken = "accessToken";
         Integer expectedResponse = 1;
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        when(classificationClientMock.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, accessToken))
+        when(classificationClientMock.deleteDuplicates(organizationId, iuv, transferIndex, ClassificationsEnum.DOPPI, accessToken))
                 .thenReturn(expectedResponse);
 
         // When
-        Integer result = classificationService.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode);
+        Integer result = classificationService.deleteDuplicates(organizationId, iuv, transferIndex);
 
         // Then
         assertEquals(expectedResponse, result);
-        verify(classificationClientMock, times(1)).deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, accessToken);
+        verify(classificationClientMock, times(1)).deleteDuplicates(organizationId, iuv, transferIndex, ClassificationsEnum.DOPPI, accessToken);
     }
 }
