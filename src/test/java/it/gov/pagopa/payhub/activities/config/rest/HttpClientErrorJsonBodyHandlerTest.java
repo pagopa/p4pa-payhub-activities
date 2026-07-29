@@ -18,6 +18,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -34,7 +35,7 @@ class HttpClientErrorJsonBodyHandlerTest {
   }
 
   private final URI url = new URI("http://www.sample.com");
-  private final DebtPositionErrorDTO expectedErrorDTO = new DebtPositionErrorDTO(CategoryEnum.DEBT_POSITION_BAD_REQUEST, "BADREQUEST", "MESSAGE", "TRACEID");
+  private final DebtPositionErrorDTO expectedErrorDTO = new DebtPositionErrorDTO(CategoryEnum.DEBT_POSITION_BAD_REQUEST, "BADREQUEST", "MESSAGE", List.of(), "TRACEID");
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
@@ -122,7 +123,7 @@ class HttpClientErrorJsonBodyHandlerTest {
   @Test
   void testBuildDefaultHttpClientExceptionTranscoder(){
     BiFunction<HttpStatusCodeException, DebtPositionErrorDTO, RuntimeException> httpErrorTranscoder = HttpClientErrorJsonBodyHandler.buildDefaultHttpClientExceptionTranscoder("TEST", DebtPositionErrorDTO::getCode, DebtPositionErrorDTO::getMessage);
-    DebtPositionErrorDTO errorDTO = new DebtPositionErrorDTO(null, "BAD_REQUEST", "MESSAGE", null);
+    DebtPositionErrorDTO errorDTO = new DebtPositionErrorDTO(null, "BAD_REQUEST", "MESSAGE", List.of(), null);
 
     for (HttpStatus httpStatus : HttpStatus.values()) {
       RuntimeException result = httpErrorTranscoder
@@ -140,7 +141,7 @@ class HttpClientErrorJsonBodyHandlerTest {
   @Test
   void testBuildDefaultHttpClientExceptionTranscoder_noErrorCodeFunction(){
     BiFunction<HttpStatusCodeException, DebtPositionErrorDTO, RuntimeException> httpErrorTranscoder = HttpClientErrorJsonBodyHandler.buildDefaultHttpClientExceptionTranscoder("TEST", null, DebtPositionErrorDTO::getMessage);
-    DebtPositionErrorDTO errorDTO = new DebtPositionErrorDTO(null, "BAD_REQUEST", "MESSAGE", null);
+    DebtPositionErrorDTO errorDTO = new DebtPositionErrorDTO(null, "BAD_REQUEST", "MESSAGE", List.of(), null);
 
     for (HttpStatus httpStatus : HttpStatus.values()) {
       RuntimeException result = httpErrorTranscoder
