@@ -48,21 +48,22 @@ public class DuplicatePaymentReportingCheckActivityImpl implements DuplicatePaym
         // If multiple Payments Reporting (different IURs) are found, create a Classification with label DOPPI for each
         List<String> iurs = paymentsReportingList.stream().map(PaymentsReporting::getIur).distinct().toList();
         if (iurs.size() > 1) {
-            TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
-                    .orgId(organizationId)
-                    .iuv(transfer2ClassifyDTO.getIuv())
-                    .iur(transfer2ClassifyDTO.getIur())
-                    .transferIndex(transfer2ClassifyDTO.getTransferIndex())
-                    .build();
             paymentsReportingList
-                    .forEach(pr ->
-                            transferClassificationStoreService.saveClassifications(transferSemanticKeyDTO,
-                                    null,
-                                    null,
-                                    pr,
-                                    null,
-                                    null,
-                                    List.of(ClassificationsEnum.DOPPI))
+                    .forEach(pr -> {
+                                TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
+                                        .orgId(organizationId)
+                                        .iuv(pr.getIuv())
+                                        .iur(pr.getIur())
+                                        .transferIndex(pr.getTransferIndex())
+                                        .build();
+                                transferClassificationStoreService.saveClassifications(transferSemanticKeyDTO,
+                                        null,
+                                        null,
+                                        pr,
+                                        null,
+                                        null,
+                                        List.of(ClassificationsEnum.DOPPI));
+                            }
                     );
 
         }
