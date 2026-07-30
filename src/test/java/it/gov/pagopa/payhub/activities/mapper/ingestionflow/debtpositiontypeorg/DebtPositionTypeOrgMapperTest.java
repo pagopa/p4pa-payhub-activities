@@ -37,7 +37,6 @@ class DebtPositionTypeOrgMapperTest {
     Long spontaneousFormId = 789L;
     DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(
             DebtPositionTypeOrgIngestionFlowFileDTO.class);
-    dto.setIban(null);
     OrgSilService orgSilServicePaidNotificationOutcome = new OrgSilService();
     orgSilServicePaidNotificationOutcome.setOrgSilServiceId(111L);
     orgSilServicePaidNotificationOutcome.setApplicationName(dto.getNotifyOutcomePushOrgSilServiceCode());
@@ -56,7 +55,7 @@ class DebtPositionTypeOrgMapperTest {
     Assertions.assertEquals(222L, result.getAmountActualizationOrgSilServiceId());
     Assertions.assertEquals(789L, result.getSpontaneousFormId());
     checkNotNullFields(result, "creationDate", "updateDate", "updateOperatorExternalId",
-        "updateTraceId", "debtPositionTypeOrgId", "allowedEntityType", "descriptionI18n", "iban");
+        "updateTraceId", "debtPositionTypeOrgId", "allowedEntityType", "descriptionI18n");
   }
 
 }
