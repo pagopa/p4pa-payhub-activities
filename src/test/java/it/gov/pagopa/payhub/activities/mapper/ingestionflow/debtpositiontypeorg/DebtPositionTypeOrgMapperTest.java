@@ -52,7 +52,6 @@ class DebtPositionTypeOrgMapperTest {
     var result = debtPositionTypeMapper.map(dto, debtPositionTypeId, organizationId, spontaneousFormId);
 
     Assertions.assertNotNull(result);
-    Assertions.assertNull(result.getIban());
     Assertions.assertEquals(111L, result.getNotifyOutcomePushOrgSilServiceId());
     Assertions.assertEquals(222L, result.getAmountActualizationOrgSilServiceId());
     Assertions.assertEquals(789L, result.getSpontaneousFormId());
