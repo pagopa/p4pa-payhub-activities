@@ -55,18 +55,10 @@ class DuplicatePaymentReportingCheckActivityTest {
 
     @Test
     void givenDuplicatesPaymentsReportingWhenDuplicatePaymentsCheckThenSaveDOPPIClassifications() {
-        Transfer2ClassifyDTO dto = Transfer2ClassifyDTO.builder()
-                .iuv("IUV")
-                .transferIndex(1)
-                .iur("IUR")
-                .build();
+        String iuv = "IUV";
+        String iur = "IUR";
+        Transfer2ClassifyDTO dto = Transfer2ClassifyDTO.builder().iuv(iuv).transferIndex(1).iur(iur).build();
         Long orgId = 1L;
-        TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
-                .orgId(orgId)
-                .iuv("IUV")
-                .iur("IUR")
-                .transferIndex(1)
-                .build();
 
         ReceiptNoPII receipt = podamFactory.manufacturePojo(ReceiptNoPII.class);
         when(receiptServiceMock.getByPaymentReceiptId(dto.getIur())).thenReturn(receipt);
@@ -75,16 +67,28 @@ class DuplicatePaymentReportingCheckActivityTest {
                 .thenReturn(1);
 
         PaymentsReporting paymentsReporting1 = podamFactory.manufacturePojo(PaymentsReporting.class);
-        paymentsReporting1.setIur("IUR1");
+        paymentsReporting1.setIur(iur);
+        paymentsReporting1.setIuv(iuv);
+        paymentsReporting1.setTransferIndex(1);
+
+        TransferSemanticKeyDTO transferSemanticKeyDTO1 = TransferSemanticKeyDTO.builder()
+                .orgId(orgId).iuv(iuv).iur(iur).transferIndex(1).build();
+
         PaymentsReporting paymentsReporting2 = podamFactory.manufacturePojo(PaymentsReporting.class);
         paymentsReporting2.setIur("IUR2");
+        paymentsReporting2.setIuv(iuv);
+        paymentsReporting2.setTransferIndex(1);
+
+        TransferSemanticKeyDTO transferSemanticKeyDTO2 = TransferSemanticKeyDTO.builder()
+                .orgId(orgId).iuv(iuv).iur("IUR2").transferIndex(1).build();
+
         when(paymentsReportingServiceMock.findDuplicates(orgId, dto.getIuv(), dto.getTransferIndex(), receipt.getOrgFiscalCode()))
                 .thenReturn(List.of(paymentsReporting1, paymentsReporting2));
 
         doReturn(1).when(transferClassificationStoreServiceMock)
-                .saveClassifications(transferSemanticKeyDTO, null, null, paymentsReporting1, null, null, List.of(ClassificationsEnum.DOPPI));
+                .saveClassifications(transferSemanticKeyDTO1, null, null, paymentsReporting1, null, null, List.of(ClassificationsEnum.DOPPI));
         doReturn(1).when(transferClassificationStoreServiceMock)
-                .saveClassifications(transferSemanticKeyDTO, null, null, paymentsReporting2, null, null, List.of(ClassificationsEnum.DOPPI));
+                .saveClassifications(transferSemanticKeyDTO2, null, null, paymentsReporting2, null, null, List.of(ClassificationsEnum.DOPPI));
 
         assertDoesNotThrow(() -> duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(orgId, dto));
     }
