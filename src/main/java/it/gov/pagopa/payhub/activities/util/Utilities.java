@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.util;
 import it.gov.pagopa.payhub.activities.dto.OffsetDateTimeIntervalFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.LocalDateIntervalFilter;
 import org.apache.commons.collections4.MultiValuedMap;
+import org.slf4j.MDC;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -37,6 +38,14 @@ public class Utilities {
         } catch (DatatypeConfigurationException e) {
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    public static String getTraceId(){
+        return MDC.get("traceId");
+    }
+
+    public static String getSpanId(){
+        return MDC.get("spanId");
     }
 
     public static boolean isValidEmail(final String email) {
