@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.performancelogger.RestInvokePerformanceLo
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -19,7 +20,9 @@ import java.util.List;
 public class SignedUrlServiceImpl implements SignedUrlService {
     private final RestTemplate noRedirectRestTemplate;
 
-    public SignedUrlServiceImpl() {
+    public SignedUrlServiceImpl(
+            @Value("${spring.application.name}") String applicationName
+    ) {
         CloseableHttpClient httpClient = HttpClients.custom()
                 .disableRedirectHandling()
                 .build();
@@ -27,7 +30,7 @@ public class SignedUrlServiceImpl implements SignedUrlService {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
         this.noRedirectRestTemplate = new RestTemplate(factory);
-        noRedirectRestTemplate.setInterceptors(List.of(new RestInvokePerformanceLogger()));
+        noRedirectRestTemplate.setInterceptors(List.of(new RestInvokePerformanceLogger(applicationName)));
     }
 
     @Override

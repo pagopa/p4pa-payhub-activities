@@ -26,13 +26,16 @@ public class DownloadEmailTemplateClientImpl implements DownloadEmailTemplateCli
     private final String templateRepoBaseUrl;
     private final RestTemplate restTemplate;
 
-    public DownloadEmailTemplateClientImpl(@Value("${mail.template.repo-base-url}") String templateRepoBaseUrl) {
+    public DownloadEmailTemplateClientImpl(
+            @Value("${spring.application.name}") String applicationName,
+            @Value("${mail.template.repo-base-url}") String templateRepoBaseUrl
+    ) {
         CloseableHttpClient httpClient = HttpClients.custom()
                 .disableRedirectHandling()
                 .build();
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
         this.restTemplate = new RestTemplate(factory);
-        restTemplate.setInterceptors(List.of(new RestInvokePerformanceLogger()));
+        restTemplate.setInterceptors(List.of(new RestInvokePerformanceLogger(applicationName)));
         this.templateRepoBaseUrl = templateRepoBaseUrl;
     }
 

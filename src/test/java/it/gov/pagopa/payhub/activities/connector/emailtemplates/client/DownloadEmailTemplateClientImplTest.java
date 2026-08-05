@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DownloadEmailTemplateClientImplTest {
@@ -35,7 +36,7 @@ class DownloadEmailTemplateClientImplTest {
 
     @BeforeEach
     void setUp() {
-        downloadTemplateFileClient = new DownloadEmailTemplateClientImpl(TEMPLATE_REPO_BASE_URL);
+        downloadTemplateFileClient = new DownloadEmailTemplateClientImpl("APPNAME", TEMPLATE_REPO_BASE_URL);
         ReflectionTestUtils.setField(downloadTemplateFileClient, "restTemplate", restTemplateMock);
     }
 
@@ -44,7 +45,7 @@ class DownloadEmailTemplateClientImplTest {
         //GIVEN
         byte[] expectedContent = "dummy-file-content".getBytes(StandardCharsets.UTF_8);
         ResponseEntity<byte[]> responseEntity = ResponseEntity.ok(expectedContent);
-        Mockito.when(restTemplateMock.getForEntity(URL, byte[].class))
+        when(restTemplateMock.getForEntity(URL, byte[].class))
                 .thenReturn(responseEntity);
         //WHEN
         Optional<byte[]> actualContent = downloadTemplateFileClient.downloadEmailTemplate(BROKER_EXTERNAL_ID, EMAIL_TEMPLATE_NAME, RELATIVE_FILE_PATH);
@@ -56,7 +57,7 @@ class DownloadEmailTemplateClientImplTest {
     @Test
     void givenNotFoundWhenDownloadEmailTemplateThenReturnOptionalEmpty() {
         //GIVEN
-        Mockito.when(restTemplateMock.getForEntity(URL, byte[].class))
+        when(restTemplateMock.getForEntity(URL, byte[].class))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
         //WHEN
         Optional<byte[]> actualContent = downloadTemplateFileClient.downloadEmailTemplate(BROKER_EXTERNAL_ID, EMAIL_TEMPLATE_NAME, RELATIVE_FILE_PATH);
@@ -68,7 +69,7 @@ class DownloadEmailTemplateClientImplTest {
     void givenExceptionWhenWhenDownloadEmailTemplateThenThrowsException() {
         //GIVEN
         RestClientException expectedCause = new RestClientException("error");
-        Mockito.when(restTemplateMock.getForEntity(URL, byte[].class)).thenThrow(expectedCause);
+        when(restTemplateMock.getForEntity(URL, byte[].class)).thenThrow(expectedCause);
         //WHEN
         RetryableActivityException retryableActivityException =
                 Assertions.assertThrows(RetryableActivityException.class, () -> downloadTemplateFileClient.downloadEmailTemplate(BROKER_EXTERNAL_ID, EMAIL_TEMPLATE_NAME, RELATIVE_FILE_PATH));
