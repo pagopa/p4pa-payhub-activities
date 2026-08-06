@@ -76,7 +76,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
 
     @Override
     protected String getSequencingId(DebtPositionTypeOrgIngestionFlowFileDTO row) {
-        return row.getCode();
+        return row.getIpaCode().toLowerCase(Locale.ROOT);
     }
 
     @Override
