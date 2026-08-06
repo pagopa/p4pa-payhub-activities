@@ -361,7 +361,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         );
     }
 
-    private void addExpectedRetrievingResultsMessage(Set<?> alreadySeenSequencingIds, List<String> expectedRetrievingResultsMessages) {
+    private void addExpectedRetrievingResultsMessage(Set<String> alreadySeenSequencingIds, List<String> expectedRetrievingResultsMessages) {
         expectedRetrievingResultsMessages.add(
                 "Retrieving results for %s tasks for ingestionFlowFileId %d".formatted(
                         alreadySeenSequencingIds.size(), ingestionFlowFile.getIngestionFlowFileId()
