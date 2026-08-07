@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

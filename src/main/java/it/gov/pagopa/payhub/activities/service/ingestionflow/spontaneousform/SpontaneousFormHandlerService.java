@@ -2,9 +2,8 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
-import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousFormStructure;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;

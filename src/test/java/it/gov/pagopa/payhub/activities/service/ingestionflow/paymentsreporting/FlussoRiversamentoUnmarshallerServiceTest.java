@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting;
 
 import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import it.gov.pagopa.payhub.activities.service.files.XMLUnmarshallerService;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;

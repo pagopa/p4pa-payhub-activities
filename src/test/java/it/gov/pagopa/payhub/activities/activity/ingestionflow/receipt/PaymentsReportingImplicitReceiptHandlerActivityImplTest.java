@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.PaymentsReporting2ReceiptMapper;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;

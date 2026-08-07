@@ -1,13 +1,15 @@
 package it.gov.pagopa.payhub.activities.exception;
 
-/** If thrown by an Activity, it could be retried */
-public class RetryableActivityException extends RuntimeException {
+import it.gov.pagopa.payhub.activities.exception.common.BaseBusinessException;
 
-    public RetryableActivityException(String message, Throwable throwable){
-        super(message, throwable);
+/** If thrown by an Activity, it could be retried */
+public class RetryableActivityException extends BaseBusinessException {
+
+    public RetryableActivityException(String code, String message, Throwable throwable){
+        super(code, message, throwable);
     }
 
-    public RetryableActivityException(String message){
-        super(message);
+    public RetryableActivityException(String code, String message){
+        this(code, message, null);
     }
 }
