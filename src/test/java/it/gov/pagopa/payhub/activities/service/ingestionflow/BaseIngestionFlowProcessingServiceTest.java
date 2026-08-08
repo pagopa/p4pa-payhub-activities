@@ -294,7 +294,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         }
 
         sequencingId2Rows.stream()
-                .collect(Collectors.groupingBy(Pair::getLeft))
+                .collect(Collectors.groupingBy(pair -> getSequencingId(pair.getRight())))
                 .values()
                 .forEach(sameSequencingIdRows -> {
                     String sequencingId = getSequencingId(sameSequencingIdRows.getFirst().getRight());
@@ -322,11 +322,11 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         Assertions.assertTrue(Arrays.stream(lineNumberThreadNames).collect(Collectors.toSet()).size() > 1,
                 "Test is not valid: all rows have been processed by the same thread, so sequencing cannot be verified. Check if service is correctly configured for parallel processing on the test.");
 
-        Set<Integer> alreadySeenSequencingIds = new HashSet<>();
+        Set<String> alreadySeenSequencingIds = new HashSet<>();
         List<String> expectedReachedMaxConcurrentProcessingRowsMessages = new ArrayList<>();
         List<String> expectedRetrievingResultsMessages = new ArrayList<>();
         for (Pair<Integer, C> sequencingId2Row : sequencingId2Rows) {
-            Integer sequencingId = sequencingId2Row.getKey();
+            String sequencingId = getSequencingId(sequencingId2Row.getValue());
             boolean foundExistingSequencingId = alreadySeenSequencingIds.contains(sequencingId);
             boolean reachedMaxConcurrentProcessingRows = alreadySeenSequencingIds.size() >= MAX_CONCURRENT_PROCESSING_ROWS;
             if (foundExistingSequencingId || reachedMaxConcurrentProcessingRows) {
@@ -361,7 +361,7 @@ public abstract class BaseIngestionFlowProcessingServiceTest<C, R extends Ingest
         );
     }
 
-    private void addExpectedRetrievingResultsMessage(Set<Integer> alreadySeenSequencingIds, List<String> expectedRetrievingResultsMessages) {
+    private void addExpectedRetrievingResultsMessage(Set<String> alreadySeenSequencingIds, List<String> expectedRetrievingResultsMessages) {
         expectedRetrievingResultsMessages.add(
                 "Retrieving results for %s tasks for ingestionFlowFileId %d".formatted(
                         alreadySeenSequencingIds.size(), ingestionFlowFile.getIngestionFlowFileId()

@@ -26,9 +26,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
@@ -273,6 +277,76 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         Assertions.assertNull(result.getBrokerId());
         Assertions.assertEquals("L'intermediario non e' stato trovato", result.getErrorDescription());
         Assertions.assertEquals(0, result.getProcessedRows());
+    }
+
+    @Test
+    void givenRowsOfSameOrganizationWhenGetSequencingIdThenReturnSameIpaCode() {
+        // Given
+        Mockito.reset(organizationServiceMock);
+        DebtPositionTypeOrgIngestionFlowFileDTO firstRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        firstRow.setIpaCode("IPA-CODE");
+        firstRow.setCode("TYPE-ONE");
+        DebtPositionTypeOrgIngestionFlowFileDTO secondRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        secondRow.setIpaCode("ipa-code");
+        secondRow.setCode("TYPE-TWO");
+
+        // When
+        String firstSequencingId = serviceSpy.getSequencingId(firstRow);
+        String secondSequencingId = serviceSpy.getSequencingId(secondRow);
+
+        // Then
+        Assertions.assertEquals("ipa-code", firstSequencingId);
+        Assertions.assertEquals(firstSequencingId, secondSequencingId);
+    }
+
+    @Test
+    void givenRowsOfDifferentOrganizationsWhenGetSequencingIdThenReturnDifferentIpaCodes() {
+        // Given
+        Mockito.reset(organizationServiceMock);
+        DebtPositionTypeOrgIngestionFlowFileDTO firstRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        firstRow.setIpaCode("IPA-ONE");
+        DebtPositionTypeOrgIngestionFlowFileDTO secondRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        secondRow.setIpaCode("IPA-TWO");
+
+        // When
+        String firstSequencingId = serviceSpy.getSequencingId(firstRow);
+        String secondSequencingId = serviceSpy.getSequencingId(secondRow);
+
+        // Then
+        Assertions.assertNotEquals(firstSequencingId, secondSequencingId);
+    }
+
+    @Test
+    void givenRowsOfDifferentOrganizationsWhenProcessThenConsumeRowsConcurrently() throws Exception {
+        // Given
+        DebtPositionTypeOrgIngestionFlowFileDTO firstRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        firstRow.setIpaCode("IPA-ONE");
+        DebtPositionTypeOrgIngestionFlowFileDTO secondRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        secondRow.setIpaCode("IPA-TWO");
+        CountDownLatch bothRowsStarted = new CountDownLatch(2);
+        CountDownLatch releaseRows = new CountDownLatch(1);
+
+        Mockito.doAnswer(invocation -> {
+                    bothRowsStarted.countDown();
+                    Assertions.assertTrue(releaseRows.await(5, TimeUnit.SECONDS));
+                    return Collections.emptyList();
+                })
+                .when(serviceSpy)
+                .consumeRow(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any());
+
+        // When
+        CompletableFuture<DebtPositionTypeOrgIngestionFlowFileResult> processingFuture = CompletableFuture.supplyAsync(
+                () -> startProcess(List.of(firstRow, secondRow).iterator(), List.of(), ingestionFlowFile, workingDirectory)
+        );
+
+        // Then
+        try {
+            Assertions.assertTrue(bothRowsStarted.await(5, TimeUnit.SECONDS));
+        } finally {
+            releaseRows.countDown();
+        }
+        DebtPositionTypeOrgIngestionFlowFileResult result = processingFuture.get(5, TimeUnit.SECONDS);
+        Assertions.assertEquals(2, result.getProcessedRows());
     }
 
 }
