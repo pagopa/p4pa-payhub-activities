@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDT
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptNoPII;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

@@ -1,12 +1,13 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
-import it.gov.pagopa.pu.debtposition.client.generated.InstallmentApi;
-import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiEntityControllerApi;
-import it.gov.pagopa.pu.debtposition.client.generated.InstallmentNoPiiSearchControllerApi;
-import it.gov.pagopa.pu.debtposition.client.generated.InstallmentsEntityExtendedControllerApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.client.generated.InstallmentApi;
+import it.gov.pagopa.pu.debtpositions.client.generated.InstallmentNoPiiEntityControllerApi;
+import it.gov.pagopa.pu.debtpositions.client.generated.InstallmentNoPiiSearchControllerApi;
+import it.gov.pagopa.pu.debtpositions.client.generated.InstallmentsEntityExtendedControllerApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -84,7 +84,7 @@ class InstallmentClientTest {
 		when(debtPositionApisHolderMock.getInstallmentNoPiiEntityControllerApi(accessToken))
 			.thenReturn(installmentNoPiiEntityControllerApiMock);
 		when(installmentNoPiiEntityControllerApiMock.crudGetInstallmentnopii(String.valueOf(installmentId)))
-			.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+			.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
 		// When
 		InstallmentNoPII result = installmentClient.findById(installmentId, accessToken);

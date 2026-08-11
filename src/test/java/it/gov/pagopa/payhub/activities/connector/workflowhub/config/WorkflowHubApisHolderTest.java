@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.SyncDebtPositionRequestDTO;
@@ -22,11 +23,11 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private WorkflowHubApisHolder workflowHubApisHolder;
+    private WorkflowHubApisHolder apisHolder;
     private WorkflowHubApiClientConfig apiClientConfig;
 
     @BeforeEach
-    void setUp() {
+    void init() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
@@ -34,8 +35,9 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
                 .baseUrl("http://example.com")
                 .maxAttempts(3)
                 .build();
+        apisHolder = new WorkflowHubApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        workflowHubApisHolder = new WorkflowHubApisHolder(apiClientConfig, restTemplateBuilderMock);
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getDebtPositionApi(null));
     }
 
     @AfterEach
@@ -49,7 +51,7 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> workflowHubApisHolder.getDebtPositionApi(accessToken)
+                accessToken -> apisHolder.getDebtPositionApi(accessToken)
                         .syncDebtPosition(new SyncDebtPositionRequestDTO(), false, false, PaymentEventType.DP_CREATED, null),
                 new ParameterizedTypeReference<>() {}
         );
@@ -58,18 +60,18 @@ class WorkflowHubApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetWorkflowHubApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> workflowHubApisHolder.getWorkflowHubApi(accessToken)
+                accessToken -> apisHolder.getWorkflowHubApi(accessToken)
                             .getWorkflowStatus("workflowId"),
                 new ParameterizedTypeReference<>() {},
-                workflowHubApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetDebtPositionApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> workflowHubApisHolder.getDebtPositionApi(accessToken)
+                accessToken -> apisHolder.getDebtPositionApi(accessToken)
                         .syncDebtPosition(new SyncDebtPositionRequestDTO(), false, false, PaymentEventType.DP_CREATED, null),
                 new ParameterizedTypeReference<>() {},
-                workflowHubApisHolder::unload);
+                apisHolder::unload);
     }
 }

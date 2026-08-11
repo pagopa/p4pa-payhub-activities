@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
+import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +12,7 @@ public class InstallmentIngestionFlowFileRequiredFieldsValidator {
     private InstallmentIngestionFlowFileRequiredFieldsValidator() {
     }
 
-    public static final String CREATION_DATE_FORMAT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    public static final String CREATION_DATE_FORMAT = LocalDateTime.now(Utilities.ZONEID).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     public static void setDefaultValues(InstallmentIngestionFlowFileDTO dto){
         if (dto.getFlagPuPagoPaPayment() == null) {

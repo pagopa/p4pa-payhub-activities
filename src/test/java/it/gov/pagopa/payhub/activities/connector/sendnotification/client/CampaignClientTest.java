@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
-import it.gov.pagopa.pu.sendnotification.controller.generated.CampaignApi;
+import it.gov.pagopa.pu.sendnotification.client.generated.CampaignApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CampaignClientTest {
@@ -37,8 +39,8 @@ class CampaignClientTest {
         String accessToken = "accessToken";
         List<String> campaignIds = List.of("campaignId");
 
-        Mockito.when(sendApisHolderMock.getCampaignApi(accessToken)).thenReturn(campaignApiMock);
-        Mockito.when(campaignApiMock.fetchAllCampaignIds()).thenReturn(campaignIds);
+        when(sendApisHolderMock.getCampaignApi(accessToken)).thenReturn(campaignApiMock);
+        when(campaignApiMock.fetchAllCampaignIds()).thenReturn(campaignIds);
 
         List<String> actualIds = campaignClient.fetchAllCampaignIds(accessToken);
 
@@ -50,7 +52,7 @@ class CampaignClientTest {
         String accessToken = "accessToken";
         String campaignId = "campaignId";
 
-        Mockito.when(sendApisHolderMock.getCampaignApi(accessToken)).thenReturn(campaignApiMock);
+        when(sendApisHolderMock.getCampaignApi(accessToken)).thenReturn(campaignApiMock);
         Mockito.doNothing().when(campaignApiMock).alignCampaign(campaignId);
 
         Assertions.assertDoesNotThrow(() -> campaignClient.alignCampaign(campaignId, accessToken));

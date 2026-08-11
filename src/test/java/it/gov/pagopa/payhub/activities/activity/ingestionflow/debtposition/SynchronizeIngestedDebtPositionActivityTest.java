@@ -13,7 +13,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDe
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.IUVArchivingExportFileService;
 import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
@@ -37,6 +37,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.build
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeIngestedDebtPositionActivityTest {
@@ -146,25 +147,25 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         Path path = Path.of("test", "iuv.csv");
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
                 .thenReturn(PaymentEventType.DP_CREATED);
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(any(), any(), any(), any()))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(any(), any(), any(), any()))
                 .thenReturn(new WorkflowCreatedDTO("workflowId", "runId"));
-        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
+        when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowStatusDTO);
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
+        when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenReturn("folderId");
-        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(anyList(), eq(ingestionFlowFileId)))
+        when(iuvArchivingExportFileServiceMock.executeExport(anyList(), eq(ingestionFlowFileId)))
                 .thenReturn(path);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1L, "folderId");
+        verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1L, "folderId");
 
         assertEquals("folderId", result.getPdfGeneratedId());
     }
@@ -203,31 +204,31 @@ class SynchronizeIngestedDebtPositionActivityTest {
         WorkflowStatusDTO worflowStatusDTO = new WorkflowStatusDTO();
         worflowStatusDTO.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_TIMED_OUT);
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
 
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
                 .thenReturn(paymentEventType);
 
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(null);
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_2", "runId"));
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_3", "runId"));
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(null);
 
-        Mockito.doThrow(new RestClientException("Error")).when(workflowHubServiceMock)
+        doThrow(new RestClientException("Error")).when(workflowHubServiceMock)
                 .waitWorkflowCompletion("workflowId_2", MAX_ATTEMPTS, RETRY_DELAY);
-        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
+        when(workflowHubServiceMock.waitWorkflowCompletion("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
                 .thenReturn(worflowStatusDTO);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
+        verify(ingestionFlowFileServiceMock, never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
 
         assertEquals(response, result);
     }
@@ -269,31 +270,31 @@ class SynchronizeIngestedDebtPositionActivityTest {
         syncResult.setIupdSyncError(Map.of("IUD_ERROR", new SyncErrorDTO("ERROR")));
         worflowStatusDTO.setResult(objectMapper.writeValueAsString(syncResult));
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
 
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
                 .thenReturn(paymentEventType);
 
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(null);
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_2", "runId"));
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_3", "runId"));
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, paymentEventType, "ingestionFlowFileId:1"))
                 .thenReturn(null);
 
-        Mockito.doThrow(new RestClientException("Error")).when(workflowHubServiceMock)
+        doThrow(new RestClientException("Error")).when(workflowHubServiceMock)
                 .waitWorkflowCompletion("workflowId_2", MAX_ATTEMPTS, RETRY_DELAY);
-        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
+        when(workflowHubServiceMock.waitWorkflowCompletion("workflowId_3", MAX_ATTEMPTS, RETRY_DELAY))
                 .thenReturn(worflowStatusDTO);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
+        verify(ingestionFlowFileServiceMock, never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
         assertEquals(response, result);
     }
 
@@ -354,40 +355,40 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .iuvFileName(path.getFileName().toString())
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 0, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsFirstPage);
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(ingestionFlowFileId, statusToExclude, 1, PAGE_SIZE, DEFAULT_ORDERING))
                 .thenReturn(pagedDebtPositionsSecondPage);
 
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition1, Map.of("iud", iupdSyncStatusUpdateDTO1)))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition1, Map.of("iud", iupdSyncStatusUpdateDTO1)))
                 .thenReturn(PaymentEventType.DP_CANCELLED);
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition2, Map.of("iud", iupdSyncStatusUpdateDTO2)))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition2, Map.of("iud", iupdSyncStatusUpdateDTO2)))
                 .thenReturn(PaymentEventType.DP_UPDATED);
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition3, Map.of("iud", iupdSyncStatusUpdateDTO3)))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition3, Map.of("iud", iupdSyncStatusUpdateDTO3)))
                 .thenReturn(PaymentEventType.DP_UPDATED);
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition4, Map.of("iud", iupdSyncStatusUpdateDTO4)))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(debtPosition4, Map.of("iud", iupdSyncStatusUpdateDTO4)))
                 .thenReturn(PaymentEventType.DP_CREATED);
 
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, PaymentEventType.DP_CANCELLED,"ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition1, wfExecutionParameters, PaymentEventType.DP_CANCELLED,"ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_1", "runId"));
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition2, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
                 .thenThrow(new RuntimeException("DUMMYEXCEPTION DP2"));
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition3, wfExecutionParameters, PaymentEventType.DP_UPDATED,"ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_3", "runId"));
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(debtPosition4, wfExecutionParameters, PaymentEventType.DP_CREATED,"ingestionFlowFileId:1"))
                 .thenReturn(new WorkflowCreatedDTO("workflowId_4", "runId"));
 
-        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
+        when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), eq(MAX_ATTEMPTS), eq(RETRY_DELAY)))
                 .thenReturn(workflowStatusDTO);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
+        when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenReturn("folderId");
-        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsExportIuv, ingestionFlowFileId))
+        when(iuvArchivingExportFileServiceMock.executeExport(debtPositionsExportIuv, ingestionFlowFileId))
                 .thenReturn(path);
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(eq(ingestionFlowFileId), anyLong(), eq("folderId"));
+        verify(ingestionFlowFileServiceMock).updatePdfGenerated(eq(ingestionFlowFileId), anyLong(), eq("folderId"));
         assertEquals(response, result);
     }
 
@@ -412,30 +413,30 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .number(0L)
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(any(), any(), anyInt(), anyInt(), any()))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(any(), any(), anyInt(), anyInt(), any()))
                 .thenReturn(page);
 
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
                 .thenReturn(PaymentEventType.DP_CREATED);
 
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(any(), any(), any(), any()))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(any(), any(), any(), any()))
                 .thenReturn(new WorkflowCreatedDTO("wf", "run"));
 
         WorkflowStatusDTO status = new WorkflowStatusDTO();
         status.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
-        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), anyInt(), anyInt()))
+        when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), anyInt(), anyInt()))
                 .thenReturn(status);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
+        when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenThrow(new IllegalStateException("ERROR"));
 
-        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(anyList(), anyLong()))
+        when(iuvArchivingExportFileServiceMock.executeExport(anyList(), anyLong()))
                 .thenReturn(Path.of("test.csv"));
 
         SyncIngestedDebtPositionDTO result = activity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-        Mockito.verify(ingestionFlowFileServiceMock, Mockito.never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
+        verify(ingestionFlowFileServiceMock, never()).updatePdfGenerated(anyLong(), anyLong(), anyString());
         assertNull(result.getPdfGeneratedId());
     }
 
@@ -472,25 +473,25 @@ class SynchronizeIngestedDebtPositionActivityTest {
                 .number(0L)
                 .build();
 
-        Mockito.when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(any(), any(), anyInt(), anyInt(), any()))
+        when(debtPositionServiceMock.getDebtPositionsByIngestionFlowFileId(any(), any(), anyInt(), anyInt(), any()))
                 .thenReturn(paged);
 
-        Mockito.when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
+        when(debtPositionOperationTypeResolverMock.calculateDebtPositionOperationType(any(), any()))
                 .thenReturn(PaymentEventType.DP_CREATED);
 
-        Mockito.when(workflowDebtPositionServiceMock.syncDebtPosition(any(), any(), any(), any()))
+        when(workflowDebtPositionServiceMock.syncDebtPosition(any(), any(), any(), any()))
                 .thenReturn(new WorkflowCreatedDTO("wf", "run"));
 
         WorkflowStatusDTO status = new WorkflowStatusDTO();
         status.setStatus(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
-        Mockito.when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), anyInt(), anyInt()))
+        when(workflowHubServiceMock.waitWorkflowCompletion(anyString(), anyInt(), anyInt()))
                 .thenReturn(status);
 
-        Mockito.when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
+        when(generateNoticeServiceMock.generateNotices(anyLong(), anyList(), anyList(), anyInt()))
                 .thenReturn("folder1", "folder2");
 
-        Mockito.when(iuvArchivingExportFileServiceMock.executeExport(anyList(), anyLong()))
+        when(iuvArchivingExportFileServiceMock.executeExport(anyList(), anyLong()))
                 .thenReturn(Path.of("test.csv"));
 
         SyncIngestedDebtPositionDTO result =
@@ -498,8 +499,8 @@ class SynchronizeIngestedDebtPositionActivityTest {
 
         assertEquals("folder1,folder2", result.getPdfGeneratedId());
 
-        Mockito.verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1500L, "folder1,folder2");
-        Mockito.verify(generateNoticeServiceMock, Mockito.times(2))
+        verify(ingestionFlowFileServiceMock).updatePdfGenerated(ingestionFlowFileId, 1500L, "folder1,folder2");
+        verify(generateNoticeServiceMock, times(2))
                 .generateNotices(anyLong(), anyList(), anyList(), anyInt());
     }
 

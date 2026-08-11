@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.connector.workflowhub.client;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.config.WorkflowHubApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflowhub.controller.generated.DebtPositionApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflowhub.client.generated.DebtPositionApi;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.SyncDebtPositionRequestDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -15,6 +15,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class WorkflowDebtPositionClientTest {
@@ -51,14 +53,14 @@ class WorkflowDebtPositionClientTest {
         PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
         String eventDescription = "EVENTDESCRIPTION";
 
-        Mockito.when(workflowHubApisHolderMock.getDebtPositionApi(accessToken))
+        when(workflowHubApisHolderMock.getDebtPositionApi(accessToken))
                 .thenReturn(debtPositionApiMock);
 
         // When
         client.syncDebtPosition(debtPositionDTO, wfExecutionParameters, paymentEventType, eventDescription, accessToken);
 
         // Then
-        Mockito.verify(debtPositionApiMock)
+        verify(debtPositionApiMock)
                 .syncDebtPosition(syncDebtPositionRequestDTO, true, false, paymentEventType, eventDescription);
     }
 }

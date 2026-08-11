@@ -9,7 +9,7 @@ import it.gov.pagopa.payhub.activities.service.classifications.TransferClassific
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptNoPII;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -12,7 +12,7 @@ import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.dto.generated.*;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.Assertions;

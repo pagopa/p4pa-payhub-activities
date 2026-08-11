@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ClassificationsExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
@@ -9,7 +10,6 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportF
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Slf4j
@@ -25,7 +25,7 @@ public class ExportFileClient {
     public PaidExportFile findPaidExportFileById(Long exportFileId, String accessToken) {
         try{
             return processExecutionsApisHolder.getPaidExportFileEntityControllerApi(accessToken).crudGetPaidexportfile(String.valueOf(exportFileId));
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find PaidExportFile having id {}", exportFileId);
             return null;
         }
@@ -34,7 +34,7 @@ public class ExportFileClient {
     public ReceiptsArchivingExportFile findReceiptsArchivingExportFileById(Long exportFileId, String accessToken){
         try{
             return processExecutionsApisHolder.getReceiptsArchivingExportFileEntityControllerApi(accessToken).crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId));
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find ReceiptsArchivingExportFile having id {}", exportFileId);
             return null;
         }
@@ -43,7 +43,7 @@ public class ExportFileClient {
     public ClassificationsExportFile findClassificationsExportFileById(Long exportFileId, String accessToken){
         try{
             return processExecutionsApisHolder.getClassificationsExportFileEntityControllerApi(accessToken).crudGetClassificationsexportfile(String.valueOf(exportFileId));
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find ClassificationsExportFile having id {}", exportFileId);
             return null;
         }
@@ -52,7 +52,7 @@ public class ExportFileClient {
     public ExportFile findById(Long exportFileId, String accessToken) {
         try{
             return processExecutionsApisHolder.getExportFileEntityControllerApi(accessToken).crudGetExportfile(String.valueOf(exportFileId));
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find ExportFile having id {}", exportFileId);
             return null;
         }
@@ -71,7 +71,7 @@ public class ExportFileClient {
                     updateStatusRequest.getExportedRows(),
                     updateStatusRequest.getErrorDescription(),
                     updateStatusRequest.getExpirationDate());
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find ExportFile having id {} and status {}", updateStatusRequest.getExportFileId(), updateStatusRequest.getOldStatus());
             return null;
         }

@@ -4,8 +4,8 @@ import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDebtorDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDebtorDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,8 @@ class PaymentsReporting2ReceiptMapperTest {
 
 		TestUtils.checkNotNullFields(receipt, "receiptId", "paymentNote", "officeName", "pspPartitaIva", "paymentMethod", "feeCents", "creationDate", "updateDate", "rtFilePath", "iud", "debtPositionTypeOrgCode", "balance", "updateOperatorExternalId", "updateTraceId");
 		TestUtils.checkNotNullFields(receipt.getDebtor(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
-		TestUtils.checkNotNullFields(receipt.getPayer(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
+		Assertions.assertNotNull(receipt.getPayer());
+        TestUtils.checkNotNullFields(receipt.getPayer(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
 		TestUtils.checkNotNullFields(receipt.getTransfers().getFirst(), "companyName", "mbdAttachment", "iban", "metadata");
         Assertions.assertEquals(installmentDebtorDTO.getDebtor(), receipt.getDebtor());
     }
@@ -43,6 +44,7 @@ class PaymentsReporting2ReceiptMapperTest {
 
         TestUtils.checkNotNullFields(receipt, "receiptId", "paymentNote", "officeName", "pspPartitaIva", "paymentMethod", "feeCents", "creationDate", "updateDate", "rtFilePath", "iud", "debtPositionTypeOrgCode", "balance", "updateOperatorExternalId", "updateTraceId");
         TestUtils.checkNotNullFields(receipt.getDebtor(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
+        Assertions.assertNotNull(receipt.getPayer());
         TestUtils.checkNotNullFields(receipt.getPayer(), "location", "civic", "address", "postalCode", "postalCode", "province", "nation", "email");
         TestUtils.checkNotNullFields(receipt.getTransfers().getFirst(), "companyName", "mbdAttachment", "iban", "metadata");
         Assertions.assertEquals(PaymentsReporting2ReceiptMapper.ANONYMOUS_PERSON, receipt.getDebtor().getFullName());

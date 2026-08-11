@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine;
 
 import it.gov.pagopa.payhub.activities.service.debtposition.custom.fine.DebtPositionFineReductionOptionExpirationProcessor;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

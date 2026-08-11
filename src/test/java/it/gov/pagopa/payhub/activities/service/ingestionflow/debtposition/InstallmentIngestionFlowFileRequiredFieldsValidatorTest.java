@@ -1,13 +1,13 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonEntityType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
-import static it.gov.pagopa.pu.debtposition.dto.generated.Action.I;
+import static it.gov.pagopa.pu.debtpositions.dto.generated.Action.I;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

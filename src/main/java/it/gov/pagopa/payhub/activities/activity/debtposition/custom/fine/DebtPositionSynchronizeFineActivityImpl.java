@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecu
 import it.gov.pagopa.payhub.activities.service.debtposition.custom.fine.DebtPositionFineNotificationDateProcessor;
 import it.gov.pagopa.payhub.activities.service.debtposition.custom.fine.DebtPositionFineProcessor;
 import it.gov.pagopa.payhub.activities.service.debtposition.custom.fine.DebtPositionFineValidation;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

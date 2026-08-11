@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.config;
 
-import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
 import it.gov.pagopa.pu.ionotification.client.generated.IoNotificationApi;
+import it.gov.pagopa.pu.ionotification.dto.generated.IoNotificationErrorDTO;
 import it.gov.pagopa.pu.ionotification.generated.ApiClient;
 import it.gov.pagopa.pu.ionotification.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -9,6 +10,7 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Lazy
 @Service
@@ -20,7 +22,8 @@ public class IoNotificationApisHolder {
 
     public IoNotificationApisHolder(
             IoNotificationApiClientConfig clientConfig,
-            RestTemplateBuilder restTemplateBuilder
+            RestTemplateBuilder restTemplateBuilder,
+            JsonMapper jsonMapper
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
@@ -28,9 +31,9 @@ public class IoNotificationApisHolder {
         apiClient.setBearerToken(bearerTokenHolder::get);
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
-        if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("IO-NOTIFICATION"));
-        }
+        restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "IO-NOTIFICATION", clientConfig.isPrintBodyWhenError(),
+                IoNotificationErrorDTO.class, IoNotificationErrorDTO::getCode, IoNotificationErrorDTO::getMessage)
+        );
 
         this.ioNotificationApi = new IoNotificationApi(apiClient);
     }

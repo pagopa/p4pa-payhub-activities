@@ -1,10 +1,10 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransferEmbedded;
-import it.gov.pagopa.pu.debtposition.dto.generated.Stamp;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelTransfer;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelTransferEmbedded;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Stamp;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Transfer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,8 @@ public class TransferFaker {
     }
 
 
-    public static it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO buildTransferDTO(){
-        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO.class)
+    public static it.gov.pagopa.pu.debtpositions.dto.generated.TransferDTO buildTransferDTO(){
+        return TestUtils.getPodamFactory().manufacturePojo(it.gov.pagopa.pu.debtpositions.dto.generated.TransferDTO.class)
             .transferId(1L)
             .installmentId(1L)
             .orgFiscalCode("orgFiscalCode")

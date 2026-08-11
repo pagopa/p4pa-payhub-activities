@@ -1,17 +1,19 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.config;
 
-import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
-import it.gov.pagopa.pu.sendnotification.controller.ApiClient;
-import it.gov.pagopa.pu.sendnotification.controller.BaseApi;
-import it.gov.pagopa.pu.sendnotification.controller.generated.CampaignApi;
-import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
-import it.gov.pagopa.pu.sendnotification.controller.generated.SendApi;
-import it.gov.pagopa.pu.sendnotification.controller.generated.StreamsApi;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.pu.sendnotification.generated.ApiClient;
+import it.gov.pagopa.pu.sendnotification.generated.BaseApi;
+import it.gov.pagopa.pu.sendnotification.client.generated.CampaignApi;
+import it.gov.pagopa.pu.sendnotification.client.generated.NotificationApi;
+import it.gov.pagopa.pu.sendnotification.client.generated.SendApi;
+import it.gov.pagopa.pu.sendnotification.client.generated.StreamsApi;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationErrorDTO;
 import jakarta.annotation.PreDestroy;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Lazy
 @Service
@@ -29,15 +31,16 @@ public class SendApisHolder {
 
     public SendApisHolder(
         SendApiClientConfig clientConfig,
-        RestTemplateBuilder restTemplateBuilder
+        RestTemplateBuilder restTemplateBuilder,
+        JsonMapper jsonMapper
     ) {
         this.restTemplate = restTemplateBuilder.build();
         this.clientConfig = clientConfig;
         ApiClient apiClient = buildApiClient();
 
-        if (clientConfig.isPrintBodyWhenError()) {
-          restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("SEND_NOTIFICATION"));
-        }
+        restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "SEND-NOTIFICATION", clientConfig.isPrintBodyWhenError(),
+                SendNotificationErrorDTO.class, SendNotificationErrorDTO::getCode, SendNotificationErrorDTO::getMessage)
+        );
 
         this.sendApi = new SendApi(apiClient);
         this.sendNotificationAPI = new NotificationApi(apiClient);

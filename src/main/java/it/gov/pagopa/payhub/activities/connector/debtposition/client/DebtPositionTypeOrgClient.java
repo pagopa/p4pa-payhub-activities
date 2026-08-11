@@ -1,15 +1,15 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
-import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrgRequestBody;
+import it.gov.pagopa.pu.debtpositions.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Service
@@ -26,7 +26,7 @@ public class DebtPositionTypeOrgClient {
         try {
             return debtPositionApisHolder.getDebtPositionTypeOrgEntityApi(accessToken)
                     .crudGetDebtpositiontypeorg(String.valueOf(debtPositionTypeOrgId));
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find DebtPositionTypeOrg having id {}", debtPositionTypeOrgId);
             return null;
         }
@@ -35,8 +35,8 @@ public class DebtPositionTypeOrgClient {
     public IONotificationDTO getIONotificationDetails(Long debtPositionTypeOrgId, PaymentEventType paymentEventType, String accessToken) {
         try{
             return debtPositionApisHolder.getDebtPositionTypeOrgApi(accessToken)
-                    .getIONotificationDetails(debtPositionTypeOrgId, it.gov.pagopa.pu.debtposition.dto.generated.PaymentEventType.valueOf(paymentEventType.getValue()));
-        } catch (HttpClientErrorException.NotFound e){
+                    .getIONotificationDetails(debtPositionTypeOrgId, it.gov.pagopa.pu.debtpositions.dto.generated.PaymentEventType.valueOf(paymentEventType.getValue()));
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find IONotificationDetails related to DebtPosition having id {} and paymentEventType {}", debtPositionTypeOrgId, paymentEventType);
             return null;
         }
@@ -46,7 +46,7 @@ public class DebtPositionTypeOrgClient {
         try {
             return debtPositionApisHolder.getDebtPositionTypeOrgSearchControllerApi(accessToken)
                     .crudDebtPositionTypeOrgsGetDebtPositionTypeOrgByInstallmentId(installmentId);
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find DebtPositionTypeOrg having installmentId {}", installmentId);
             return null;
         }
@@ -57,7 +57,7 @@ public class DebtPositionTypeOrgClient {
         try {
             return debtPositionApisHolder.getDebtPositionTypeOrgSearchControllerApi(accessToken)
                     .crudDebtPositionTypeOrgsFindByOrganizationIdAndCode(organizationId, code);
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find DebtPositionTypeOrg having organization id {} and debt position type code {}", organizationId, code);
             return null;
         }
@@ -72,7 +72,7 @@ public class DebtPositionTypeOrgClient {
         try {
             return debtPositionApisHolder.getSpontaneousFormSearchControllerApi(accessToken)
                     .crudSpontaneousFormsFindByOrganizationIdAndCode(organizationId, code);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.debug("SpontaneousForm not found for organizationId: {} and code: {}", organizationId, code);
             return null;
         }

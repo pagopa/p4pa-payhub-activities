@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.workflowhub.client;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.config.WorkflowHubApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;

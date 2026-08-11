@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.PaymentOptionService;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

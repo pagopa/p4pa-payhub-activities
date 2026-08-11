@@ -14,8 +14,8 @@ import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
 import it.gov.pagopa.pu.classification.dto.generated.*;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<AssessmentsIngestionFlowFileDTO, AssessmentsIngestionFlowFileResult, AssessmentsErrorDTO> {
@@ -61,7 +61,7 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
     @BeforeEach
     void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        serviceSpy = Mockito.spy(new AssessmentsProcessingService(
+        serviceSpy = spy(new AssessmentsProcessingService(
                 MAX_CONCURRENT_PROCESSING_ROWS,
                 errorsArchiverServiceMock,
                 organizationServiceMock,
@@ -124,20 +124,20 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
         collectionInstallment.setEmbedded(CollectionModelInstallmentNoPIIEmbedded.builder()
                 .installmentNoPIIs(List.of(installment))
                 .build());
-        Mockito.doReturn(collectionInstallment)
+        doReturn(collectionInstallment)
                 .when(installmentServiceMock)
                 .getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(), dto.getIud(), INSTALLMENT_STATUSES);
 
         if (!sequenceIdAlreadySent) {
             DebtPositionTypeOrg debtPositionTypeOrg = podamFactory.manufacturePojo(DebtPositionTypeOrg.class);
             debtPositionTypeOrg.setDebtPositionTypeOrgId(debtPositionTypeOrgId);
-            Mockito.doReturn(debtPositionTypeOrg)
+            doReturn(debtPositionTypeOrg)
                     .when(debtPositionTypeOrgServiceMock)
                     .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getDebtPositionTypeOrgCode());
 
             Assessments assessments = podamFactory.manufacturePojo(Assessments.class);
             assessments.setAssessmentId(assessmentId);
-            Mockito.doReturn(assessments)
+            doReturn(assessments)
                     .when(assessmentsServiceMock)
                     .createAssessment(AssessmentsRequestBody.builder()
                             .organizationId(ingestionFlowFile.getOrganizationId())
@@ -151,10 +151,10 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
                             .build()
                     );
 
-            Mockito.doReturn(receiptDTO)
+            doReturn(receiptDTO)
                     .when(receiptServiceMock).getByReceiptId(installment.getReceiptId());
 
-            Mockito.doReturn(Optional.empty())
+            doReturn(Optional.empty())
                     .when(assessmentsServiceMock)
                     .findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
                             ingestionFlowFile.getOrganizationId(),
@@ -163,10 +163,10 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
         }
 
         AssessmentsDetailRequestBody assessmentsDetailRequestBody = podamFactory.manufacturePojo(AssessmentsDetailRequestBody.class);
-        Mockito.doReturn(assessmentsDetailRequestBody)
+        doReturn(assessmentsDetailRequestBody)
                 .when(mapperMock).map2AssessmentsDetailRequestBody(dto, ingestionFlowFile.getOrganizationId(), assessmentId, receiptDTO, debtPositionTypeOrgId);
 
-        Mockito.doReturn(new AssessmentsDetail())
+        doReturn(new AssessmentsDetail())
                 .when(assessmentsDetailServiceMock).createAssessmentDetail(assessmentsDetailRequestBody);
 
         return dto;
@@ -201,7 +201,7 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
         AssessmentsIngestionFlowFileDTO dto = podamFactory.manufacturePojo(AssessmentsIngestionFlowFileDTO.class);
         dto.setOrganizationIpaCode(organization.getIpaCode());
 
-        Mockito.doReturn(CollectionModelInstallmentNoPII.builder().embedded(new CollectionModelInstallmentNoPIIEmbedded()).build())
+        doReturn(CollectionModelInstallmentNoPII.builder().embedded(new CollectionModelInstallmentNoPIIEmbedded()).build())
                 .when(installmentServiceMock)
                 .getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(),
                         dto.getIud(), INSTALLMENT_STATUSES);
@@ -228,16 +228,16 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
         collectionInstallment.setEmbedded(CollectionModelInstallmentNoPIIEmbedded.builder()
                 .installmentNoPIIs(List.of(installment))
                 .build());
-        Mockito.doReturn(collectionInstallment)
+        doReturn(collectionInstallment)
                 .when(installmentServiceMock)
                 .getInstallmentsByOrgIdAndIudAndStatus(ingestionFlowFile.getOrganizationId(), dto.getIud(), INSTALLMENT_STATUSES);
 
-        var receiptDTOMock = mock(it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO.class);
-        Mockito.doReturn(receiptDTOMock)
+        var receiptDTOMock = mock(it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO.class);
+        doReturn(receiptDTOMock)
                 .when(receiptServiceMock)
                 .getByReceiptId(installment.getReceiptId());
 
-        Mockito.doReturn(Optional.empty())
+        doReturn(Optional.empty())
                 .when(assessmentsServiceMock)
                 .findByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
                         ingestionFlowFile.getOrganizationId(),
@@ -245,7 +245,7 @@ class AssessmentsProcessingServiceTest extends BaseIngestionFlowProcessingServic
                         dto.getAssessmentName()
                 );
 
-        Mockito.doReturn(null)
+        doReturn(null)
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getDebtPositionTypeOrgCode());
 

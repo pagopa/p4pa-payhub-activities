@@ -8,9 +8,9 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowFile
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.IUVInstallmentsExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,8 +31,7 @@ import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildIUVInstallmentsExportFlowFileDTO;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class IUVArchivingExportFileServiceTest {
@@ -84,15 +83,15 @@ class IUVArchivingExportFileServiceTest {
         Long ingestionFlowFileId = 1L;
 
 
-        Mockito.when(dpTypeOrgServiceMock.getById(debtPositionDTO.getDebtPositionTypeOrgId()))
+        when(dpTypeOrgServiceMock.getById(debtPositionDTO.getDebtPositionTypeOrgId()))
                         .thenReturn(dpTypeOrg);
-        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+        when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
 
-        Mockito.when(iuvMapperMock.map(any(InstallmentDTO.class), same(dpTypeOrg)))
+        when(iuvMapperMock.map(any(InstallmentDTO.class), same(dpTypeOrg)))
                         .thenReturn(buildIUVInstallmentsExportFlowFileDTO());
 
-        Mockito.when(foldersPathsConfigMock.getTmp())
+        when(foldersPathsConfigMock.getTmp())
                 .thenReturn(Path.of("/tmp"));
 
         doAnswer(invocation -> {
@@ -101,16 +100,16 @@ class IUVArchivingExportFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), eq("1.0"));
 
-        Mockito.when(foldersPathsConfigMock.getShared())
+        when(foldersPathsConfigMock.getShared())
                 .thenReturn(Path.of("/shared"));
 
-        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
+        when(foldersPathsConfigMock.getProcessTargetSubFolders())
                 .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
                         .archive("archive")
                         .build());
 
 
-        Mockito.when(fileArchiverServiceMock.compressAndArchive(any(), any(), any()))
+        when(fileArchiverServiceMock.compressAndArchive(any(), any(), any()))
                 .thenReturn(1L);
         
         // When
@@ -129,7 +128,7 @@ class IUVArchivingExportFileServiceTest {
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
         Long ingestionFlowFileId = 1L;
 
-        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+        when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.empty());
 
         List<DebtPositionDTO> dpList = List.of(debtPositionDTO);
@@ -148,16 +147,16 @@ class IUVArchivingExportFileServiceTest {
         DebtPositionTypeOrg dpTypeOrg = new DebtPositionTypeOrg();
         Long ingestionFlowFileId = 1L;
 
-        Mockito.when(dpTypeOrgServiceMock.getById(debtPositionDTO.getDebtPositionTypeOrgId()))
+        when(dpTypeOrgServiceMock.getById(debtPositionDTO.getDebtPositionTypeOrgId()))
                 .thenReturn(dpTypeOrg);
 
-        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+        when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
 
-        Mockito.when(iuvMapperMock.map(any(InstallmentDTO.class), same(dpTypeOrg)))
+        when(iuvMapperMock.map(any(InstallmentDTO.class), same(dpTypeOrg)))
                 .thenReturn(buildIUVInstallmentsExportFlowFileDTO());
 
-        Mockito.when(foldersPathsConfigMock.getTmp())
+        when(foldersPathsConfigMock.getTmp())
                 .thenReturn(Path.of("/tmp"));
 
         doThrow(new IOException("Error"))
@@ -180,15 +179,15 @@ class IUVArchivingExportFileServiceTest {
         DebtPositionTypeOrg dpTypeOrg = new DebtPositionTypeOrg();
         Long ingestionFlowFileId = 1L;
 
-        Mockito.when(dpTypeOrgServiceMock.getById(debtPositionDTO.getDebtPositionTypeOrgId()))
+        when(dpTypeOrgServiceMock.getById(debtPositionDTO.getDebtPositionTypeOrgId()))
                 .thenReturn(dpTypeOrg);
 
-        Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+        when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
                 .thenReturn(Optional.of(ingestionFlowFile));
-        Mockito.when(iuvMapperMock.map(any(InstallmentDTO.class), same(dpTypeOrg)))
+        when(iuvMapperMock.map(any(InstallmentDTO.class), same(dpTypeOrg)))
                 .thenReturn(buildIUVInstallmentsExportFlowFileDTO());
 
-        Mockito.when(foldersPathsConfigMock.getTmp())
+        when(foldersPathsConfigMock.getTmp())
                 .thenReturn(Path.of("/tmp"));
 
         doAnswer(invocation -> {
@@ -197,10 +196,10 @@ class IUVArchivingExportFileServiceTest {
             return null;
         }).when(csvServiceMock).createCsv(any(Path.class), eq(IUVInstallmentsExportFlowFileDTO.class), any(), eq("1.0"));
 
-        Mockito.when(foldersPathsConfigMock.getShared())
+        when(foldersPathsConfigMock.getShared())
                 .thenReturn(Path.of("/shared"));
 
-        Mockito.when(foldersPathsConfigMock.getProcessTargetSubFolders())
+        when(foldersPathsConfigMock.getProcessTargetSubFolders())
                 .thenReturn(FoldersPathsConfig.ProcessTargetSubFolders.builder()
                         .archive("archive")
                         .build());

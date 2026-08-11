@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.organization.client;
 
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.organization.client.generated.BrokerConfigurationApi;
 import it.gov.pagopa.pu.organization.dto.generated.EmailServerConfigDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -58,7 +58,7 @@ class BrokerConfigurationClientTest {
 		when(organizationApisHolderMock.getBrokerConfigurationApi(accessToken))
 				.thenReturn(mockApi);
 		when(mockApi.getBrokerEmailServerConfig(brokerId))
-				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
 		EmailServerConfigDTO response = client.getBrokerEmailServerConfig(brokerId, accessToken);
 

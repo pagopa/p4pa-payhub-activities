@@ -1,15 +1,15 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.aca;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.AcaService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeInstallmentAcaActivityTest {
@@ -31,6 +31,6 @@ class SynchronizeInstallmentAcaActivityTest {
 
         activity.synchronizeInstallmentAca(debtPositionDTO, iud);
 
-        Mockito.verify(acaServiceMock).syncInstallmentAca(iud, debtPositionDTO);
+        verify(acaServiceMock).syncInstallmentAca(iud, debtPositionDTO);
     }
 }

@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SpontaneousFormServiceTest {
@@ -46,8 +48,8 @@ class SpontaneousFormServiceTest {
         String code = "SF_CODE";
         SpontaneousForm expectedForm = podamFactory.manufacturePojo(SpontaneousForm.class);
 
-        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionTypeOrgClientMock.findSpontaneousFormByOrganizationIdAndCode(organizationId, code, accessToken))
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(debtPositionTypeOrgClientMock.findSpontaneousFormByOrganizationIdAndCode(organizationId, code, accessToken))
             .thenReturn(expectedForm);
 
         // When
@@ -63,8 +65,8 @@ class SpontaneousFormServiceTest {
         Long organizationId = 1L;
         String code = "SF_CODE_NOT_FOUND";
 
-        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionTypeOrgClientMock.findSpontaneousFormByOrganizationIdAndCode(organizationId, code, accessToken))
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(debtPositionTypeOrgClientMock.findSpontaneousFormByOrganizationIdAndCode(organizationId, code, accessToken))
             .thenReturn(null);
 
         // When
@@ -80,8 +82,8 @@ class SpontaneousFormServiceTest {
         SpontaneousForm formToCreate = new SpontaneousForm();
         SpontaneousForm createdForm = new SpontaneousForm();
 
-        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(debtPositionTypeOrgClientMock.createSpontaneousForm(Mockito.same(formToCreate), Mockito.eq(accessToken)))
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(debtPositionTypeOrgClientMock.createSpontaneousForm(Mockito.same(formToCreate), Mockito.eq(accessToken)))
             .thenReturn(createdForm);
 
         // When

@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.auth.client;
 
 import it.gov.pagopa.payhub.activities.connector.auth.config.AuthApisHolder;
-import it.gov.pagopa.pu.auth.controller.generated.AuthnApi;
+import it.gov.pagopa.pu.auth.client.generated.AuthnApi;
 import it.gov.pagopa.pu.auth.dto.generated.AccessToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

@@ -2,15 +2,15 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Slf4j
@@ -30,7 +30,7 @@ public class ReceiptClient {
         try {
             return debtPositionApisHolder.getReceiptNoPiiSearchControllerApi(accessToken)
                 .crudReceiptsGetByTransferId(transferId);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("ReceiptDTO not found for TransferId: {}", transferId);
             return null;
         }
@@ -40,7 +40,7 @@ public class ReceiptClient {
         try {
            return debtPositionApisHolder.getReceiptApi(accessToken)
                    .getReceipt(receiptId);
-       } catch (HttpClientErrorException.NotFound e) {
+       } catch (RestInvokeNotFoundException e) {
            log.info("ReceiptDTO not found for id: {}", receiptId);
            return null;
        }
@@ -50,7 +50,7 @@ public class ReceiptClient {
         try {
             return debtPositionApisHolder.getReceiptNoPiiSearchControllerApi(accessToken)
                     .crudReceiptsGetByPaymentReceiptId(paymentReceiptId);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("Receipt not found for paymentReceiptId: {}", paymentReceiptId);
             return null;
         }
@@ -64,7 +64,7 @@ public class ReceiptClient {
               .resource(resourceResponseEntity.getBody())
               .fileName(resourceResponseEntity.getHeaders().getContentDisposition().getFilename())
               .build();
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("Receipt having receiptId [{}] and organizationId [{}] not found", receiptId, organizationId);
             return null;
         }

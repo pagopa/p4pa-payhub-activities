@@ -2,8 +2,9 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification.stream.process
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.debtposition.dto.generated.UpdateInstallmentNotificationDateRequest;
+import it.gov.pagopa.pu.debtpositions.dto.generated.UpdateInstallmentNotificationDateRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +22,7 @@ import java.util.List;
 import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.faker.SendNotificationFaker.buildSendNotificationDTO;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationDateRetrieveActivityTest {
@@ -45,16 +46,16 @@ class SendNotificationDateRetrieveActivityTest {
         String notificationRequestId = "notificationRequestId";
         SendNotificationDTO dto = buildSendNotificationDTO(sendNotificationId);
 
-        Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
-        Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
         SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(notificationRequestId);
 
         // Then
         assertEquals(dto, result);
-        Mockito.verify(sendServiceMock).retrieveNotificationDate(sendNotificationId);
-        Mockito.verify(debtPositionServiceMock).updateInstallmentNotificationDate(Mockito.any());
+        verify(sendServiceMock).retrieveNotificationDate(sendNotificationId);
+        verify(debtPositionServiceMock).updateInstallmentNotificationDate(Mockito.any());
     }
 
     @Test
@@ -65,8 +66,8 @@ class SendNotificationDateRetrieveActivityTest {
         SendNotificationDTO dto = buildSendNotificationDTO(sendNotificationId);
         dto.getPayments().getFirst().setNotificationDate(null);
 
-        Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
-        Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
         SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(notificationRequestId);
@@ -84,7 +85,7 @@ class SendNotificationDateRetrieveActivityTest {
         SendNotificationDTO dto = new SendNotificationDTO();
         dto.sendNotificationId(sendNotificationId);
 
-        Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
 
         SendNotificationPaymentsDTO paymentWithDate = new SendNotificationPaymentsDTO();
         paymentWithDate.setDebtPositionId(123L);
@@ -104,14 +105,14 @@ class SendNotificationDateRetrieveActivityTest {
 
         dto.setPayments(List.of(paymentWithDate, paymentWithoutDate));
 
-        Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
         SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(notificationRequestId);
 
         // Then
         assertNull(result);
-        Mockito.verify(debtPositionServiceMock).updateInstallmentNotificationDate(updateRequest);
+        verify(debtPositionServiceMock).updateInstallmentNotificationDate(updateRequest);
     }
 
     @Test
@@ -123,8 +124,8 @@ class SendNotificationDateRetrieveActivityTest {
         dto.setSendNotificationId(sendNotificationId);
         dto.setPayments(Collections.emptyList());
 
-        Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
-        Mockito.when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId)).thenReturn(dto);
+        when(sendServiceMock.retrieveNotificationDate(sendNotificationId)).thenReturn(dto);
 
         // When
         SendNotificationDTO result = sendNotificationDateRetrieve.sendNotificationDateRetrieve(notificationRequestId);
@@ -139,7 +140,7 @@ class SendNotificationDateRetrieveActivityTest {
         // Given
         String notificationRequestId = "notificationRequestId";
 
-        Mockito.when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId))
+        when(sendServiceMock.retrieveNotificationByNotificationRequestId(notificationRequestId))
                 .thenReturn(null);
 
         // When
@@ -147,7 +148,7 @@ class SendNotificationDateRetrieveActivityTest {
 
         // Then
         assertNull(result);
-        Mockito.verify(sendServiceMock, Mockito.times(0)).retrieveNotificationDate(notificationRequestId);
+        verify(sendServiceMock, times(0)).retrieveNotificationDate(notificationRequestId);
         Mockito.verifyNoInteractions(debtPositionServiceMock);
     }
 
@@ -156,7 +157,7 @@ class SendNotificationDateRetrieveActivityTest {
         // Given
         String notificationRequestId = "notificationRequestId";
 
-        Mockito.doThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null))
+        doThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"))
                 .when(sendServiceMock)
                 .retrieveNotificationByNotificationRequestId(notificationRequestId);
 
@@ -168,12 +169,12 @@ class SendNotificationDateRetrieveActivityTest {
 
         // Then
         assertNotNull(sendStreamSkippedEventException);
-        String causeErrorMessage = "Notification for notificationRequestId %s not found: error message 404 NotFound".formatted(notificationRequestId);
+        String causeErrorMessage = "Notification for notificationRequestId %s not found: error message ERRORMESSAGE".formatted(notificationRequestId);
         assertEquals(
             "Skipped an error during execution of activity %s: %s".formatted(SendNotificationDateRetrieveActivity.class.getSimpleName(), causeErrorMessage),
             sendStreamSkippedEventException.getMessage()
         );
-        Mockito.verify(sendServiceMock, Mockito.times(0)).retrieveNotificationDate(notificationRequestId);
+        verify(sendServiceMock, times(0)).retrieveNotificationDate(notificationRequestId);
         Mockito.verifyNoInteractions(debtPositionServiceMock);
     }
 }

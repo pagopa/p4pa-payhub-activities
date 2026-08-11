@@ -4,7 +4,7 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvIgnore;
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonEntityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

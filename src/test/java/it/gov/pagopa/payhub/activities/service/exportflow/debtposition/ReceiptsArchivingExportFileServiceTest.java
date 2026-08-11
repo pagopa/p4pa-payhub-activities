@@ -9,8 +9,8 @@ import it.gov.pagopa.payhub.activities.exception.exportflow.InvalidExportStatusE
 import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTOMapper;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptArchivingView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PagedReceiptsArchivingView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFileFilter;
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -52,7 +51,6 @@ class ReceiptsArchivingExportFileServiceTest {
 
     private final Path workingDirectory = Path.of("build","tmp");
     private final int pageSize = 20;
-    private final String sharedFolder = "shared";
     private final String relativeFileFolder = Path.of("export", "receipts-archiving").toString();
     private PodamFactory podamFactory;
 
@@ -60,7 +58,8 @@ class ReceiptsArchivingExportFileServiceTest {
     @BeforeEach
     void setUp() {
         String filenamePrefix = "EXPORT";
-        receiptsArchivingExportFileService =  new ReceiptsArchivingExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix,sharedFolder, pageSize, exportFileServiceMock, debtPositionsDataExportServiceMock, receiptsArchivingExportFlowFileDTOMapperMock);
+        String sharedFolder = "shared";
+        receiptsArchivingExportFileService =  new ReceiptsArchivingExportFileService(csvServiceMock, fileArchiverServiceMock, workingDirectory, relativeFileFolder, filenamePrefix, sharedFolder, pageSize, exportFileServiceMock, debtPositionsDataExportServiceMock, receiptsArchivingExportFlowFileDTOMapperMock);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -82,7 +81,7 @@ class ReceiptsArchivingExportFileServiceTest {
         //given
         Long exportFileId = 1L;
 
-        Mockito.when(exportFileServiceMock.findReceiptsArchivingExportFileById(exportFileId)).thenReturn(Optional.empty());
+        when(exportFileServiceMock.findReceiptsArchivingExportFileById(exportFileId)).thenReturn(Optional.empty());
         //when
         ExportFileNotFoundException ex = assertThrows(ExportFileNotFoundException.class,
                 () -> receiptsArchivingExportFileService.findExportFileRecord(exportFileId));

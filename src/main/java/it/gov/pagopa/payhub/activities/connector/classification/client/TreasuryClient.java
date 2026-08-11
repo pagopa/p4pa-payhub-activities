@@ -2,11 +2,11 @@ package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.payhub.activities.connector.classification.mapper.TreasuryRequestMapper;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.classification.dto.generated.Treasury;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Service
@@ -25,7 +25,7 @@ public class TreasuryClient {
         try {
             return classificationApisHolder.getTreasurySearchApi(accessToken)
                     .crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("Treasury not found: organizationId: {}, iuf: {}", organizationId, iuf);
             return null;
         }
@@ -35,7 +35,7 @@ public class TreasuryClient {
         try {
             return classificationApisHolder.getTreasurySearchApi(accessToken)
                     .crudTreasuryFindBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("Treasury not found: organizationId: {}, billCode: {}, billYear: {}, orgBtCode: {}, orgIstatCode: {}", organizationId, billCode, billYear, orgBtCode, orgIstatCode);
             return null;
         }

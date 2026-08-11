@@ -1,9 +1,10 @@
 package it.gov.pagopa.payhub.activities.connector.workflowhub.config;
 
 
-import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
-import it.gov.pagopa.pu.workflowhub.controller.generated.DebtPositionApi;
-import it.gov.pagopa.pu.workflowhub.controller.generated.WorkflowApi;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.pu.workflowhub.client.generated.DebtPositionApi;
+import it.gov.pagopa.pu.workflowhub.client.generated.WorkflowApi;
+import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowErrorDTO;
 import it.gov.pagopa.pu.workflowhub.generated.ApiClient;
 import it.gov.pagopa.pu.workflowhub.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -11,6 +12,7 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Lazy
 @Service
@@ -22,7 +24,8 @@ public class WorkflowHubApisHolder {
 
     public WorkflowHubApisHolder(
             WorkflowHubApiClientConfig clientConfig,
-            RestTemplateBuilder restTemplateBuilder
+            RestTemplateBuilder restTemplateBuilder,
+            JsonMapper jsonMapper
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
@@ -30,9 +33,9 @@ public class WorkflowHubApisHolder {
         apiClient.setBearerToken(bearerTokenHolder::get);
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
-        if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("WORKFLOW-HUB"));
-        }
+        restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "WORKFLOW-HUB", clientConfig.isPrintBodyWhenError(),
+                WorkflowErrorDTO.class, WorkflowErrorDTO::getCode, WorkflowErrorDTO::getMessage)
+        );
 
         this.workflowApi = new WorkflowApi(apiClient);
         this.debtPositionApi = new DebtPositionApi(apiClient);

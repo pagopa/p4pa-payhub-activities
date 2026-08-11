@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.service.files.XMLMarshallerService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtReceiptV2;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtSubject;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -20,6 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RtFileHandlerServiceTest {
@@ -57,9 +59,9 @@ class RtFileHandlerServiceTest {
 
         String fileName = "rtFileName.xml";
 
-        Mockito.when(foldersPathsConfigMock.getShared())
+        when(foldersPathsConfigMock.getShared())
                 .thenReturn(tmpDir);
-        Mockito.when(foldersPathsConfigMock.getPaths())
+        when(foldersPathsConfigMock.getPaths())
                 .thenReturn(FoldersPathsConfig.FoldersPaths.builder()
                         .rtFolder("data/rt/path")
                         .build());
@@ -91,7 +93,7 @@ class RtFileHandlerServiceTest {
         Long organizationId = 1L;
         ReceiptDTO receiptDTO = new ReceiptDTO();
 
-        Mockito.when(foldersPathsConfigMock.getShared())
+        when(foldersPathsConfigMock.getShared())
                 .thenReturn(tmpDir);
 
         // When

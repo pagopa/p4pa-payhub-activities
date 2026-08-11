@@ -10,8 +10,8 @@ import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowFileRe
 import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptParserService;
 import it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaIngestionActivityTest {
@@ -73,10 +75,10 @@ class ReceiptPagopaIngestionActivityTest {
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
 
-    Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+    when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
       .thenReturn(Optional.of(ingestionFlowFileDTO));
 
-    Mockito.when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
+    when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
         ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName()))
       .thenReturn(mockedListPath);
 
@@ -84,12 +86,12 @@ class ReceiptPagopaIngestionActivityTest {
 
     PaSendRTV2Request paSendRTV2Request = new PaSendRTV2Request();
 
-    Mockito.when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
+    when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
       .thenReturn(paSendRTV2Request);
 
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
 
-    Mockito.when(receiptMapperMock.map(ingestionFlowFileDTO, paSendRTV2Request)).thenReturn(receiptWithAdditionalNodeDataDTO);
+    when(receiptMapperMock.map(ingestionFlowFileDTO, paSendRTV2Request)).thenReturn(receiptWithAdditionalNodeDataDTO);
 
     ReceiptDTO receiptDTO = new ReceiptDTO();
     receiptDTO.setReceiptId(1L);
@@ -104,7 +106,7 @@ class ReceiptPagopaIngestionActivityTest {
             .fileSize(100L)
             .build();
 
-    Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(receiptDTO);
+    when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(receiptDTO);
 
     // When
     ReceiptPagopaIngestionFlowFileResult result = receiptPagopaIngestionActivity.processFile(ingestionFlowFileId);
@@ -124,10 +126,10 @@ class ReceiptPagopaIngestionActivityTest {
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
 
-    Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+    when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
             .thenReturn(Optional.of(ingestionFlowFileDTO));
 
-    Mockito.when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
+    when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
                     ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName()))
             .thenReturn(mockedListPath);
 
@@ -135,12 +137,12 @@ class ReceiptPagopaIngestionActivityTest {
 
     PaSendRTV2Request paSendRTV2Request = new PaSendRTV2Request();
 
-    Mockito.when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
+    when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
             .thenReturn(paSendRTV2Request);
 
     ReceiptWithAdditionalNodeDataDTO receiptWithAdditionalNodeDataDTO = new ReceiptWithAdditionalNodeDataDTO();
 
-    Mockito.when(receiptMapperMock.map(ingestionFlowFileDTO, paSendRTV2Request)).thenReturn(receiptWithAdditionalNodeDataDTO);
+    when(receiptMapperMock.map(ingestionFlowFileDTO, paSendRTV2Request)).thenReturn(receiptWithAdditionalNodeDataDTO);
 
     ReceiptPagopaIngestionFlowFileResult expectedResult = ReceiptPagopaIngestionFlowFileResult.builder()
             .receiptDTO(receiptWithAdditionalNodeDataDTO)
@@ -152,7 +154,7 @@ class ReceiptPagopaIngestionActivityTest {
             .fileSize(100L)
             .build();
 
-    Mockito.when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(null);
+    when(receiptServiceMock.createReceipt(receiptWithAdditionalNodeDataDTO)).thenReturn(null);
 
     // When
     ReceiptPagopaIngestionFlowFileResult result = receiptPagopaIngestionActivity.processFile(ingestionFlowFileId);
@@ -173,14 +175,14 @@ class ReceiptPagopaIngestionActivityTest {
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath);
 
-    Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+    when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
       .thenReturn(Optional.of(ingestionFlowFileDTO));
 
-    Mockito.when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
+    when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
         ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName()))
       .thenReturn(mockedListPath);
 
-    Mockito.when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
+    when(receiptParserServiceMock.parseReceiptPagopaFile(filePath, ingestionFlowFileDTO))
       .thenThrow(new RuntimeException("test error"));
 
     // When
@@ -188,10 +190,10 @@ class ReceiptPagopaIngestionActivityTest {
 
     // Then
     Assertions.assertEquals("test error", response.getMessage());
-    Mockito.verify(ingestionFlowFileServiceMock, Mockito.times(1)).findById(ingestionFlowFileId);
-    Mockito.verify(ingestionFlowFileRetrieverServiceMock, Mockito.times(1)).retrieveAndUnzipFile(
+    verify(ingestionFlowFileServiceMock, times(1)).findById(ingestionFlowFileId);
+    verify(ingestionFlowFileRetrieverServiceMock, times(1)).retrieveAndUnzipFile(
       ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName());
-    Mockito.verify(receiptParserServiceMock, Mockito.times(1)).parseReceiptPagopaFile(filePath, ingestionFlowFileDTO);
+    verify(receiptParserServiceMock, times(1)).parseReceiptPagopaFile(filePath, ingestionFlowFileDTO);
 
     Assertions.assertFalse(filePath.toFile().exists());
   }
@@ -205,10 +207,10 @@ class ReceiptPagopaIngestionActivityTest {
     Path filePath = Files.createFile(Path.of(ingestionFlowFileDTO.getFilePathName()).resolve(ingestionFlowFileDTO.getFileName()));
     List<Path> mockedListPath = List.of(filePath, filePath);
 
-    Mockito.when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
+    when(ingestionFlowFileServiceMock.findById(ingestionFlowFileId))
       .thenReturn(Optional.of(ingestionFlowFileDTO));
 
-    Mockito.when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
+    when(ingestionFlowFileRetrieverServiceMock.retrieveAndUnzipFile(
         ingestionFlowFileDTO.getOrganizationId(), Path.of(ingestionFlowFileDTO.getFilePathName()), ingestionFlowFileDTO.getFileName()))
       .thenReturn(mockedListPath);
 

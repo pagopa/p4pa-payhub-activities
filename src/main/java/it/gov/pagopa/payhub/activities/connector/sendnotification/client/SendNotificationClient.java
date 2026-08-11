@@ -1,11 +1,13 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.BaseBusinessException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class SendNotificationClient {
     try {
       return sendApisHolder.getSendNotificationApi(accessToken)
               .getSendNotification(sendNotificationId);
-    } catch (HttpClientErrorException.NotFound e){
+    } catch (RestInvokeNotFoundException e){
       log.info("Cannot find SendNotification having id {}", sendNotificationId);
       return null;
     }
@@ -34,7 +36,7 @@ public class SendNotificationClient {
     try {
       return sendApisHolder.getSendNotificationApi(accessToken)
           .findSendNotificationByOrgIdAndNav(organizationId, nav);
-    } catch (HttpClientErrorException.NotFound e){
+    } catch (RestInvokeNotFoundException e){
       log.info("Cannot find SendNotification having orgId {} and nav {}", organizationId, nav);
       return null;
     }
@@ -44,9 +46,12 @@ public class SendNotificationClient {
     try {
       return sendApisHolder.getSendNotificationApi(accessToken)
           .createSendNotification(createNotificationRequest);
-    } catch (HttpClientErrorException exception){
-      log.info("Cannot create SendNotification");
-      return null;
+    } catch (BaseBusinessException e){
+      if(e instanceof RestInvokeException){
+        log.info("Cannot create SendNotification: {}", e.getMessage());
+        return null;
+      }
+      throw e;
     }
   }
 
@@ -78,7 +83,7 @@ public class SendNotificationClient {
   public FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId, String accessToken) {
     try {
       return sendApisHolder.getSendNotificationApi(accessToken).deleteExpiredLegalFacts(sendNotificationId);
-    } catch (HttpClientErrorException.NotFound e){
+    } catch (RestInvokeNotFoundException e){
       log.info("Could not find SendNotification legal facts to delete having sendNotificationId {}", sendNotificationId);
       return null;
     }
@@ -87,7 +92,7 @@ public class SendNotificationClient {
   public FileExpirationResponseDTO deleteExpiredDocuments(String sendNotificationId, String accessToken) {
     try {
       return sendApisHolder.getSendNotificationApi(accessToken).deleteExpiredDocuments(sendNotificationId);
-    } catch (HttpClientErrorException.NotFound e){
+    } catch (RestInvokeNotFoundException e){
       log.info("Could not find SendNotification documents to delete having sendNotificationId {}", sendNotificationId);
       return null;
     }

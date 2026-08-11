@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.client.GpdClient;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GpdServiceTest {
@@ -47,7 +49,7 @@ class GpdServiceTest {
 
         String iupdPagoPaExpected = "iupdPagopa";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
@@ -55,7 +57,7 @@ class GpdServiceTest {
 
         // Then
         assertEquals(iupdPagoPaExpected, result);
-        Mockito.verify(gpdClientMock).syncGpd(iud, debtPosition, accessToken);
+        verify(gpdClientMock).syncGpd(iud, debtPosition, accessToken);
     }
 
 }

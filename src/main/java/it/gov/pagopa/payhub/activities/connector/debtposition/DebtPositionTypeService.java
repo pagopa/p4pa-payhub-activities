@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelDebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeRequestBody;
 
 /**
  * This interface provides methods that manage debt positions type within the related microservice.

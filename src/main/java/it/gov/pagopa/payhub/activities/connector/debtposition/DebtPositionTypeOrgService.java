@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
-import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrgRequestBody;
+import it.gov.pagopa.pu.debtpositions.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 
 /**

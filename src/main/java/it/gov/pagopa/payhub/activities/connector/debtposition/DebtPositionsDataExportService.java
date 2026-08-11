@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PagedInstallmentsPaidView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFileFilter;
 

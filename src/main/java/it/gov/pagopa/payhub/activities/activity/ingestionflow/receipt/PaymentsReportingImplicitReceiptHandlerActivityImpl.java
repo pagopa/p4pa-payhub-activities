@@ -5,13 +5,13 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService
 import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.PaymentsReporting2ReceiptMapper;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDebtorDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDebtorDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;

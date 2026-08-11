@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.files;
 
 import it.gov.agenziaentrate._2014.marcadabollo.MarcaDaBollo;
 import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Assertions;

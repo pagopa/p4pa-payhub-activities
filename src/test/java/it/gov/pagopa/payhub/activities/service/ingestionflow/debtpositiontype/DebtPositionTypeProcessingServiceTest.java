@@ -10,10 +10,10 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontype.Deb
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedModelDebtPositionTypeEmbedded;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelDebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeRequestBody;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PagedModelDebtPositionTypeEmbedded;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<DebtPositionTypeIngestionFlowFileDTO, DebtPositionTypeIngestionFlowFileResult, DebtPositionTypeErrorDTO> {
@@ -52,7 +54,7 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
     @BeforeEach
     void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        serviceSpy = Mockito.spy(new DebtPositionTypeProcessingService(
+        serviceSpy = spy(new DebtPositionTypeProcessingService(
                 MAX_CONCURRENT_PROCESSING_ROWS,
                 mapperMock,
                 errorsArchiverServiceMock,
@@ -94,13 +96,13 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
         DebtPositionTypeRequestBody mappedDebtPosType = podamFactory.manufacturePojo(DebtPositionTypeRequestBody.class);
         DebtPositionType createdDebtPosType = podamFactory.manufacturePojo(DebtPositionType.class);
 
-        Mockito.doReturn(mappedDebtPosType)
+        doReturn(mappedDebtPosType)
                 .when(mapperMock)
                 .map(dto, organization.getBrokerId());
-        Mockito.doReturn(createdDebtPosType)
+        doReturn(createdDebtPosType)
                 .when(debtPositionTypeServiceMock)
                 .createDebtPositionType(mappedDebtPosType);
-        Mockito.doReturn(
+        doReturn(
                         CollectionModelDebtPositionType.builder()
                                 .embedded(PagedModelDebtPositionTypeEmbedded.builder()
                                         .debtPositionTypes(Collections.emptyList())
@@ -136,7 +138,7 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
                         .debtPositionTypes(List.of(existingDebtPosType))
                         .build())
                 .build();
-        Mockito.when(debtPositionTypeServiceMock.getByMainFields(
+        when(debtPositionTypeServiceMock.getByMainFields(
                 dto.getDebtPositionTypeCode(),
                 organization.getBrokerId(),
                 dto.getOrgType(),
@@ -167,7 +169,7 @@ class DebtPositionTypeProcessingServiceTest extends BaseIngestionFlowProcessingS
         DebtPositionTypeIngestionFlowFileResult expectedResult = new DebtPositionTypeIngestionFlowFileResult();
 
         Mockito.reset(organizationServiceMock);
-        Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(new Organization()));
 
         // When

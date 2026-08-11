@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Lazy;
@@ -70,7 +70,7 @@ public class DebtPositionFineNotificationDateProcessor {
     private boolean processDueDate(InstallmentDTO installment, long days2add) {
         LocalDate nextDueDate = Objects.requireNonNull(installment.getNotificationDate()).plusDays(days2add).atZoneSameInstant(Utilities.ZONEID).toLocalDate();
         if (!nextDueDate.equals(installment.getDueDate())) {
-            installment.setDueDate(ObjectUtils.max(nextDueDate, LocalDate.now()));
+            installment.setDueDate(ObjectUtils.max(nextDueDate, LocalDate.now(Utilities.ZONEID)));
 
             log.info("Updating installment with id: {} to new dueDate: {} ", installment.getInstallmentId(), installment.getDueDate());
             installmentService.updateDueDate(installment.getInstallmentId(), installment.getDueDate());

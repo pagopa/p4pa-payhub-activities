@@ -1,8 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionEntityControllerApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPosition;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
+import it.gov.pagopa.pu.debtpositions.client.generated.DebtPositionEntityControllerApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPosition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionSearchClientTest {
@@ -42,9 +44,9 @@ class DebtPositionSearchClientTest {
         Long debtPositionId = 0L;
         DebtPosition expectedResult = new DebtPosition();
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionEntityControllerApi(accessToken))
+        when(debtPositionApisHolderMock.getDebtPositionEntityControllerApi(accessToken))
                 .thenReturn(debtPositionEntityControllerApiMock);
-        Mockito.when(debtPositionEntityControllerApiMock.crudGetDebtposition(String.valueOf(debtPositionId)))
+        when(debtPositionEntityControllerApiMock.crudGetDebtposition(String.valueOf(debtPositionId)))
                 .thenReturn(expectedResult);
 
         // When
@@ -60,10 +62,10 @@ class DebtPositionSearchClientTest {
         String accessToken = "ACCESSTOKEN";
         Long debtPositionId = 0L;
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionEntityControllerApi(accessToken))
+        when(debtPositionApisHolderMock.getDebtPositionEntityControllerApi(accessToken))
                 .thenReturn(debtPositionEntityControllerApiMock);
-        Mockito.when(debtPositionEntityControllerApiMock.crudGetDebtposition(String.valueOf(debtPositionId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(debtPositionEntityControllerApiMock.crudGetDebtposition(String.valueOf(debtPositionId)))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         DebtPosition result = debtPositionSearchClient.findById(debtPositionId, accessToken);

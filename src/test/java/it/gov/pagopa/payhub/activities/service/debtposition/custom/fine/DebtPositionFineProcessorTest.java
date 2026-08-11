@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.service.debtposition.custom.fine;
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.PaymentOptionService;
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

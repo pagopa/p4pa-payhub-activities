@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.classifications;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Transfer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
