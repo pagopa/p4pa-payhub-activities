@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.pu_sil.client;
 
 import it.gov.pagopa.payhub.activities.connector.pu_sil.config.PuSilApisHolder;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

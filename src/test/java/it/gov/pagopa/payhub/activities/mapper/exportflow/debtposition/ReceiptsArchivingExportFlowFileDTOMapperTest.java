@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptArchivingView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptArchivingView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static it.gov.pagopa.payhub.activities.util.Utilities.INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptsArchivingExportFlowFileDTOMapperTest {
@@ -46,7 +47,7 @@ class ReceiptsArchivingExportFlowFileDTOMapperTest {
         // Given
         ReceiptArchivingView receiptArchivingView = podamFactory.manufacturePojo(ReceiptArchivingView.class);
 
-        Mockito.when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+        when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
                 .thenReturn("RTXML");
 
         // When
@@ -67,7 +68,7 @@ class ReceiptsArchivingExportFlowFileDTOMapperTest {
         receiptArchivingView.setPayer(null);
         receiptArchivingView.setDebtor(null);
 
-        Mockito.when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+        when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
                 .thenReturn("RTXML");
 
         // When
@@ -92,7 +93,7 @@ class ReceiptsArchivingExportFlowFileDTOMapperTest {
         ReceiptArchivingView receiptArchivingView = podamFactory.manufacturePojo(ReceiptArchivingView.class);
         receiptArchivingView.setPaymentDateTime(null);
 
-        Mockito.when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+        when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
                 .thenReturn("RTXML");
 
         ReceiptsArchivingExportFlowFileDTO result = receiptsArchivingExportFlowFileDTOMapper.map(receiptArchivingView);
@@ -113,7 +114,7 @@ class ReceiptsArchivingExportFlowFileDTOMapperTest {
         receiptArchivingView.setRemittanceInformation(remittance);
         receiptArchivingView.setOriginalRemittanceInformation(originalRemittance);
 
-        Mockito.when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
+        when(rtFileHandlerServiceMock.read(receiptArchivingView.getOrganizationId(), receiptArchivingView.getRtFilePath()))
                 .thenReturn("RTXML");
 
         // When

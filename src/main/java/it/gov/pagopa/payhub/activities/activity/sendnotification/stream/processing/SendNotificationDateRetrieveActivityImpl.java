@@ -2,14 +2,14 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification.stream.process
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.debtposition.dto.generated.UpdateInstallmentNotificationDateRequest;
+import it.gov.pagopa.pu.debtpositions.dto.generated.UpdateInstallmentNotificationDateRequest;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class SendNotificationDateRetrieveActivityImpl implements SendNotificatio
         SendNotificationDTO sendNotificationDTO;
         try {
             sendNotificationDTO = sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             String errorMessage = "Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage());
             throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(SendNotificationDateRetrieveActivity.class.getSimpleName(), errorMessage));
         }

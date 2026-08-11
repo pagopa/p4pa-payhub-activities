@@ -4,14 +4,13 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
@@ -20,6 +19,7 @@ import java.util.Optional;
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptIngestionFlowFileRequiredFieldsValidatorService.setDefaultValues;
 import static it.gov.pagopa.payhub.activities.util.faker.IngestionFlowFileFaker.buildIngestionFlowFile;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
@@ -83,9 +83,9 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
                 .thenReturn(Optional.of(org));
-        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+        when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
                 .thenReturn(receiptNoPII);
 
         assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
@@ -107,9 +107,9 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(2L))
+        when(organizationServiceMock.getOrganizationById(2L))
                 .thenReturn(Optional.of(org));
-        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+        when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
                 .thenReturn(receiptNoPII);
 
         assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
@@ -131,9 +131,9 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(3L))
+        when(organizationServiceMock.getOrganizationById(3L))
                 .thenReturn(Optional.of(org));
-        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+        when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
                 .thenReturn(receiptNoPII);
 
         assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
@@ -154,7 +154,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         dto.setOrgFiscalCode("ORG1234");
         dto.setFiscalCodePA("DIFFERENT");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(4L)).thenReturn(Optional.of(org));
+        when(organizationServiceMock.getOrganizationById(4L)).thenReturn(Optional.of(org));
 
         assertThrows(IllegalArgumentException.class, () -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
     }
@@ -172,7 +172,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
                 .thenReturn(Optional.of(org));
 
         assertThrows(IllegalArgumentException.class, () -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
@@ -191,7 +191,7 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
                 .thenReturn(Optional.of(org));
 
         assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
@@ -211,9 +211,9 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY12");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
                 .thenReturn(Optional.of(org));
-        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+        when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
                 .thenReturn(receiptNoPII);
 
         assertThrows(IllegalArgumentException.class, () -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
@@ -234,9 +234,9 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         ReceiptNoPII receiptNoPII = new ReceiptNoPII();
         receiptNoPII.setCreditorReferenceId("PAY123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
                 .thenReturn(Optional.of(org));
-        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+        when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
                 .thenReturn(receiptNoPII);
 
         assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));
@@ -254,9 +254,9 @@ class ReceiptIngestionFlowFileRequiredFieldsValidatorServiceTest {
         dto.setPaymentReceiptId("PAY123");
         dto.setIuv("PAY123");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(flowFile.getOrganizationId()))
                 .thenReturn(Optional.of(org));
-        Mockito.when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
+        when(receiptServiceMock.getByPaymentReceiptId(dto.getPaymentReceiptId()))
                 .thenReturn(null);
 
         assertDoesNotThrow(() -> receiptIngestionFlowFileRequiredFieldsValidatorService.validateIngestionFile(flowFile, dto));

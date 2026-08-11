@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmentsExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import static it.gov.pagopa.payhub.activities.util.TestUtils.OFFSETDATETIME;
 import static it.gov.pagopa.payhub.activities.util.Utilities.longCentsToBigDecimalEuro;
 import static it.gov.pagopa.payhub.activities.util.faker.PersonFaker.buildPersonDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.TransferFaker.buildTransferDTO;
-import static it.gov.pagopa.pu.debtposition.dto.generated.Action.I;
+import static it.gov.pagopa.pu.debtpositions.dto.generated.Action.I;
 
 public class InstallmentFaker {
 

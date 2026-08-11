@@ -1,14 +1,15 @@
 package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.IUVInstallmentsExportFlowFileDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.TransferDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static it.gov.pagopa.payhub.activities.util.Utilities.longCentsToBigDecimalEuro;
@@ -44,7 +45,7 @@ public class IUVInstallmentsExportFlowFileDTOMapper {
                 .legacyPaymentMetadata(dto.getLegacyPaymentMetadata())
                 .balance(dto.getBalance())
                 .generateNotice(dto.getGenerateNotice())
-                .flagMultiBeneficiary(transferDTOList.size() == 1 ? Boolean.FALSE : Boolean.TRUE)
+                .flagMultiBeneficiary(Objects.requireNonNull(transferDTOList).size() == 1 ? Boolean.FALSE : Boolean.TRUE)
                 .action(dto.getIngestionFlowFileAction())
                 .build();
 

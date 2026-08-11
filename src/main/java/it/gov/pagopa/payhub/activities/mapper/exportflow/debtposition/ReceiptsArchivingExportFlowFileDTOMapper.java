@@ -3,8 +3,8 @@ package it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition;
 import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.ReceiptsArchivingExportFlowFileDTO;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptArchivingView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptArchivingView;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 

@@ -2,11 +2,12 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.client.generated.DataExportsApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedReceiptsArchivingView;
+import it.gov.pagopa.pu.debtpositions.client.generated.DataExportsApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PagedInstallmentsPaidView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PagedReceiptsArchivingView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.OffsetDateTimeIntervalFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ReceiptsArchivingExportFileFilter;
@@ -66,8 +67,8 @@ class DebtPositionsDebtPositionsDataExportClientTest {
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
 
-        Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateTime.getFrom(), paymentDateTime.getTo(), null, null, debtPositionTypeOrgId, null, 0, 10, null)). thenReturn(expected);
-        Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
+        when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId, paymentDateTime.getFrom(), paymentDateTime.getTo(), null, null, debtPositionTypeOrgId, null, 0, 10, null)). thenReturn(expected);
+        when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
         PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
         //then
@@ -90,8 +91,8 @@ class DebtPositionsDebtPositionsDataExportClientTest {
 
         PagedInstallmentsPaidView expected = podamFactory.manufacturePojo(PagedInstallmentsPaidView.class);
 
-        Mockito.when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId,null,null, null, null, debtPositionTypeOrgId, null, 0, 10, null)). thenReturn(expected);
-        Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
+        when(dataExportsApiMock.exportPaidInstallments(organizationId, operatorExternalUserId,null,null, null, null, debtPositionTypeOrgId, null, 0, 10, null)). thenReturn(expected);
+        when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
         PagedInstallmentsPaidView result = debtPositionsDataExportClient.getExportPaidInstallments(accessToken, organizationId, operatorExternalUserId, paidExportFileFilter , 0, 10, null);
         //then
@@ -116,8 +117,8 @@ class DebtPositionsDebtPositionsDataExportClientTest {
 
         PagedReceiptsArchivingView expected = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
 
-        Mockito.when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId, paymentDateTime.getFrom(), paymentDateTime.getTo(),  0, 10, null)). thenReturn(expected);
-        Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
+        when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId, paymentDateTime.getFrom(), paymentDateTime.getTo(),  0, 10, null)). thenReturn(expected);
+        when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
         PagedReceiptsArchivingView result = debtPositionsDataExportClient.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
         //then
@@ -138,8 +139,8 @@ class DebtPositionsDebtPositionsDataExportClientTest {
 
         PagedReceiptsArchivingView expected = podamFactory.manufacturePojo(PagedReceiptsArchivingView.class);
 
-        Mockito.when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId,null,null, 0, 10, null)). thenReturn(expected);
-        Mockito.when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
+        when(dataExportsApiMock.exportArchivingReceipts(organizationId, operatorExternalUserId,null,null, 0, 10, null)). thenReturn(expected);
+        when(debtPositionApisHolderMock.getDataExportsApi(accessToken)).thenReturn(dataExportsApiMock);
         //when
         PagedReceiptsArchivingView result = debtPositionsDataExportClient.getExportReceiptsArchivingView(accessToken, organizationId, operatorExternalUserId, receiptsArchivingExportFileFilter, 0, 10, null);
         //then

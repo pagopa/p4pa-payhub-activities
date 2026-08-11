@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.pagopapayments;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.PrintPaymentNoticeService;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +16,7 @@ import java.util.List;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GenerateNoticeServiceTest {
@@ -58,7 +59,7 @@ class GenerateNoticeServiceTest {
             .folderId(folderId)
             .build();
 
-        Mockito.when(printPaymentNoticeServiceMock.generateMassive(requestMassive))
+        when(printPaymentNoticeServiceMock.generateMassive(requestMassive))
             .thenReturn(responseFolder);
 
         String result = generateNoticeService.generateNotices(ingestionFlowFileId, debtPositionsGenerateNotices, navListGenerateNotices, 1);

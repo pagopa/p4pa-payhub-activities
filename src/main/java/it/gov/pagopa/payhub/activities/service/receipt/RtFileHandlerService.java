@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.service.files.XMLMarshallerService;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.payhub.activities.util.FileShareUtils;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.CtReceiptV2;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;

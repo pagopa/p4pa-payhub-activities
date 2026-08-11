@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
-import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import tools.jackson.databind.JsonNode;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +56,7 @@ class SpontaneousFormHandlerServiceTest {
             .spontaneousFormId(expectedId)
             .organizationId(organizationId)
             .code(code)
-            .structure(Mockito.mock(JsonNode.class))
+            .structure(mock(JsonNode.class))
             .build();
 
         when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))

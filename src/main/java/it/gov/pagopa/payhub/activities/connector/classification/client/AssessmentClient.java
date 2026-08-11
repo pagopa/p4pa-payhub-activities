@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class AssessmentClient {
       return classificationApisHolder.getAssessmentsSearchControllerApi(accessToken)
               .crudAssessmentsFindByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(
                       organizationId, debtPositionTypeOrgCode, assessmentName);
-    } catch (HttpClientErrorException.NotFound e) {
+    } catch (RestInvokeNotFoundException e) {
       log.info("Assessment not found: organizationId: {}, debtPositionTypeOrgCode: {}, assessmentName: {}", organizationId, debtPositionTypeOrgCode, assessmentName);
       return null;
     }
@@ -46,7 +46,7 @@ public class AssessmentClient {
     try {
       return classificationApisHolder.getAssessmentsEntityControllerApi(accessToken)
               .crudGetAssessments(String.valueOf(assessmentId));
-    } catch (HttpClientErrorException.NotFound e) {
+    } catch (RestInvokeNotFoundException e) {
       log.info("Assessment not found: assessmentId: {}", assessmentId);
       return null;
     }

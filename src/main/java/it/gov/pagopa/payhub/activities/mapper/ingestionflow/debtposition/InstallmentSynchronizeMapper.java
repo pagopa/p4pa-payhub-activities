@@ -2,8 +2,8 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferSynchronizeDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentSynchronizeDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.TransferSynchronizeDTO;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;

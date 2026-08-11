@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.classification.client.generated.AssessmentsControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.AssessmentsEntityControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.AssessmentsSearchControllerApi;
@@ -14,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collections;
 import java.util.List;
@@ -135,7 +135,7 @@ class AssessmentsClientTest {
         when(classificationApisHolderMock.getAssessmentsEntityControllerApi(accessToken))
                 .thenReturn(mockApi);
         when(mockApi.crudGetAssessments(String.valueOf(assessmentId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         Assessments actualResult = assessmentClient.findAssessment(assessmentId, accessToken);

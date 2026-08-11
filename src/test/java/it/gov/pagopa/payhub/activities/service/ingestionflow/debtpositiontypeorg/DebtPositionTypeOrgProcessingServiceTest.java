@@ -12,7 +12,7 @@ import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform.SpontaneousFormHandlerService;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<DebtPositionTypeOrgIngestionFlowFileDTO, DebtPositionTypeOrgIngestionFlowFileResult, DebtPositionTypeOrgErrorDTO> {
@@ -60,7 +60,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
     @BeforeEach
     void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        serviceSpy = Mockito.spy(new DebtPositionTypeOrgProcessingService(
+        serviceSpy = spy(new DebtPositionTypeOrgProcessingService(
                 MAX_CONCURRENT_PROCESSING_ROWS,
                 mapperMock,
                 errorsArchiverServiceMock,
@@ -120,23 +120,23 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                             .debtPositionTypes(List.of(dpType))
                             .build())
                     .build();
-            Mockito.doReturn(existingCollectionModel)
+            doReturn(existingCollectionModel)
                     .when(debtPositionTypeServiceMock)
                     .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
 
-            Mockito.doReturn(null)
+            doReturn(null)
                     .when(debtPositionTypeOrgServiceMock)
                     .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
         }
 
-        Mockito.doReturn(spontaneousFormId)
+        doReturn(spontaneousFormId)
                 .when(spontaneousFormHandlerServiceMock)
                 .handleSpontaneousForm(ingestionFlowFile.getOrganizationId(), dto);
 
-        Mockito.doReturn(mappedDebtPosType)
+        doReturn(mappedDebtPosType)
                 .when(mapperMock)
                 .map(dto, dpTypeId, ingestionFlowFile.getOrganizationId(), spontaneousFormId);
-        Mockito.doReturn(createdDebtPosType)
+        doReturn(createdDebtPosType)
                 .when(debtPositionTypeOrgServiceMock)
                 .createDebtPositionTypeOrg(mappedDebtPosType);
 
@@ -158,7 +158,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         dto.setIpaCode(organization.getIpaCode());
 
         DebtPositionTypeOrg alreadyExistingDPTypeOrg = podamFactory.manufacturePojo(DebtPositionTypeOrg.class);
-        Mockito.doReturn(alreadyExistingDPTypeOrg)
+        doReturn(alreadyExistingDPTypeOrg)
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
 
@@ -180,11 +180,11 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         dto.setIpaCode(organization.getIpaCode());
 
-        Mockito.doReturn(null)
+        doReturn(null)
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
 
-        Mockito.doReturn(CollectionModelDebtPositionType.builder().embedded(new PagedModelDebtPositionTypeEmbedded()).build())
+        doReturn(CollectionModelDebtPositionType.builder().embedded(new PagedModelDebtPositionTypeEmbedded()).build())
                 .when(debtPositionTypeServiceMock)
                 .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
 
@@ -224,7 +224,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         dto.setIpaCode(organization.getIpaCode());
 
-        Mockito.doReturn(null)
+        doReturn(null)
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
 
@@ -236,11 +236,11 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                         .debtPositionTypes(List.of(dpType))
                         .build())
                 .build();
-        Mockito.doReturn(existingCollectionModel)
+        doReturn(existingCollectionModel)
                 .when(debtPositionTypeServiceMock)
                 .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
 
-        Mockito.doThrow(new RuntimeException("Error parsing JSON for spontaneous form"))
+        doThrow(new RuntimeException("Error parsing JSON for spontaneous form"))
                 .when(spontaneousFormHandlerServiceMock)
                 .handleSpontaneousForm(ingestionFlowFile.getOrganizationId(), dto);
 
@@ -265,7 +265,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileResult expectedResult = new DebtPositionTypeOrgIngestionFlowFileResult();
 
         Mockito.reset(organizationServiceMock);
-        Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(new Organization()));
 
         // When

@@ -1,14 +1,16 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
-import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
-import it.gov.pagopa.pu.debtposition.client.generated.*;
-import it.gov.pagopa.pu.debtposition.generated.BaseApi;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.pu.debtpositions.client.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionErrorDTO;
+import it.gov.pagopa.pu.debtpositions.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Lazy
 @Service
@@ -40,7 +42,8 @@ public class DebtPositionApisHolder {
 
     public DebtPositionApisHolder(
         DebtPositionApiClientConfig clientConfig,
-        RestTemplateBuilder restTemplateBuilder
+        RestTemplateBuilder restTemplateBuilder,
+        JsonMapper jsonMapper
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClientExt apiClient = new ApiClientExt(restTemplate);
@@ -49,9 +52,9 @@ public class DebtPositionApisHolder {
         apiClient.setUserIdSupplier(() -> authContextHolder.get().getValue());
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
-        if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("DEBT-POSITIONS"));
-        }
+        restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "DEBT-POSITIONS", clientConfig.isPrintBodyWhenError(),
+                DebtPositionErrorDTO.class, DebtPositionErrorDTO::getCode, DebtPositionErrorDTO::getMessage)
+        );
 
         this.debtPositionSearchControllerApi = new DebtPositionSearchControllerApi(apiClient);
         this.debtPositionEntityControllerApi = new DebtPositionEntityControllerApi(apiClient);

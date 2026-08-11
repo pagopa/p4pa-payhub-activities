@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.classification.config;
 
-import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
 import it.gov.pagopa.pu.classification.client.generated.*;
+import it.gov.pagopa.pu.classification.dto.generated.ClassificationErrorDTO;
 import it.gov.pagopa.pu.classification.generated.ApiClient;
 import it.gov.pagopa.pu.classification.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -9,13 +10,13 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Lazy
 @Service
 public class ClassificationApisHolder {
 
     private final ClassificationSearchControllerApi classificationSearchControllerApi;
-    private final ClassificationEntityControllerApi classificationEntityControllerApi;
     private final ClassificationEntityExtendedControllerApi classificationEntityExtendedControllerApi;
 
     private final PaymentsReportingSearchControllerApi paymentsReportingSearchControllerApi;
@@ -45,7 +46,8 @@ public class ClassificationApisHolder {
 
     public ClassificationApisHolder(
             ClassificationApiClientConfig clientConfig,
-            RestTemplateBuilder restTemplateBuilder
+            RestTemplateBuilder restTemplateBuilder,
+            JsonMapper jsonMapper
     ) {
       RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
@@ -53,12 +55,11 @@ public class ClassificationApisHolder {
         apiClient.setBearerToken(bearerTokenHolder::get);
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
-        if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("CLASSIFICATION"));
-        }
+        restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "CLASSIFICATION", clientConfig.isPrintBodyWhenError(),
+                ClassificationErrorDTO.class, ClassificationErrorDTO::getCode, ClassificationErrorDTO::getMessage)
+        );
 
         this.classificationSearchControllerApi = new ClassificationSearchControllerApi(apiClient);
-        this.classificationEntityControllerApi = new ClassificationEntityControllerApi(apiClient);
         this.classificationEntityExtendedControllerApi = new ClassificationEntityExtendedControllerApi(apiClient);
 
         this.paymentsReportingSearchControllerApi = new PaymentsReportingSearchControllerApi(apiClient);
@@ -98,9 +99,6 @@ public class ClassificationApisHolder {
         return getApi(accessToken, classificationSearchControllerApi);
     }
 
-    public ClassificationEntityControllerApi getClassificationEntityControllerApi(String accessToken){
-        return getApi(accessToken, classificationEntityControllerApi);
-    }
     public ClassificationEntityExtendedControllerApi getClassificationEntityExtendedControllerApi(String accessToken){
         return getApi(accessToken, classificationEntityExtendedControllerApi);
     }

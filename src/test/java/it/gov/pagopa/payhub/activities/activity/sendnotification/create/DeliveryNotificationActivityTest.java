@@ -1,18 +1,19 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification.create;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeConflictException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationConflictException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DeliveryNotificationActivityTest {
@@ -31,20 +32,14 @@ class DeliveryNotificationActivityTest {
     void whenDeliveryNotificationThenVoid() {
         deliveryNotificationActivity.deliverySendNotification("sendNotificationId");
 
-        Mockito.verify(sendServiceMock).deliveryNotification("sendNotificationId");
+        verify(sendServiceMock).deliveryNotification("sendNotificationId");
     }
     @Test
     void whenDeliveryNotificationThenThrowSendNotificationConflictException() {
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.doThrow(HttpClientErrorException.Conflict.create(
-                "Conflict",
-                HttpStatus.CONFLICT,
-                "409 Conflict",
-                null,
-                null,
-                null
-        )).when(sendServiceMock).deliveryNotification(sendNotificationId);
+        doThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", "ERRORCODE", "ERRORMESSAGE", null))
+                .when(sendServiceMock).deliveryNotification(sendNotificationId);
 
         SendNotificationConflictException exception = assertThrows(
                 SendNotificationConflictException.class,
@@ -55,7 +50,7 @@ class DeliveryNotificationActivityTest {
                 "Conflict error while deliverySendNotification for sendNotificationId " + sendNotificationId,
                 exception.getMessage()
         );
-        Mockito.verify(sendServiceMock).deliveryNotification(sendNotificationId);
+        verify(sendServiceMock).deliveryNotification(sendNotificationId);
     }
 
 }

@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileEntityExtendedControllerApi;
 import it.gov.pagopa.pu.processexecutions.client.generated.IngestionFlowFileSearchControllerApi;
@@ -17,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.*;
 import java.util.List;
@@ -87,7 +87,7 @@ class IngestionFlowFileClientTest {
         when(processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityControllerApiMock);
         when(ingestionFlowFileEntityControllerApiMock.crudGetIngestionflowfile(ingestionFlowFileIdString))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         IngestionFlowFile result = ingestionFlowFileClient.findById(ingestionFlowFileId, accessToken);
@@ -175,7 +175,7 @@ class IngestionFlowFileClientTest {
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
         when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, ingestionFlowFileUpdateStatusRequestDTO))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, ingestionFlowFileResult, accessToken);
@@ -189,14 +189,14 @@ class IngestionFlowFileClientTest {
         // Given
         Long organizationId = 1L;
         IngestionFlowFileTypeEnum flowFileType = IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
-        OffsetDateTime creationDate = OffsetDateTime.of(LocalDateTime.of(LocalDate.of(2025,1,1), LocalTime.MIDNIGHT), ZoneOffset.UTC);
-        LocalDateTime exptectedCreationDateFrom = LocalDateTime.of(LocalDate.of(2025,1,1), LocalTime.of(1,0));
+        OffsetDateTime creationDate = OffsetDateTime.of(LocalDateTime.of(LocalDate.of(2025, Month.JANUARY,1), LocalTime.MIDNIGHT), ZoneOffset.UTC);
+        LocalDateTime expectedCreationDateFrom = LocalDateTime.of(LocalDate.of(2025, Month.JANUARY,1), LocalTime.of(1,0));
         String accessToken = "accessToken";
 
         PagedModelIngestionFlowFile expectedResponse = new PagedModelIngestionFlowFile();
         when(processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileSearchControllerApiMock);
-        when(ingestionFlowFileSearchControllerApiMock.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, List.of(flowFileType.getValue()), exptectedCreationDateFrom, null, null, null, null, null, null, null))
+        when(ingestionFlowFileSearchControllerApiMock.crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(organizationId, List.of(flowFileType.getValue()), expectedCreationDateFrom, null, null, null, null, null, null, null))
                 .thenReturn(expectedResponse);
 
         // When
@@ -281,7 +281,7 @@ class IngestionFlowFileClientTest {
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
         when(ingestionFlowFileEntityExtendedControllerApiMock.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         Integer result = ingestionFlowFileClient.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId, accessToken);

@@ -1,16 +1,16 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpd;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.GpdService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeInstallmentGpdActivityTest {
@@ -31,7 +31,7 @@ class SynchronizeInstallmentGpdActivityTest {
         String iupdPagoPa = "IUPDPAGOPA";
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-        Mockito.when(gpdServiceMock.syncInstallmentGpd(iud, debtPositionDTO))
+        when(gpdServiceMock.syncInstallmentGpd(iud, debtPositionDTO))
                 .thenReturn(iupdPagoPa);
 
         String result = activity.synchronizeInstallmentGpd(debtPositionDTO, iud);

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg
 
 import it.gov.pagopa.payhub.activities.connector.organization.OrgSilServiceService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrgRequestBody;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrgRequestBody;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilService;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
 import org.springframework.stereotype.Service;

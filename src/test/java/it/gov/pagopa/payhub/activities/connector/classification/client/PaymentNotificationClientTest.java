@@ -1,11 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.classification.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.classification.client.generated.PaymentNotificationApi;
 import it.gov.pagopa.pu.classification.client.generated.PaymentNotificationNoPiiSearchControllerApi;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationDTO;
@@ -17,7 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentNotificationClientTest {
@@ -94,8 +92,7 @@ class PaymentNotificationClientTest {
         when(classificationApisHolderMock.getPaymentNotificationNoPiiSearchControllerApi(accessToken))
             .thenReturn(paymentNotificationNoPiiSearchControllerApi);
         when(paymentNotificationNoPiiSearchControllerApi.crudPaymentNotificationGetByOrganizationIdAndIud(organizationId, iud))
-            .thenThrow(
-                HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         PaymentNotificationNoPII result = paymentNotificationClient.getByOrgIdAndIud(organizationId, iud, accessToken);

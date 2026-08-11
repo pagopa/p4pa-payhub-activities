@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
-import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

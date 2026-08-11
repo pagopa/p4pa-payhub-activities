@@ -3,14 +3,14 @@ package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.util.PageUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class DebtPositionClient {
     public DebtPositionDTO getDebtPosition(String accessToken, Long debtPositionId) {
         try {
             return debtPositionApisHolder.getDebtPositionApi(accessToken).getDebtPosition(debtPositionId);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("Cannot find DebtPosition having id: {}", debtPositionId);
             return null;
         }
@@ -64,7 +64,7 @@ public class DebtPositionClient {
         try {
             return debtPositionApisHolder.getDebtPositionSearchControllerApi(accessToken)
                 .crudDebtPositionsFindByInstallmentId(installmentId);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             log.info("Cannot find DebtPosition having installmentId: {}", installmentId);
             return null;
         }

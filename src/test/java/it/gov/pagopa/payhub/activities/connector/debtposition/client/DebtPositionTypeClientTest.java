@@ -1,11 +1,11 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeEntityControllerApi;
-import it.gov.pagopa.pu.debtposition.client.generated.DebtPositionTypeSearchControllerApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
+import it.gov.pagopa.pu.debtpositions.client.generated.DebtPositionTypeEntityControllerApi;
+import it.gov.pagopa.pu.debtpositions.client.generated.DebtPositionTypeSearchControllerApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelDebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeRequestBody;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeClientTest {
@@ -46,9 +48,9 @@ class DebtPositionTypeClientTest {
         DebtPositionType expectedDebtPositionType = new DebtPositionType();
         DebtPositionTypeRequestBody requestBody = new DebtPositionTypeRequestBody();
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeEntityControllerApi(accessToken))
+        when(debtPositionApisHolderMock.getDebtPositionTypeEntityControllerApi(accessToken))
             .thenReturn(debtPositionTypeEntityControllerApiMock);
-        Mockito.when(debtPositionTypeEntityControllerApiMock.crudCreateDebtpositiontype(requestBody))
+        when(debtPositionTypeEntityControllerApiMock.crudCreateDebtpositiontype(requestBody))
             .thenReturn(expectedDebtPositionType);
 
         // When
@@ -71,9 +73,9 @@ class DebtPositionTypeClientTest {
         String taxonomyCode = "taxonomyCode";
         CollectionModelDebtPositionType expectedResult = new CollectionModelDebtPositionType();
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
+        when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
             .thenReturn(debtPositionTypeSearchControllerApiMock);
-        Mockito.when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByMainFields(
+        when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByMainFields(
                 code, brokerId, orgType, macroArea, serviceType, collectingReason, taxonomyCode))
             .thenReturn(expectedResult);
 
@@ -94,9 +96,9 @@ class DebtPositionTypeClientTest {
 
         CollectionModelDebtPositionType expectedResult = new CollectionModelDebtPositionType();
 
-        Mockito.when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
+        when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
             .thenReturn(debtPositionTypeSearchControllerApiMock);
-        Mockito.when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByBrokerIdAndCode(
+        when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByBrokerIdAndCode(
                         brokerId, code))
             .thenReturn(expectedResult);
 

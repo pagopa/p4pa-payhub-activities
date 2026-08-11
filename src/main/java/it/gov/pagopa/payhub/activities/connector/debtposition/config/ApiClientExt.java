@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.config;
 
-import it.gov.pagopa.pu.debtposition.generated.ApiClient;
+import it.gov.pagopa.pu.debtpositions.generated.ApiClient;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;

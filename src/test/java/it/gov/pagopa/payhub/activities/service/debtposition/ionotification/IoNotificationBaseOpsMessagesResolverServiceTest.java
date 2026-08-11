@@ -3,9 +3,9 @@ package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOrgService;
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.IONotificationDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +19,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class IoNotificationBaseOpsMessagesResolverServiceTest {
@@ -95,7 +97,7 @@ class IoNotificationBaseOpsMessagesResolverServiceTest {
         IONotificationMessage expectedIoMessage = paymentEventType2IONotificationMessage.get(paymentEventType);
         IONotificationDTO expectedResult = null;
         if(expectedIoMessage!=null) {
-            Mockito.when(debtPositionTypeOrgServiceMock.getById(debtPositionTypeOrgId))
+            when(debtPositionTypeOrgServiceMock.getById(debtPositionTypeOrgId))
                     .thenReturn(debtPositionTypeOrg);
 
             expectedResult = IONotificationDTO.builder()

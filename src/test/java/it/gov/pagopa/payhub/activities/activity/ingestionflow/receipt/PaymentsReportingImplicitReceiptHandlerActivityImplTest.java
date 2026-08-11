@@ -11,9 +11,9 @@ import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.payhub.activities.util.faker.OrganizationFaker;
 import it.gov.pagopa.payhub.activities.util.faker.PaymentsReportingFaker;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDebtorDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDebtorDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,7 +66,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 
         InstallmentDebtorDTO installmentDebtorDTO = mock(InstallmentDebtorDTO.class);
         installmentDebtorDTO.setIuv(paymentsReportingFake.getIuv());
-        installmentDebtorDTO.setOrganizationId(organizationFake.getOrganizationId());
+        installmentDebtorDTO.setOrganizationId(Objects.requireNonNull(organizationFake.getOrganizationId()));
 
         when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId(),  DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST)).thenReturn(List.of(installmentDebtorDTO));
 		when(paymentsReportingServiceMock.getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);
@@ -94,7 +95,7 @@ class PaymentsReportingImplicitReceiptHandlerActivityImplTest {
 
 		InstallmentDebtorDTO installmentDebtorDTO = mock(InstallmentDebtorDTO.class);
 		installmentDebtorDTO.setIuv(paymentsReportingFake.getIuv());
-		installmentDebtorDTO.setOrganizationId(organizationFake.getOrganizationId());
+		installmentDebtorDTO.setOrganizationId(Objects.requireNonNull(organizationFake.getOrganizationId()));
 
 		when(installmentServiceMock.findByIuvOrNav(paymentsReportingFake.getIuv(), null, organizationFake.getOrganizationId(),  DebtPositionUtilities.UNPAID_OR_PAID_INSTALLMENT_STATUSES_LIST)).thenReturn(List.of(installmentDebtorDTO));
 		when(paymentsReportingServiceMock.getByTransferSemanticKeyIncludedDeleted(paymentsReportingTransferDTO)).thenReturn(paymentsReportingFake);

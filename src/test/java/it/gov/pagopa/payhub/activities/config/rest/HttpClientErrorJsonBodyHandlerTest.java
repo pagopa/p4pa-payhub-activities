@@ -35,6 +35,7 @@ class HttpClientErrorJsonBodyHandlerTest {
 
   private final URI url = new URI("http://www.sample.com");
   private final PuErrorDTO expectedErrorDTO = new PuErrorDTO("BADREQUEST", "BADREQUEST", "MESSAGE", List.of(new PuErrorDTO.ErrorFieldDTO("FIELD", "FIELDERRORCODE", "FIELDERRORMESSAGE")));
+  private final byte[] expectedErrorBytes = jsonMapper.writeValueAsBytes(expectedErrorDTO);
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
@@ -59,34 +60,25 @@ class HttpClientErrorJsonBodyHandlerTest {
     try (MockClientHttpResponse response = new MockClientHttpResponse(new byte[0], HttpStatus.BAD_REQUEST)) {
 
       // When
-      HttpClientErrorException.BadRequest result = Assertions.assertThrows(HttpClientErrorException.BadRequest.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
+      RestInvokeInvalidValueException result = Assertions.assertThrows(RestInvokeInvalidValueException.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
 
       // Then
+      Assertions.assertEquals(HttpStatus.BAD_REQUEST, result.getHttpStatus());
+      Assertions.assertEquals("APPNAME", result.getApplicationName());
+      Assertions.assertNull(result.getCategory());
+      Assertions.assertEquals("APPNAME_BAD_REQUEST", result.getCode());
       Assertions.assertEquals("400 Bad Request on GET request for \"http://www.sample.com\": [no body]", result.getMessage());
+      Assertions.assertNull(result.getFields());
     }
   }
 
-  @ParameterizedTest
-  @ValueSource(booleans = {true, false})
-  void testNotFoundException(boolean bodyPrinterWhenError) {
-    // Given
-    HttpClientErrorJsonBodyHandler<PuErrorDTO> httpClientHandler = buildHttpClientErrorHandler(bodyPrinterWhenError);
-    try (MockClientHttpResponse response = new MockClientHttpResponse(new byte[0], HttpStatus.NOT_FOUND)) {
-
-      // When
-      HttpClientErrorException.NotFound result = Assertions.assertThrows(HttpClientErrorException.NotFound.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
-
-      // Then
-      Assertions.assertEquals("404 Not Found on GET request for \"http://www.sample.com\": [no body]", result.getMessage());
-    }
-  }
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void testBodyException(boolean bodyPrinterWhenError) {
     // Given
     HttpClientErrorJsonBodyHandler<PuErrorDTO> httpClientHandler = buildHttpClientErrorHandler(bodyPrinterWhenError);
-    try (MockClientHttpResponse response = new MockClientHttpResponse(jsonMapper.writeValueAsBytes(expectedErrorDTO), HttpStatus.BAD_REQUEST)) {
+    try (MockClientHttpResponse response = new MockClientHttpResponse(expectedErrorBytes, HttpStatus.BAD_REQUEST)) {
 
       // When
       RestInvokeInvalidValueException result = Assertions.assertThrows(RestInvokeInvalidValueException.class, () -> httpClientHandler.handleError(url, HttpMethod.GET, response));
@@ -119,7 +111,8 @@ class HttpClientErrorJsonBodyHandlerTest {
   private final Map<HttpStatus, Class<? extends BaseBusinessException>> httpStatus2ExpectedException = Map.of(
     HttpStatus.CONFLICT, RestInvokeConflictException.class,
     HttpStatus.FORBIDDEN, RestInvokeForbiddenException.class,
-    HttpStatus.UNAUTHORIZED, RestInvokeNotAuthorizedException.class
+    HttpStatus.UNAUTHORIZED, RestInvokeNotAuthorizedException.class,
+    HttpStatus.NOT_FOUND, RestInvokeNotFoundException.class
   );
 
   @Test

@@ -2,9 +2,9 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.email;
 
 import it.gov.pagopa.payhub.activities.config.EmailTemplatesConfiguration;
 import it.gov.pagopa.payhub.activities.dto.email.EmailTemplate;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.mockito.Mockito.mock;
+
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagoPaEmailConfigurerServiceTest {
 
@@ -26,7 +28,7 @@ class ReceiptPagoPaEmailConfigurerServiceTest {
 
   @BeforeEach
   void init(TestInfo info) {
-    EmailTemplatesConfiguration emailTemplatesConfigurationMock = Mockito.mock(EmailTemplatesConfiguration.class);
+    EmailTemplatesConfiguration emailTemplatesConfigurationMock = mock(EmailTemplatesConfiguration.class);
     if(info.getTags().contains("needEmailTemplate")) {
       Mockito.lenient().when(emailTemplatesConfigurationMock.getReceivedPagopaReceipt()).thenReturn(
         EmailTemplate.builder()

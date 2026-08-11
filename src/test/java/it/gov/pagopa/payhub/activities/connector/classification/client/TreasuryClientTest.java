@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.classification.client;
 
 import it.gov.pagopa.payhub.activities.connector.classification.config.ClassificationApisHolder;
 import it.gov.pagopa.payhub.activities.connector.classification.mapper.TreasuryRequestMapper;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityControllerApi;
 import it.gov.pagopa.pu.classification.client.generated.TreasuryEntityExtendedControllerApi;
@@ -17,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -71,7 +71,7 @@ class TreasuryClientTest {
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         Treasury result = treasuryClient.findByOrganizationIdAndIuf(organizationId, iuf, accessToken);
@@ -115,7 +115,7 @@ class TreasuryClientTest {
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);

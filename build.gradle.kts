@@ -328,11 +328,11 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/p4pa-workflow-hub.openapi.yaml")
     outputDir.set("$projectDir/build/generated")
     invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
-    apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")
+    apiPackage.set("it.gov.pagopa.pu.workflowhub.client.generated")
     modelPackage.set("it.gov.pagopa.pu.workflowhub.dto.generated")
     typeMappings.set(
         mapOf(
-            "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+            "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
             "IngestionFlowFileType" to "String",
             "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
             "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
@@ -371,7 +371,7 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
     outputDir.set("$projectDir/build/generated")
     invokerPackage.set("it.gov.pagopa.pu.auth.generated")
-    apiPackage.set("it.gov.pagopa.pu.auth.controller.generated")
+    apiPackage.set("it.gov.pagopa.pu.auth.client.generated")
     modelPackage.set("it.gov.pagopa.pu.auth.dto.generated")
     configOptions.set(
         mapOf(
@@ -472,9 +472,9 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/develop/openapi/generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
-    apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
-    modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+    invokerPackage.set("it.gov.pagopa.pu.debtpositions.generated")
+    apiPackage.set("it.gov.pagopa.pu.debtpositions.client.generated")
+    modelPackage.set("it.gov.pagopa.pu.debtpositions.dto.generated")
     typeMappings.set(
         mapOf(
             "LocalDateTime" to "java.time.LocalDateTime",
@@ -524,9 +524,9 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
     modelPackage.set("it.gov.pagopa.pu.classification.dto.generated")
     typeMappings.set(
         mapOf(
-            "DebtPositionOrigin" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin",
-            "ReceiptOriginType" to "it.gov.pagopa.pu.debtposition.dto.generated.ReceiptOriginType",
-            "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+            "DebtPositionOrigin" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin",
+            "ReceiptOriginType" to "it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptOriginType",
+            "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
             "LocalDateTime" to "java.time.LocalDateTime"
         )
     )
@@ -566,7 +566,7 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
     modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
     typeMappings.set(
         mapOf(
-            "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+            "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
             "NoticeGenerationMassiveResourceDTO" to "String"
         )
     )
@@ -644,7 +644,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-send-notification/refs/heads/develop/openapi/generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    apiPackage.set("it.gov.pagopa.pu.sendnotification.controller.generated")
+    invokerPackage.set("it.gov.pagopa.pu.sendnotification.generated")
+    apiPackage.set("it.gov.pagopa.pu.sendnotification.client.generated")
     modelPackage.set("it.gov.pagopa.pu.sendnotification.dto.generated")
     configOptions.set(
         mapOf(
@@ -677,11 +678,12 @@ tasks.register<GenerateTask>("openApiGeneratePUSIL") {
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-pu-sil/refs/heads/develop/openapi/generated-internal.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    apiPackage.set("it.gov.pagopa.pu.pusil.controller.generated")
+    invokerPackage.set("it.gov.pagopa.pu.pusil.generated")
+    apiPackage.set("it.gov.pagopa.pu.pusil.client.generated")
     modelPackage.set("it.gov.pagopa.pu.pusil.dto.generated")
     importMappings.set(
         mapOf(
-            "InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO"
+            "InstallmentDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO"
         )
     )
     configOptions.set(

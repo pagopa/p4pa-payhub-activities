@@ -9,7 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDe
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
 import it.gov.pagopa.payhub.activities.service.exportflow.debtposition.IUVArchivingExportFileService;
 import it.gov.pagopa.payhub.activities.service.pagopapayments.GenerateNoticeService;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.WorkflowStatusDTO;
