@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.config;
 
 import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.payhub.activities.connector.sendnotification.mapper.SendNotificationErrorDTOMapper;
 import it.gov.pagopa.pu.sendnotification.generated.ApiClient;
 import it.gov.pagopa.pu.sendnotification.generated.BaseApi;
 import it.gov.pagopa.pu.sendnotification.client.generated.CampaignApi;
@@ -39,7 +40,7 @@ public class SendApisHolder {
         ApiClient apiClient = buildApiClient();
 
         restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "SEND-NOTIFICATION", clientConfig.isPrintBodyWhenError(),
-                SendNotificationErrorDTO.class, SendNotificationErrorDTO::getCode, SendNotificationErrorDTO::getMessage)
+                SendNotificationErrorDTO.class, SendNotificationErrorDTOMapper::map)
         );
 
         this.sendApi = new SendApi(apiClient);

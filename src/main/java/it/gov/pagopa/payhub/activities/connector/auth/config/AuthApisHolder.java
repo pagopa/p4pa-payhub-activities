@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.auth.config;
 
 import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.payhub.activities.connector.auth.mapper.AuthErrorDTOMapper;
 import it.gov.pagopa.pu.auth.client.generated.AuthnApi;
 import it.gov.pagopa.pu.auth.client.generated.AuthzApi;
 import it.gov.pagopa.pu.auth.dto.generated.AuthErrorDTO;
@@ -34,7 +35,7 @@ public class AuthApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "AUTH", clientConfig.isPrintBodyWhenError(),
-                AuthErrorDTO.class, AuthErrorDTO::getCode, AuthErrorDTO::getErrorDescription)
+                AuthErrorDTO.class, AuthErrorDTOMapper::map)
         );
 
         this.authnApi = new AuthnApi(apiClient);
