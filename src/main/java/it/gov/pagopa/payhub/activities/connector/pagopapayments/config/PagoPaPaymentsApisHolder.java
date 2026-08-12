@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
 import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.payhub.activities.connector.pagopapayments.mapper.PagoPaPaymentsErrorDTOMapper;
 import it.gov.pagopa.pu.pagopapayments.client.generated.AcaApi;
 import it.gov.pagopa.pu.pagopapayments.client.generated.GpdApi;
 import it.gov.pagopa.pu.pagopapayments.client.generated.PaymentsReportingApi;
@@ -37,7 +38,7 @@ public class PagoPaPaymentsApisHolder {
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
 
         restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "PAGOPA-PAYMENTS", clientConfig.isPrintBodyWhenError(),
-                PagoPaPaymentsErrorDTO.class, PagoPaPaymentsErrorDTO::getCode, PagoPaPaymentsErrorDTO::getMessage));
+                PagoPaPaymentsErrorDTO.class, PagoPaPaymentsErrorDTOMapper::map));
 
         this.acaApi = new AcaApi(apiClient);
         this.paymentsReportingApi = new PaymentsReportingApi(apiClient);

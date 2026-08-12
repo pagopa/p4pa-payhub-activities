@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.config;
 
 import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.IoNotificationErrorDTOMapper;
 import it.gov.pagopa.pu.ionotification.client.generated.IoNotificationApi;
 import it.gov.pagopa.pu.ionotification.dto.generated.IoNotificationErrorDTO;
 import it.gov.pagopa.pu.ionotification.generated.ApiClient;
@@ -32,7 +33,7 @@ public class IoNotificationApisHolder {
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
         restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "IO-NOTIFICATION", clientConfig.isPrintBodyWhenError(),
-                IoNotificationErrorDTO.class, IoNotificationErrorDTO::getCode, IoNotificationErrorDTO::getMessage)
+                IoNotificationErrorDTO.class, IoNotificationErrorDTOMapper::map)
         );
 
         this.ioNotificationApi = new IoNotificationApi(apiClient);
