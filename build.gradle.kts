@@ -41,8 +41,8 @@ licenseReport {
     outputDir = "$projectDir/dependency-licenses"
     filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
-tasks.classes {
-    finalizedBy(tasks.generateLicenseReport)
+tasks.dependencies {
+  finalizedBy(tasks.generateLicenseReport)
 }
 
 repositories {
@@ -88,7 +88,7 @@ val commonsTextVersion = "1.15.0"
 val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "4.0.5"
-val jsoupVersion = "1.22.2"
+val jsoupVersion = "1.23.1"
 val openApiToolsVersion = "0.2.10"
 val temporalVersion = "1.35.0"
 val protobufJavaVersion = "4.35.1"
@@ -97,8 +97,8 @@ val guavaVersion = "33.6.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
-val httpClientVersion = "5.6.1"
-val httpCoreVersion = "5.4.2"
+val httpClientVersion = "5.6.4"
+val httpCoreVersion = "5.4.3"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
@@ -116,6 +116,7 @@ dependencies {
     implementation("commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
+    implementation("org.apache.httpcomponents.core5:httpcore5-h2:$httpCoreVersion")
     implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
     // openApi
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
