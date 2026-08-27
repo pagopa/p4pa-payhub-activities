@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.CampaignClient;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +32,42 @@ class CampaignServiceTest {
     @AfterEach
     void verifyNoMoreInteractions() {
         Mockito.verifyNoMoreInteractions(campaignClientMock, authnServiceMock);
+    }
+
+    @Test
+    void whenFindLatestFullRecalculationDateThenOk() {
+        //GIVEN
+        String accessToken = "accessToken";
+        OffsetDateTime expectedLatestFullRecalculationDate = OffsetDateTime.now(Utilities.ZONEID);
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(campaignClientMock.findLatestFullRecalculationDate(Mockito.eq(accessToken)))
+                .thenReturn(expectedLatestFullRecalculationDate);
+        //WHEN
+        OffsetDateTime actualLatestFullRecalculationDate = campaignService.findLatestFullRecalculationDate();
+        //THEN
+        Assertions.assertEquals(expectedLatestFullRecalculationDate, actualLatestFullRecalculationDate);
+    }
+
+    @Test
+    void whenFindIdsOfUpdatedCampaignsByNotificationUpdateDateThenOk() {
+        //GIVEN
+        String accessToken = "accessToken";
+        List<String> expectedCampaignIds = List.of("campaignId");
+
+        Mockito.when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.when(
+                campaignClientMock.findIdsOfUpdatedCampaignsByNotificationUpdateDate(
+                        Mockito.any(OffsetDateTime.class),
+                        Mockito.eq(accessToken)
+                )
+        ).thenReturn(expectedCampaignIds);
+        //WHEN
+        List<String> actualCampaignIds = campaignService.findIdsOfUpdatedCampaignsByNotificationUpdateDate(OffsetDateTime.now(Utilities.ZONEID));
+        //THEN
+        Assertions.assertEquals(expectedCampaignIds, actualCampaignIds);
     }
 
     @Test
