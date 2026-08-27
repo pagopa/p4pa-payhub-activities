@@ -15,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class CampaignServiceTest {
     @Mock
@@ -40,9 +42,9 @@ class CampaignServiceTest {
         String accessToken = "accessToken";
         OffsetDateTime expectedLatestFullRecalculationDate = OffsetDateTime.now(Utilities.ZONEID);
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(campaignClientMock.findLatestFullRecalculationDate(Mockito.eq(accessToken)))
+        when(campaignClientMock.findLatestFullRecalculationDate(accessToken))
                 .thenReturn(expectedLatestFullRecalculationDate);
         //WHEN
         OffsetDateTime actualLatestFullRecalculationDate = campaignService.findLatestFullRecalculationDate();
@@ -56,9 +58,9 @@ class CampaignServiceTest {
         String accessToken = "accessToken";
         List<String> expectedCampaignIds = List.of("campaignId");
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(
+        when(
                 campaignClientMock.findIdsOfUpdatedCampaignsByNotificationUpdateDate(
                         Mockito.any(OffsetDateTime.class),
                         Mockito.eq(accessToken)
@@ -75,8 +77,8 @@ class CampaignServiceTest {
         String accessToken = "accessToken";
         List<String> campaignIds = List.of("campaignId");
 
-        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.when(campaignClientMock.fetchAllCampaignIds(accessToken)).thenReturn(campaignIds);
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(campaignClientMock.fetchAllCampaignIds(accessToken)).thenReturn(campaignIds);
 
         List<String> actualCampaignIds = campaignService.fetchAllCampaignIds();
 
@@ -88,7 +90,7 @@ class CampaignServiceTest {
         String accessToken = "accessToken";
         String campaignId = "campaignId";
 
-        Mockito.when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
         Mockito.doNothing().when(campaignClientMock).alignCampaign(campaignId, accessToken);
 
         Assertions.assertDoesNotThrow(() -> campaignService.alignCampaign(campaignId));

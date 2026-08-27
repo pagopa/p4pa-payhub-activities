@@ -14,9 +14,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class FetchUpdatedSendCampaignsActivityTest {
+class FetchUpdatedSendCampaignsActivityTest {
     @Mock
     private CampaignService campaignServiceMock;
 
@@ -37,8 +38,8 @@ public class FetchUpdatedSendCampaignsActivityTest {
         //GIVEN
         List<String> expectedCampaignIds = List.of("campaignId1", "campaignId2");
         OffsetDateTime latestFullRecalculationDate = OffsetDateTime.now(Utilities.ZONEID);
-        Mockito.when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(latestFullRecalculationDate);
-        Mockito.when(campaignServiceMock.findIdsOfUpdatedCampaignsByNotificationUpdateDate(Mockito.any(OffsetDateTime.class))).thenReturn(expectedCampaignIds);
+        when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(latestFullRecalculationDate);
+        when(campaignServiceMock.findIdsOfUpdatedCampaignsByNotificationUpdateDate(Mockito.any(OffsetDateTime.class))).thenReturn(expectedCampaignIds);
         //WHEN
         List<String> actualCampaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns();
         //THEN
@@ -49,8 +50,8 @@ public class FetchUpdatedSendCampaignsActivityTest {
     void givenNoLatestFullRecalculationDateWhenFetchIdsForUpdatedSendCampaignsThenReturnFilteredId() {
         //GIVEN
         List<String> expectedCampaignIds = List.of("campaignId1", "campaignId2", "campaignId3");
-        Mockito.when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(null);
-        Mockito.when(campaignServiceMock.fetchAllCampaignIds()).thenReturn(expectedCampaignIds);
+        when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(null);
+        when(campaignServiceMock.fetchAllCampaignIds()).thenReturn(expectedCampaignIds);
         //WHEN
         List<String> actualCampaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns();
         //THEN
