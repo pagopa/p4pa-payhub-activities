@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Lazy
@@ -23,5 +24,13 @@ public class CampaignClient {
 
     public void alignCampaign(String campaignId, String accessToken) {
         sendApisHolder.getCampaignApi(accessToken).alignCampaign(campaignId);
+    }
+
+    public OffsetDateTime findLatestFullRecalculationDate(String accessToken) {
+        return sendApisHolder.getCampaignApi(accessToken).findLatestFullRecalculationDate();
+    }
+
+    public List<String> findIdsOfUpdatedCampaignsByNotificationUpdateDate(OffsetDateTime latestFullRecalculationDate, String accessToken) {
+        return sendApisHolder.getCampaignApi(accessToken).findIdsOfUpdatedCampaignsByNotificationUpdateDate(latestFullRecalculationDate);
     }
 }
