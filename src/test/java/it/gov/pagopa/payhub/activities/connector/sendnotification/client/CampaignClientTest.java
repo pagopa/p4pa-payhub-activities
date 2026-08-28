@@ -53,11 +53,12 @@ class CampaignClientTest {
     void whenAlignCampaignThenInvokeWithAccessToken() {
         String accessToken = "accessToken";
         String campaignId = "campaignId";
+        OffsetDateTime countersRecalculationDate = OffsetDateTime.now(Utilities.ZONEID);
 
         when(sendApisHolderMock.getCampaignApi(accessToken)).thenReturn(campaignApiMock);
-        Mockito.doNothing().when(campaignApiMock).alignCampaign(campaignId);
+        Mockito.doNothing().when(campaignApiMock).alignCampaign(campaignId, countersRecalculationDate);
 
-        Assertions.assertDoesNotThrow(() -> campaignClient.alignCampaign(campaignId, accessToken));
+        Assertions.assertDoesNotThrow(() -> campaignClient.alignCampaign(campaignId, countersRecalculationDate, accessToken));
     }
 
     @Test

@@ -89,10 +89,11 @@ class CampaignServiceTest {
     void whenAlignCampaignThenOk() {
         String accessToken = "accessToken";
         String campaignId = "campaignId";
+        OffsetDateTime countersRecalculationDate = OffsetDateTime.now(Utilities.ZONEID);
 
         when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
-        Mockito.doNothing().when(campaignClientMock).alignCampaign(campaignId, accessToken);
+        Mockito.doNothing().when(campaignClientMock).alignCampaign(campaignId, countersRecalculationDate, accessToken);
 
-        Assertions.assertDoesNotThrow(() -> campaignService.alignCampaign(campaignId));
+        Assertions.assertDoesNotThrow(() -> campaignService.alignCampaign(campaignId, countersRecalculationDate));
     }
 }
