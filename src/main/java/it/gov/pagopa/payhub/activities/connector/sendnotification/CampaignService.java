@@ -7,5 +7,5 @@ public interface CampaignService {
     List<String> fetchAllCampaignIds();
     OffsetDateTime findLatestFullRecalculationDate();
     List<String> findIdsOfUpdatedCampaignsByNotificationUpdateDate(OffsetDateTime fullRecalculationDate);
-    void alignCampaign(String campaignId);
+    void alignCampaign(String campaignId, OffsetDateTime countersRecalculationDate);
 }

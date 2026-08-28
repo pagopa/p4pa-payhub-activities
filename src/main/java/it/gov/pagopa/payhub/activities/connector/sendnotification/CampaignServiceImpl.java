@@ -38,7 +38,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public void alignCampaign(String campaignId) {
-        campaignClient.alignCampaign(campaignId, authnService.getAccessToken());
+    public void alignCampaign(String campaignId, OffsetDateTime countersRecalculationDate) {
+        campaignClient.alignCampaign(campaignId, countersRecalculationDate, authnService.getAccessToken());
     }
 }

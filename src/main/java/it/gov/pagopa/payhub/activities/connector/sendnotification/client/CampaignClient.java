@@ -22,8 +22,8 @@ public class CampaignClient {
         return sendApisHolder.getCampaignApi(accessToken).fetchAllCampaignIds();
     }
 
-    public void alignCampaign(String campaignId, String accessToken) {
-        sendApisHolder.getCampaignApi(accessToken).alignCampaign(campaignId);
+    public void alignCampaign(String campaignId, OffsetDateTime countersRecalculationDate, String accessToken) {
+        sendApisHolder.getCampaignApi(accessToken).alignCampaign(campaignId, countersRecalculationDate);
     }
 
     public OffsetDateTime findLatestFullRecalculationDate(String accessToken) {
