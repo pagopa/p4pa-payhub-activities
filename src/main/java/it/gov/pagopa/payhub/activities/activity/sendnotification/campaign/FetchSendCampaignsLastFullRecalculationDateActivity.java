@@ -4,10 +4,10 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 @ActivityInterface
-public interface FetchUpdatedSendCampaignsActivity {
+public interface FetchSendCampaignsLastFullRecalculationDateActivity {
     @ActivityMethod
-    List<String> fetchIdsForUpdatedSendCampaigns(OffsetDateTime latestFullRecalculationDate);
+    OffsetDateTime fetchSendCampaignsLastFullRecalculationDate();
 }
+

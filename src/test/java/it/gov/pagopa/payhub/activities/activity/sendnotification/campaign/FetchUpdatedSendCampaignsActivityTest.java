@@ -38,22 +38,9 @@ class FetchUpdatedSendCampaignsActivityTest {
         //GIVEN
         List<String> expectedCampaignIds = List.of("campaignId1", "campaignId2");
         OffsetDateTime latestFullRecalculationDate = OffsetDateTime.now(Utilities.ZONEID);
-        when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(latestFullRecalculationDate);
-        when(campaignServiceMock.findIdsOfUpdatedCampaignsByNotificationUpdateDate(Mockito.any(OffsetDateTime.class))).thenReturn(expectedCampaignIds);
+        when(campaignServiceMock.findIdsOfUpdatedCampaignsByNotificationUpdateDate(latestFullRecalculationDate)).thenReturn(expectedCampaignIds);
         //WHEN
-        List<String> actualCampaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns();
-        //THEN
-        assertEquals(expectedCampaignIds, actualCampaignIds);
-    }
-
-    @Test
-    void givenNoLatestFullRecalculationDateWhenFetchIdsForUpdatedSendCampaignsThenReturnFilteredId() {
-        //GIVEN
-        List<String> expectedCampaignIds = List.of("campaignId1", "campaignId2", "campaignId3");
-        when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(null);
-        when(campaignServiceMock.fetchAllCampaignIds()).thenReturn(expectedCampaignIds);
-        //WHEN
-        List<String> actualCampaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns();
+        List<String> actualCampaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns(latestFullRecalculationDate);
         //THEN
         assertEquals(expectedCampaignIds, actualCampaignIds);
     }
