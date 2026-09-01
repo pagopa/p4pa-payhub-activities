@@ -20,6 +20,8 @@ public class FetchSendCampaignsLastFullRecalculationDateActivityImpl implements 
 
     public OffsetDateTime fetchSendCampaignsLastFullRecalculationDate() {
         log.info("Fetch last full recalculation date for SEND campaigns");
-        return campaignService.findLatestFullRecalculationDate();
+        OffsetDateTime lastFullRecalculationDate = campaignService.findLatestFullRecalculationDate();
+        return (lastFullRecalculationDate != null) ?
+            lastFullRecalculationDate : campaignService.findFirstCampaignStartDate();
     }
 }
