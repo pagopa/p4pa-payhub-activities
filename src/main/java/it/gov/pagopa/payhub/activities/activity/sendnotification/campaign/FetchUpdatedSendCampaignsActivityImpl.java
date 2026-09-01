@@ -20,14 +20,9 @@ public class FetchUpdatedSendCampaignsActivityImpl implements FetchUpdatedSendCa
     }
 
     @Override
-    public List<String> fetchIdsForUpdatedSendCampaigns() {
-        log.info("Fetch ids for updated SEND campaigns");
-        OffsetDateTime latestFullRecalculationDate = campaignService.findLatestFullRecalculationDate();
-        if(latestFullRecalculationDate!=null) {
-            return campaignService.findIdsOfUpdatedCampaignsByNotificationUpdateDate(latestFullRecalculationDate);
-        } else {
-            return campaignService.fetchAllCampaignIds();
-        }
+    public List<String> fetchIdsForUpdatedSendCampaigns(OffsetDateTime latestFullRecalculationDate) {
+        log.info("Fetch ids for SEND campaigns updated after {}", latestFullRecalculationDate);
+        return campaignService.findIdsOfUpdatedCampaignsByNotificationUpdateDate(latestFullRecalculationDate);
     }
 
 }
