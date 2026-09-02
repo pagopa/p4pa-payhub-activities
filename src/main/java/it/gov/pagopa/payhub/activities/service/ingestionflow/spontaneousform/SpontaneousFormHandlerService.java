@@ -51,14 +51,14 @@ public class SpontaneousFormHandlerService {
 			return Optional.ofNullable(spontaneousFormService.matchOrSaveSpontaneousForm(newForm))
 				.map(SpontaneousForm::getSpontaneousFormId)
 				.orElse(null);
-		} catch (RestInvokeInvalidValueException | RestInvokeConflictException | JacksonException e) {
+		} catch (RestInvokeInvalidValueException | RestInvokeConflictException e) {
 			String errorMessage = "Error parsing spontaneous form JSON structure for code "+ row.getSpontaneousFormCode() + ": " + ExceptionUtils.getRootCauseMessage(e);
 			log.error(errorMessage, e);
-			switch (e) {
-				case RestInvokeInvalidValueException ex -> throw new InvalidValueException(ex.getCode(), errorMessage);
-				case RestInvokeConflictException ex -> throw new InvalidValueException(ex.getCode(), errorMessage);
-				default -> throw new InvalidValueException(errorMessage);
-			}
+			throw new InvalidValueException(e.getCode(), errorMessage);
+		} catch (JacksonException je) {
+			String errorMessage = "Error parsing spontaneous form JSON structure for code "+ row.getSpontaneousFormCode() + ": " + ExceptionUtils.getRootCauseMessage(je);
+			log.error(errorMessage, je);
+			throw new InvalidValueException(errorMessage);
 		}
 	}
 }
