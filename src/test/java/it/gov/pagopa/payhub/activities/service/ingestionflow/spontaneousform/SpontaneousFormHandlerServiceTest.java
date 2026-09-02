@@ -2,19 +2,20 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeConflictException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeInvalidValueException;
 import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
+import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -99,23 +100,69 @@ class SpontaneousFormHandlerServiceTest {
         assertNull(capturedForm.getDictionary());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"{invalid json structure"})
-    void givenMalformedJsonWhenHandleSpontaneousFormThenThrowJacksonException(String input) {
+    @Test
+    void givenMalformedJsonWhenHandleSpontaneousFormThenThrowInvalidValueException() {
 		String code = "SF_CODE_INVALID";
         Long organizationId = 100L;
 
         DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
             .spontaneousFormCode(code)
-            .spontaneousFormStructure(input)
+            .spontaneousFormStructure("{invalid json structure")
             .build();
 
-        Exception exception = assertThrows(
-            JacksonException.class,
+        InvalidValueException exception = assertThrows(
+            InvalidValueException.class,
             () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
         );
 
-        assertNotNull(exception.getMessage());
+        assertEquals("INVALID_VALUE", exception.getCode());
+        assertTrue(exception.getMessage().contains("Error parsing spontaneous form JSON structure for code " + code));
+    }
+
+    @Test
+    void givenRestInvokeInvalidValueExceptionWhenHandleSpontaneousFormThenThrowInvalidValueExceptionWithSameCode() {
+        String code = "SF_CODE_INVALID_VALUE";
+        Long organizationId = 100L;
+        String exceptionCode = "DOWNSTREAM_INVALID_VALUE";
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+            .spontaneousFormCode(code)
+            .spontaneousFormStructure("{\"fields\":[]}")
+            .build();
+
+        when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
+            .thenThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", exceptionCode, "ERRORMESSAGE", null));
+
+        InvalidValueException exception = assertThrows(
+            InvalidValueException.class,
+            () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
+        );
+
+        assertEquals(exceptionCode, exception.getCode());
+        assertTrue(exception.getMessage().contains("Error parsing spontaneous form JSON structure for code " + code));
+    }
+
+    @Test
+    void givenRestInvokeConflictExceptionWhenHandleSpontaneousFormThenThrowInvalidValueExceptionWithSameCode() {
+        String code = "SF_CODE_CONFLICT";
+        Long organizationId = 100L;
+        String exceptionCode = "DOWNSTREAM_CONFLICT";
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+            .spontaneousFormCode(code)
+            .spontaneousFormStructure("{\"fields\":[]}")
+            .build();
+
+        when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
+            .thenThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", exceptionCode, "ERRORMESSAGE", null));
+
+        InvalidValueException exception = assertThrows(
+            InvalidValueException.class,
+            () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
+        );
+
+        assertEquals(exceptionCode, exception.getCode());
+        assertTrue(exception.getMessage().contains("Error parsing spontaneous form JSON structure for code " + code));
     }
 
     @Test
