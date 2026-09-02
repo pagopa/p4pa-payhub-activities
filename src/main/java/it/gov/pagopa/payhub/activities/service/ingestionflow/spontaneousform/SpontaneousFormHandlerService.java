@@ -52,12 +52,9 @@ public class SpontaneousFormHandlerService {
 				.map(SpontaneousForm::getSpontaneousFormId)
 				.orElse(null);
 		} catch (RestInvokeInvalidValueException | RestInvokeConflictException e) {
-			String errorMessage = "Error parsing spontaneous form JSON structure for code "+ row.getSpontaneousFormCode() + ": " + ExceptionUtils.getRootCauseMessage(e);
-			log.error(errorMessage, e);
-			throw new InvalidValueException(e.getCode(), errorMessage);
+			throw new InvalidValueException(e.getCode(), e.getMessage());
 		} catch (JacksonException je) {
 			String errorMessage = "Error parsing spontaneous form JSON structure for code "+ row.getSpontaneousFormCode() + ": " + ExceptionUtils.getRootCauseMessage(je);
-			log.error(errorMessage, je);
 			throw new InvalidValueException(errorMessage);
 		}
 	}
