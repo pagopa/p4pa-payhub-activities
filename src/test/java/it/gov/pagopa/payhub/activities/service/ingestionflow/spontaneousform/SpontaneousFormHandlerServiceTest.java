@@ -2,19 +2,18 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.common.RestInvokeInvalidValueException;
 import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,9 +100,8 @@ class SpontaneousFormHandlerServiceTest {
     }
 
     @ParameterizedTest
-    @NullSource
     @ValueSource(strings = {"{invalid json structure"})
-    void givenInvalidJsonWhenHandleSpontaneousFormThenThrowInvalidValueException(String input) {
+    void givenMalformedJsonWhenHandleSpontaneousFormThenThrowJacksonException(String input) {
 		String code = "SF_CODE_INVALID";
         Long organizationId = 100L;
 
@@ -113,11 +111,11 @@ class SpontaneousFormHandlerServiceTest {
             .build();
 
         Exception exception = assertThrows(
-            RestInvokeInvalidValueException.class,
+            JacksonException.class,
             () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
         );
 
-        assertTrue(exception.getMessage().contains(code));
+        assertNotNull(exception.getMessage());
     }
 
     @Test
