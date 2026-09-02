@@ -7,14 +7,14 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     java
-    id("org.springframework.boot") version "4.1.0"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.sonarqube") version "7.3.1.8318"
+    id("org.sonarqube") version "7.4.0.8496"
     `java-library`
     `maven-publish`
     jacoco
     id("com.intershop.gradle.jaxb") version "8.0.1"
-    id("org.openapi.generator") version "7.23.0"
+    id("org.openapi.generator") version "7.25.0"
     id("com.github.jk1.dependency-license-report") version "3.1.4"
 }
 
@@ -88,12 +88,12 @@ val commonsTextVersion = "1.15.0"
 val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "4.0.5"
-val jsoupVersion = "1.23.1"
-val openApiToolsVersion = "0.2.10"
-val temporalVersion = "1.35.0"
-val protobufJavaVersion = "4.35.1"
-val grpcBomVersion = "1.82.0"
-val guavaVersion = "33.6.0-jre"
+val jsoupVersion = "1.23.2"
+val openApiToolsVersion = "0.2.11"
+val temporalVersion = "1.38.0"
+val protobufJavaVersion = "4.36.0"
+val grpcBomVersion = "1.83.1"
+val guavaVersion = "33.7.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
