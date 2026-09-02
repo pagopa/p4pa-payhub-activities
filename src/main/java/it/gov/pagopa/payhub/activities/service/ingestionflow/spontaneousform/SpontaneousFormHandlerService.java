@@ -3,6 +3,8 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeConflictException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeInvalidValueException;
 import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +51,7 @@ public class SpontaneousFormHandlerService {
 			return Optional.ofNullable(spontaneousFormService.matchOrSaveSpontaneousForm(newForm))
 				.map(SpontaneousForm::getSpontaneousFormId)
 				.orElse(null);
-		} catch (IllegalArgumentException | JacksonException e) {
+		} catch (RestInvokeInvalidValueException | RestInvokeConflictException e) {
 			String errorMessage = "Error parsing spontaneous form JSON structure for code "+ row.getSpontaneousFormCode() + ": " + ExceptionUtils.getRootCauseMessage(e);
 			log.error(errorMessage, e);
 			throw new InvalidValueException(errorMessage);

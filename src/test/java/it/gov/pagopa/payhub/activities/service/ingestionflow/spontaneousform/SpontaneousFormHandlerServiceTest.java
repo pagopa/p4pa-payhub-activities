@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeInvalidValueException;
 import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,7 +113,7 @@ class SpontaneousFormHandlerServiceTest {
             .build();
 
         Exception exception = assertThrows(
-            InvalidValueException.class,
+            RestInvokeInvalidValueException.class,
             () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
         );
 

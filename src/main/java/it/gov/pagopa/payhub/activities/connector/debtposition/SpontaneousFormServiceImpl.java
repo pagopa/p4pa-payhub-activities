@@ -32,7 +32,7 @@ public class SpontaneousFormServiceImpl implements SpontaneousFormService {
 
     @Override
     public SpontaneousForm matchOrSaveSpontaneousForm(SpontaneousForm spontaneousForm) {
-        log.info("Matching/saving SpontaneousForm with code: {}", spontaneousForm.getCode());
+        log.debug("Matching/saving SpontaneousForm with code: {}", spontaneousForm.getCode());
         return debtPositionTypeOrgClient.matchOrSaveSpontaneousForm(spontaneousForm, authnService.getAccessToken());
     }
 }

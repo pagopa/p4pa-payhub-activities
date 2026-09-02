@@ -85,7 +85,7 @@ public class DebtPositionTypeOrgClient {
     }
 
     public SpontaneousForm matchOrSaveSpontaneousForm(SpontaneousForm spontaneousForm, String accessToken) {
-        log.info("Matching/saving SpontaneousForm with code: {}", spontaneousForm.getCode());
+        log.debug("Matching/saving SpontaneousForm with code: {}", spontaneousForm.getCode());
         return debtPositionApisHolder.getSpontaneousFormApi(accessToken)
             .matchOrSaveSpontaneousForm(spontaneousForm);
     }
