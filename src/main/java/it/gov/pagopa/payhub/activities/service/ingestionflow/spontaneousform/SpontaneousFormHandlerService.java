@@ -37,12 +37,6 @@ public class SpontaneousFormHandlerService {
 			return null;
 		}
 
-		SpontaneousForm existingForm = spontaneousFormService.findByOrganizationIdAndCode(organizationId, row.getSpontaneousFormCode());
-
-		if (existingForm != null) {
-			return existingForm.getSpontaneousFormId();
-		}
-
 		try {
 			SpontaneousForm newForm = SpontaneousForm.builder()
 				.organizationId(organizationId)
@@ -52,7 +46,7 @@ public class SpontaneousFormHandlerService {
 				.dictionary(null)
 				.build();
 
-			return Optional.ofNullable(spontaneousFormService.createSpontaneousForm(newForm))
+			return Optional.ofNullable(spontaneousFormService.matchOrSaveSpontaneousForm(newForm))
 				.map(SpontaneousForm::getSpontaneousFormId)
 				.orElse(null);
 		} catch (IllegalArgumentException | JacksonException e) {
