@@ -32,7 +32,7 @@ public class SpontaneousFormHandlerService {
 	 *
 	 * @param organizationId the organization ID
 	 * @param row the DTO containing spontaneous form data
-	 * @return the ID of the existing or newly created spontaneous form, or nullif creation fails
+	 * @return the ID of the existing or newly created spontaneous form, or null if creation fails
 	 */
 	public Long handleSpontaneousForm(Long organizationId, DebtPositionTypeOrgIngestionFlowFileDTO row) {
 		if(StringUtils.isEmpty(row.getSpontaneousFormCode())){
@@ -51,10 +51,14 @@ public class SpontaneousFormHandlerService {
 			return Optional.ofNullable(spontaneousFormService.matchOrSaveSpontaneousForm(newForm))
 				.map(SpontaneousForm::getSpontaneousFormId)
 				.orElse(null);
-		} catch (RestInvokeInvalidValueException | RestInvokeConflictException e) {
+		} catch (RestInvokeInvalidValueException | RestInvokeConflictException | JacksonException e) {
 			String errorMessage = "Error parsing spontaneous form JSON structure for code "+ row.getSpontaneousFormCode() + ": " + ExceptionUtils.getRootCauseMessage(e);
 			log.error(errorMessage, e);
-			throw new InvalidValueException(errorMessage);
+			switch (e) {
+				case RestInvokeInvalidValueException ex -> throw new InvalidValueException(ex.getCode(), errorMessage);
+				case RestInvokeConflictException ex -> throw new InvalidValueException(ex.getCode(), errorMessage);
+				default -> throw new InvalidValueException(errorMessage);
+			}
 		}
 	}
 }
