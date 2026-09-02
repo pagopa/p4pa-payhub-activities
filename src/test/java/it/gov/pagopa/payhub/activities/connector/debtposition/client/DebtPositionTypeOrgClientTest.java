@@ -285,4 +285,22 @@ class DebtPositionTypeOrgClientTest {
     }
 
 
+    @Test
+    void whenMatchOrSaveSpontaneousFormThenInvokeWithAccessToken() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        SpontaneousForm formToMatchOrSave = new SpontaneousForm();
+        SpontaneousForm matchedOrSavedForm = new SpontaneousForm();
+
+        when(debtPositionApisHolderMock.getSpontaneousFormApi(accessToken))
+            .thenReturn(spontaneousFormApiMock);
+        when(spontaneousFormApiMock.matchOrSaveSpontaneousForm(Mockito.same(formToMatchOrSave)))
+            .thenReturn(matchedOrSavedForm);
+
+        // When
+        SpontaneousForm result = debtPositionTypeOrgClient.matchOrSaveSpontaneousForm(formToMatchOrSave, accessToken);
+
+        // Then
+        Assertions.assertSame(matchedOrSavedForm, result);
+    }
 }
