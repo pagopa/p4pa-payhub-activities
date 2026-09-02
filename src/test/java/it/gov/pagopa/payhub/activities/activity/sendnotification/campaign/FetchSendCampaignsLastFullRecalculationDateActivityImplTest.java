@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FetchSendCampaignsLastFullRecalculationDateActivityImplTest {
@@ -34,7 +34,7 @@ class FetchSendCampaignsLastFullRecalculationDateActivityImplTest {
     }
 
     @Test
-    void whenFetchSendCampaignsLastFullRecalculationDateThenOk() {
+    void givenFullRecalculationDateWhenFetchSendCampaignsLastFullRecalculationDateThenReturnLatestFullRecalculationDate() {
         //GIVEN
         OffsetDateTime expectedLatestFullRecalculationDate = OffsetDateTime.now(Utilities.ZONEID);
         when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(expectedLatestFullRecalculationDate);
@@ -42,5 +42,18 @@ class FetchSendCampaignsLastFullRecalculationDateActivityImplTest {
         java.time.OffsetDateTime actualLatestFullRecalculationDate  = fetchSendCampaignsLastFullRecalculationDateActivity.fetchSendCampaignsLastFullRecalculationDate();
         //THEN
         assertEquals(expectedLatestFullRecalculationDate, actualLatestFullRecalculationDate);
+        verify(campaignServiceMock, times(0)).findFirstCampaignStartDate();
+    }
+
+    @Test
+    void givenNoFullRecalculationDateWhenFetchSendCampaignsLastFullRecalculationDateThenReturnFirstCampaignStartDate() {
+        //GIVEN
+        OffsetDateTime expectedFirstCampaignStartDate = OffsetDateTime.now(Utilities.ZONEID);
+        when(campaignServiceMock.findLatestFullRecalculationDate()).thenReturn(null);
+        when(campaignServiceMock.findFirstCampaignStartDate()).thenReturn(expectedFirstCampaignStartDate);
+        //WHEN
+        java.time.OffsetDateTime actualLatestFullRecalculationDate  = fetchSendCampaignsLastFullRecalculationDateActivity.fetchSendCampaignsLastFullRecalculationDate();
+        //THEN
+        assertEquals(expectedFirstCampaignStartDate, actualLatestFullRecalculationDate);
     }
 }

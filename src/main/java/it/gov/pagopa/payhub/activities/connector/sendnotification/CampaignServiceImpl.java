@@ -25,6 +25,11 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    public OffsetDateTime findFirstCampaignStartDate() {
+        return campaignClient.findFirstCampaignStartDate(authnService.getAccessToken());
+    }
+
+    @Override
     public List<String> findIdsOfUpdatedCampaignsByNotificationUpdateDate(OffsetDateTime fullRecalculationDate) {
         return campaignClient.findIdsOfUpdatedCampaignsByNotificationUpdateDate(
                 fullRecalculationDate,

@@ -30,6 +30,10 @@ public class CampaignClient {
         return sendApisHolder.getCampaignApi(accessToken).findLatestFullRecalculationDate();
     }
 
+    public OffsetDateTime findFirstCampaignStartDate(String accessToken) {
+        return sendApisHolder.getCampaignApi(accessToken).findFirstCampaignStartDate();
+    }
+
     public List<String> findIdsOfUpdatedCampaignsByNotificationUpdateDate(OffsetDateTime latestFullRecalculationDate, String accessToken) {
         return sendApisHolder.getCampaignApi(accessToken).findIdsOfUpdatedCampaignsByNotificationUpdateDate(latestFullRecalculationDate);
     }

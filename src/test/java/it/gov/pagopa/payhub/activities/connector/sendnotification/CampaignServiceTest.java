@@ -53,6 +53,22 @@ class CampaignServiceTest {
     }
 
     @Test
+    void whenFindFirstCampaignStartDateThenOk() {
+        //GIVEN
+        String accessToken = "accessToken";
+        OffsetDateTime expectedFindFirstCampaignStartDate = OffsetDateTime.now(Utilities.ZONEID);
+
+        when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        when(campaignClientMock.findFirstCampaignStartDate(accessToken))
+                .thenReturn(expectedFindFirstCampaignStartDate);
+        //WHEN
+        OffsetDateTime actualFindFirstCampaignStartDate = campaignService.findFirstCampaignStartDate();
+        //THEN
+        Assertions.assertEquals(expectedFindFirstCampaignStartDate, actualFindFirstCampaignStartDate);
+    }
+
+    @Test
     void whenFindIdsOfUpdatedCampaignsByNotificationUpdateDateThenOk() {
         //GIVEN
         String accessToken = "accessToken";
