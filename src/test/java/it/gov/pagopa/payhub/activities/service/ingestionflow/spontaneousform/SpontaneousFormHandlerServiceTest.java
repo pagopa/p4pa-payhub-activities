@@ -1,22 +1,21 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform;
 
-import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.debtposition.SpontaneousFormService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontypeorg.DebtPositionTypeOrgIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeConflictException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeInvalidValueException;
 import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.databind.JsonNode;
+import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,7 +41,7 @@ class SpontaneousFormHandlerServiceTest {
     }
 
     @Test
-    void givenExistingFormFoundWhenHandleSpontaneousFormThenReturnExistingId() {
+    void givenValidInputWhenHandleSpontaneousFormThenReturnMatchedId() {
         Long organizationId = 100L;
         String code = "SF_CODE_001";
         Long expectedId = 999L;
@@ -59,7 +58,7 @@ class SpontaneousFormHandlerServiceTest {
             .structure(mock(JsonNode.class))
             .build();
 
-        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
+        when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
             .thenReturn(existingForm);
 
         Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
@@ -68,7 +67,7 @@ class SpontaneousFormHandlerServiceTest {
     }
 
     @Test
-    void givenNoExistingFormAndValidJsonWhenHandleSpontaneousFormThenCreateAndReturnNewId() {
+    void givenValidJsonWhenHandleSpontaneousFormThenCallMatchOrSaveWithExpectedForm() {
         Long organizationId = 100L;
         String code = "SF_CODE_NEW";
         String jsonStructure = "{\"fields\":[{\"name\":\"field1\",\"type\":\"text\"}]}";
@@ -79,19 +78,15 @@ class SpontaneousFormHandlerServiceTest {
             .spontaneousFormStructure(jsonStructure)
             .build();
 
-        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
-            .thenReturn(null);
-
-        JsonNode expectedDeserializedStructure = new JsonConfig().objectMapperJackson3().readTree(jsonStructure);
         SpontaneousForm createdForm = SpontaneousForm.builder()
             .spontaneousFormId(expectedId)
             .organizationId(organizationId)
             .code(code)
-            .structure(expectedDeserializedStructure)
+            .structure(mock(JsonNode.class))
             .build();
 
         ArgumentCaptor<SpontaneousForm> formCaptor = ArgumentCaptor.forClass(SpontaneousForm.class);
-        when(spontaneousFormServiceMock.createSpontaneousForm(formCaptor.capture()))
+        when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(formCaptor.capture()))
             .thenReturn(createdForm);
 
         Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);
@@ -101,35 +96,79 @@ class SpontaneousFormHandlerServiceTest {
         SpontaneousForm capturedForm = formCaptor.getValue();
         assertEquals(organizationId, capturedForm.getOrganizationId());
         assertEquals(code, capturedForm.getCode());
-        assertEquals(expectedDeserializedStructure, capturedForm.getStructure());
+        assertEquals(jsonStructure, capturedForm.getStructure().toString());
         assertNull(capturedForm.getDictionary());
     }
 
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {"{invalid json structure"})
-    void givenNoExistingFormAndInvalidJsonWhenHandleSpontaneousFormThenThrowInvalidValueException(String input) {
+    @Test
+    void givenMalformedJsonWhenHandleSpontaneousFormThenThrowInvalidValueException() {
 		String code = "SF_CODE_INVALID";
         Long organizationId = 100L;
 
         DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
             .spontaneousFormCode(code)
-            .spontaneousFormStructure(input)
+            .spontaneousFormStructure("{invalid json structure")
             .build();
 
-        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
-            .thenReturn(null);
-
-        Exception exception = assertThrows(
+        InvalidValueException exception = assertThrows(
             InvalidValueException.class,
             () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
         );
 
-        assertTrue(exception.getMessage().contains(code));
+        assertEquals("INVALID_VALUE", exception.getCode());
+        assertTrue(exception.getMessage().contains("Error parsing spontaneous form JSON structure for code " + code));
     }
 
     @Test
-    void givenNoExistingFormAndCreateServiceReturnsNullWhenHandleSpontaneousFormThenReturnNull() {
+    void givenRestInvokeInvalidValueExceptionWhenHandleSpontaneousFormThenThrowInvalidValueExceptionWithSameCode() {
+        String code = "SF_CODE_INVALID_VALUE";
+        Long organizationId = 100L;
+        String exceptionCode = "DOWNSTREAM_INVALID_VALUE";
+        String errormessage = "ERRORMESSAGE";
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+            .spontaneousFormCode(code)
+            .spontaneousFormStructure("{\"fields\":[]}")
+            .build();
+
+        when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
+            .thenThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", exceptionCode, errormessage, null));
+
+        InvalidValueException exception = assertThrows(
+            InvalidValueException.class,
+            () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
+        );
+
+        assertEquals(exceptionCode, exception.getCode());
+        assertEquals(errormessage, exception.getMessage());
+    }
+
+    @Test
+    void givenRestInvokeConflictExceptionWhenHandleSpontaneousFormThenThrowInvalidValueExceptionWithSameCode() {
+        String code = "SF_CODE_CONFLICT";
+        Long organizationId = 100L;
+        String exceptionCode = "DOWNSTREAM_CONFLICT";
+        String errormessage = "ERRORMESSAGE";
+
+        DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
+            .spontaneousFormCode(code)
+            .spontaneousFormStructure("{\"fields\":[]}")
+            .build();
+
+        when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
+            .thenThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", exceptionCode, errormessage, null));
+
+        InvalidValueException exception = assertThrows(
+            InvalidValueException.class,
+            () -> spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row)
+        );
+
+        assertEquals(exceptionCode, exception.getCode());
+        assertEquals(errormessage, exception.getMessage());
+    }
+
+    @Test
+    void givenMatchOrSaveReturnsNullWhenHandleSpontaneousFormThenReturnNull() {
         Long organizationId = 100L;
         String code = "SF_CODE_FAIL";
 
@@ -138,10 +177,7 @@ class SpontaneousFormHandlerServiceTest {
             .spontaneousFormStructure("{\"fields\":[]}")
             .build();
 
-        when(spontaneousFormServiceMock.findByOrganizationIdAndCode(organizationId, code))
-            .thenReturn(null);
-
-        when(spontaneousFormServiceMock.createSpontaneousForm(any(SpontaneousForm.class)))
+        when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
             .thenReturn(null);
 
         Long result = spontaneousFormHandlerService.handleSpontaneousForm(organizationId, row);

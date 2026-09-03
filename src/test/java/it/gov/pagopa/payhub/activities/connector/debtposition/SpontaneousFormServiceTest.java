@@ -92,6 +92,23 @@ class SpontaneousFormServiceTest {
         // Then
         Assertions.assertSame(createdForm, result);
     }
+
+    @Test
+    void whenMatchOrSaveSpontaneousFormThenInvokeClient() {
+        // Given
+        SpontaneousForm formToMatchOrSave = new SpontaneousForm();
+        SpontaneousForm matchedOrSavedForm = new SpontaneousForm();
+
+        when(authnServiceMock.getAccessToken()).thenReturn(accessToken);
+        when(debtPositionTypeOrgClientMock.matchOrSaveSpontaneousForm(Mockito.same(formToMatchOrSave), Mockito.eq(accessToken)))
+            .thenReturn(matchedOrSavedForm);
+
+        // When
+        SpontaneousForm result = spontaneousFormService.matchOrSaveSpontaneousForm(formToMatchOrSave);
+
+        // Then
+        Assertions.assertSame(matchedOrSavedForm, result);
+    }
 }
 
 

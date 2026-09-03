@@ -29,6 +29,12 @@ public class SpontaneousFormServiceImpl implements SpontaneousFormService {
         log.info("Creating SpontaneousForm with code: {}", spontaneousForm.getCode());
         return debtPositionTypeOrgClient.createSpontaneousForm(spontaneousForm, authnService.getAccessToken());
     }
+
+    @Override
+    public SpontaneousForm matchOrSaveSpontaneousForm(SpontaneousForm spontaneousForm) {
+        log.debug("Matching/saving SpontaneousForm with code: {}", spontaneousForm.getCode());
+        return debtPositionTypeOrgClient.matchOrSaveSpontaneousForm(spontaneousForm, authnService.getAccessToken());
+    }
 }
 
 
