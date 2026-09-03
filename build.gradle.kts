@@ -102,6 +102,11 @@ val httpCoreVersion = "5.4.3"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
+val jaxbXewPluginVersion = "2.1"
+val jaxbPluginVersion = "4.0.16"
+
+// CVE Security dependencies
+val tomcatEmbedCoreVersion = "11.0.25"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -151,7 +156,14 @@ dependencies {
     implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
     runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
+    // CVE Security dependencies
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
+
     compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
+    testAnnotationProcessor("org.projectlombok:lombok")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
     //	Testing
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
@@ -161,20 +173,8 @@ dependencies {
     testImplementation("org.projectlombok:lombok")
     testImplementation("uk.co.jemos.podam:podam:$podamVersion")
 
-    /**
-     * Mapstruct
-     * https://mapstruct.org/
-     * mapstruct dependencies must always be placed after the lombok dependency
-     * or the generated mappers will return an empty object
-     **/
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
-
-    testAnnotationProcessor("org.projectlombok:lombok")
-    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
-
-    jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
-    jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
+    jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:$jaxbXewPluginVersion")
+    jaxbext("org.jvnet.jaxb:jaxb-plugins:$jaxbPluginVersion")
 }
 
 
