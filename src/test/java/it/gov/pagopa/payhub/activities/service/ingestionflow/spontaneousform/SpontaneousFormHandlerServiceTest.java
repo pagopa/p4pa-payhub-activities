@@ -124,6 +124,7 @@ class SpontaneousFormHandlerServiceTest {
         String code = "SF_CODE_INVALID_VALUE";
         Long organizationId = 100L;
         String exceptionCode = "DOWNSTREAM_INVALID_VALUE";
+        String errormessage = "ERRORMESSAGE";
 
         DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
             .spontaneousFormCode(code)
@@ -131,7 +132,7 @@ class SpontaneousFormHandlerServiceTest {
             .build();
 
         when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
-            .thenThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", exceptionCode, "ERRORMESSAGE", null));
+            .thenThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", exceptionCode, errormessage, null));
 
         InvalidValueException exception = assertThrows(
             InvalidValueException.class,
@@ -139,7 +140,7 @@ class SpontaneousFormHandlerServiceTest {
         );
 
         assertEquals(exceptionCode, exception.getCode());
-        assertTrue(exception.getMessage().contains("Error parsing spontaneous form JSON structure for code " + code));
+        assertEquals(errormessage, exception.getMessage());
     }
 
     @Test
@@ -147,6 +148,7 @@ class SpontaneousFormHandlerServiceTest {
         String code = "SF_CODE_CONFLICT";
         Long organizationId = 100L;
         String exceptionCode = "DOWNSTREAM_CONFLICT";
+        String errormessage = "ERRORMESSAGE";
 
         DebtPositionTypeOrgIngestionFlowFileDTO row = DebtPositionTypeOrgIngestionFlowFileDTO.builder()
             .spontaneousFormCode(code)
@@ -154,7 +156,7 @@ class SpontaneousFormHandlerServiceTest {
             .build();
 
         when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
-            .thenThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", exceptionCode, "ERRORMESSAGE", null));
+            .thenThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", exceptionCode, errormessage, null));
 
         InvalidValueException exception = assertThrows(
             InvalidValueException.class,
@@ -162,7 +164,7 @@ class SpontaneousFormHandlerServiceTest {
         );
 
         assertEquals(exceptionCode, exception.getCode());
-        assertTrue(exception.getMessage().contains("Error parsing spontaneous form JSON structure for code " + code));
+        assertEquals(errormessage, exception.getMessage());
     }
 
     @Test
