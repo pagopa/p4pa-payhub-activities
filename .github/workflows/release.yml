@@ -11,6 +11,10 @@ on:
       - '.**'
       - 'version'
 
+permissions:
+  packages: write
+  contents: write
+
 jobs:
   release:
     name: Release
