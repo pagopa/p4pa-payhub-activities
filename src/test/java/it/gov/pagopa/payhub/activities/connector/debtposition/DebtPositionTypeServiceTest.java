@@ -90,12 +90,14 @@ class DebtPositionTypeServiceTest {
     // Given
     String code = "CODE";
     Long brokerId = 123L;
-    var expected = mock(CollectionModelDebtPositionType.class);
-    when(debtPositionTypeClientMock.getByBrokerIdAndCode(brokerId, code, accessToken))
+    String orgType = "ORG_TYPE";
+    String taxonomyCode = "TAX";
+    var expected = mock(DebtPositionType.class);
+    when(debtPositionTypeClientMock.getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode, accessToken))
             .thenReturn(expected);
 
     // When
-    var result = service.getByBrokerIdAndCode(brokerId, code);
+    var result = service.getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode);
 
     // Then
     Assertions.assertSame(expected, result);

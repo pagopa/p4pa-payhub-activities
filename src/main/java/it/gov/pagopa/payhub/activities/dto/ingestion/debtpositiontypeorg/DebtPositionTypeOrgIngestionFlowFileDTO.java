@@ -25,6 +25,12 @@ public class DebtPositionTypeOrgIngestionFlowFileDTO {
     @CsvBindByName(column = "descrizione", required = true)
     private String description;
 
+    @CsvBindByName(column = "tipoEnte", required = true)
+    private String orgType;
+
+    @CsvBindByName(column = "codiceTassonomico", required = true)
+    private String taxonomyCode;
+
     @CsvBindByName(column = "codIban")
     private String iban;
 
