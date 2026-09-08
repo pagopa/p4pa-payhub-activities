@@ -39,7 +39,7 @@ public class AssessmentsRegistryIngestionFlowFileDTO {
     @CsvBindByName(column = "annoEsercizio", required = true)
     private String operatingYear;
 
-    @CsvBindByName(column = "flgAttivo", required = true)
+    @CsvBindByName(column = "statoAccertamento", required = true)
     private String status;
 
 }
