@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.debtpositions.client.generated.DebtPositionTypeEntityControllerApi;
 import it.gov.pagopa.pu.debtpositions.client.generated.DebtPositionTypeSearchControllerApi;
 import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelDebtPositionType;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import static org.mockito.Mockito.when;
 
@@ -109,6 +111,27 @@ class DebtPositionTypeClientTest {
 
         // Then
         Assertions.assertSame(expectedResult, result);
+    }
+
+    @Test
+    void givenNoDebtPositionTypeWhenFindByBrokerIdAndCodeAndOrgTypeAndTaxonomyCodeThenNull(){
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        String code = "code";
+        String orgType = "orgType";
+        String taxonomyCode = "taxonomyCode";
+        Long brokerId = 1L;
+
+        when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
+                .thenReturn(debtPositionTypeSearchControllerApiMock);
+        when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+
+        // When
+        DebtPositionType result = client.getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode, accessToken);
+
+        // Then
+        Assertions.assertNull(result);
     }
 
 
