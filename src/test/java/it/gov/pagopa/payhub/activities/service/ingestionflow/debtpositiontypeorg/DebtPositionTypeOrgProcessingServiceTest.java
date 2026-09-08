@@ -107,6 +107,8 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         dto.setIpaCode(organization.getIpaCode());
         dto.setCode("CODE" + sequencingId);
+        dto.setOrgType("ORG_TYPE" + sequencingId);
+        dto.setTaxonomyCode("TAX_CODE" + sequencingId);
 
         DebtPositionTypeOrgRequestBody mappedDebtPosType = podamFactory.manufacturePojo(DebtPositionTypeOrgRequestBody.class);
         DebtPositionTypeOrg createdDebtPosType = podamFactory.manufacturePojo(DebtPositionTypeOrg.class);
@@ -115,14 +117,9 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
             DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
             dpType.setDebtPositionTypeId(dpTypeId);
 
-            CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
-                    .embedded(PagedModelDebtPositionTypeEmbedded.builder()
-                            .debtPositionTypes(List.of(dpType))
-                            .build())
-                    .build();
-            doReturn(existingCollectionModel)
+            doReturn(dpType)
                     .when(debtPositionTypeServiceMock)
-                    .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
+                    .getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(organization.getBrokerId(), dto.getCode(), dto.getOrgType(), dto.getTaxonomyCode());
 
             doReturn(null)
                     .when(debtPositionTypeOrgServiceMock)
@@ -184,9 +181,9 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
 
-        doReturn(CollectionModelDebtPositionType.builder().embedded(new PagedModelDebtPositionTypeEmbedded()).build())
+        doReturn(null)
                 .when(debtPositionTypeServiceMock)
-                .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
+                .getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(organization.getBrokerId(), dto.getCode(), dto.getOrgType(), dto.getTaxonomyCode());
 
         List<DebtPositionTypeOrgErrorDTO> expectedErrors = List.of(
                 DebtPositionTypeOrgErrorDTO.builder()
@@ -231,14 +228,9 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
         dpType.setDebtPositionTypeId(999L);
 
-        CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
-                .embedded(PagedModelDebtPositionTypeEmbedded.builder()
-                        .debtPositionTypes(List.of(dpType))
-                        .build())
-                .build();
-        doReturn(existingCollectionModel)
+        doReturn(dpType)
                 .when(debtPositionTypeServiceMock)
-                .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
+                .getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(organization.getBrokerId(), dto.getCode(), dto.getOrgType(), dto.getTaxonomyCode());
 
         doThrow(new RuntimeException("Error parsing JSON for spontaneous form"))
                 .when(spontaneousFormHandlerServiceMock)

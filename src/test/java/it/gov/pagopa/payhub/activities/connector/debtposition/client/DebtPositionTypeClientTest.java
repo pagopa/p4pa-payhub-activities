@@ -88,22 +88,24 @@ class DebtPositionTypeClientTest {
 
 
     @Test
-    void whenFindByBrokerIdAndCodeThenInvokeWithAccessToken(){
+    void whenFindByBrokerIdAndCodeAndOrgTypeAndTaxonomyCodeThenInvokeWithAccessToken(){
         // Given
         String accessToken = "ACCESSTOKEN";
         String code = "code";
+        String orgType = "orgType";
+        String taxonomyCode = "taxonomyCode";
         Long brokerId = 1L;
 
-        CollectionModelDebtPositionType expectedResult = new CollectionModelDebtPositionType();
+        DebtPositionType expectedResult = new DebtPositionType();
 
         when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
             .thenReturn(debtPositionTypeSearchControllerApiMock);
-        when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByBrokerIdAndCode(
-                        brokerId, code))
+        when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(
+                        brokerId, code, orgType, taxonomyCode))
             .thenReturn(expectedResult);
 
         // When
-        CollectionModelDebtPositionType result = client.getByBrokerIdAndCode(brokerId, code, accessToken);
+        DebtPositionType result = client.getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode, accessToken);
 
         // Then
         Assertions.assertSame(expectedResult, result);

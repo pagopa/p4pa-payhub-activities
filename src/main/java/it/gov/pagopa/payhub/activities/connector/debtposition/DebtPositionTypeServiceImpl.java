@@ -39,7 +39,7 @@ public class DebtPositionTypeServiceImpl implements DebtPositionTypeService {
     }
 
     @Override
-    public CollectionModelDebtPositionType getByBrokerIdAndCode(Long brokerId, String code) {
-        return debtPositionTypeClient.getByBrokerIdAndCode(brokerId, code, authnService.getAccessToken());
+    public DebtPositionType getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(Long brokerId, String code, String orgType, String taxonomyCode) {
+        return debtPositionTypeClient.getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode, authnService.getAccessToken());
     }
 }

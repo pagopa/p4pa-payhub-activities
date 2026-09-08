@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelDebtPositionType;
 import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionType;
 import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeRequestBody;
@@ -20,22 +21,27 @@ public class DebtPositionTypeClient {
     }
 
     public DebtPositionType createDebtPositionType(
-        DebtPositionTypeRequestBody debtPositionTypeRequestBody, String accessToken) {
-            return debtPositionApisHolder.getDebtPositionTypeEntityControllerApi(accessToken)
-                    .crudCreateDebtpositiontype(debtPositionTypeRequestBody);
+            DebtPositionTypeRequestBody debtPositionTypeRequestBody, String accessToken) {
+        return debtPositionApisHolder.getDebtPositionTypeEntityControllerApi(accessToken)
+                .crudCreateDebtpositiontype(debtPositionTypeRequestBody);
     }
 
     public CollectionModelDebtPositionType getByMainFields(String code, Long brokerId, String orgType,
-        String macroArea, String serviceType, String collectingReason, String taxonomyCode, String accessToken) {
+                                                           String macroArea, String serviceType, String collectingReason, String taxonomyCode, String accessToken) {
         return debtPositionApisHolder.getDebtPositionTypeSearchControllerApi(accessToken)
-            .crudDebtPositionTypesFindByMainFields(code, brokerId, orgType, macroArea, serviceType,
-                collectingReason, taxonomyCode);
+                .crudDebtPositionTypesFindByMainFields(code, brokerId, orgType, macroArea, serviceType,
+                        collectingReason, taxonomyCode);
     }
 
-    public CollectionModelDebtPositionType getByBrokerIdAndCode(Long brokerId, String code, String accessToken) {
-        return debtPositionApisHolder.getDebtPositionTypeSearchControllerApi(accessToken)
-                .crudDebtPositionTypesFindByBrokerIdAndCode(brokerId,code);
+    public DebtPositionType getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(Long brokerId, String code, String orgType, String taxonomyCode, String accessToken) {
+        try {
+            return debtPositionApisHolder.getDebtPositionTypeSearchControllerApi(accessToken)
+                    .crudDebtPositionTypesFindByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode);
+        } catch (
+                RestInvokeNotFoundException e) {
+            log.info("Cannot find DebtPositionType having brokerId {}, code {}, orgType {} and taxonomyCode {}", brokerId, code, orgType, taxonomyCode);
+            return null;
+        }
     }
-
 
 }

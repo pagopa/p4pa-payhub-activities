@@ -38,7 +38,9 @@ public interface DebtPositionTypeService {
      *
      * @param brokerId the broker identifier
      * @param code the code of the debt position type
-     * @return a collection of matching DebtPositionType objects
+     * @param orgType the code of organization type
+     * @param taxonomyCode tha taxonomy code
+     * @return a matching DebtPositionType object
      */
-    CollectionModelDebtPositionType getByBrokerIdAndCode(Long brokerId, String code);
+    DebtPositionType getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(Long brokerId, String code, String orgType, String taxonomyCode);
 }
