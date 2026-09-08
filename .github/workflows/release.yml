@@ -39,9 +39,13 @@ jobs:
           git config set --local user.name "p4pa-pagopa-github-bot"
           git add version
           git commit -m "Bump version"
+          echo "PROVA1"
           git config unset --local remote.origin.url
+          echo "PROVA2"
           git config set --local remote.origin.url 'https://p4pa-pagopa-github-bot:${{ secrets.ADMIN_GITHUB_TOKEN_RW }}@github.com/pagopa/p4pa-payhub-activities.git'
-          git config unset --local --all http.https://github.com/.extraheader
+          echo "PROVA3"
+          git config list --local
+          git config unset --local http.https://github.com/.extraheader
           echo "PROVA4"
           git push origin ${{ github.ref }}
           echo "PROVA4"
