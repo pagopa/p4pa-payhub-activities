@@ -4,7 +4,7 @@ on:
   # Trigger the workflow on push on the main branch
   push:
     branches:
-      - fix
+      - main
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
@@ -42,5 +42,4 @@ jobs:
           git config unset --local remote.origin.url
           git config set --local remote.origin.url 'https://p4pa-pagopa-github-bot:${{ secrets.ADMIN_GITHUB_TOKEN_RW }}@github.com/pagopa/p4pa-payhub-activities.git'
           git config unset --local http.https://github.com/.extraheader ||true # ignored error if not exists
-          echo "PROVA4"
           git push origin ${{ github.ref }}
