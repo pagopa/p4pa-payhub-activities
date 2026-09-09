@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification.stream.process
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;

@@ -2,9 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification.stream.process
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
