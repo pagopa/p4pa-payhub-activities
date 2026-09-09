@@ -25,8 +25,7 @@ public class GetSendNotificationByNotificationRequestIdActivityImpl implements G
         try {
             return sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
         } catch (RestInvokeNotFoundException e) {
-            String errorMessage = "Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage());
-            throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(ValidateSendNotificationStatusActivity.class.getSimpleName(), errorMessage));
+            return null;
         }
     }
 }

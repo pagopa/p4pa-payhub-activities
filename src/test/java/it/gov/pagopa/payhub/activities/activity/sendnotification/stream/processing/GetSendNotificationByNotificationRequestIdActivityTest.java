@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -32,7 +33,7 @@ class GetSendNotificationByNotificationRequestIdActivityTest {
     }
 
     @Test
-    void whenSendNotificationStatusThenOk() {
+    void whenGetSendNotificationByNotificationRequestIdThenOk() {
         // Given
         String notificationId = "sendNotificationId";
         String notificationRequestId = "notificationRequestId";
@@ -49,30 +50,19 @@ class GetSendNotificationByNotificationRequestIdActivityTest {
     }
 
     @Test
-    void givenNotFoundExceptionWhenSendNotificationStatusThenThrowNotRetryableActivityException() {
+    void givenNotFoundExceptionWhenGetSendNotificationByNotificationRequestIdThenReturnNull() {
         // Given
-        String notificationId = "sendNotificationId";
         String notificationRequestId = "notificationRequestId";
-        SendNotificationDTO expectedResponse = new SendNotificationDTO();
-        expectedResponse.setSendNotificationId(notificationId);
 
         doThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"))
                 .when(sendServiceMock)
                 .retrieveNotificationByNotificationRequestId(notificationRequestId);
 
         // When
-        SendStreamSkippedEventException sendStreamSkippedEventException = Assertions.assertThrows(
-                SendStreamSkippedEventException.class,
-                () -> activity.getSendNotificationByNotificationRequestId(notificationRequestId)
-        );
+        SendNotificationDTO result = activity.getSendNotificationByNotificationRequestId(notificationRequestId);
 
         // Then
-        Assertions.assertNotNull(sendStreamSkippedEventException);
-        String causeErrorMessage = "Notification for notificationRequestId %s not found: error message ERRORMESSAGE".formatted(notificationRequestId);
-        Assertions.assertEquals(
-                "Skipped an error during execution of activity %s: %s".formatted(ValidateSendNotificationStatusActivity.class.getSimpleName(), causeErrorMessage),
-                sendStreamSkippedEventException.getMessage()
-        );
+        assertNull(result);
     }
 
 }
