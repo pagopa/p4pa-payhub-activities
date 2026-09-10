@@ -48,8 +48,6 @@ public class EmailTemplatesConfiguration {
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates debtPositionsTypeOrgFlow;
     @NestedConfigurationProperty
-    private EmailOutcomeBasedTemplates debtPositionsTypeOrgOperatorsFlow;
-    @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates assessmentsFlow;
     @NestedConfigurationProperty
     private EmailOutcomeBasedTemplates assessmentsRegistryFlow;
