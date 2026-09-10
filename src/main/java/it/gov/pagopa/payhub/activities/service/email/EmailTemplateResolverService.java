@@ -74,9 +74,6 @@ public class EmailTemplateResolverService {
             case INGESTION_DEBT_POSITIONS_TYPE_ORG_OK -> emailTemplatesConfiguration.getDebtPositionsTypeOrgFlow().getOk();
             case INGESTION_DEBT_POSITIONS_TYPE_ORG_KO -> emailTemplatesConfiguration.getDebtPositionsTypeOrgFlow().getKo();
 
-            case INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_OK -> emailTemplatesConfiguration.getDebtPositionsTypeOrgOperatorsFlow().getOk();
-            case INGESTION_DEBT_POSITIONS_TYPE_ORG_OPERATORS_KO -> emailTemplatesConfiguration.getDebtPositionsTypeOrgOperatorsFlow().getKo();
-
             case INGESTION_ASSESSMENTS_OK -> emailTemplatesConfiguration.getAssessmentsFlow().getOk();
             case INGESTION_ASSESSMENTS_KO -> emailTemplatesConfiguration.getAssessmentsFlow().getKo();
 
