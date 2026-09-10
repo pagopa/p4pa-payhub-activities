@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.activity.sendnotification.stream.process
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -25,8 +24,7 @@ public class GetSendNotificationByNotificationRequestIdActivityImpl implements G
         try {
             return sendService.retrieveNotificationByNotificationRequestId(notificationRequestId);
         } catch (RestInvokeNotFoundException e) {
-            String errorMessage = "Notification for notificationRequestId %s not found: error message %s".formatted(notificationRequestId, e.getMessage());
-            throw new SendStreamSkippedEventException("Skipped an error during execution of activity %s: %s".formatted(ValidateSendNotificationStatusActivity.class.getSimpleName(), errorMessage));
+            return null;
         }
     }
 }
