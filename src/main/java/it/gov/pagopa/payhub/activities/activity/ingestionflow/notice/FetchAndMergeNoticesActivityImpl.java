@@ -92,6 +92,11 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
 
                             int currentIndex = signedUrlIndex[0]++;
 
+                            //TODO rimuovere
+                            if(currentIndex == 2) {
+                                throw new RuntimeException("prova");
+                            }
+
                             log.debug("Downloading next signedUrl {} of {} related to ingestionFlowFileId {}", currentIndex, signedUrls.size(), ingestionFlowFileId);
 
                             currentExtractDirPath[0] = tmpDir.resolve("extracted_" + currentIndex);
@@ -115,7 +120,8 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         } catch (IOException e) {
             throw new IllegalStateException("Cannot process and merge notices in working directory: " + tmpDir, e);
         } finally {
-            cleanupTmpDir(tmpDir);
+            //TODO decommentare
+            //cleanupTmpDir(tmpDir);
         }
     }
 
