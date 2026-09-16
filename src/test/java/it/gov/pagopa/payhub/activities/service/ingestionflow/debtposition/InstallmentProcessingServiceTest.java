@@ -11,7 +11,7 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.Install
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentSynchronizeDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
+import static it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<InstallmentIngestionFlowFileDTO, InstallmentIngestionFlowFileResult, InstallmentErrorDTO> {
@@ -51,7 +52,7 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
     @BeforeEach
     void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        serviceSpy = Mockito.spy(new InstallmentProcessingService(
+        serviceSpy = spy(new InstallmentProcessingService(
                 MAX_CONCURRENT_PROCESSING_ROWS,
                 debtPositionServiceMock,
                 installmentSynchronizeMapperMock,
@@ -104,15 +105,15 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
                 .partialChange(true)
                 .build();
 
-        Mockito.doReturn(installmentSynchronizeDTO)
+        doReturn(installmentSynchronizeDTO)
                 .when(installmentSynchronizeMapperMock)
                 .map(dto, ingestionFlowFile.getIngestionFlowFileId(), rowNumber, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFileName());
 
-        Mockito.doReturn(workflowId)
+        doReturn(workflowId)
                 .when(debtPositionServiceMock)
                 .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
-        Mockito.doReturn(Collections.emptyList())
+        doReturn(Collections.emptyList())
                 .when(dpInstallmentsWorkflowCompletionServiceMock)
                 .waitForWorkflowCompletion(workflowId, dto, rowNumber);
 
@@ -137,16 +138,16 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
                 .partialChange(true)
                 .build();
 
-        Mockito.doReturn(installmentSynchronizeDTO)
+        doReturn(installmentSynchronizeDTO)
                 .when(installmentSynchronizeMapperMock)
                 .map(dto, ingestionFlowFile.getIngestionFlowFileId(), rowNumber, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFileName());
 
-        Mockito.doReturn(workflowId)
+        doReturn(workflowId)
                 .when(debtPositionServiceMock)
                 .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 
         List<InstallmentErrorDTO> expectedErrors = List.of(InstallmentErrorDTO.builder().errorCode("DUMMY_ERROR").csvRow(new String[]{"test"}).build());
-        Mockito.doReturn(expectedErrors)
+        doReturn(expectedErrors)
                 .when(dpInstallmentsWorkflowCompletionServiceMock)
                 .waitForWorkflowCompletion(workflowId, dto, rowNumber);
 
@@ -162,11 +163,11 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
                 .partialChange(true)
                 .build();
 
-        Mockito.doReturn(installmentSynchronizeDTO)
+        doReturn(installmentSynchronizeDTO)
                 .when(installmentSynchronizeMapperMock)
                 .map(dto, ingestionFlowFile.getIngestionFlowFileId(), rowNumber, ingestionFlowFile.getOrganizationId(), ingestionFlowFile.getFileName());
 
-        Mockito.doThrow(new RestClientException("[DEBT_POSITION_NOT_FOUND] debt position not found"))
+        doThrow(new RestClientException("[DEBT_POSITION_NOT_FOUND] debt position not found"))
                 .when(debtPositionServiceMock)
                 .installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
 

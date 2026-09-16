@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.util;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentStatus;
 
 import java.time.LocalDate;
 import java.util.Comparator;

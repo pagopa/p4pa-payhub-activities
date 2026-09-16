@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.classification.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.classification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
@@ -27,7 +28,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private ClassificationApisHolder classificationApisHolder;
+    private ClassificationApisHolder apisHolder;
     private ClassificationApiClientConfig apiClientConfig;
 
     @BeforeEach
@@ -39,8 +40,9 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                 .baseUrl("http://example.com")
                 .maxAttempts(3)
                 .build();
+        apisHolder = new ClassificationApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        classificationApisHolder = new ClassificationApisHolder(apiClientConfig, restTemplateBuilderMock);
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getAssessmentsControllerApi(null));
     }
     @AfterEach
     void verifyNoMoreInteractions() {
@@ -53,7 +55,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> classificationApisHolder.getClassificationSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getClassificationSearchControllerApi(accessToken)
                         .crudClassificationsFindAllByOrganizationIdAndIuvAndIud(1L, "iuv", "iud"),
                 new ParameterizedTypeReference<>() {}
         );
@@ -63,10 +65,10 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetClassificationEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
+                accessToken -> apisHolder.getClassificationEntityExtendedControllerApi(accessToken)
                             .saveAll2(List.of(new Classification())),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 //endregion
 
@@ -74,37 +76,37 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetPaymentsReportingSearchApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getPaymentsReportingSearchApi(accessToken)
+                accessToken -> apisHolder.getPaymentsReportingSearchApi(accessToken)
                             .crudPaymentsReportingFindByOrganizationIdAndIuf(1L, "iuf"),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetPaymentsReportingEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getPaymentsReportingEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getPaymentsReportingEntityControllerApi(accessToken)
                             .crudCreatePaymentsreporting(new PaymentsReportingRequestBody()),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetPaymentsReportingEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getPaymentsReportingEntityExtendedControllerApi(accessToken)
+                accessToken -> apisHolder.getPaymentsReportingEntityExtendedControllerApi(accessToken)
                             .saveAll1(List.of(new PaymentsReporting())),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetPaymentsReportingApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getPaymentReportingApi(accessToken)
+                accessToken -> apisHolder.getPaymentReportingApi(accessToken)
                         .findAndDeleteByOrgIdAndIufAndIngestionFlowFileIdNot(1L, "IUF", 100L),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 //endregion
 
@@ -112,26 +114,26 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetTreasurySearchApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getTreasurySearchApi(accessToken)
+                accessToken -> apisHolder.getTreasurySearchApi(accessToken)
                             .crudTreasuryGetByOrganizationIdAndIuf(1L, "iuf"),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
     @Test
     void whenGetTreasuryEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getTreasuryEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getTreasuryEntityControllerApi(accessToken)
                             .crudCreateTreasury(new TreasuryRequestBody()),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
     @Test
     void whenGetTreasuryEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
+                accessToken -> apisHolder.getTreasuryEntityExtendedControllerApi(accessToken)
                             .deleteByOrganizationIdAndBillCodeAndBillYearAndOrgBtCodeAndOrgIstatCode(1L, "billCode", "2021", "btCode", "istatCode"),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 //endregion
 
@@ -139,28 +141,28 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetAssessmentsControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getAssessmentsControllerApi(accessToken)
+                accessToken -> apisHolder.getAssessmentsControllerApi(accessToken)
                             .createAssessmentByReceiptId(1L),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
 @Test
     void whenGetAssessmentsSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getAssessmentsSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getAssessmentsSearchControllerApi(accessToken)
                             .crudAssessmentsFindByOrganizationIdAndDebtPositionTypeOrgCodeAndAssessmentName(1L,"debtPositionTypeOrgCode", "assessmentName"),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
 @Test
     void whenGetAssessmentsEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getAssessmentsEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getAssessmentsEntityControllerApi(accessToken)
                             .crudCreateAssessments(new AssessmentsRequestBody()),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 //endregion
 
@@ -168,19 +170,19 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetAssessmentsDetailEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getAssessmentsDetailEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getAssessmentsDetailEntityControllerApi(accessToken)
                         .crudCreateAssessmentsdetail(new AssessmentsDetailRequestBody()),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetAssessmentsDetailSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getAssessmentsDetailSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getAssessmentsDetailSearchControllerApi(accessToken)
                         .crudAssessmentsDetailsFindAllByOrganizationIdAndIuvAndIud(1L, "iuv", "iud"),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 //endregion
 
@@ -188,12 +190,12 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetAssessmentsRegistryApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> { classificationApisHolder.getAssessmentsRegistryApi(accessToken)
+            accessToken -> { apisHolder.getAssessmentsRegistryApi(accessToken)
                 .createAssessmentsRegistryByDebtPositionDTOAndIud(new CreateAssessmentsRegistryByDebtPositionDTOAndIudRequest());
                 return voidMock;
             },
             new ParameterizedTypeReference<>() {},
-            classificationApisHolder::unload);
+            apisHolder::unload);
     }
 
     @Test
@@ -213,12 +215,12 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
         List<String> sort = List.of("assessmentCode,asc");
 
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken ->  classificationApisHolder.getAssessmentsRegistrySearchControllerApi(accessToken)
+                accessToken ->  apisHolder.getAssessmentsRegistrySearchControllerApi(accessToken)
                         .crudAssessmentsRegistriesFindAssessmentsRegistriesByFilters(organizationId ,
                                 debtPositionTypeOrgCodes, sectionCode, sectionDescription, officeCode, officeDescription,
                                 assessmentCode, assessmentDescription, operatingYear, status, page, size, sort)
                 ,new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
 
@@ -228,20 +230,20 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetPaymentNotificationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> classificationApisHolder.getPaymentNotificationApi(accessToken)
+            accessToken -> apisHolder.getPaymentNotificationApi(accessToken)
                 .createPaymentNotification(new PaymentNotificationDTO()),
             new ParameterizedTypeReference<>() {},
-            classificationApisHolder::unload);
+            apisHolder::unload);
     }
 //endregion
 
     @Test
     void whenGetPaymentNotificationNoPiiSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> classificationApisHolder.getPaymentNotificationNoPiiSearchControllerApi(accessToken)
+            accessToken -> apisHolder.getPaymentNotificationNoPiiSearchControllerApi(accessToken)
                 .crudPaymentNotificationGetByOrganizationIdAndIud(0L, "IUD"),
             new ParameterizedTypeReference<>() {},
-            classificationApisHolder::unload);
+            apisHolder::unload);
     }
 
     @Test
@@ -262,7 +264,7 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
         String pspCompanyName= "PSP_NAME";
         String pspLastName= "PSP_LAST_NAME";
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getDataExportsApi(accessToken)
+                accessToken -> apisHolder.getDataExportsApi(accessToken)
                         .exportClassifications(0L,
                                 operatorExternalUserId,
                                 Set.of(ClassificationsEnum.DOPPI),
@@ -294,17 +296,17 @@ class ClassificationApisHolderTest extends BaseApiHolderTest {
                                 List.of("classificationId")
                                 ),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 
 //region Classification entity
     @Test
     void whenGetClassificationSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> classificationApisHolder.getClassificationSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getClassificationSearchControllerApi(accessToken)
                         .crudClassificationsFindAllByOrganizationIdAndIuvAndIud(1L, "iuv", "iud"),
                 new ParameterizedTypeReference<>() {},
-                classificationApisHolder::unload);
+                apisHolder::unload);
     }
 //endregion
 }

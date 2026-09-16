@@ -30,7 +30,7 @@ class PaymentsReportingMapperServiceTest {
 		GregorianCalendar gregorianCalendar = new GregorianCalendar(2024, GregorianCalendar.DECEMBER, 25);
 
 		// Given
-		CtFlussoRiversamento ctFlussoRiversamento = new CtFlussoRiversamento();
+		FlussoRiversamento ctFlussoRiversamento = new FlussoRiversamento();
 		ctFlussoRiversamento.setIdentificativoFlusso("flow123");
 
 		ctFlussoRiversamento.setIdentificativoUnivocoRegolamento("reg123");
@@ -70,7 +70,7 @@ class PaymentsReportingMapperServiceTest {
 		singlePayment.setCodiceEsitoSingoloPagamento("OK");
 		singlePayment.setDataEsitoSingoloPagamento(toXMLGregorianCalendar(gregorianCalendar));
 
-		ctFlussoRiversamento.getDatiSingoliPagamenti().add(singlePayment);
+		ctFlussoRiversamento.getDatiSingoliPagamentis().add(singlePayment);
 
 		// When
 		List<PaymentsReporting> result = mapper.map2PaymentsReportings(ctFlussoRiversamento, ingestionFlowFileDTO);

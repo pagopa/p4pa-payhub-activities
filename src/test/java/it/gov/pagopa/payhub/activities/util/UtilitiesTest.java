@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.MDC;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
@@ -26,7 +28,46 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static it.gov.pagopa.payhub.activities.util.Utilities.INSTALLMENT_REMITTANCE_INFORMATION_PLACEHOLDER;
 
-class UtilitiesTest {
+public class UtilitiesTest {
+
+    public static void setTraceId(String traceId) {
+        setTraceId(traceId, null);
+    }
+    public static void setTraceId(String traceId, String spanId) {
+        MDC.put("traceId", traceId);
+        MDC.put("spanId", spanId);
+    }
+    public static void clearTraceIdContext(){
+        MDC.clear();
+    }
+
+    @Test
+    void testGetTraceId(){
+        // Given
+        String expectedResult = "TRACEID";
+        setTraceId(expectedResult);
+
+        // When
+        String result = Utilities.getTraceId();
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+        clearTraceIdContext();
+    }
+
+    @Test
+    void testGetSpanId(){
+        // Given
+        String expectedResult = "SPANID";
+        setTraceId("TRACEID", expectedResult);
+
+        // When
+        String result = Utilities.getSpanId();
+
+        // Then
+        Assertions.assertSame(expectedResult, result);
+        clearTraceIdContext();
+    }
 
     @Test
     void testIbanInvalid(){
@@ -175,8 +216,8 @@ class UtilitiesTest {
 
     @Test
     void givenNotNullInputWhenToLocalDateTimeThenOk() {
-        OffsetDateTime input = OffsetDateTime.of(2025, 10, 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
-        LocalDateTime expected = LocalDateTime.of(2025, 10, 20, 11, 30, 0, 0);
+        OffsetDateTime input = OffsetDateTime.of(2025, Month.OCTOBER.getValue(), 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
+        LocalDateTime expected = LocalDateTime.of(2025, Month.OCTOBER, 20, 11, 30, 0, 0);
 
         LocalDateTime result = Utilities.toLocalDateTime(input);
 
@@ -194,8 +235,8 @@ class UtilitiesTest {
 
     @Test
     void givenNotNullInputWhenToLocalDateThenOk() {
-        OffsetDateTime input = OffsetDateTime.of(2025, 10, 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
-        LocalDate expected = LocalDate.of(2025, 10, 20);
+        OffsetDateTime input = OffsetDateTime.of(2025, Month.OCTOBER.getValue(), 20, 11, 30, 0, 0, ZoneOffset.ofHours(2));
+        LocalDate expected = LocalDate.of(2025, Month.OCTOBER.getValue(), 20);
 
         LocalDate result = Utilities.toLocalDate(input);
 

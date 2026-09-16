@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt;
 import it.gov.pagopa.payhub.activities.connector.pu_sil.PuSilService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptInstallmentResolverService;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

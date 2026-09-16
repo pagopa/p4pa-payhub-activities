@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.sendnotification.client.Campaig
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Lazy
@@ -19,12 +20,30 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    public OffsetDateTime findLatestFullRecalculationDate() {
+        return campaignClient.findLatestFullRecalculationDate(authnService.getAccessToken());
+    }
+
+    @Override
+    public OffsetDateTime findFirstCampaignStartDate() {
+        return campaignClient.findFirstCampaignStartDate(authnService.getAccessToken());
+    }
+
+    @Override
+    public List<String> findIdsOfUpdatedCampaignsByNotificationUpdateDate(OffsetDateTime fullRecalculationDate) {
+        return campaignClient.findIdsOfUpdatedCampaignsByNotificationUpdateDate(
+                fullRecalculationDate,
+                authnService.getAccessToken()
+        );
+    }
+
+    @Override
     public List<String> fetchAllCampaignIds() {
         return campaignClient.fetchAllCampaignIds(authnService.getAccessToken());
     }
 
     @Override
-    public void alignCampaign(String campaignId) {
-        campaignClient.alignCampaign(campaignId, authnService.getAccessToken());
+    public void alignCampaign(String campaignId, OffsetDateTime countersRecalculationDate) {
+        campaignClient.alignCampaign(campaignId, countersRecalculationDate, authnService.getAccessToken());
     }
 }

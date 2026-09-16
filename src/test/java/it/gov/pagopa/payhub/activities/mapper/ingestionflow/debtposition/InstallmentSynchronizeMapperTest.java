@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSynchronizeDTO;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentSynchronizeDTO;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -166,6 +166,7 @@ class InstallmentSynchronizeMapperTest {
 
         InstallmentSynchronizeDTO result = installmentSynchronizeMapper.map(dto, 1L, 1L, 1L, FILENAME);
 
+        assertNotNull(result.getAdditionalTransfers());
         assertTrue(result.getAdditionalTransfers().stream().noneMatch(t -> "causaleVersamentoEnte1".equals(t.getRemittanceInformation())));
     }
 

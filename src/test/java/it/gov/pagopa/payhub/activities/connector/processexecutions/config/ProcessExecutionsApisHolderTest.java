@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
@@ -28,11 +29,11 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private ProcessExecutionsApisHolder processExecutionsApisHolder;
+    private ProcessExecutionsApisHolder apisHolder;
     private ProcessExecutionsApiClientConfig apiClientConfig;
 
     @BeforeEach
-    void setUp() {
+    void init() {
         when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
         when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
@@ -40,8 +41,9 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
                 .baseUrl("http://example.com")
                 .maxAttempts(3)
                 .build();
+        apisHolder = new ProcessExecutionsApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        processExecutionsApisHolder = new ProcessExecutionsApisHolder(apiClientConfig, restTemplateBuilderMock);
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getExportFileEntityControllerApi(null));
     }
 
     @AfterEach
@@ -55,7 +57,7 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> processExecutionsApisHolder.getClassificationsExportFileEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getClassificationsExportFileEntityControllerApi(accessToken)
                         .crudGetClassificationsexportfile(String.valueOf(1L)),
                 new ParameterizedTypeReference<>() {}
         );
@@ -64,10 +66,10 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetIngestionFlowFileEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
                             .crudGetIngestionflowfile(String.valueOf(1L)),
                 new ParameterizedTypeReference<>() {},
-                processExecutionsApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
@@ -82,63 +84,63 @@ class ProcessExecutionsApisHolderTest extends BaseApiHolderTest {
         ingestionFlowFileUpdateStatusRequestDTO.setDiscardFile("error");
 
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
+                accessToken -> apisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
                             .updateStatus(1L, ingestionFlowFileUpdateStatusRequestDTO),
                 new ParameterizedTypeReference<>() {},
-                processExecutionsApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetIngestionFlowFileSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> processExecutionsApisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
+            accessToken -> apisHolder.getIngestionFlowFileSearchControllerApi(accessToken)
                     .crudIngestionFlowFilesFindByOrganizationIDFlowTypeCreateDate(1L, List.of(IngestionFlowFileTypeEnum.PAYMENTS_REPORTING.getValue()), LocalDateTime.now().minusDays(1L), LocalDateTime.now().minusDays(1L), null, null, null, null, null, null),
             new ParameterizedTypeReference<>() {},
-            processExecutionsApisHolder::unload);
+            apisHolder::unload);
     }
 
     @Test
     void whenGetPaidExportFileEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> processExecutionsApisHolder.getPaidExportFileEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getPaidExportFileEntityControllerApi(accessToken)
                         .crudGetPaidexportfile(String.valueOf(1L)),
                 new ParameterizedTypeReference<>() {},
-                processExecutionsApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetExportFileEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> processExecutionsApisHolder.getExportFileEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getExportFileEntityControllerApi(accessToken)
                         .crudGetExportfile(String.valueOf(1L)),
                 new ParameterizedTypeReference<>() {},
-                processExecutionsApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetExportFileEntityExtendedControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> processExecutionsApisHolder.getExportFileEntityExtendedControllerApi(accessToken)
+                accessToken -> apisHolder.getExportFileEntityExtendedControllerApi(accessToken)
                         .updateExportFileStatus(1L, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, "filePath", "fileName", 20L,2L, "", OffsetDateTime.now().plusDays(5L)),
                 new ParameterizedTypeReference<>() {},
-                processExecutionsApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetReceiptsArchivingExportFileEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> processExecutionsApisHolder.getReceiptsArchivingExportFileEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getReceiptsArchivingExportFileEntityControllerApi(accessToken)
                         .crudGetReceiptsarchivingexportfile(String.valueOf(1L)),
                 new ParameterizedTypeReference<>() {},
-                processExecutionsApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetClassificationsExportFileEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> processExecutionsApisHolder.getClassificationsExportFileEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getClassificationsExportFileEntityControllerApi(accessToken)
                         .crudGetClassificationsexportfile(String.valueOf(1L)),
                 new ParameterizedTypeReference<>() {},
-                processExecutionsApisHolder::unload);
+                apisHolder::unload);
     }
 }

@@ -8,8 +8,8 @@ import it.gov.pagopa.payhub.activities.mapper.exportflow.debtposition.Installmen
 import it.gov.pagopa.payhub.activities.service.exportflow.BaseExportFileService;
 import it.gov.pagopa.payhub.activities.service.files.CsvService;
 import it.gov.pagopa.payhub.activities.service.files.FileArchiverService;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PagedInstallmentsPaidView;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentPaidViewDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PagedInstallmentsPaidView;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.PaidExportFileFilter;

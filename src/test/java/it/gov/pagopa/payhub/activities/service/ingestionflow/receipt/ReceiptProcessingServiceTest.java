@@ -10,8 +10,8 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.receipt.ReceiptMappe
 import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +25,9 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<ReceiptIngestionFlowFileDTO, ReceiptIngestionFlowFileResult, ReceiptErrorDTO> {
@@ -47,7 +50,7 @@ class ReceiptProcessingServiceTest extends BaseIngestionFlowProcessingServiceTes
     @BeforeEach
     void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        serviceSpy = Mockito.spy(new ReceiptProcessingService(
+        serviceSpy = spy(new ReceiptProcessingService(
                 MAX_CONCURRENT_PROCESSING_ROWS,
                 mapperMock,
                 errorsArchiverServiceMock,
@@ -95,10 +98,10 @@ class ReceiptProcessingServiceTest extends BaseIngestionFlowProcessingServiceTes
         Mockito.doNothing()
                 .when(requiredFieldsValidatorServiceMock)
                 .validateIngestionFile(ingestionFlowFile, dto);
-        Mockito.doReturn(receiptWithAdditionalNodeDataDTO)
+        doReturn(receiptWithAdditionalNodeDataDTO)
                 .when(mapperMock)
                 .map(ingestionFlowFile, dto);
-        Mockito.doReturn(new ReceiptDTO())
+        doReturn(new ReceiptDTO())
                 .when(receiptServiceMock)
                 .createReceipt(receiptWithAdditionalNodeDataDTO);
 
@@ -119,7 +122,7 @@ class ReceiptProcessingServiceTest extends BaseIngestionFlowProcessingServiceTes
 
         Mockito.doAnswer(a -> {
                     ReceiptIngestionFlowFileDTO validatingRow = a.getArgument(1);
-                    Mockito.doReturn(Optional.of(organization)).when(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
+                    doReturn(Optional.of(organization)).when(organizationServiceMock).getOrganizationById(ingestionFlowFile.getOrganizationId());
                     new ReceiptIngestionFlowFileRequiredFieldsValidatorService(organizationServiceMock, null).validateIngestionFile(ingestionFlowFile, validatingRow);
                     return true;
                 })

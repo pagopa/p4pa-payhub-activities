@@ -50,10 +50,9 @@ public class ClassificationClient {
     }
 
     public Integer deleteDuplicates(Long organizationId, String iuv, int transferIndex,
-        Long receiptPaymentAmount, String receiptOrgFiscalCode,
         ClassificationsEnum label, String accessToken) {
         return classificationApisHolder.getClassificationEntityExtendedControllerApi(accessToken)
-            .deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label);
+            .deleteDuplicates(organizationId, iuv, transferIndex, label);
     }
 
     public List<Classification> findAllByOrganizationIdAndIuvAndIud(Long organizationId, String iuv, String iud, String accessToken) {

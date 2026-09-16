@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.organization.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrgSilServiceType;
@@ -14,25 +15,28 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class OrganizationApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private OrganizationApisHolder organizationApisHolder;
+    private OrganizationApisHolder apisHolder;
     private OrganizationApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
-        Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-        Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+        when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+        when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
         apiClientConfig = OrganizationApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .maxAttempts(3)
                 .build();
+        apisHolder = new OrganizationApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        organizationApisHolder = new OrganizationApisHolder(apiClientConfig, restTemplateBuilderMock);
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getOrganizationApi(null));
     }
 
     @AfterEach
@@ -46,7 +50,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> organizationApisHolder.getBrokerConfigurationApi(accessToken)
+                accessToken -> apisHolder.getBrokerConfigurationApi(accessToken)
                         .getBrokerEmailServerConfig(1L),
                 new ParameterizedTypeReference<>() {}
         );
@@ -55,81 +59,81 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetOrganizationSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getOrganizationSearchControllerApi(accessToken)
                         .crudOrganizationsFindByIpaCode("ORGIPACODE"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
 	@Test
 	void whenGetBrokerEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> organizationApisHolder.getBrokerEntityControllerApi(accessToken)
+            accessToken -> apisHolder.getBrokerEntityControllerApi(accessToken)
                 .crudGetBrokers(0, 2_000, null),
             new ParameterizedTypeReference<>() {},
-            organizationApisHolder::unload);
+            apisHolder::unload);
 	}
 
 	@Test
 	void whenGetOrganizationSilServiceApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> organizationApisHolder.getOrganizationSilServiceApi(accessToken)
+            accessToken -> apisHolder.getOrganizationSilServiceApi(accessToken)
                 .createOrUpdateOrgSilService(new OrgSilServiceDTO()),
             new ParameterizedTypeReference<>() {},
-            organizationApisHolder::unload);
+            apisHolder::unload);
 	}
 
 	@Test
 	void whenGetOrgSilServiceSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-            accessToken -> organizationApisHolder.getOrgSilServiceSearchControllerApi(accessToken)
+            accessToken -> apisHolder.getOrgSilServiceSearchControllerApi(accessToken)
                 .crudOrgSilServicesFindAllByOrganizationIdAndServiceType(1L, OrgSilServiceType.ACTUALIZATION),
             new ParameterizedTypeReference<>() {},
-            organizationApisHolder::unload);
+            apisHolder::unload);
 	}
 
     @Test
     void whenGetTaxonomyApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getTaxonomyApi(accessToken)
+                accessToken -> apisHolder.getTaxonomyApi(accessToken)
                         .syncTaxonomies(),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetBrokerSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getBrokerSearchControllerApi(accessToken)
+                accessToken -> apisHolder.getBrokerSearchControllerApi(accessToken)
                         .crudBrokersFindByBrokeredOrganizationId("ORGID"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetOrganizationEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getOrganizationEntityControllerApi(accessToken)
                         .crudGetOrganization("ORGID"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetBrokerConfigurationEntityControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getBrokerConfigurationEntityControllerApi(accessToken)
+                accessToken -> apisHolder.getBrokerConfigurationEntityControllerApi(accessToken)
                         .crudGetBrokerconfiguration("BROKER_ID"),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetBrokerConfigurationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getBrokerConfigurationApi(accessToken)
+                accessToken -> apisHolder.getBrokerConfigurationApi(accessToken)
                         .getBrokerEmailServerConfig(1L),
                 new ParameterizedTypeReference<>() {},
-                organizationApisHolder::unload);
+                apisHolder::unload);
     }
 }

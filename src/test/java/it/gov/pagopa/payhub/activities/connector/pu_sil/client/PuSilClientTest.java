@@ -1,10 +1,11 @@
 package it.gov.pagopa.payhub.activities.connector.pu_sil.client;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.connector.pu_sil.config.PuSilApisHolder;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.pusil.controller.generated.NotifyPaymentApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.pusil.client.generated.NotifyPaymentApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class PuSilClientTest {
     Long orgSilServiceId = 1L;
     InstallmentDTO installmentDTO = new InstallmentDTO();
 
-    Mockito.when(puSilApisHolderMock.getNotifyPaymentApi(accessToken)).thenReturn(notifyPaymentApiMock);
+    when(puSilApisHolderMock.getNotifyPaymentApi(accessToken)).thenReturn(notifyPaymentApiMock);
     Mockito.doNothing().when(notifyPaymentApiMock).notifyPayment(orgSilServiceId, installmentDTO);
     // When Then
     assertDoesNotThrow(()-> puSilClient.notifyPayment(orgSilServiceId, installmentDTO, accessToken));

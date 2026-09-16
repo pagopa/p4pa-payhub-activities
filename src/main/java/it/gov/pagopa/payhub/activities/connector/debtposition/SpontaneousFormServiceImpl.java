@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositionTypeOrgClient;
-import it.gov.pagopa.pu.debtposition.dto.generated.SpontaneousForm;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SpontaneousForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +28,12 @@ public class SpontaneousFormServiceImpl implements SpontaneousFormService {
     public SpontaneousForm createSpontaneousForm(SpontaneousForm spontaneousForm) {
         log.info("Creating SpontaneousForm with code: {}", spontaneousForm.getCode());
         return debtPositionTypeOrgClient.createSpontaneousForm(spontaneousForm, authnService.getAccessToken());
+    }
+
+    @Override
+    public SpontaneousForm matchOrSaveSpontaneousForm(SpontaneousForm spontaneousForm) {
+        log.debug("Matching/saving SpontaneousForm with code: {}", spontaneousForm.getCode());
+        return debtPositionTypeOrgClient.matchOrSaveSpontaneousForm(spontaneousForm, authnService.getAccessToken());
     }
 }
 

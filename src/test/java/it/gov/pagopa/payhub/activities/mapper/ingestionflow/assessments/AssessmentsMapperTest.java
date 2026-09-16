@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessments;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail.AssessmentsDetailMapper;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

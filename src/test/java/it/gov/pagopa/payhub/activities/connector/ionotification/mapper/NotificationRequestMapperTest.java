@@ -2,15 +2,14 @@ package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationGenericPlaceholderResolverService;
 import it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -19,6 +18,7 @@ import static it.gov.pagopa.payhub.activities.util.TestUtils.checkNotNullFields;
 import static it.gov.pagopa.payhub.activities.util.faker.IONotificationDTOFaker.buildIONotificationDTO;
 import static it.gov.pagopa.payhub.activities.util.faker.InstallmentFaker.buildInstallmentDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationRequestMapperTest {
@@ -42,13 +42,13 @@ class NotificationRequestMapperTest {
         String expectedMarkdown = "expectedMarkdown";
         String expectedSubject = "expectedSubject";
 
-        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
 
-        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateSubject(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
@@ -77,14 +77,14 @@ class NotificationRequestMapperTest {
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
         String expectedMarkdown = "expectedMarkdown";
-        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
 
         String expectedSubject = "expectedSubject";
-        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateSubject(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
@@ -111,14 +111,14 @@ class NotificationRequestMapperTest {
         IONotificationDTO ioNotificationDTO = buildIONotificationDTO();
 
         String expectedMarkdown = "expectedMarkdown";
-        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateMessage(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()
         )).thenReturn(expectedMarkdown);
 
         String expectedSubject = "expectedSubject";
-        Mockito.when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
+        when(ioNotificationGenericPlaceholderResolverServiceMock.applyDefaultPlaceholder(
                 ioNotificationDTO.getIoTemplateSubject(),
                 debtPosition,
                 debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst()

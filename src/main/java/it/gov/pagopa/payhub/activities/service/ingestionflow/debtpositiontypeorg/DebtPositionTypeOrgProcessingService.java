@@ -12,12 +12,11 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontypeorg.
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform.SpontaneousFormHandlerService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -76,7 +75,7 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
 
     @Override
     protected String getSequencingId(DebtPositionTypeOrgIngestionFlowFileDTO row) {
-        return row.getCode();
+        return row.getIpaCode().toLowerCase(Locale.ROOT);
     }
 
     @Override
@@ -105,15 +104,15 @@ public class DebtPositionTypeOrgProcessingService extends IngestionFlowProcessin
 		    return List.of(error);
 	    }
 
-	    List<DebtPositionType> debtPositionTypeList = Objects.requireNonNull(debtPositionTypeService.getByBrokerIdAndCode(ingestionFlowFileResult.getBrokerId(), row.getCode()).getEmbedded()).getDebtPositionTypes();
-	    if (CollectionUtils.isEmpty(debtPositionTypeList)) {
+	    DebtPositionType debtPositionType = debtPositionTypeService.getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(ingestionFlowFileResult.getBrokerId(), row.getCode(), row.getOrgType(), row.getTaxonomyCode());
+	    if (debtPositionType == null) {
 		    DebtPositionTypeOrgErrorDTO error = buildErrorDto(
 			    ingestionFlowFile, lineNumber, row,
 			    FileErrorCode.DEBT_POSITION_TYPE_BY_CODE_NOT_FOUND.name(),
 			    FileErrorCode.DEBT_POSITION_TYPE_BY_CODE_NOT_FOUND.format(row.getCode()));
 		    return List.of(error);
 	    }
-	    Long debtPositionTypeId = debtPositionTypeList.getFirst().getDebtPositionTypeId();
+	    Long debtPositionTypeId = debtPositionType.getDebtPositionTypeId();
 
 
 	    Long spontaneousFormId;

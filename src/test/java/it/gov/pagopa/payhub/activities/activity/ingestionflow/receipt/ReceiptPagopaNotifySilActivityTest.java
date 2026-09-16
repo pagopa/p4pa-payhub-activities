@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.activities.connector.pu_sil.PuSilService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.receipt.ReceiptInstallmentResolverService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -18,6 +18,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaNotifySilActivityTest {
@@ -56,14 +59,14 @@ class ReceiptPagopaNotifySilActivityTest {
     );
     ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(installment, notifiable, organization);
 
-    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
 
     // When
     Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
 
     // Then
-    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
-    Mockito.verify(puSilServiceMock).notifyPayment(2L, installment, "IPACODE");
+    verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    verify(puSilServiceMock).notifyPayment(2L, installment, "IPACODE");
   }
 
   @Test
@@ -71,14 +74,14 @@ class ReceiptPagopaNotifySilActivityTest {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
 
-    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO))
+    when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO))
             .thenThrow(new OrganizationNotFoundException("Organization not found"));
 
     // When Then
     Assertions.assertThrows(OrganizationNotFoundException.class,
             () -> activity.notifyReceiptToSil(receiptDTO));
 
-    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
     Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
@@ -92,13 +95,13 @@ class ReceiptPagopaNotifySilActivityTest {
 
     ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(null, List.of(), organization);
 
-    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
 
     // When
     Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
 
     // Then
-    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
     Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
@@ -107,14 +110,14 @@ class ReceiptPagopaNotifySilActivityTest {
     // Given
     ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("UNKNOWN_11111111111");
 
-    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO))
+    when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO))
             .thenReturn(ResolvedInstallmentResult.empty());
 
     // When
     Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
 
     // Then
-    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
     Mockito.verifyNoInteractions(puSilServiceMock);
   }
 
@@ -128,13 +131,13 @@ class ReceiptPagopaNotifySilActivityTest {
 
     ResolvedInstallmentResult resolved = new ResolvedInstallmentResult(null, List.of(), organization);
 
-    Mockito.when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
+    when(receiptInstallmentResolverServiceMock.resolveInstallment(receiptDTO)).thenReturn(resolved);
 
     // When
     Assertions.assertDoesNotThrow(() -> activity.notifyReceiptToSil(receiptDTO));
 
     // Then
-    Mockito.verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
+    verify(receiptInstallmentResolverServiceMock).resolveInstallment(receiptDTO);
     Mockito.verifyNoInteractions(puSilServiceMock);
   }
 

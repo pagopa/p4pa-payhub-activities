@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
-import it.gov.pagopa.pu.debtposition.client.generated.PaymentOptionEntityExtendedControllerApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionStatus;
+import it.gov.pagopa.pu.debtpositions.client.generated.PaymentOptionEntityExtendedControllerApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

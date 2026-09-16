@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.dto.ingestion.receipt;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

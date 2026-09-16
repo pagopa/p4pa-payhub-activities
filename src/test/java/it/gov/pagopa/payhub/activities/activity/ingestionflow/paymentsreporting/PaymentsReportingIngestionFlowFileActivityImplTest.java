@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIdentificativoUnivocoPersonaG;
 import it.gov.digitpa.schemas._2011.pagamenti.CtIstitutoRicevente;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
@@ -57,7 +57,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 
 	private PaymentsReportingIngestionFlowFileActivityImpl ingestionActivity;
 
-	private CtFlussoRiversamento ctFlussoRiversamento;
+	private FlussoRiversamento ctFlussoRiversamento;
 
 	@TempDir
 	private Path workingDir;
@@ -78,7 +78,7 @@ class PaymentsReportingIngestionFlowFileActivityImplTest {
 		ctIdentificativoUnivocoPersonaG.setCodiceIdentificativoUnivoco("80010020011");
 		CtIstitutoRicevente istitutoRicevente = new CtIstitutoRicevente();
 		istitutoRicevente.setIdentificativoUnivocoRicevente(ctIdentificativoUnivocoPersonaG);
-		ctFlussoRiversamento = new CtFlussoRiversamento();
+		ctFlussoRiversamento = new FlussoRiversamento();
 		ctFlussoRiversamento.setIstitutoRicevente(istitutoRicevente);
 	}
 

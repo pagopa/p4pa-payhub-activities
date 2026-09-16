@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 
 /**
  * Service interface responsible for handling fine debt position reduction expiration.

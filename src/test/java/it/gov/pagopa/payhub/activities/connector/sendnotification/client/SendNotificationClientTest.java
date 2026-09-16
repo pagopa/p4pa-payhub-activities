@@ -1,8 +1,9 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.client;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.config.SendApisHolder;
-import it.gov.pagopa.pu.sendnotification.controller.generated.NotificationApi;
-import it.gov.pagopa.pu.sendnotification.controller.generated.StreamsApi;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
+import it.gov.pagopa.pu.sendnotification.client.generated.NotificationApi;
+import it.gov.pagopa.pu.sendnotification.client.generated.StreamsApi;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -13,9 +14,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationClientTest {
@@ -47,9 +50,9 @@ class SendNotificationClientTest {
 
         SendNotificationDTO expectedResult = new SendNotificationDTO();
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.getSendNotification(Mockito.same(sendNotificationId)))
+        when(sendNotificationApiMock.getSendNotification(Mockito.same(sendNotificationId)))
                 .thenReturn(expectedResult);
 
         // When
@@ -65,10 +68,10 @@ class SendNotificationClientTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "notificationId";
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.getSendNotification(Mockito.same(sendNotificationId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(sendNotificationApiMock.getSendNotification(Mockito.same(sendNotificationId)))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         SendNotificationDTO result = client.findSendNotification(sendNotificationId, accessToken);
@@ -85,9 +88,9 @@ class SendNotificationClientTest {
         CreateNotificationRequest request = new CreateNotificationRequest();
         CreateNotificationResponse expectedResult = new CreateNotificationResponse();
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
             .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.createSendNotification(request))
+        when(sendNotificationApiMock.createSendNotification(request))
             .thenReturn(expectedResult);
 
         // When
@@ -104,10 +107,10 @@ class SendNotificationClientTest {
 
         CreateNotificationRequest request = new CreateNotificationRequest();
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
             .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.createSendNotification(request))
-            .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(sendNotificationApiMock.createSendNotification(request))
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         CreateNotificationResponse result = client.createSendNotification(request, accessToken);
@@ -124,9 +127,9 @@ class SendNotificationClientTest {
         Long organizationId = 1L;
         SendNotificationDTO expectedResult = new SendNotificationDTO();
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
             .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
+        when(sendNotificationApiMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
             .thenReturn(expectedResult);
 
         // When
@@ -143,10 +146,10 @@ class SendNotificationClientTest {
         String nav = "NAV";
         Long organizationId = 1L;
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
             .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
-            .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(sendNotificationApiMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         // When
         SendNotificationDTO result = client.findSendNotificationByOrgIdAndNav(organizationId, nav, accessToken);
@@ -163,9 +166,9 @@ class SendNotificationClientTest {
 
         StartNotificationResponse expectedResponse = new StartNotificationResponse();
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
             .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.startNotification(sendNotificationId, new LoadFileRequest()))
+        when(sendNotificationApiMock.startNotification(sendNotificationId, new LoadFileRequest()))
             .thenReturn(expectedResponse);
 
         // When
@@ -184,9 +187,9 @@ class SendNotificationClientTest {
 
         SendStreamDTO expectedResult = new SendStreamDTO();
 
-        Mockito.when(sendApisHolderMock.getSendStreamsApi(accessToken))
+        when(sendApisHolderMock.getSendStreamsApi(accessToken))
                 .thenReturn(sendStreamsApiMock);
-        Mockito.when(sendStreamsApiMock.getStream(sendStreamId))
+        when(sendStreamsApiMock.getStream(sendStreamId))
                 .thenReturn(expectedResult);
 
         //When
@@ -205,9 +208,9 @@ class SendNotificationClientTest {
 
         List<ProgressResponseElementV28DTO> expectedResult = List.of(new ProgressResponseElementV28DTO());
 
-        Mockito.when(sendApisHolderMock.getSendStreamsApi(accessToken))
+        when(sendApisHolderMock.getSendStreamsApi(accessToken))
                 .thenReturn(sendStreamsApiMock);
-        Mockito.when(sendStreamsApiMock.getStreamEvents(organizationId, streamId))
+        when(sendStreamsApiMock.getStreamEvents(organizationId, streamId))
                 .thenReturn(expectedResult);
 
         //When
@@ -224,7 +227,7 @@ class SendNotificationClientTest {
         String streamId = "streamId";
         String lastEventId = "lastEventId";
 
-        Mockito.when(sendApisHolderMock.getSendStreamsApi(accessToken))
+        when(sendApisHolderMock.getSendStreamsApi(accessToken))
                 .thenReturn(sendStreamsApiMock);
         Mockito.doNothing()
                 .when(sendStreamsApiMock)
@@ -234,7 +237,7 @@ class SendNotificationClientTest {
         client.updateLastProcessedStreamEventId(streamId, lastEventId, accessToken);
 
         //Then
-        Mockito.verify(sendStreamsApiMock)
+        verify(sendStreamsApiMock)
                 .updateStreamLastEventId(
                     streamId,
                     lastEventId
@@ -247,7 +250,7 @@ class SendNotificationClientTest {
         String accessToken = "ACCESSTOKEN";
         String notificationRequestId = "requestId";
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
         Mockito.doNothing()
                 .when(sendNotificationApiMock)
@@ -257,7 +260,7 @@ class SendNotificationClientTest {
         client.updateSendNotificationStatus(notificationRequestId, NotificationStatus.DELIVERED, accessToken);
 
         //Then
-        Mockito.verify(sendNotificationApiMock)
+        verify(sendNotificationApiMock)
                 .updateNotificationStatus(
                         notificationRequestId,
                         NotificationStatus.DELIVERED
@@ -270,9 +273,9 @@ class SendNotificationClientTest {
         String sendNotificationId = "sendNotificationId";
         FileExpirationResponseDTO expectedResult = new FileExpirationResponseDTO();
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.deleteExpiredLegalFacts(sendNotificationId))
+        when(sendNotificationApiMock.deleteExpiredLegalFacts(sendNotificationId))
                 .thenReturn(expectedResult);
 
         FileExpirationResponseDTO result = client.deleteExpiredLegalFacts(sendNotificationId, accessToken);
@@ -285,10 +288,10 @@ class SendNotificationClientTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.deleteExpiredLegalFacts(sendNotificationId))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(sendNotificationApiMock.deleteExpiredLegalFacts(sendNotificationId))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         FileExpirationResponseDTO result = client.deleteExpiredLegalFacts(sendNotificationId, accessToken);
 
@@ -301,9 +304,9 @@ class SendNotificationClientTest {
         String sendNotificationId = "sendNotificationId";
         FileExpirationResponseDTO expectedResult = new FileExpirationResponseDTO();
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.deleteExpiredDocuments(sendNotificationId))
+        when(sendNotificationApiMock.deleteExpiredDocuments(sendNotificationId))
                 .thenReturn(expectedResult);
 
         FileExpirationResponseDTO result = client.deleteExpiredDocuments(sendNotificationId, accessToken);
@@ -316,10 +319,10 @@ class SendNotificationClientTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(sendApisHolderMock.getSendNotificationApi(accessToken))
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
-        Mockito.when(sendNotificationApiMock.deleteExpiredDocuments(sendNotificationId))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(sendNotificationApiMock.deleteExpiredDocuments(sendNotificationId))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
         FileExpirationResponseDTO result = client.deleteExpiredDocuments(sendNotificationId, accessToken);
 

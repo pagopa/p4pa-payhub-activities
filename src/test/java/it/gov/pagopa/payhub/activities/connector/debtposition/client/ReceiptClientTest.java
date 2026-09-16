@@ -1,17 +1,13 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
 import it.gov.pagopa.payhub.activities.dto.email.FileResourceDTO;
-import it.gov.pagopa.pu.debtposition.client.generated.ReceiptApi;
-import it.gov.pagopa.pu.debtposition.client.generated.ReceiptNoPiiSearchControllerApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
+import it.gov.pagopa.pu.debtpositions.client.generated.ReceiptApi;
+import it.gov.pagopa.pu.debtpositions.client.generated.ReceiptNoPiiSearchControllerApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +20,8 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptClientTest {
@@ -103,7 +100,7 @@ class ReceiptClientTest {
 
 		when(debtPositionApisHolderMock.getReceiptNoPiiSearchControllerApi(accessToken)).thenReturn(receiptNoPiiSearchControllerApiMock);
 		when(receiptNoPiiSearchControllerApiMock.crudReceiptsGetByTransferId(transferId))
-				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
 		// When
 		var result = receiptClient.getByTransferId(accessToken, transferId);
@@ -119,7 +116,7 @@ class ReceiptClientTest {
 
 		when(debtPositionApisHolderMock.getReceiptApi(accessToken)).thenReturn(receiptApiMock);
 		when(receiptApiMock.getReceipt(receiptId))
-				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
 		// When
 		var result = receiptClient.getByReceiptId(accessToken, receiptId);
@@ -157,7 +154,7 @@ class ReceiptClientTest {
 		when(debtPositionApisHolderMock.getReceiptNoPiiSearchControllerApi(accessToken))
 				.thenReturn(receiptNoPiiSearchControllerApiMock);
 		when(receiptNoPiiSearchControllerApiMock.crudReceiptsGetByPaymentReceiptId(paymentReceiptId))
-				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
 		// When
 		ReceiptNoPII result = receiptClient.getByPaymentReceiptId(accessToken, paymentReceiptId);
@@ -207,7 +204,7 @@ class ReceiptClientTest {
 		when(debtPositionApisHolderMock.getReceiptApi(accessToken))
 				.thenReturn(receiptApiMock);
 		when(receiptApiMock.getReceiptPdfWithHttpInfo(receiptId, organizationId))
-				.thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
 		// When
 		FileResourceDTO result = receiptClient.getReceiptPdf(accessToken, receiptId, organizationId);

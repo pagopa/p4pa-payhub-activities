@@ -7,8 +7,9 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.*;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
@@ -184,7 +185,7 @@ public class TransferClassificationStoreService {
 
                 // Classification-specific fields
                 .label(classification)
-                .lastClassificationDate(LocalDate.now())
+                .lastClassificationDate(LocalDate.now(Utilities.ZONEID))
 
                 // Origins
                 .debtPositionOrigin(optionalDebtPosition.map(DebtPosition::getDebtPositionOrigin).orElse(null))

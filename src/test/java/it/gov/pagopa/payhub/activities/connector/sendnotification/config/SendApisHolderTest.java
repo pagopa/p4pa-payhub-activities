@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.sendnotification.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,25 +13,28 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class SendApisHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private SendApisHolder sendApisHolder;
+    private SendApisHolder apisHolder;
     private SendApiClientConfig apiClientConfig;
 
     @BeforeEach
-    void setUp() {
-        Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-        Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+    void init() {
+        when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+        when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
         apiClientConfig = SendApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .maxAttempts(3)
                 .build();
+        apisHolder = new SendApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        sendApisHolder = new SendApisHolder(apiClientConfig, restTemplateBuilderMock);
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getCampaignApi(null));
     }
 
     @AfterEach
@@ -44,7 +48,7 @@ class SendApisHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> sendApisHolder.getSendStreamsApi(accessToken)
+                accessToken -> apisHolder.getSendStreamsApi(accessToken)
                         .getStream("sendStreamId"),
                 new ParameterizedTypeReference<>() {}
         );
@@ -53,40 +57,40 @@ class SendApisHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetSendApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> { sendApisHolder.getSendApi(accessToken)
+                accessToken -> { apisHolder.getSendApi(accessToken)
                         .preloadSendFile("notificationId");
                     return voidMock;
                 },
                 new ParameterizedTypeReference<>() {},
-                sendApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetSendNotificationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> sendApisHolder.getSendNotificationApi(accessToken)
+                accessToken -> apisHolder.getSendNotificationApi(accessToken)
                         .getSendNotification("notificationId"),
                 new ParameterizedTypeReference<>() {},
-                sendApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenGetSendStreamsApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> sendApisHolder.getSendStreamsApi(accessToken)
+                accessToken -> apisHolder.getSendStreamsApi(accessToken)
                         .getStream("sendStreamId"),
                 new ParameterizedTypeReference<>() {},
-                sendApisHolder::unload);
+                apisHolder::unload);
     }
 
     @Test
     void whenThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> sendApisHolder.getCampaignApi(accessToken)
+                accessToken -> apisHolder.getCampaignApi(accessToken)
                         .fetchAllCampaignIds(),
                 new ParameterizedTypeReference<>() {
                 },
-                sendApisHolder::unload
+                apisHolder::unload
         );
     }
 }

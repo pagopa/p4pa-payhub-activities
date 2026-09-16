@@ -4,8 +4,8 @@ import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 import it.gov.pagopa.payhub.activities.service.files.CsvRowAware;
-import it.gov.pagopa.pu.debtposition.dto.generated.Action;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Action;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonEntityType;
 import lombok.*;
 import org.apache.commons.collections4.MultiValuedMap;
 

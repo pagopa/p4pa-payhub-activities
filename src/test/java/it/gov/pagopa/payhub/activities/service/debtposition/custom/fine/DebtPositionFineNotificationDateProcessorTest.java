@@ -4,10 +4,10 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

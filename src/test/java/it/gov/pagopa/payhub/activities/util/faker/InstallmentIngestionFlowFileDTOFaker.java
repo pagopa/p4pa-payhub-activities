@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.util.faker;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.Action;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Action;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonEntityType;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 

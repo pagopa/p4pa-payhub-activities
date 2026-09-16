@@ -60,8 +60,8 @@ public class ClassificationServiceImpl implements ClassificationService {
     }
 
     @Override
-    public Integer deleteDuplicates(Long organizationId, String iuv, int transferIndex, Long receiptPaymentAmount, String receiptOrgFiscalCode) {
-        return classificationClient.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, ClassificationsEnum.DOPPI, authnService.getAccessToken());
+    public Integer deleteDuplicates(Long organizationId, String iuv, int transferIndex) {
+        return classificationClient.deleteDuplicates(organizationId, iuv, transferIndex, ClassificationsEnum.DOPPI, authnService.getAccessToken());
     }
 
     @Override

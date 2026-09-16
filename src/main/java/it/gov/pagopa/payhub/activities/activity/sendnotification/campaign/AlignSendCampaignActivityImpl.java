@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+
 @Slf4j
 @Component
 @Lazy
@@ -16,8 +18,8 @@ public class AlignSendCampaignActivityImpl implements AlignSendCampaignActivity 
     }
 
     @Override
-    public void alignSendCampaign(String campaignId) {
+    public void alignSendCampaign(String campaignId, OffsetDateTime countersRecalculationDate) {
         log.info("Align campaign with id {}", campaignId);
-        campaignService.alignCampaign(campaignId);
+        campaignService.alignCampaign(campaignId, countersRecalculationDate);
     }
 }

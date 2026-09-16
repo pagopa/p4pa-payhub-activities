@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.service.ingestionflow.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.springframework.context.annotation.Lazy;
@@ -27,11 +28,11 @@ public class PaymentsReportingMapperService {
 	 * @param ingestionFlowFileDTO the ingestion metadata containing information about the processing flow.
 	 * @return a list of `PaymentsReporting` objects, one for each individual payment in the flow.
 	 */
-	public List<PaymentsReporting> map2PaymentsReportings(CtFlussoRiversamento ctFlussoRiversamento, IngestionFlowFile ingestionFlowFileDTO) {
+	public List<PaymentsReporting> map2PaymentsReportings(FlussoRiversamento ctFlussoRiversamento, IngestionFlowFile ingestionFlowFileDTO) {
 
 		PaymentsReporting.PaymentsReportingBuilder builder = PaymentsReporting.builder()
-			.creationDate(OffsetDateTime.now())
-			.updateDate(OffsetDateTime.now())
+			.creationDate(OffsetDateTime.now(Utilities.ZONEID))
+			.updateDate(OffsetDateTime.now(Utilities.ZONEID))
 			.acquiringDate(ingestionFlowFileDTO.getCreationDate().toLocalDate())
 			.organizationId(ingestionFlowFileDTO.getOrganizationId())
 			.ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
@@ -52,7 +53,7 @@ public class PaymentsReportingMapperService {
 			.revision(Optional.ofNullable(ctFlussoRiversamento.getRevisioneFlusso()).orElse(0))
 			.deleted(false);
 
-		return ctFlussoRiversamento.getDatiSingoliPagamenti().stream()
+		return ctFlussoRiversamento.getDatiSingoliPagamentis().stream()
 			.map(item -> builder
 				.iuv(item.getIdentificativoUnivocoVersamento())
 				.iur(item.getIdentificativoUnivocoRiscossione())

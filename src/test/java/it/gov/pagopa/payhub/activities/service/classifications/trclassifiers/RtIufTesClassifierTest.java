@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
 import it.gov.pagopa.payhub.activities.util.faker.TreasuryFaker;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentsReporting;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Transfer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

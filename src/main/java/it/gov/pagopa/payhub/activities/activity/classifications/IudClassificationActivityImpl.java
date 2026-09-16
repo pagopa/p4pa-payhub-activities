@@ -9,12 +9,14 @@ import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActi
 import it.gov.pagopa.payhub.activities.service.classifications.TransferClassificationStoreService;
 import it.gov.pagopa.pu.classification.dto.generated.ClassificationsEnum;
 import it.gov.pagopa.pu.classification.dto.generated.PaymentNotificationNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelInstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelInstallmentNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Transfer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -44,7 +46,7 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
     CollectionModelInstallmentNoPII installment = installmentService.getInstallmentsByOrgIdAndIudAndStatus(organizationId, iud,
         INSTALLMENT_PAID_STATUSES_LIST);
-    List<InstallmentNoPII> installmentsList = installment.getEmbedded().getInstallmentNoPIIs();
+    List<InstallmentNoPII> installmentsList = Objects.requireNonNull(installment.getEmbedded()).getInstallmentNoPIIs();
     if (installmentsList == null || installmentsList.isEmpty()) {
       log.info("No installments found for organization id {} and iud {}", organizationId,iud);
 
@@ -62,9 +64,9 @@ public class IudClassificationActivityImpl implements IudClassificationActivity{
 
     installmentsList.forEach(installmentNoPII -> {
       log.debug("InstallmentNoPII: {}", installmentNoPII);
-      List<Transfer> transferList = transferService.findByInstallmentId(installmentNoPII.getInstallmentId()).getEmbedded().getTransfers();
+      List<Transfer> transferList = Objects.requireNonNull(transferService.findByInstallmentId(installmentNoPII.getInstallmentId()).getEmbedded()).getTransfers();
 
-      transferList.forEach(transfer -> {
+      Objects.requireNonNull(transferList).forEach(transfer -> {
         log.debug("Transfer: {}", transfer);
         transferIndex.add(transfer.getTransferIndex());
       });

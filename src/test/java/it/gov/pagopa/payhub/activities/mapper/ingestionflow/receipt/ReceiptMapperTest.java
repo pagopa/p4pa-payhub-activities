@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlo
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.TestUtils;
 import it.gov.pagopa.payhub.activities.xsd.receipt.pagopa.PaSendRTV2Request;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.jemos.podam.api.PodamFactory;
 
 import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptMapperTest {
@@ -65,9 +67,9 @@ class ReceiptMapperTest {
         organization.setIpaCode("IPACODE");
 
         String rtFilePath = "RT/FILE/PATH.xml";
-        Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getReceipt()), Mockito.same(ingestionFlowFile.getFileName())))
+        when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getReceipt()), Mockito.same(ingestionFlowFile.getFileName())))
                 .thenReturn(rtFilePath);
-        Mockito.when(organizationServiceMock.getOrganizationById(organizationId)).thenReturn(
+        when(organizationServiceMock.getOrganizationById(organizationId)).thenReturn(
                 Optional.of(organization));
 
         // When
@@ -107,7 +109,7 @@ class ReceiptMapperTest {
 
         String rtFilePath = "RT/FILE/PATH.xml";
         if (!codPaymentResult) {
-            Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
+            when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
                     .thenReturn(rtFilePath);
         }
 
@@ -119,6 +121,7 @@ class ReceiptMapperTest {
                 "idChannel", "channelDescription", "paymentMethod", "applicationDate", "transferDate", "standin",
                 "creationDate", "updateDate", "metadata", "rtFilePath", "paymentNote", "updateOperatorExternalId", "updateTraceId");
         TestUtils.checkNotNullFields(result.getDebtor());
+        Assertions.assertNotNull(result.getPayer());
         TestUtils.checkNotNullFields(result.getPayer());
         if (!codPaymentResult) {
             Assertions.assertEquals("OK", result.getOutcome());
@@ -165,7 +168,7 @@ class ReceiptMapperTest {
         }
 
         String rtFilePath = "RT/FILE/PATH.xml";
-        Mockito.when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
+        when(rtFileHandlerServiceMock.store(Mockito.same(ingestionFlowFile.getOrganizationId()), Mockito.same(request.getRt()), Mockito.same(ingestionFlowFile.getFileName())))
                 .thenReturn(rtFilePath);
 
         // When

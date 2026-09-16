@@ -1,7 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.config;
 
 import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
-import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -25,11 +24,11 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	@Mock
 	private RestTemplateBuilder restTemplateBuilderMock;
 
-	private PagoPaPaymentsApisHolder pagoPaPaymentsApisHolder;
+	private PagoPaPaymentsApisHolder apisHolder;
 	private PagoPaPaymentsApiClientConfig apiClientConfig;
 
 	@BeforeEach
-	void setUp() {
+	void init() {
 		when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
 		when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
@@ -37,15 +36,13 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 				.baseUrl("http://example.com")
 				.maxAttempts(3)
 				.build();
+		apisHolder = new PagoPaPaymentsApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-		pagoPaPaymentsApisHolder = new PagoPaPaymentsApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
-
-		Mockito.verify(restTemplateMock)
-				.setErrorHandler(Mockito.any(HttpClientErrorJsonBodyHandler.class));
+		verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getAcaApi(null));
 	}
 
 	@AfterEach
-	void tearDown() {
+	void verifyNoMoreInteractions() {
 		Mockito.verifyNoMoreInteractions(
 			restTemplateBuilderMock,
 			restTemplateMock
@@ -55,7 +52,7 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	@Test
 	void testRetryConfiguration() {
 		assertRetry(apiClientConfig,
-				accessToken -> pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken)
+				accessToken -> apisHolder.getPrintPaymentNoticeApi(accessToken)
 						.generateMassive(new NoticeRequestMassiveDTO()),
 				new ParameterizedTypeReference<>() {}
 		);
@@ -65,42 +62,42 @@ class PagoPaPaymentsApisHolderTest extends BaseApiHolderTest {
 	void whenCreateAcaApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
 			accessToken -> {
-				pagoPaPaymentsApisHolder.getAcaApi(accessToken)
+				apisHolder.getAcaApi(accessToken)
 					.syncAca("IUD", buildDebtPositionDTO(), Boolean.FALSE);
 				return voidMock;
 			},
 			new ParameterizedTypeReference<>() {},
-			pagoPaPaymentsApisHolder::unload);
+			apisHolder::unload);
 	}
 
 	@Test
 	void whenGetPaymentsReportingApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
-			accessToken -> pagoPaPaymentsApisHolder.getPaymentsReportingApi(accessToken)
+			accessToken -> apisHolder.getPaymentsReportingApi(accessToken)
 					.getPaymentsReportingList(1L, OffsetDateTime.now()),
 			new ParameterizedTypeReference<>() {},
-			pagoPaPaymentsApisHolder::unload);
+			apisHolder::unload);
 	}
 
 	@Test
 	void whenSyncGpdApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
 				accessToken -> {
-					pagoPaPaymentsApisHolder.getGpdApi(accessToken)
+					apisHolder.getGpdApi(accessToken)
 							.syncGpd("IUD", buildDebtPositionDTO());
 					return voidMock;
 				},
 				new ParameterizedTypeReference<>() {},
-				pagoPaPaymentsApisHolder::unload);
+				apisHolder::unload);
 	}
 
 	@Test
 	void whenGenerateMassiveApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
 		assertAuthenticationShouldBeSetInThreadSafeMode(
 				accessToken ->
-					pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken)
+					apisHolder.getPrintPaymentNoticeApi(accessToken)
 							.generateMassive(new NoticeRequestMassiveDTO()),
 				new ParameterizedTypeReference<>() {},
-				pagoPaPaymentsApisHolder::unload);
+				apisHolder::unload);
 	}
 }

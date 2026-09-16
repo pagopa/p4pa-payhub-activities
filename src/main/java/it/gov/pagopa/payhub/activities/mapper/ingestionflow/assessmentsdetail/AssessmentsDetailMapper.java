@@ -3,7 +3,7 @@ package it.gov.pagopa.payhub.activities.mapper.ingestionflow.assessmentsdetail;
 import it.gov.pagopa.payhub.activities.dto.ingestion.assessments.AssessmentsIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.util.AESUtils;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

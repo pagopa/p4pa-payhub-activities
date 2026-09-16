@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.service.debtposition.ionotification;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 

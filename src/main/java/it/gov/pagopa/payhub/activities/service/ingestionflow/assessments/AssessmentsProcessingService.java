@@ -19,7 +19,7 @@ import it.gov.pagopa.pu.classification.dto.generated.AssessmentStatus;
 import it.gov.pagopa.pu.classification.dto.generated.Assessments;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsDetailRequestBody;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRequestBody;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;

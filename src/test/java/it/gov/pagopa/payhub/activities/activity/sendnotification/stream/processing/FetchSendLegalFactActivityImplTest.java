@@ -1,6 +1,7 @@
 package it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing;
 
 import it.gov.pagopa.payhub.activities.connector.sendnotification.SendService;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeInvalidValueException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +13,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class FetchSendLegalFactActivityImplTest {
@@ -53,7 +56,7 @@ class FetchSendLegalFactActivityImplTest {
 		);
 
 		//THEN
-		Mockito.verify(sendServiceMock)
+		verify(sendServiceMock)
 			.downloadAndArchiveSendLegalFact(
 				notificationRequestId,
 				category,
@@ -68,7 +71,7 @@ class FetchSendLegalFactActivityImplTest {
 		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
 		String legalFactId = "sendLegalFact.pdf";
 
-		Mockito.doThrow(HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "BadRequest", null, null, null))
+		doThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", "ERRORCODE", "ERRORMESSAGE", null))
 				.when(sendServiceMock)
 				.downloadAndArchiveSendLegalFact(
 						notificationRequestId,
@@ -88,12 +91,12 @@ class FetchSendLegalFactActivityImplTest {
 
 		//THEN
 		Assertions.assertNotNull(sendStreamSkippedEventException);
-		String causeErrorMessage = "Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message 400 BadRequest".formatted(notificationRequestId, LegalFactCategoryDTO.ANALOG_DELIVERY, legalFactId);
+		String causeErrorMessage = "Bad request in downloadAndArchiveSendLegalFact for notificationRequestId %s, legal fact category %s and id %s: error message ERRORMESSAGE".formatted(notificationRequestId, LegalFactCategoryDTO.ANALOG_DELIVERY, legalFactId);
 		Assertions.assertEquals(
 			"Skipped an error during execution of activity %s: %s".formatted(FetchSendLegalFactActivity.class.getSimpleName(), causeErrorMessage),
 			sendStreamSkippedEventException.getMessage()
 		);
-		Mockito.verify(sendServiceMock)
+		verify(sendServiceMock)
 				.downloadAndArchiveSendLegalFact(
 						notificationRequestId,
 						category,

@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.pu_sil;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.pu_sil.client.PuSilClient;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
 import org.springframework.stereotype.Service;
 
 @Service

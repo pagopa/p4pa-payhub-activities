@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.OrganizationServic
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileDTO;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptNoPII;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.StringUtils;

@@ -1,9 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.processexecutions.client.generated.*;
 import it.gov.pagopa.pu.processexecutions.dto.generated.*;
 import org.junit.jupiter.api.AfterEach;
@@ -15,11 +14,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.time.OffsetDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExportFileClientTest {
@@ -64,9 +65,9 @@ class ExportFileClientTest {
         String accessToken = "accessToken";
         PaidExportFile paidExportFileExpected = podamFactory.manufacturePojo(PaidExportFile.class);
 
-        Mockito.when(paidExportFileEntityControllerApiMock.crudGetPaidexportfile(String.valueOf(exportFileId)))
+        when(paidExportFileEntityControllerApiMock.crudGetPaidexportfile(String.valueOf(exportFileId)))
                 .thenReturn(paidExportFileExpected);
-        Mockito.when(processExecutionsApisHolderMock.getPaidExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getPaidExportFileEntityControllerApi(accessToken))
                 .thenReturn(paidExportFileEntityControllerApiMock);
         //when
         PaidExportFile result = exportFileClient.findPaidExportFileById(exportFileId, accessToken);
@@ -80,10 +81,10 @@ class ExportFileClientTest {
         Long exportFileId = 1L;
         String accessToken = "accessToken";
 
-        Mockito.when(paidExportFileEntityControllerApiMock.crudGetPaidexportfile(String.valueOf(exportFileId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
-        Mockito.when(processExecutionsApisHolderMock.getPaidExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getPaidExportFileEntityControllerApi(accessToken))
                 .thenReturn(paidExportFileEntityControllerApiMock);
+        when(paidExportFileEntityControllerApiMock.crudGetPaidexportfile(String.valueOf(exportFileId)))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
         // When
         PaidExportFile result = exportFileClient.findPaidExportFileById(exportFileId, accessToken);
         // Then
@@ -97,9 +98,9 @@ class ExportFileClientTest {
         String accessToken = "accessToken";
         ExportFile exportFile = podamFactory.manufacturePojo(ExportFile.class);
 
-        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken))
                 .thenReturn(exportFileEntityControllerApiMock);
-        Mockito.when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId)))
+        when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId)))
                 .thenReturn(exportFile);
         //when
         ExportFile result = exportFileClient.findById(exportFileId, accessToken);
@@ -113,10 +114,10 @@ class ExportFileClientTest {
         Long exportFileId = 1L;
         String accessToken = "accessToken";
 
-        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken))
                 .thenReturn(exportFileEntityControllerApiMock);
-        Mockito.when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId)))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
         //when
         ExportFile result = exportFileClient.findById(exportFileId, accessToken);
         //then
@@ -134,9 +135,9 @@ class ExportFileClientTest {
         Long numTotalRows = 2L;
         OffsetDateTime expirationDate = OffsetDateTime.now().plusDays(5L);
 
-        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(exportFileEntityExtendedControllerApiMock);
-        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate))
+        when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate))
                 .thenReturn(1);
         //when
         Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows,"", expirationDate),accessToken);
@@ -155,10 +156,10 @@ class ExportFileClientTest {
         Long numTotalRows = 2L;
         OffsetDateTime expirationDate = OffsetDateTime.now().plusDays(5L);
 
-        Mockito.when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(exportFileEntityExtendedControllerApiMock);
-        Mockito.when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+        when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
         //when
         Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate), accessToken);
         //then
@@ -172,9 +173,9 @@ class ExportFileClientTest {
         String accessToken = "accessToken";
         ReceiptsArchivingExportFile receiptsArchivingExportFile = podamFactory.manufacturePojo(ReceiptsArchivingExportFile.class);
 
-        Mockito.when(receiptsArchivingExportFileEntityControllerApiMock.crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId)))
+        when(receiptsArchivingExportFileEntityControllerApiMock.crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId)))
                 .thenReturn(receiptsArchivingExportFile);
-        Mockito.when(processExecutionsApisHolderMock.getReceiptsArchivingExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getReceiptsArchivingExportFileEntityControllerApi(accessToken))
                 .thenReturn(receiptsArchivingExportFileEntityControllerApiMock);
         //when
         ReceiptsArchivingExportFile result = exportFileClient.findReceiptsArchivingExportFileById(exportFileId, accessToken);
@@ -188,10 +189,10 @@ class ExportFileClientTest {
         Long exportFileId = 1L;
         String accessToken = "accessToken";
 
-        Mockito.when(receiptsArchivingExportFileEntityControllerApiMock.crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
-        Mockito.when(processExecutionsApisHolderMock.getReceiptsArchivingExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getReceiptsArchivingExportFileEntityControllerApi(accessToken))
                 .thenReturn(receiptsArchivingExportFileEntityControllerApiMock);
+        when(receiptsArchivingExportFileEntityControllerApiMock.crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId)))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
         // When
         ReceiptsArchivingExportFile result = exportFileClient.findReceiptsArchivingExportFileById(exportFileId, accessToken);
         // Then
@@ -205,9 +206,9 @@ class ExportFileClientTest {
         String accessToken = "accessToken";
         ClassificationsExportFile classificationsExportFile = podamFactory.manufacturePojo(ClassificationsExportFile.class);
 
-        Mockito.when(classificationsExportFileEntityControllerApiMock.crudGetClassificationsexportfile(String.valueOf(exportFileId)))
+        when(classificationsExportFileEntityControllerApiMock.crudGetClassificationsexportfile(String.valueOf(exportFileId)))
                 .thenReturn(classificationsExportFile);
-        Mockito.when(processExecutionsApisHolderMock.getClassificationsExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getClassificationsExportFileEntityControllerApi(accessToken))
                 .thenReturn(classificationsExportFileEntityControllerApiMock);
         //when
         ClassificationsExportFile result = exportFileClient.findClassificationsExportFileById(exportFileId, accessToken);
@@ -221,10 +222,10 @@ class ExportFileClientTest {
         Long exportFileId = 1L;
         String accessToken = "accessToken";
 
-        Mockito.when(classificationsExportFileEntityControllerApiMock.crudGetClassificationsexportfile(String.valueOf(exportFileId)))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
-        Mockito.when(processExecutionsApisHolderMock.getClassificationsExportFileEntityControllerApi(accessToken))
+        when(processExecutionsApisHolderMock.getClassificationsExportFileEntityControllerApi(accessToken))
                 .thenReturn(classificationsExportFileEntityControllerApiMock);
+        when(classificationsExportFileEntityControllerApiMock.crudGetClassificationsexportfile(String.valueOf(exportFileId)))
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
         // When
         ClassificationsExportFile result = exportFileClient.findClassificationsExportFileById(exportFileId, accessToken);
         // Then

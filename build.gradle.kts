@@ -7,14 +7,14 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     java
-    id("org.springframework.boot") version "4.1.0"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.sonarqube") version "7.3.1.8318"
+    id("org.sonarqube") version "7.4.0.8496"
     `java-library`
     `maven-publish`
     jacoco
     id("com.intershop.gradle.jaxb") version "8.0.1"
-    id("org.openapi.generator") version "7.23.0"
+    id("org.openapi.generator") version "7.25.0"
     id("com.github.jk1.dependency-license-report") version "3.1.4"
 }
 
@@ -41,8 +41,8 @@ licenseReport {
     outputDir = "$projectDir/dependency-licenses"
     filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
-tasks.classes {
-    finalizedBy(tasks.generateLicenseReport)
+tasks.dependencies {
+  finalizedBy(tasks.generateLicenseReport)
 }
 
 repositories {
@@ -88,26 +88,32 @@ val commonsTextVersion = "1.15.0"
 val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "4.0.5"
-val jsoupVersion = "1.22.2"
-val openApiToolsVersion = "0.2.10"
-val temporalVersion = "1.35.0"
-val protobufJavaVersion = "4.35.1"
-val grpcBomVersion = "1.82.0"
-val guavaVersion = "33.6.0-jre"
+val jsoupVersion = "1.23.2"
+val openApiToolsVersion = "0.2.11"
+val temporalVersion = "1.38.0"
+val protobufJavaVersion = "4.36.0"
+val grpcBomVersion = "1.83.1"
+val guavaVersion = "33.7.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
-val httpClientVersion = "5.6.1"
-val httpCoreVersion = "5.4.2"
+val httpClientVersion = "5.6.4"
+val httpCoreVersion = "5.4.3"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
+val jaxbXewPluginVersion = "2.1"
+val jaxbPluginVersion = "4.0.16"
+
+// CVE Security dependencies
+val tomcatEmbedCoreVersion = "11.0.25"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
+    implementation("org.springframework.boot:spring-boot-micrometer-tracing")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
@@ -115,6 +121,7 @@ dependencies {
     implementation("commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion")
     implementation("org.mapstruct:mapstruct:$mapStructVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
+    implementation("org.apache.httpcomponents.core5:httpcore5-h2:$httpCoreVersion")
     implementation("org.apache.httpcomponents.core5:httpcore5:$httpCoreVersion")
     // openApi
     implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
@@ -149,7 +156,14 @@ dependencies {
     implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
     runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
+    // CVE Security dependencies
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
+
     compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
+    testAnnotationProcessor("org.projectlombok:lombok")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
     //	Testing
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
@@ -159,20 +173,8 @@ dependencies {
     testImplementation("org.projectlombok:lombok")
     testImplementation("uk.co.jemos.podam:podam:$podamVersion")
 
-    /**
-     * Mapstruct
-     * https://mapstruct.org/
-     * mapstruct dependencies must always be placed after the lombok dependency
-     * or the generated mappers will return an empty object
-     **/
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
-
-    testAnnotationProcessor("org.projectlombok:lombok")
-    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
-
-    jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1")
-    jaxbext("org.jvnet.jaxb:jaxb-plugins:4.0.0")
+    jaxbext("com.github.jaxb-xew-plugin:jaxb-xew-plugin:$jaxbXewPluginVersion")
+    jaxbext("org.jvnet.jaxb:jaxb-plugins:$jaxbPluginVersion")
 }
 
 
@@ -197,7 +199,7 @@ jaxb {
             args = listOf("-xmlschema")
             outputDir = file("$projectDir/build/generated/jaxb/java")
             schema = file("src/main/resources/xsd/FlussoRiversamento.xsd")
-            bindings = layout.files("src/main/resources/xsd/FlussoRiversamento.xjb")
+            bindings = layout.files("src/main/resources/xsd/simple-bindings.xjb")
         }
         register("Opi14TreasuryFlow") {
             extension = true
@@ -327,11 +329,11 @@ tasks.register<GenerateTask>("openApiGenerateWORKFLOWHUB") {
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-workflow-hub/refs/heads/develop/openapi/p4pa-workflow-hub.openapi.yaml")
     outputDir.set("$projectDir/build/generated")
     invokerPackage.set("it.gov.pagopa.pu.workflowhub.generated")
-    apiPackage.set("it.gov.pagopa.pu.workflowhub.controller.generated")
+    apiPackage.set("it.gov.pagopa.pu.workflowhub.client.generated")
     modelPackage.set("it.gov.pagopa.pu.workflowhub.dto.generated")
     typeMappings.set(
         mapOf(
-            "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+            "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
             "IngestionFlowFileType" to "String",
             "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
             "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
@@ -370,7 +372,7 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-auth/refs/heads/develop/openapi/p4pa-auth.openapi.yaml")
     outputDir.set("$projectDir/build/generated")
     invokerPackage.set("it.gov.pagopa.pu.auth.generated")
-    apiPackage.set("it.gov.pagopa.pu.auth.controller.generated")
+    apiPackage.set("it.gov.pagopa.pu.auth.client.generated")
     modelPackage.set("it.gov.pagopa.pu.auth.dto.generated")
     configOptions.set(
         mapOf(
@@ -392,6 +394,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PAAUTH") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
@@ -424,6 +428,8 @@ tasks.register<GenerateTask>("openApiGenerateIONOTIFICATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
@@ -456,6 +462,8 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
@@ -465,9 +473,9 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/develop/openapi/generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    invokerPackage.set("it.gov.pagopa.pu.debtposition.generated")
-    apiPackage.set("it.gov.pagopa.pu.debtposition.client.generated")
-    modelPackage.set("it.gov.pagopa.pu.debtposition.dto.generated")
+    invokerPackage.set("it.gov.pagopa.pu.debtpositions.generated")
+    apiPackage.set("it.gov.pagopa.pu.debtpositions.client.generated")
+    modelPackage.set("it.gov.pagopa.pu.debtpositions.dto.generated")
     typeMappings.set(
         mapOf(
             "LocalDateTime" to "java.time.LocalDateTime",
@@ -501,6 +509,8 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
@@ -515,9 +525,9 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
     modelPackage.set("it.gov.pagopa.pu.classification.dto.generated")
     typeMappings.set(
         mapOf(
-            "DebtPositionOrigin" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin",
-            "ReceiptOriginType" to "it.gov.pagopa.pu.debtposition.dto.generated.ReceiptOriginType",
-            "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+            "DebtPositionOrigin" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin",
+            "ReceiptOriginType" to "it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptOriginType",
+            "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
             "LocalDateTime" to "java.time.LocalDateTime"
         )
     )
@@ -541,6 +551,8 @@ tasks.register<GenerateTask>("openApiGenerateCLASSIFICATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
@@ -555,7 +567,7 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
     modelPackage.set("it.gov.pagopa.pu.pagopapayments.dto.generated")
     typeMappings.set(
         mapOf(
-            "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+            "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
             "NoticeGenerationMassiveResourceDTO" to "String"
         )
     )
@@ -579,6 +591,8 @@ tasks.register<GenerateTask>("openApiGeneratePAGOPAPAYMENTS") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
@@ -620,6 +634,8 @@ tasks.register<GenerateTask>("openApiGeneratePROCESSEXECUTIONS") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
@@ -629,7 +645,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-send-notification/refs/heads/develop/openapi/generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    apiPackage.set("it.gov.pagopa.pu.sendnotification.controller.generated")
+    invokerPackage.set("it.gov.pagopa.pu.sendnotification.generated")
+    apiPackage.set("it.gov.pagopa.pu.sendnotification.client.generated")
     modelPackage.set("it.gov.pagopa.pu.sendnotification.dto.generated")
     configOptions.set(
         mapOf(
@@ -651,6 +668,8 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
         )
     )
     library.set("resttemplate")
+
+    workerIsolation.set("process")
 }
 
 tasks.register<GenerateTask>("openApiGeneratePUSIL") {
@@ -660,11 +679,12 @@ tasks.register<GenerateTask>("openApiGeneratePUSIL") {
     generatorName.set("java")
     remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-pu-sil/refs/heads/develop/openapi/generated-internal.openapi.json")
     outputDir.set("$projectDir/build/generated")
-    apiPackage.set("it.gov.pagopa.pu.pusil.controller.generated")
+    invokerPackage.set("it.gov.pagopa.pu.pusil.generated")
+    apiPackage.set("it.gov.pagopa.pu.pusil.client.generated")
     modelPackage.set("it.gov.pagopa.pu.pusil.dto.generated")
     importMappings.set(
         mapOf(
-            "InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO"
+            "InstallmentDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO"
         )
     )
     configOptions.set(

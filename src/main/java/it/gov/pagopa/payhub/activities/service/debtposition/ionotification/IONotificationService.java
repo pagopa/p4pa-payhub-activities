@@ -6,9 +6,9 @@ import it.gov.pagopa.payhub.activities.connector.ionotification.mapper.Notificat
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.service.debtposition.DebtPositionOperationTypeResolver;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.MessageResponseDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import it.gov.pagopa.pu.workflowhub.dto.generated.PaymentEventType;

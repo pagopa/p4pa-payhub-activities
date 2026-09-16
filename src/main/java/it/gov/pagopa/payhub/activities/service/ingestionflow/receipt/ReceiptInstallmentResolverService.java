@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOr
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionStatus;
 
 public interface PaymentOptionService {
 

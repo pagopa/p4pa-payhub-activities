@@ -153,6 +153,12 @@ See [config/application.yml](src/main/resources/config/application.yml) for each
 | INGESTION_FLOW_FILES_SEND_NOTIFICATIONS_MAX_CONCURRENT_PROCESSING_ROWS    | Maximum number of rows to process concurrently during SEND_NOTIFICATION ingestion                                                              | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
 | INGESTION_FLOW_FILES_TREASURIES_MAX_CONCURRENT_PROCESSING_ROWS            | Maximum number of rows to process concurrently during treasuries ingestion (TREASURY_CSV, TREASURY_XLS, TREASURY_POSTE, TREASURY_CSV_COMPLETE) | ${INGESTION_FLOW_FILES_DEFAULT_MAX_CONCURRENT_PROCESSING_ROWS} |
 
+##### MassiveIbanUpdate
+| ENV                                         | DESCRIPTION                                                                 | DEFAULT |
+|---------------------------------------------|-----------------------------------------------------------------------------|---------|
+| MASSIVE_IBAN_UPDATE_MAX_CONCURRENT_REQUESTS | Maximum number of concurrent requests during massive IBAN update            | 50      |
+| MASSIVE_IBAN_UPDATE_PAGE_SIZE               | Page size configured when retrieving debt positions for massive IBAN update | 500     |
+
 #### 🔑 keys
 | ENV                   | DESCRIPTION                                                              | DEFAULT |
 |-----------------------|--------------------------------------------------------------------------|---------|

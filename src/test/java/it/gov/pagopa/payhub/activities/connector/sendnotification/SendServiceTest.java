@@ -4,15 +4,22 @@ import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.client.SendClient;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SendServiceTest {
@@ -22,12 +29,8 @@ class SendServiceTest {
     @Mock
     private AuthnService authnServiceMock;
 
-    private SendService sendService;
-
-    @BeforeEach
-    void setUp() {
-        sendService = new SendServiceImpl(sendClientMock, authnServiceMock);
-    }
+    @InjectMocks
+    private SendServiceImpl sendService;
 
     @AfterEach
     void verifyNoMoreInteractions() {
@@ -41,14 +44,14 @@ class SendServiceTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
         sendService.preloadSendFile(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).preloadSendFile(sendNotificationId, accessToken);
+        verify(sendClientMock).preloadSendFile(sendNotificationId, accessToken);
     }
 
     @Test
@@ -57,14 +60,14 @@ class SendServiceTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
         sendService.uploadSendFile(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).uploadSendFile(sendNotificationId, accessToken);
+        verify(sendClientMock).uploadSendFile(sendNotificationId, accessToken);
     }
 
     @Test
@@ -73,14 +76,14 @@ class SendServiceTest {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
 
         // When
         sendService.deliveryNotification(sendNotificationId);
 
         // Then
-        Mockito.verify(sendClientMock).deliveryNotification(sendNotificationId, accessToken);
+        verify(sendClientMock).deliveryNotification(sendNotificationId, accessToken);
     }
 
     @Test
@@ -90,9 +93,9 @@ class SendServiceTest {
         String sendNotificationId = "sendNotificationId";
         SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(sendClientMock.notificationStatus(sendNotificationId, accessToken))
+        when(sendClientMock.notificationStatus(sendNotificationId, accessToken))
                 .thenReturn(expectedResponse);
 
         // When
@@ -109,9 +112,9 @@ class SendServiceTest {
         String sendNotificationId = "sendNotificationId";
         SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(sendClientMock.retrieveNotificationDate(sendNotificationId, accessToken))
+        when(sendClientMock.retrieveNotificationDate(sendNotificationId, accessToken))
                 .thenReturn(expectedResponse);
 
         // When
@@ -128,9 +131,9 @@ class SendServiceTest {
         String notificationRequestId = "notificationRequestId";
         SendNotificationDTO expectedResponse = new SendNotificationDTO();
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(sendClientMock.retrieveNotificationByNotificationRequestId(notificationRequestId, accessToken))
+        when(sendClientMock.retrieveNotificationByNotificationRequestId(notificationRequestId, accessToken))
                 .thenReturn(expectedResponse);
 
         // When
@@ -148,7 +151,7 @@ class SendServiceTest {
         LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
         String legalFactId = "legalFactFile.pdf";
 
-        Mockito.when(authnServiceMock.getAccessToken())
+        when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
         Mockito.doNothing()
                 .when(sendClientMock)
@@ -167,12 +170,40 @@ class SendServiceTest {
         );
 
         // Then
-        Mockito.verify(sendClientMock)
+        verify(sendClientMock)
                 .downloadAndArchiveSendLegalFact(
                     notificationRequestId,
                     category,
                     legalFactId,
                     accessToken
+                );
+    }
+
+    @Test
+    void givenValidRequestWhenNotifySendNotificationStreamEventsThenOk() {
+        // Given
+        String accessToken = "ACCESSTOKEN";
+        Map<String, List<StreamEventSummaryDTO>> map = new HashMap<>();
+
+        when(authnServiceMock.getAccessToken())
+                .thenReturn(accessToken);
+        Mockito.doNothing()
+                .when(sendClientMock)
+                .notifySendNotificationStreamEvents(
+                    map,
+                    accessToken
+                );
+
+        // When
+        sendService.notifySendNotificationStreamEvents(
+              map
+        );
+
+        // Then
+        verify(sendClientMock)
+                .notifySendNotificationStreamEvents(
+                        map,
+                        accessToken
                 );
     }
 

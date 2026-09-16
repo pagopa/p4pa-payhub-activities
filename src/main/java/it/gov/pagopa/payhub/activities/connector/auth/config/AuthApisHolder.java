@@ -1,8 +1,10 @@
 package it.gov.pagopa.payhub.activities.connector.auth.config;
 
-import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
-import it.gov.pagopa.pu.auth.controller.generated.AuthnApi;
-import it.gov.pagopa.pu.auth.controller.generated.AuthzApi;
+import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
+import it.gov.pagopa.payhub.activities.connector.auth.mapper.AuthErrorDTOMapper;
+import it.gov.pagopa.pu.auth.client.generated.AuthnApi;
+import it.gov.pagopa.pu.auth.client.generated.AuthzApi;
+import it.gov.pagopa.pu.auth.dto.generated.AuthErrorDTO;
 import it.gov.pagopa.pu.auth.generated.ApiClient;
 import it.gov.pagopa.pu.auth.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -10,6 +12,7 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.json.JsonMapper;
 
 @Lazy
 @Service
@@ -22,7 +25,8 @@ public class AuthApisHolder {
 
     public AuthApisHolder(
             AuthApiClientConfig clientConfig,
-            RestTemplateBuilder restTemplateBuilder
+            RestTemplateBuilder restTemplateBuilder,
+            JsonMapper jsonMapper
     ) {
         RestTemplate restTemplate = restTemplateBuilder.build();
         ApiClient apiClient = new ApiClient(restTemplate);
@@ -30,9 +34,9 @@ public class AuthApisHolder {
         apiClient.setBearerToken(bearerTokenHolder::get);
         apiClient.setMaxAttemptsForRetry(Math.max(1, clientConfig.getMaxAttempts()));
         apiClient.setWaitTimeMillis(clientConfig.getWaitTimeMillis());
-        if (clientConfig.isPrintBodyWhenError()) {
-            restTemplate.setErrorHandler(RestTemplateConfig.bodyPrinterWhenError("AUTH"));
-        }
+        restTemplate.setErrorHandler(new HttpClientErrorJsonBodyHandler<>(jsonMapper, "AUTH", clientConfig.isPrintBodyWhenError(),
+                AuthErrorDTO.class, AuthErrorDTOMapper::map)
+        );
 
         this.authnApi = new AuthnApi(apiClient);
         this.authzApi = new AuthzApi(apiClient);

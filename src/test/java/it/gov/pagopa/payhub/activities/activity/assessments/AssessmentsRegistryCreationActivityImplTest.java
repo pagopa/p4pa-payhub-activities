@@ -2,10 +2,10 @@ package it.gov.pagopa.payhub.activities.activity.assessments;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 import it.gov.pagopa.payhub.activities.connector.classification.AssessmentsRegistryService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ class AssessmentsRegistryCreationActivityImplTest {
 
     assertDoesNotThrow(() -> activity.createAssessmentsRegistryByDebtPositionDTOAndIudList(debtPositionDTO, iudList));
 
-    Mockito.verify(assessmentsRegistryServiceMock, Mockito.times(1))
+    verify(assessmentsRegistryServiceMock, times(1))
         .createAssessmentsRegistryByDebtPositionDTOAndIudList(debtPositionDTO, iudList);
   }
 }

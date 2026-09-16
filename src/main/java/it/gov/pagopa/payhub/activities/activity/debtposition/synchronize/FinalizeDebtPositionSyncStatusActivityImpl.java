@@ -1,9 +1,9 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncErrorDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncStatusUpdateRequestDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncErrorDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncStatusUpdateRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

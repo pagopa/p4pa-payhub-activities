@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionTypeOr
 import it.gov.pagopa.payhub.activities.connector.debtposition.InstallmentService;
 import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ResolvedInstallmentResult;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeOrg;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeOrg;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptInstallmentResolverServiceTest {
@@ -60,14 +63,14 @@ class ReceiptInstallmentResolverServiceTest {
         // Given
         ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.empty());
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.empty());
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
 
         // Then
         Assertions.assertTrue(result.isEmpty());
-        Mockito.verify(organizationServiceMock).getOrganizationById(1L);
+        verify(organizationServiceMock).getOrganizationById(1L);
         Mockito.verifyNoInteractions(installmentServiceMock, debtPositionTypeOrgServiceMock);
     }
 
@@ -77,8 +80,8 @@ class ReceiptInstallmentResolverServiceTest {
         ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
         Organization organization = buildOrganization();
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-        Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of());
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
+        when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of());
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
@@ -87,8 +90,8 @@ class ReceiptInstallmentResolverServiceTest {
         Assertions.assertFalse(result.isEmpty());
         Assertions.assertNull(result.getCitizenNotifiableInstallment());
         Assertions.assertTrue(result.getSilNotifiableInstallments().isEmpty());
-        Mockito.verify(organizationServiceMock).getOrganizationById(1L);
-        Mockito.verify(installmentServiceMock).getByOrganizationIdAndReceiptId(1L, 99L, null);
+        verify(organizationServiceMock).getOrganizationById(1L);
+        verify(installmentServiceMock).getByOrganizationIdAndReceiptId(1L, 99L, null);
     }
 
     @Test
@@ -100,9 +103,9 @@ class ReceiptInstallmentResolverServiceTest {
 
         DebtPositionTypeOrg dptOrg = buildDebtPositionTypeOrg(1L, "CODE", 1L, 5L);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-        Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of(installment));
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg);
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
+        when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of(installment));
+        when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg);
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
@@ -127,11 +130,11 @@ class ReceiptInstallmentResolverServiceTest {
         DebtPositionTypeOrg normalDptOrg = buildDebtPositionTypeOrg(1L, "CODE", 1L, 5L);
         DebtPositionTypeOrg mixedDptOrg = buildDebtPositionTypeOrg(2L, "MIXED", -2L, 5L);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-        Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null))
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
+        when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null))
                 .thenReturn(List.of(normalInstallment, mixedInstallment));
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(normalDptOrg);
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(20L)).thenReturn(mixedDptOrg);
+        when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(normalDptOrg);
+        when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(20L)).thenReturn(mixedDptOrg);
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
@@ -151,9 +154,9 @@ class ReceiptInstallmentResolverServiceTest {
 
         DebtPositionTypeOrg dptOrg = buildDebtPositionTypeOrg(1L, "CODE", 1L, null);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-        Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of(installment));
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg);
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
+        when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of(installment));
+        when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg);
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
@@ -172,9 +175,9 @@ class ReceiptInstallmentResolverServiceTest {
 
         DebtPositionTypeOrg dptOrg = buildDebtPositionTypeOrg(1L, "CODE", -1L, 5L);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-        Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of(installment));
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg);
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
+        when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of(installment));
+        when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg);
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
@@ -196,11 +199,11 @@ class ReceiptInstallmentResolverServiceTest {
         DebtPositionTypeOrg dptOrg1 = buildDebtPositionTypeOrg(1L, "CODE1", 1L, 5L);
         DebtPositionTypeOrg dptOrg2 = buildDebtPositionTypeOrg(2L, "CODE2", 2L, 6L);
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-        Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null))
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
+        when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null))
                 .thenReturn(List.of(first, second));
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg1);
-        Mockito.when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(20L)).thenReturn(dptOrg2);
+        when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(10L)).thenReturn(dptOrg1);
+        when(debtPositionTypeOrgServiceMock.getDebtPositionTypeOrgByInstallmentId(20L)).thenReturn(dptOrg2);
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);
@@ -216,8 +219,8 @@ class ReceiptInstallmentResolverServiceTest {
         ReceiptWithAdditionalNodeDataDTO receiptDTO = buildReceipt("FISCALCODE");
         Organization organization = buildOrganization();
 
-        Mockito.when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-        Mockito.when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of());
+        when(organizationServiceMock.getOrganizationById(1L)).thenReturn(Optional.of(organization));
+        when(installmentServiceMock.getByOrganizationIdAndReceiptId(1L, 99L, null)).thenReturn(List.of());
 
         // When
         ResolvedInstallmentResult result = service.resolveInstallment(receiptDTO);

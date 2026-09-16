@@ -12,7 +12,7 @@ import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.spontaneousform.SpontaneousFormHandlerService;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,12 +26,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessingServiceTest<DebtPositionTypeOrgIngestionFlowFileDTO, DebtPositionTypeOrgIngestionFlowFileResult, DebtPositionTypeOrgErrorDTO> {
@@ -56,7 +60,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
     @BeforeEach
     void init() {
         FileExceptionHandlerService fileExceptionHandlerService = new FileExceptionHandlerService();
-        serviceSpy = Mockito.spy(new DebtPositionTypeOrgProcessingService(
+        serviceSpy = spy(new DebtPositionTypeOrgProcessingService(
                 MAX_CONCURRENT_PROCESSING_ROWS,
                 mapperMock,
                 errorsArchiverServiceMock,
@@ -103,6 +107,8 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         dto.setIpaCode(organization.getIpaCode());
         dto.setCode("CODE" + sequencingId);
+        dto.setOrgType("ORG_TYPE" + sequencingId);
+        dto.setTaxonomyCode("TAX_CODE" + sequencingId);
 
         DebtPositionTypeOrgRequestBody mappedDebtPosType = podamFactory.manufacturePojo(DebtPositionTypeOrgRequestBody.class);
         DebtPositionTypeOrg createdDebtPosType = podamFactory.manufacturePojo(DebtPositionTypeOrg.class);
@@ -111,28 +117,23 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
             DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
             dpType.setDebtPositionTypeId(dpTypeId);
 
-            CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
-                    .embedded(PagedModelDebtPositionTypeEmbedded.builder()
-                            .debtPositionTypes(List.of(dpType))
-                            .build())
-                    .build();
-            Mockito.doReturn(existingCollectionModel)
+            doReturn(dpType)
                     .when(debtPositionTypeServiceMock)
-                    .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
+                    .getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(organization.getBrokerId(), dto.getCode(), dto.getOrgType(), dto.getTaxonomyCode());
 
-            Mockito.doReturn(null)
+            doReturn(null)
                     .when(debtPositionTypeOrgServiceMock)
                     .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
         }
 
-        Mockito.doReturn(spontaneousFormId)
+        doReturn(spontaneousFormId)
                 .when(spontaneousFormHandlerServiceMock)
                 .handleSpontaneousForm(ingestionFlowFile.getOrganizationId(), dto);
 
-        Mockito.doReturn(mappedDebtPosType)
+        doReturn(mappedDebtPosType)
                 .when(mapperMock)
                 .map(dto, dpTypeId, ingestionFlowFile.getOrganizationId(), spontaneousFormId);
-        Mockito.doReturn(createdDebtPosType)
+        doReturn(createdDebtPosType)
                 .when(debtPositionTypeOrgServiceMock)
                 .createDebtPositionTypeOrg(mappedDebtPosType);
 
@@ -154,7 +155,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         dto.setIpaCode(organization.getIpaCode());
 
         DebtPositionTypeOrg alreadyExistingDPTypeOrg = podamFactory.manufacturePojo(DebtPositionTypeOrg.class);
-        Mockito.doReturn(alreadyExistingDPTypeOrg)
+        doReturn(alreadyExistingDPTypeOrg)
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
 
@@ -176,13 +177,13 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         dto.setIpaCode(organization.getIpaCode());
 
-        Mockito.doReturn(null)
+        doReturn(null)
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
 
-        Mockito.doReturn(CollectionModelDebtPositionType.builder().embedded(new PagedModelDebtPositionTypeEmbedded()).build())
+        doReturn(null)
                 .when(debtPositionTypeServiceMock)
-                .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
+                .getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(organization.getBrokerId(), dto.getCode(), dto.getOrgType(), dto.getTaxonomyCode());
 
         List<DebtPositionTypeOrgErrorDTO> expectedErrors = List.of(
                 DebtPositionTypeOrgErrorDTO.builder()
@@ -220,23 +221,18 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileDTO dto = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
         dto.setIpaCode(organization.getIpaCode());
 
-        Mockito.doReturn(null)
+        doReturn(null)
                 .when(debtPositionTypeOrgServiceMock)
                 .getDebtPositionTypeOrgByOrganizationIdAndCode(ingestionFlowFile.getOrganizationId(), dto.getCode());
 
         DebtPositionType dpType = podamFactory.manufacturePojo(DebtPositionType.class);
         dpType.setDebtPositionTypeId(999L);
 
-        CollectionModelDebtPositionType existingCollectionModel = CollectionModelDebtPositionType.builder()
-                .embedded(PagedModelDebtPositionTypeEmbedded.builder()
-                        .debtPositionTypes(List.of(dpType))
-                        .build())
-                .build();
-        Mockito.doReturn(existingCollectionModel)
+        doReturn(dpType)
                 .when(debtPositionTypeServiceMock)
-                .getByBrokerIdAndCode(organization.getBrokerId(), dto.getCode());
+                .getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(organization.getBrokerId(), dto.getCode(), dto.getOrgType(), dto.getTaxonomyCode());
 
-        Mockito.doThrow(new RuntimeException("Error parsing JSON for spontaneous form"))
+        doThrow(new RuntimeException("Error parsing JSON for spontaneous form"))
                 .when(spontaneousFormHandlerServiceMock)
                 .handleSpontaneousForm(ingestionFlowFile.getOrganizationId(), dto);
 
@@ -261,7 +257,7 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         DebtPositionTypeOrgIngestionFlowFileResult expectedResult = new DebtPositionTypeOrgIngestionFlowFileResult();
 
         Mockito.reset(organizationServiceMock);
-        Mockito.when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
+        when(organizationServiceMock.getOrganizationById(ingestionFlowFile.getOrganizationId()))
                 .thenReturn(Optional.of(new Organization()));
 
         // When
@@ -273,6 +269,76 @@ class DebtPositionTypeOrgProcessingServiceTest extends BaseIngestionFlowProcessi
         Assertions.assertNull(result.getBrokerId());
         Assertions.assertEquals("L'intermediario non e' stato trovato", result.getErrorDescription());
         Assertions.assertEquals(0, result.getProcessedRows());
+    }
+
+    @Test
+    void givenRowsOfSameOrganizationWhenGetSequencingIdThenReturnSameIpaCode() {
+        // Given
+        Mockito.reset(organizationServiceMock);
+        DebtPositionTypeOrgIngestionFlowFileDTO firstRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        firstRow.setIpaCode("IPA-CODE");
+        firstRow.setCode("TYPE-ONE");
+        DebtPositionTypeOrgIngestionFlowFileDTO secondRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        secondRow.setIpaCode("ipa-code");
+        secondRow.setCode("TYPE-TWO");
+
+        // When
+        String firstSequencingId = serviceSpy.getSequencingId(firstRow);
+        String secondSequencingId = serviceSpy.getSequencingId(secondRow);
+
+        // Then
+        Assertions.assertEquals("ipa-code", firstSequencingId);
+        Assertions.assertEquals(firstSequencingId, secondSequencingId);
+    }
+
+    @Test
+    void givenRowsOfDifferentOrganizationsWhenGetSequencingIdThenReturnDifferentIpaCodes() {
+        // Given
+        Mockito.reset(organizationServiceMock);
+        DebtPositionTypeOrgIngestionFlowFileDTO firstRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        firstRow.setIpaCode("IPA-ONE");
+        DebtPositionTypeOrgIngestionFlowFileDTO secondRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        secondRow.setIpaCode("IPA-TWO");
+
+        // When
+        String firstSequencingId = serviceSpy.getSequencingId(firstRow);
+        String secondSequencingId = serviceSpy.getSequencingId(secondRow);
+
+        // Then
+        Assertions.assertNotEquals(firstSequencingId, secondSequencingId);
+    }
+
+    @Test
+    void givenRowsOfDifferentOrganizationsWhenProcessThenConsumeRowsConcurrently() throws Exception {
+        // Given
+        DebtPositionTypeOrgIngestionFlowFileDTO firstRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        firstRow.setIpaCode("IPA-ONE");
+        DebtPositionTypeOrgIngestionFlowFileDTO secondRow = podamFactory.manufacturePojo(DebtPositionTypeOrgIngestionFlowFileDTO.class);
+        secondRow.setIpaCode("IPA-TWO");
+        CountDownLatch bothRowsStarted = new CountDownLatch(2);
+        CountDownLatch releaseRows = new CountDownLatch(1);
+
+        Mockito.doAnswer(invocation -> {
+                    bothRowsStarted.countDown();
+                    Assertions.assertTrue(releaseRows.await(5, TimeUnit.SECONDS));
+                    return Collections.emptyList();
+                })
+                .when(serviceSpy)
+                .consumeRow(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any());
+
+        // When
+        CompletableFuture<DebtPositionTypeOrgIngestionFlowFileResult> processingFuture = CompletableFuture.supplyAsync(
+                () -> startProcess(List.of(firstRow, secondRow).iterator(), List.of(), ingestionFlowFile, workingDirectory)
+        );
+
+        // Then
+        try {
+            Assertions.assertTrue(bothRowsStarted.await(5, TimeUnit.SECONDS));
+        } finally {
+            releaseRows.countDown();
+        }
+        DebtPositionTypeOrgIngestionFlowFileResult result = processingFuture.get(5, TimeUnit.SECONDS);
+        Assertions.assertEquals(2, result.getProcessedRows());
     }
 
 }

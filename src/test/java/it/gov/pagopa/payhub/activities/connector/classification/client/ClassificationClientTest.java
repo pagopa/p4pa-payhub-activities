@@ -253,23 +253,21 @@ class ClassificationClientTest {
         Long organizationId = 1L;
         String iuv = "IUV123";
         int transferIndex = 1;
-        Long receiptPaymentAmount = 100L;
-        String receiptOrgFiscalCode = "FiscalCode123";
         ClassificationsEnum label = ClassificationsEnum.DOPPI;
         String accessToken = "accessToken";
         Integer expectedResponse = 1;
 
         ClassificationEntityExtendedControllerApi mockApi = mock(ClassificationEntityExtendedControllerApi.class);
         when(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken)).thenReturn(mockApi);
-        when(mockApi.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label))
+        when(mockApi.deleteDuplicates(organizationId, iuv, transferIndex, label))
                 .thenReturn(expectedResponse);
 
         // When
-        Integer result = classificationClient.deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label, accessToken);
+        Integer result = classificationClient.deleteDuplicates(organizationId, iuv, transferIndex, label, accessToken);
 
         // Then
         assertEquals(expectedResponse, result);
         verify(classificationApisHolderMock.getClassificationEntityExtendedControllerApi(accessToken), times(1))
-                .deleteDuplicates(organizationId, iuv, transferIndex, receiptPaymentAmount, receiptOrgFiscalCode, label);
+                .deleteDuplicates(organizationId, iuv, transferIndex, label);
     }
 }

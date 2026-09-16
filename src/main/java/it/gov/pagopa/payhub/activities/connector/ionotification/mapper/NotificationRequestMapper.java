@@ -1,16 +1,17 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.mapper;
 
 import it.gov.pagopa.payhub.activities.service.debtposition.ionotification.IoNotificationGenericPlaceholderResolverService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IONotificationDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.IONotificationDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -45,7 +46,7 @@ public class NotificationRequestMapper {
                         NotificationRequestDTO notificationRequestDTO = mapNotificationRequestDTO(
                                 debtPositionDTO, ioNotificationDTO, installment);
                         notificationRequestDTO.setNav(installment.getNav());
-                        notificationRequestDTO.setOrgFiscalCode(installment.getTransfers().getFirst().getOrgFiscalCode());
+                        notificationRequestDTO.setOrgFiscalCode(Objects.requireNonNull(installment.getTransfers()).getFirst().getOrgFiscalCode());
                         return notificationRequestDTO;
                     })
                     .toList();

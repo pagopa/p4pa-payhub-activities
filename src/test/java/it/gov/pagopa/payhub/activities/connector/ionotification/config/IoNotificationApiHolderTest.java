@@ -1,5 +1,6 @@
 package it.gov.pagopa.payhub.activities.connector.ionotification.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
 import it.gov.pagopa.pu.ionotification.dto.generated.NotificationRequestDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -13,25 +14,28 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class IoNotificationApiHolderTest extends BaseApiHolderTest {
     @Mock
     private RestTemplateBuilder restTemplateBuilderMock;
 
-    private IoNotificationApisHolder ioNotificationApisHolder;
+    private IoNotificationApisHolder apisHolder;
     private IoNotificationApiClientConfig apiClientConfig;
 
     @BeforeEach
     void setUp() {
-        Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-        Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+        when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+        when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
         apiClientConfig = IoNotificationApiClientConfig.builder()
                 .baseUrl("http://example.com")
                 .maxAttempts(3)
                 .build();
+        apisHolder = new IoNotificationApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-        ioNotificationApisHolder = new IoNotificationApisHolder(apiClientConfig, restTemplateBuilderMock);
+        verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getIoNotificationApi(null));
     }
 
     @AfterEach
@@ -45,7 +49,7 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
     @Test
     void testRetryConfiguration() {
         assertRetry(apiClientConfig,
-                accessToken -> ioNotificationApisHolder.getIoNotificationApi(accessToken)
+                accessToken -> apisHolder.getIoNotificationApi(accessToken)
                         .sendMessage(new NotificationRequestDTO()),
                 new ParameterizedTypeReference<>() {}
         );
@@ -54,9 +58,9 @@ class IoNotificationApiHolderTest extends BaseApiHolderTest {
     @Test
     void whenGetIoNotificationApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
         assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> ioNotificationApisHolder.getIoNotificationApi(accessToken)
+                accessToken -> apisHolder.getIoNotificationApi(accessToken)
                             .sendMessage(new NotificationRequestDTO()),
                 new ParameterizedTypeReference<>() {},
-                ioNotificationApisHolder::unload);
+                apisHolder::unload);
     }
 }

@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.debtposition.PaidInstallme
 import it.gov.pagopa.payhub.activities.enums.UniqueIdentifierType;
 import it.gov.pagopa.payhub.activities.service.receipt.RtFileHandlerService;
 import it.gov.pagopa.payhub.activities.util.Utilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentPaidViewDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentPaidViewDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PersonEntityType;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 

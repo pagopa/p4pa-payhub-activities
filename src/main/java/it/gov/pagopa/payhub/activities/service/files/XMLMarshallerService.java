@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.service.files;
 
-import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;

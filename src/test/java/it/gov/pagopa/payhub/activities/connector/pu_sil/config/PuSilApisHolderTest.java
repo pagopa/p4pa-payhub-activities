@@ -1,7 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.pu_sil.config;
 
+import it.gov.pagopa.payhub.activities.config.json.JsonConfig;
 import it.gov.pagopa.payhub.activities.connector.BaseApiHolderTest;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,26 +14,29 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class PuSilApisHolderTest extends BaseApiHolderTest {
 
   @Mock
   private RestTemplateBuilder restTemplateBuilderMock;
 
-  private PuSilApisHolder puSilApisHolder;
+  private PuSilApisHolder apisHolder;
   private PuSilApiClientConfig apiClientConfig;
 
   @BeforeEach
-  void setUp() {
-    Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-    Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+  void init() {
+    when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+    when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
     apiClientConfig = PuSilApiClientConfig.builder()
         .baseUrl("http://example.com")
             .maxAttempts(3)
         .build();
+    apisHolder = new PuSilApisHolder(apiClientConfig, restTemplateBuilderMock, new JsonConfig().objectMapperJackson3());
 
-    puSilApisHolder = new PuSilApisHolder(apiClientConfig, restTemplateBuilderMock);
+    verifyHttpClientErrorJsonBodyHandlerConfiguration(apisHolder.getNotifyPaymentApi(null));
   }
 
   @AfterEach
@@ -46,7 +50,7 @@ class PuSilApisHolderTest extends BaseApiHolderTest {
   @Test
   void testRetryConfiguration() {
     assertRetry(apiClientConfig,
-            accessToken -> { puSilApisHolder.getNotifyPaymentApi(accessToken)
+            accessToken -> { apisHolder.getNotifyPaymentApi(accessToken)
                     .notifyPayment(1L, new InstallmentDTO());
               return voidMock;
             },
@@ -57,11 +61,11 @@ class PuSilApisHolderTest extends BaseApiHolderTest {
   @Test
   void whenGetNotifyPaymentApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
     assertAuthenticationShouldBeSetInThreadSafeMode(
-        accessToken -> { puSilApisHolder.getNotifyPaymentApi(accessToken)
+        accessToken -> { apisHolder.getNotifyPaymentApi(accessToken)
             .notifyPayment(1L, new InstallmentDTO());
           return voidMock;
         },
         new ParameterizedTypeReference<>() {},
-        puSilApisHolder::unload);
+        apisHolder::unload);
   }
 }

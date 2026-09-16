@@ -25,7 +25,7 @@ import org.springframework.web.client.RestClientException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -181,7 +181,7 @@ class OrganizationIngestionActivityImplTest {
                         .orgLogo("orgLogo1")
                         .status("status1")
                         .additionalLanguage("additionalLanguage1")
-                        .startDate(LocalDateTime.now())
+                        .startDate(LocalDate.now())
                         .brokerCf("brokerCf1")
                         .ioApiKey("ioApiKey1")
                         .flagNotifyIo(true)
@@ -201,7 +201,7 @@ class OrganizationIngestionActivityImplTest {
                         .orgLogo("orgLogo2")
                         .status("status2")
                         .additionalLanguage("additionalLanguage2")
-                        .startDate(LocalDateTime.now())
+                        .startDate(LocalDate.now())
                         .brokerCf("brokerCf2")
                         .ioApiKey("ioApiKey2")
                         .flagNotifyIo(true)

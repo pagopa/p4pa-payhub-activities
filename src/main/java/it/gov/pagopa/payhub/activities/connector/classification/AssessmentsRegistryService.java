@@ -2,7 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.classification;
 
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsRegistrySemanticKey;
 import it.gov.pagopa.pu.classification.dto.generated.AssessmentsRegistry;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 
 import java.util.List;
 import java.util.Optional;

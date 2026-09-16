@@ -5,13 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SignedUrlImplTest {
@@ -25,7 +26,7 @@ class SignedUrlImplTest {
 
     @BeforeEach
     void setUp() {
-        signedUrlService = new SignedUrlServiceImpl();
+        signedUrlService = new SignedUrlServiceImpl("APPNAME");
         ReflectionTestUtils.setField(signedUrlService, "noRedirectRestTemplate", restTemplateMock);
     }
 
@@ -33,7 +34,7 @@ class SignedUrlImplTest {
     void givenValidUrlAndAvailableFileWhenDownloadFileFromSignedUrlThenReturnFileContent() {
         byte[] expectedContent = "dummy-file-content".getBytes();
         ResponseEntity<byte[]> responseEntity = ResponseEntity.ok(expectedContent);
-        Mockito.when(restTemplateMock.getForEntity(DUMMY_URI, byte[].class)).thenReturn(responseEntity);
+        when(restTemplateMock.getForEntity(DUMMY_URI, byte[].class)).thenReturn(responseEntity);
 
         byte[] actualContent = signedUrlService.downloadFileFromSignedUrl(SIGNED_URL);
 
@@ -43,7 +44,7 @@ class SignedUrlImplTest {
     @Test
     void givenEmptyResponseBodyWhenDownloadFileFromSignedUrlThenThrowsIllegalStateException() {
         ResponseEntity<byte[]> responseEntity = ResponseEntity.ok(null);
-        Mockito.when(restTemplateMock.getForEntity(DUMMY_URI, byte[].class)).thenReturn(responseEntity);
+        when(restTemplateMock.getForEntity(DUMMY_URI, byte[].class)).thenReturn(responseEntity);
 
        Assertions.assertThrows(IllegalStateException.class, () ->
                 signedUrlService.downloadFileFromSignedUrl(SIGNED_URL)

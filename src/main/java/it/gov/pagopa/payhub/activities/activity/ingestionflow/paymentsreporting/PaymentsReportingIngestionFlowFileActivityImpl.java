@@ -1,6 +1,6 @@
 package it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting;
 
-import it.gov.digitpa.schemas._2011.pagamenti.CtFlussoRiversamento;
+import it.gov.digitpa.schemas._2011.pagamenti.FlussoRiversamento;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.BaseIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.connector.classification.PaymentsReportingService;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
@@ -81,7 +81,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	}
 
 	/**
-	 * Parses the provided file into a {@link CtFlussoRiversamento} object and maps its content into a list
+	 * Parses the provided file into a {@link FlussoRiversamento} object and maps its content into a list
 	 * of {@link PaymentsReporting}. Validates the file's organization data.
 	 *
 	 * @param ingestionFlowFile the file to be parsed
@@ -90,7 +90,7 @@ public class PaymentsReportingIngestionFlowFileActivityImpl extends BaseIngestio
 	 * @throws IllegalArgumentException if the file content does not conform to the expected structure
 	 */
 	private Pair<String, List<PaymentsReporting>> parseData(File ingestionFlowFile, IngestionFlowFile ingestionFlowFileDTO) {
-		CtFlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
+		FlussoRiversamento ctFlussoRiversamento = flussoRiversamentoUnmarshallerService.unmarshal(ingestionFlowFile);
 		log.debug("file CtFlussoRiversamento with Id {} parsed successfully ", ctFlussoRiversamento.getIdentificativoFlusso());
 
 		paymentsReportingIngestionFlowFileValidatorService.validateData(ctFlussoRiversamento, ingestionFlowFileDTO);

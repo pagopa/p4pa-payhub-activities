@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.connector.debtposition.client.DebtPositio
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIdViewFilters;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

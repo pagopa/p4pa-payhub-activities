@@ -1,12 +1,12 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.client;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.config.PagoPaPaymentsApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.GeneratedNoticeMassiveFolderDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.NoticeRequestMassiveDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Lazy
 @Service
@@ -24,7 +24,7 @@ public class PrintPaymentNoticeClient {
 	public SignedUrlResultDTO getSignedUrl(Long organizationId, String pdfGeneratedId, String accessToken) {
         try {
             return pagoPaPaymentsApisHolder.getPrintPaymentNoticeApi(accessToken).getSignedUrl(organizationId, pdfGeneratedId);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             return null;
         }
 	}

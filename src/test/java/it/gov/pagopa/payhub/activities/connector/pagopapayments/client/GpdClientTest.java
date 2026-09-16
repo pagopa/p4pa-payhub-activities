@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.connector.pagopapayments.client;
 
 import it.gov.pagopa.payhub.activities.connector.pagopapayments.config.PagoPaPaymentsApisHolder;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.pagopapayments.client.generated.GpdApi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GpdClientTest {
@@ -40,14 +42,14 @@ class GpdClientTest {
         String iud = "IUD";
         DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-        Mockito.when(pagoPaPaymentsApisHolderMock.getGpdApi(accessToken))
+        when(pagoPaPaymentsApisHolderMock.getGpdApi(accessToken))
                 .thenReturn(gpdApiMock);
 
         // When
         gpdClient.syncGpd(iud, debtPositionDTO, accessToken);
 
         // Then
-        Mockito.verify(gpdApiMock)
+        verify(gpdApiMock)
                 .syncGpd(iud, debtPositionDTO);
     }
 }

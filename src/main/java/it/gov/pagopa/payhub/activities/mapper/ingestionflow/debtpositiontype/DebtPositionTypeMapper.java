@@ -1,7 +1,7 @@
 package it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtpositiontype;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeRequestBody;
 import org.springframework.stereotype.Service;
 
 @Service

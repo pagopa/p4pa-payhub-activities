@@ -1,11 +1,12 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition.client;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.config.DebtPositionApisHolder;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.util.faker.TransferFaker;
-import it.gov.pagopa.pu.debtposition.client.generated.TransferSearchControllerApi;
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelTransfer;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtpositions.client.generated.TransferSearchControllerApi;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelTransfer;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Transfer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Set;
 
@@ -86,7 +86,7 @@ class TransferSearchClientTest {
 			iur,
 			transferIndex,
 			Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED)
-		)).thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+		)).thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
 		// When
 		Transfer result = transferSearchClient.findBySemanticKey(

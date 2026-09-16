@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.connector.processexecutions.client;
 
 import it.gov.pagopa.payhub.activities.connector.processexecutions.config.ProcessExecutionsApisHolder;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum;
@@ -11,7 +12,6 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.PagedModelIngestionFlowF
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -32,7 +32,7 @@ public class IngestionFlowFileClient {
         try{
             return processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken)
                     .crudGetIngestionflowfile(String.valueOf(ingestionFlowFileId));
-        } catch (HttpClientErrorException.NotFound e){
+        } catch (RestInvokeNotFoundException e){
             log.info("Cannot find IngestionFlowFile having id {}", ingestionFlowFileId);
             return null;
         }
@@ -55,7 +55,7 @@ public class IngestionFlowFileClient {
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
                     .updateStatus(ingestionFlowFileId, ingestionFlowFileUpdateStatusRequestDTO);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             return 0;
         }
     }
@@ -83,7 +83,7 @@ public class IngestionFlowFileClient {
         try {
             return processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken)
                     .updatePdfGenerated(ingestionFlowFileId, pdfGenerated, pdfGeneratedId);
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (RestInvokeNotFoundException e) {
             return 0;
         }
     }

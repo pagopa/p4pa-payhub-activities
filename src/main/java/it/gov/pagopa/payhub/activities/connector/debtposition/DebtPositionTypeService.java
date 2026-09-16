@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.connector.debtposition;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.CollectionModelDebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionType;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionTypeRequestBody;
+import it.gov.pagopa.pu.debtpositions.dto.generated.CollectionModelDebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionTypeRequestBody;
 
 /**
  * This interface provides methods that manage debt positions type within the related microservice.
@@ -38,7 +38,9 @@ public interface DebtPositionTypeService {
      *
      * @param brokerId the broker identifier
      * @param code the code of the debt position type
-     * @return a collection of matching DebtPositionType objects
+     * @param orgType the code of organization type
+     * @param taxonomyCode tha taxonomy code
+     * @return a matching DebtPositionType object
      */
-    CollectionModelDebtPositionType getByBrokerIdAndCode(Long brokerId, String code);
+    DebtPositionType getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(Long brokerId, String code, String orgType, String taxonomyCode);
 }

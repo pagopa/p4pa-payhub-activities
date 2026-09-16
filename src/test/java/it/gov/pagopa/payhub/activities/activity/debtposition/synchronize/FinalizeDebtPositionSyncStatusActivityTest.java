@@ -1,8 +1,8 @@
 package it.gov.pagopa.payhub.activities.activity.debtposition.synchronize;
 
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncStatusUpdateRequestDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncStatusUpdateRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static it.gov.pagopa.payhub.activities.util.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FinalizeDebtPositionSyncStatusActivityTest {
@@ -39,7 +40,7 @@ class FinalizeDebtPositionSyncStatusActivityTest {
         DebtPositionDTO debtPosition = buildDebtPositionDTO();
         SyncStatusUpdateRequestDTO requestDTO = new SyncStatusUpdateRequestDTO();
 
-        Mockito.when(debtPositionServiceMock.finalizeSyncStatus(Mockito.same(debtPositionId), Mockito.same(requestDTO))).thenReturn(debtPosition);
+        when(debtPositionServiceMock.finalizeSyncStatus(Mockito.same(debtPositionId), Mockito.same(requestDTO))).thenReturn(debtPosition);
         // When
         DebtPositionDTO result = activity.finalizeDebtPositionSyncStatus(debtPositionId, requestDTO);
 
