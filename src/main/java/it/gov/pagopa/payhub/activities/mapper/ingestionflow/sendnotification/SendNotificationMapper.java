@@ -21,6 +21,7 @@ public class SendNotificationMapper {
         request.setPaProtocolNumber(sendFile.getPaProtocolNumber());
         request.setNotificationFeePolicy(NotificationFeePolicyEnum.valueOf(sendFile.getNotificationFeePolicy()));
         request.setPhysicalCommunicationType(PhysicalCommunicationTypeEnum.valueOf(sendFile.getPhysicalCommunicationType()));
+        request.setSubject(sendFile.getSubject());
         request.setSenderDenomination(sendFile.getSenderDenomination());
         request.setSenderTaxId(sendFile.getSenderTaxId());
         request.setAmount(sendFile.getAmount());
