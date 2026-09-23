@@ -26,6 +26,7 @@ public class SendNotificationFaker {
                         .build()))
                 .status(NotificationStatus.ACCEPTED)
                 .campaignId("campaignId1")
+                .subject("NOTIFICATION SUBJECT")
                 .build();
     }
 
@@ -35,6 +36,7 @@ public class SendNotificationFaker {
                 .paProtocolNumber("prot-123")
                 .notificationFeePolicy("DELIVERY_MODE")
                 .physicalCommunicationType("AR_REGISTERED_LETTER")
+                .subject("NOTIFICATION SUBJECT")
                 .senderDenomination("Test Denom")
                 .senderTaxId("ABC123")
                 .amount(new BigDecimal("12.50"))

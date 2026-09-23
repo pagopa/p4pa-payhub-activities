@@ -30,6 +30,9 @@ public class SendNotificationIngestionFlowFileDTO {
   @CsvBindByName(column = "physicalCommunicationType", required = true)
   private String physicalCommunicationType;
 
+  @CsvBindByName(column = "subject")
+  private String subject;
+
   @CsvBindByName(column = "senderDenomination")
   private String senderDenomination;
 
