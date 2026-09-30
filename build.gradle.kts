@@ -98,7 +98,7 @@ val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
 val httpClientVersion = "5.6.4"
-val httpCoreVersion = "5.4.3"
+val httpCoreVersion = "5.4.4"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
@@ -106,7 +106,9 @@ val jaxbXewPluginVersion = "2.1"
 val jaxbPluginVersion = "4.0.16"
 
 // CVE Security dependencies
-val tomcatEmbedCoreVersion = "11.0.25"
+val tomcatEmbedCoreVersion = "11.0.26"
+val jackson2DatabindVersion = "2.22.3"
+val jackson3DatabindVersion = "3.1.7"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -158,6 +160,8 @@ dependencies {
 
     // CVE Security dependencies
     implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2DatabindVersion")
+    implementation("tools.jackson.core:jackson-databind:$jackson3DatabindVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
