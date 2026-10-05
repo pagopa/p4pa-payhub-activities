@@ -42,7 +42,7 @@ licenseReport {
     filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
 tasks.dependencies {
-  finalizedBy(tasks.generateLicenseReport)
+    finalizedBy(tasks.generateLicenseReport)
 }
 
 repositories {
@@ -187,6 +187,20 @@ val projectInfo = mapOf(
     "version" to project.version
 )
 
+configure<SourceSetContainer> {
+    named("main") {
+        java.srcDir("$projectDir/build/generated/src/main/java")
+    }
+}
+
+tasks.named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates") {
+    revision = "release"
+    outputFormatter = "json"
+    checkForGradleUpdate = false
+    checkEmbeddedKotlin = false
+    rejectPreReleases = true
+}
+
 tasks {
     val processResources by getting(ProcessResources::class) {
         filesMatching("**/application.yml") {
@@ -196,57 +210,12 @@ tasks {
     processResources.dependsOn("dependenciesBuild")
 }
 
-jaxb {
-    javaGen {
-        register("PaymentsReport") {
-            extension = true
-            args = listOf("-xmlschema")
-            outputDir = file("$projectDir/build/generated/jaxb/java")
-            schema = file("src/main/resources/xsd/FlussoRiversamento.xsd")
-            bindings = layout.files("src/main/resources/xsd/simple-bindings.xjb")
-        }
-        register("Opi14TreasuryFlow") {
-            extension = true
-            args = listOf("-xmlschema", "-Xsimplify")
-            outputDir = file("$projectDir/build/generated/jaxb/java")
-            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd")
-            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xjb")
-        }
-        register("Opi161TreasuryFlow") {
-            extension = true
-            args = listOf("-xmlschema", "-Xsimplify")
-            outputDir = file("$projectDir/build/generated/jaxb/java")
-            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd")
-            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xjb")
-        }
-        register("Opi171TreasuryFlow") {
-            extension = true
-            args = listOf("-xmlschema", "-Xsimplify")
-            outputDir = file("$projectDir/build/generated/jaxb/java")
-            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xsd")
-            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xjb")
-        }
-        register("Opi18TreasuryFlow") {
-            extension = true
-            args = listOf("-xmlschema", "-Xsimplify")
-            outputDir = file("$projectDir/build/generated/jaxb/java")
-            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_8.xsd")
-            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_8.xjb")
-        }
-        register("ReceiptPagopa") {
-            extension = true
-            args = listOf("-xmlschema", "-Xsimplify")
-            outputDir = file("$projectDir/build/generated/jaxb/java")
-            schema = file("src/main/resources/receipt/wsdl/xsd/paForNode.xsd")
-            bindings = layout.files("src/main/resources/receipt/wsdl/xsd/paForNode.xjb")
-        }
-    }
+tasks.withType<BootJar> {
+    enabled = false
 }
 
-configure<SourceSetContainer> {
-    named("main") {
-        java.srcDir("$projectDir/build/generated/src/main/java")
-    }
+tasks.compileJava {
+    dependsOn("dependenciesBuild")
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -297,13 +266,51 @@ publishing {
     }
 }
 
-
-tasks.withType<BootJar> {
-    enabled = false
-}
-
-tasks.compileJava {
-    dependsOn("dependenciesBuild")
+jaxb {
+    javaGen {
+        register("PaymentsReport") {
+            extension = true
+            args = listOf("-xmlschema")
+            outputDir = file("$projectDir/build/generated/jaxb/java")
+            schema = file("src/main/resources/xsd/FlussoRiversamento.xsd")
+            bindings = layout.files("src/main/resources/xsd/simple-bindings.xjb")
+        }
+        register("Opi14TreasuryFlow") {
+            extension = true
+            args = listOf("-xmlschema", "-Xsimplify")
+            outputDir = file("$projectDir/build/generated/jaxb/java")
+            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xsd")
+            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_4.xjb")
+        }
+        register("Opi161TreasuryFlow") {
+            extension = true
+            args = listOf("-xmlschema", "-Xsimplify")
+            outputDir = file("$projectDir/build/generated/jaxb/java")
+            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xsd")
+            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_6_1.xjb")
+        }
+        register("Opi171TreasuryFlow") {
+            extension = true
+            args = listOf("-xmlschema", "-Xsimplify")
+            outputDir = file("$projectDir/build/generated/jaxb/java")
+            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xsd")
+            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_7_1.xjb")
+        }
+        register("Opi18TreasuryFlow") {
+            extension = true
+            args = listOf("-xmlschema", "-Xsimplify")
+            outputDir = file("$projectDir/build/generated/jaxb/java")
+            schema = file("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_8.xsd")
+            bindings = layout.files("src/main/resources/xsd/OPI_GIORNALE_DI_CASSA_V_1_8.xjb")
+        }
+        register("ReceiptPagopa") {
+            extension = true
+            args = listOf("-xmlschema", "-Xsimplify")
+            outputDir = file("$projectDir/build/generated/jaxb/java")
+            schema = file("src/main/resources/receipt/wsdl/xsd/paForNode.xsd")
+            bindings = layout.files("src/main/resources/receipt/wsdl/xsd/paForNode.xjb")
+        }
+    }
 }
 
 tasks.register("dependenciesBuild") {
