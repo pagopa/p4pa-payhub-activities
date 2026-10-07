@@ -482,7 +482,7 @@ tasks.register<GenerateTask>("openApiGenerateDEBTPOSITIONS") {
     description = "openapi"
 
     generatorName.set("java")
-    remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/develop/openapi/generated.openapi.json")
+    remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-debt-positions/refs/heads/P4ADEV-5130-handle-iupd-pagopa/openapi/generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
     invokerPackage.set("it.gov.pagopa.pu.debtpositions.generated")
     apiPackage.set("it.gov.pagopa.pu.debtpositions.client.generated")

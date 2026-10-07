@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.*;
 
-import static it.gov.pagopa.payhub.activities.enums.FileErrorCode.ORGANIZATION_STATION_NOT_FOUND;
+import static it.gov.pagopa.payhub.activities.enums.FileErrorCode.*;
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
 import static it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 
@@ -109,11 +109,13 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         Boolean flagPuPagoPaPayment = installment.getFlagPuPagoPaPayment();
 
         if (Boolean.TRUE.equals(flagPuPagoPaPayment) && isGpd && StringUtils.isBlank(installment.getIupdPagopa())) {
-            // TODO
+            return List.of(buildErrorDto(ingestionFlowFile, lineNumber, installment,
+                    MISSING_IUPD_PAGOPA.name(), MISSING_IUPD_PAGOPA.getMessage()));
         }
 
         if (Boolean.FALSE.equals(flagPuPagoPaPayment)) {
-            // TODO
+            return List.of(buildErrorDto(ingestionFlowFile, lineNumber, installment,
+                    INVALID_IUPD_PAGOPA.name(), INVALID_IUPD_PAGOPA.getMessage()));
         }
 
         String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
