@@ -11,18 +11,19 @@ import it.gov.pagopa.payhub.activities.mapper.ingestionflow.debtposition.Install
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.IngestionFlowProcessingService;
 import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentSynchronizeDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
+import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+import static it.gov.pagopa.payhub.activities.enums.FileErrorCode.ORGANIZATION_STATION_NOT_FOUND;
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
 import static it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
 
@@ -34,10 +35,10 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
     private final DebtPositionService debtPositionService;
     private final InstallmentSynchronizeMapper installmentSynchronizeMapper;
     private final DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionService;
+    private final OrganizationService organizationService;
 
     public InstallmentProcessingService(
             @Value("${ingestion-flow-files.dp-installments.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
-
             DebtPositionService debtPositionService,
             InstallmentSynchronizeMapper installmentSynchronizeMapper,
             InstallmentErrorsArchiverService installmentErrorsArchiverService,
@@ -47,6 +48,7 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         this.debtPositionService = debtPositionService;
         this.installmentSynchronizeMapper = installmentSynchronizeMapper;
         this.dpInstallmentsWorkflowCompletionService = dpInstallmentsWorkflowCompletionService;
+        this.organizationService = organizationService;
     }
 
     /**
@@ -64,6 +66,17 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
                                                                   Path workingDirectory,
                                                                   InstallmentIngestionFlowFileResult result) {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
+
+        Optional<OrganizationStationDTO> organizationStationOpt = organizationService.getOrganizationStation(ingestionFlowFile.getOrganizationId(), null);
+
+        if (organizationStationOpt.isEmpty()) {
+            log.error("OrganizationStation for organization id {} not found", ingestionFlowFile.getOrganizationId());
+            result.setErrorDescription(ORGANIZATION_STATION_NOT_FOUND.getMessage());
+            return result;
+        }
+
+        result.setPagoPaInteractionModel(organizationStationOpt.get().getPagoPaInteractionModel());
+
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
         return result;
     }
@@ -89,6 +102,19 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
         wfExecutionParameters.setMassive(true);
         wfExecutionParameters.setPartialChange(true);
+
+        PagoPaInteractionModel pagoPaInteractionModel = ingestionFlowFileResult.getPagoPaInteractionModel();
+
+        boolean isGpd = Objects.equals(pagoPaInteractionModel, PagoPaInteractionModel.ASYNC_GPD);
+        Boolean flagPuPagoPaPayment = installment.getFlagPuPagoPaPayment();
+
+        if (Boolean.TRUE.equals(flagPuPagoPaPayment) && isGpd && StringUtils.isBlank(installment.getIupdPagopa())) {
+            // TODO
+        }
+
+        if (Boolean.FALSE.equals(flagPuPagoPaPayment)) {
+            // TODO
+        }
 
         String workflowId = debtPositionService.installmentSynchronize(ORDINARY_SIL, installmentSynchronizeDTO, wfExecutionParameters, ingestionFlowFile.getOperatorExternalId());
         return dpInstallmentsWorkflowCompletionService.waitForWorkflowCompletion(workflowId, installment, lineNumber);

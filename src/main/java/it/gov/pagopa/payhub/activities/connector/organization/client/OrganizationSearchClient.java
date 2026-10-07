@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.connector.organization.config.Organizatio
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -53,5 +54,15 @@ public class OrganizationSearchClient {
     public CollectionModelOrganization findActiveOrganizationsByBrokerId(Long brokerId, String accessToken) {
         return organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
                 .crudOrganizationsFindByBrokerIdAndStatus(brokerId, OrganizationStatus.ACTIVE);
+    }
+
+    public OrganizationStationDTO findOrganizationStationByOrganizationIdAndStationId(Long organizationId, String stationId, String accessToken) {
+        try{
+            return organizationApisHolder.getOrganizationApi(accessToken)
+                    .getOrganizationStation(organizationId, stationId);
+        } catch (RestInvokeNotFoundException e){
+            log.info("Cannot find organization_station having organizationId {} and stationId {}", organizationId, stationId);
+            return null;
+        }
     }
 }

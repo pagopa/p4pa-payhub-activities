@@ -55,6 +55,7 @@ public enum FileErrorCode {
     MISSING_DEBT_POSITION_TYPE_ORG("Il tipo posizione debitoria impostato e' obbligatorio"),
     DIFFERENT_DEBTORS_IN_SAME_PO("Le rate di un'opzione di pagamento devono avere lo stesso debitore"),
     MULTIDEBTOR_DISABLED("Non e' possibile avere piu' di un debitore se la posizione debitoria non permette coobbligati"),
+    ORGANIZATION_STATION_NOT_FOUND("Non e' stata trovata la stazione dell'ente"),
 
     // payment option
     PAYMENT_OPTION_NOT_FOUND("Opzione di pagamento non trovata"),

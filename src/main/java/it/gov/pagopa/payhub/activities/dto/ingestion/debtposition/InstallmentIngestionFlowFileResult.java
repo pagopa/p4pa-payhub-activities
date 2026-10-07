@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.dto.ingestion.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.service.files.CsvHeaderAware;
+import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -27,4 +28,5 @@ public class InstallmentIngestionFlowFileResult extends IngestionFlowFileResult 
         return originalHeader;
     }
 
+    public PagoPaInteractionModel pagoPaInteractionModel;
 }
