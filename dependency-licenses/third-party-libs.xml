@@ -22,7 +22,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson-bom'>com.fasterxml.jackson:jackson-bom</a></td>
-<td>2.21.5</td>
+<td>2.22.3</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -37,7 +37,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson'>com.fasterxml.jackson.core:jackson-databind</a></td>
-<td>2.21.5</td>
+<td>2.22.3</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -337,12 +337,12 @@
 </tr>
 <tr>
 <td>org.apache.httpcomponents.core5:httpcore5</td>
-<td>5.4.3</td>
+<td>5.4.4</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
 <td>org.apache.httpcomponents.core5:httpcore5-h2</td>
-<td>5.4.3</td>
+<td>5.4.4</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -382,7 +382,7 @@
 </tr>
 <tr>
 <td><a href='https://tomcat.apache.org/'>org.apache.tomcat.embed:tomcat-embed-core</a></td>
-<td>11.0.25</td>
+<td>11.0.26</td>
 <td><a href='https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt'>EPL-2.0</a></td>
 </tr>
 <tr>
@@ -652,7 +652,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson-bom'>tools.jackson:jackson-bom</a></td>
-<td>3.1.5</td>
+<td>3.1.7</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -662,7 +662,7 @@
 </tr>
 <tr>
 <td><a href='https://github.com/FasterXML/jackson'>tools.jackson.core:jackson-databind</a></td>
-<td>3.1.5</td>
+<td>3.1.7</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 </table>
