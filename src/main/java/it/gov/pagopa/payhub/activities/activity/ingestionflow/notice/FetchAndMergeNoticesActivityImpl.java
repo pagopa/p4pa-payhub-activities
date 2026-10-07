@@ -122,6 +122,7 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
         } finally {
             //TODO decommentare
             //cleanupTmpDir(tmpDir);
+            //comment
         }
     }
 
