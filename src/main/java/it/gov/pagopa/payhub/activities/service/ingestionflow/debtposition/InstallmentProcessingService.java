@@ -108,12 +108,12 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
         boolean isGpd = Objects.equals(pagoPaInteractionModel, PagoPaInteractionModel.ASYNC_GPD);
         Boolean flagPuPagoPaPayment = installment.getFlagPuPagoPaPayment();
 
-        if (Boolean.TRUE.equals(flagPuPagoPaPayment) && isGpd && StringUtils.isBlank(installment.getIupdPagopa())) {
+        if (Boolean.FALSE.equals(flagPuPagoPaPayment) && isGpd && StringUtils.isBlank(installment.getIupdPagopa())) {
             return List.of(buildErrorDto(ingestionFlowFile, lineNumber, installment,
                     MISSING_IUPD_PAGOPA.name(), MISSING_IUPD_PAGOPA.getMessage()));
         }
 
-        if (Boolean.FALSE.equals(flagPuPagoPaPayment)) {
+        if (Boolean.TRUE.equals(flagPuPagoPaPayment) && StringUtils.isNotBlank(installment.getIupdPagopa())) {
             return List.of(buildErrorDto(ingestionFlowFile, lineNumber, installment,
                     INVALID_IUPD_PAGOPA.name(), INVALID_IUPD_PAGOPA.getMessage()));
         }
