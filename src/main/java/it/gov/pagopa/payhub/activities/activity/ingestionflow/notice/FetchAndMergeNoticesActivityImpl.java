@@ -93,7 +93,7 @@ public class FetchAndMergeNoticesActivityImpl implements FetchAndMergeNoticesAct
                             int currentIndex = signedUrlIndex[0]++;
 
                             //TODO rimuovere
-                            if(currentIndex == 2) {
+                            if(currentIndex == 1) {
                                 throw new RuntimeException("prova");
                             }
 
