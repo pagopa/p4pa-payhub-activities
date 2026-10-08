@@ -2,7 +2,6 @@ package it.gov.pagopa.payhub.activities.connector.organization;
 
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
 
 import java.util.List;
 import java.util.Optional;
