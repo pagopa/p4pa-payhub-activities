@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.connector.organization.client.Organizatio
 import it.gov.pagopa.pu.organization.dto.generated.CollectionModelOrganization;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.OrganizationCreateDTO;
-import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -61,12 +60,5 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization createOrganization(OrganizationCreateDTO organization) {
         return organizationEntityClient.createOrganization(organization, authnService.getAccessToken());
-    }
-
-    @Override
-    public Optional<OrganizationStationDTO> getOrganizationStation(Long organizationId, String stationId) {
-        return Optional.ofNullable(
-                organizationSearchClient.findOrganizationStationByOrganizationIdAndStationId(organizationId, stationId, authnService.getAccessToken())
-        );
     }
 }

@@ -19,5 +19,4 @@ public interface OrganizationService {
 
   Organization createOrganization(OrganizationCreateDTO organization);
 
-  Optional<OrganizationStationDTO> getOrganizationStation(Long organizationId, String stationId);
 }
