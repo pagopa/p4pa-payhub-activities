@@ -109,7 +109,7 @@ class IUVArchivingExportFileServiceTest {
                         .build());
 
 
-        when(fileArchiverServiceMock.compressAndArchive(any(), any(), any()))
+        when(fileArchiverServiceMock.compressAndArchive(Mockito.<List<Path>>any(), any(Path.class), any(Path.class)))
                 .thenReturn(1L);
         
         // When
@@ -206,7 +206,7 @@ class IUVArchivingExportFileServiceTest {
 
 
         doThrow(new IOException("Error"))
-                .when(fileArchiverServiceMock).compressAndArchive(any(), any(), any());
+                .when(fileArchiverServiceMock).compressAndArchive(Mockito.<List<Path>>any(), any(Path.class), any(Path.class));
 
         List<DebtPositionDTO> dpList = List.of(debtPositionDTO);
         // When & Then
