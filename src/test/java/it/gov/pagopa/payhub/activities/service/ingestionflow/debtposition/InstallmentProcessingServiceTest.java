@@ -2,6 +2,7 @@ package it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition;
 
 import com.opencsv.exceptions.CsvException;
 import it.gov.pagopa.payhub.activities.connector.debtposition.DebtPositionService;
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentErrorDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileDTO;
@@ -12,6 +13,7 @@ import it.gov.pagopa.payhub.activities.service.files.ErrorArchiverService;
 import it.gov.pagopa.payhub.activities.service.files.FileExceptionHandlerService;
 import it.gov.pagopa.payhub.activities.service.ingestionflow.BaseIngestionFlowProcessingServiceTest;
 import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentSynchronizeDTO;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
@@ -42,6 +44,8 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
     private InstallmentErrorsArchiverService errorsArchiverServiceMock;
     @Mock
     private DPInstallmentsWorkflowCompletionService dpInstallmentsWorkflowCompletionServiceMock;
+    @Mock
+    private OrganizationService organizationServiceMock;
 
     private InstallmentProcessingService serviceSpy;
 
@@ -86,6 +90,12 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
 
     @Override
     protected InstallmentIngestionFlowFileResult startProcess(Iterator<InstallmentIngestionFlowFileDTO> rowIterator, List<CsvException> readerExceptions, IngestionFlowFile ingestionFlowFile, Path workingDirectory) {
+        OrganizationStationDTO stationDTO = podamFactory.manufacturePojo(OrganizationStationDTO.class);
+
+        doReturn(java.util.Optional.of(stationDTO))
+                .when(organizationServiceMock)
+                .getOrganizationStation(ingestionFlowFile.getOrganizationId(), null);
+
         return serviceSpy.processInstallments(rowIterator, readerExceptions, ingestionFlowFile, workingDirectory, new InstallmentIngestionFlowFileResult());
     }
 
@@ -93,10 +103,14 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
     protected InstallmentIngestionFlowFileDTO buildAndConfigureHappyUseCase(IngestionFlowFile ingestionFlowFile, int sequencingId, boolean sequencingIdAlreadySent, long rowNumber) {
         InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
         dto.setIupdOrg("IUPDORG-" + sequencingId);
+        dto.setIupdPagopa("IUPDPAGOPA-" + sequencingId);
         dto.setIud("IUD-" + sequencingId);
         if (sequencingId > 1) {
             dto.setIupdOrg(null);
         }
+
+        dto.setFlagPuPagoPaPayment(true);
+        dto.setIupdPagopa(null);
 
         InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         String workflowId = "workflow-123";
@@ -131,6 +145,8 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
     private Pair<InstallmentIngestionFlowFileDTO, List<InstallmentErrorDTO>> configureUnhappyUseCaseWaitWorkflowErrors(IngestionFlowFile ingestionFlowFile, long rowNumber) {
         InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
         dto.setRow(new String[]{"test"});
+        dto.setFlagPuPagoPaPayment(true);
+        dto.setIupdPagopa(null);
         InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         String workflowId = "workflow-123";
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
@@ -157,6 +173,8 @@ class InstallmentProcessingServiceTest extends BaseIngestionFlowProcessingServic
     private Pair<InstallmentIngestionFlowFileDTO, List<InstallmentErrorDTO>> configureUnhappyUseCaseDebtPositionNotFound(IngestionFlowFile ingestionFlowFile, long rowNumber) {
         InstallmentIngestionFlowFileDTO dto = podamFactory.manufacturePojo(InstallmentIngestionFlowFileDTO.class);
         dto.setRow(new String[]{"test"});
+        dto.setFlagPuPagoPaPayment(true);
+        dto.setIupdPagopa(null);
         InstallmentSynchronizeDTO installmentSynchronizeDTO = podamFactory.manufacturePojo(InstallmentSynchronizeDTO.class);
         WfExecutionParameters wfExecutionParameters = WfExecutionParameters.builder()
                 .massive(true)
