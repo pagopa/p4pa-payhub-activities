@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.exceptions.*;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
+import it.gov.pagopa.payhub.activities.exception.common.BaseBusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +32,8 @@ public class FileExceptionHandlerService {
     //CONNECTOR
     private static final Pattern ERROR_CODE_PATTERN = Pattern.compile("\\[([A-Z_]+)\\]");
 
-    public ErrorDetails mapExceptionToErrorCodeAndMessage(String exceptionMessage) {
+    public ErrorDetails mapExceptionToErrorCodeAndMessage(Throwable throwable) {
+        String exceptionMessage = throwable.getMessage();
         if (exceptionMessage == null || exceptionMessage.isEmpty()) {
             return new ErrorDetails(FileErrorCode.UNKNOWN_ERROR.name(), FileErrorCode.UNKNOWN_ERROR.getMessage());
         }
@@ -39,16 +41,23 @@ public class FileExceptionHandlerService {
             Matcher matcher = ERROR_CODE_PATTERN.matcher(exceptionMessage);
             if (matcher.find()) {
                 String code = matcher.group(1);
-                return FileErrorCode.fromCode(code)
-                        .filter(FileErrorCode::hasDefaultMessage)
-                        .map(errorCode -> new ErrorDetails(errorCode.name(), errorCode.getMessage()))
-                        .orElse(new ErrorDetails(code, exceptionMessage));
+                return resolveCode(code, exceptionMessage);
+            } else if (throwable instanceof BaseBusinessException bbe && bbe.getCode() != null) {
+                String code = bbe.getCode();
+                return resolveCode(code, exceptionMessage);
             } else {
                 return new ErrorDetails(FileErrorCode.GENERIC_ERROR.name(), exceptionMessage);
             }
         } catch (Exception e) {
             return new ErrorDetails(FileErrorCode.GENERIC_ERROR.name(), exceptionMessage);
         }
+    }
+
+    private ErrorDetails resolveCode(String code, String exceptionMessage) {
+        return FileErrorCode.fromCode(code)
+                .filter(FileErrorCode::hasDefaultMessage)
+                .map(errorCode -> new ErrorDetails(errorCode.name(), errorCode.getMessage()))
+                .orElse(new ErrorDetails(code, exceptionMessage));
     }
 
     //CSV

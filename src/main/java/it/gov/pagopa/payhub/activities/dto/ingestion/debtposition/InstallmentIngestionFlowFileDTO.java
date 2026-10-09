@@ -25,7 +25,7 @@ public class InstallmentIngestionFlowFileDTO implements CsvRowAware {
     @CsvBindByName(column = "iupdOrg", profiles = {V2_0, V2_0_ENG})
     private String iupdOrg;
 
-    @CsvBindByName(column = "iupdPagoPa", profiles = {V2_0, V2_0_ENG})
+    @CsvBindByName(column = "iupdPagopa", profiles = {V2_0, V2_0_ENG})
     private String iupdPagopa;
 
     @CsvBindByName(column = "descrizionePosizioneDebitoria", required = true, profiles = V2_0)

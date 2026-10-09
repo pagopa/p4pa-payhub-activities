@@ -161,7 +161,7 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
     private void handleRowProcessingException(IngestionFlowFile ingestionFlowFile, List<E> errorList, Throwable e, Long lineNumber, C row) {
         log.error("Not handled exception during IngestionFlowFile processing: ingestionFlowFileId {}, lineNumber {}",
                 ingestionFlowFile.getIngestionFlowFileId(), lineNumber, e);
-        FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e.getMessage());
+        FileExceptionHandlerService.ErrorDetails errorDetails = fileExceptionHandlerService.mapExceptionToErrorCodeAndMessage(e);
         String errorCode = errorDetails.getErrorCode();
         if(errorCode.equals(FileErrorCode.GENERIC_ERROR.name())) {
             errorCode = FileErrorCode.PROCESSING_ERROR.name();
