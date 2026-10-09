@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.exceptions.*;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
+import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import lombok.Data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -557,4 +558,13 @@ class FileExceptionHandlerServiceTest {
         assertNotNull(result);
     }
 
+    @Test
+    void givenBaseBusinessExceptionWhenMapExceptionToErrorCodeAndMessageThenOk() {
+        InvalidValueException exc = new InvalidValueException(FileErrorCode.BROKER_NOT_FOUND.name(), "Broker not found");
+
+        FileExceptionHandlerService.ErrorDetails result = service.mapExceptionToErrorCodeAndMessage(exc);
+
+        assertEquals(exc.getCode(), result.getErrorCode());
+        assertEquals(FileErrorCode.BROKER_NOT_FOUND.getMessage(), result.getErrorMessage());
+    }
 }

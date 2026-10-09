@@ -39,11 +39,11 @@ public class FileExceptionHandlerService {
         }
         try {
             Matcher matcher = ERROR_CODE_PATTERN.matcher(exceptionMessage);
-            if (matcher.find()) {
-                String code = matcher.group(1);
-                return resolveCode(code, exceptionMessage);
-            } else if (throwable instanceof BaseBusinessException bbe && bbe.getCode() != null) {
+            if (throwable instanceof BaseBusinessException bbe && bbe.getCode() != null) {
                 String code = bbe.getCode();
+                return resolveCode(code, exceptionMessage);
+            } else if (matcher.find()) {
+                String code = matcher.group(1);
                 return resolveCode(code, exceptionMessage);
             } else {
                 return new ErrorDetails(FileErrorCode.GENERIC_ERROR.name(), exceptionMessage);
