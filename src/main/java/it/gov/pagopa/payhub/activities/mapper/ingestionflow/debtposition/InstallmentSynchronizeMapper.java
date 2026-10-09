@@ -50,6 +50,7 @@ public class InstallmentSynchronizeMapper {
                 .action(installmentIngestionFlowFileDTO.getAction())
                 .draft(installmentIngestionFlowFileDTO.getDraft())
                 .iupdOrg(installmentIngestionFlowFileDTO.getIupdOrg())
+                .iupdPagopa(installmentIngestionFlowFileDTO.getIupdPagopa())
                 .description(installmentIngestionFlowFileDTO.getDescription())
                 .validityDate(installmentIngestionFlowFileDTO.getValidityDate())
                 .multiDebtor(installmentIngestionFlowFileDTO.getMultiDebtor())

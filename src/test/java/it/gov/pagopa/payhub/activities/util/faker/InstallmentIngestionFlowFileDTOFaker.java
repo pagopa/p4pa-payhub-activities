@@ -16,7 +16,8 @@ public class InstallmentIngestionFlowFileDTOFaker {
         return InstallmentIngestionFlowFileDTO.builder()
                 .action(Action.I)
                 .draft(false)
-                .iupdOrg("iupd")
+                .iupdOrg("iupdOrg")
+                .iupdPagopa("iupdPagopa")
                 .description("description")
                 .validityDate(LOCALDATE)
                 .multiDebtor(false)
@@ -62,7 +63,8 @@ public class InstallmentIngestionFlowFileDTOFaker {
         installmentIngestionFlowFileDTO.setAmount(BigDecimal.valueOf(1L));
         installmentIngestionFlowFileDTO.setDebtPositionTypeCode("typeCode");
         installmentIngestionFlowFileDTO.setEntityType(PersonEntityType.F);
-        installmentIngestionFlowFileDTO.setIupdOrg("iupd");
+        installmentIngestionFlowFileDTO.setIupdOrg("iupdOrg");
+        installmentIngestionFlowFileDTO.setIupdPagopa("iupdPagopa");
         installmentIngestionFlowFileDTO.setRemittanceInformation("info");
         installmentIngestionFlowFileDTO.setPaymentOptionIndex(1);
         installmentIngestionFlowFileDTO.setPaymentOptionType("type");

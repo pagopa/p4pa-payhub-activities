@@ -18,10 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static it.gov.pagopa.payhub.activities.service.ingestionflow.debtposition.InstallmentIngestionFlowFileRequiredFieldsValidator.setDefaultValues;
 import static it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin.ORDINARY_SIL;
@@ -37,7 +34,6 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
 
     public InstallmentProcessingService(
             @Value("${ingestion-flow-files.dp-installments.max-concurrent-processing-rows}") int maxConcurrentProcessingRows,
-
             DebtPositionService debtPositionService,
             InstallmentSynchronizeMapper installmentSynchronizeMapper,
             InstallmentErrorsArchiverService installmentErrorsArchiverService,
@@ -64,6 +60,7 @@ public class InstallmentProcessingService extends IngestionFlowProcessingService
                                                                   Path workingDirectory,
                                                                   InstallmentIngestionFlowFileResult result) {
         List<InstallmentErrorDTO> errorList = new ArrayList<>();
+
         process(iterator, readerExceptions, result, ingestionFlowFile, errorList, workingDirectory);
         return result;
     }

@@ -22,9 +22,11 @@ public class InstallmentIngestionFlowFileDTO implements CsvRowAware {
 
     private String[] row;
 
-    @CsvBindByName(column = "IUPD", profiles = V2_0)
-    @CsvBindByName(column = "iupdOrg", profiles = V2_0_ENG)
+    @CsvBindByName(column = "iupdOrg", profiles = {V2_0, V2_0_ENG})
     private String iupdOrg;
+
+    @CsvBindByName(column = "iupdPagopa", profiles = {V2_0, V2_0_ENG})
+    private String iupdPagopa;
 
     @CsvBindByName(column = "descrizionePosizioneDebitoria", required = true, profiles = V2_0)
     @CsvBindByName(column = "description", required = true, profiles = V2_0_ENG)
