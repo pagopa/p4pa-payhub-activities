@@ -2,12 +2,9 @@ package it.gov.pagopa.payhub.activities.connector.sendnotification.config;
 
 import it.gov.pagopa.payhub.activities.config.rest.HttpClientErrorJsonBodyHandler;
 import it.gov.pagopa.payhub.activities.connector.sendnotification.mapper.SendNotificationErrorDTOMapper;
+import it.gov.pagopa.pu.sendnotification.client.generated.*;
 import it.gov.pagopa.pu.sendnotification.generated.ApiClient;
 import it.gov.pagopa.pu.sendnotification.generated.BaseApi;
-import it.gov.pagopa.pu.sendnotification.client.generated.CampaignApi;
-import it.gov.pagopa.pu.sendnotification.client.generated.NotificationApi;
-import it.gov.pagopa.pu.sendnotification.client.generated.SendApi;
-import it.gov.pagopa.pu.sendnotification.client.generated.StreamsApi;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationErrorDTO;
 import jakarta.annotation.PreDestroy;
 import org.springframework.boot.restclient.RestTemplateBuilder;
@@ -27,6 +24,7 @@ public class SendApisHolder {
     private final NotificationApi sendNotificationAPI;
     private final StreamsApi streamsApi;
     private final CampaignApi campaignApi;
+    private final PaymentsApi paymentsApi;
 
     private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -47,6 +45,7 @@ public class SendApisHolder {
         this.sendNotificationAPI = new NotificationApi(apiClient);
         this.streamsApi = new StreamsApi(apiClient);
         this.campaignApi = new CampaignApi(apiClient);
+        this.paymentsApi = new PaymentsApi(apiClient);
     }
 
     @PreDestroy
@@ -72,6 +71,11 @@ public class SendApisHolder {
     /** It will return a {@link CampaignApi} instrumented with the provided accessToken. Use null if auth is not required */
     public CampaignApi getCampaignApi(String accessToken) {
         return getApi(accessToken, campaignApi);
+    }
+
+    /** It will return a {@link PaymentsApi} instrumented with the provided accessToken. Use null if auth is not required */
+    public PaymentsApi getPaymentsApi(String accessToken) {
+        return getApi(accessToken, paymentsApi);
     }
 
     private <T extends BaseApi> T getApi(String accessToken, T api) {
