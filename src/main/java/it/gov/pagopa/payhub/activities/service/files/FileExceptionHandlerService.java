@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.files;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.exceptions.*;
+import it.gov.pagopa.payhub.activities.config.rest.PuErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.common.BaseBusinessException;
 import lombok.AllArgsConstructor;
@@ -10,11 +11,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -41,6 +45,9 @@ public class FileExceptionHandlerService {
             Matcher matcher = ERROR_CODE_PATTERN.matcher(exceptionMessage);
             if (throwable instanceof BaseBusinessException bbe && bbe.getCode() != null) {
                 String code = bbe.getCode();
+                if (code.equals("IMMUTABLE_FIELD")) {
+                    return buildImmutableFieldErrorDetails(bbe, code, exceptionMessage);
+                }
                 return resolveCode(code, exceptionMessage);
             } else if (matcher.find()) {
                 String code = matcher.group(1);
@@ -51,6 +58,22 @@ public class FileExceptionHandlerService {
         } catch (Exception e) {
             return new ErrorDetails(FileErrorCode.GENERIC_ERROR.name(), exceptionMessage);
         }
+    }
+
+    private ErrorDetails buildImmutableFieldErrorDetails(BaseBusinessException bbe, String code, String exceptionMessage) {
+        List<PuErrorDTO.ErrorFieldDTO> fields = bbe.getFields();
+
+        String immutableFields = (fields != null) ? fields.stream()
+                .map(PuErrorDTO.ErrorFieldDTO::getField)
+                .collect(Collectors.joining(", ")) : "";
+
+        ErrorDetails errorDetails = resolveCode(code, exceptionMessage);
+
+        if (StringUtils.isNotBlank(immutableFields)) {
+            errorDetails.setErrorMessage(errorDetails.getErrorMessage() + ": " + immutableFields);
+        }
+
+        return errorDetails;
     }
 
     private ErrorDetails resolveCode(String code, String exceptionMessage) {
