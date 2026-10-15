@@ -3,6 +3,7 @@ package it.gov.pagopa.payhub.activities.service.files;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.exceptions.*;
+import it.gov.pagopa.payhub.activities.config.rest.PuErrorDTO;
 import it.gov.pagopa.payhub.activities.enums.FileErrorCode;
 import it.gov.pagopa.payhub.activities.exception.common.InvalidValueException;
 import lombok.Data;
@@ -15,10 +16,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileExceptionHandlerServiceTest {
@@ -566,5 +567,27 @@ class FileExceptionHandlerServiceTest {
 
         assertEquals(exc.getCode(), result.getErrorCode());
         assertEquals(FileErrorCode.BROKER_NOT_FOUND.getMessage(), result.getErrorMessage());
+    }
+
+    @Test
+    void givenBaseBusinessExceptionWithMultipleFieldsWhenMapExceptionToErrorCodeThenAppendFieldsToMessage() {
+        PuErrorDTO.ErrorFieldDTO field1 = new PuErrorDTO.ErrorFieldDTO();
+        field1.setField("iuv");
+
+        PuErrorDTO.ErrorFieldDTO field2 = new PuErrorDTO.ErrorFieldDTO();
+        field2.setField("iupdPagopa");
+
+        List<PuErrorDTO.ErrorFieldDTO> modifiedFields = List.of(field1, field2);
+
+        InvalidValueException bbe = new InvalidValueException(
+                "IMMUTABLE_FIELD",
+                "These fields are not mutable",
+                modifiedFields
+        );
+
+        FileExceptionHandlerService.ErrorDetails result = service.mapExceptionToErrorCodeAndMessage(bbe);
+
+        assertEquals("IMMUTABLE_FIELD", result.getErrorCode());
+        assertEquals("Campi non modificabili: iuv, iupdPagopa", result.getErrorMessage());
     }
 }
