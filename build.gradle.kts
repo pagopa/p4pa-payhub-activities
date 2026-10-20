@@ -104,6 +104,7 @@ val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
 val jaxbXewPluginVersion = "2.1"
 val jaxbPluginVersion = "4.0.16"
+val jackson2DataTypeVersion = "2.21.5"
 
 // CVE Security dependencies
 val tomcatEmbedCoreVersion = "11.0.26"
@@ -116,7 +117,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
     implementation("org.springframework.boot:spring-boot-micrometer-tracing")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson2DataTypeVersion")
     implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
     implementation("org.apache.commons:commons-lang3:$commonsLang3Version")
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
@@ -139,8 +140,8 @@ dependencies {
         exclude(group = "com.google.guava", module = "guava")
     }
     implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
-    implementation("com.google.protobuf:protobuf-java-util:${protobufJavaVersion}")
-    implementation(platform("io.grpc:grpc-bom:${grpcBomVersion}"))
+    implementation("com.google.protobuf:protobuf-java-util:$protobufJavaVersion")
+    implementation(platform("io.grpc:grpc-bom:$grpcBomVersion"))
     implementation("com.google.guava:guava:$guavaVersion")
     //openCsv
     implementation("com.opencsv:opencsv:$openCsvVersion")
