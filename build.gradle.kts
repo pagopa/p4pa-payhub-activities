@@ -9,12 +9,12 @@ plugins {
     java
     id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.sonarqube") version "7.4.0.8496"
+    id("org.sonarqube") version "7.5.0.8588"
     `java-library`
     `maven-publish`
     jacoco
-    id("com.intershop.gradle.jaxb") version "8.0.1"
-    id("org.openapi.generator") version "7.25.0"
+    id("com.intershop.gradle.jaxb") version "9.0.0"
+    id("org.openapi.generator") version "7.26.0"
     id("com.github.jk1.dependency-license-report") version "3.1.4"
 }
 
@@ -49,67 +49,37 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-val mockitoAgent = configurations.create("mockitoAgent")
-dependencies {
-    mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
-}
-tasks {
-    jar {
-        from("${rootProject.projectDir}") {
-            include("LICENSE.md")
-            into("META-INF")
-        }
-    }
-    test {
-        jvmArgs("-javaagent:${mockitoAgent.asPath}")
-        jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
-        testLogging.events = setOf(TestLogEvent.FAILED)
-        testLogging.exceptionFormat = TestExceptionFormat.FULL
-    }
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required = true
-    }
-}
-
 apply(plugin = "maven-publish")
 
 val commonsCompressVersion = "1.28.0"
-val commonsLang3Version = "3.20.0"
+val commonsLang3Version = "3.21.0"
 val commonsTextVersion = "1.15.0"
 val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "4.0.5"
 val jsoupVersion = "1.23.2"
-val openApiToolsVersion = "0.2.11"
-val temporalVersion = "1.38.0"
-val protobufJavaVersion = "4.36.0"
-val grpcBomVersion = "1.83.1"
-val guavaVersion = "33.7.0-jre"
+val openApiToolsVersion = "0.2.12"
+val temporalVersion = "1.40.0"
+val protobufJavaVersion = "4.36.2"
+val grpcBomVersion = "1.85.1"
+val guavaVersion = "33.7.2-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
-val httpClientVersion = "5.6.4"
+val httpClientVersion = "5.6.5"
 val httpCoreVersion = "5.4.4"
 val commonsBeanUtilsVersion = "1.11.0"
 val apachePoiVersion = "5.5.1"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
 val jaxbXewPluginVersion = "2.1"
 val jaxbPluginVersion = "4.0.16"
-val jackson2DataTypeVersion = "2.21.5"
+val jackson2DataTypeVersion = "2.22.4"
 
 // CVE Security dependencies
 val tomcatEmbedCoreVersion = "11.0.26"
-val jackson2DatabindVersion = "2.22.3"
-val jackson3DatabindVersion = "3.1.7"
+val jackson2BomVersion = "2.22.3"
+val jackson2AnnotationsVersion = "2.22"
+val jackson3BomVersion = "3.2.3"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -161,8 +131,13 @@ dependencies {
 
     // CVE Security dependencies
     implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2DatabindVersion")
-    implementation("tools.jackson.core:jackson-databind:$jackson3DatabindVersion")
+    implementation(platform("com.fasterxml.jackson:jackson-bom:$jackson2BomVersion"))
+    implementation("com.fasterxml.jackson.core:jackson-core:${jackson2BomVersion}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2BomVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jackson2AnnotationsVersion")
+    implementation(platform("tools.jackson:jackson-bom:$jackson3BomVersion"))
+    implementation("tools.jackson.core:jackson-core:$jackson3BomVersion")
+    implementation("tools.jackson.core:jackson-databind:$jackson3BomVersion")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -182,6 +157,36 @@ dependencies {
     jaxbext("org.jvnet.jaxb:jaxb-plugins:$jaxbPluginVersion")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+val mockitoAgent = configurations.create("mockitoAgent")
+dependencies {
+    mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
+}
+tasks {
+    jar {
+        from("${rootProject.projectDir}") {
+            include("LICENSE.md")
+            into("META-INF")
+        }
+    }
+    test {
+        jvmArgs("-javaagent:${mockitoAgent.asPath}")
+        jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
+        testLogging.events = setOf(TestLogEvent.FAILED)
+        testLogging.exceptionFormat = TestExceptionFormat.FULL
+    }
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+    }
+}
 
 val projectInfo = mapOf(
     "artifactId" to project.name,

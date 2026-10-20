@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static it.gov.pagopa.payhub.activities.util.TreasuryUtils.generateTechnicalIuf;
 
@@ -52,7 +53,7 @@ public class TreasuryCsvProcessingService extends IngestionFlowProcessingService
             Path workingDirectory,
             TreasuryIufIngestionFlowFileResult result) {
         List<TreasuryCsvErrorDTO> errorList = new ArrayList<>();
-        result.setIuf2TreasuryIdMap(new HashMap<>());
+        result.setIuf2TreasuryIdMap(new ConcurrentHashMap<>());
         result.setIpaCode(getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId()));
 
         process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);

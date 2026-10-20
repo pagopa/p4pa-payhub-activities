@@ -49,7 +49,7 @@ public class PaymentNotificationProcessingService extends IngestionFlowProcessin
             Path workingDirectory,
             PaymentNotificationIngestionFlowFileResult result) {
         List<PaymentNotificationErrorDTO> errorList = new ArrayList<>();
-        result.setIudList(new ArrayList<>());
+        result.setIudList(Collections.synchronizedList(new ArrayList<>()));
 
         process(iterator, readerException, result, ingestionFlowFile, errorList, workingDirectory);
         return result;

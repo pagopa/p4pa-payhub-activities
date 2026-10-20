@@ -118,7 +118,10 @@ public abstract class IngestionFlowProcessingService<C, R extends IngestionFlowF
 
     /** Function to get the sequencing identifier of the row, used to handle the right processing order */
     protected abstract String getSequencingId(C row);
-    /** Function to consume single record, it will return null or empty List if the record has been correctly processed, otherwise it will return the list of errors */
+    /** Function to consume single record, it will return null or empty List if the record has been correctly processed, otherwise it will return the list of errors.
+     * <br>
+     * It will be run concurrently, so it should be thread safe and not use any shared state (be careful with the ingestionFlowFileResult, it should be used only to read data or use thread safe methods to update it)
+      */
     protected abstract List<E> consumeRow(long lineNumber, C row, R ingestionFlowFileResult, IngestionFlowFile ingestionFlowFile);
     /** Function to build an instance of the ErrorDTO with the configured params */
     protected abstract E buildErrorDto(IngestionFlowFile ingestionFlowFile, long lineNumber, C row, String errorCode, String message);
