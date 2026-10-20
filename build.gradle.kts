@@ -49,37 +49,6 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-val mockitoAgent = configurations.create("mockitoAgent")
-dependencies {
-    mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
-}
-tasks {
-    jar {
-        from("${rootProject.projectDir}") {
-            include("LICENSE.md")
-            into("META-INF")
-        }
-    }
-    test {
-        jvmArgs("-javaagent:${mockitoAgent.asPath}")
-        jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
-        testLogging.events = setOf(TestLogEvent.FAILED)
-        testLogging.exceptionFormat = TestExceptionFormat.FULL
-    }
-}
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required = true
-    }
-}
-
 apply(plugin = "maven-publish")
 
 val commonsCompressVersion = "1.28.0"
@@ -182,6 +151,36 @@ dependencies {
     jaxbext("org.jvnet.jaxb:jaxb-plugins:$jaxbPluginVersion")
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+val mockitoAgent = configurations.create("mockitoAgent")
+dependencies {
+    mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
+}
+tasks {
+    jar {
+        from("${rootProject.projectDir}") {
+            include("LICENSE.md")
+            into("META-INF")
+        }
+    }
+    test {
+        jvmArgs("-javaagent:${mockitoAgent.asPath}")
+        jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
+        testLogging.events = setOf(TestLogEvent.FAILED)
+        testLogging.exceptionFormat = TestExceptionFormat.FULL
+    }
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+    }
+}
 
 val projectInfo = mapOf(
     "artifactId" to project.name,
