@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Lazy
@@ -48,7 +49,7 @@ public class TreasuryXlsProcessingService extends IngestionFlowProcessingService
             Path workingDirectory) {
         List<TreasuryXlsErrorDTO> errorList = new ArrayList<>();
         TreasuryIufIngestionFlowFileResult ingestionFlowFileResult = new TreasuryIufIngestionFlowFileResult();
-        ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
+        ingestionFlowFileResult.setIuf2TreasuryIdMap(new ConcurrentHashMap<>());
         ingestionFlowFileResult.setIpaCode(getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId()));
 
         process(iterator, Collections.emptyList(), ingestionFlowFileResult, ingestionFlowFile, errorList, workingDirectory);

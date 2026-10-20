@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static it.gov.pagopa.payhub.activities.mapper.ingestionflow.treasury.poste.TreasuryPosteMapper.POSTE_DATE_FORMAT;
 
@@ -55,7 +56,7 @@ public class TreasuryPosteProcessingService extends IngestionFlowProcessingServi
         List<TreasuryPosteErrorDTO> errorList = new ArrayList<>();
         TreasuryPosteIngestionFlowFileResult ingestionFlowFileResult = new TreasuryPosteIngestionFlowFileResult();
         ingestionFlowFileResult.setIban(iban);
-        ingestionFlowFileResult.setIuf2TreasuryIdMap(new HashMap<>());
+        ingestionFlowFileResult.setIuf2TreasuryIdMap(new ConcurrentHashMap<>());
         String ipa = getIpaCodeByOrganizationId(ingestionFlowFile.getOrganizationId());
         ingestionFlowFileResult.setIpaCode(ipa);
 
