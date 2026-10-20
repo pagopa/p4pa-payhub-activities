@@ -19,7 +19,7 @@ public class SendNotificationMapper {
         CreateNotificationRequest request = new CreateNotificationRequest();
         request.setOrganizationId(sendFile.getOrganizationId());
         request.setPaProtocolNumber(sendFile.getPaProtocolNumber());
-        request.setNotificationFeePolicy(NotificationFeePolicyEnum.valueOf(sendFile.getNotificationFeePolicy()));
+        request.setNotificationFeePolicy(NotificationFeePolicyDTO.valueOf(sendFile.getNotificationFeePolicy()));
         request.setPhysicalCommunicationType(PhysicalCommunicationTypeEnum.valueOf(sendFile.getPhysicalCommunicationType()));
         request.setSubject(sendFile.getSubject());
         request.setSenderDenomination(sendFile.getSenderDenomination());
