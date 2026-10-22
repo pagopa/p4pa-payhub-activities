@@ -84,7 +84,7 @@ class ExportFileClientTest {
         when(processExecutionsApisHolderMock.getPaidExportFileEntityControllerApi(accessToken))
                 .thenReturn(paidExportFileEntityControllerApiMock);
         when(paidExportFileEntityControllerApiMock.crudGetPaidexportfile(String.valueOf(exportFileId)))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
         // When
         PaidExportFile result = exportFileClient.findPaidExportFileById(exportFileId, accessToken);
         // Then
@@ -117,7 +117,7 @@ class ExportFileClientTest {
         when(processExecutionsApisHolderMock.getExportFileEntityControllerApi(accessToken))
                 .thenReturn(exportFileEntityControllerApiMock);
         when(exportFileEntityControllerApiMock.crudGetExportfile(String.valueOf(exportFileId)))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
         //when
         ExportFile result = exportFileClient.findById(exportFileId, accessToken);
         //then
@@ -159,7 +159,7 @@ class ExportFileClientTest {
         when(processExecutionsApisHolderMock.getExportFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(exportFileEntityExtendedControllerApiMock);
         when(exportFileEntityExtendedControllerApiMock.updateExportFileStatus(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
         //when
         Integer result = exportFileClient.updateStatus(new UpdateStatusRequest(exportFileId, ExportFileStatus.COMPLETED, ExportFileStatus.EXPIRED, filePath, fileName, fileSize, numTotalRows, "", expirationDate), accessToken);
         //then
@@ -192,7 +192,7 @@ class ExportFileClientTest {
         when(processExecutionsApisHolderMock.getReceiptsArchivingExportFileEntityControllerApi(accessToken))
                 .thenReturn(receiptsArchivingExportFileEntityControllerApiMock);
         when(receiptsArchivingExportFileEntityControllerApiMock.crudGetReceiptsarchivingexportfile(String.valueOf(exportFileId)))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
         // When
         ReceiptsArchivingExportFile result = exportFileClient.findReceiptsArchivingExportFileById(exportFileId, accessToken);
         // Then
@@ -225,7 +225,7 @@ class ExportFileClientTest {
         when(processExecutionsApisHolderMock.getClassificationsExportFileEntityControllerApi(accessToken))
                 .thenReturn(classificationsExportFileEntityControllerApiMock);
         when(classificationsExportFileEntityControllerApiMock.crudGetClassificationsexportfile(String.valueOf(exportFileId)))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
         // When
         ClassificationsExportFile result = exportFileClient.findClassificationsExportFileById(exportFileId, accessToken);
         // Then

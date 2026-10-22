@@ -71,7 +71,7 @@ class FetchSendLegalFactActivityImplTest {
 		LegalFactCategoryDTO category = LegalFactCategoryDTO.ANALOG_DELIVERY;
 		String legalFactId = "sendLegalFact.pdf";
 
-		doThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", "ERRORCODE", "ERRORMESSAGE", null))
+		doThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", "ERRORCODE", "ERRORMESSAGE", null, "BODY"))
 				.when(sendServiceMock)
 				.downloadAndArchiveSendLegalFact(
 						notificationRequestId,

@@ -135,7 +135,7 @@ class AssessmentsClientTest {
         when(classificationApisHolderMock.getAssessmentsEntityControllerApi(accessToken))
                 .thenReturn(mockApi);
         when(mockApi.crudGetAssessments(String.valueOf(assessmentId)))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         Assessments actualResult = assessmentClient.findAssessment(assessmentId, accessToken);

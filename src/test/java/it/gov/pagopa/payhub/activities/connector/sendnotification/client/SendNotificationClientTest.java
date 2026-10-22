@@ -71,7 +71,7 @@ class SendNotificationClientTest {
         when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
         when(sendNotificationApiMock.getSendNotification(Mockito.same(sendNotificationId)))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         SendNotificationDTO result = client.findSendNotification(sendNotificationId, accessToken);
@@ -110,7 +110,7 @@ class SendNotificationClientTest {
         when(sendApisHolderMock.getSendNotificationApi(accessToken))
             .thenReturn(sendNotificationApiMock);
         when(sendNotificationApiMock.createSendNotification(request))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         CreateNotificationResponse result = client.createSendNotification(request, accessToken);
@@ -149,7 +149,7 @@ class SendNotificationClientTest {
         when(sendApisHolderMock.getSendNotificationApi(accessToken))
             .thenReturn(sendNotificationApiMock);
         when(sendNotificationApiMock.findSendNotificationByOrgIdAndNav(organizationId, nav))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         SendNotificationDTO result = client.findSendNotificationByOrgIdAndNav(organizationId, nav, accessToken);
@@ -291,7 +291,7 @@ class SendNotificationClientTest {
         when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
         when(sendNotificationApiMock.deleteExpiredLegalFacts(sendNotificationId))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         FileExpirationResponseDTO result = client.deleteExpiredLegalFacts(sendNotificationId, accessToken);
 
@@ -322,7 +322,7 @@ class SendNotificationClientTest {
         when(sendApisHolderMock.getSendNotificationApi(accessToken))
                 .thenReturn(sendNotificationApiMock);
         when(sendNotificationApiMock.deleteExpiredDocuments(sendNotificationId))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         FileExpirationResponseDTO result = client.deleteExpiredDocuments(sendNotificationId, accessToken);
 

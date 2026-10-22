@@ -132,7 +132,7 @@ class SpontaneousFormHandlerServiceTest {
             .build();
 
         when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
-            .thenThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", exceptionCode, errormessage, null));
+            .thenThrow(new RestInvokeInvalidValueException("APPNAME", HttpStatus.BAD_REQUEST, "ERROR", exceptionCode, errormessage, null, "BODY"));
 
         InvalidValueException exception = assertThrows(
             InvalidValueException.class,
@@ -156,7 +156,7 @@ class SpontaneousFormHandlerServiceTest {
             .build();
 
         when(spontaneousFormServiceMock.matchOrSaveSpontaneousForm(any(SpontaneousForm.class)))
-            .thenThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", exceptionCode, errormessage, null));
+            .thenThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", exceptionCode, errormessage, null, "BODY"));
 
         InvalidValueException exception = assertThrows(
             InvalidValueException.class,

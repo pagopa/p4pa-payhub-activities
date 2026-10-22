@@ -86,7 +86,7 @@ class TransferSearchClientTest {
 			iur,
 			transferIndex,
 			Set.of(InstallmentStatus.PAID, InstallmentStatus.REPORTED)
-		)).thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+		)).thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
 		// When
 		Transfer result = transferSearchClient.findBySemanticKey(
