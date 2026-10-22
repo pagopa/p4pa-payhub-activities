@@ -100,7 +100,7 @@ class ReceiptClientTest {
 
 		when(debtPositionApisHolderMock.getReceiptNoPiiSearchControllerApi(accessToken)).thenReturn(receiptNoPiiSearchControllerApiMock);
 		when(receiptNoPiiSearchControllerApiMock.crudReceiptsGetByTransferId(transferId))
-				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
 		// When
 		var result = receiptClient.getByTransferId(accessToken, transferId);
@@ -116,7 +116,7 @@ class ReceiptClientTest {
 
 		when(debtPositionApisHolderMock.getReceiptApi(accessToken)).thenReturn(receiptApiMock);
 		when(receiptApiMock.getReceipt(receiptId))
-				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
 		// When
 		var result = receiptClient.getByReceiptId(accessToken, receiptId);
@@ -154,7 +154,7 @@ class ReceiptClientTest {
 		when(debtPositionApisHolderMock.getReceiptNoPiiSearchControllerApi(accessToken))
 				.thenReturn(receiptNoPiiSearchControllerApiMock);
 		when(receiptNoPiiSearchControllerApiMock.crudReceiptsGetByPaymentReceiptId(paymentReceiptId))
-				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
 		// When
 		ReceiptNoPII result = receiptClient.getByPaymentReceiptId(accessToken, paymentReceiptId);
@@ -204,7 +204,7 @@ class ReceiptClientTest {
 		when(debtPositionApisHolderMock.getReceiptApi(accessToken))
 				.thenReturn(receiptApiMock);
 		when(receiptApiMock.getReceiptPdfWithHttpInfo(receiptId, organizationId))
-				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
 		// When
 		FileResourceDTO result = receiptClient.getReceiptPdf(accessToken, receiptId, organizationId);

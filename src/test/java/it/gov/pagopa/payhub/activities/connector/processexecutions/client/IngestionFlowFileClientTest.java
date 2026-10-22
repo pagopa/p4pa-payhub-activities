@@ -87,7 +87,7 @@ class IngestionFlowFileClientTest {
         when(processExecutionsApisHolder.getIngestionFlowFileEntityControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityControllerApiMock);
         when(ingestionFlowFileEntityControllerApiMock.crudGetIngestionflowfile(ingestionFlowFileIdString))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         IngestionFlowFile result = ingestionFlowFileClient.findById(ingestionFlowFileId, accessToken);
@@ -175,7 +175,7 @@ class IngestionFlowFileClientTest {
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
         when(ingestionFlowFileEntityExtendedControllerApiMock.updateStatus(ingestionFlowFileId, ingestionFlowFileUpdateStatusRequestDTO))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         Integer result = ingestionFlowFileClient.updateStatus(ingestionFlowFileId, oldStatus, newStatus, ingestionFlowFileResult, accessToken);
@@ -281,7 +281,7 @@ class IngestionFlowFileClientTest {
         when(processExecutionsApisHolder.getIngestionFlowFileEntityExtendedControllerApi(accessToken))
                 .thenReturn(ingestionFlowFileEntityExtendedControllerApiMock);
         when(ingestionFlowFileEntityExtendedControllerApiMock.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         Integer result = ingestionFlowFileClient.updatePdfGenerated(ingestionFlowFileId, pdfGenerated, folderId, accessToken);

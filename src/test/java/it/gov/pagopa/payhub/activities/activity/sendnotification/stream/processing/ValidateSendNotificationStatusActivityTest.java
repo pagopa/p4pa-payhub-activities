@@ -65,7 +65,7 @@ class ValidateSendNotificationStatusActivityTest {
 		SendNotificationDTO expectedResponse = new SendNotificationDTO();
 		expectedResponse.setSendNotificationId(notificationId);
 
-		doThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"))
+		doThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"))
 				.when(sendServiceMock)
 				.retrieveNotificationByNotificationRequestId(notificationRequestId);
 

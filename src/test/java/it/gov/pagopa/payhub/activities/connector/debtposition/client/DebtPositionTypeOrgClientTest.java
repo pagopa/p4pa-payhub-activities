@@ -83,7 +83,7 @@ class DebtPositionTypeOrgClientTest {
         when(debtPositionApisHolderMock.getDebtPositionTypeOrgApi(accessToken))
             .thenReturn(debtPositionTypeOrgApiMock);
         when(debtPositionTypeOrgApiMock.getIONotificationDetails(debtPositionTypeOrgId, it.gov.pagopa.pu.debtpositions.dto.generated.PaymentEventType.DP_CREATED))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         IONotificationDTO result = debtPositionTypeOrgClient.getIONotificationDetails(debtPositionTypeOrgId, PaymentEventType.DP_CREATED, accessToken);
@@ -120,7 +120,7 @@ class DebtPositionTypeOrgClientTest {
         when(debtPositionApisHolderMock.getDebtPositionTypeOrgEntityApi(accessToken))
             .thenReturn(debtPositionTypeOrgEntityApiMock);
         when(debtPositionTypeOrgEntityApiMock.crudGetDebtpositiontypeorg(debtPositionTypeOrgId+""))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         DebtPositionTypeOrg result = debtPositionTypeOrgClient.findById(debtPositionTypeOrgId, accessToken);
@@ -157,7 +157,7 @@ class DebtPositionTypeOrgClientTest {
         when(debtPositionApisHolderMock.getDebtPositionTypeOrgSearchControllerApi(accessToken))
             .thenReturn(debtPositionTypeOrgSearchApiMock);
         when(debtPositionTypeOrgSearchApiMock.crudDebtPositionTypeOrgsGetDebtPositionTypeOrgByInstallmentId(installmentId))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         DebtPositionTypeOrg result = debtPositionTypeOrgClient.getDebtPositionTypeOrgByInstallmentId(installmentId, accessToken);
@@ -196,7 +196,7 @@ class DebtPositionTypeOrgClientTest {
         when(debtPositionApisHolderMock.getDebtPositionTypeOrgSearchControllerApi(accessToken))
             .thenReturn(debtPositionTypeOrgSearchApiMock);
         when(debtPositionTypeOrgSearchApiMock.crudDebtPositionTypeOrgsFindByOrganizationIdAndCode(organizationId, code))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         DebtPositionTypeOrg result = debtPositionTypeOrgClient.getDebtPositionTypeOrgByOrganizationIdAndCode(organizationId, code, accessToken);
@@ -256,7 +256,7 @@ class DebtPositionTypeOrgClientTest {
         when(debtPositionApisHolderMock.getSpontaneousFormSearchControllerApi(accessToken))
             .thenReturn(spontaneousFormSearchApiMock);
         when(spontaneousFormSearchApiMock.crudSpontaneousFormsFindByOrganizationIdAndCode(organizationId, code))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         SpontaneousForm result = debtPositionTypeOrgClient.findSpontaneousFormByOrganizationIdAndCode(organizationId, code, accessToken);

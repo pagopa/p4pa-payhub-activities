@@ -58,7 +58,7 @@ class BrokerConfigurationClientTest {
 		when(organizationApisHolderMock.getBrokerConfigurationApi(accessToken))
 				.thenReturn(mockApi);
 		when(mockApi.getBrokerEmailServerConfig(brokerId))
-				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+				.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
 		EmailServerConfigDTO response = client.getBrokerEmailServerConfig(brokerId, accessToken);
 

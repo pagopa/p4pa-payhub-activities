@@ -38,7 +38,7 @@ class DeliveryNotificationActivityTest {
     void whenDeliveryNotificationThenThrowSendNotificationConflictException() {
         String sendNotificationId = "sendNotificationId";
 
-        doThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", "ERRORCODE", "ERRORMESSAGE", null))
+        doThrow(new RestInvokeConflictException("APPNAME", HttpStatus.CONFLICT, "ERROR", "ERRORCODE", "ERRORMESSAGE", null, "BODY"))
                 .when(sendServiceMock).deliveryNotification(sendNotificationId);
 
         SendNotificationConflictException exception = assertThrows(

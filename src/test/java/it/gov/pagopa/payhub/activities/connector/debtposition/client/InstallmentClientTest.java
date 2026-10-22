@@ -84,7 +84,7 @@ class InstallmentClientTest {
 		when(debtPositionApisHolderMock.getInstallmentNoPiiEntityControllerApi(accessToken))
 			.thenReturn(installmentNoPiiEntityControllerApiMock);
 		when(installmentNoPiiEntityControllerApiMock.crudGetInstallmentnopii(String.valueOf(installmentId)))
-			.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+			.thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
 		// When
 		InstallmentNoPII result = installmentClient.findById(installmentId, accessToken);

@@ -92,7 +92,7 @@ class PaymentNotificationClientTest {
         when(classificationApisHolderMock.getPaymentNotificationNoPiiSearchControllerApi(accessToken))
             .thenReturn(paymentNotificationNoPiiSearchControllerApi);
         when(paymentNotificationNoPiiSearchControllerApi.crudPaymentNotificationGetByOrganizationIdAndIud(organizationId, iud))
-            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+            .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         PaymentNotificationNoPII result = paymentNotificationClient.getByOrgIdAndIud(organizationId, iud, accessToken);

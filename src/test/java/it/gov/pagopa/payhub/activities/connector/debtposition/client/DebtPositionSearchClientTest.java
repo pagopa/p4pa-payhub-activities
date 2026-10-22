@@ -65,7 +65,7 @@ class DebtPositionSearchClientTest {
         when(debtPositionApisHolderMock.getDebtPositionEntityControllerApi(accessToken))
                 .thenReturn(debtPositionEntityControllerApiMock);
         when(debtPositionEntityControllerApiMock.crudGetDebtposition(String.valueOf(debtPositionId)))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         DebtPosition result = debtPositionSearchClient.findById(debtPositionId, accessToken);

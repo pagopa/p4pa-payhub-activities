@@ -125,7 +125,7 @@ class DebtPositionTypeClientTest {
         when(debtPositionApisHolderMock.getDebtPositionTypeSearchControllerApi(accessToken))
                 .thenReturn(debtPositionTypeSearchControllerApiMock);
         when(debtPositionTypeSearchControllerApiMock.crudDebtPositionTypesFindByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         DebtPositionType result = client.getByBrokerIdAndCodeAndOrgTypeAndTaxonomyCode(brokerId, code, orgType, taxonomyCode, accessToken);

@@ -66,7 +66,7 @@ class AuthzClientTest {
         when(authApisHolderMock.getAuthzApi(accessToken))
                 .thenReturn(authzApiMock);
         when(authzApiMock.getUserInfoFromMappedExternaUserId(externalUserId))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         UserInfo result = authzClient.getOperatorInfo(externalUserId, accessToken);

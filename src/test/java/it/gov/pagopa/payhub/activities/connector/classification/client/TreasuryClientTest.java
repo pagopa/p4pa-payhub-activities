@@ -71,7 +71,7 @@ class TreasuryClientTest {
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryGetByOrganizationIdAndIuf(organizationId, iuf))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         Treasury result = treasuryClient.findByOrganizationIdAndIuf(organizationId, iuf, accessToken);
@@ -115,7 +115,7 @@ class TreasuryClientTest {
         TreasurySearchControllerApi mockApi = mock(TreasurySearchControllerApi.class);
         when(classificationApisHolderMock.getTreasurySearchApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudTreasuryFindBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode))
-                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+                .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
         // When
         Treasury result = treasuryClient.getBySemanticKey(organizationId, billCode, billYear, orgBtCode, orgIstatCode, accessToken);
@@ -131,7 +131,8 @@ class TreasuryClientTest {
         String accessToken = "accessToken";
         Treasury expectedTreasury = TreasuryFaker.buildTreasuryDTO();
         TreasuryEntityControllerApi mockApi = mock(TreasuryEntityControllerApi.class);
-        when(mapperMock.map(treasury)).thenReturn(mock(TreasuryRequestBody.class));
+        TreasuryRequestBody mockResult = mock(TreasuryRequestBody.class);
+        when(mapperMock.map(treasury)).thenReturn(mockResult);
         when(classificationApisHolderMock.getTreasuryEntityControllerApi(accessToken)).thenReturn(mockApi);
         when(mockApi.crudCreateTreasury(any())).thenReturn(expectedTreasury);
 
