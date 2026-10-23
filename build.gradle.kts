@@ -7,7 +7,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     java
-    id("org.springframework.boot") version "4.1.1"
+    id("org.springframework.boot") version "4.1.2"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.sonarqube") version "7.5.0.8588"
     `java-library`
@@ -69,17 +69,14 @@ val podamVersion = "8.0.2.RELEASE"
 val httpClientVersion = "5.6.5"
 val httpCoreVersion = "5.4.4"
 val commonsBeanUtilsVersion = "1.11.0"
-val apachePoiVersion = "5.5.1"
+val apachePoiVersion = "6.0.0"
 val apachePoiOoxmlSchemaVersion = "4.1.2"
 val jaxbXewPluginVersion = "2.1"
 val jaxbPluginVersion = "4.0.16"
 val jackson2DataTypeVersion = "2.22.4"
 
 // CVE Security dependencies
-val tomcatEmbedCoreVersion = "11.0.26"
-val jackson2BomVersion = "2.22.3"
-val jackson2AnnotationsVersion = "2.22"
-val jackson3BomVersion = "3.2.3"
+val jackson2DatabindVersion = "2.22.3"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -129,15 +126,8 @@ dependencies {
     implementation("jakarta.activation:jakarta.activation-api:$activationVersion")
     runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
-    // CVE Security dependencies
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
-    implementation(platform("com.fasterxml.jackson:jackson-bom:$jackson2BomVersion"))
-    implementation("com.fasterxml.jackson.core:jackson-core:$jackson2BomVersion")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson2BomVersion")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jackson2AnnotationsVersion")
-    implementation(platform("tools.jackson:jackson-bom:$jackson3BomVersion"))
-    implementation("tools.jackson.core:jackson-core:$jackson3BomVersion")
-    implementation("tools.jackson.core:jackson-databind:$jackson3BomVersion")
+    // CVE Security dependencies// CVE Security dependencies
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jackson2DatabindVersion}")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
