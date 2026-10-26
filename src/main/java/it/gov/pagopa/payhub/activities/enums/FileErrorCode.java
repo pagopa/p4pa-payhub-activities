@@ -174,6 +174,7 @@ public enum FileErrorCode {
     //p4pa-pagopa-payments
     ACTUALIZATION_ERROR("Errore di attualizzazione"),
     INVALID_INSTALLMENT("Rata non trovata oppure con status di sincronizzazione non valido"),
+    INVALID_INSTALLMENT_NUMBER_BENEFICIARY_MISMATCH("Il numero di beneficiari indicato non corrisponde al numero effettivo di beneficiari della rata"),
     INVALID_SYNC_STATUS("Status di sincronizzazione non valido"),
     INVALID_FILE_NAME("Nome file non valido"),
 
