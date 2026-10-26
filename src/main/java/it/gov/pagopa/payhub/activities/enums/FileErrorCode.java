@@ -58,6 +58,7 @@ public enum FileErrorCode {
     ORGANIZATION_STATION_NOT_FOUND("Non e' stata trovata la stazione dell'ente"),
     MISSING_IUPD_PAGOPA("Il campo iupdPagopa è obbligatorio quando flagPuPagoPaPayment è false e la stazione EC è GPD."),
     INVALID_IUPD_PAGOPA("Il campo iupd_pagopa non deve essere valorizzato quando flagPuPagoPaPayment è true."),
+    INVALID_INSTALLMENT_NUMBER_BENEFICIARY_MISMATCH("Il numero di beneficiari indicato non corrisponde al numero effettivo di beneficiari della rata"),
 
     // payment option
     PAYMENT_OPTION_NOT_FOUND("Opzione di pagamento non trovata"),
@@ -174,7 +175,6 @@ public enum FileErrorCode {
     //p4pa-pagopa-payments
     ACTUALIZATION_ERROR("Errore di attualizzazione"),
     INVALID_INSTALLMENT("Rata non trovata oppure con status di sincronizzazione non valido"),
-    INVALID_INSTALLMENT_NUMBER_BENEFICIARY_MISMATCH("Il numero di beneficiari indicato non corrisponde al numero effettivo di beneficiari della rata"),
     INVALID_SYNC_STATUS("Status di sincronizzazione non valido"),
     INVALID_FILE_NAME("Nome file non valido"),
 
