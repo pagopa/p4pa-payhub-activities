@@ -13,6 +13,7 @@ public interface SendNotificationService {
   List<ProgressResponseElementV28DTO> readSendStreamEvents(Long organizationId, String sendStreamId);
   void updateLastProcessedStreamEventId(String sendStreamId, String lastEventId);
   void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus);
+  void updateNotificationRefusalReasons(String notificationRequestId, List<NotificationRefusedErrorV27DTO> refusalReasons);
   FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId);
   FileExpirationResponseDTO deleteExpiredDocuments(String sendNotificationId);
 }

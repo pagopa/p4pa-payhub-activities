@@ -268,6 +268,27 @@ class SendNotificationClientTest {
     }
 
     @Test
+    void givenValidRequestWhenUpdateNotificationRefusalReasonsThenOk() {
+        //Given
+        String accessToken = "ACCESSTOKEN";
+        String notificationRequestId = "requestId";
+        List<NotificationRefusedErrorV27DTO> refusalReasons = List.of(new NotificationRefusedErrorV27DTO());
+
+        when(sendApisHolderMock.getSendNotificationApi(accessToken))
+                .thenReturn(sendNotificationApiMock);
+
+        //When
+        client.updateNotificationRefusalReasons(notificationRequestId, refusalReasons, accessToken);
+
+        //Then
+        verify(sendNotificationApiMock)
+                .updateNotificationRefusalReasons(
+                        notificationRequestId,
+                        refusalReasons
+                );
+    }
+
+    @Test
     void whenDeleteExpiredLegalFactsThenInvokeWithAccessToken() {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";

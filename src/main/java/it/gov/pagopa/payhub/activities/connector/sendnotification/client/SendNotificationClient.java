@@ -80,6 +80,11 @@ public class SendNotificationClient {
             .updateNotificationStatus(notificationRequestId, newStatus);
   }
 
+  public void updateNotificationRefusalReasons(String notificationRequestId, List<NotificationRefusedErrorV27DTO> refusalReasons, String accessToken) {
+    sendApisHolder.getSendNotificationApi(accessToken)
+            .updateNotificationRefusalReasons(notificationRequestId, refusalReasons);
+  }
+
   public FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId, String accessToken) {
     try {
       return sendApisHolder.getSendNotificationApi(accessToken).deleteExpiredLegalFacts(sendNotificationId);
