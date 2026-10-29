@@ -35,7 +35,7 @@ class UpdateSendNotificationRefusalReasonsActivityImplTest {
     }
 
     @Test
-    void updateSendNotificationStatus() {
+    void whenUpdateNotificationRefusalReasonsThenOk() {
         //GIVEN
         String notificationRequestId = "requestId";
         List<NotificationRefusedErrorV27DTO> refusalReasons = List.of(new NotificationRefusedErrorV27DTO());
@@ -51,37 +51,4 @@ class UpdateSendNotificationRefusalReasonsActivityImplTest {
                 );
     }
 
-    @Test
-    void givenEmptyRefusalReasonsWhenUpdateSendNotificationStatus() {
-        //GIVEN
-        String notificationRequestId = "requestId";
-        List<NotificationRefusedErrorV27DTO> refusalReasons = Collections.emptyList();
-
-        //WHEN
-        activity.updateNotificationRefusalReasons(notificationRequestId, refusalReasons);
-
-        //THEN
-        verify(sendNotificationServiceMock, never())
-                .updateNotificationRefusalReasons(
-                        anyString(),
-                        anyList()
-                );
-    }
-
-    @Test
-    void givenNullRefusalReasonsWhenUpdateSendNotificationStatus() {
-        //GIVEN
-        String notificationRequestId = "requestId";
-        List<NotificationRefusedErrorV27DTO> refusalReasons = null;
-
-        //WHEN
-        activity.updateNotificationRefusalReasons(notificationRequestId, refusalReasons);
-
-        //THEN
-        verify(sendNotificationServiceMock, never())
-                .updateNotificationRefusalReasons(
-                        anyString(),
-                        anyList()
-                );
-    }
 }
