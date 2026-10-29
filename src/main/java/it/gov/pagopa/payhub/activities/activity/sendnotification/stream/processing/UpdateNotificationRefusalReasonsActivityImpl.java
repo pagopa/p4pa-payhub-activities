@@ -19,6 +19,9 @@ public class UpdateNotificationRefusalReasonsActivityImpl implements UpdateNotif
 
     @Override
     public void updateNotificationRefusalReasons(String notificationRequestId, List<NotificationRefusedErrorV27DTO> refusalReasons) {
+        if (refusalReasons == null || refusalReasons.isEmpty()) {
+            return;
+        }
         sendNotificationService.updateNotificationRefusalReasons(notificationRequestId, refusalReasons);
     }
 }
