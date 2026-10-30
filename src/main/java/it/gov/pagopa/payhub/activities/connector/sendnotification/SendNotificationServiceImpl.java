@@ -60,11 +60,6 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     }
 
     @Override
-    public void updateNotificationRefusalReasons(String notificationRequestId, List<NotificationRefusedErrorV27DTO> refusalReasons) {
-        sendNotificationClient.updateNotificationRefusalReasons(notificationRequestId, refusalReasons, authnService.getAccessToken());
-    }
-
-    @Override
     public FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId) {
         return sendNotificationClient.deleteExpiredLegalFacts(sendNotificationId, authnService.getAccessToken());
     }
