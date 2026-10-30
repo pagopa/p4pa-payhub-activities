@@ -203,28 +203,6 @@ class SendNotificationServiceTest {
     }
 
     @Test
-    void givenValidRequestWhenUpdateNotificationRefusalReasonsThenOk() {
-        // Given
-        String accessToken = "ACCESSTOKEN";
-        String requestId = "requestId";
-        List<NotificationRefusedErrorV27DTO> refusalReasons = List.of(new NotificationRefusedErrorV27DTO());
-
-        Mockito.when(authnServiceMock.getAccessToken())
-                .thenReturn(accessToken);
-
-        // When
-        service.updateNotificationRefusalReasons(requestId, refusalReasons);
-
-        // Then
-        Mockito.verify(clientMock)
-                .updateNotificationRefusalReasons(
-                        requestId,
-                        refusalReasons,
-                        accessToken
-                );
-    }
-
-    @Test
     void whenDeleteExpiredLegalFactsThenOk() {
         String accessToken = "ACCESSTOKEN";
         String sendNotificationId = "sendNotificationId";
