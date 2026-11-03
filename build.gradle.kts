@@ -14,8 +14,8 @@ plugins {
     `maven-publish`
     jacoco
     id("com.intershop.gradle.jaxb") version "9.0.0"
-    id("org.openapi.generator") version "7.26.0"
-    id("com.github.jk1.dependency-license-report") version "3.1.4"
+    id("org.openapi.generator") version "7.27.0"
+    id("com.github.jk1.dependency-license-report") version "3.1.5"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -60,12 +60,12 @@ val commonsTextVersion = "1.15.0"
 val activationVersion = "2.1.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "4.0.5"
-val jsoupVersion = "1.23.2"
-val openApiToolsVersion = "0.2.12"
+val jsoupVersion = "1.24.1"
+val openApiToolsVersion = "0.2.13"
 val temporalVersion = "1.40.0"
 val protobufJavaVersion = "4.36.2"
 val grpcBomVersion = "1.85.1"
-val guavaVersion = "33.7.2-jre"
+val guavaVersion = "33.8.0-jre"
 val openCsvVersion = "5.12.0"
 val mapStructVersion = "1.6.3"
 val podamVersion = "8.0.2.RELEASE"
