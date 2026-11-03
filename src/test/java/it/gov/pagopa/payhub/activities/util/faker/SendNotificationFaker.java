@@ -7,7 +7,6 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 
@@ -38,10 +37,10 @@ public class SendNotificationFaker {
                 .subject("NOTIFICATION SUBJECT")
                 .senderDenomination("Test Denom")
                 .senderTaxId("ABC123")
-                .amountCents(new BigDecimal("12500"))
+                .amountCents(12500)
                 .paymentExpirationDate(LocalDate.now().plusDays(1))
                 .taxonomyCode("TAX001")
-                .paFeeCents(new BigDecimal("100"))
+                .paFeeCents(100)
                 .vat(20)
                 .pagoPaIntMode("NONE")
                 .recipientType("PF")

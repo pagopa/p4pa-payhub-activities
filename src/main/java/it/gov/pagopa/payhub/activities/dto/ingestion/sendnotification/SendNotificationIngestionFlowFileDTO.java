@@ -40,7 +40,7 @@ public class SendNotificationIngestionFlowFileDTO {
   private String senderTaxId;
 
   @CsvBindByName(column = "amountCents")
-  private BigDecimal amountCents;
+  private Integer amountCents;
 
   @CsvBindByName(column = "paymentExpirationDate")
   @CsvDate(value = "yyyy-MM-dd")
@@ -50,7 +50,7 @@ public class SendNotificationIngestionFlowFileDTO {
   private String taxonomyCode;
 
   @CsvBindByName(column = "paFeeCents")
-  private BigDecimal paFeeCents;
+  private Integer paFeeCents;
 
   @CsvBindByName(column = "vat")
   private Integer vat;
