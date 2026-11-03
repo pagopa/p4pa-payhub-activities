@@ -24,10 +24,10 @@ public class SendNotificationMapper {
         request.setSubject(sendFile.getSubject());
         request.setSenderDenomination(sendFile.getSenderDenomination());
         request.setSenderTaxId(sendFile.getSenderTaxId());
-        request.setAmount(sendFile.getAmountCents());
+        request.setAmountCents(sendFile.getAmountCents());
         request.setPaymentExpirationDate(sendFile.getPaymentExpirationDate());
         request.setTaxonomyCode(sendFile.getTaxonomyCode());
-        request.setPaFee(sendFile.getPaFeeCents());
+        request.setPaFeeCents(sendFile.getPaFeeCents());
         request.setVat(sendFile.getVat());
         request.setExternalCampaignId(sendFile.getExternalCampaignId());
 
