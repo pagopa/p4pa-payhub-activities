@@ -650,7 +650,7 @@ tasks.register<GenerateTask>("openApiGenerateP4PASENDNOTIFICATION") {
     description = "description"
 
     generatorName.set("java")
-    remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-send-notification/refs/heads/develop/openapi/generated.openapi.json")
+    remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-send-notification/refs/heads/P4ADEV-5182-fix-paFeeCents-and-amountCents/openapi/generated.openapi.json")
     outputDir.set("$projectDir/build/generated")
     invokerPackage.set("it.gov.pagopa.pu.sendnotification.generated")
     apiPackage.set("it.gov.pagopa.pu.sendnotification.client.generated")

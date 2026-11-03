@@ -75,7 +75,7 @@ public class SendNotificationProcessingService extends
                                                         SendNotificationIngestionFlowFileResult ingestionFlowFileResult,
                                                         IngestionFlowFile ingestionFlowFile) {
 
-        CreateNotificationRequest createNotificationRequest = mapper.buildCreateNotificationRequest(row);
+        CreateNotificationRequest createNotificationRequest = mapper.buildCreateNotificationRequest(row, ingestionFlowFile.getOrganizationId());
 
         // check if exists a send notification with status UPLOADED/COMPLETE/ACCEPTED and if exists skip row
         if (createNotificationRequest.getRecipients().getFirst().getPayments() != null

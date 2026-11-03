@@ -6,6 +6,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,19 +16,19 @@ import java.util.stream.IntStream;
 @Lazy
 public class SendNotificationMapper {
 
-    public CreateNotificationRequest buildCreateNotificationRequest(SendNotificationIngestionFlowFileDTO sendFile) {
+    public CreateNotificationRequest buildCreateNotificationRequest(SendNotificationIngestionFlowFileDTO sendFile, Long organizationId) {
         CreateNotificationRequest request = new CreateNotificationRequest();
-        request.setOrganizationId(sendFile.getOrganizationId());
+        request.setOrganizationId(organizationId);
         request.setPaProtocolNumber(sendFile.getPaProtocolNumber());
         request.setNotificationFeePolicy(NotificationFeePolicyDTO.valueOf(sendFile.getNotificationFeePolicy()));
         request.setPhysicalCommunicationType(PhysicalCommunicationTypeEnum.valueOf(sendFile.getPhysicalCommunicationType()));
         request.setSubject(sendFile.getSubject());
         request.setSenderDenomination(sendFile.getSenderDenomination());
         request.setSenderTaxId(sendFile.getSenderTaxId());
-        request.setAmount(sendFile.getAmount());
+        request.setAmount(sendFile.getAmountCents());
         request.setPaymentExpirationDate(sendFile.getPaymentExpirationDate());
         request.setTaxonomyCode(sendFile.getTaxonomyCode());
-        request.setPaFee(sendFile.getPaFee());
+        request.setPaFee(sendFile.getPaFeeCents());
         request.setVat(sendFile.getVat());
         request.setExternalCampaignId(sendFile.getExternalCampaignId());
 
