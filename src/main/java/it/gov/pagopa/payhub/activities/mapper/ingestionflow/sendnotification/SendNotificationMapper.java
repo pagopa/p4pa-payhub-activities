@@ -18,6 +18,7 @@ public class SendNotificationMapper {
     public CreateNotificationRequest buildCreateNotificationRequest(SendNotificationIngestionFlowFileDTO sendFile, Long organizationId) {
         CreateNotificationRequest request = new CreateNotificationRequest();
         request.setOrganizationId(organizationId);
+        request.setSubUnitCode(sendFile.getSubUnitCode());
         request.setPaProtocolNumber(sendFile.getPaProtocolNumber());
         request.setNotificationFeePolicy(NotificationFeePolicyDTO.valueOf(sendFile.getNotificationFeePolicy()));
         request.setPhysicalCommunicationType(PhysicalCommunicationTypeEnum.valueOf(sendFile.getPhysicalCommunicationType()));
@@ -30,6 +31,7 @@ public class SendNotificationMapper {
         request.setPaFeeCents(sendFile.getPaFeeCents());
         request.setVat(sendFile.getVat());
         request.setExternalCampaignId(sendFile.getExternalCampaignId());
+        request.setCampaignName(sendFile.getCampaignName());
 
         Recipient recipient = new Recipient();
         recipient.setRecipientType(RecipientTypeEnum.valueOf(sendFile.getRecipientType()));
