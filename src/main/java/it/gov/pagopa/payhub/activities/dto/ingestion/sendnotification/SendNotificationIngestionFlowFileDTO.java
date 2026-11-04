@@ -19,7 +19,7 @@ import java.time.LocalDate;
 public class SendNotificationIngestionFlowFileDTO {
 
   @CsvBindByName(column = "subUnitCode")
-  private Long subUnitCode;
+  private String subUnitCode;
 
   @CsvBindByName(column = "paProtocolNumber", required = true)
   private String paProtocolNumber;
