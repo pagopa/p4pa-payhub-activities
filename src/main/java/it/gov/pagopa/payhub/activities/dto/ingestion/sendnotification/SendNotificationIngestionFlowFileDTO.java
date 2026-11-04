@@ -18,8 +18,8 @@ import java.time.LocalDate;
 @Builder
 public class SendNotificationIngestionFlowFileDTO {
 
-  @CsvBindByName(column = "organizationId", required = true)
-  private Long organizationId;
+  @CsvBindByName(column = "subUnitCode")
+  private String subUnitCode;
 
   @CsvBindByName(column = "paProtocolNumber", required = true)
   private String paProtocolNumber;
@@ -39,8 +39,8 @@ public class SendNotificationIngestionFlowFileDTO {
   @CsvBindByName(column = "senderTaxId")
   private String senderTaxId;
 
-  @CsvBindByName(column = "amount")
-  private BigDecimal amount;
+  @CsvBindByName(column = "amountCents")
+  private Integer amountCents;
 
   @CsvBindByName(column = "paymentExpirationDate")
   @CsvDate(value = "yyyy-MM-dd")
@@ -49,8 +49,8 @@ public class SendNotificationIngestionFlowFileDTO {
   @CsvBindByName(column = "taxonomyCode")
   private String taxonomyCode;
 
-  @CsvBindByName(column = "paFee")
-  private Integer paFee;
+  @CsvBindByName(column = "paFeeCents")
+  private Integer paFeeCents;
 
   @CsvBindByName(column = "vat")
   private Integer vat;
@@ -87,6 +87,9 @@ public class SendNotificationIngestionFlowFileDTO {
 
   @CsvBindByName(column = "externalCampaignId", required = true)
   private String externalCampaignId;
+
+  @CsvBindByName(column = "campaignName")
+  private String campaignName;
 
   @CsvBindAndJoinByName(column = "payment.*_1", elementType = String.class)
   private MultiValuedMap<String, String> payment;

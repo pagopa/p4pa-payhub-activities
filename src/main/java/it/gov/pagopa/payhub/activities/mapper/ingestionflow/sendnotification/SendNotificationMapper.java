@@ -15,21 +15,23 @@ import java.util.stream.IntStream;
 @Lazy
 public class SendNotificationMapper {
 
-    public CreateNotificationRequest buildCreateNotificationRequest(SendNotificationIngestionFlowFileDTO sendFile) {
+    public CreateNotificationRequest buildCreateNotificationRequest(SendNotificationIngestionFlowFileDTO sendFile, Long organizationId) {
         CreateNotificationRequest request = new CreateNotificationRequest();
-        request.setOrganizationId(sendFile.getOrganizationId());
+        request.setOrganizationId(organizationId);
+        request.setSubUnitCode(sendFile.getSubUnitCode());
         request.setPaProtocolNumber(sendFile.getPaProtocolNumber());
         request.setNotificationFeePolicy(NotificationFeePolicyDTO.valueOf(sendFile.getNotificationFeePolicy()));
         request.setPhysicalCommunicationType(PhysicalCommunicationTypeEnum.valueOf(sendFile.getPhysicalCommunicationType()));
         request.setSubject(sendFile.getSubject());
         request.setSenderDenomination(sendFile.getSenderDenomination());
         request.setSenderTaxId(sendFile.getSenderTaxId());
-        request.setAmount(sendFile.getAmount());
+        request.setAmountCents(sendFile.getAmountCents());
         request.setPaymentExpirationDate(sendFile.getPaymentExpirationDate());
         request.setTaxonomyCode(sendFile.getTaxonomyCode());
-        request.setPaFee(sendFile.getPaFee());
+        request.setPaFeeCents(sendFile.getPaFeeCents());
         request.setVat(sendFile.getVat());
         request.setExternalCampaignId(sendFile.getExternalCampaignId());
+        request.setCampaignName(sendFile.getCampaignName());
 
         Recipient recipient = new Recipient();
         recipient.setRecipientType(RecipientTypeEnum.valueOf(sendFile.getRecipientType()));

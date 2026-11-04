@@ -34,7 +34,7 @@ class SendNotificationMapperTest {
     void givenFullDtoWhenBuildRequestThenAllFieldsMapped() {
         SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
 
-        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto, 1L);
 
         Assertions.assertNotNull(result);
         TestUtils.checkNotNullFields(result, "subUnitCode", "campaignName");
@@ -46,7 +46,7 @@ class SendNotificationMapperTest {
         dto.setDigitalDomicileAddress(null);
         dto.setDigitalDomicileType(null);
 
-        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto, 1L);
 
         Assertions.assertNull(result.getRecipients().getFirst().getDigitalDomicile());
     }
@@ -57,7 +57,7 @@ class SendNotificationMapperTest {
         dto.setPayment(null);
         dto.setF24Payment1(null);
 
-        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto, 1L);
 
         Assertions.assertTrue(result.getRecipients().getFirst().getPayments().isEmpty());
     }
@@ -68,7 +68,7 @@ class SendNotificationMapperTest {
         dto.setF24Payment1(null);
         dto.setAttachment(null);
 
-        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto, 1L);
 
         Assertions.assertNotNull(result.getRecipients().getFirst().getPayments().getFirst().getPagoPa());
         Assertions.assertNull(result.getRecipients().getFirst().getPayments().getFirst().getPagoPa().getAttachment());
@@ -80,7 +80,7 @@ class SendNotificationMapperTest {
         dto.setPayment(null);
         dto.setMetadataAttachment1(null);
 
-        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto, 1L);
 
         Assertions.assertNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getPagoPa());
         Assertions.assertNull(Objects.requireNonNull(result.getRecipients().getFirst().getPayments()).getFirst().getF24().getMetadataAttachment());
@@ -92,7 +92,7 @@ class SendNotificationMapperTest {
         SendNotificationIngestionFlowFileDTO dto = buildSendNotificationIngestionFlowFileDTO();
         dto.setDocument(new ArrayListValuedHashMap<>());
 
-        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto, 1L);
 
         Assertions.assertEquals(result.getDocuments(), List.of());
         TestUtils.checkNotNullFields(result, "subUnitCode", "campaignName");
@@ -133,7 +133,7 @@ class SendNotificationMapperTest {
             put("f24PaymentApplyCost_1", null);
         }}));
 
-        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto);
+        CreateNotificationRequest result = mapper.buildCreateNotificationRequest(dto, 1L);
 
         Assertions.assertTrue(result.getRecipients().getFirst().getPayments().isEmpty());
     }

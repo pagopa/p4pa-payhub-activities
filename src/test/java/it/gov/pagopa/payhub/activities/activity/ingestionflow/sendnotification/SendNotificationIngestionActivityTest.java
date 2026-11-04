@@ -162,7 +162,6 @@ class SendNotificationIngestionActivityTest {
   private Iterator<SendNotificationIngestionFlowFileDTO> buildSendNotificationIngestionFlowFileDTO() {
     List<SendNotificationIngestionFlowFileDTO> sendNotificationIngestionFlowFileDTOS = List.of(
         SendNotificationIngestionFlowFileDTO.builder()
-            .organizationId(1L)
             .paProtocolNumber("paProtocolNumber")
             .notificationFeePolicy("notificationFeePolicy")
             .physicalCommunicationType("physicalCommunicationType")
@@ -173,7 +172,6 @@ class SendNotificationIngestionActivityTest {
             .municipality("municipality")
             .build(),
         SendNotificationIngestionFlowFileDTO.builder()
-            .organizationId(1L)
             .paProtocolNumber("paProtocolNumber2")
             .notificationFeePolicy("notificationFeePolicy")
             .physicalCommunicationType("physicalCommunicationType")

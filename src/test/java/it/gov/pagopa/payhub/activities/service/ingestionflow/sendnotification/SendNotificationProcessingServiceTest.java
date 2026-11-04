@@ -106,7 +106,7 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
 
         Mockito.doReturn(createNotificationRequest)
                 .when(mapperMock)
-                .buildCreateNotificationRequest(dto);
+                .buildCreateNotificationRequest(dto, ingestionFlowFile.getOrganizationId());
 
         Mockito.doReturn(response)
                 .when(sendNotificationServiceMock)
@@ -241,7 +241,7 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
 
         Mockito.doReturn(createNotificationRequest)
                 .when(mapperMock)
-                .buildCreateNotificationRequest(dto);
+                .buildCreateNotificationRequest(dto, ingestionFlowFile.getOrganizationId());
 
         Mockito.doReturn(sendNotificationDTO)
                 .when(sendNotificationServiceMock)
@@ -276,7 +276,7 @@ class SendNotificationProcessingServiceTest extends BaseIngestionFlowProcessingS
 
         Mockito.doReturn(createNotificationRequest)
                 .when(mapperMock)
-                .buildCreateNotificationRequest(dto);
+                .buildCreateNotificationRequest(dto, ingestionFlowFile.getOrganizationId());
 
         Mockito.doReturn(null)
                 .when(sendNotificationServiceMock)
