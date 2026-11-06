@@ -79,6 +79,7 @@ class PaymentsReportingMapperServiceTest {
 		// Then
 		assertEquals(1, result.size());
 		assertEquals("flow123", firstDTO.getIuf());
+		assertEquals("12345", firstDTO.getPspIdentifier());
 		assertEquals("PSP Mittente", firstDTO.getSenderPspName());
 		assertEquals("Org Ricevente", firstDTO.getReceiverOrganizationName());
 		assertEquals(1L, firstDTO.getTotalPayments());

@@ -36,7 +36,7 @@ public class PaymentsReportingMapperService {
 			.acquiringDate(ingestionFlowFileDTO.getCreationDate().toLocalDate())
 			.organizationId(ingestionFlowFileDTO.getOrganizationId())
 			.ingestionFlowFileId(ingestionFlowFileDTO.getIngestionFlowFileId())
-			.pspIdentifier(ctFlussoRiversamento.getIstitutoMittente().getDenominazioneMittente())
+			.pspIdentifier(ctFlussoRiversamento.getIstitutoMittente().getIdentificativoUnivocoMittente().getCodiceIdentificativoUnivoco())
 			.iuf(ctFlussoRiversamento.getIdentificativoFlusso())
 			.flowDateTime(ctFlussoRiversamento.getDataOraFlusso().toGregorianCalendar().toZonedDateTime().toOffsetDateTime())
 			.regulationUniqueIdentifier(ctFlussoRiversamento.getIdentificativoUnivocoRegolamento())
