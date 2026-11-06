@@ -32,6 +32,7 @@ public class SendNotificationMapper {
         request.setVat(sendFile.getVat());
         request.setExternalCampaignId(sendFile.getExternalCampaignId());
         request.setCampaignName(sendFile.getCampaignName());
+        request.setPagoPaIntMode(PagoPaIntModeEnum.valueOf(sendFile.getPagoPaIntMode()));
 
         Recipient recipient = new Recipient();
         recipient.setRecipientType(RecipientTypeEnum.valueOf(sendFile.getRecipientType()));
