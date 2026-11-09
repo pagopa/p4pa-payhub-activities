@@ -10,8 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -53,5 +52,22 @@ class PaymentsClientTest {
         SendNotificationDTO result = assertDoesNotThrow(() -> paymentsClient.notifyPayment(organizationId, nav, accessToken));
 
         assertSame(expectedResponse, result);
+    }
+
+    @Test
+    void givenNotExistentSendNotificationWhenNotifyPaymentThenReturnNull(){
+        Long organizationId = 1L;
+        String nav = "NAV123";
+        String accessToken = "accessToken";
+
+        when(sendApisHolderMock.getPaymentsApi(accessToken))
+                .thenReturn(paymentsApiMock);
+
+        when(paymentsApiMock.notifyPayment(organizationId, nav))
+                .thenReturn(null);
+
+        SendNotificationDTO result = paymentsClient.notifyPayment(organizationId, nav, accessToken);
+
+        assertNull(result);
     }
 }
