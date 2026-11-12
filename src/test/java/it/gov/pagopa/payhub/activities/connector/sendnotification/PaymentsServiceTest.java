@@ -72,7 +72,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void whenNotifyPaymentWithInvalidReceiptIdThenThrowException() {
+    void whenNotifyPaymentWithInvalidReceiptIdThenReturnNull() {
         Long receiptId = 2L;
 
         InstallmentDTO installment = new InstallmentDTO();
@@ -85,9 +85,8 @@ class PaymentsServiceTest {
         DebtPositionDTO debtPosition = new DebtPositionDTO();
         debtPosition.setPaymentOptions(List.of(paymentOption));
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> paymentsService.notifyPayment(debtPosition, receiptId));
+        SendNotificationDTO result = paymentsService.notifyPayment(debtPosition, receiptId);
 
-        assertEquals("NAV not found for receiptId: " + receiptId, exception.getMessage());
+        assertNull(result);
     }
 }

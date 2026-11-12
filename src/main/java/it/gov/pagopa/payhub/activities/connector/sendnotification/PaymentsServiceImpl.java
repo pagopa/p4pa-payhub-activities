@@ -27,7 +27,11 @@ public class PaymentsServiceImpl implements PaymentsService {
                 .filter(installment -> receiptId.equals(installment.getReceiptId()))
                 .findFirst()
                 .map(InstallmentDTO::getNav)
-                .orElseThrow(() -> new IllegalArgumentException("NAV not found for receiptId: " + receiptId));
+                .orElse(null);
+
+        if (nav == null) {
+            return null;
+        }
 
         return paymentsClient.notifyPayment(debtPosition.getOrganizationId(), nav, authnService.getAccessToken());
     }
