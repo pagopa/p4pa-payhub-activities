@@ -27,7 +27,13 @@ public class PaymentsServiceImpl implements PaymentsService {
                 .filter(installment -> receiptId.equals(installment.getReceiptId()))
                 .findFirst()
                 .map(InstallmentDTO::getNav)
-                .orElseThrow(() -> new IllegalArgumentException("NAV not found for receiptId: " + receiptId));
+                .orElse(null);
+
+        // NAV may not be found when the receipt from the pagoPA node arrives before the one imported from a receipts file:
+        // the installment stays linked to the pagoPA receipt, so no installment references the receipt imported from file.
+        if (nav == null) {
+            return null;
+        }
 
         return paymentsClient.notifyPayment(debtPosition.getOrganizationId(), nav, authnService.getAccessToken());
     }
