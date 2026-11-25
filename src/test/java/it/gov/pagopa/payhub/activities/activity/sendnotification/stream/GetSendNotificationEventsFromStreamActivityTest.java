@@ -36,14 +36,15 @@ class GetSendNotificationEventsFromStreamActivityTest {
 		// Given
 		Long organizationId = 1L;
 		String streamId = "streamId";
+		String subUnitCode = "subUnitCode";
 
 		List<ProgressResponseElementV28DTO> expectedResult = List.of(new ProgressResponseElementV28DTO());
 
-		Mockito.when(serviceMock.readSendStreamEvents(organizationId, streamId))
+		Mockito.when(serviceMock.readSendStreamEvents(organizationId, subUnitCode, streamId))
 				.thenReturn(expectedResult);
 
 		// When
-		List<ProgressResponseElementV28DTO> actualResult = activity.fetchSendNotificationEventsFromStream(organizationId, streamId);
+		List<ProgressResponseElementV28DTO> actualResult = activity.fetchSendNotificationEventsFromStream(organizationId, subUnitCode, streamId);
 
 		// Then
 		Assertions.assertSame(expectedResult, actualResult);

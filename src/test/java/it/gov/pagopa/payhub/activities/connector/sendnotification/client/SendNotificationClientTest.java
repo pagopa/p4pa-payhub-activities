@@ -205,16 +205,17 @@ class SendNotificationClientTest {
         String accessToken = "ACCESSTOKEN";
         Long organizationId = 1L;
         String streamId = "streamId";
+        String subUnitCode = "subUnitCode";
 
         List<ProgressResponseElementV28DTO> expectedResult = List.of(new ProgressResponseElementV28DTO());
 
         when(sendApisHolderMock.getSendStreamsApi(accessToken))
                 .thenReturn(sendStreamsApiMock);
-        when(sendStreamsApiMock.getStreamEvents(organizationId, streamId))
+        when(sendStreamsApiMock.getStreamEvents(organizationId, subUnitCode, streamId))
                 .thenReturn(expectedResult);
 
         //When
-        List<ProgressResponseElementV28DTO> actualResult = client.readSendStreamEvents(organizationId, streamId, accessToken);
+        List<ProgressResponseElementV28DTO> actualResult = client.readSendStreamEvents(organizationId, subUnitCode, streamId, accessToken);
 
         //Then
         Assertions.assertEquals(expectedResult, actualResult);

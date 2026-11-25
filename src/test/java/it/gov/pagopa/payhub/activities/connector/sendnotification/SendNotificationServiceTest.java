@@ -140,16 +140,17 @@ class SendNotificationServiceTest {
         String accessToken = "ACCESSTOKEN";
         Long organizationId = 1L;
         String streamId = "streamId";
+        String subUnitCode = "subUnitCode";
 
         List<ProgressResponseElementV28DTO> expectedResult = List.of(new ProgressResponseElementV28DTO());
 
         Mockito.when(authnServiceMock.getAccessToken())
                 .thenReturn(accessToken);
-        Mockito.when(clientMock.readSendStreamEvents(organizationId, streamId, accessToken))
+        Mockito.when(clientMock.readSendStreamEvents(organizationId, subUnitCode, streamId, accessToken))
                 .thenReturn(expectedResult);
 
         // When
-        List<ProgressResponseElementV28DTO> result = service.readSendStreamEvents(organizationId, streamId);
+        List<ProgressResponseElementV28DTO> result = service.readSendStreamEvents(organizationId, subUnitCode, streamId);
 
         // Then
         Assertions.assertEquals(expectedResult, result);

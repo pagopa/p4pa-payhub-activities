@@ -10,7 +10,7 @@ public interface SendNotificationService {
   SendNotificationDTO findSendNotificationByOrgIdAndNav(Long organizationId, String nav);
   StartNotificationResponse startSendNotification(String sendNotificationId, LoadFileRequest loadFileRequest);
   SendStreamDTO findSendStream(String sendStreamId);
-  List<ProgressResponseElementV28DTO> readSendStreamEvents(Long organizationId, String sendStreamId);
+  List<ProgressResponseElementV28DTO> readSendStreamEvents(Long organizationId, String subUnitCode, String sendStreamId);
   void updateLastProcessedStreamEventId(String sendStreamId, String lastEventId);
   void updateSendNotificationStatus(String notificationRequestId, NotificationStatus newStatus);
   FileExpirationResponseDTO deleteExpiredLegalFacts(String sendNotificationId);

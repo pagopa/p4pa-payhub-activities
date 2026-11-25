@@ -20,8 +20,8 @@ public class GetSendNotificationEventsFromStreamActivityImpl implements GetSendN
 	}
 
 	@Override
-	public List<ProgressResponseElementV28DTO> fetchSendNotificationEventsFromStream(Long organizationId, String sendStreamId) {
-		log.info("Retrieve SEND event from stream {} for organization {}", sendStreamId, organizationId);
-		return sendNotificationService.readSendStreamEvents(organizationId, sendStreamId);
+	public List<ProgressResponseElementV28DTO> fetchSendNotificationEventsFromStream(Long organizationId, String subUnitCode, String sendStreamId) {
+		log.info("Retrieve SEND event from stream {} for organization {} and subUnitCode {}", sendStreamId, organizationId, subUnitCode);
+		return sendNotificationService.readSendStreamEvents(organizationId, subUnitCode, sendStreamId);
 	}
 }
