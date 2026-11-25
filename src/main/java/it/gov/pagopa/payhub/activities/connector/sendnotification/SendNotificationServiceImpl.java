@@ -45,8 +45,8 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     }
 
     @Override
-    public List<ProgressResponseElementV28DTO> readSendStreamEvents(Long organizationId, String sendStreamId) {
-        return sendNotificationClient.readSendStreamEvents(organizationId, sendStreamId, authnService.getAccessToken());
+    public List<ProgressResponseElementV28DTO> readSendStreamEvents(Long organizationId, String subUnitCode, String sendStreamId) {
+        return sendNotificationClient.readSendStreamEvents(organizationId, subUnitCode, sendStreamId, authnService.getAccessToken());
     }
 
     @Override

@@ -14,9 +14,11 @@ public interface GetSendNotificationEventsFromStreamActivity {
 	/**
 	 * Fetch notification event from a stream.
 	 *
+	 * @param organizationId the ID of the organization owning the stream
+	 * @param subUnitCode the code of the organization sub unit owning the stream, null if the stream is at organization level
 	 * @param sendStreamId the ID of send notification stream
 	 */
 	@ActivityMethod
-	List<ProgressResponseElementV28DTO> fetchSendNotificationEventsFromStream(Long organizationId, String sendStreamId);
+	List<ProgressResponseElementV28DTO> fetchSendNotificationEventsFromStream(Long organizationId, String subUnitCode, String sendStreamId);
 
 }
